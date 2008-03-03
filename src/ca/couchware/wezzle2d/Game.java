@@ -153,10 +153,10 @@ public class Game extends Canvas implements GameWindowCallback
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
 		boardMan.createTile(0, TileEntity.COLOR_RED);
-		boardMan.createTile(16, TileEntity.COLOR_RED);
-		boardMan.createTile(33, TileEntity.COLOR_RED);
-		boardMan.createTile(25, TileEntity.COLOR_RED);
-		boardMan.createTile(20, TileEntity.COLOR_RED);
+		boardMan.createTile(16, TileEntity.COLOR_PURPLE);
+		boardMan.createTile(33, TileEntity.COLOR_BLUE);
+		boardMan.createTile(25, TileEntity.COLOR_YELLOW);
+		boardMan.createTile(20, TileEntity.COLOR_GREEN);
 		boardMan.createTile(79, TileEntity.COLOR_RED);
 
 		// Setup the initial game state.
