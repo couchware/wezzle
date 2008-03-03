@@ -52,6 +52,10 @@ public class Game extends Canvas implements GameWindowCallback
 	/** The message to display which waiting for a key press. */
 	private Sprite message;
 	
+	private boolean activateRefactorThisLoop = false;
+	private boolean refactorDownInProgress = false;
+	private boolean refactorLeftInProgress = false;
+	
 	/** True if we're holding up game play until a key has been pressed. */
 	private boolean waitingForKeyPress = true;
 	
@@ -169,7 +173,7 @@ public class Game extends Canvas implements GameWindowCallback
 		entities.clear();
 		createEntities();
 		
-		boardMan.startShiftDown();
+		this.activateRefactorThisLoop = true;
 	}
 
 	/**
@@ -303,35 +307,75 @@ public class Game extends Canvas implements GameWindowCallback
 		lastFpsTime += delta;
 		fps++;
 
-		// update our FPS counter if a second has passed
+		// Update our FPS counter if a second has passed.
 		if (lastFpsTime >= 1000)
 		{
 			window.setTitle(windowTitle + " (FPS: " + fps + ")");
 			lastFpsTime = 0;
 			fps = 0;
 		}
-
-		// cycle round asking each entity to move itself
-		if (waitingForKeyPress == false)
+		
+		// See if we need to activate the refactor.
+		if (activateRefactorThisLoop == true)
 		{
-			for (int i = 0; i < entities.size(); i++)
-			{
-				Entity entity = (Entity) entities.get(i);
-
-				entity.move(delta);
-			}
-		}
-
-		// cycle round drawing all the entities we have in the game
-		for (int i = 0; i < entities.size(); i++)
-		{
-			Entity entity = (Entity) entities.get(i);
-			entity.draw();
+			// Start down refactor.
+			boardMan.startShiftDown();
+			refactorDownInProgress = true;
+			
+			// Clear flag.
+			activateRefactorThisLoop = false;
 		}
 		
+		// See if we're down refactoring.
+		if (refactorDownInProgress == true)
+		{
+			if (boardMan.moveAll(delta) == false)
+			{									
+				// Synchronize board.
+				boardMan.synchronize();							
+				
+				// Start left refactor.
+				boardMan.startShiftLeft();
+				refactorLeftInProgress = true;
+				
+				// Clear down flag.
+				refactorDownInProgress = false;
+			}
+		}
+		
+		// See if we're left refactoring.
+		if (refactorLeftInProgress == true)
+		{
+			if (boardMan.moveAll(delta) == false)
+			{
+				// Synchronize board.
+				boardMan.synchronize();
+				
+				// Clear left flag.
+				refactorLeftInProgress = false;
+			}
+		}
+					
 		// Draw the board.
-		boardMan.moveAll(delta);
 		boardMan.draw();
+
+//		// cycle round asking each entity to move itself
+//		if (waitingForKeyPress == false)
+//		{
+//			for (int i = 0; i < entities.size(); i++)
+//			{
+//				Entity entity = (Entity) entities.get(i);
+//
+//				entity.move(delta);
+//			}
+//		}
+//
+//		// cycle round drawing all the entities we have in the game
+//		for (int i = 0; i < entities.size(); i++)
+//		{
+//			Entity entity = (Entity) entities.get(i);
+//			entity.draw();
+//		}				
 
 		// Brute force collisions, compare every entity against
 		// every other entity. If any of them collide notify
@@ -358,7 +402,7 @@ public class Game extends Canvas implements GameWindowCallback
 		// if a game event has indicated that game logic should
 		// be resolved, cycle round every entity requesting that
 		// their personal logic should be considered.
-		if (logicRequiredThisLoop)
+		if (logicRequiredThisLoop == true)
 		{
 			for (int i = 0; i < entities.size(); i++)
 			{

@@ -84,6 +84,25 @@ public class BoardManager
 		board = new TileEntity[columns * rows];
 	}
 	
+	public void synchronize()
+	{				
+		for (int i = 0; i < cells; i++)
+		{			
+			if (board[i] != null)
+			{
+				TileEntity t = board[i];
+				int column = (t.getX() - x) / cellWidth;
+				int row = (t.getY() - y) / cellHeight;
+												
+				if (column + (row * columns) != i)
+				{
+					board[column + (row * columns)] = board[i];
+					board[i] = null;
+				}
+			}
+		}
+	}
+	
 	public void startShiftDown()
 	{
 		// Start them moving down.
@@ -97,17 +116,38 @@ public class BoardManager
 		}
 	}
 	
+	public void startShiftLeft()
+	{
+		// Start them moving left.
+		for (int i = 0; i < cells; i++)
+		{
+			if (board[i] != null)
+			{
+				board[i].setXMovement(-150);
+				board[i].calculateLeftBound(countTilesLeftOfCell(i));
+			}
+		}
+	}
+	
 	/**
 	 * Moves all currently moving tiles.
 	 * @returns True if there is still more moving to happen.
 	 */
 	public boolean moveAll(long delta)
 	{
+		// Set to true if there are more movement to happen.
+		boolean moreMovement = false;
+		
 		for (int i = 0; i < cells; i++)		
 			if (board[i] != null)
+			{
 				board[i].move(delta);
+				if (board[i].getXMovement() != 0 
+						|| board[i].getYMovement() != 0)
+					moreMovement = true;
+			}
 		
-		return true;
+		return moreMovement;
 	}
 	
 	public int countTilesBelowCell(int index)
@@ -129,6 +169,31 @@ public class BoardManager
 		// Cycle through the column rows, counting tiles.
 		for (int j = row + 1; j < rows; j++)
 			if (getTile(column, j) != null)
+				count++;
+		
+		// Return the count.
+		return count;
+	}
+	
+	public int countTilesLeftOfCell(int index)
+	{
+		// Sanity check.
+		assert(index >= 0 && index < cells);
+		
+		// The current column and row.
+		int column = index % columns;
+		int row = index / columns;
+		
+		// If we're at the bottom row, return 0.
+		if (column == 0)
+			return 0;
+		
+		// The tile count.
+		int count = 0;
+		
+		// Cycle through the column rows, counting tiles.
+		for (int i = column - 1; i >= 0; i--)
+			if (getTile(i, row) != null)
 				count++;
 		
 		// Return the count.
@@ -241,5 +306,24 @@ public class BoardManager
 		for (int i = 0; i < board.length; i++)
 			if (board[i] != null)
 				board[i].draw();
+	}
+	
+	/**
+	 * Prints board to console (for debugging purposes).
+	 */
+	public void print()
+	{
+		for (int i = 0; i < board.length; i++)
+		{
+			if (board[i] == null)
+				System.out.print(".");
+			else
+				System.out.print("X");
+			
+			if (i % columns == columns - 1)
+				System.out.println();
+		}
+		
+		System.out.println();
 	}
 }

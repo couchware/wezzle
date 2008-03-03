@@ -61,6 +61,20 @@ public class TileEntity extends Entity
 				y = bottomBound;
 				dy = 0;
 			}
+		}	
+		
+		if (dx != 0)
+		{						
+			// Move the tile.
+			x += (delta * dx) / 1000;
+			
+			// Make sure we haven't exceeded our bound.
+			// If we have, stop moving.
+			if (x < leftBound)
+			{
+				x = leftBound;
+				dx = 0;
+			}
 		}		
 	}
 	
@@ -77,5 +91,13 @@ public class TileEntity extends Entity
 	{
 		this.bottomBound = boardMan.getY() + boardMan.getHeight() - (tilesInColumn * boardMan.getCellHeight());
 		this.bottomBound -= boardMan.getCellHeight();
+	}
+	
+	/**
+	 * Sets the leftBound.
+	 */
+	public void calculateLeftBound(int tilesInRow)
+	{
+		this.leftBound = boardMan.getX() + (tilesInRow * boardMan.getCellWidth());
 	}
 }
