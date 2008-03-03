@@ -16,6 +16,7 @@ public class Java2DSprite implements Sprite
 {
 	/** The image to be drawn for this sprite */
 	private Image image;
+	
 	/** The game window to which this sprite is going to be drawn */
 	private Java2DGameWindow window;
 
@@ -27,7 +28,8 @@ public class Java2DSprite implements Sprite
 	 * @param image
 	 *            The image that is this sprite
 	 */
-	public Java2DSprite(Java2DGameWindow window, Image image) {
+	public Java2DSprite(Java2DGameWindow window, Image image)
+	{
 		this.image = image;
 		this.window = window;
 	}

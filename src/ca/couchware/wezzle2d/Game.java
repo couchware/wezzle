@@ -23,6 +23,11 @@ import javax.swing.JOptionPane;
  */
 public class Game extends Canvas implements GameWindowCallback
 {
+	/**
+	 * The manager in charge of maintaining the board.
+	 */
+	BoardManager boardMan;
+	
 	/** The list of all the entities that exist in our game. */
 	private ArrayList entities = new ArrayList();
 	
@@ -96,13 +101,13 @@ public class Game extends Canvas implements GameWindowCallback
 	public Game(int renderingType) 
 	{
 		// Create a window based on a chosen rendering method.
-		ResourceFactory.get().setRenderingType(renderingType);
-		window = ResourceFactory.get().getGameWindow();
+		ResourceFactory.get().setRenderingType(renderingType);		
 
 		final Runnable r = new Runnable()
 		{
 			public void run()
 			{
+				window = ResourceFactory.get().getGameWindow();
 				window.setResolution(800, 600);
 				window.setGameWindowCallback(Game.this);
 				window.setTitle(windowTitle);
@@ -131,17 +136,22 @@ public class Game extends Canvas implements GameWindowCallback
 	}
 
 	/**
-	 * Intialise the common elements for the game
+	 * Initialize the common elements for the game
 	 */
-	public void initialise()
+	public void initialize()
 	{
 		youLose = ResourceFactory.get().getSprite("sprites/gotyou.gif");
 		pressAnyKey = ResourceFactory.get().getSprite("sprites/pressanykey.gif");
 		youWin = ResourceFactory.get().getSprite("sprites/youwin.gif");
 
 		message = pressAnyKey;
+		
+		// Create the board manager.
+		boardMan = new BoardManager(272, 139, 8, 10);
+		boardMan.createTile(0, TileEntity.COLOR_RED);
+		boardMan.createTile(79, TileEntity.COLOR_RED);
 
-		// setup the initial game state
+		// Setup the initial game state.
 		startGame();
 	}
 
@@ -151,33 +161,37 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	private void startGame()
 	{
-		// clear out any existing entities and intialise a new set
+		// Clear out any existing entities and initialize a new set.
 		entities.clear();
-		initEntities();
+		createEntities();
 	}
 
 	/**
-	 * Initialise the starting state of the entities (ship and aliens). Each
+	 * Initialize the starting state of the entities (ship and aliens). Each
 	 * entity will be added to the overall list of entities in the game.
 	 */
-	private void initEntities()
+	private void createEntities()
 	{
+//		TileEntity t = new TileEntity(TileEntity.COLOR_RED, 0, 0);
+//		entities.add(t);
+		
 		// Create the player ship and place it roughly in the center of the
 		// screen.
-		ship = new ShipEntity(this, "sprites/ship.gif", 370, 550);
-		entities.add(ship);
-
-		// Create a block of aliens (5 rows, by 12 aliens, spaced evenly).
-		alienCount = 0;
-		for (int row = 0; row < 5; row++)
-		{
-			for (int x = 0; x < 12; x++)
-			{
-				Entity alien = new AlienEntity(this, 100 + (x * 50), (50) + row * 30);
-				entities.add(alien);
-				alienCount++;
-			}
-		}
+//		ship = new ShipEntity(this, "sprites/ship.gif", 370, 550);
+//		entities.add(ship);
+//
+//		// Create a block of aliens (5 rows, by 12 aliens, spaced evenly).
+//		alienCount = 0;
+//		for (int row = 0; row < 5; row++)
+//		{
+//			for (int x = 0; x < 12; x++)
+//			{
+//				Entity alien = new AlienEntity(this, 100 + (x * 50), (50) + row * 30);
+//				entities.add(alien);
+//				alienCount++;
+//			}
+//		}
+		
 	}
 
 	/**
@@ -308,6 +322,9 @@ public class Game extends Canvas implements GameWindowCallback
 			Entity entity = (Entity) entities.get(i);
 			entity.draw();
 		}
+		
+		// Draw the board.
+		boardMan.draw();
 
 		// Brute force collisions, compare every entity against
 		// every other entity. If any of them collide notify
@@ -347,50 +364,50 @@ public class Game extends Canvas implements GameWindowCallback
 
 		// if we're waiting for an "any key" press then draw the
 		// current message
-		if (waitingForKeyPress == true)
-		{
-			message.draw(325, 250);
-		}
+//		if (waitingForKeyPress == true)
+//		{
+//			message.draw(325, 250);
+//		}
 
 		// resolve the movement of the ship. First assume the ship
 		// isn't moving. If either cursor key is pressed then
 		// update the movement appropriately.
-		ship.setHorizontalMovement(0);
-
-		boolean leftPressed = window.isKeyPressed(KeyEvent.VK_LEFT);
-		boolean rightPressed = window.isKeyPressed(KeyEvent.VK_RIGHT);
-		boolean firePressed = window.isKeyPressed(KeyEvent.VK_SPACE);
-
-		if (!waitingForKeyPress)
-		{
-			if ((leftPressed) && (!rightPressed))
-			{
-				ship.setHorizontalMovement(-moveSpeed);
-			}
-			else if ((rightPressed) && (!leftPressed))
-			{
-				ship.setHorizontalMovement(moveSpeed);
-			}
-
-			// if we're pressing fire, attempt to fire
-			if (firePressed)
-			{
-				tryToFire();
-			}
-		}
-		else
-		{
-			if (!firePressed)
-			{
-				fireHasBeenReleased = true;
-			}
-			if ((firePressed) && (fireHasBeenReleased))
-			{
-				waitingForKeyPress = false;
-				fireHasBeenReleased = false;
-				startGame();
-			}
-		}
+//		ship.setHorizontalMovement(0);
+//
+//		boolean leftPressed = window.isKeyPressed(KeyEvent.VK_LEFT);
+//		boolean rightPressed = window.isKeyPressed(KeyEvent.VK_RIGHT);
+//		boolean firePressed = window.isKeyPressed(KeyEvent.VK_SPACE);
+//
+//		if (!waitingForKeyPress)
+//		{
+//			if ((leftPressed) && (!rightPressed))
+//			{
+//				ship.setHorizontalMovement(-moveSpeed);
+//			}
+//			else if ((rightPressed) && (!leftPressed))
+//			{
+//				ship.setHorizontalMovement(moveSpeed);
+//			}
+//
+//			// if we're pressing fire, attempt to fire
+//			if (firePressed)
+//			{
+//				tryToFire();
+//			}
+//		}
+//		else
+//		{
+//			if (!firePressed)
+//			{
+//				fireHasBeenReleased = true;
+//			}
+//			if ((firePressed) && (fireHasBeenReleased))
+//			{
+//				waitingForKeyPress = false;
+//				fireHasBeenReleased = false;
+//				startGame();
+//			}
+//		}
 
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))

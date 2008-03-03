@@ -2,65 +2,120 @@ package ca.couchware.wezzle2d;
 
 /**
  * Manages the game board.  A replacement for the GameBoard class from
- * the SVG-based Wezzle.  The board manager is a singleton class.
- * @author cdmckay
+ * the SVG-based Wezzle. * @author cdmckay
  *
  */
 
 public class BoardManager
-{
+{		
 	/**
-	 * The singleton reference.
+	 * The x-coordiante of the top left corner of the board.
 	 */
-	private static final BoardManager single = new BoardManager();
+	final private int x;
+	
+	/**
+	 * The y-coordinate of the top left corner of the board.
+	 */
+	final private int y;
 	
 	/**
 	 * The number of columns in the game board.
 	 */
-	final public static int TOTAL_COLUMNS = 8;
+	final private int columns;
 	
 	/**
 	 * The number of rows in the game board.
 	 */
-	final public static int TOTAL_ROWS = 12;
+	final private int rows;
+	
+	/**
+	 * The width of a grid cell.
+	 */
+	final private int cellWidth;
+	
+	/**
+	 * The height of a grid cell.
+	 */
+	final private int cellHeight;
 	
 	/**
 	 * The array representing the game board.
 	 */
-	final private static TileEntity[] board = new TileEntity[TOTAL_COLUMNS * TOTAL_ROWS];
+	final private TileEntity[] board;
 	
 	/**
-	 * The default contructor has been made private to prevent construction of
-	 * this class anywhere externally. This is used to enforce the singleton
-	 * pattern that this class attempts to follow.
+	 * The constructor.
 	 */
-	public BoardManager()
+	public BoardManager(final int x, final int y, final int columns, final int rows)
 	{
-		// Intentionally left blank.
+		// Set the cell width and height. Hard-coded to 32x32 for now.
+		this.cellWidth = 32;
+		this.cellHeight = 32;
+		
+		// Set the x and y coordinates.
+		this.x = x;
+		this.y = y;
+		
+		// Set columns and rows.
+		this.columns = columns;
+		this.rows = rows;
+		
+		// Initialize board.
+		board = new TileEntity[columns * rows];
 	}
 	
-	/**
-	 * Retrieve the single instance of this class.
-	 * 
-	 * @return The single instance of this class.
-	 */
-	public static BoardManager get()
+	public void createTile(final int index, final String color)
 	{
-		return single;
+		// Sanity check.
+		assert(index < columns * rows);
+		
+		TileEntity t = new TileEntity(color, x + (index % columns) * cellWidth,
+				y + (index / columns) * cellHeight);
+		
+		setTile(index, t);
 	}
 	
-	public static void setTile(int index, TileEntity tile)
+	public void setTile(int index, TileEntity tile)
 	{
+		// Sanity check.
+		assert(index < columns * rows);
+		
 		// Set the tile.
 		board[index] = tile;
 	}
 	
-	public static void setTile(int column, int row, TileEntity tile)
+	public void setTile(int column, int row, TileEntity tile)
 	{
 		// Make sure we're within parameters.
-		assert(column < TOTAL_COLUMNS && row < TOTAL_ROWS);
+		assert(column < columns && row < rows);
 		
 		// Forward.
-		setTile(column + (row * TOTAL_COLUMNS), tile);
-	}		
+		setTile(column + (row * columns), tile);
+	}
+
+	/**
+	 * @return The cellWidth.
+	 */
+	public int getCellWidth()
+	{
+		return cellWidth;
+	}
+
+	/**
+	 * @return The cellHeight.
+	 */
+	public int getCellHeight()
+	{
+		return cellHeight;
+	}	
+	
+	/**
+	 * Draw the board to the screen.
+	 */
+	public void draw()
+	{
+		for (int i = 0; i < board.length; i++)
+			if (board[i] != null)
+				board[i].draw();
+	}
 }

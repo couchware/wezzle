@@ -12,7 +12,7 @@ public interface GameWindowCallback
 	 * Notification that game should initialise any resources it needs to use.
 	 * This includes loading sprites.
 	 */
-	public void initialise();
+	public void initialize();
 
 	/**
 	 * Notification that the display is being rendered. The implementor should

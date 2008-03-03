@@ -18,16 +18,22 @@ public abstract class Entity
 {
 	/** The current x location of this entity */
 	protected double x;
+	
 	/** The current y location of this entity */
 	protected double y;
+	
 	/** The sprite that represents this entity */
 	protected Sprite sprite;
+	
 	/** The current speed of this entity horizontally (pixels/sec) */
 	protected double dx;
+	
 	/** The current speed of this entity vertically (pixels/sec) */
 	protected double dy;
+	
 	/** The rectangle used for this entity during collisions resolution */
 	private Rectangle me = new Rectangle();
+	
 	/** The rectangle used for other entities during collision resolution */
 	private Rectangle him = new Rectangle();
 
@@ -49,11 +55,11 @@ public abstract class Entity
 	}
 
 	/**
-	 * Request that this entity move itself based on a certain ammount of time
+	 * Request that this entity move itself based on a certain amount of time
 	 * passing.
 	 * 
 	 * @param delta
-	 *            The ammount of time that has passed in milliseconds
+	 *            The amount of time that has passed in milliseconds.
 	 */
 	public void move(long delta)
 	{
@@ -66,7 +72,7 @@ public abstract class Entity
 	 * Set the horizontal speed of this entity
 	 * 
 	 * @param dx
-	 *            The horizontal speed of this entity (pixels/sec)
+	 *            The horizontal speed of this entity (pixels/sec).
 	 */
 	public void setHorizontalMovement(double dx)
 	{
@@ -77,7 +83,7 @@ public abstract class Entity
 	 * Set the vertical speed of this entity
 	 * 
 	 * @param dy
-	 *            The vertical speed of this entity (pixels/sec)
+	 *            The vertical speed of this entity (pixels/sec).
 	 */
 	public void setVerticalMovement(double dy)
 	{
@@ -87,7 +93,7 @@ public abstract class Entity
 	/**
 	 * Get the horizontal speed of this entity
 	 * 
-	 * @return The horizontal speed of this entity (pixels/sec)
+	 * @return The horizontal speed of this entity (pixels/sec).
 	 */
 	public double getHorizontalMovement()
 	{
@@ -97,7 +103,7 @@ public abstract class Entity
 	/**
 	 * Get the vertical speed of this entity
 	 * 
-	 * @return The vertical speed of this entity (pixels/sec)
+	 * @return The vertical speed of this entity (pixels/sec).
 	 */
 	public double getVerticalMovement()
 	{
@@ -105,7 +111,7 @@ public abstract class Entity
 	}
 
 	/**
-	 * Draw this entity to the graphics context provided
+	 * Draw this entity to the graphics context provided.
 	 */
 	public void draw()
 	{
@@ -114,16 +120,16 @@ public abstract class Entity
 
 	/**
 	 * Do the logic associated with this entity. This method will be called
-	 * periodically based on game events
+	 * periodically based on game events.
 	 */
 	public void doLogic()
 	{
 	}
 
 	/**
-	 * Get the x location of this entity
+	 * Get the x location of this entity.
 	 * 
-	 * @return The x location of this entity
+	 * @return The x location of this entity.
 	 */
 	public int getX()
 	{
@@ -131,9 +137,9 @@ public abstract class Entity
 	}
 
 	/**
-	 * Get the y location of this entity
+	 * Get the y location of this entity.
 	 * 
-	 * @return The y location of this entity
+	 * @return The y location of this entity.
 	 */
 	public int getY()
 	{
@@ -143,9 +149,8 @@ public abstract class Entity
 	/**
 	 * Check if this entity collides with another.
 	 * 
-	 * @param other
-	 *            The other entity to check collision against
-	 * @return True if the entities collide with each other
+	 * @param other The other entity to check collision against.
+	 * @return True if the entities collide with each other.
 	 */
 	public boolean collidesWith(Entity other)
 	{

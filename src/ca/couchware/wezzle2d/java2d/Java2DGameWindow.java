@@ -1,16 +1,21 @@
 package ca.couchware.wezzle2d.java2d;
 
+import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import ca.couchware.wezzle2d.GameWindow;
 import ca.couchware.wezzle2d.GameWindowCallback;
@@ -51,8 +56,15 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	 * Create a new window to render using Java 2D. Note this will *not*
 	 * actually cause the window to be shown.
 	 */
-	public Java2DGameWindow() {
-		frame = new JFrame();
+	public Java2DGameWindow() 
+	{
+		java.awt.EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				frame = new JFrame();
+			}
+		});
 	}
 
 	/**
@@ -61,9 +73,15 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	 * @param title
 	 *            The title to display on the window
 	 */
-	public void setTitle(String title)
+	public void setTitle(final String title)
 	{
-		frame.setTitle(title);
+		java.awt.EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				frame.setTitle(title);
+			}
+		});		
 	}
 
 	/**
@@ -85,7 +103,7 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	 * Start the rendering process. This method will not return.
 	 */
 	public void startRendering()
-	{
+	{			
 		final Runnable r = new Runnable()
 		{
 			public void run()
@@ -94,24 +112,22 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 				// game.
 				JPanel panel = (JPanel) frame.getContentPane();		
 				
-				// TODO: Workaround.  Don't know why it oversizes by 10 pixels.
-				panel.setPreferredSize(new Dimension(width - 10, height - 10));
-				panel.setLayout(null);								
-
-				Keyboard.init(Java2DGameWindow.this);
+				// Set the panel size.				
+				panel.setPreferredSize(new Dimension(width, height));			
+				panel.setLayout(null);
 
 				// Setup our canvas size and put it into the content of the frame.
-				setBounds(0, 0, width, height);
+				setBounds(0, 0, width, height);				
 				panel.add(Java2DGameWindow.this);
 
 				// Tell AWT not to bother repainting our canvas since we're
-				// going to do that our self in accelerated mode
+				// going to do that our self in accelerated mode.
 				setIgnoreRepaint(true);
 
-				// Finally make the window visible.
-				//frame.setPreferredSize(new Dimension(width, height));
-				frame.pack();
+				// Finally make the window visible.				
 				frame.setResizable(false);
+				frame.pack();				
+				frame.setLocation(100, 100);
 				frame.setVisible(true);
 
 				// Add a listener to respond to the user closing the window. If they
@@ -138,6 +154,9 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 				// to manage our accelerated graphics.
 				createBufferStrategy(2);
 				strategy = getBufferStrategy();
+				
+				// Initialize keyboard.
+				Keyboard.init(Java2DGameWindow.this);
 			}
 		};
 		
@@ -160,7 +179,7 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 		// it that initialization is taking place.
 		if (callback != null)
 		{
-			callback.initialise();
+			callback.initialize();
 		}
 
 		// Start the game loop.
@@ -209,7 +228,7 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	private void gameLoop()
 	{
 		while (gameRunning)
-		{
+		{						
 			// Get hold of a graphics context for the accelerated
 			// surface and black it out.
 			g = (Graphics2D) strategy.getDrawGraphics();
