@@ -14,14 +14,14 @@ public interface Sprite
 	/**
 	 * Get the width of the drawn sprite
 	 * 
-	 * @return The width in pixels of this sprite
+	 * @return The width in pixels of this sprite.
 	 */
 	public int getWidth();
 
 	/**
 	 * Get the height of the drawn sprite
 	 * 
-	 * @return The height in pixels of this sprite
+	 * @return The height in pixels of this sprite.
 	 */
 	public int getHeight();
 
@@ -29,9 +29,9 @@ public interface Sprite
 	 * Draw the sprite onto the graphics context provided
 	 * 
 	 * @param x
-	 *            The x location at which to draw the sprite
+	 *            The x location at which to draw the sprite.
 	 * @param y
-	 *            The y location at which to draw the sprite
+	 *            The y location at which to draw the sprite.
 	 */
 	public void draw(int x, int y);
 }

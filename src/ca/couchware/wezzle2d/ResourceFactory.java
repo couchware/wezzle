@@ -17,16 +17,6 @@ public class ResourceFactory
 	/** The single instance of this class to ever exist <singleton> */
 	private static final ResourceFactory single = new ResourceFactory();
 
-	/**
-	 * Retrieve the single instance of this class
-	 * 
-	 * @return The single instance of this class
-	 */
-	public static ResourceFactory get()
-	{
-		return single;
-	}
-
 	/** 
 	 * A value to indicate that we should use Java 2D to render our game. 
 	 */
@@ -46,7 +36,19 @@ public class ResourceFactory
 	 * pattern that this class attempts to follow
 	 */
 	private ResourceFactory() 
-	{}
+	{
+		// Intentionally blank.
+	}
+	
+	/**
+	 * Retrieve the single instance of this class.
+	 * 
+	 * @return The single instance of this class.
+	 */
+	public static ResourceFactory get()
+	{
+		return single;
+	}
 
 	/**
 	 * Set the rendering method that should be used. Note: This can only be done

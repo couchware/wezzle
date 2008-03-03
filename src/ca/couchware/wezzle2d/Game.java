@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d;
 
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -22,55 +23,68 @@ import javax.swing.JOptionPane;
  */
 public class Game extends Canvas implements GameWindowCallback
 {
-	/** The list of all the entities that exist in our game */
+	/** The list of all the entities that exist in our game. */
 	private ArrayList entities = new ArrayList();
-	/** The list of entities that need to be removed from the game this loop */
+	
+	/** The list of entities that need to be removed from the game this loop. */
 	private ArrayList removeList = new ArrayList();
-	/** The entity representing the player */
+	
+	/** The entity representing the player. */
 	private Entity ship;
-	/** The speed at which the player's ship should move (pixels/sec) */
+	
+	/** The speed at which the player's ship should move (pixels/sec). */
 	private double moveSpeed = 300;
+	
 	/** The time at which last fired a shot */
 	private long lastFire = 0;
-	/** The interval between our players shot (ms) */
-	private long firingInterval = 500;
-	/** The number of aliens left on the screen */
+	
+	/** The interval between our players shot (ms). */
+	private long firingInterval = 200;
+	
+	/** The number of aliens left on the screen. */
 	private int alienCount;
 
-	/** The message to display which waiting for a key press */
+	/** The message to display which waiting for a key press. */
 	private Sprite message;
-	/** True if we're holding up game play until a key has been pressed */
+	
+	/** True if we're holding up game play until a key has been pressed. */
 	private boolean waitingForKeyPress = true;
+	
 	/**
 	 * True if game logic needs to be applied this loop, normally as a result of
-	 * a game event
+	 * a game event.
 	 */
 	private boolean logicRequiredThisLoop = false;
 
 	/**
 	 * The time at which the last rendering looped started from the point of
-	 * view of the game logic
+	 * view of the game logic.
 	 */
 	private long lastLoopTime = SystemTimer.getTime();
-	/** The window that is being used to render the game */
+	
+	/** The window that is being used to render the game. */
 	private GameWindow window;
-	/** True if the fire key has been released */
+	
+	/** True if the fire key has been released. */
 	private boolean fireHasBeenReleased = false;
 
-	/** The sprite containing the "Press Any Key" message */
+	/** The sprite containing the "Press Any Key" message. */
 	private Sprite pressAnyKey;
-	/** The sprite containing the "You win!" message */
+	
+	/** The sprite containing the "You win!" message. */
 	private Sprite youWin;
-	/** The sprite containing the "You lose!" message */
-	private Sprite gotYou;
+	
+	/** The sprite containing the "You lose!" message. */
+	private Sprite youLose;
 
-	/** The time since the last record of fps */
+	/** The time since the last record of FPS. */
 	private long lastFpsTime = 0;
-	/** The recorded fps */
+	
+	/** The recorded FPS. */
 	private int fps;
 
-	/** The normal title of the window */
-	private String windowTitle = "Space Invaders 103 - Version (0.3)";
+	/** The normal title of the window. */
+	private String windowTitle = "Wezzle";
 
 	/**
 	 * Construct our game and set it running.
@@ -79,14 +93,36 @@ public class Game extends Canvas implements GameWindowCallback
 	 *            The type of rendering to use (should be one of the contansts
 	 *            from ResourceFactory)
 	 */
-	public Game(int renderingType) {
-		// create a window based on a chosen rendering method
+	public Game(int renderingType) 
+	{
+		// Create a window based on a chosen rendering method.
 		ResourceFactory.get().setRenderingType(renderingType);
 		window = ResourceFactory.get().getGameWindow();
 
-		window.setResolution(800, 600);
-		window.setGameWindowCallback(this);
-		window.setTitle(windowTitle);
+		final Runnable r = new Runnable()
+		{
+			public void run()
+			{
+				window.setResolution(800, 600);
+				window.setGameWindowCallback(Game.this);
+				window.setTitle(windowTitle);
+			}		
+		};
+		
+		try
+		{
+			javax.swing.SwingUtilities.invokeAndWait(r);
+		}
+		catch (InterruptedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (InvocationTargetException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 
 	public void startRendering()
@@ -99,9 +135,8 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void initialise()
 	{
-		gotYou = ResourceFactory.get().getSprite("sprites/gotyou.gif");
-		pressAnyKey = ResourceFactory.get()
-				.getSprite("sprites/pressanykey.gif");
+		youLose = ResourceFactory.get().getSprite("sprites/gotyou.gif");
+		pressAnyKey = ResourceFactory.get().getSprite("sprites/pressanykey.gif");
 		youWin = ResourceFactory.get().getSprite("sprites/youwin.gif");
 
 		message = pressAnyKey;
@@ -123,23 +158,22 @@ public class Game extends Canvas implements GameWindowCallback
 
 	/**
 	 * Initialise the starting state of the entities (ship and aliens). Each
-	 * entitiy will be added to the overall list of entities in the game.
+	 * entity will be added to the overall list of entities in the game.
 	 */
 	private void initEntities()
 	{
-		// create the player ship and place it roughly in the center of the
-		// screen
+		// Create the player ship and place it roughly in the center of the
+		// screen.
 		ship = new ShipEntity(this, "sprites/ship.gif", 370, 550);
 		entities.add(ship);
 
-		// create a block of aliens (5 rows, by 12 aliens, spaced evenly)
+		// Create a block of aliens (5 rows, by 12 aliens, spaced evenly).
 		alienCount = 0;
 		for (int row = 0; row < 5; row++)
 		{
 			for (int x = 0; x < 12; x++)
 			{
-				Entity alien = new AlienEntity(this, 100 + (x * 50),
-						(50) + row * 30);
+				Entity alien = new AlienEntity(this, 100 + (x * 50), (50) + row * 30);
 				entities.add(alien);
 				alienCount++;
 			}
@@ -172,7 +206,7 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void notifyDeath()
 	{
-		message = gotYou;
+		message = youLose;
 		waitingForKeyPress = true;
 	}
 
@@ -190,7 +224,7 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void notifyAlienKilled()
 	{
-		// reduce the alient count, if there are none left, the player has won!
+		// reduce the alien count, if there are none left, the player has won!
 		alienCount--;
 
 		if (alienCount == 0)
@@ -207,9 +241,8 @@ public class Game extends Canvas implements GameWindowCallback
 
 			if (entity instanceof AlienEntity)
 			{
-				// speed up by 2%
-				entity
-						.setHorizontalMovement(entity.getHorizontalMovement() * 1.02);
+				// Speed up by 2%.
+				entity.setHorizontalMovement(entity.getHorizontalMovement() * 1.02);
 			}
 		}
 	}
@@ -230,8 +263,7 @@ public class Game extends Canvas implements GameWindowCallback
 		// if we waited long enough, create the shot entity, and record the
 		// time.
 		lastFire = System.currentTimeMillis();
-		ShotEntity shot = new ShotEntity(this, "sprites/shot.gif",
-				ship.getX() + 10, ship.getY() - 30);
+		ShotEntity shot = new ShotEntity(this, "sprites/shot.gif", ship.getX() + 10, ship.getY() - 30);
 		entities.add(shot);
 	}
 
@@ -260,7 +292,7 @@ public class Game extends Canvas implements GameWindowCallback
 		}
 
 		// cycle round asking each entity to move itself
-		if (!waitingForKeyPress)
+		if (waitingForKeyPress == false)
 		{
 			for (int i = 0; i < entities.size(); i++)
 			{
@@ -274,27 +306,26 @@ public class Game extends Canvas implements GameWindowCallback
 		for (int i = 0; i < entities.size(); i++)
 		{
 			Entity entity = (Entity) entities.get(i);
-
 			entity.draw();
 		}
 
-		// brute force collisions, compare every entity against
+		// Brute force collisions, compare every entity against
 		// every other entity. If any of them collide notify
-		// both entities that the collision has occured
-		for (int p = 0; p < entities.size(); p++)
-		{
-			for (int s = p + 1; s < entities.size(); s++)
-			{
-				Entity me = (Entity) entities.get(p);
-				Entity him = (Entity) entities.get(s);
-
-				if (me.collidesWith(him))
-				{
-					me.collidedWith(him);
-					him.collidedWith(me);
-				}
-			}
-		}
+		// both entities that the collision has occurred.
+//		for (int p = 0; p < entities.size(); p++)
+//		{
+//			for (int s = p + 1; s < entities.size(); s++)
+//			{
+//				Entity me = (Entity) entities.get(p);
+//				Entity him = (Entity) entities.get(s);
+//
+//				if (me.collidesWith(him))
+//				{
+//					me.collidedWith(him);
+//					him.collidedWith(me);
+//				}
+//			}
+//		}
 
 		// remove any entity that has been marked for clear up
 		entities.removeAll(removeList);
@@ -316,14 +347,14 @@ public class Game extends Canvas implements GameWindowCallback
 
 		// if we're waiting for an "any key" press then draw the
 		// current message
-		if (waitingForKeyPress)
+		if (waitingForKeyPress == true)
 		{
 			message.draw(325, 250);
 		}
 
-		// resolve the movemfent of the ship. First assume the ship
+		// resolve the movement of the ship. First assume the ship
 		// isn't moving. If either cursor key is pressed then
-		// update the movement appropraitely
+		// update the movement appropriately.
 		ship.setHorizontalMovement(0);
 
 		boolean leftPressed = window.isKeyPressed(KeyEvent.VK_LEFT);
@@ -369,7 +400,7 @@ public class Game extends Canvas implements GameWindowCallback
 	}
 
 	/**
-	 * Notifcation that the game window has been closed
+	 * Notification that the game window has been closed
 	 */
 	public void windowClosed()
 	{

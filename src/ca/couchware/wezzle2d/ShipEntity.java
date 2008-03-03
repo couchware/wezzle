@@ -15,16 +15,16 @@ public class ShipEntity extends Entity
 	 * 
 	 * @param game
 	 *            The game in which the ship is being created
-	 * @param ref
+	 * @param path
 	 *            The reference to the sprite to show for the ship
 	 * @param x
 	 *            The initial x location of the player's ship
 	 * @param y
 	 *            The initial y location of the player's ship
 	 */
-	public ShipEntity(Game game, String ref, int x, int y) {
-		super(ref, x, y);
-
+	public ShipEntity(Game game, String path, int x, int y) {
+		
+		super(path, x, y);
 		this.game = game;
 	}
 

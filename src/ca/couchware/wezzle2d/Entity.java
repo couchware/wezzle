@@ -34,15 +34,16 @@ public abstract class Entity
 	/**
 	 * Construct a entity based on a sprite image and a location.
 	 * 
-	 * @param ref
+	 * @param path
 	 *            The reference to the image to be displayed for this entity
 	 * @param x
 	 *            The initial x location of this entity
 	 * @param y
 	 *            The initial y location of this entity
 	 */
-	public Entity(String ref, int x, int y) {
-		this.sprite = ResourceFactory.get().getSprite(ref);
+	public Entity(String path, int x, int y) 
+	{
+		this.sprite = ResourceFactory.get().getSprite(path);
 		this.x = x;
 		this.y = y;
 	}
@@ -140,7 +141,7 @@ public abstract class Entity
 	}
 
 	/**
-	 * Check if this entity collised with another.
+	 * Check if this entity collides with another.
 	 * 
 	 * @param other
 	 *            The other entity to check collision against
