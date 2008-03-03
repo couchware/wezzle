@@ -15,20 +15,67 @@ public class TileEntity extends Entity
 	final public static String COLOR_YELLOW = "Yellow";
 	
 	/**
+	 * The associated board manager.
+	 */
+	private final BoardManager boardMan;
+	
+	/**
+	 * The current bottom bound.
+	 */
+	int bottomBound;
+	
+	/**
+	 * The current left bound.
+	 */
+	int leftBound;
+	
+	/**
 	 * Creates a tile at (x,y) with the specified color.
 	 * @param color
 	 * @param x
 	 * @param y
 	 */
-	public TileEntity(String color, int x, int y) 
+	public TileEntity(BoardManager bm, String color, int x, int y) 
 	{
 		// Invoke super.		
 		super("resources/Tile" + color + ".png", x, y);	
+		
+		// Set board manager reference.
+		this.boardMan = bm;	
 	}
-
+	
+	/**
+	 * Override move.
+	 */
+	public void move(long delta)
+	{
+		if (dy != 0)
+		{
+			// Move the tile.
+			y += (delta * dy) / 1000;
+			
+			// Make sure we haven't exceeded our bound.
+			// If we have, stop moving.
+			if (y > bottomBound)
+			{
+				y = bottomBound;
+				dy = 0;
+			}
+		}		
+	}
+	
 	@Override
 	public void collidedWith(Entity other)
 	{
 		// Do nothing.  This method is probably going to get removed.
+	}
+
+	/**
+	 * Sets the bottomBound.
+	 */
+	public void calculateBottomBound(int tilesInColumn)
+	{
+		this.bottomBound = boardMan.getY() + boardMan.getHeight() - (tilesInColumn * boardMan.getCellHeight());
+		this.bottomBound -= boardMan.getCellHeight();
 	}
 }

@@ -25,10 +25,10 @@ public abstract class Entity
 	/** The sprite that represents this entity */
 	protected Sprite sprite;
 	
-	/** The current speed of this entity horizontally (pixels/sec) */
+	/** The current speed of this entity horizontally (pixels/s). */
 	protected double dx;
 	
-	/** The current speed of this entity vertically (pixels/sec) */
+	/** The current speed of this entity vertically (pixels/s). */
 	protected double dy;
 	
 	/** The rectangle used for this entity during collisions resolution */
@@ -63,7 +63,7 @@ public abstract class Entity
 	 */
 	public void move(long delta)
 	{
-		// update the location of the entity based on move speeds
+		// Update the location of the entity based on move speeds.
 		x += (delta * dx) / 1000;
 		y += (delta * dy) / 1000;
 	}
@@ -72,9 +72,9 @@ public abstract class Entity
 	 * Set the horizontal speed of this entity
 	 * 
 	 * @param dx
-	 *            The horizontal speed of this entity (pixels/sec).
+	 *            The horizontal speed of this entity (pixels/s).
 	 */
-	public void setHorizontalMovement(double dx)
+	public void setXMovement(double dx)
 	{
 		this.dx = dx;
 	}
@@ -83,9 +83,9 @@ public abstract class Entity
 	 * Set the vertical speed of this entity
 	 * 
 	 * @param dy
-	 *            The vertical speed of this entity (pixels/sec).
+	 *            The vertical speed of this entity (pixels/s).
 	 */
-	public void setVerticalMovement(double dy)
+	public void setYMovement(double dy)
 	{
 		this.dy = dy;
 	}
@@ -93,9 +93,9 @@ public abstract class Entity
 	/**
 	 * Get the horizontal speed of this entity
 	 * 
-	 * @return The horizontal speed of this entity (pixels/sec).
+	 * @return The horizontal speed of this entity (pixels/s).
 	 */
-	public double getHorizontalMovement()
+	public double getXMovement()
 	{
 		return dx;
 	}
@@ -103,9 +103,9 @@ public abstract class Entity
 	/**
 	 * Get the vertical speed of this entity
 	 * 
-	 * @return The vertical speed of this entity (pixels/sec).
+	 * @return The vertical speed of this entity (pixels/ms).
 	 */
-	public double getVerticalMovement()
+	public double getYMovement()
 	{
 		return dy;
 	}

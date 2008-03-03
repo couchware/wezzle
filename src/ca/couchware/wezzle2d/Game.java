@@ -149,6 +149,10 @@ public class Game extends Canvas implements GameWindowCallback
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
 		boardMan.createTile(0, TileEntity.COLOR_RED);
+		boardMan.createTile(16, TileEntity.COLOR_RED);
+		boardMan.createTile(33, TileEntity.COLOR_RED);
+		boardMan.createTile(25, TileEntity.COLOR_RED);
+		boardMan.createTile(20, TileEntity.COLOR_RED);
 		boardMan.createTile(79, TileEntity.COLOR_RED);
 
 		// Setup the initial game state.
@@ -160,10 +164,12 @@ public class Game extends Canvas implements GameWindowCallback
 	 * set.
 	 */
 	private void startGame()
-	{
+	{		
 		// Clear out any existing entities and initialize a new set.
 		entities.clear();
 		createEntities();
+		
+		boardMan.startShiftDown();
 	}
 
 	/**
@@ -256,7 +262,7 @@ public class Game extends Canvas implements GameWindowCallback
 			if (entity instanceof AlienEntity)
 			{
 				// Speed up by 2%.
-				entity.setHorizontalMovement(entity.getHorizontalMovement() * 1.02);
+				entity.setXMovement(entity.getXMovement() * 1.02);
 			}
 		}
 	}
@@ -324,6 +330,7 @@ public class Game extends Canvas implements GameWindowCallback
 		}
 		
 		// Draw the board.
+		boardMan.moveAll(delta);
 		boardMan.draw();
 
 		// Brute force collisions, compare every entity against

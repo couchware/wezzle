@@ -29,6 +29,21 @@ public class BoardManager
 	final private int rows;
 	
 	/**
+	 * The total number of cells.
+	 */
+	final private int cells;
+	
+	/**
+	 * The width of the board.
+	 */
+	final private int width;
+	
+	/**
+	 * The height of the board.
+	 */
+	final private int height;
+	
+	/**
 	 * The width of a grid cell.
 	 */
 	final private int cellWidth;
@@ -59,9 +74,65 @@ public class BoardManager
 		// Set columns and rows.
 		this.columns = columns;
 		this.rows = rows;
+		this.cells = columns * rows;
+		
+		// Set the board width and height.
+		this.width = columns * cellWidth;
+		this.height = rows * cellHeight;
 		
 		// Initialize board.
 		board = new TileEntity[columns * rows];
+	}
+	
+	public void startShiftDown()
+	{
+		// Start them moving down.
+		for (int i = 0; i < cells; i++)
+		{
+			if (board[i] != null)
+			{
+				board[i].setYMovement(150);
+				board[i].calculateBottomBound(countTilesBelowCell(i));
+			}
+		}
+	}
+	
+	/**
+	 * Moves all currently moving tiles.
+	 * @returns True if there is still more moving to happen.
+	 */
+	public boolean moveAll(long delta)
+	{
+		for (int i = 0; i < cells; i++)		
+			if (board[i] != null)
+				board[i].move(delta);
+		
+		return true;
+	}
+	
+	public int countTilesBelowCell(int index)
+	{
+		// Sanity check.
+		assert(index >= 0 && index < cells);
+		
+		// The current column and row.
+		int column = index % columns;
+		int row = index / columns;
+		
+		// If we're at the bottom row, return 0.
+		if (row == rows - 1)
+			return 0;
+		
+		// The tile count.
+		int count = 0;
+		
+		// Cycle through the column rows, counting tiles.
+		for (int j = row + 1; j < rows; j++)
+			if (getTile(column, j) != null)
+				count++;
+		
+		// Return the count.
+		return count;
 	}
 	
 	public void createTile(final int index, final String color)
@@ -69,16 +140,33 @@ public class BoardManager
 		// Sanity check.
 		assert(index < columns * rows);
 		
-		TileEntity t = new TileEntity(color, x + (index % columns) * cellWidth,
+		TileEntity t = new TileEntity(this, color, x + (index % columns) * cellWidth,
 				y + (index / columns) * cellHeight);
 		
 		setTile(index, t);
 	}
 	
+	public TileEntity getTile(int index)
+	{
+		// Sanity check.
+		assert(index >= 0 && index < columns * rows);
+		
+		// Set the tile.
+		return board[index];
+	}
+	
+	public TileEntity getTile(int column, int row)
+	{
+		// Make sure we're within parameters.
+		assert(column >= 0 && row >= 0 && column < columns && row < rows);
+		
+		return getTile(column + (row * columns));
+	}
+	
 	public void setTile(int index, TileEntity tile)
 	{
 		// Sanity check.
-		assert(index < columns * rows);
+		assert(index >= 0 && index < columns * rows);
 		
 		// Set the tile.
 		board[index] = tile;
@@ -107,8 +195,44 @@ public class BoardManager
 	public int getCellHeight()
 	{
 		return cellHeight;
-	}	
+	}			
 	
+	/**
+	 * Gets the width.
+	 * @return The width.
+	 */
+	public int getWidth()
+	{
+		return width;
+	}
+
+	/**
+	 * Gets the height.
+	 * @return The height.
+	 */
+	public int getHeight()
+	{
+		return height;
+	}
+
+	/**
+	 * Gets the x.
+	 * @return The x.
+	 */
+	public int getX()
+	{
+		return x;
+	}
+
+	/**
+	 * Gets the y.
+	 * @return The y.
+	 */
+	public int getY()
+	{
+		return y;
+	}
+
 	/**
 	 * Draw the board to the screen.
 	 */
