@@ -98,6 +98,13 @@ public class Game extends Canvas implements GameWindowCallback
 
 	/** The normal title of the window. */
 	private String windowTitle = "Wezzle";
+	
+	
+	
+	
+	
+	/** FOR TESTING PURPOSES ONLY: REMOVE */
+	Text t;
 
 	/**
 	 * Construct our game and set it running.
@@ -162,6 +169,10 @@ public class Game extends Canvas implements GameWindowCallback
 		boardMan.createTile(25, TileEntity.COLOR_YELLOW);
 		boardMan.createTile(20, TileEntity.COLOR_GREEN);
 		boardMan.createTile(79, TileEntity.COLOR_RED);
+		
+		t = ResourceFactory.get().getText();
+		t.setText("Testing");
+		t.setColor(Color.red);
 
 		// Setup the initial game state.
 		startGame();
@@ -359,14 +370,12 @@ public class Game extends Canvas implements GameWindowCallback
 				refactorLeftInProgress = false;
 			}
 		}
-					
+		
+		
 		// Draw the board.
 		boardMan.draw();
 		
 		// Draw the text.
-		Text t = ResourceFactory.get().getText();
-		t.setText("Testing");
-		t.setColor(Color.red);
 		t.draw(10, 10);
 		
 

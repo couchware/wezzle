@@ -26,7 +26,7 @@ public interface Text
 	 * 
 	 * @param s The size.
 	 */
-	public void setSize(int s);
+	public void setSize(float s);
 	
 	
 	

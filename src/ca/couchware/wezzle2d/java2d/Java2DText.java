@@ -21,6 +21,10 @@ import ca.couchware.wezzle2d.Text;
 
 public class Java2DText implements Text
 {
+	/** the url and font */
+	private URL url;
+	private Font font;
+	
 	/** The size of the font */
 	private float size;
 	
@@ -32,9 +36,8 @@ public class Java2DText implements Text
 	
 	/** The game window to which this text is going to be drawn */
 	private Java2DGameWindow window;
+
 	
-	/** The x and y offsets used when a new anchor is defined. */
-	private int xOffset, yOffset;
 
 	/**
 	 * The constructor loads the default text settings.
@@ -43,18 +46,27 @@ public class Java2DText implements Text
 	 * size: 14pt.
 	 * Color: Black.
 	 * Text: "".
-	 * (x,y): (0,0);
 	 * 
 	 * @param window The game window to be drawn to.
 	 */
 	public Java2DText(Java2DGameWindow window)
 	{
-		this.size = 14f;
+		this.url = this.getClass().getClassLoader().getResource("resources/bubbleboy2.ttf");
+		
+		// Setup the font bubbleboy2.
+		try
+		{
+			this.font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		this.size = 14.0f;
 		this.color = Color.black;
 		this.text = "";
 		this.window = window;
-		this.xOffset = 0;
-		this.yOffset = 0;
 	}	
 
 	/**
@@ -75,7 +87,7 @@ public class Java2DText implements Text
 	 * 
 	 * @param s The size.
 	 */
-	public void setSize(int s)
+	public void setSize(float s)
 	{
 		this.size = s;
 	}
@@ -103,8 +115,6 @@ public class Java2DText implements Text
 	 */
 	public void setAnchor(int x, int y)
 	{
-		this.xOffset = x;
-		this.yOffset = y;
 	}
 	
 		
@@ -121,13 +131,12 @@ public class Java2DText implements Text
 		{
 			// Get the graphics.
 			Graphics2D g2d = (Graphics2D)this.window.getGraphics();
-			URL url = this.getClass().getClassLoader().getResource("resources/bubbleboy2.ttf");
 			
 			// Test url.
 			assert (url != null);
 						
 			// Create the font, size it and display the text.
-			Font font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());
+			
 			font.deriveFont(this.size);
 		
 			// Test font.
@@ -136,7 +145,7 @@ public class Java2DText implements Text
 			g2d.setFont(font);
 			g2d.setColor(this.color);
 			
-			g2d.drawString(this.text, x+this.xOffset, y+this.yOffset);			
+			g2d.drawString(this.text, x, y);			
 		}
 		catch(Exception e)
 		{
