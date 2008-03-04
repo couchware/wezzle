@@ -1,11 +1,15 @@
 package ca.couchware.wezzle2d;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
+
+import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
+import ca.couchware.wezzle2d.java2d.Java2DText;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -174,6 +178,12 @@ public class Game extends Canvas implements GameWindowCallback
 		createEntities();
 		
 		this.activateRefactorThisLoop = true;
+		
+		// TEST
+		Java2DText text = new Java2DText((Java2DGameWindow)window);
+		text.setText("Hello");
+		text.setColor(Color.red);
+		text.draw(10, 10);
 	}
 
 	/**
