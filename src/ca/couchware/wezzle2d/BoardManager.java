@@ -1,9 +1,13 @@
 package ca.couchware.wezzle2d;
 
+import java.util.LinkedList;
+
 /**
  * Manages the game board.  A replacement for the GameBoard class from
- * the SVG-based Wezzle. * @author cdmckay
- *
+ * the SVG-based Wezzle.
+ *  
+ * @author cdmckay
+ * 
  */
 
 public class BoardManager
@@ -84,6 +88,11 @@ public class BoardManager
 		board = new TileEntity[columns * rows];
 	}
 	
+	/**
+	 * Synchronizes the current board array with where the tiles are current
+	 * are on the board.  Usually called after a refactor so that the board
+	 * array will accurately reflect the board.
+	 */
 	public void synchronize()
 	{				
 		for (int i = 0; i < cells; i++)
@@ -150,6 +159,22 @@ public class BoardManager
 		return moreMovement;
 	}
 	
+	/**
+	 * Counts all the tiles that are under the tile at the specified
+	 * index.
+	 * 
+	 * For example, if we had a 3x3 board like this:
+	 * 
+	 * 012 .X.
+	 * 345 XX.
+	 * 678 .XX
+	 * 
+	 * where "X" is a tile and "." is an empty space, then calling
+	 * this method on index 1 would return 2.
+	 * 
+	 * @param index
+	 * @return
+	 */
 	public int countTilesBelowCell(int index)
 	{
 		// Sanity check.
@@ -175,6 +200,11 @@ public class BoardManager
 		return count;
 	}
 	
+	/**
+	 * See <pre>countTilesBelowCell</pre>.
+	 * @param index
+	 * @return
+	 */
 	public int countTilesLeftOfCell(int index)
 	{
 		// Sanity check.
@@ -200,12 +230,148 @@ public class BoardManager
 		return count;
 	}
 	
+//	/**
+//	 * Generates a random board with a specified amount of normal, star and bomb tiles
+//	 * 
+//	 * @param numNormal     The number of normal tiles on the board.
+//	 * @param numMultiplier The number of multiplier tiles on the board.
+//	 * @param numBomb 	The number of bombs on the board. Must be < numMultiplier.	 
+//	 */			
+//	public void generateGameBoard(LinkedList<ItemDescriptor> itemList)
+//	{					
+//		// Determine the amount of items to add.
+//		int itemTotal = 0;
+//		for (ItemDescriptor item : itemList)
+//			itemTotal += item.getInitialAmount();
+//		
+//		// Sanity check.
+//		assert(itemTotal < cells);
+//		
+//		// This variable keeps track of where we are in the board.
+//		int j = 0;
+//		
+//		// Cycle through items, adding each.
+//		for (ItemDescriptor item : itemList)
+//		{
+//			for (int i = j; i < j + item.getInitialAmount(); i++)
+//			{		
+//				try
+//				{
+//					// Create an instance of it and add it to the board.
+//					this.setTile(i, (TileEntity) item.getItemClass().newInstance(), false);																				
+//				}
+//				catch (Exception e)
+//				{
+//					Util.handleException(e);
+//				}
+//			}
+//		
+//			// Keep track of where we left off on the board.
+//			j += item.getInitialAmount();
+//		}
+//
+//		// Shuffle.		
+//		this.shuffleGameBoard();
+//		
+//		// Colour the board.
+//		this.colorGameBoard();		
+//	}
+//	
+//	public void shuffleGameBoard()
+//	{
+//		for (int i = 0; i < cells; i++)
+//		{
+//			int r = Util.random.nextInt(cells);
+//			swapTile(i, r);
+//		}		
+//	}
+//	
+//	/**
+//	 * A method to colour the private gameBoard based on a probability for tile
+//	 * distribution.
+//	 * 
+//	 * @param prob
+//	 *            An array of integer probabilities for tile distribution.
+//	 */
+//	public void colorGameBoard()
+//	{		
+//		// The potential colour for the tile.
+//		int color = 0;
+//		
+//		// The tile we are colouring.
+//		Tile tile;
+//		
+//		// First, refactor game board.
+//		this.refactorGameBoard(Game.SPEED_INSTANT);	
+//		
+//		for (int row = this.getRows() - 1; row >= 0; row--)
+//		{
+//			for (int col = 0; col < this.getColumns(); col++)
+//			{
+//				// Pick a random colour.
+//				color = Math.abs(Util.random.nextInt()) % 5;
+//								
+//				// If there is no tile here.
+//				if (this.getTile(col, row) == null)
+//					continue;
+//				
+//				while (true)
+//				{					
+//					// Check to see if we can place the tile here.
+//					if (col > 2)
+//					{
+//						// If both pieces to the left are the same, do not
+//						// colour.
+//						if (this.getTile(col - 1, row).getColor() == color
+//								&& this.getTile(col - 2, row).getColor() == color
+//								&& this.getTile(col - 3, row).getColor() == color)
+//						{
+//							color = (color + 1) % 5;
+//							continue;
+//						}
+//					}
+//	
+//					if (row < (this.getRows() - 3))
+//					{
+//						if (  this.getTile(col, row + 1).getColor()== color
+//								&& this.getTile(col, row + 2).getColor() == color
+//								&& this.getTile(col, row + 3).getColor() == color)
+//						{
+//							color = (color + 1) % 5;
+//							continue;
+//						}
+//					}
+//					
+//					// Otherwise colour the piece.					
+//					tile = this.getTile(col, row);
+//					
+//					// Set the colour.
+//					tile.setColor(color);						
+//					
+//					// Add it to the board.
+//					this.setTile(col, row, tile);									
+//					
+//					// Make it visible.
+//					//Util.handleMessage(tile.getVisibility(), Thread.currentThread());
+//					//tile.setVisibility("inherit");
+//					//tile.updateUsingComponent();
+//					break;
+//					
+//				} // end while
+//			} // end for
+//		} // end for	
+//		
+//		// Print the dist.
+//		//board.printTileDist();		
+//	}
+	
 	public void createTile(final int index, final String color)
 	{
 		// Sanity check.
 		assert(index < columns * rows);
 		
-		TileEntity t = new TileEntity(this, color, x + (index % columns) * cellWidth,
+		TileEntity t = new TileEntity(this, color, 
+				x + (index % columns) * cellWidth,
 				y + (index / columns) * cellHeight);
 		
 		setTile(index, t);
@@ -244,6 +410,33 @@ public class BoardManager
 		
 		// Forward.
 		setTile(column + (row * columns), tile);
+	}
+	
+	/**
+	 * Swaps two tile locations. The locations are updated.
+	 * 
+	 * @param index1
+	 * @param index2
+	 */
+	public void swapTile(final int index1, final int index2)
+	{
+		TileEntity swap = board[index1];
+		board[index1] = board[index2];
+		board[index2] = swap;
+		
+		TileEntity t1 = board[index1];
+		if (t1 != null)
+		{
+			t1.setX(cellWidth * (index1 % columns));
+			t1.setY(cellHeight * (index1 / columns));
+		}
+					
+		TileEntity t2 = board[index2];		
+		if (t2 != null)
+		{			
+			t2.setX(cellWidth * (index2 % columns));
+			t2.setY(cellHeight * (index2 / columns));
+		}
 	}
 
 	/**

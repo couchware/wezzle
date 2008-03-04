@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.RenderingHints;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -154,7 +155,7 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 				// to manage our accelerated graphics.
 				createBufferStrategy(2);
 				strategy = getBufferStrategy();
-				
+								
 				// Initialize keyboard.
 				Keyboard.init(Java2DGameWindow.this);
 			}

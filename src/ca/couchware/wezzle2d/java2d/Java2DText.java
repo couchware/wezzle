@@ -54,7 +54,7 @@ public class Java2DText implements Text
 	{
 		this.url = this.getClass().getClassLoader().getResource("resources/bubbleboy2.ttf");
 		
-		this.size = 14.0f;
+		this.size = 24.0f;
 		this.color = Color.black;
 		this.text = "";
 		this.window = window;
@@ -133,7 +133,7 @@ public class Java2DText implements Text
 		try
 		{
 			// Get the graphics.
-			Graphics2D g = window.getDrawGraphics();
+			Graphics2D g = window.getDrawGraphics();			
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			

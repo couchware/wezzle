@@ -17,17 +17,22 @@ public class TileEntity extends Entity
 	/**
 	 * The associated board manager.
 	 */
-	private final BoardManager boardMan;
+	protected final BoardManager boardMan;
+	
+	/**
+	 * The colour of the tile.
+	 */
+	protected final String color;
 	
 	/**
 	 * The current bottom bound.
 	 */
-	int bottomBound;
+	protected int bottomBound;
 	
 	/**
 	 * The current left bound.
 	 */
-	int leftBound;
+	protected int leftBound;
 	
 	/**
 	 * Creates a tile at (x,y) with the specified color.
@@ -39,9 +44,10 @@ public class TileEntity extends Entity
 	{
 		// Invoke super.		
 		super("resources/Tile" + color + ".png", x, y);	
-		
-		// Set board manager reference.
+						
+		// Set board manager and color reference.
 		this.boardMan = bm;	
+		this.color = color;
 	}
 	
 	/**
@@ -82,6 +88,15 @@ public class TileEntity extends Entity
 	public void collidedWith(Entity other)
 	{
 		// Do nothing.  This method is probably going to get removed.
+	}	
+	
+	/**
+	 * Gets the color.
+	 * @return The color.
+	 */
+	public String getColor()
+	{
+		return color;
 	}
 
 	/**

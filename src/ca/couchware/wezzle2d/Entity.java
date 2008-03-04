@@ -66,8 +66,8 @@ public abstract class Entity
 		// Update the location of the entity based on move speeds.
 		x += (delta * dx) / 1000;
 		y += (delta * dy) / 1000;
-	}
-
+	}	
+	
 	/**
 	 * Set the horizontal speed of this entity
 	 * 
@@ -137,6 +137,15 @@ public abstract class Entity
 	}
 
 	/**
+	 * Sets the x.
+	 * @param x The x to set.
+	 */
+	public void setX(double x)
+	{
+		this.x = x;
+	}
+
+	/**
 	 * Get the y location of this entity.
 	 * 
 	 * @return The y location of this entity.
@@ -146,6 +155,15 @@ public abstract class Entity
 		return (int) y;
 	}
 
+	/**
+	 * Sets the y.
+	 * @param y The y to set.
+	 */
+	public void setY(double y)
+	{
+		this.y = y;
+	}
+	
 	/**
 	 * Check if this entity collides with another.
 	 * 

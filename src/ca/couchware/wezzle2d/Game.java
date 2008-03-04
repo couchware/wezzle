@@ -21,7 +21,7 @@ import ca.couchware.wezzle2d.java2d.Java2DText;
  * main ship.
  * 
  * As a mediator it will be informed when entities within our game detect events
- * (e.g. alient killed, played died) and will take appropriate game actions.
+ * (e.g. alien killed, played died) and will take appropriate game actions.
  * 
  * @author Kevin Glass
  */
