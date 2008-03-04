@@ -110,7 +110,7 @@ public class BoardManager
 		{
 			if (board[i] != null)
 			{
-				board[i].setYMovement(150);
+				board[i].setYMovement(200);
 				board[i].calculateBottomBound(countTilesBelowCell(i));
 			}
 		}
@@ -123,7 +123,7 @@ public class BoardManager
 		{
 			if (board[i] != null)
 			{
-				board[i].setXMovement(-150);
+				board[i].setXMovement(-200);
 				board[i].calculateLeftBound(countTilesLeftOfCell(i));
 			}
 		}

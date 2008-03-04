@@ -36,7 +36,6 @@ public class Java2DText implements Text
 	/** The x and y offsets used when a new anchor is defined. */
 	private int xOffset, yOffset;
 
-
 	/**
 	 * The constructor loads the default text settings.
 	 * The default settings are:
@@ -56,8 +55,7 @@ public class Java2DText implements Text
 		this.window = window;
 		this.xOffset = 0;
 		this.yOffset = 0;
-	}
-	
+	}	
 
 	/**
 	 * Set the text.
@@ -119,8 +117,6 @@ public class Java2DText implements Text
 	 */
 	public void draw(int x, int y)
 	{
-		
-		
 		try
 		{
 			// Get the graphics.
@@ -129,8 +125,7 @@ public class Java2DText implements Text
 			
 			// Test url.
 			assert (url != null);
-			
-			
+						
 			// Create the font, size it and display the text.
 			Font font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());
 			font.deriveFont(this.size);
@@ -141,15 +136,11 @@ public class Java2DText implements Text
 			g2d.setFont(font);
 			g2d.setColor(this.color);
 			
-			g2d.drawString(this.text, x+this.xOffset, y+this.yOffset);
-			
+			g2d.drawString(this.text, x+this.xOffset, y+this.yOffset);			
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
-		}
-		
+		}		
 	}
-	
-
 }
