@@ -53,20 +53,22 @@ public class Java2DText implements Text
 	{
 		this.url = this.getClass().getClassLoader().getResource("resources/bubbleboy2.ttf");
 		
+		this.size = 14.0f;
+		this.color = Color.black;
+		this.text = "";
+		this.window = window;
+		
 		// Setup the font bubbleboy2.
 		try
 		{
 			this.font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());	
+			this.font = font.deriveFont(this.size);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
 		
-		this.size = 14.0f;
-		this.color = Color.black;
-		this.text = "";
-		this.window = window;
 	}	
 
 	/**
@@ -130,22 +132,22 @@ public class Java2DText implements Text
 		try
 		{
 			// Get the graphics.
-			Graphics2D g2d = (Graphics2D)this.window.getGraphics();
+			Graphics2D g = window.getDrawGraphics();
 			
 			// Test url.
 			assert (url != null);
 						
 			// Create the font, size it and display the text.
 			
-			font.deriveFont(this.size);
+			
 		
 			// Test font.
 			assert (font != null);
 			
-			g2d.setFont(font);
-			g2d.setColor(this.color);
+			g.setFont(font);
+			g.setColor(this.color);
 			
-			g2d.drawString(this.text, x, y);			
+			g.drawString(this.text, x, y);			
 		}
 		catch(Exception e)
 		{
