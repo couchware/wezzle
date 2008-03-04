@@ -376,7 +376,7 @@ public class Game extends Canvas implements GameWindowCallback
 		boardMan.draw();
 		
 		// Draw the text.
-		t.draw(10, 10);
+		t.draw(100, 100);
 		
 
 //		// cycle round asking each entity to move itself

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.awt.RenderingHints;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -133,13 +134,17 @@ public class Java2DText implements Text
 		{
 			// Get the graphics.
 			Graphics2D g = window.getDrawGraphics();
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			
 			// Test url.
 			assert (url != null);
 						
 			// Create the font, size it and display the text.
 			
-			
+
+			font = font.deriveFont(this.size);
+
 		
 			// Test font.
 			assert (font != null);
