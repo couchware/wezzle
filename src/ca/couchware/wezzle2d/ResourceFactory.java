@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
 import ca.couchware.wezzle2d.java2d.Java2DSpriteStore;
+import ca.couchware.wezzle2d.java2d.Java2DText;
 
 /**
  * A central reference point for creating resources for use in the game. The
@@ -133,4 +134,31 @@ public class ResourceFactory
 
 		throw new RuntimeException("Unknown rendering type: " + renderingType);
 	}
+	
+	
+	
+	/**
+	 * Create a text object which will then be configured.
+	 *
+	 * @return A Text object that can be modified and drawn to screen.
+	 */
+	public Text getText()
+	{
+		if (window == null)
+		{
+			throw new RuntimeException(
+					"Attempted to retrieve text before game window was created");
+		}
+
+		switch (renderingType)
+		{
+			case JAVA2D:
+			{
+				return new Java2DText((Java2DGameWindow) window);
+			}		
+		}
+
+		throw new RuntimeException("Unknown rendering type: " + renderingType);
+	}
+	
 }

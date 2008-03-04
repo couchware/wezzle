@@ -178,12 +178,6 @@ public class Game extends Canvas implements GameWindowCallback
 		createEntities();
 		
 		this.activateRefactorThisLoop = true;
-		
-		// TEST
-		Java2DText text = new Java2DText((Java2DGameWindow)window);
-		text.setText("Hello");
-		text.setColor(Color.red);
-		text.draw(10, 10);
 	}
 
 	/**
@@ -368,6 +362,13 @@ public class Game extends Canvas implements GameWindowCallback
 					
 		// Draw the board.
 		boardMan.draw();
+		
+		// Draw the text.
+		Text t = ResourceFactory.get().getText();
+		t.setText("Testing");
+		t.setColor(Color.red);
+		t.draw(10, 10);
+		
 
 //		// cycle round asking each entity to move itself
 //		if (waitingForKeyPress == false)
