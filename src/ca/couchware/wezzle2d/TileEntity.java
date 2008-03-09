@@ -14,6 +14,8 @@ public class TileEntity extends Entity
 	final public static String COLOR_RED = "Red";		
 	final public static String COLOR_YELLOW = "Yellow";
 	
+	final public static int NUMBER_OF_COLORS = 5;
+	
 	/**
 	 * The associated board manager.
 	 */
@@ -114,5 +116,30 @@ public class TileEntity extends Entity
 	public void calculateLeftBound(int tilesInRow)
 	{
 		this.leftBound = boardMan.getX() + (tilesInRow * boardMan.getCellWidth());
+	}
+	
+	public static String randomColor()
+	{
+		switch (Util.random.nextInt(NUMBER_OF_COLORS))
+		{
+			case 0:
+				return COLOR_BLUE;
+				
+			case 1:
+				return COLOR_GREEN;
+			
+			case 2:
+				return COLOR_PURPLE;
+				
+			case 3:
+				return COLOR_RED;
+			
+			case 4:
+				return COLOR_YELLOW;
+				
+			default:
+				Util.handleWarning("Unknown color, defaulting to COLOR_RED.", Thread.currentThread());
+				return COLOR_RED;
+		}
 	}
 }

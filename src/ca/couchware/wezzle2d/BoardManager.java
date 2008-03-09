@@ -60,7 +60,7 @@ public class BoardManager
 	/**
 	 * The array representing the game board.
 	 */
-	final private TileEntity[] board;
+	private TileEntity[] board;
 	
 	/**
 	 * The constructor.
@@ -88,6 +88,41 @@ public class BoardManager
 		board = new TileEntity[columns * rows];
 	}
 	
+	public void generateBoard(int tileMax)
+	{
+		for (int i = 0; i < tileMax; i++)
+			this.createTile(i, TileEntity.randomColor());
+		
+		shuffleBoard();
+		refactorBoard();
+	}
+	
+	private void shuffleBoard()
+	{
+		for (int i = 0; i < cells; i++)
+			swapTile(i, Util.random.nextInt(cells));
+	}
+	
+	/**
+	 * An instant refactor used for generating boards.
+	 */
+	private void refactorBoard()
+	{
+		startShiftDown();
+		for (int i = 0; i < cells; i++)
+			if (board[i] != null)
+				board[i].setYMovement(rows * cellHeight);
+		moveAll(1000);
+		
+		synchronize();
+		
+		startShiftLeft();
+		for (int i = 0; i < cells; i++)
+			if (board[i] != null)
+				board[i].setXMovement(-columns * cellWidth);
+		moveAll(1000);
+	}
+	
 	/**
 	 * Synchronizes the current board array with where the tiles are current
 	 * are on the board.  Usually called after a refactor so that the board
@@ -95,21 +130,26 @@ public class BoardManager
 	 */
 	public void synchronize()
 	{				
+		TileEntity[] newBoard = new TileEntity[columns * rows];
+		
 		for (int i = 0; i < cells; i++)
 		{			
 			if (board[i] != null)
 			{
 				TileEntity t = board[i];
+//				Util.handleMessage("" + (t.getX() - x), null);
 				int column = (t.getX() - x) / cellWidth;
 				int row = (t.getY() - y) / cellHeight;
 												
-				if (column + (row * columns) != i)
-				{
-					board[column + (row * columns)] = board[i];
-					board[i] = null;
-				}
+//				if (column + (row * columns) != i)
+//				{
+					newBoard[column + (row * columns)] = board[i];
+//					board[i] = null;
+//				}
 			}
 		}
+		
+		board = newBoard;
 	}
 	
 	public void startShiftDown()
@@ -411,31 +451,27 @@ public class BoardManager
 		// Forward.
 		setTile(column + (row * columns), tile);
 	}
-	
-	/**
-	 * Swaps two tile locations. The locations are updated.
-	 * 
-	 * @param index1
-	 * @param index2
-	 */
-	public void swapTile(final int index1, final int index2)
+
+	public void swapTile(int index1, int index2)
 	{
-		TileEntity swap = board[index1];
-		board[index1] = board[index2];
-		board[index2] = swap;
+		// Validate parameters.
+		assert(index1 >= 0 && index1 < cells);
+		assert(index2 >= 0 && index2 < cells);
 		
-		TileEntity t1 = board[index1];
-		if (t1 != null)
+		TileEntity t = board[index1];
+		board[index1] = board[index2];
+		board[index2] = t;
+		
+		if (board[index1] != null)
 		{
-			t1.setX(cellWidth * (index1 % columns));
-			t1.setY(cellHeight * (index1 / columns));
+			board[index1].setX(x + (index1 % columns) * cellWidth);
+			board[index1].setY(y + (index1 / columns) * cellHeight);
 		}
-					
-		TileEntity t2 = board[index2];		
-		if (t2 != null)
-		{			
-			t2.setX(cellWidth * (index2 % columns));
-			t2.setY(cellHeight * (index2 / columns));
+		
+		if (board[index2] != null)
+		{
+			board[index2].setX(x + (index2 % columns) * cellWidth);
+			board[index2].setY(y + (index2 / columns) * cellHeight);
 		}
 	}
 

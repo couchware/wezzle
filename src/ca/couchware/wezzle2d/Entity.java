@@ -125,6 +125,22 @@ public abstract class Entity
 	public void doLogic()
 	{
 	}
+	
+	/**
+	 * @param x The x to set.
+	 */
+	public void setX(int x)
+	{
+		this.x = x;
+	}
+
+	/**
+	 * @param y The y to set.
+	 */
+	public void setY(int y)
+	{
+		this.y = y;
+	}
 
 	/**
 	 * Get the x location of this entity.
