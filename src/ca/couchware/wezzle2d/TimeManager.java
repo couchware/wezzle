@@ -1,5 +1,13 @@
 package ca.couchware.wezzle2d;
-
+/**
+ * The TimeManager is a class that manages the time for the Timer.
+ * The class works as follows: An internal count is held starting at 0.
+ * An offset is passed in every update with an increment. When the internal count
+ * goes above 1000ms (or 1 second) the timer is decremented.
+ * 
+ * @author Kevin Grad
+ *
+ */
 public class TimeManager 
 {
 
