@@ -8,11 +8,11 @@ package ca.couchware.wezzle2d;
 
 public class TileEntity extends Entity
 {
-	final public static String COLOR_BLUE = "Blue";
-	final public static String COLOR_GREEN = "Green";
-	final public static String COLOR_PURPLE = "Purple";
-	final public static String COLOR_RED = "Red";		
-	final public static String COLOR_YELLOW = "Yellow";
+	final public static int COLOR_BLUE = 0;
+	final public static int COLOR_GREEN = 1;
+	final public static int COLOR_PURPLE = 2;
+	final public static int COLOR_RED = 3;		
+	final public static int COLOR_YELLOW = 4;
 	
 	final public static int NUMBER_OF_COLORS = 5;
 	
@@ -24,7 +24,7 @@ public class TileEntity extends Entity
 	/**
 	 * The colour of the tile.
 	 */
-	protected final String color;
+	protected final int color;
 	
 	/**
 	 * The current bottom bound.
@@ -42,10 +42,10 @@ public class TileEntity extends Entity
 	 * @param x
 	 * @param y
 	 */
-	public TileEntity(BoardManager bm, String color, int x, int y) 
+	public TileEntity(BoardManager bm, int color, int x, int y) 
 	{
 		// Invoke super.		
-		super("resources/Tile" + color + ".png", x, y);	
+		super("resources/Tile" + toColorString(color) + ".png", x, y);	
 						
 		// Set board manager and color reference.
 		this.boardMan = bm;	
@@ -96,7 +96,7 @@ public class TileEntity extends Entity
 	 * Gets the color.
 	 * @return The color.
 	 */
-	public String getColor()
+	public int getColor()
 	{
 		return color;
 	}
@@ -118,28 +118,33 @@ public class TileEntity extends Entity
 		this.leftBound = boardMan.getX() + (tilesInRow * boardMan.getCellWidth());
 	}
 	
-	public static String randomColor()
+	public static int randomColor()
 	{
-		switch (Util.random.nextInt(NUMBER_OF_COLORS))
+		return Util.random.nextInt(NUMBER_OF_COLORS);
+	}
+	
+	private static String toColorString(int color)
+	{
+		switch (color)
 		{
-			case 0:
-				return COLOR_BLUE;
+			case COLOR_BLUE:
+				return "Blue";
 				
-			case 1:
-				return COLOR_GREEN;
-			
-			case 2:
-				return COLOR_PURPLE;
+			case COLOR_GREEN:
+				return "Green";
 				
-			case 3:
-				return COLOR_RED;
-			
-			case 4:
-				return COLOR_YELLOW;
+			case COLOR_PURPLE:
+				return "Purple";
+				
+			case COLOR_RED:
+				return "Red";
+				
+			case COLOR_YELLOW:
+				return "Yellow";
 				
 			default:
-				Util.handleWarning("Unknown color, defaulting to COLOR_RED.", Thread.currentThread());
-				return COLOR_RED;
+				Util.handleWarning("Unknown color number. Defaulting to 'Red'.", Thread.currentThread());
+				return "Red";
 		}
 	}
 }

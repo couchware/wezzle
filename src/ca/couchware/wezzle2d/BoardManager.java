@@ -11,7 +11,7 @@ import java.util.LinkedList;
  */
 
 public class BoardManager
-{		
+{	
 	/**
 	 * The x-coordiante of the top left corner of the board.
 	 */
@@ -36,6 +36,11 @@ public class BoardManager
 	 * The total number of cells.
 	 */
 	final private int cells;
+	
+	/**
+	 * The minimum number of tiles in a match.
+	 */
+	final private int minimumMatch;
 	
 	/**
 	 * The width of the board.
@@ -80,6 +85,9 @@ public class BoardManager
 		this.rows = rows;
 		this.cells = columns * rows;
 		
+		// Set the minimum match length.
+		this.minimumMatch = 2;
+		
 		// Set the board width and height.
 		this.width = columns * cellWidth;
 		this.height = rows * cellHeight;
@@ -88,6 +96,10 @@ public class BoardManager
 		board = new TileEntity[columns * rows];
 	}
 	
+	/**
+	 * Generates a random game board with the given parameters.
+	 * @param tileMax
+	 */
 	public void generateBoard(int tileMax)
 	{
 		for (int i = 0; i < tileMax; i++)
@@ -95,8 +107,12 @@ public class BoardManager
 		
 		shuffleBoard();
 		refactorBoard();
+		findXMatch(null);
 	}
 	
+	/**
+	 * Shuffles the board randomly.
+	 */
 	private void shuffleBoard()
 	{
 		for (int i = 0; i < cells; i++)
@@ -121,6 +137,46 @@ public class BoardManager
 			if (board[i] != null)
 				board[i].setXMovement(-columns * cellWidth);
 		moveAll(1000);
+		
+		synchronize();
+	}
+	
+	/**
+	 * Searches for all matches in the x-direction and returns a linked list
+	 * with the indices of the matches.
+	 * @param ll The linked list that will be filled with indices.
+	 */
+	public void findXMatch(LinkedList ll)
+	{
+		// Cycle through the board looking for a match in the X-direction.
+		for (int i = 0; i < cells; i++)
+		{
+			// Check to see if there's even enough room for an X-match.
+			if (columns - (i % columns) < minimumMatch)
+				continue;
+			
+			// Make sure there's a tile here.
+			if (board[i] == null)
+				continue;
+			
+			// Get the color of this tile.
+			int color = board[i].getColor();
+			
+			// See how long we have a match for.
+			int j;
+			for (j = 1; j < (columns - (i % columns)); j++)
+			{
+				if (board[i + j] == null || board[i + j].getColor() != color)
+					break;
+			}
+			
+			// Check if we have a match.
+			if (j >= minimumMatch)
+			{
+				Util.handleMessage("Match of length " + j + " found.", Thread.currentThread());
+				i += j - 1;
+			}
+		}
 	}
 	
 	/**
@@ -405,7 +461,7 @@ public class BoardManager
 //		//board.printTileDist();		
 //	}
 	
-	public void createTile(final int index, final String color)
+	public void createTile(final int index, final int color)
 	{
 		// Sanity check.
 		assert(index < columns * rows);
