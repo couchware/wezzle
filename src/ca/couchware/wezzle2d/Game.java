@@ -155,9 +155,9 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void initialize()
 	{
-		youLose = ResourceFactory.get().getSprite("sprites/gotyou.gif");
-		pressAnyKey = ResourceFactory.get().getSprite("sprites/pressanykey.gif");
-		youWin = ResourceFactory.get().getSprite("sprites/youwin.gif");
+//		youLose = ResourceFactory.get().getSprite("sprites/gotyou.gif");
+//		pressAnyKey = ResourceFactory.get().getSprite("sprites/pressanykey.gif");
+//		youWin = ResourceFactory.get().getSprite("sprites/youwin.gif");
 
 		message = pressAnyKey;
 		
