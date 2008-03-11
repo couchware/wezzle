@@ -99,7 +99,8 @@ public class Game extends Canvas implements GameWindowCallback
 	/** The normal title of the window. */
 	private String windowTitle = "Wezzle";
 	
-	
+	/** The Timer */
+	private TimeManager timer;
 	
 	
 	
@@ -174,6 +175,9 @@ public class Game extends Canvas implements GameWindowCallback
 		t = ResourceFactory.get().getText();
 		t.setText("Testing");
 		t.setColor(Color.red);
+		
+		// Creat the timer.
+		timer = new TimeManager();
 
 		// Setup the initial game state.
 		startGame();
@@ -322,6 +326,10 @@ public class Game extends Canvas implements GameWindowCallback
 		lastLoopTime = SystemTimer.getTime();
 		lastFpsTime += delta;
 		fps++;
+		
+		
+		
+		
 
 		// Update our FPS counter if a second has passed.
 		if (lastFpsTime >= 1000)
@@ -481,6 +489,14 @@ public class Game extends Canvas implements GameWindowCallback
 //				startGame();
 //			}
 //		}
+		
+		
+		
+		// Handle the timer.
+		timer.incrementInternalTime(delta);
+		
+		
+		
 
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))

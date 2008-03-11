@@ -9,8 +9,14 @@ import java.awt.Color;
  * @author Kevin
  *
  */
-public interface Text
+public abstract interface Text
 {
+	
+	public static int TOP = 1;
+	public static int BOTTOM = 2;
+	public static int LEFT = 4;
+	public static int RIGHT = 8;
+	
 	/**
 	 * Set the text.
 	 * 
@@ -46,7 +52,7 @@ public interface Text
 	 * @param x The x anchor coordinate with respect to the top left corner of the text box.
 	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
 	 */
-	public void setAnchor(int x, int y);
+	public void setAnchor(int anchor);
 	
 	
 	

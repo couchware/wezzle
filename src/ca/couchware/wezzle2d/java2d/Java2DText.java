@@ -116,8 +116,9 @@ public class Java2DText implements Text
 	 * @param x The x anchor coordinate with respect to the top left corner of the text box.
 	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
 	 */
-	public void setAnchor(int x, int y)
+	public void setAnchor(int anchor)
 	{
+		// Insert Anchor code here.	
 	}
 	
 		
