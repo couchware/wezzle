@@ -235,7 +235,8 @@ public class Java2DText implements Text
 			g.setFont(font);
 			g.setColor(this.color);			
 			
-			
+			// Recalculate the anchor points.
+			this.setAnchor(this.currentAnchor);
 			g.drawString(this.text, x - this.anchorx, y - this.anchory);			
 		}
 		catch(Exception e)
