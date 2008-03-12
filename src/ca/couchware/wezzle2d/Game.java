@@ -298,17 +298,17 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void tryToFire()
 	{
-		// check that we have waiting long enough to fire
-		if (System.currentTimeMillis() - lastFire < firingInterval)
-		{
-			return;
-		}
-
-		// if we waited long enough, create the shot entity, and record the
-		// time.
-		lastFire = System.currentTimeMillis();
-		ShotEntity shot = new ShotEntity(this, "sprites/shot.gif", ship.getX() + 10, ship.getY() - 30);
-		entities.add(shot);
+//		// check that we have waiting long enough to fire
+//		if (System.currentTimeMillis() - lastFire < firingInterval)
+//		{
+//			return;
+//		}
+//
+//		// if we waited long enough, create the shot entity, and record the
+//		// time.
+//		lastFire = System.currentTimeMillis();
+//		ShotEntity shot = new ShotEntity(this, "sprites/shot.gif", ship.getX() + 10, ship.getY() - 30);
+//		entities.add(shot);
 	}
 
 	/**
@@ -378,8 +378,7 @@ public class Game extends Canvas implements GameWindowCallback
 				// Clear left flag.
 				refactorLeftInProgress = false;
 			}
-		}
-		
+		}		
 		
 		// Draw the board.
 		boardMan.draw();
@@ -387,7 +386,6 @@ public class Game extends Canvas implements GameWindowCallback
 		// Draw the text.
 		t.draw(100, 100);
 		
-
 //		// cycle round asking each entity to move itself
 //		if (waitingForKeyPress == false)
 //		{

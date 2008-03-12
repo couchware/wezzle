@@ -89,7 +89,7 @@ public class BoardManager
 		this.cells = columns * rows;
 		
 		// Set the minimum match length.
-		this.minimumMatch = 3;
+		this.minimumMatch = 4;
 		
 		// Set the board width and height.
 		this.width = columns * cellWidth;

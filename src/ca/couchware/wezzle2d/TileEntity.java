@@ -86,12 +86,6 @@ public class TileEntity extends Entity
 		}		
 	}
 	
-	@Override
-	public void collidedWith(Entity other)
-	{
-		// Do nothing.  This method is probably going to get removed.
-	}	
-	
 	/**
 	 * Gets the color.
 	 * @return The color.
