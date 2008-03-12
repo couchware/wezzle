@@ -92,12 +92,16 @@ public class Java2DText implements Text
 	
 	/**
 	 * Set the text.
+	 * Recalculate any anchor points.
 	 * 
 	 * @param t The text.
 	 */
 	public void setText(String t)
 	{
 		this.text = t;
+		
+		// Recalculate the anchor points.
+		this.setAnchor(this.currentAnchor);
 	}
 	
 	/**
@@ -235,8 +239,6 @@ public class Java2DText implements Text
 			g.setFont(font);
 			g.setColor(this.color);			
 			
-			// Recalculate the anchor points.
-			this.setAnchor(this.currentAnchor);
 			g.drawString(this.text, x - this.anchorx, y - this.anchory);			
 		}
 		catch(Exception e)
