@@ -105,7 +105,7 @@ public class Game extends Canvas implements GameWindowCallback
 	
 	
 	/** FOR TESTING PURPOSES ONLY: REMOVE */
-	Text t;
+	Text timerText;
 
 	/**
 	 * Construct our game and set it running.
@@ -172,11 +172,10 @@ public class Game extends Canvas implements GameWindowCallback
 //		boardMan.createTile(79, TileEntity.COLOR_RED);
 		boardMan.generateBoard(40);
 		
-		t = ResourceFactory.get().getText();
-		t.setText("Testing");
-		t.setColor(Color.red);
+		timerText = ResourceFactory.get().getText();
+		timerText.setColor(Color.red);
 		
-		// Creat the timer.
+		// Create the timer.
 		timer = new TimeManager();
 
 		// Setup the initial game state.
@@ -384,7 +383,9 @@ public class Game extends Canvas implements GameWindowCallback
 		boardMan.draw();
 		
 		// Draw the text.
-		t.draw(100, 100);
+		timerText.setAnchor(Text.HCENTER | Text.VCENTER);
+		timerText.setText(String.valueOf(timer.getTime()));
+		timerText.draw(0, 30);
 		
 //		// cycle round asking each entity to move itself
 //		if (waitingForKeyPress == false)

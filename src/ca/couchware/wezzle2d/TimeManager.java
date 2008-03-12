@@ -1,4 +1,7 @@
 package ca.couchware.wezzle2d;
+
+import ca.couchware.wezzle2d.java2d.Java2DText;
+
 /**
  * The TimeManager is a class that manages the time for the Timer.
  * The class works as follows: An internal count is held starting at 0.
@@ -138,10 +141,7 @@ public class TimeManager
 			if(this.currentTime < 0)
 			{
 				this.currentTime += this.initialTime;
-			}
-			
-			// DEBUG---------------------------------------------------
-			System.out.println("Time: " + this.currentTime);
+			}	
 		}
 		else
 		{

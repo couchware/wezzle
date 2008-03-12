@@ -49,7 +49,7 @@ public class Util
 	/**
 	 * Prints an error to standard error and dumps the stack.
 	 * @param message The error message.
-	 * @param t The current thread, usually Thread.currentThread().
+	 * @param timerText The current thread, usually Thread.currentThread().
 	 */
 	public static void handleException(Exception e)
 	{
