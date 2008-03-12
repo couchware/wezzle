@@ -383,9 +383,8 @@ public class Game extends Canvas implements GameWindowCallback
 		boardMan.draw();
 		
 		// Draw the text.
-		timerText.setAnchor(Text.HCENTER | Text.VCENTER);
 		timerText.setText(String.valueOf(timer.getTime()));
-		timerText.draw(0, 30);
+		timerText.draw(100, 100);
 		
 //		// cycle round asking each entity to move itself
 //		if (waitingForKeyPress == false)

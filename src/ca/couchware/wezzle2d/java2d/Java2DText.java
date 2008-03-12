@@ -37,10 +37,13 @@ public class Java2DText implements Text
 	private Java2DGameWindow window;	
 
 	/** The x offset for anchor. */
-	int anchorx;
+	private int anchorx;
 	
 	/** The y offset for anchor. */
-	int anchory;
+	private int anchory;
+	
+	/** The current anchor */
+	private int currentAnchor;
 
 	
 	
@@ -63,8 +66,7 @@ public class Java2DText implements Text
 		this.window = window;
 		
 		// Set the default anchors.
-		this.anchorx = 0;
-		this.anchory = 0;
+		this.currentAnchor = (Text.TOP | Text.LEFT);
 		
 		// Setup the font bubbleboy2.
 		try
@@ -165,8 +167,8 @@ public class Java2DText implements Text
 	public void setAnchor(int anchor)
 	{
 		// Get the width and height of the font.
-		int strWidth = window.getFontMetrics(this.font).stringWidth(this.text);
-		int strHeight = this.font.getSize();
+		int strWidth = (int)window.getFontMetrics(this.font).getStringBounds(this.text, window.getDrawGraphics()).getWidth();
+		int strHeight = window.getFontMetrics(this.font).getHeight();
 		
 		// They y's.
 		if((anchor & Text.BOTTOM) == Text.BOTTOM)
@@ -234,7 +236,7 @@ public class Java2DText implements Text
 			g.setColor(this.color);			
 			
 			
-			g.drawString(this.text, x + this.anchorx, y + this.anchory);			
+			g.drawString(this.text, x - this.anchorx, y - this.anchory);			
 		}
 		catch(Exception e)
 		{

@@ -23,6 +23,8 @@ public class TimeManager
 	/** Holds the internal time for comparison to time increments. */
 	private long internalTime;
 	
+	
+	
 	/**
 	 * The overloaded constructor created a timer manager with a passed in 
 	 * initial time.
