@@ -122,6 +122,7 @@ public class Java2DText implements Text
 	public void setSize(float s)
 	{
 		this.size = s;
+		this.font = font.deriveFont(this.size);
 	}
 	
 //	/**
@@ -212,6 +213,9 @@ public class Java2DText implements Text
 			// The default x value is Left.
 			this.anchorx = 0;	
 		}
+		
+		// Set the anchor.
+		this.currentAnchor = anchor;
 		
 	}
 	
