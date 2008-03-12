@@ -125,6 +125,12 @@ public class Util
 			for (int i = j + 0; i < array.length; i++)			
 				swap2d(array, i, j, j, i);						
 	}
+	
+	public static int pseudoTranspose(int i, int columns, int rows)
+	{
+		return ((columns * i) % (columns * rows)) 
+			+ (i / rows); 
+	}
 
 	/**
 	 * A method for swapping matrix cells in-place.

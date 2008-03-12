@@ -1,6 +1,9 @@
 package ca.couchware.wezzle2d;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Manages the game board.  A replacement for the GameBoard class from
@@ -86,7 +89,7 @@ public class BoardManager
 		this.cells = columns * rows;
 		
 		// Set the minimum match length.
-		this.minimumMatch = 2;
+		this.minimumMatch = 3;
 		
 		// Set the board width and height.
 		this.width = columns * cellWidth;
@@ -107,7 +110,28 @@ public class BoardManager
 		
 		shuffleBoard();
 		refactorBoard();
-		findXMatch(null);
+		
+		HashSet set = new HashSet();		
+
+		while (true)
+		{
+			findXMatch(set);
+			findYMatch(set);
+			
+			if (set.size() > 0)
+			{
+				for (Iterator it = set.iterator(); it.hasNext(); )
+				{
+					Integer n = (Integer) it.next();
+					this.createTile(n.intValue(), TileEntity.randomColor());
+				}
+				
+				set.clear();
+			}
+			else
+				break;
+		}
+				
 	}
 	
 	/**
@@ -142,11 +166,11 @@ public class BoardManager
 	}
 	
 	/**
-	 * Searches for all matches in the x-direction and returns a linked list
+	 * Searches for all matches in the X-direction and returns a linked list
 	 * with the indices of the matches.
-	 * @param ll The linked list that will be filled with indices.
+	 * @param set The linked list that will be filled with indices.
 	 */
-	public void findXMatch(LinkedList ll)
+	public void findXMatch(Set set)
 	{
 		// Cycle through the board looking for a match in the X-direction.
 		for (int i = 0; i < cells; i++)
@@ -173,7 +197,62 @@ public class BoardManager
 			// Check if we have a match.
 			if (j >= minimumMatch)
 			{
-				Util.handleMessage("Match of length " + j + " found.", Thread.currentThread());
+				Util.handleMessage("XMatch of length " + j + " found.", Thread.currentThread());
+				
+				// Copy all matched locations to the linked list.
+				for (int k = i; k < i + j; k++)				
+					set.add(new Integer(k));				
+				
+				i += j - 1;
+			}
+		}
+	}
+	
+	/**
+	 * Searches for all matches in the Y-direction and returns a set
+	 * with the indices of the matches.
+	 * @param set The linked list that will be filled with indices.
+	 */
+	public void findYMatch(Set set)
+	{
+		// Cycle through the board looking for a match in the Y-direction.
+		for (int i = 0; i < cells; i++)
+		{
+			// Transpose i.
+			int ti = Util.pseudoTranspose(i, columns, rows);
+			
+			// Check to see if there's even enough room for an Y-match.
+			if (rows - (ti / columns) < minimumMatch)
+				continue;
+			
+			// Make sure there's a tile here.
+			if (board[ti] == null)
+				continue;
+			
+			// Get the color of this tile.
+			int color = board[ti].getColor();
+			
+			// See how long we have a match for.
+			int j;
+			for (j = 1; j < (rows - (ti / columns)); j++)
+			{
+				// Transpose i + j.
+				int tij = Util.pseudoTranspose(i + j, columns, rows);
+				
+				if (board[tij] == null 
+						|| board[tij].getColor() != color)
+					break;
+			}
+			
+			// Check if we have a match.
+			if (j >= minimumMatch)
+			{
+				Util.handleMessage("YMatch of length " + j + " found.", Thread.currentThread());
+				
+				// Copy all matched locations to the linked list.
+				for (int k = i; k < i + j; k++)				
+					set.add(new Integer(Util.pseudoTranspose(k, columns, rows)));				
+				
 				i += j - 1;
 			}
 		}

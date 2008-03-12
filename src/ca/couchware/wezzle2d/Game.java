@@ -170,7 +170,7 @@ public class Game extends Canvas implements GameWindowCallback
 //		boardMan.createTile(25, TileEntity.COLOR_YELLOW);
 //		boardMan.createTile(20, TileEntity.COLOR_GREEN);
 //		boardMan.createTile(79, TileEntity.COLOR_RED);
-		boardMan.generateBoard(20);
+		boardMan.generateBoard(40);
 		
 		t = ResourceFactory.get().getText();
 		t.setText("Testing");
@@ -356,8 +356,7 @@ public class Game extends Canvas implements GameWindowCallback
 			if (boardMan.moveAll(delta) == false)
 			{									
 				// Synchronize board.
-				boardMan.synchronize();			
-				boardMan.print();
+				boardMan.synchronize();							
 				
 				// Start left refactor.
 				boardMan.startShiftLeft();
