@@ -182,7 +182,7 @@ public class Java2DText implements Text
 //		double strHeight = bounds.getHeight();
 		Rectangle2D bounds = textLayout.getBounds();
 		
-//		Util.handleMessage("" + bounds.getMinX(), null);
+		Util.handleMessage("" + bounds.getCenterX(), null);
 		// window.getFontMetrics(this.font).getHeight();
 		
 		// They Y's.
@@ -211,7 +211,7 @@ public class Java2DText implements Text
 		}
 		else if((anchor & Text.HCENTER) == Text.HCENTER)
 		{
-			this.anchorX = (int) bounds.getCenterX();			
+			this.anchorX = (int) bounds.getMaxX() / 2;			
 		}
 		else if((anchor & Text.RIGHT) == Text.RIGHT)
 		{

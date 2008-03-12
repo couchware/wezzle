@@ -502,7 +502,7 @@ public class Game extends Canvas implements GameWindowCallback
 //		}
 		
 		// Handle the timer.
-		//timeMan.incrementInternalTime(delta);
+//		timeMan.incrementInternalTime(delta);
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
