@@ -4,10 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.net.URL;
 
 import ca.couchware.wezzle2d.Text;
+import ca.couchware.wezzle2d.Util;
 
 /**
  * The Java2DText class provides a java2D implementation of the text interface.
@@ -33,6 +35,7 @@ public class Java2DText implements Text
 	
 	/** The text */
 	private String text;
+	private TextLayout textLayout;
 	
 	/** The game window to which this text is going to be drawn */
 	private Java2DGameWindow window;	
@@ -67,9 +70,9 @@ public class Java2DText implements Text
 		// Set the default anchors.
 		this.currentAnchor = (Text.TOP | Text.LEFT);
 		
-		// Setup the font bubbleboy2.
+		// Setup the font.
 		try
-		{
+		{			
 			this.font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());	
 			this.font = font.deriveFont(this.size);
 		}
@@ -77,7 +80,6 @@ public class Java2DText implements Text
 		{
 			e.printStackTrace();
 		}
-		
 	}	
 
 	/**
@@ -98,6 +100,7 @@ public class Java2DText implements Text
 	public void setText(String t)
 	{
 		this.text = t;
+		this.textLayout = new TextLayout(t, font, window.getDrawGraphics().getFontRenderContext());
 		
 		// Recalculate the anchor points.
 		this.setAnchor(this.currentAnchor);
@@ -170,10 +173,16 @@ public class Java2DText implements Text
 	 */
 	public void setAnchor(int anchor)
 	{
+		if (text.equals("") == true)
+			return;
+		
 		// Get the width and height of the font.
-		Rectangle2D bounds = window.getFontMetrics(this.font).getStringBounds(this.text, window.getDrawGraphics());
-		double strWidth = bounds.getWidth();
-		double strHeight = bounds.getHeight();
+//		Rectangle2D bounds = window.getFontMetrics(this.font).getStringBounds(this.text, window.getDrawGraphics());
+//		double strWidth = bounds.getWidth();		
+//		double strHeight = bounds.getHeight();
+		Rectangle2D bounds = textLayout.getBounds();
+		
+//		Util.handleMessage("" + bounds.getMinX(), null);
 		// window.getFontMetrics(this.font).getHeight();
 		
 		// They Y's.
@@ -183,11 +192,11 @@ public class Java2DText implements Text
 		}
 		else if((anchor & Text.VCENTER) == Text.VCENTER)
 		{
-			this.anchorY = (int) (strHeight / 2);
+			this.anchorY = (int) bounds.getCenterY();
 		}
 		else if((anchor & Text.TOP) == Text.TOP)
 		{
-			this.anchorY = (int) strHeight;
+			this.anchorY = (int) bounds.getMaxY();
 		}
 		else
 		{
@@ -202,11 +211,11 @@ public class Java2DText implements Text
 		}
 		else if((anchor & Text.HCENTER) == Text.HCENTER)
 		{
-			this.anchorX = (int) (strWidth / 2);
+			this.anchorX = (int) bounds.getCenterX();			
 		}
 		else if((anchor & Text.RIGHT) == Text.RIGHT)
 		{
-			this.anchorX = (int) strWidth;
+			this.anchorX = (int) bounds.getMaxX();
 		}
 		else
 		{
@@ -226,12 +235,18 @@ public class Java2DText implements Text
 	 */
 	public void draw(int x, int y)
 	{
+		// Return immediately is string is empty.
+		if (text.equals("") == true)
+			return;
+		
 		try
 		{
 			// Get the graphics.
 			Graphics2D g = window.getDrawGraphics();			
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+					RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 			
 			// Test url.
 			assert (url != null);
@@ -242,7 +257,11 @@ public class Java2DText implements Text
 			g.setFont(font);
 			g.setColor(this.color);			
 			
-			g.drawString(this.text, x - this.anchorX, y - this.anchorY);
+//			g.drawLine(0, 100, 100, 100);
+//			TextLayout tl = new TextLayout(text, font, g.getFontRenderContext());
+			textLayout.draw(g, x - this.anchorX, y - this.anchorY);
+//			Util.handleMessage(tl.getBounds().toString(), null);
+//			g.drawString(this.text, 0, y - this.anchorY);
 		}
 		catch(Exception e)
 		{
