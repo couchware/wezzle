@@ -35,7 +35,7 @@ public class PieceLine extends Piece
 	public void rotate()
 	{
 		// Transpose the structure.		
-		Util.transpose(structure);
+		Util.transpose2d(structure);
 		
 		// Update the dimensions.
 		int swap = this.columns;

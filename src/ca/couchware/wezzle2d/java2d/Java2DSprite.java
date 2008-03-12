@@ -1,6 +1,8 @@
 package ca.couchware.wezzle2d.java2d;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 
 import ca.couchware.wezzle2d.Sprite;
 
@@ -64,6 +66,15 @@ public class Java2DSprite implements Sprite
 	 */
 	public void draw(int x, int y)
 	{
-		window.getDrawGraphics().drawImage(image, x, y, null);
+		Graphics2D g = window.getDrawGraphics();
+		
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_RENDERING, 
+				RenderingHints.VALUE_RENDER_QUALITY);
+		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+				RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+		
+		g.drawImage(image, x, y, null);
 	}
 }

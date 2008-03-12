@@ -37,16 +37,14 @@ public class Java2DText implements Text
 	private Java2DGameWindow window;	
 
 	/** The x offset for anchor. */
-	private int anchorx;
+	private int anchorX;
 	
 	/** The y offset for anchor. */
-	private int anchory;
+	private int anchorY;
 	
 	/** The current anchor */
 	private int currentAnchor;
 
-	
-	
 	/**
 	 * The constructor loads the default text settings.
 	 * The default settings are:
@@ -175,45 +173,43 @@ public class Java2DText implements Text
 		int strWidth = (int)window.getFontMetrics(this.font).getStringBounds(this.text, window.getDrawGraphics()).getWidth();
 		int strHeight = window.getFontMetrics(this.font).getHeight();
 		
-		// They y's.
+		// They Y's.
 		if((anchor & Text.BOTTOM) == Text.BOTTOM)
 		{
-			this.anchory = strHeight;
+			this.anchorY = strHeight;
 		}
 		else if((anchor & Text.VCENTER) == Text.VCENTER)
 		{
-			this.anchory = strHeight / 2;
+			this.anchorY = strHeight / 2;
 		}
 		else if((anchor & Text.TOP) == Text.TOP)
 		{
-			this.anchory = 0;
+			this.anchorY = 0;
 		}
 		else
 		{
 			// The default y value is top.
-			this.anchory = 0;
+			this.anchorY = 0;
 		}
-		
 		
 		// The X's. 
 		if((anchor & Text.LEFT) == Text.LEFT)
 		{
-			this.anchorx = 0;
+			this.anchorX = 0;
 		}
-		else if(((anchor & Text.HCENTER) == Text.HCENTER))
+		else if((anchor & Text.HCENTER) == Text.HCENTER)
 		{
-			this.anchorx = strWidth / 2;
+			this.anchorX = strWidth / 2;
 		}
 		else if((anchor & Text.RIGHT) == Text.RIGHT)
 		{
-			this.anchorx = strWidth;
+			this.anchorX = strWidth;
 		}
 		else
 		{
 			// The default x value is Left.
-			this.anchorx = 0;	
+			this.anchorX = 0;	
 		}
-		
 		// Set the anchor.
 		this.currentAnchor = anchor;
 		
@@ -243,7 +239,8 @@ public class Java2DText implements Text
 			g.setFont(font);
 			g.setColor(this.color);			
 			
-			g.drawString(this.text, x - this.anchorx, y - this.anchory);			
+			g.drawString(this.text, x - this.anchorX, y - this.anchorY);
+//			g.drawString(text, 0, 10);
 		}
 		catch(Exception e)
 		{

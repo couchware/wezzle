@@ -30,7 +30,18 @@ public class Game extends Canvas implements GameWindowCallback
 	/**
 	 * The manager in charge of maintaining the board.
 	 */
-	BoardManager boardMan;
+	private BoardManager boardMan;
+	
+	/**
+	 * The manager in charge of moving the piece around with the
+	 * pointer and drawing the piece to the board.
+	 */
+	private PieceManager pieceMan;
+	
+	/** 
+	 * The manager in charge of keeping track of the time. 
+	 */
+	private TimeManager timeMan;
 	
 	/** The list of all the entities that exist in our game. */
 	private ArrayList entities = new ArrayList();
@@ -99,12 +110,7 @@ public class Game extends Canvas implements GameWindowCallback
 	/** The normal title of the window. */
 	private String windowTitle = "Wezzle";
 	
-	/** The Timer */
-	private TimeManager timer;
-	
-	
-	
-	/** FOR TESTING PURPOSES ONLY: REMOVE */
+	/** FOR TESTING PURPOSES ONLY: REMOVE. */
 	Text timerText;
 
 	/**
@@ -172,14 +178,19 @@ public class Game extends Canvas implements GameWindowCallback
 //		boardMan.createTile(79, TileEntity.COLOR_RED);
 		boardMan.generateBoard(40);
 		
+		// Create the piece manager.
+		pieceMan = new PieceManager(boardMan);
+		window.addMouseListener(pieceMan);
+		window.addMouseMotionListener(pieceMan);	
+	
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
 		timerText.setSize(50);
 		timerText.setAnchor(Text.HCENTER);
 		timerText.setColor(new Color(252, 233, 45 ));
 		
-		// Create the timer.
-		timer = new TimeManager();
+		// Create the time manager.
+		timeMan = new TimeManager();
 
 		// Setup the initial game state.
 		startGame();
@@ -328,10 +339,6 @@ public class Game extends Canvas implements GameWindowCallback
 		lastLoopTime = SystemTimer.getTime();
 		lastFpsTime += delta;
 		fps++;
-		
-		
-		
-		
 
 		// Update our FPS counter if a second has passed.
 		if (lastFpsTime >= 1000)
@@ -385,8 +392,12 @@ public class Game extends Canvas implements GameWindowCallback
 		// Draw the board.
 		boardMan.draw();
 		
+		// Draw the piece.
+		pieceMan.draw();
+		
 		// Draw the text.
-		timerText.setText(String.valueOf(timer.getTime()));
+		timerText.setText(String.valueOf(timeMan.getTime()));
+		timerText.setAnchor(Text.VCENTER | Text.HCENTER);
 		timerText.draw(400, 100);
 		
 //		// cycle round asking each entity to move itself
@@ -490,14 +501,9 @@ public class Game extends Canvas implements GameWindowCallback
 //			}
 //		}
 		
-		
-		
 		// Handle the timer.
-		timer.incrementInternalTime(delta);
+		timeMan.incrementInternalTime(delta);
 		
-		
-		
-
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
 		{

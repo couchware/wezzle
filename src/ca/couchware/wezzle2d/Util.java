@@ -49,7 +49,7 @@ public class Util
 	/**
 	 * Prints an error to standard error and dumps the stack.
 	 * @param message The error message.
-	 * @param timerText The current thread, usually Thread.currentThread().
+	 * @param t The current thread, usually Thread.currentThread().
 	 */
 	public static void handleException(Exception e)
 	{
@@ -114,10 +114,28 @@ public class Util
 			LogManager.appendToLog(output);
 	}
 	
+//	/**
+//	 * A method for transposing square 1D arrays in-place.
+//	 */
+//	public static void transpose(Object[] array)
+//	{
+//		assert array != null;
+//		
+//		int columns = (int) Math.sqrt(array.length);
+//		
+//		for (int i = 0; i < arrays.length; i++)
+//		{
+//			int column = i % columns;
+//			int row = i / columns;
+//			
+//			
+//		}
+//	}
+	
 	/**
 	 * A method for transposing square 2D arrays in-place.
 	 */
-	public static void transpose(Object[][] array)
+	public static void transpose2d(Object[][] array)
 	{
 		assert array != null;
 		

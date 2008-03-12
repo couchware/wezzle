@@ -17,11 +17,11 @@ public class PieceDash extends Piece
 		
 		// Set the name.
 		this.name = "Dash";
-		this.structure = new Boolean[][] 
+		this.structure = new Boolean[][]
 		{ 
-				{ false, false, false },
-				{ false, true,  true  },
-				{ false, false, false }
+			{ false, false, false },
+			{ false, true,  true },
+			{ false, false, false }
 		};
 		
 		// Set the dimensions.
@@ -35,7 +35,7 @@ public class PieceDash extends Piece
 	public void rotate()
 	{
 		// Transpose the structure.		
-		Util.transpose(structure);
+		Util.transpose2d(structure);
 //		Util.swap2d(structure, 1, 0, 2, 1);
 //		Util.swap2d(structure, 1, 0, 1, 2);
 //		Util.swap2d(structure, 1, 0, 0, 1);

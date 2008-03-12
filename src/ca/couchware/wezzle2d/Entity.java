@@ -14,7 +14,7 @@ import java.awt.Rectangle;
  * 
  * @author Kevin Glass
  */
-public abstract class Entity
+public abstract class Entity implements Drawable
 {
 	/** The current x location of this entity */
 	protected double x;
@@ -153,15 +153,6 @@ public abstract class Entity
 	}
 
 	/**
-	 * Sets the x.
-	 * @param x The x to set.
-	 */
-	public void setX(double x)
-	{
-		this.x = x;
-	}
-
-	/**
 	 * Get the y location of this entity.
 	 * 
 	 * @return The y location of this entity.
@@ -169,14 +160,5 @@ public abstract class Entity
 	public int getY()
 	{
 		return (int) y;
-	}
-
-	/**
-	 * Sets the y.
-	 * @param y The y to set.
-	 */
-	public void setY(double y)
-	{
-		this.y = y;
 	}
 }

@@ -13,7 +13,7 @@ import java.util.Set;
  * 
  */
 
-public class BoardManager
+public class BoardManager implements Drawable
 {	
 	/**
 	 * The x-coordiante of the top left corner of the board.

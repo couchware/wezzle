@@ -1,5 +1,8 @@
 package ca.couchware.wezzle2d;
 
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
 /**
  * The window in which the game will be displayed. This interface exposes just
  * enough to allow the game logic to interact with, while still maintaining an
@@ -50,4 +53,14 @@ public interface GameWindow
 	 * @return True if the particular key is pressed
 	 */
 	public boolean isKeyPressed(int keyCode);
+	
+	/**
+	 * Registers a mouse listener.
+	 */
+	public void addMouseListener(MouseListener l);
+	
+	/**
+	 * Registers a mouse motion listener.
+	 */
+	public void addMouseMotionListener(MouseMotionListener l);
 }
