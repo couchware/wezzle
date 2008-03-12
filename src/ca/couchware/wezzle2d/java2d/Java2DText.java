@@ -176,7 +176,7 @@ public class Java2DText implements Text
 		// They Y's.
 		if((anchor & Text.BOTTOM) == Text.BOTTOM)
 		{
-			this.anchorY = strHeight;
+			this.anchorY = 0;
 		}
 		else if((anchor & Text.VCENTER) == Text.VCENTER)
 		{
@@ -184,11 +184,11 @@ public class Java2DText implements Text
 		}
 		else if((anchor & Text.TOP) == Text.TOP)
 		{
-			this.anchorY = 0;
+			this.anchorY = strHeight;
 		}
 		else
 		{
-			// The default y value is top.
+			// The default y value is bottom.
 			this.anchorY = 0;
 		}
 		
@@ -239,8 +239,7 @@ public class Java2DText implements Text
 			g.setFont(font);
 			g.setColor(this.color);			
 			
-			g.drawString(this.text, x - this.anchorX, y - this.anchorY);
-//			g.drawString(text, 0, 10);
+			g.drawString(this.text, x - this.anchorX, y + this.anchorY);			
 		}
 		catch(Exception e)
 		{

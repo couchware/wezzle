@@ -186,7 +186,7 @@ public class Game extends Canvas implements GameWindowCallback
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
 		timerText.setSize(50);
-		timerText.setAnchor(Text.HCENTER);
+		timerText.setAnchor(Text.VCENTER | Text.HCENTER);
 		timerText.setColor(new Color(252, 233, 45 ));
 		
 		// Create the time manager.
@@ -399,7 +399,7 @@ public class Game extends Canvas implements GameWindowCallback
 		timerText.setText(String.valueOf(timeMan.getTime()));
 		timerText.setAnchor(Text.VCENTER | Text.HCENTER);
 		timerText.draw(400, 100);
-		
+		//timerText.draw(0,0);
 //		// cycle round asking each entity to move itself
 //		if (waitingForKeyPress == false)
 //		{
