@@ -3,11 +3,7 @@ package ca.couchware.wezzle2d.java2d;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
 
 import ca.couchware.wezzle2d.Text;
@@ -22,8 +18,10 @@ import ca.couchware.wezzle2d.Text;
 
 public class Java2DText implements Text
 {
-	/** the url and font */
+	/** The URL. */
 	private URL url;
+	
+	/** The font. */
 	private Font font;
 	
 	/** The size of the font */
@@ -36,9 +34,7 @@ public class Java2DText implements Text
 	private String text;
 	
 	/** The game window to which this text is going to be drawn */
-	private Java2DGameWindow window;
-
-	
+	private Java2DGameWindow window;	
 
 	/**
 	 * The constructor loads the default text settings.
@@ -53,7 +49,6 @@ public class Java2DText implements Text
 	public Java2DText(Java2DGameWindow window)
 	{
 		this.url = this.getClass().getClassLoader().getResource("resources/bubbleboy2.ttf");
-		
 		this.size = 24.0f;
 		this.color = Color.black;
 		this.text = "";
@@ -73,6 +68,15 @@ public class Java2DText implements Text
 	}	
 
 	/**
+	 * Gets the text.
+	 * @return The text.
+	 */
+	public String getText()
+	{
+		return text;
+	}
+	
+	/**
 	 * Set the text.
 	 * 
 	 * @param t The text.
@@ -82,7 +86,14 @@ public class Java2DText implements Text
 		this.text = t;
 	}
 	
-	
+	/**
+	 * Gets the size.
+	 * @return The size.
+	 */
+	public float getSize()
+	{
+		return size;
+	}
 	
 	/**
 	 * Set the color of the text.
@@ -95,8 +106,33 @@ public class Java2DText implements Text
 		this.size = s;
 	}
 	
-	
-	
+//	/**
+//	 * Gets the font.
+//	 * @return The font.
+//	 */
+//	public Font getFont()
+//	{
+//		return font;
+//	}
+//
+//	/**
+//	 * Sets the font.
+//	 * @param font The font to set.
+//	 */
+//	public void setFont(Font font)
+//	{
+//		this.font = font;
+//	}
+
+	/**
+	 * Gets the color.
+	 * @return The color.
+	 */
+	public Color getColor()
+	{
+		return color;
+	}
+
 	/**
 	 * Set the text color.
 	 * The initial color is black.
@@ -108,8 +144,6 @@ public class Java2DText implements Text
 		this.color = c;
 	}
 	
-	
-	
 	/**
 	 * Set the anchor of the text box. The anchor is initially set to the top left. 
 	 * 
@@ -120,8 +154,6 @@ public class Java2DText implements Text
 	{
 		// Insert Anchor code here.	
 	}
-	
-		
 	
 	/**
 	 * Draw the text onto the graphics context provided.
@@ -141,18 +173,11 @@ public class Java2DText implements Text
 			// Test url.
 			assert (url != null);
 						
-			// Create the font, size it and display the text.
-			
-
-			font = font.deriveFont(this.size);
-
-		
 			// Test font.
 			assert (font != null);
 			
 			g.setFont(font);
-			g.setColor(this.color);
-			
+			g.setColor(this.color);			
 			g.drawString(this.text, x, y);			
 		}
 		catch(Exception e)
