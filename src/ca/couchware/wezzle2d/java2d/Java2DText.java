@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.Rectangle2D;
 import java.net.URL;
 
 import ca.couchware.wezzle2d.Text;
@@ -170,8 +171,10 @@ public class Java2DText implements Text
 	public void setAnchor(int anchor)
 	{
 		// Get the width and height of the font.
-		int strWidth = (int)window.getFontMetrics(this.font).getStringBounds(this.text, window.getDrawGraphics()).getWidth();
-		int strHeight = window.getFontMetrics(this.font).getHeight();
+		Rectangle2D bounds = window.getFontMetrics(this.font).getStringBounds(this.text, window.getDrawGraphics());
+		double strWidth = bounds.getWidth();
+		double strHeight = bounds.getHeight();
+		// window.getFontMetrics(this.font).getHeight();
 		
 		// They Y's.
 		if((anchor & Text.BOTTOM) == Text.BOTTOM)
@@ -180,11 +183,11 @@ public class Java2DText implements Text
 		}
 		else if((anchor & Text.VCENTER) == Text.VCENTER)
 		{
-			this.anchorY = strHeight / 2;
+			this.anchorY = (int) (strHeight / 2);
 		}
 		else if((anchor & Text.TOP) == Text.TOP)
 		{
-			this.anchorY = strHeight;
+			this.anchorY = (int) strHeight;
 		}
 		else
 		{
@@ -199,20 +202,20 @@ public class Java2DText implements Text
 		}
 		else if((anchor & Text.HCENTER) == Text.HCENTER)
 		{
-			this.anchorX = strWidth / 2;
+			this.anchorX = (int) (strWidth / 2);
 		}
 		else if((anchor & Text.RIGHT) == Text.RIGHT)
 		{
-			this.anchorX = strWidth;
+			this.anchorX = (int) strWidth;
 		}
 		else
 		{
 			// The default x value is Left.
 			this.anchorX = 0;	
 		}
-		// Set the anchor.
-		this.currentAnchor = anchor;
 		
+		// Set the anchor.
+		this.currentAnchor = anchor;		
 	}
 	
 	/**
@@ -239,7 +242,7 @@ public class Java2DText implements Text
 			g.setFont(font);
 			g.setColor(this.color);			
 			
-			g.drawString(this.text, x - this.anchorX, y + this.anchorY);			
+			g.drawString(this.text, x - this.anchorX, y - this.anchorY);
 		}
 		catch(Exception e)
 		{

@@ -397,7 +397,7 @@ public class Game extends Canvas implements GameWindowCallback
 		
 		// Draw the text.
 		timerText.setText(String.valueOf(timeMan.getTime()));
-		timerText.setAnchor(Text.VCENTER | Text.HCENTER);
+		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
 		timerText.draw(400, 100);
 		//timerText.draw(0,0);
 //		// cycle round asking each entity to move itself
@@ -502,7 +502,7 @@ public class Game extends Canvas implements GameWindowCallback
 //		}
 		
 		// Handle the timer.
-		timeMan.incrementInternalTime(delta);
+		//timeMan.incrementInternalTime(delta);
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
