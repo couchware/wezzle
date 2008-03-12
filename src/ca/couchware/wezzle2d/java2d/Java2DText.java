@@ -182,10 +182,10 @@ public class Java2DText implements Text
 //		double strHeight = bounds.getHeight();
 		Rectangle2D bounds = textLayout.getBounds();
 		
-		Util.handleMessage("" + bounds.getCenterX(), null);
+		Util.handleMessage("" + bounds.getMinY(), null);
 		// window.getFontMetrics(this.font).getHeight();
 		
-		// They Y's.
+		// The Y's.
 		if((anchor & Text.BOTTOM) == Text.BOTTOM)
 		{
 			this.anchorY = 0;
@@ -196,18 +196,17 @@ public class Java2DText implements Text
 		}
 		else if((anchor & Text.TOP) == Text.TOP)
 		{
-			this.anchorY = (int) bounds.getMaxY();
+			this.anchorY = (int) bounds.getMinY();
 		}
 		else
 		{
-			// The default y value is bottom.
-			this.anchorY = 0;
+			Util.handleWarning("No Y anchor set!", Thread.currentThread());
 		}
 		
 		// The X's. 
 		if((anchor & Text.LEFT) == Text.LEFT)
 		{
-			this.anchorX = 0;
+			this.anchorX = (int) bounds.getMinX();
 		}
 		else if((anchor & Text.HCENTER) == Text.HCENTER)
 		{
@@ -219,8 +218,7 @@ public class Java2DText implements Text
 		}
 		else
 		{
-			// The default x value is Left.
-			this.anchorX = 0;	
+			Util.handleWarning("No X anchor set!", Thread.currentThread());
 		}
 		
 		// Set the anchor.
