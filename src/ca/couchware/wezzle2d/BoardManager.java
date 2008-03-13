@@ -15,6 +15,11 @@ import java.util.Set;
 
 public class BoardManager implements Drawable
 {	
+    /**
+     * Whether or not this is visible.
+     */
+    private boolean visible;
+    
 	/**
 	 * The x-coordiante of the top left corner of the board.
 	 */
@@ -79,6 +84,9 @@ public class BoardManager implements Drawable
 	 */
 	public BoardManager(final int x, final int y, final int columns, final int rows)
 	{
+        // Board is initially visible.
+        this.visible = true;
+        
 		// Set the cell width and height. Hard-coded to 32x32 for now.
 		this.cellWidth = 32;
 		this.cellHeight = 32;
@@ -443,6 +451,15 @@ public class BoardManager implements Drawable
         // Passthrough.
         removeTile(column + (row * columns));
     }
+    
+    public void removeTiles(final Set set)
+    {
+        for (Iterator it = set.iterator(); it.hasNext(); )
+        {
+            removeTile((Integer) it.next());
+            it.remove();
+        }
+    }
 	
 	public TileEntity getTile(int index)
 	{
@@ -573,6 +590,10 @@ public class BoardManager implements Drawable
 	 */
 	public void draw()
 	{
+        // Don't draw if not visible.
+        if (isVisible() == false)
+            return;
+        
 		for (int i = 0; i < board.length; i++)
 			if (board[i] != null)
 				board[i].draw();
@@ -596,4 +617,14 @@ public class BoardManager implements Drawable
 		
 		System.out.println();
 	}
+
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
+    }
 }

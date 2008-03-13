@@ -21,6 +21,11 @@ import java.awt.event.MouseMotionListener;
 public class PieceManager implements 
         Drawable, MouseListener, MouseMotionListener
 {	
+    /**
+     * Whether or not this is visible.
+     */
+    private boolean visible;
+    
 	/**
 	 * The current location of the mouse pointer.
 	 */
@@ -62,6 +67,9 @@ public class PieceManager implements
 	 */
 	public PieceManager(BoardManager boardMan)
 	{
+        // Set visible.
+        this.visible = true;
+        
 		// Set the reference.
 		this.boardMan = boardMan;
         
@@ -266,11 +274,16 @@ public class PieceManager implements
     // Logic
     //--------------------------------------------------------------------------
     
-    public void logic()
+    public void logic(final Game game)
     { 
+        // Ignore logic if not visible.
+        if (isVisible() == false)
+            return;
+        
         if (isMouseLeftReleased() == true)
         {
             commitPiece(getMousePosition());
+            game.runRefactor();
             setMouseLeftReleased(false);
         }
         
@@ -291,6 +304,10 @@ public class PieceManager implements
 	 */
 	public void draw()
 	{
+        // Don't draw if invisible.
+        if (isVisible() == false)
+            return;
+        
         // Retrieve the current mouse position.
         Position p = getMousePosition();
         
@@ -343,7 +360,7 @@ public class PieceManager implements
 	public void mouseReleased(MouseEvent e)
 	{
         // Debug.
-        Util.handleMessage("Button clicked.", Thread.currentThread());                
+        //Util.handleMessage("Button clicked.", Thread.currentThread());                
         
         // Retrieve the mouse position.
         Position p = getMousePosition();
@@ -391,5 +408,15 @@ public class PieceManager implements
         
 		// Set the mouse position.
 		setMousePosition(e.getX(), e.getY());
+    }
+
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
     }
 }

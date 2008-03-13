@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -38,42 +39,12 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	private TimeManager timeMan;
 	
-	/** The list of all the entities that exist in our game. */
-	private ArrayList entities = new ArrayList();
-	
 	/** The list of entities that need to be removed from the game this loop. */
 	private ArrayList removeList = new ArrayList();
 	
-	/** The entity representing the player. */
-	private Entity ship;
-	
-	/** The speed at which the player's ship should move (pixels/sec). */
-	private double moveSpeed = 300;
-	
-	/** The time at which last fired a shot */
-	private long lastFire = 0;
-	
-	/** The interval between our players shot (ms). */
-	private long firingInterval = 200;
-	
-	/** The number of aliens left on the screen. */
-	private int alienCount;
-
-	/** The message to display which waiting for a key press. */
-	private Sprite message;
-	
-	private boolean activateRefactorThisLoop = false;
+	private boolean activateRefactor = false;
 	private boolean refactorDownInProgress = false;
 	private boolean refactorLeftInProgress = false;
-	
-	/** True if we're holding up game play until a key has been pressed. */
-	private boolean waitingForKeyPress = true;
-	
-	/**
-	 * True if game logic needs to be applied this loop, normally as a result of
-	 * a game event.
-	 */
-	private boolean logicRequiredThisLoop = false;
 
 	/**
 	 * The time at which the last rendering looped started from the point of
@@ -83,21 +54,9 @@ public class Game extends Canvas implements GameWindowCallback
 	
 	/** The window that is being used to render the game. */
 	private GameWindow window;
-	
-	/** True if the fire key has been released. */
-	private boolean fireHasBeenReleased = false;
-
-	/** The sprite containing the "Press Any Key" message. */
-	private Sprite pressAnyKey;
-	
-	/** The sprite containing the "You win!" message. */
-	private Sprite youWin;
-	
-	/** The sprite containing the "You lose!" message. */
-	private Sprite youLose;
 
 	/** The time since the last record of FPS. */
-	private long lastFramePerSecondTime = 0;
+	private long lastFramesPerSecondTime = 0;
 	
 	/** The recorded FPS. */
 	private int framesPerSecond;
@@ -137,13 +96,11 @@ public class Game extends Canvas implements GameWindowCallback
 		}
 		catch (InterruptedException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Util.handleException(e);
 		}
 		catch (InvocationTargetException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Util.handleException(e);
 		}		
 	}
 
@@ -157,20 +114,8 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void initialize()
 	{
-//		youLose = ResourceFactory.get().getSprite("sprites/gotyou.gif");
-//		pressAnyKey = ResourceFactory.get().getSprite("sprites/pressanykey.gif");
-//		youWin = ResourceFactory.get().getSprite("sprites/youwin.gif");
-
-		message = pressAnyKey;
-		
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
-//		boardMan.createTile(0, TileEntity.COLOR_RED);
-//		boardMan.createTile(16, TileEntity.COLOR_PURPLE);
-//		boardMan.createTile(33, TileEntity.COLOR_BLUE);
-//		boardMan.createTile(25, TileEntity.COLOR_YELLOW);
-//		boardMan.createTile(20, TileEntity.COLOR_GREEN);
-//		boardMan.createTile(79, TileEntity.COLOR_RED);
 		boardMan.generateBoard(40);
 		
 		// Create the piece manager.
@@ -197,48 +142,7 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	private void startGame()
 	{		
-		// Clear out any existing entities and initialize a new set.
-		entities.clear();
-		createEntities();
-		
-		this.activateRefactorThisLoop = true;
-	}
-
-	/**
-	 * Initialize the starting state of the entities (ship and aliens). Each
-	 * entity will be added to the overall list of entities in the game.
-	 */
-	private void createEntities()
-	{
-//		TileEntity t = new TileEntity(TileEntity.COLOR_RED, 0, 0);
-//		entities.add(t);
-		
-		// Create the player ship and place it roughly in the center of the
-		// screen.
-//		ship = new ShipEntity(this, "sprites/ship.gif", 370, 550);
-//		entities.add(ship);
-//
-//		// Create a block of aliens (5 rows, by 12 aliens, spaced evenly).
-//		alienCount = 0;
-//		for (int row = 0; row < 5; row++)
-//		{
-//			for (int x = 0; x < 12; x++)
-//			{
-//				Entity alien = new AlienEntity(this, 100 + (x * 50), (50) + row * 30);
-//				entities.add(alien);
-//				alienCount++;
-//			}
-//		}
-		
-	}
-
-	/**
-	 * Notification from a game entity that the logic of the game should be run
-	 * at the next opportunity (normally as a result of some game event)
-	 */
-	public void updateLogic()
-	{
-		logicRequiredThisLoop = true;
+		// Nothing here yet.
 	}
 
 	/**
@@ -252,72 +156,18 @@ public class Game extends Canvas implements GameWindowCallback
 	{
 		removeList.add(entity);
 	}
-
-	/**
-	 * Notification that the player has died.
-	 */
-	public void notifyDeath()
-	{
-		message = youLose;
-		waitingForKeyPress = true;
-	}
-
-	/**
-	 * Notification that the player has won since all the aliens are dead.
-	 */
-	public void notifyWin()
-	{
-		message = youWin;
-		waitingForKeyPress = true;
-	}
-
-	/**
-	 * Notification that an alien has been killed
-	 */
-	public void notifyAlienKilled()
-	{
-		// reduce the alien count, if there are none left, the player has won!
-		alienCount--;
-
-		if (alienCount == 0)
-		{
-			notifyWin();
-		}
-
-		// if there are still some aliens left then they all need to get faster,
-		// so
-		// speed up all the existing aliens
-		for (int i = 0; i < entities.size(); i++)
-		{
-			Entity entity = (Entity) entities.get(i);
-
-			if (entity instanceof AlienEntity)
-			{
-				// Speed up by 2%.
-				entity.setXMovement(entity.getXMovement() * 1.02);
-			}
-		}
-	}
-
-	/**
-	 * Attempt to fire a shot from the player. Its called "try" since we must
-	 * first check that the player can fire at this point, i.e. has he/she
-	 * waited long enough between shots
-	 */
-	public void tryToFire()
-	{
-//		// check that we have waiting long enough to fire
-//		if (System.currentTimeMillis() - lastFire < firingInterval)
-//		{
-//			return;
-//		}
-//
-//		// if we waited long enough, create the shot entity, and record the
-//		// time.
-//		lastFire = System.currentTimeMillis();
-//		ShotEntity shot = new ShotEntity(this, "sprites/shot.gif", ship.getX() + 10, ship.getY() - 30);
-//		entities.add(shot);
-	}
+    
+    public void runRefactor()
+    {
+        // Set the refactor flag.
+        this.activateRefactor = true;
+    }
+    
+   public  void clearRefactor()
+   {
+       // Set the refactor flag.
+       this.activateRefactor = false;
+   }
 
 	/**
 	 * Notification that a frame is being rendered. Responsible for running game
@@ -332,168 +182,106 @@ public class Game extends Canvas implements GameWindowCallback
 		// move this loop.
 		long delta = SystemTimer.getTime() - lastLoopTime;
 		lastLoopTime = SystemTimer.getTime();
-		lastFramePerSecondTime += delta;
+		lastFramesPerSecondTime += delta;
 		framesPerSecond++;
 
 		// Update our FPS counter if a second has passed.
-		if (lastFramePerSecondTime >= 1000)
+		if (lastFramesPerSecondTime >= 1000)
 		{
 			window.setTitle(windowTitle + " (FPS: " + framesPerSecond + ")");
-			lastFramePerSecondTime = 0;
+			lastFramesPerSecondTime = 0;
 			framesPerSecond = 0;
 		}
 		
 		// See if we need to activate the refactor.
-		if (activateRefactorThisLoop == true)
-		{
+		if (activateRefactor == true)
+		{            
+            // Hide piece.
+            pieceMan.setVisible(false);
+            
 			// Start down refactor.
 			boardMan.startShiftDown();
 			refactorDownInProgress = true;
 			
 			// Clear flag.
-			activateRefactorThisLoop = false;
+			clearRefactor();
 		}
 		
 		// See if we're down refactoring.
 		if (refactorDownInProgress == true)
 		{
 			if (boardMan.moveAll(delta) == false)
-			{									
+			{			
+                // Clear down flag.
+				refactorDownInProgress = false;
+                
 				// Synchronize board.
 				boardMan.synchronize();							
 				
 				// Start left refactor.
 				boardMan.startShiftLeft();
-				refactorLeftInProgress = true;
-				
-				// Clear down flag.
-				refactorDownInProgress = false;
+				refactorLeftInProgress = true;								
 			}
-		}
+		} // end if
 		
 		// See if we're left refactoring.
 		if (refactorLeftInProgress == true)
 		{
 			if (boardMan.moveAll(delta) == false)
 			{
-				// Synchronize board.
-				boardMan.synchronize();
-				
-				// Clear left flag.
+                // Clear left flag.
 				refactorLeftInProgress = false;
-			}
-		}		
+                
+				// Synchronize board.
+				boardMan.synchronize();		
+                
+                // Look for matches.
+                HashSet set = new HashSet();
+                boardMan.findXMatch(set);
+                boardMan.findYMatch(set);
+                
+                // If there are matches, remove them and then
+                // refactor again.
+                if (set.size() > 0)
+                {
+                    boardMan.removeTiles(set);
+                    runRefactor();
+                }
+                else
+                {
+                    pieceMan.loadRandomPiece();
+                    pieceMan.setVisible(true);
+                }
+			} // end if
+		} // end if
 		
 		// Draw the board.
 		boardMan.draw();
 		
 		// Update piece manager logic and then draw it.
-        pieceMan.logic();
+        pieceMan.logic(this);
 		pieceMan.draw();
 		
 		// Draw the text.
 		timerText.setText(String.valueOf(timeMan.getTime()));		
 		timerText.draw(400, 100);
-		//timerText.draw(0,0);
-//		// cycle round asking each entity to move itself
-//		if (waitingForKeyPress == false)
-//		{
-//			for (int i = 0; i < entities.size(); i++)
-//			{
-//				Entity entity = (Entity) entities.get(i);
-//
-//				entity.move(delta);
-//			}
-//		}
-//
-//		// cycle round drawing all the entities we have in the game
-//		for (int i = 0; i < entities.size(); i++)
-//		{
-//			Entity entity = (Entity) entities.get(i);
-//			entity.draw();
-//		}				
-
-		// Brute force collisions, compare every entity against
-		// every other entity. If any of them collide notify
-		// both entities that the collision has occurred.
-//		for (int p = 0; p < entities.size(); p++)
-//		{
-//			for (int s = p + 1; s < entities.size(); s++)
-//			{
-//				Entity me = (Entity) entities.get(p);
-//				Entity him = (Entity) entities.get(s);
-//
-//				if (me.collidesWith(him))
-//				{
-//					me.collidedWith(him);
-//					him.collidedWith(me);
-//				}
-//			}
-//		}
 
 		// remove any entity that has been marked for clear up
-		entities.removeAll(removeList);
-		removeList.clear();
+//		entities.removeAll(removeList);
+//		removeList.clear();
 
 		// if a game event has indicated that game logic should
 		// be resolved, cycle round every entity requesting that
 		// their personal logic should be considered.
-		if (logicRequiredThisLoop == true)
-		{
-			for (int i = 0; i < entities.size(); i++)
-			{
-				Entity entity = (Entity) entities.get(i);
-				entity.doLogic();
-			}
-
-			logicRequiredThisLoop = false;
-		}
-
-		// if we're waiting for an "any key" press then draw the
-		// current message
-//		if (waitingForKeyPress == true)
+//		if (logicRequiredThisLoop == true)
 //		{
-//			message.draw(325, 250);
-//		}
-
-		// resolve the movement of the ship. First assume the ship
-		// isn't moving. If either cursor key is pressed then
-		// update the movement appropriately.
-//		ship.setHorizontalMovement(0);
-//
-//		boolean leftPressed = window.isKeyPressed(KeyEvent.VK_LEFT);
-//		boolean rightPressed = window.isKeyPressed(KeyEvent.VK_RIGHT);
-//		boolean firePressed = window.isKeyPressed(KeyEvent.VK_SPACE);
-//
-//		if (!waitingForKeyPress)
-//		{
-//			if ((leftPressed) && (!rightPressed))
+//			for (int i = 0; i < entities.size(); i++)
 //			{
-//				ship.setHorizontalMovement(-moveSpeed);
-//			}
-//			else if ((rightPressed) && (!leftPressed))
-//			{
-//				ship.setHorizontalMovement(moveSpeed);
+//				Entity entity = (Entity) entities.get(i);
+//				entity.doLogic();
 //			}
 //
-//			// if we're pressing fire, attempt to fire
-//			if (firePressed)
-//			{
-//				tryToFire();
-//			}
-//		}
-//		else
-//		{
-//			if (!firePressed)
-//			{
-//				fireHasBeenReleased = true;
-//			}
-//			if ((firePressed) && (fireHasBeenReleased))
-//			{
-//				waitingForKeyPress = false;
-//				fireHasBeenReleased = false;
-//				startGame();
-//			}
+//			logicRequiredThisLoop = false;
 //		}
 		
 		// Handle the timer.

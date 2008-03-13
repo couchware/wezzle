@@ -8,13 +8,13 @@ package ca.couchware.wezzle2d;
 
 public class TileEntity extends Entity
 {
-	final public static int COLOR_BLUE = 0;
+    final public static int COLOR_BLUE = 0;
 	final public static int COLOR_GREEN = 1;
 	final public static int COLOR_PURPLE = 2;
 	final public static int COLOR_RED = 3;		
 	final public static int COLOR_YELLOW = 4;
 	
-	final public static int NUMBER_OF_COLORS = 5;
+	final public static int NUMBER_OF_COLORS = 5;        
 	
 	/**
 	 * The associated board manager.
@@ -140,5 +140,5 @@ public class TileEntity extends Entity
 				Util.handleWarning("Unknown color number. Defaulting to 'Red'.", Thread.currentThread());
 				return "Red";
 		}
-	}
+    }
 }

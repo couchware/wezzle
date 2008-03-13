@@ -34,6 +34,11 @@ public class PieceGrid implements Drawable
 	private Sprite[][] sprites;
     
     /**
+     * Whether or not this is visible.
+     */
+    private boolean visible;
+    
+    /**
      * The board manager reference.
      */
     final private BoardManager boardMan;
@@ -56,6 +61,9 @@ public class PieceGrid implements Drawable
 	 */
 	public PieceGrid(BoardManager boardMan, int x, int y)
 	{
+        // Grid is initially visible.
+        this.visible = true;
+        
         // Set board manager reference.
         this.boardMan = boardMan;
         
@@ -112,6 +120,10 @@ public class PieceGrid implements Drawable
      */
 	public void draw()
 	{
+        // Don't draw if we're not visible.
+        if (isVisible() == false)
+            return;
+        
 		// Cycle through, drawing only the sprites that should be shown.
         for (int i = 0; i < structure.length; i++)
         {
@@ -125,4 +137,14 @@ public class PieceGrid implements Drawable
             } // end for
         } // end for			
 	}
+
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
+    }
 }

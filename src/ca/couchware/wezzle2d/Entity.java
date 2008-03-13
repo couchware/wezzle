@@ -1,7 +1,5 @@
 package ca.couchware.wezzle2d;
 
-import java.awt.Rectangle;
-
 /**
  * An entity represents any element that appears in the game. The entity is
  * responsible for resolving collisions and movement based on a set of
@@ -16,6 +14,9 @@ import java.awt.Rectangle;
  */
 public abstract class Entity implements Drawable
 {
+    /** Is this visible? */
+    protected boolean visible;
+    
 	/** The current x location of this entity */
 	protected double x;
 	
@@ -30,12 +31,6 @@ public abstract class Entity implements Drawable
 	
 	/** The current speed of this entity vertically (pixels/s). */
 	protected double dy;
-	
-	/** The rectangle used for this entity during collisions resolution */
-	private Rectangle me = new Rectangle();
-	
-	/** The rectangle used for other entities during collision resolution */
-	private Rectangle him = new Rectangle();
 
 	/**
 	 * Construct a entity based on a sprite image and a location.
@@ -49,6 +44,7 @@ public abstract class Entity implements Drawable
 	 */
 	public Entity(String path, int x, int y) 
 	{
+        this.visible = true;
 		this.sprite = ResourceFactory.get().getSprite(path);
 		this.x = x;
 		this.y = y;
@@ -115,17 +111,22 @@ public abstract class Entity implements Drawable
 	 */
 	public void draw()
 	{
+        if (isVisible() == false)
+            return;
+        
 		sprite.draw((int) x, (int) y);
 	}
-
-	/**
-	 * Do the logic associated with this entity. This method will be called
-	 * periodically based on game events.
-	 */
-	public void doLogic()
-	{
-	}
 	
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
+    }
+    
 	/**
 	 * @param x The x to set.
 	 */
