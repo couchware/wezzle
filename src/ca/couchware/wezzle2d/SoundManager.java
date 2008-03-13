@@ -1,14 +1,19 @@
 package ca.couchware.wezzle2d;
 
 
-import ca.couchware.wezzle2d.Game;
 import java.applet.AudioClip;
 import java.net.URL;
 
 
 
 /**
- *A class for managing the playing of game sounds.
+ * A class for managing the playing of game sounds.
+ * Sounds are played by calling the Play() method and passing in
+ * an integer. 
+ * 
+ * The class also defines the constants BOMB, LINE, BLEEP, CLICK for the
+ * sounds that are available.
+ * 
  * @author Kevin
  */
 
@@ -146,53 +151,5 @@ public class SoundManager
             } 
         }
     }
-	
-//	// ---------------------------------------------------------------------------
-//	// Listeners
-//	// ---------------------------------------------------------------------------
-//	
-//	public void lineEventOccurred(LineEvent evt)
-//	{
-//		// Play the line sound. Blah.
-//		if (evt.getLineType() == LineEvent.TYPE_NORMAL)
-//		{
-//			Util.handleMessage("It's a normal!", Thread.currentThread());
-//			synchronized (lineClip)
-//			{
-//				lineClip[lineCounter].play();
-//				lineCounter = (lineCounter + 1) % lineClip.length;
-//			}
-//		}
-//		else if (evt.getLineType() == LineEvent.TYPE_BOMB)
-//		{
-//			Util.handleMessage("It's a bomb!", Thread.currentThread());
-//			synchronized (bombClip)
-//			{
-//				bombClip[bombCounter].play();
-//				bombCounter = (bombCounter + 1) % bombClip.length;
-//			}
-//		}
-//	}
-//
-//	public void commitCompleted(CommitEvent evt)
-//	{
-//		// Intentionally left blank.
-//	}
-//	
-//	public void commitStarted(CommitEvent evt) 
-//	{
-//		// Play the click.
-//		clickClip.play();		
-//	}
-//
-//	public void tileAdded(GameBoardEvent evt)
-//	{
-//		// Play the bleep.
-//		synchronized (bleepClip)
-//		{
-//			bleepClip[bleepCounter].play();
-//			bleepCounter = (bleepCounter + 1) % bleepClip.length;
-//		}
-//	}
 }
 
