@@ -9,6 +9,8 @@ import ca.couchware.wezzle2d.piece.PieceLine;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The piece manager keeps track of where the mouse pointer is on the board
@@ -197,8 +199,11 @@ public class PieceManager implements
      * 
      * @param p The position of the piece.
      */
-    public void commitPiece(Position p)
+    public Set commitPiece(Position p)
     {
+        //create a set.
+        HashSet set = new HashSet();
+        
         // Convert to rows and columns.
         Position ap = adjustPosition(p);
         int column = (ap.getX() - boardMan.getX()) / boardMan.getCellWidth();
@@ -222,10 +227,14 @@ public class PieceManager implements
 //                    tiles[tilePointer++] = board.getTile(correctColumn - 1 + i, correctRow - 1 + j);
 
                     // Remove the tile.
-                    boardMan.removeTile(column - 1 + i, row - 1 + j);															
+                   set.add(boardMan.getTile(column - 1 + i, row - 1 + j));
+                   boardMan.removeTile(column - 1 + i, row - 1 + j);
                 }		
             } // end for				
-        } // end for	
+        } // end for
+        
+        // Return the set.
+        return set;
     }
     
     //--------------------------------------------------------------------------
@@ -282,7 +291,10 @@ public class PieceManager implements
         
         if (isMouseLeftReleased() == true)
         {
-            commitPiece(getMousePosition());
+            Set set = commitPiece(getMousePosition());
+            // Calculate the score. remove the piece.
+            game.scoreManager.calculatePieceScore(set);
+            
             game.runRefactor();
             setMouseLeftReleased(false);
         }

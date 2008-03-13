@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+
 /**
  * The main hook of our game. This class with both act as a manager for the
  * display and central mediator for the game logic.
@@ -66,6 +67,8 @@ public class Game extends Canvas implements GameWindowCallback
 	
 	/** FOR TESTING PURPOSES ONLY: REMOVE. */
 	Text timerText;
+        Text scoreText;
+        ScoreManager scoreManager;
 
 	/**
 	 * Construct our game and set it running.
@@ -123,11 +126,21 @@ public class Game extends Canvas implements GameWindowCallback
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
 	
+                // Create the score manager.
+                scoreManager = new ScoreManager();
+                
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
 		timerText.setSize(50);
 		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
 		timerText.setColor(new Color(252, 233, 45 ));
+                
+                // Set up the score text.
+                scoreText = ResourceFactory.get().getText();
+                scoreText.setSize(20);
+                scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
+                scoreText.setColor(new Color(252, 233, 45 ));
+                
 		
 		// Create the time manager.
 		timeMan = new TimeManager();
@@ -240,10 +253,11 @@ public class Game extends Canvas implements GameWindowCallback
                 boardMan.findXMatch(set);
                 boardMan.findYMatch(set);
                 
-                // If there are matches, remove them and then
+                // If there are matches, score them, remove them and then
                 // refactor again.
                 if (set.size() > 0)
                 {
+                    scoreManager.calculateLineScore(set, 1, 1);
                     boardMan.removeTiles(set);
                     runRefactor();
                 }
@@ -262,9 +276,16 @@ public class Game extends Canvas implements GameWindowCallback
         pieceMan.logic(this);
 		pieceMan.draw();
 		
-		// Draw the text.
+		// Draw the  timer text.
+
 		timerText.setText(String.valueOf(timeMan.getTime()));		
 		timerText.draw(400, 100);
+                
+                
+                // Draw the score text.
+                scoreText.setText(String.valueOf(this.scoreManager.getLevelScore()));
+                scoreText.draw(100, 100);
+                
 
 		// remove any entity that has been marked for clear up
 //		entities.removeAll(removeList);
