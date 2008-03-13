@@ -175,7 +175,6 @@ public class Game extends Canvas implements GameWindowCallback
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
-        pieceMan.loadRandomPiece();
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
 	
@@ -388,7 +387,8 @@ public class Game extends Canvas implements GameWindowCallback
 		// Draw the board.
 		boardMan.draw();
 		
-		// Draw the piece.
+		// Update piece manager logic and then draw it.
+        pieceMan.logic();
 		pieceMan.draw();
 		
 		// Draw the text.

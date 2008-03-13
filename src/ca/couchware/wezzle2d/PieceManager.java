@@ -27,6 +27,16 @@ public class PieceManager implements
 	private Position mousePosition;
 	
     /**
+     * Was the left mouse button clicked?
+     */
+    private boolean mouseLeftReleased;
+    
+    /**
+     * Was the right mouse button clicked?
+     */
+    private boolean mouseRightReleased;
+    
+    /**
      * The current piece.
      */
     private Piece piece;
@@ -48,19 +58,32 @@ public class PieceManager implements
 	/**
 	 * The constructor.
 	 * 
-	 * @param bm The board manager.
+	 * @param boardMan The board manager.
 	 */
 	public PieceManager(BoardManager boardMan)
 	{
 		// Set the reference.
 		this.boardMan = boardMan;
+        
+        // Default the mouse buttons to not clicked.
+        mouseLeftReleased = false;
+        mouseRightReleased = false;
+        
+        // Create new piece entity at the origin of the board.
+		pieceGrid = new PieceGrid(boardMan, 0, 0);
+        
+        // Load a random piece.
+        loadRandomPiece();
 		
 		// Create initial mouse position.
 		mousePosition = new Position(boardMan.getX(), boardMan.getY());
-		
-		// Create new piece entity at the origin of the board.
-		pieceGrid = new PieceGrid(boardMan, 
-                boardMan.getX(), boardMan.getY());
+        
+        // Adjust the position.
+        Position ap = adjustPosition(mousePosition);
+        
+        // Move the piece there.
+        pieceGrid.setX(ap.getX());
+        pieceGrid.setY(ap.getY());
 	}	
     
     //--------------------------------------------------------------------------
@@ -219,6 +242,45 @@ public class PieceManager implements
 		this.mousePosition = new Position(x, y);
 	}
 
+    public synchronized boolean isMouseLeftReleased()
+    {
+        return mouseLeftReleased;
+    }
+
+    public synchronized void setMouseLeftReleased(boolean mouseLeftReleased)
+    {
+        this.mouseLeftReleased = mouseLeftReleased;
+    }
+
+    public synchronized boolean isMouseRightReleased()
+    {
+        return mouseRightReleased;
+    }
+
+    public synchronized void setMouseRightReleased(boolean mouseRightReleased)
+    {
+        this.mouseRightReleased = mouseRightReleased;
+    }
+
+    //--------------------------------------------------------------------------
+    // Logic
+    //--------------------------------------------------------------------------
+    
+    public void logic()
+    { 
+        if (isMouseLeftReleased() == true)
+        {
+            commitPiece(getMousePosition());
+            setMouseLeftReleased(false);
+        }
+        
+        if (isMouseRightReleased() == true)
+        {
+            piece.rotate();
+            setMouseRightReleased(false);
+        }
+    }
+    
     //--------------------------------------------------------------------------
     // Draw
     //--------------------------------------------------------------------------
@@ -281,7 +343,7 @@ public class PieceManager implements
 	public void mouseReleased(MouseEvent e)
 	{
         // Debug.
-        Util.handleMessage("Button clicked.", Thread.currentThread());
+        Util.handleMessage("Button clicked.", Thread.currentThread());                
         
         // Retrieve the mouse position.
         Position p = getMousePosition();
@@ -298,12 +360,12 @@ public class PieceManager implements
         {
             // Left mouse clicked.
             case MouseEvent.BUTTON1:
-                commitPiece(p);
+                this.setMouseLeftReleased(true);
                 break;
               
             // Right mouse clicked.
             case MouseEvent.BUTTON3:
-                piece.rotate();
+                this.setMouseRightReleased(true);
                 break;
                 
             default:
