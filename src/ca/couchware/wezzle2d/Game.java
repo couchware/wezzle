@@ -23,8 +23,9 @@ import java.util.HashSet;
  * @author Kevin Glass
  */
 public class Game extends Canvas implements GameWindowCallback
-{
-	/**
+{	
+    
+        /**
 	 * The manager in charge of maintaining the board.
 	 */
 	private BoardManager boardMan;
@@ -283,8 +284,8 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 
                 // Draw the score text.
-                scoreText.setText(String.valueOf(this.scoreManager.getLevelScore()));
-                scoreText.draw(100, 100);
+                scoreText.setText(String.valueOf(this.scoreManager.getTotalScore()));
+                scoreText.draw(126, 400);
                 
 
 		// remove any entity that has been marked for clear up
