@@ -129,18 +129,18 @@ public class Game extends Canvas implements GameWindowCallback
 	{
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
-		boardMan.generateBoard(40, 6);
+		boardMan.generateBoard(40, 6, 6);
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
 	
-                // Create the score manager.
-                scoreMan = new ScoreManager();
-                
-                // Create the sound manager.
-                soundMan = new SoundManager();
+        // Create the score manager.
+        scoreMan = new ScoreManager();
+
+        // Create the sound manager.
+        soundMan = new SoundManager();
                 
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
@@ -148,13 +148,12 @@ public class Game extends Canvas implements GameWindowCallback
 		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
 		timerText.setColor(new Color(252, 233, 45 ));
                 
-                // Set up the score text.
-                scoreText = ResourceFactory.get().getText();
-                scoreText.setSize(20);
-                scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
-                scoreText.setColor(new Color(252, 233, 45 ));
-                
-		
+        // Set up the score text.
+        scoreText = ResourceFactory.get().getText();
+        scoreText.setSize(20);
+        scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
+        scoreText.setColor(new Color(252, 233, 45 ));
+                		
 		// Create the time manager.
 		timeMan = new TimeManager();
 

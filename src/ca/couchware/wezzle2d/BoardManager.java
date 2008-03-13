@@ -122,15 +122,22 @@ public class BoardManager implements Drawable
 	 * Generates a random game board with the given parameters.
 	 * @param tileMax
 	 */
-	public void generateBoard(int normal, int bomb)
+	public void generateBoard(int normal, int bomb, int mult2x)
 	{
 		int i;
         for (i = 0; i < normal; i++)
-			this.createTile(i, TileEntity.class, TileEntity.randomColor());
+			this.createTile(i, TileEntity.class, 
+                    TileEntity.randomColor());
         
         int j;
         for (j = i; j < normal + bomb; j++)
-            this.createTile(j, BombTileEntity.class, TileEntity.randomColor());
+            this.createTile(j, BombTileEntity.class,
+                    TileEntity.randomColor());
+        
+        int k;
+        for (k = j; k < normal + bomb + mult2x; k++)
+            this.createTile(k, Mult2xTileEntity.class, 
+                    TileEntity.randomColor());
 		
 		shuffleBoard();
 		refactorBoard();
