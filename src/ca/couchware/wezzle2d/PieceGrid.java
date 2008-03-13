@@ -14,6 +14,11 @@ import ca.couchware.wezzle2d.piece.Piece;
 
 public class PieceGrid implements Drawable
 {
+    /**
+     * Path to the piece selector sprite.
+     */
+    final private String PATH = "resources/Selector.png";
+    
 	/**
 	 * The current structure of the piece, representing by a 2D 
 	 * boolean array.  Where the array is true, there is a selector.
@@ -27,15 +32,33 @@ public class PieceGrid implements Drawable
 	 * cell is true.
 	 */
 	private Sprite[][] sprites;
+    
+    /**
+     * The board manager reference.
+     */
+    final private BoardManager boardMan;
 	
+    /**
+     * The X-coordinate of the top left corner of the piece grid.
+     */
+    private int x;
+    
+    /**
+     * The Y-coordinate of the top let corner of the piece grid.
+     */
+    private int y;
+    
 	/**
 	 * The constructor.  Initializes the structure and sprites arrays.
 	 * @param path
 	 * @param x
 	 * @param y
 	 */
-	public PieceGrid(String path, int x, int y)
+	public PieceGrid(BoardManager boardMan, int x, int y)
 	{
+        // Set board manager reference.
+        this.boardMan = boardMan;
+        
 		// Create an blank out the structure.
 		structure = new Boolean[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 		
@@ -47,18 +70,55 @@ public class PieceGrid implements Drawable
 		
 		for (int i = 0; i < sprites.length; i++)
 			for (int j = 0; j < sprites[0].length; j++)
-				sprites[i][j] = ResourceFactory.get().getSprite(path);
+				sprites[i][j] = ResourceFactory.get().getSprite(PATH);
 	}	
 	
-	public void setStructure(final Boolean[][] structure)
+    /**
+     * Load in a piece structure.
+     * @param structure
+     */
+	public void loadStructure(final Boolean[][] structure)
 	{
 		// Save the new array.
 		this.structure = structure;
 	}
 
+    public int getX()
+    {
+        return x;
+    }
+
+    public void setX(int x) 
+    {
+        this.x = x;
+    }
+
+    public int getY() 
+    {
+        return y;
+    }
+
+    public void setY(int y) 
+    {
+        this.y = y;
+    }
+    
+    /**
+     * Draw the piece grid at the predefined location x,y.
+     */
 	public void draw()
 	{
-		// TODO Auto-generated method stub
-		
+		// Cycle through, drawing only the sprites that should be shown.
+        for (int i = 0; i < structure.length; i++)
+        {
+            for (int j = 0; j < structure[0].length; j++)
+            {
+				if (structure[i][j] == true)
+                {
+                    sprites[i][j].draw(x + (i - 1) * boardMan.getCellWidth(),
+                            y + (j - 1) * boardMan.getCellHeight());
+                } // end if
+            } // end for
+        } // end for			
 	}
 }

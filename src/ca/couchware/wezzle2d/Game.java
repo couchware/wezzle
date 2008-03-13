@@ -6,11 +6,6 @@ import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
-import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
-import ca.couchware.wezzle2d.java2d.Java2DText;
-
 /**
  * The main hook of our game. This class with both act as a manager for the
  * display and central mediator for the game logic.
@@ -180,13 +175,14 @@ public class Game extends Canvas implements GameWindowCallback
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
+        pieceMan.loadRandomPiece();
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
 	
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
 		timerText.setSize(50);
-//		timerText.setAnchor(Text.VCENTER | Text.HCENTER);
+		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
 		timerText.setColor(new Color(252, 233, 45 ));
 		
 		// Create the time manager.
@@ -396,9 +392,8 @@ public class Game extends Canvas implements GameWindowCallback
 		pieceMan.draw();
 		
 		// Draw the text.
-		timerText.setText(String.valueOf(timeMan.getTime()));
-		timerText.setAnchor(Text.TOP | Text.LEFT);
-		timerText.draw(0, 0);
+		timerText.setText(String.valueOf(timeMan.getTime()));		
+		timerText.draw(400, 100);
 		//timerText.draw(0,0);
 //		// cycle round asking each entity to move itself
 //		if (waitingForKeyPress == false)
@@ -502,7 +497,7 @@ public class Game extends Canvas implements GameWindowCallback
 //		}
 		
 		// Handle the timer.
-//		timeMan.incrementInternalTime(delta);
+		timeMan.incrementInternalTime(delta);
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))

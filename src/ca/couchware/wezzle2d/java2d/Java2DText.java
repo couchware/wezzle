@@ -173,6 +173,10 @@ public class Java2DText implements Text
 	 */
 	public void setAnchor(int anchor)
 	{
+        // Remember the anchor.
+		this.currentAnchor = anchor;
+        
+        // Return if there's no text.
 		if (text.equals("") == true)
 			return;
 		
@@ -219,10 +223,7 @@ public class Java2DText implements Text
 		else
 		{
 			Util.handleWarning("No X anchor set!", Thread.currentThread());
-		}
-		
-		// Set the anchor.
-		this.currentAnchor = anchor;		
+		}					
 	}
 	
 	/**
