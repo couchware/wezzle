@@ -40,6 +40,12 @@ public class Game extends Canvas implements GameWindowCallback
 	 * The manager in charge of keeping track of the time. 
 	 */
 	private TimeManager timeMan;
+        
+         /** The manager in charge of score */
+        public ScoreManager scoreMan;
+        
+        /** The manager in charge of sound */
+        public SoundManager soundMan;
 	
 	/** The list of entities that need to be removed from the game this loop. */
 	private ArrayList removeList = new ArrayList();
@@ -66,10 +72,13 @@ public class Game extends Canvas implements GameWindowCallback
 	/** The normal title of the window. */
 	private String windowTitle = "Wezzle";
 	
-	/** FOR TESTING PURPOSES ONLY: REMOVE. */
+	/** The timer text. */
 	Text timerText;
+        
+        /** The score text. */
         Text scoreText;
-        ScoreManager scoreManager;
+        
+       
 
 	/**
 	 * Construct our game and set it running.
@@ -128,7 +137,10 @@ public class Game extends Canvas implements GameWindowCallback
 		window.addMouseMotionListener(pieceMan);	
 	
                 // Create the score manager.
-                scoreManager = new ScoreManager();
+                scoreMan = new ScoreManager();
+                
+                // Create the sound manager.
+                soundMan = new SoundManager();
                 
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
@@ -258,7 +270,8 @@ public class Game extends Canvas implements GameWindowCallback
                 // refactor again.
                 if (set.size() > 0)
                 {
-                    scoreManager.calculateLineScore(set, 1, 1);
+                    scoreMan.calculateLineScore(set, 1, 1);
+                    soundMan.play(SoundManager.LINE);
                     boardMan.removeTiles(set);
                     runRefactor();
                 }
@@ -284,7 +297,7 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 
                 // Draw the score text.
-                scoreText.setText(String.valueOf(this.scoreManager.getTotalScore()));
+                scoreText.setText(String.valueOf(this.scoreMan.getTotalScore()));
                 scoreText.draw(126, 400);
                 
 

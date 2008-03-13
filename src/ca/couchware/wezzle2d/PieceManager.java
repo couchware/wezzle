@@ -291,9 +291,14 @@ public class PieceManager implements
         
         if (isMouseLeftReleased() == true)
         {
+            // Get the pieces covered, remove the piece.
             Set set = commitPiece(getMousePosition());
-            // Calculate the score. remove the piece.
-            game.scoreManager.calculatePieceScore(set);
+            
+            // Score the piece.
+            game.scoreMan.calculatePieceScore(set);
+            
+            // Play the sound.
+            game.soundMan.play(SoundManager.CLICK);
             
             game.runRefactor();
             setMouseLeftReleased(false);
