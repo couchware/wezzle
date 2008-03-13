@@ -113,7 +113,14 @@ public class PieceManager implements
 		}
 	}
     
-    public Position filterPosition(Position p)
+    /**
+     * Adjusts the position of the piece grid so that it is within the board's
+     * boundaries.
+     * 
+     * @param p The position to adjust.
+     * @return The adjusted position.
+     */
+    public Position adjustPosition(Position p)
 	{
 		int column = (p.getX() - boardMan.getX()) / boardMan.getCellWidth();
 		int row = (p.getY() - boardMan.getY()) / boardMan.getCellWidth();
@@ -151,6 +158,44 @@ public class PieceManager implements
                 boardMan.getX() + (column * boardMan.getCellWidth()), 
                 boardMan.getY() + (row * boardMan.getCellHeight()));
 	}
+    
+    /**
+     * Commits the current piece to the current location.  This will result
+     * in all tiles covered by the piece to be removed and a refactor will
+     * be initiated.
+     * 
+     * @param p The position of the piece.
+     */
+    public void commitPiece(Position p)
+    {
+        // Convert to rows and columns.
+        Position ap = adjustPosition(p);
+        int column = (ap.getX() - boardMan.getX()) / boardMan.getCellWidth();
+		int row = (ap.getY() - boardMan.getY()) / boardMan.getCellWidth();
+        
+        // Get the piece struture.
+        Boolean[][] structure = piece.getStructure();
+        
+        // Remove all tiles covered by this piece.
+        for (int j = 0; j < structure[0].length; j++)
+        {
+            for (int i = 0; i < structure.length; i++)
+            {	
+                if (structure[i][j] == true 
+                        && boardMan.getTile(column - 1 + i, row - 1 + j) != null)
+                {
+                    // The piece is over a tile.
+//                    pieceOverTile = true;
+
+                    // Record the tile.
+//                    tiles[tilePointer++] = board.getTile(correctColumn - 1 + i, correctRow - 1 + j);
+
+                    // Remove the tile.
+                    boardMan.removeTile(column - 1 + i, row - 1 + j);															
+                }		
+            } // end for				
+        } // end for	
+    }
     
     //--------------------------------------------------------------------------
     // Getters and Setters
@@ -194,11 +239,11 @@ public class PieceManager implements
                 && p.getY() <= boardMan.getY() + boardMan.getHeight())
         {
             // Filter the current position.
-            Position fp = filterPosition(p);
+            Position ap = adjustPosition(p);
 
             // Draw the piece there.
-            pieceGrid.setX(fp.getX());
-            pieceGrid.setY(fp.getY());  
+            pieceGrid.setX(ap.getX());
+            pieceGrid.setY(ap.getY());  
         }        		            
 		
 		// Draw the piece.
@@ -251,9 +296,12 @@ public class PieceManager implements
 		// Check which button.
         switch (e.getButton())
         {
+            // Left mouse clicked.
             case MouseEvent.BUTTON1:
+                commitPiece(p);
                 break;
-                
+              
+            // Right mouse clicked.
             case MouseEvent.BUTTON3:
                 piece.rotate();
                 break;

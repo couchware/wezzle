@@ -416,7 +416,7 @@ public class BoardManager implements Drawable
 	public void createTile(final int index, final int color)
 	{
 		// Sanity check.
-		assert(index < columns * rows);
+		assert(index >= 0 && index < cells);
 		
 		TileEntity t = new TileEntity(this, color, 
 				x + (index % columns) * cellWidth,
@@ -424,11 +424,30 @@ public class BoardManager implements Drawable
 		
 		setTile(index, t);
 	}
+    
+    public void removeTile(final int index)
+    {
+        // Sanity check.
+		assert(index >= 0 && index < cells);
+        
+        // Remove the tile.
+        setTile(index, null);
+    }
+    
+    public void removeTile(final int column, final int row)
+    {
+        // Sanity check.
+		assert(column >= 0 && column < columns);
+        assert(row >= 0 && row < rows);
+        
+        // Passthrough.
+        removeTile(column + (row * columns));
+    }
 	
 	public TileEntity getTile(int index)
 	{
 		// Sanity check.
-		assert(index >= 0 && index < columns * rows);
+		assert(index >= 0 && index < cells);
 		
 		// Set the tile.
 		return board[index];
@@ -445,7 +464,7 @@ public class BoardManager implements Drawable
 	public void setTile(int index, TileEntity tile)
 	{
 		// Sanity check.
-		assert(index >= 0 && index < columns * rows);
+		assert(index >= 0 && index < cells);
 		
 		// Set the tile.
 		board[index] = tile;
