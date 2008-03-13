@@ -97,10 +97,10 @@ public class Game extends Canvas implements GameWindowCallback
 	private Sprite youLose;
 
 	/** The time since the last record of FPS. */
-	private long lastFpsTime = 0;
+	private long lastFramePerSecondTime = 0;
 	
 	/** The recorded FPS. */
-	private int fps;
+	private int framesPerSecond;
 
 	/** The normal title of the window. */
 	private String windowTitle = "Wezzle";
@@ -333,15 +333,15 @@ public class Game extends Canvas implements GameWindowCallback
 		// move this loop.
 		long delta = SystemTimer.getTime() - lastLoopTime;
 		lastLoopTime = SystemTimer.getTime();
-		lastFpsTime += delta;
-		fps++;
+		lastFramePerSecondTime += delta;
+		framesPerSecond++;
 
 		// Update our FPS counter if a second has passed.
-		if (lastFpsTime >= 1000)
+		if (lastFramePerSecondTime >= 1000)
 		{
-			window.setTitle(windowTitle + " (FPS: " + fps + ")");
-			lastFpsTime = 0;
-			fps = 0;
+			window.setTitle(windowTitle + " (FPS: " + framesPerSecond + ")");
+			lastFramePerSecondTime = 0;
+			framesPerSecond = 0;
 		}
 		
 		// See if we need to activate the refactor.

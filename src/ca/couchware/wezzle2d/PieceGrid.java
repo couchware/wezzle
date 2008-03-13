@@ -59,6 +59,10 @@ public class PieceGrid implements Drawable
         // Set board manager reference.
         this.boardMan = boardMan;
         
+        // Set x and y.
+        this.x = x;
+        this.y = y;
+        
 		// Create an blank out the structure.
 		structure = new Boolean[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 		

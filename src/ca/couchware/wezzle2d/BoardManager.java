@@ -70,6 +70,10 @@ public class BoardManager implements Drawable
 	 */
 	private TileEntity[] board;
 	
+    //--------------------------------------------------------------------------
+    // Constructor
+    //--------------------------------------------------------------------------
+    
 	/**
 	 * The constructor.
 	 */
@@ -98,6 +102,10 @@ public class BoardManager implements Drawable
 		// Initialize board.
 		board = new TileEntity[columns * rows];
 	}
+    
+    //--------------------------------------------------------------------------
+    // Instance Methods
+    //--------------------------------------------------------------------------
 	
 	/**
 	 * Generates a random game board with the given parameters.
@@ -405,141 +413,6 @@ public class BoardManager implements Drawable
 		return count;
 	}
 	
-//	/**
-//	 * Generates a random board with a specified amount of normal, star and bomb tiles
-//	 * 
-//	 * @param numNormal     The number of normal tiles on the board.
-//	 * @param numMultiplier The number of multiplier tiles on the board.
-//	 * @param numBomb 	The number of bombs on the board. Must be < numMultiplier.	 
-//	 */			
-//	public void generateGameBoard(LinkedList<ItemDescriptor> itemList)
-//	{					
-//		// Determine the amount of items to add.
-//		int itemTotal = 0;
-//		for (ItemDescriptor item : itemList)
-//			itemTotal += item.getInitialAmount();
-//		
-//		// Sanity check.
-//		assert(itemTotal < cells);
-//		
-//		// This variable keeps track of where we are in the board.
-//		int j = 0;
-//		
-//		// Cycle through items, adding each.
-//		for (ItemDescriptor item : itemList)
-//		{
-//			for (int i = j; i < j + item.getInitialAmount(); i++)
-//			{		
-//				try
-//				{
-//					// Create an instance of it and add it to the board.
-//					this.setTile(i, (TileEntity) item.getItemClass().newInstance(), false);																				
-//				}
-//				catch (Exception e)
-//				{
-//					Util.handleException(e);
-//				}
-//			}
-//		
-//			// Keep track of where we left off on the board.
-//			j += item.getInitialAmount();
-//		}
-//
-//		// Shuffle.		
-//		this.shuffleGameBoard();
-//		
-//		// Colour the board.
-//		this.colorGameBoard();		
-//	}
-//	
-//	public void shuffleGameBoard()
-//	{
-//		for (int i = 0; i < cells; i++)
-//		{
-//			int r = Util.random.nextInt(cells);
-//			swapTile(i, r);
-//		}		
-//	}
-//	
-//	/**
-//	 * A method to colour the private gameBoard based on a probability for tile
-//	 * distribution.
-//	 * 
-//	 * @param prob
-//	 *            An array of integer probabilities for tile distribution.
-//	 */
-//	public void colorGameBoard()
-//	{		
-//		// The potential colour for the tile.
-//		int color = 0;
-//		
-//		// The tile we are colouring.
-//		Tile tile;
-//		
-//		// First, refactor game board.
-//		this.refactorGameBoard(Game.SPEED_INSTANT);	
-//		
-//		for (int row = this.getRows() - 1; row >= 0; row--)
-//		{
-//			for (int col = 0; col < this.getColumns(); col++)
-//			{
-//				// Pick a random colour.
-//				color = Math.abs(Util.random.nextInt()) % 5;
-//								
-//				// If there is no tile here.
-//				if (this.getTile(col, row) == null)
-//					continue;
-//				
-//				while (true)
-//				{					
-//					// Check to see if we can place the tile here.
-//					if (col > 2)
-//					{
-//						// If both pieces to the left are the same, do not
-//						// colour.
-//						if (this.getTile(col - 1, row).getColor() == color
-//								&& this.getTile(col - 2, row).getColor() == color
-//								&& this.getTile(col - 3, row).getColor() == color)
-//						{
-//							color = (color + 1) % 5;
-//							continue;
-//						}
-//					}
-//	
-//					if (row < (this.getRows() - 3))
-//					{
-//						if (  this.getTile(col, row + 1).getColor()== color
-//								&& this.getTile(col, row + 2).getColor() == color
-//								&& this.getTile(col, row + 3).getColor() == color)
-//						{
-//							color = (color + 1) % 5;
-//							continue;
-//						}
-//					}
-//					
-//					// Otherwise colour the piece.					
-//					tile = this.getTile(col, row);
-//					
-//					// Set the colour.
-//					tile.setColor(color);						
-//					
-//					// Add it to the board.
-//					this.setTile(col, row, tile);									
-//					
-//					// Make it visible.
-//					//Util.handleMessage(tile.getVisibility(), Thread.currentThread());
-//					//tile.setVisibility("inherit");
-//					//tile.updateUsingComponent();
-//					break;
-//					
-//				} // end while
-//			} // end for
-//		} // end for	
-//		
-//		// Print the dist.
-//		//board.printTileDist();		
-//	}
-	
 	public void createTile(final int index, final int color)
 	{
 		// Sanity check.
@@ -610,6 +483,10 @@ public class BoardManager implements Drawable
 		}
 	}
 
+    //--------------------------------------------------------------------------
+    // Getters and Setters
+    //--------------------------------------------------------------------------
+    
 	/**
 	 * @return The cellWidth.
 	 */
@@ -662,6 +539,16 @@ public class BoardManager implements Drawable
 		return y;
 	}
 
+    public int getColumns()
+    {
+        return columns;
+    }
+
+    public int getRows()
+    {
+        return rows;
+    }    
+    
 	/**
 	 * Draw the board to the screen.
 	 */

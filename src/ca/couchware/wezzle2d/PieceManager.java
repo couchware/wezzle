@@ -60,8 +60,7 @@ public class PieceManager implements
 		
 		// Create new piece entity at the origin of the board.
 		pieceGrid = new PieceGrid(boardMan, 
-                mousePosition.getX(), 
-                mousePosition.getY());
+                boardMan.getX(), boardMan.getY());
 	}	
     
     //--------------------------------------------------------------------------
@@ -114,6 +113,45 @@ public class PieceManager implements
 		}
 	}
     
+    public Position filterPosition(Position p)
+	{
+		int column = (p.getX() - boardMan.getX()) / boardMan.getCellWidth();
+		int row = (p.getY() - boardMan.getY()) / boardMan.getCellWidth();
+		
+		if (column >= boardMan.getColumns())
+			column = boardMan.getColumns() - 1;
+		
+		if (row >= boardMan.getRows())
+			row = boardMan.getRows() - 1;
+		
+		// Get the piece structure.
+		Boolean[][] structure = piece.getStructure();
+		
+		// Cycle through the structure.
+		for (int j = 0; j < structure[0].length; j++)
+		{
+			for (int i = 0; i < structure.length; i++)
+			{	
+				if (structure[i][j] == true)
+				{					
+					if (column - 1 + i < 0)
+						column++;					
+					else if (column - 1 + i >= boardMan.getColumns())
+						column--;
+						
+					if (row - 1 + j < 0)
+						row++;
+					else if (row - 1 + j >= boardMan.getRows())
+						row--;										
+				}										
+			} // end for				
+		} // end for
+		
+		return new Position(
+                boardMan.getX() + (column * boardMan.getCellWidth()), 
+                boardMan.getY() + (row * boardMan.getCellHeight()));
+	}
+    
     //--------------------------------------------------------------------------
     // Getters and Setters
     //--------------------------------------------------------------------------
@@ -146,16 +184,22 @@ public class PieceManager implements
 	 */
 	public void draw()
 	{
-		// Retrieve the current position.
-		Position p = getMousePosition();	
-		
-		// Draw the piece there.
-		pieceGrid.setX(((p.getX() - boardMan.getX()) / 32) 
-                * 32 + boardMan.getX());
-		pieceGrid.setY(((p.getY() - boardMan.getY()) / 32) 
-                * 32 + boardMan.getY());
+        // Retrieve the current mouse position.
+        Position p = getMousePosition();
         
-        
+        // If mouse is inside the board then update the piece grid location.
+        if (p.getX() > boardMan.getX()
+                && p.getX() <= boardMan.getX() + boardMan.getWidth()
+                && p.getY() > boardMan.getY()
+                && p.getY() <= boardMan.getY() + boardMan.getHeight())
+        {
+            // Filter the current position.
+            Position fp = filterPosition(p);
+
+            // Draw the piece there.
+            pieceGrid.setX(fp.getX());
+            pieceGrid.setY(fp.getY());  
+        }        		            
 		
 		// Draw the piece.
 		pieceGrid.draw();
@@ -191,8 +235,33 @@ public class PieceManager implements
 
 	public void mouseReleased(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-		
+        // Debug.
+        Util.handleMessage("Button clicked.", Thread.currentThread());
+        
+        // Retrieve the mouse position.
+        Position p = getMousePosition();
+        
+        // Ignore click if we're outside the board.
+        if (p.getX() < boardMan.getX()
+                || p.getX() >= boardMan.getX() + boardMan.getWidth()
+                || p.getY() < boardMan.getY()
+                || p.getY() >= boardMan.getY() + boardMan.getHeight())
+            return;            
+            
+		// Check which button.
+        switch (e.getButton())
+        {
+            case MouseEvent.BUTTON1:
+                break;
+                
+            case MouseEvent.BUTTON3:
+                piece.rotate();
+                break;
+                
+            default:
+                Util.handleMessage("No recognized button pressed.", 
+                        Thread.currentThread());
+        }
 	}
 
 	public void mouseDragged(MouseEvent e)
@@ -207,14 +276,8 @@ public class PieceManager implements
 	public void mouseMoved(MouseEvent e)
 	{
 		// Debug.
-//		Util.handleMessage("Mouse moved to: " + e.getX() + "," + e.getY() + ".", Thread.currentThread());
-		
-        // If mouse is outside the board, then ignore the event.
-        if (e.getX() < boardMan.getX()
-                || e.getX() > boardMan.getX() + boardMan.getWidth()
-                || e.getY() < boardMan.getY()
-                || e.getY() > boardMan.getY() + boardMan.getHeight())
-            return;
+//		Util.handleMessage("Mouse moved to: " + e.getX() + "," + e.getY() + ".", 
+//                Thread.currentThread());		       
         
 		// Set the mouse position.
 		setMousePosition(e.getX(), e.getY());
