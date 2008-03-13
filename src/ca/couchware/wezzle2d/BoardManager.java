@@ -1,9 +1,12 @@
 package ca.couchware.wezzle2d;
 
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages the game board.  A replacement for the GameBoard class from
@@ -119,10 +122,15 @@ public class BoardManager implements Drawable
 	 * Generates a random game board with the given parameters.
 	 * @param tileMax
 	 */
-	public void generateBoard(int tileMax)
+	public void generateBoard(int normal, int bomb)
 	{
-		for (int i = 0; i < tileMax; i++)
-			this.createTile(i, TileEntity.randomColor());
+		int i;
+        for (i = 0; i < normal; i++)
+			this.createTile(i, TileEntity.class, TileEntity.randomColor());
+        
+        int j;
+        for (j = i; j < normal + bomb; j++)
+            this.createTile(j, BombTileEntity.class, TileEntity.randomColor());
 		
 		shuffleBoard();
 		refactorBoard();
@@ -139,15 +147,16 @@ public class BoardManager implements Drawable
 				for (Iterator it = set.iterator(); it.hasNext(); )
 				{
 					Integer n = (Integer) it.next();
-					this.createTile(n.intValue(), TileEntity.randomColor());
+					this.createTile(n.intValue(), 
+                            getTile(n.intValue()).getClass(),
+                            TileEntity.randomColor());
 				}
 				
 				set.clear();
 			}
 			else
 				break;
-		}
-				
+		} // end while	
 	}
 	
 	/**
@@ -421,16 +430,29 @@ public class BoardManager implements Drawable
 		return count;
 	}
 	
-	public void createTile(final int index, final int color)
+	public void createTile(final int index, final Class c, final int color)
 	{
-		// Sanity check.
-		assert(index >= 0 && index < cells);
-		
-		TileEntity t = new TileEntity(this, color, 
+         // Sanity check.
+        assert (index >= 0 && index < cells);
+        assert (c != null);
+        assert (color >= 0 && color < TileEntity.NUMBER_OF_COLORS);
+        
+        try
+        {           
+            // Get the constructor.  All tiles must have the same constructor.
+            Constructor con = c.getConstructor(new Class[] { BoardManager.class, 
+                Integer.TYPE, Integer.TYPE, Integer.TYPE });
+
+            TileEntity t = (TileEntity) con.newInstance(this, color, 
 				x + (index % columns) * cellWidth,
 				y + (index / columns) * cellHeight);
-		
-		setTile(index, t);
+
+            setTile(index, t);
+        }
+        catch (Exception ex)
+        {
+            Util.handleException(ex);
+        }
 	}
     
     public void removeTile(final int index)

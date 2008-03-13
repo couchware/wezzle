@@ -129,7 +129,7 @@ public class Game extends Canvas implements GameWindowCallback
 	{
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
-		boardMan.generateBoard(40);
+		boardMan.generateBoard(40, 6);
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
