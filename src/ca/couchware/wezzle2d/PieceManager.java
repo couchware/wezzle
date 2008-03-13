@@ -201,7 +201,7 @@ public class PieceManager implements
      */
     public Set commitPiece(Position p)
     {
-        //create a set.
+        // Create a set.
         HashSet set = new HashSet();
         
         // Convert to rows and columns.
@@ -291,8 +291,8 @@ public class PieceManager implements
         
         if (isMouseLeftReleased() == true)
         {
-            // Get the pieces covered, remove the piece.
-            Set set = commitPiece(getMousePosition());
+            // Remove the piece, getting the tiles in return.
+            Set set = commitPiece(getMousePosition());                    
             
             // Score the piece.
             game.scoreMan.calculatePieceScore(set);
@@ -300,13 +300,19 @@ public class PieceManager implements
             // Play the sound.
             game.soundMan.play(SoundManager.CLICK);
             
+            // Refactor the board.
             game.runRefactor();
+            
+            // Reset flag.
             setMouseLeftReleased(false);
         }
         
         if (isMouseRightReleased() == true)
         {
+            // Rotate the piece.            
             piece.rotate();
+            
+            // Reset flag.
             setMouseRightReleased(false);
         }
     }

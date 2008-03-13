@@ -42,13 +42,13 @@ public class TileEntity extends Entity
 	 * @param x
 	 * @param y
 	 */
-	public TileEntity(BoardManager bm, int color, int x, int y) 
+	public TileEntity(BoardManager boardMan, int color, int x, int y) 
 	{
 		// Invoke super.		
 		super("resources/Tile" + toColorString(color) + ".png", x, y);	
 						
 		// Set board manager and color reference.
-		this.boardMan = bm;	
+		this.boardMan = boardMan;	
 		this.color = color;
 	}
 	

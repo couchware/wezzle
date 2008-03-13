@@ -290,34 +290,13 @@ public class Game extends Canvas implements GameWindowCallback
         pieceMan.logic(this);
 		pieceMan.draw();
 		
-		// Draw the  timer text.
-
+		// Draw the timer text.
 		timerText.setText(String.valueOf(timeMan.getTime()));		
-		timerText.draw(400, 100);
+		timerText.draw(400, 100);                                
                 
-                
-                // Draw the score text.
-                scoreText.setText(String.valueOf(this.scoreMan.getTotalScore()));
-                scoreText.draw(126, 400);
-                
-
-		// remove any entity that has been marked for clear up
-//		entities.removeAll(removeList);
-//		removeList.clear();
-
-		// if a game event has indicated that game logic should
-		// be resolved, cycle round every entity requesting that
-		// their personal logic should be considered.
-//		if (logicRequiredThisLoop == true)
-//		{
-//			for (int i = 0; i < entities.size(); i++)
-//			{
-//				Entity entity = (Entity) entities.get(i);
-//				entity.doLogic();
-//			}
-//
-//			logicRequiredThisLoop = false;
-//		}
+        // Draw the score text.
+        scoreText.setText(String.valueOf(this.scoreMan.getTotalScore()));
+        scoreText.draw(126, 400);               
 		
 		// Handle the timer.
 		timeMan.incrementInternalTime(delta);
