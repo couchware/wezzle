@@ -49,6 +49,9 @@ public class Game extends Canvas implements GameWindowCallback
     
     /** The manager in charge of loading and saving properties */
     public PropertyManager propertyMan;
+    
+    /** The manager in charge of the moves. */
+    public MoveManager moveMan;
 	
 	/** The list of entities that need to be removed from the game this loop. */
 	private ArrayList removeList = new ArrayList();
@@ -76,13 +79,16 @@ public class Game extends Canvas implements GameWindowCallback
 	private String windowTitle = "Wezzle";
 	
 	/** The timer text. */
-	Text timerText;
+	private Text timerText;
         
     /** The score text. */
-    Text scoreText;
+    private Text scoreText;
     
     /** The high score text. */
-    Text highScoreText;
+    private Text highScoreText;
+    
+    /** The move count text */
+    private Text moveCountText;
         
        
 
@@ -150,6 +156,9 @@ public class Game extends Canvas implements GameWindowCallback
 
         // Create the sound manager.
         soundMan = new SoundManager();
+        
+        // Create the move manager.
+        moveMan = new MoveManager();
                 
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
@@ -168,6 +177,13 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreText.setSize(20);
         highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         highScoreText.setColor(new Color(252, 233, 45 ));
+        
+        
+         // Set up the move count text.
+        moveCountText = ResourceFactory.get().getText();
+        moveCountText.setSize(20);
+        moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
+        moveCountText.setColor(new Color(252, 233, 45 ));
         
                 		
 		// Create the time manager.
@@ -316,6 +332,10 @@ public class Game extends Canvas implements GameWindowCallback
         // Draw the high score text.
         scoreText.setText(String.valueOf(this.scoreMan.getHighScore()));
         scoreText.draw(126, 270);
+        
+        // Draw the move count text.
+        moveCountText.setText(String.valueOf(this.moveMan.getCurrentMoveCount()));
+        moveCountText.draw(669, 400);
         
 		
 		// Handle the timer.

@@ -297,6 +297,9 @@ public class PieceManager implements
             // Score the piece.
             game.scoreMan.calculatePieceScore(set);
             
+            // Increment the moves.
+            game.moveMan.incrementMoveCount();
+            
             // Play the sound.
             game.soundMan.play(SoundManager.CLICK);
             
