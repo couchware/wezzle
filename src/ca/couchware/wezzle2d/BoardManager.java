@@ -547,6 +547,105 @@ public class BoardManager implements Drawable
 			board[index2].setY(y + (index2 / columns) * cellHeight);
 		}
 	}
+    
+    /**
+	 * Determines where tiles are affected by the bomb explosion.
+     * 
+	 * @param bombIndex     
+     * @return The set of indices (including the bomb) affected by the bomb.
+	 */
+	private Set<Integer> processBomb(final int bombIndex)
+	{		
+		// List of additional bomb tiles.
+		Set<Integer> affectedTileSet = new HashSet<Integer>();		
+		
+		// Return if bomb is null.
+		if (getTile(bombIndex) == null)
+			return null;				
+		
+		// Determine affected tiles.
+		for (int j = -1; j < 2; j++)
+		{
+			for (int i = -1; i < 2; i++)
+			{
+				if ((bombIndex % columns) + i >= 0
+						&& (bombIndex % columns) + i < this.getColumns()
+						&& (bombIndex / columns) + j >= 0
+						&& (bombIndex / columns) + j < this.getRows())
+				{
+					if (getTile(bombIndex % columns + i, bombIndex / columns + j) != null)
+						affectedTileSet.add(new Integer(bombIndex + i + (j * columns)));														
+				}
+			} // end for i
+		} // end for j
+				
+		// Pass back affected tiles.
+		return affectedTileSet;
+	}
+
+	/**
+	 * Feeds all the bombs in the bomb processor.
+     * 
+	 * @param bombTileSet
+     * @return A list of a bombs triggered by the bombs blast.
+	 */
+	public Set<Integer> processBombs(Set bombSet)
+	{				
+		// A list of tiles affected by the blast.
+		Set affectedSet = new HashSet();		
+			
+//		// A list of tiles (excluding bombs) being blown up.
+//		Set collateralSet = new HashSet();
+//		
+//		// A list of bomb tiles that were triggered by the blast.
+//		Set triggeredSet = new HashSet();
+		
+		// Gather affected tiles.
+		for (Iterator<Integer> it = bombSet.iterator(); it.hasNext(); )		
+			affectedSet.addAll(this.processBomb(it.next()));
+				
+//		for (Iterator<Integer> it = affectedSet.iterator(); it.hasNext(); )
+//		{		
+//			final Integer index = it.next();
+//			final TileEntity t = getTile(index);
+//			
+//			if (t != null)					
+//			{			
+//				if (t.getClass() == BombTileEntity.class 
+//                        && bombSet.contains(index) == false)
+//                {
+//					triggeredSet.add(index);				
+//                }
+//				else if (t.getClass() != BombTileEntity.class)
+//                {
+//					collateralSet.add(index);				
+//                }
+//			} // end if
+//		} // end for
+				
+		// Remove.
+//		this.removeTiles(bombSet);
+//		this.removeTiles(collateralSet);
+		
+		// Return the set of tiles affected by these bombs.
+		return affectedSet;
+	}
+    
+    public Set scanBombs(Set tileSet)
+    {
+        // The set of indices that have bombs.
+        Set bombSet = new HashSet();
+        
+        for (Iterator it = tileSet.iterator(); it.hasNext(); )
+        {
+            Integer index = (Integer) it.next();
+            if (getTile(index).getClass() == BombTileEntity.class)            
+                bombSet.add(index);                            
+        } // end for
+        
+        // Return the set.
+        return bombSet;
+    }
 
     //--------------------------------------------------------------------------
     // Getters and Setters

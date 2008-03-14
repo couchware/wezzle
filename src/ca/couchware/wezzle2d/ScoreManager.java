@@ -1,5 +1,3 @@
-
-
 package ca.couchware.wezzle2d;
 
 import java.util.Iterator;
@@ -11,16 +9,31 @@ import java.util.Set;
  */
  public class ScoreManager
  {
-     /**
+    /**
+     * A line.
+     */
+    final public static int TYPE_LINE = 0;
+    
+    /**
+     * A bomb.
+     */
+    final public static int TYPE_BOMB = 1;
+     
+    /**
      * The amount of point per tile in a line.
      */
-    private static int POINTS_PER_LINE_TILE = 50;
+    final private static int POINTS_PER_LINE_TILE = 50;
 
     /** 
      * The amount of point per tile in a piece.
      */
-    private static int POINTS_PER_PIECE_TILE = 10;
- 
+    final private static int POINTS_PER_PIECE_TILE = 10;
+
+    /**
+     * The board manager.
+     */
+    final private BoardManager boardMan;
+    
     /**
      * The score this level.
      */
@@ -50,17 +63,20 @@ import java.util.Set;
      * The constructor.
      * @param properties A property manager to load properties from.
      */
-    public ScoreManager(PropertyManager properties)
+    public ScoreManager(BoardManager boardMan, PropertyManager propertyMan)
     {
+        // Store reference to board manager.
+        this.boardMan = boardMan;
+        
         // Initialize the scores.
         this.totalScore = 0;
         this.levelScore = 0;
-        this.highScore = properties.getIntegerProperty(PropertyManager.HIGH_SCORE);
+        this.highScore = propertyMan.getIntegerProperty(PropertyManager.HIGH_SCORE);
     }
 
     /**
      * Requires documentation.
-     * @param tiles
+     * @param set
      * @param lineType
      * @param cascadeCount
      */
@@ -72,30 +88,30 @@ import java.util.Set;
         int numMult4x = 0;
         int numMult3x = 0;
         int numMult2x = 0;		
-
 		
         // Cycle through the set counting the pieces.
-        for (Iterator it = set.iterator(); it.hasNext(); )
-        {			
-                if (it.next() != null)
+        for (Iterator it = set.iterator(); it.hasNext();)
+        {
+            // Grab the tile.
+            TileEntity t = boardMan.getTile((Integer) it.next());
+            
+            // See what kinda tile it is.
+            if (t != null)
+            {
+                if (t.getClass() == TileEntity.class)
                 {
-                       // if (tiles[i].getClass() == TileNormal.class)
-                                numNormal++;
-//                        else if (tiles[i].getClass() == TileMultiplier.class)
-//                        {
-//                                if (((TileMultiplier) tiles[i]).getMultiplier() == 2)
-//                                        numMult2x++;
-//                                else if (((TileMultiplier) tiles[i]).getMultiplier() == 3)
-//                                        numMult3x++;
-//                                else if (((TileMultiplier) tiles[i]).getMultiplier() == 4)
-//                                        numMult4x++;
-//                        }
-//                        else if (tiles[i].getClass() == TileBomb.class)
-//                        {
-//                                numBomb++;	
-//                        }
+                    numNormal++;
                 }
-        }					
+                else if (t.getClass() == Mult2xTileEntity.class)                    
+                {
+                    numMult2x++;
+                }
+                else if (t.getClass() == BombTileEntity.class)
+                {
+                    numBomb++;
+                }
+            } // end if
+        } // end for
 
         // Change this when we add bombs and multipliers.
         int deltaScore = (int) (calculateLineTilePoints(numNormal + numBomb + numMult2x + numMult3x + numMult4x, lineType)
@@ -119,21 +135,22 @@ import java.util.Set;
      */
     private int calculateLineTilePoints(int numTotal, int lineType)
     {
-            // If we have a minimal line, it's just 4 times the points/tile.
-            if (numTotal <= 4 )//|| lineType == LineEvent.TYPE_BOMB )
-                    return numTotal * POINTS_PER_LINE_TILE;
+        // If we have a minimal line, it's just 4 times the points/tile.
+        if (numTotal <= 4  || lineType == TYPE_BOMB)
+            return numTotal * POINTS_PER_LINE_TILE;
 
-            // If we have more, 4 times the points/tile + 100 + 150 + 200 + ...
-            int score = 4 * POINTS_PER_LINE_TILE;
+        // If we have more, 4 times the points/tile + 100 + 150 + 200 + ...
+        int score = 4 * POINTS_PER_LINE_TILE;
 
-            for (int i = 0; i < numTotal - 4; i++)
-                    score += (i + 2) * POINTS_PER_LINE_TILE;
+        for (int i = 0; i < numTotal - 4; i++)
+            score += (i + 2) * POINTS_PER_LINE_TILE;
 
-            return score;
+        return score;
     }
 
     /**
      * Requires documentation.
+     * 
      * @param set A set of tiles.
      */
     public void calculatePieceScore(Set set)
@@ -154,16 +171,14 @@ import java.util.Set;
         // Update the score if there is a score update.
         if (deltaScore != 0)
         {			
-                // Update scores.
-                updateScore(deltaScore);
+            // Update scores.
+            updateScore(deltaScore);
         }
         else
         {
             // Otherwise do nothing.
         }
     }
-
-    
 
     /**
      * Requires documentation.

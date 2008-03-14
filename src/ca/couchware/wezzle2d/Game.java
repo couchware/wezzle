@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -25,7 +26,7 @@ import java.util.HashSet;
 public class Game extends Canvas implements GameWindowCallback
 {	
     
-        /**
+    /**
 	 * The manager in charge of maintaining the board.
 	 */
 	private BoardManager boardMan;
@@ -141,7 +142,7 @@ public class Game extends Canvas implements GameWindowCallback
 	{
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
-		boardMan.generateBoard(40, 6, 6);
+		boardMan.generateBoard(40, 2, 6);
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
@@ -152,7 +153,7 @@ public class Game extends Canvas implements GameWindowCallback
         this.propertyMan = new PropertyManager();
         
         // Create the score manager.
-        scoreMan = new ScoreManager(this.propertyMan);
+        scoreMan = new ScoreManager(boardMan, propertyMan);
 
         // Create the sound manager.
         soundMan = new SoundManager();
@@ -301,9 +302,39 @@ public class Game extends Canvas implements GameWindowCallback
                 // refactor again.
                 if (set.size() > 0)
                 {
-                    scoreMan.calculateLineScore(set, 1, 1);
+                    // Calculate score and play the sound.
+                    scoreMan.calculateLineScore(set, 
+                            ScoreManager.TYPE_LINE, 1);
                     soundMan.play(SoundManager.LINE);
+                    
+                    // Make sure bombs aren't removed (they get removed
+                    // in a different step).
+                    Set bombSet = boardMan.scanBombs(set);
+                    set.removeAll(bombSet);
+                    
+                    // Remove non-bombs.
                     boardMan.removeTiles(set);
+                                                            
+                    while (bombSet.size() > 0)
+                    {
+                        // Get the tiles the bombs would affect.
+                        Set affectedSet = boardMan.processBombs(bombSet);
+                        scoreMan.calculateLineScore(affectedSet, 
+                                ScoreManager.TYPE_BOMB, 1);
+                                                
+                        // Extract all the new bombs.
+                        Set newBombSet = boardMan.scanBombs(affectedSet);                                                
+                        newBombSet.removeAll(bombSet);
+                        
+                        // Remove all tiles that aren't new bombs.
+                        affectedSet.removeAll(newBombSet);
+                        boardMan.removeTiles(affectedSet);
+
+                        // Start again.
+                        bombSet = newBombSet;
+                    }                                       
+                                        
+                    // Refactor.
                     runRefactor();
                 }
                 else

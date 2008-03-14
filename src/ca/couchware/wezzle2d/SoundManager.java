@@ -1,10 +1,7 @@
 package ca.couchware.wezzle2d;
 
-
 import java.applet.AudioClip;
 import java.net.URL;
-
-
 
 /**
  * A class for managing the playing of game sounds.
@@ -17,10 +14,8 @@ import java.net.URL;
  * @author Kevin
  */
 
-
 public class SoundManager
 {
-    
     public final static int BOMB = 1;
     public final static int LINE = 2;
     public final static int BLEEP = 3;
@@ -29,22 +24,26 @@ public class SoundManager
     /**
      * Path to the line audio clip.
      */
-    private final URL lineUrl = this.getClass().getClassLoader().getResource("resources/SoundLine.wav");
+    private final URL lineUrl = this.getClass()
+            .getClassLoader().getResource("resources/SoundLine.wav");
 
     /**
      * Path to the bomb audio clip.
      */
-    private final URL bombUrl = this.getClass().getClassLoader().getResource("resources/SoundExplosion.wav");
+    private final URL bombUrl = this.getClass()
+            .getClassLoader().getResource("resources/SoundExplosion.wav");
 
     /**
      * Path to the bleep audio clip.
      */
-    private final URL bleepUrl = this.getClass().getClassLoader().getResource( "resources/SoundBleep.wav");
+    private final URL bleepUrl = this.getClass()
+            .getClassLoader().getResource( "resources/SoundBleep.wav");
 
     /**
      * Path to the click audio clip.
      */
-    private final URL clickUrl = this.getClass().getClassLoader().getResource("resources/SoundClick.wav");
+    private final URL clickUrl = this.getClass()
+            .getClassLoader().getResource("resources/SoundClick.wav");
 
     /**
      * The current line clip we are playing.
@@ -149,7 +148,7 @@ public class SoundManager
             {
                 clickClip.play();
             } 
-        }
+        } // end if
     }
 }
 
