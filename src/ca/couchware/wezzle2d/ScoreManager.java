@@ -48,12 +48,14 @@ import java.util.Set;
 
     /**
      * The constructor.
+     * @param properties A property manager to load properties from.
      */
-    public ScoreManager()
+    public ScoreManager(PropertyManager properties)
     {
-        // Initialize the score.
+        // Initialize the scores.
         this.totalScore = 0;
         this.levelScore = 0;
+        this.highScore = properties.getIntegerProperty(PropertyManager.HIGH_SCORE);
     }
 
     /**

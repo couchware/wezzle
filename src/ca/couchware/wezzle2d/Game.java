@@ -41,11 +41,14 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	private TimeManager timeMan;
         
-         /** The manager in charge of score */
-        public ScoreManager scoreMan;
-        
-        /** The manager in charge of sound */
-        public SoundManager soundMan;
+     /** The manager in charge of score */
+    public ScoreManager scoreMan;
+
+    /** The manager in charge of sound */
+    public SoundManager soundMan;
+    
+    /** The manager in charge of loading and saving properties */
+    public PropertyManager propertyMan;
 	
 	/** The list of entities that need to be removed from the game this loop. */
 	private ArrayList removeList = new ArrayList();
@@ -75,8 +78,11 @@ public class Game extends Canvas implements GameWindowCallback
 	/** The timer text. */
 	Text timerText;
         
-        /** The score text. */
-        Text scoreText;
+    /** The score text. */
+    Text scoreText;
+    
+    /** The high score text. */
+    Text highScoreText;
         
        
 
@@ -136,8 +142,11 @@ public class Game extends Canvas implements GameWindowCallback
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
 	
+        // Create the property manager. Must be done before Score manager.
+        this.propertyMan = new PropertyManager();
+        
         // Create the score manager.
-        scoreMan = new ScoreManager();
+        scoreMan = new ScoreManager(this.propertyMan);
 
         // Create the sound manager.
         soundMan = new SoundManager();
@@ -153,6 +162,13 @@ public class Game extends Canvas implements GameWindowCallback
         scoreText.setSize(20);
         scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         scoreText.setColor(new Color(252, 233, 45 ));
+        
+        // Set up the high score text.
+        highScoreText = ResourceFactory.get().getText();
+        highScoreText.setSize(20);
+        highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
+        highScoreText.setColor(new Color(252, 233, 45 ));
+        
                 		
 		// Create the time manager.
 		timeMan = new TimeManager();
@@ -295,7 +311,12 @@ public class Game extends Canvas implements GameWindowCallback
                 
         // Draw the score text.
         scoreText.setText(String.valueOf(this.scoreMan.getTotalScore()));
-        scoreText.draw(126, 400);               
+        scoreText.draw(126, 400); 
+        
+        // Draw the high score text.
+        scoreText.setText(String.valueOf(this.scoreMan.getHighScore()));
+        scoreText.draw(126, 270);
+        
 		
 		// Handle the timer.
 		timeMan.incrementInternalTime(delta);
