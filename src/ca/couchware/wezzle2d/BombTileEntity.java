@@ -44,9 +44,9 @@ public class BombTileEntity extends TileEntity
             return;
         
         // Invoke super draw.
-        super.draw();
+        super.draw();        
         
         // Draw bomb on top of it.
-        bombSprite.draw((int) x, (int) y);
+        bombSprite.draw((int) x, (int) y, width, height);
     }
 }

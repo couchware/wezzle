@@ -10,26 +10,53 @@ package ca.couchware.wezzle2d;
  * move a partial pixel. It doesn't of course mean that they will be display
  * half way through a pixel but allows us not lose accuracy as we move.
  * 
- * @author Kevin Glass
+ * @author Cameron McKay (based on code by Kevin Glass)
  */
 public abstract class Entity implements Drawable
 {
-    /** Is this visible? */
+    /** 
+     * Is this visible? 
+     */
     protected boolean visible;
     
-	/** The current x location of this entity */
-	protected double x;
+    /** 
+     * The current x location of this entity. 
+     */
+    protected double x;
 	
-	/** The current y location of this entity */
+	/** 
+     * The current y location of this entity .
+     */
 	protected double y;
+    
+    /** 
+     * The current width of the entity.
+     */
+    protected int width;
+    
+    /**
+     * The current height of the entity.
+     */
+    protected int height;
 	
-	/** The sprite that represents this entity */
+	/** 
+     * The sprite that represents this entity.
+     */
 	protected Sprite sprite;
+    
+    /**
+     * The animation attached to this entity.
+     */
+    protected Animation animation;
 	
-	/** The current speed of this entity horizontally (pixels/s). */
+	/** 
+     * The current speed of this entity horizontally (pixels/s). 
+     */
 	protected double dx;
 	
-	/** The current speed of this entity vertically (pixels/s). */
+	/** 
+     * The current speed of this entity vertically (pixels/s). 
+     */
 	protected double dy;
 
 	/**
@@ -42,12 +69,15 @@ public abstract class Entity implements Drawable
 	 * @param y
 	 *            The initial y location of this entity
 	 */
-	public Entity(String path, int x, int y) 
+	public Entity(final String path, final int x, final int y, 
+            final int width, final int height) 
 	{
         this.visible = true;
 		this.sprite = ResourceFactory.get().getSprite(path);
 		this.x = x;
 		this.y = y;
+        this.width = width;
+        this.height = height;
 	}
 
 	/**
@@ -105,17 +135,6 @@ public abstract class Entity implements Drawable
 	{
 		return dy;
 	}
-
-	/**
-	 * Draw this entity to the graphics context provided.
-	 */
-	public void draw()
-	{
-        if (isVisible() == false)
-            return;
-        
-		sprite.draw((int) x, (int) y);
-	}
 	
     public void setVisible(boolean visible)
     {
@@ -162,4 +181,60 @@ public abstract class Entity implements Drawable
 	{
 		return (int) y;
 	}
+
+    public int getHeight()
+    {
+        return height;
+    }
+
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+    
+    /**
+	 * Draw this entity to the graphics context provided.
+	 */
+	public void draw()
+	{
+        if (isVisible() == false)
+            return;
+        
+		sprite.draw((int) x, (int) y, width, height);
+	}
+
+    public Animation getAnimation()
+    {
+        return animation;
+    }
+
+    public void setAnimation(Animation animation)
+    {
+        this.animation = animation;
+    }        
+    
+    /**
+     * Advances the animation depending on the amount of time that has passed.
+     * 
+     * @param delta The amount of time that has passed.
+     */
+    public void animate(long delta)
+    {
+        // Ignore if we have no animation.
+        if (animation == null)
+            return;
+        
+        // Pass through to the animation.
+        animation.nextFrame(delta);
+    }
 }

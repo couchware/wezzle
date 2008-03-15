@@ -6,12 +6,12 @@ package ca.couchware.wezzle2d;
  *
  */
 
-public class Position
+public class XYPosition
 {
 	public final int x;
 	public final int y;
 	
-	public Position(final int x, final int y)
+	public XYPosition(final int x, final int y)
 	{
 		this.x = x;
 		this.y = y;

@@ -45,7 +45,8 @@ public class TileEntity extends Entity
 	public TileEntity(BoardManager boardMan, int color, int x, int y) 
 	{
 		// Invoke super.		
-		super("resources/Tile" + toColorString(color) + ".png", x, y);	
+		super("resources/Tile" + toColorString(color) + ".png", x, y,
+                boardMan.getCellWidth(), boardMan.getCellHeight());
 						
 		// Set board manager and color reference.
 		this.boardMan = boardMan;	

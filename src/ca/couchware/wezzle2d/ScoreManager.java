@@ -153,18 +153,18 @@ import java.util.Set;
      * 
      * @param set A set of tiles.
      */
-    public void calculatePieceScore(Set set)
+    public void calculatePieceScore(Set indexSet)
     {
         //Sanity check.
-        assert(set != null);
+        assert(indexSet != null);
         
         // Initilize deltaScore variable.
         int deltaScore = 0;
 
         // Cycle through the set counting the pieces.
-        for (Iterator it = set.iterator(); it.hasNext(); )
+        for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {
-            if(it.next() != null)
+            if (it.next() != null)
                 deltaScore += POINTS_PER_PIECE_TILE;
         }
             

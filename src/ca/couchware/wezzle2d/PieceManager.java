@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -28,10 +29,15 @@ public class PieceManager implements
      */
     private boolean visible;
     
+    /**
+     * Was the board recently refactored?
+     */
+    private boolean refactored = false;
+    
 	/**
 	 * The current location of the mouse pointer.
 	 */
-	private Position mousePosition;
+	private XYPosition mousePosition;
 	
     /**
      * Was the left mouse button clicked?
@@ -52,6 +58,16 @@ public class PieceManager implements
 	 * The piece grid.  The graphical representation of the piece.
 	 */
 	private PieceGrid pieceGrid;
+    
+    /**
+     * The current piece column.
+     */
+    private int pieceColumn;
+    
+    /**
+     * The current piece row.
+     */
+    private int pieceRow;
 	
 	/**
 	 * The board manager the piece manager to attached to.
@@ -86,10 +102,10 @@ public class PieceManager implements
         loadRandomPiece();
 		
 		// Create initial mouse position.
-		mousePosition = new Position(boardMan.getX(), boardMan.getY());
+		mousePosition = new XYPosition(boardMan.getX(), boardMan.getY());
         
         // Adjust the position.
-        Position ap = adjustPosition(mousePosition);
+        XYPosition ap = adjustPosition(mousePosition);
         
         // Move the piece there.
         pieceGrid.setX(ap.getX());
@@ -153,10 +169,10 @@ public class PieceManager implements
      * @param p The position to adjust.
      * @return The adjusted position.
      */
-    public Position adjustPosition(Position p)
+    public XYPosition adjustPosition(XYPosition p)
 	{
-		int column = (p.getX() - boardMan.getX()) / boardMan.getCellWidth();
-		int row = (p.getY() - boardMan.getY()) / boardMan.getCellWidth();
+		int column = convertXToColumn(p.getX());
+		int row = convertYToRow(p.getY());
 		
 		if (column >= boardMan.getColumns())
 			column = boardMan.getColumns() - 1;
@@ -187,7 +203,7 @@ public class PieceManager implements
 			} // end for				
 		} // end for
 		
-		return new Position(
+		return new XYPosition(
                 boardMan.getX() + (column * boardMan.getCellWidth()), 
                 boardMan.getY() + (row * boardMan.getCellHeight()));
 	}
@@ -199,20 +215,31 @@ public class PieceManager implements
      * 
      * @param p The position of the piece.
      */
-    public Set commitPiece(Position p)
+    public Set commitPiece(XYPosition p)
     {
-        // Create a set.
-        HashSet set = new HashSet();
+        // Get the set of selected tiles.
+        Set indexSet = getSelectedIndexSet(p);
+        
+        // Remove the tiles in the set.        
+        boardMan.removeTiles(indexSet);
+        
+        // Return the set.
+        return indexSet;
+    }
+    
+    public Set getSelectedIndexSet(XYPosition p)
+    {
+         // Create a set.
+        HashSet indexSet = new HashSet();
         
         // Convert to rows and columns.
-        Position ap = adjustPosition(p);
-        int column = (ap.getX() - boardMan.getX()) / boardMan.getCellWidth();
-		int row = (ap.getY() - boardMan.getY()) / boardMan.getCellWidth();
+        XYPosition ap = adjustPosition(p);
+        int column = convertXToColumn(ap.getX());
+		int row = convertYToRow(ap.getY());
         
         // Get the piece struture.
         Boolean[][] structure = piece.getStructure();
         
-        // Remove all tiles covered by this piece.
         for (int j = 0; j < structure[0].length; j++)
         {
             for (int i = 0; i < structure.length; i++)
@@ -220,21 +247,152 @@ public class PieceManager implements
                 if (structure[i][j] == true 
                         && boardMan.getTile(column - 1 + i, row - 1 + j) != null)
                 {
-                    // The piece is over a tile.
-//                    pieceOverTile = true;
-
-                    // Record the tile.
-//                    tiles[tilePointer++] = board.getTile(correctColumn - 1 + i, correctRow - 1 + j);
-
                     // Remove the tile.
-                   set.add(boardMan.getTile(column - 1 + i, row - 1 + j));
-                   boardMan.removeTile(column - 1 + i, row - 1 + j);
+                   indexSet.add(new Integer((column - 1 + i) 
+                           + (row - 1 + j) * boardMan.getColumns()));                   
                 }		
             } // end for				
         } // end for
         
         // Return the set.
-        return set;
+        return indexSet;
+    }
+    
+    public void notifyRefactored()
+    {
+        refactored = true;
+    }
+    
+    private boolean isOnBoard(final XYPosition p)
+    {
+        if (p.getX() > boardMan.getX()
+                && p.getX() <= boardMan.getX() + boardMan.getWidth()
+                && p.getY() > boardMan.getY()
+                && p.getY() <= boardMan.getY() + boardMan.getHeight())
+            return true;
+        else
+            return false;
+    }
+    
+    private int convertXToColumn(final int x)
+    {
+        return (x - boardMan.getX()) / boardMan.getCellWidth();
+    }    
+    
+    private int convertYToRow(final int y)
+    {
+       return (y - boardMan.getY()) / boardMan.getCellHeight(); 
+    }
+    
+    private void startAnimationAt(final XYPosition p)
+    {
+        // Add new animations.
+        Set indexSet = getSelectedIndexSet(p);
+        for (Iterator it = indexSet.iterator(); it.hasNext(); )
+        {
+            final TileEntity t = boardMan.getTile((Integer) it.next());
+
+            // Skip if this is not a tile.
+            if (t == null)
+                continue;
+
+            // Make sure they have a pulse animation.                   
+            t.setAnimation(new PulseAnimation(t));           
+        }
+    }
+    
+    private void stopAnimationAt(final XYPosition p)
+    {
+        // Remove old animations.
+        Set indexSet = getSelectedIndexSet(p);
+        for (Iterator it = indexSet.iterator(); it.hasNext(); )
+        {                    
+            final TileEntity t = boardMan.getTile((Integer) it.next());
+
+            // Skip if this is not a tile.
+            if (t == null)
+                continue;
+
+            Animation a = t.getAnimation();
+
+            if (a != null)
+                a.cleanUp();
+
+            t.setAnimation(null);
+        }
+    }
+    
+    //--------------------------------------------------------------------------
+    // Logic
+    //--------------------------------------------------------------------------
+    
+    public void updateLogic(final Game game)
+    { 
+        // Ignore logic if not visible.
+        if (isVisible() == false)
+            return;
+        
+        // Grab the current mouse position.
+        final XYPosition p = getMousePosition();                
+        
+        // Whether or not the piece was rotated.
+        boolean pieceRotated = false;
+        
+        if (isMouseLeftReleased() == true)
+        {            
+            // Remove and score the piece.
+            game.scoreMan.calculatePieceScore(commitPiece(p));
+            
+            // Increment the moves.
+            game.moveMan.incrementMoveCount();
+            
+            // Play the sound.
+            game.soundMan.play(SoundManager.CLICK);
+            
+            // Refactor the board.
+            game.runRefactor();
+            
+            // Reset flag.
+            setMouseLeftReleased(false);
+            setMouseRightReleased(false);
+        }
+        
+        if (isMouseRightReleased() == true)
+        {
+            // Rotate the piece.            
+            stopAnimationAt(pieceGrid.getXYPosition());
+            piece.rotate();
+            startAnimationAt(pieceGrid.getXYPosition());
+            
+            // Reset flag.
+            setMouseRightReleased(false);
+        }
+        
+        // Animate selected pieces.
+        if (isOnBoard(p) == true)
+        {
+            // Filter the current position.
+            XYPosition ap = adjustPosition(p);
+
+            // If the position changed, or the board was refactored.
+            if (ap.getX() != pieceGrid.getX()
+                    || ap.getY() != pieceGrid.getY()
+                    || refactored == true)                    
+            {
+                // Clear refactored flag.
+                refactored = false;
+                
+                // Stop the old animations.
+                stopAnimationAt(pieceGrid.getXYPosition());
+                
+                // Update piece grid position.
+                pieceGrid.setX(ap.getX());
+                pieceGrid.setY(ap.getY()); 
+                                               
+                // Start new animation.
+                startAnimationAt(ap);
+            } // end if           
+        }
     }
     
     //--------------------------------------------------------------------------
@@ -245,7 +403,7 @@ public class PieceManager implements
 	 * Gets the mousePosition.
 	 * @return The mousePosition.
 	 */
-	public synchronized Position getMousePosition()
+	public synchronized XYPosition getMousePosition()
 	{
 		return mousePosition;
 	}
@@ -256,7 +414,7 @@ public class PieceManager implements
 	 */
 	public synchronized void setMousePosition(int x, int y)
 	{
-		this.mousePosition = new Position(x, y);
+		this.mousePosition = new XYPosition(x, y);
 	}
 
     public synchronized boolean isMouseLeftReleased()
@@ -278,47 +436,6 @@ public class PieceManager implements
     {
         this.mouseRightReleased = mouseRightReleased;
     }
-
-    //--------------------------------------------------------------------------
-    // Logic
-    //--------------------------------------------------------------------------
-    
-    public void logic(final Game game)
-    { 
-        // Ignore logic if not visible.
-        if (isVisible() == false)
-            return;
-        
-        if (isMouseLeftReleased() == true)
-        {
-            // Remove the piece, getting the tiles in return.
-            Set set = commitPiece(getMousePosition());                    
-            
-            // Score the piece.
-            game.scoreMan.calculatePieceScore(set);
-            
-            // Increment the moves.
-            game.moveMan.incrementMoveCount();
-            
-            // Play the sound.
-            game.soundMan.play(SoundManager.CLICK);
-            
-            // Refactor the board.
-            game.runRefactor();
-            
-            // Reset flag.
-            setMouseLeftReleased(false);
-        }
-        
-        if (isMouseRightReleased() == true)
-        {
-            // Rotate the piece.            
-            piece.rotate();
-            
-            // Reset flag.
-            setMouseRightReleased(false);
-        }
-    }
     
     //--------------------------------------------------------------------------
     // Draw
@@ -334,22 +451,19 @@ public class PieceManager implements
         if (isVisible() == false)
             return;
         
-        // Retrieve the current mouse position.
-        Position p = getMousePosition();
-        
-        // If mouse is inside the board then update the piece grid location.
-        if (p.getX() > boardMan.getX()
-                && p.getX() <= boardMan.getX() + boardMan.getWidth()
-                && p.getY() > boardMan.getY()
-                && p.getY() <= boardMan.getY() + boardMan.getHeight())
-        {
-            // Filter the current position.
-            Position ap = adjustPosition(p);
-
-            // Draw the piece there.
-            pieceGrid.setX(ap.getX());
-            pieceGrid.setY(ap.getY());  
-        }        		            
+//        // Retrieve the current mouse position.
+//        final XYPosition p = getMousePosition();
+//        
+//        // If mouse is inside the board then update the piece grid location.
+//        if (isOnBoard(p) == true)
+//        {
+//            // Filter the current position.
+//            XYPosition ap = adjustPosition(p);
+//
+//            // Draw the piece there.
+//            pieceGrid.setX(ap.getX());
+//            pieceGrid.setY(ap.getY());  
+//        }        		            
 		
 		// Draw the piece.
 		pieceGrid.draw();
@@ -389,13 +503,10 @@ public class PieceManager implements
         //Util.handleMessage("Button clicked.", Thread.currentThread());                
         
         // Retrieve the mouse position.
-        Position p = getMousePosition();
+        final XYPosition p = getMousePosition();
         
         // Ignore click if we're outside the board.
-        if (p.getX() < boardMan.getX()
-                || p.getX() >= boardMan.getX() + boardMan.getWidth()
-                || p.getY() < boardMan.getY()
-                || p.getY() >= boardMan.getY() + boardMan.getHeight())
+        if (isOnBoard(p) == false)
             return;            
             
 		// Check which button.
@@ -427,11 +538,7 @@ public class PieceManager implements
 	 * Called automatically when the mouse is moved.
 	 */
 	public void mouseMoved(MouseEvent e)
-	{
-		// Debug.
-//		Util.handleMessage("Mouse moved to: " + e.getX() + "," + e.getY() + ".", 
-//                Thread.currentThread());		       
-        
+	{	    
 		// Set the mouse position.
 		setMousePosition(e.getX(), e.getY());
     }

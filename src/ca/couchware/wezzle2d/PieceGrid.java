@@ -115,6 +115,11 @@ public class PieceGrid implements Drawable
         this.y = y;
     }
     
+    public XYPosition getXYPosition()
+    {
+        return new XYPosition(x, y);
+    }
+    
     /**
      * Draw the piece grid at the predefined location x,y.
      */

@@ -22,7 +22,7 @@ public class BoardManager implements Drawable
      * Whether or not this is visible.
      */
     private boolean visible;
-    
+        
 	/**
 	 * The x-coordiante of the top left corner of the board.
 	 */
@@ -365,6 +365,16 @@ public class BoardManager implements Drawable
 		
 		return moreMovement;
 	}
+    
+    /**
+     * Animates all tiles with an animation.
+     */
+    public void animateAll(long delta)
+    {
+        for (int i = 0; i < cells; i++)
+            if (board[i] != null)
+                board[i].animate(delta);
+    }
 	
 	/**
 	 * Counts all the tiles that are under the tile at the specified
@@ -592,40 +602,11 @@ public class BoardManager implements Drawable
 	public Set<Integer> processBombs(Set bombSet)
 	{				
 		// A list of tiles affected by the blast.
-		Set affectedSet = new HashSet();		
-			
-//		// A list of tiles (excluding bombs) being blown up.
-//		Set collateralSet = new HashSet();
-//		
-//		// A list of bomb tiles that were triggered by the blast.
-//		Set triggeredSet = new HashSet();
+		Set affectedSet = new HashSet();				
 		
 		// Gather affected tiles.
 		for (Iterator<Integer> it = bombSet.iterator(); it.hasNext(); )		
-			affectedSet.addAll(this.processBomb(it.next()));
-				
-//		for (Iterator<Integer> it = affectedSet.iterator(); it.hasNext(); )
-//		{		
-//			final Integer index = it.next();
-//			final TileEntity t = getTile(index);
-//			
-//			if (t != null)					
-//			{			
-//				if (t.getClass() == BombTileEntity.class 
-//                        && bombSet.contains(index) == false)
-//                {
-//					triggeredSet.add(index);				
-//                }
-//				else if (t.getClass() != BombTileEntity.class)
-//                {
-//					collateralSet.add(index);				
-//                }
-//			} // end if
-//		} // end for
-				
-		// Remove.
-//		this.removeTiles(bombSet);
-//		this.removeTiles(collateralSet);
+			affectedSet.addAll(this.processBomb(it.next()));			
 		
 		// Return the set of tiles affected by these bombs.
 		return affectedSet;

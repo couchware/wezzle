@@ -135,6 +135,8 @@ public class Game extends Canvas implements GameWindowCallback
 		window.startRendering();
 	}
 
+//    TileEntity t;
+    
 	/**
 	 * Initialize the common elements for the game
 	 */
@@ -143,6 +145,9 @@ public class Game extends Canvas implements GameWindowCallback
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
 		boardMan.generateBoard(40, 2, 6);
+//        boardMan.createTile(0, TileEntity.class, TileEntity.randomColor());
+//        t = boardMan.getTile(0);
+//        t.setAnimation(new PulseAnimation(t));
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
@@ -343,14 +348,20 @@ public class Game extends Canvas implements GameWindowCallback
                     pieceMan.setVisible(true);
                 }
 			} // end if
+            
+            // Notify piece manager.
+            pieceMan.notifyRefactored();
 		} // end if
 		
+        // Animate all the pieces.
+        boardMan.animateAll(delta);
+        
 		// Draw the board.
 		boardMan.draw();
 		
-		// Update piece manager logic and then draw it.
-        pieceMan.logic(this);
-		pieceMan.draw();
+        // Update piece manager logic and then draw it.
+        pieceMan.updateLogic(this);
+        pieceMan.draw();
 		
 		// Draw the timer text.
 		timerText.setText(String.valueOf(timeMan.getTime()));		
@@ -368,6 +379,7 @@ public class Game extends Canvas implements GameWindowCallback
         moveCountText.setText(String.valueOf(this.moveMan.getCurrentMoveCount()));
         moveCountText.draw(669, 400);
         
+//        t.animate(delta);
 		
 		// Handle the timer.
 		timeMan.incrementInternalTime(delta);

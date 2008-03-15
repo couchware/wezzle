@@ -26,12 +26,25 @@ public interface Sprite
 	public int getHeight();
 
 	/**
-	 * Draw the sprite onto the graphics context provided
+	 * Draw the sprite onto the graphics context provided.
 	 * 
 	 * @param x
 	 *            The x location at which to draw the sprite.
 	 * @param y
 	 *            The y location at which to draw the sprite.
 	 */
-	public void draw(int x, int y);
+	public void draw(int x, int y);    
+    
+    /**
+	 * Draw the sprite onto the graphics context provided and
+     * resizes to the width and height provided.
+	 * 
+	 * @param x
+	 *            The x location at which to draw the sprite.
+	 * @param y
+	 *            The y location at which to draw the sprite.
+     * @param width The width.
+     * @param height The height.
+	 */
+    public void draw(int x, int y, int width, int height);
 }
