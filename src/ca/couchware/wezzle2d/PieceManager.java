@@ -355,22 +355,24 @@ public class PieceManager implements
         // that the board is locked while tiles are dropping.
         if(isTileDropActive == true)
         {
-            // If we are in the middle of a refactor.. return.
-            
             
             // find a random empty column and drop in a tile.
-            Vector indices = new Vector();
-            for(int i = 0; i < boardMan.getColumns(); i++)
+            int offset = Util.random.nextInt(boardMan.getColumns());
+            int index = 0;
+            
+            for (int i = 0; i < boardMan.getColumns(); i++)
             {
-                if(boardMan.getTile(i) == null)
-                    indices.add(i);
+                int j = (i + offset) % boardMan.getColumns();
+                if(boardMan.getTile(j) == null)
+                {
+                    index = j;
+                    break;
+                }
             }
-            int index = Util.random.nextInt(indices.size());
             
             // Sanity check.
             assert (index >= 0 && index < boardMan.getColumns());
             
-            index = Integer.parseInt(indices.get(index).toString());
             boardMan.createTile(index, TileEntity.class, TileEntity.randomColor());
              
             // Run a refactor.
@@ -378,7 +380,13 @@ public class PieceManager implements
              
             // Check to see if we have more tiles to drop. If not stop tile dropping.
             if(--this.tileDropCount <= 0 )
+            {
                 this.isTileDropActive = false; 
+                
+                 // Reset the mouse click flags.
+                setMouseLeftReleased(false);
+                setMouseRightReleased(false);
+            }
         }
         else
         {
@@ -386,7 +394,7 @@ public class PieceManager implements
             if (isMouseLeftReleased() == true)
             {            
                 // Remove and score the piece.
-                this.tileDropCount += game.scoreMan.calculatePieceScore(commitPiece(p));
+                this.tileDropCount = game.scoreMan.calculatePieceScore(commitPiece(p));
 
                 // Increment the moves.
                 game.moveMan.incrementMoveCount();
