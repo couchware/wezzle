@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.animation.PulseAnimation;
+import ca.couchware.wezzle2d.animation.Animation;
 import ca.couchware.wezzle2d.piece.Piece;
 import ca.couchware.wezzle2d.piece.PieceDash;
 import ca.couchware.wezzle2d.piece.PieceDiagonal;

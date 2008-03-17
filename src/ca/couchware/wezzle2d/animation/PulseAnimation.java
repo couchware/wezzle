@@ -1,5 +1,6 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.animation;
 
+import ca.couchware.wezzle2d.*;
 import java.awt.Dimension;
 
 /**
@@ -10,20 +11,25 @@ import java.awt.Dimension;
 public class PulseAnimation extends Animation
 {    
     /**
+     * The period of each frame.
+     */
+    final private static int FRAME_PERIOD = 120;
+    
+    /**
      * The pulse down state.
      */
-    final private int PULSE_DOWN = 0;
+    final private static int PULSE_DOWN = 0;
     
     /**
      * The pulse up state.
      */
-    final private int PULSE_UP = 1;
+    final private static int PULSE_UP = 1;
     
     /**
      * The minimum width the entity may become before switching 
      * pulse states.
      */
-    final private int MIN_WIDTH;
+    final private int minWidth;
     
     /**
      * The current pulse state.
@@ -46,13 +52,13 @@ public class PulseAnimation extends Animation
     public PulseAnimation(final Entity entity)
     {                
         // Invoke super constructor.
-        super(entity, 120);       
+        super(entity, FRAME_PERIOD);       
         
         // Set the initial pulse state.
         state = PULSE_DOWN;
         
         // Set the minimum width.
-        MIN_WIDTH = entity.getWidth() - 8;
+        minWidth = entity.getWidth() - 8;
         
         // Remember initial dimensions.
         d = new Dimension(entity.getWidth(), entity.getHeight());
@@ -89,7 +95,7 @@ public class PulseAnimation extends Animation
                     
                     // If the width is equal to the minimum, then
                     // change states.
-                    if (entity.getWidth() == MIN_WIDTH)
+                    if (entity.getWidth() == minWidth)
                         state = PULSE_UP;
                     
                     break;

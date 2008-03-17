@@ -1,4 +1,6 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.animation;
+
+import ca.couchware.wezzle2d.*;
 
 /**
  * An abstract class for animating entities.
@@ -28,6 +30,11 @@ public abstract class Animation
     protected long counter;
     
     /**
+     * A variable holding the done state.
+     */
+    protected boolean done;
+    
+    /**
      * The default constructor.
      */
     public Animation(final Entity entity, final int period)
@@ -39,6 +46,7 @@ public abstract class Animation
         this.period = period;
         this.frame = 0;
         this.counter = 0;
+        this.done = false;
     }
     
     /**
@@ -51,5 +59,17 @@ public abstract class Animation
      * Performs cleanup to the animation so that it may remain in a consistent
      * state even if it is called half-way through an animation.
      */
-    public abstract void cleanUp();
+    public void cleanUp()
+    {
+        // Do nothing.
+    }
+    
+    /**
+     * Checks whether the animation is done.  Always returns false if the
+     * animation is a looping animation.
+     */
+    public boolean isDone()
+    {
+        return done;
+    }
 }

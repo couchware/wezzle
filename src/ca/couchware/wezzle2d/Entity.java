@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.animation.Animation;
+
 /**
  * An entity represents any element that appears in the game. The entity is
  * responsible for resolving collisions and movement based on a set of

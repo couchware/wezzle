@@ -1,11 +1,13 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 
@@ -52,15 +54,38 @@ public class Game extends Canvas implements GameWindowCallback
     public PropertyManager propertyMan;
     
     /** The manager in charge of the moves. */
-    public MoveManager moveMan;
+    public MoveManager moveMan;	
 	
-	/** The list of entities that need to be removed from the game this loop. */
-	private ArrayList removeList = new ArrayList();
-	
+    /**
+     * If true, refactor will be activated next loop.
+     */
 	private boolean activateRefactor = false;
+    
+    /**
+     * If true, the board is currently being refactored downwards.
+     */
 	private boolean refactorDownInProgress = false;
+    
+    /**
+     * If true, the board is currently being refactored leftward.
+     */
 	private boolean refactorLeftInProgress = false;
-
+    
+    /**
+     * If true, a line removal will be activated next loop.
+     */
+    private boolean activateLineRemoval = false;
+    
+    /**
+     * If true, a line removal is in progress.
+     */
+    private boolean lineRemovalInProgress = false;
+    
+    /**
+     * The set of tiles that will be removed.
+     */
+    private Set lineRemovalSet;
+    
 	/**
 	 * The time at which the last rendering looped started from the point of
 	 * view of the game logic.
@@ -91,8 +116,6 @@ public class Game extends Canvas implements GameWindowCallback
     /** The move count text */
     private Text moveCountText;
         
-       
-
 	/**
 	 * Construct our game and set it running.
 	 * 
@@ -134,20 +157,18 @@ public class Game extends Canvas implements GameWindowCallback
 	{
 		window.startRendering();
 	}
-
-//    TileEntity t;
     
 	/**
 	 * Initialize the common elements for the game
 	 */
 	public void initialize()
 	{
+        // Initialize line index set.
+        lineRemovalSet = new HashSet();
+        
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
 		boardMan.generateBoard(40, 2, 6);
-//        boardMan.createTile(0, TileEntity.class, TileEntity.randomColor());
-//        t = boardMan.getTile(0);
-//        t.setAnimation(new PulseAnimation(t));
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
@@ -183,15 +204,13 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreText.setSize(20);
         highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         highScoreText.setColor(new Color(252, 233, 45 ));
-        
-        
+                
          // Set up the move count text.
         moveCountText = ResourceFactory.get().getText();
         moveCountText.setSize(20);
         moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
         moveCountText.setColor(new Color(252, 233, 45 ));
-        
-                		
+                        		
 		// Create the time manager.
 		timeMan = new TimeManager();
 
@@ -206,18 +225,6 @@ public class Game extends Canvas implements GameWindowCallback
 	private void startGame()
 	{		
 		// Nothing here yet.
-	}
-
-	/**
-	 * Remove an entity from the game. The entity removed will no longer move or
-	 * be drawn.
-	 * 
-	 * @param entity
-	 *            The entity that should be removed
-	 */
-	public void removeEntity(Entity entity)
-	{
-		removeList.add(entity);
 	}
     
     public void runRefactor()
@@ -312,35 +319,39 @@ public class Game extends Canvas implements GameWindowCallback
                             ScoreManager.TYPE_LINE, 1);
                     soundMan.play(SoundManager.LINE);
                     
+                    // Activate the tile removal.
+                    activateLineRemoval = true;
+                    lineRemovalSet = set;
+                    
                     // Make sure bombs aren't removed (they get removed
                     // in a different step).
-                    Set bombSet = boardMan.scanBombs(set);
-                    set.removeAll(bombSet);
+//                    Set bombSet = boardMan.scanBombs(set);
+//                    set.removeAll(bombSet);
                     
-                    // Remove non-bombs.
-                    boardMan.removeTiles(set);
+                    // Remove non-bombs.                    
+//                    boardMan.removeTiles(set);
                                                             
-                    while (bombSet.size() > 0)
-                    {
-                        // Get the tiles the bombs would affect.
-                        Set affectedSet = boardMan.processBombs(bombSet);
-                        scoreMan.calculateLineScore(affectedSet, 
-                                ScoreManager.TYPE_BOMB, 1);
-                                                
-                        // Extract all the new bombs.
-                        Set newBombSet = boardMan.scanBombs(affectedSet);                                                
-                        newBombSet.removeAll(bombSet);
-                        
-                        // Remove all tiles that aren't new bombs.
-                        affectedSet.removeAll(newBombSet);
-                        boardMan.removeTiles(affectedSet);
-
-                        // Start again.
-                        bombSet = newBombSet;
-                    }                                       
+//                    while (bombSet.size() > 0)
+//                    {
+//                        // Get the tiles the bombs would affect.
+//                        Set affectedSet = boardMan.processBombs(bombSet);
+//                        scoreMan.calculateLineScore(affectedSet, 
+//                                ScoreManager.TYPE_BOMB, 1);
+//                                                
+//                        // Extract all the new bombs.
+//                        Set newBombSet = boardMan.scanBombs(affectedSet);                                                
+//                        newBombSet.removeAll(bombSet);
+//                        
+//                        // Remove all tiles that aren't new bombs.
+//                        affectedSet.removeAll(newBombSet);
+//                        boardMan.removeTiles(affectedSet);
+//
+//                        // Start again.
+//                        bombSet = newBombSet;
+//                    }                                       
                                         
                     // Refactor.
-                    runRefactor();
+//                    runRefactor();
                 }
                 else
                 {
@@ -353,6 +364,41 @@ public class Game extends Canvas implements GameWindowCallback
             pieceMan.notifyRefactored();
 		} // end if
 		
+        // If a line removal was activated.
+        if (activateLineRemoval == true)
+        {
+            // Clear flag.
+            activateLineRemoval = false;
+            
+            // Start the line removal animations.
+            for (Iterator it = lineRemovalSet.iterator(); it.hasNext(); )
+            {
+                TileEntity t = boardMan.getTile((Integer) it.next());
+                t.setAnimation(new ZoomAnimation(t));
+            }
+            
+            // Set the flag.
+            lineRemovalInProgress = true;
+        }
+        
+        // If a line removal is in progress.
+        if (lineRemovalInProgress)
+        {
+            // Check to see if they're all done.
+            if (boardMan.getTile((Integer) lineRemovalSet.iterator().next())
+                    .getAnimation().isDone() == true)
+            {
+                // Remove the tiles from the board.
+                boardMan.removeTiles(lineRemovalSet);
+                
+                // Line removal is completed.
+                lineRemovalInProgress = false;
+                
+                // Start a new refactor.
+                runRefactor();
+            }                        
+        }
+        
         // Animate all the pieces.
         boardMan.animateAll(delta);
         
