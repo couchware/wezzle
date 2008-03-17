@@ -14,6 +14,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * The piece manager keeps track of where the mouse pointer is on the board
@@ -350,15 +351,27 @@ public class PieceManager implements
         // Whether or not the piece was rotated.
         boolean pieceRotated = false;
             
-        // Drop in any tiles.
+        // Drop in any tiles. This if statement encompasses the entire function in order to ensure
+        // that the board is locked while tiles are dropping.
         if(isTileDropActive == true)
         {
             // If we are in the middle of a refactor.. return.
             
             
-            // find a random column and drop in a tile.
-            int col = Util.random.nextInt(boardMan.getColumns());
-            boardMan.createTile(col, TileEntity.class, TileEntity.randomColor());
+            // find a random empty column and drop in a tile.
+            Vector indices = new Vector();
+            for(int i = 0; i < boardMan.getColumns(); i++)
+            {
+                if(boardMan.getTile(i) == null)
+                    indices.add(i);
+            }
+            int index = Util.random.nextInt(indices.size());
+            
+            // Sanity check.
+            assert (index >= 0 && index < boardMan.getColumns());
+            
+            index = Integer.parseInt(indices.get(index).toString());
+            boardMan.createTile(index, TileEntity.class, TileEntity.randomColor());
              
             // Run a refactor.
             game.runRefactor();
@@ -367,66 +380,67 @@ public class PieceManager implements
             if(--this.tileDropCount <= 0 )
                 this.isTileDropActive = false; 
         }
-        else{
-        
-        if (isMouseLeftReleased() == true)
-        {            
-            // Remove and score the piece.
-            this.tileDropCount += game.scoreMan.calculatePieceScore(commitPiece(p));
-                
-            // Increment the moves.
-            game.moveMan.incrementMoveCount();
-            
-            // Play the sound.
-            game.soundMan.play(SoundManager.CLICK);
-         
-            // Start a tile drop.
-            this.isTileDropActive = true;
-            
-            // Run a refactor.
-            game.runRefactor();
-            
-            // Reset flag.
-            setMouseLeftReleased(false);
-            setMouseRightReleased(false);
-        }
-        
-        if (isMouseRightReleased() == true)
+        else
         {
-            // Rotate the piece.            
-            stopAnimationAt(pieceGrid.getXYPosition());
-            piece.rotate();
-            startAnimationAt(pieceGrid.getXYPosition());
-            
-            // Reset flag.
-            setMouseRightReleased(false);
-        }
-        
-        // Animate selected pieces.
-        if (isOnBoard(p) == true)
-        {
-            // Filter the current position.
-            XYPosition ap = adjustPosition(p);
 
-            // If the position changed, or the board was refactored.
-            if (ap.getX() != pieceGrid.getX()
-                    || ap.getY() != pieceGrid.getY()
-                    || refactored == true)                    
+            if (isMouseLeftReleased() == true)
+            {            
+                // Remove and score the piece.
+                this.tileDropCount += game.scoreMan.calculatePieceScore(commitPiece(p));
+
+                // Increment the moves.
+                game.moveMan.incrementMoveCount();
+
+                // Play the sound.
+                game.soundMan.play(SoundManager.CLICK);
+
+                // Start a tile drop.
+                this.isTileDropActive = true;
+
+                // Run a refactor.
+                game.runRefactor();
+
+                // Reset flag.
+                setMouseLeftReleased(false);
+                setMouseRightReleased(false);
+            }
+
+            if (isMouseRightReleased() == true)
             {
-                // Clear refactored flag.
-                refactored = false;
-                
-                // Stop the old animations.
+                // Rotate the piece.            
                 stopAnimationAt(pieceGrid.getXYPosition());
-                
-                // Update piece grid position.
-                pieceGrid.setX(ap.getX());
-                pieceGrid.setY(ap.getY()); 
-                                               
-                // Start new animation.
-                startAnimationAt(ap);
-            } // end if           
-        }
+                piece.rotate();
+                startAnimationAt(pieceGrid.getXYPosition());
+
+                // Reset flag.
+                setMouseRightReleased(false);
+            }
+
+            // Animate selected pieces.
+            if (isOnBoard(p) == true)
+            {
+                // Filter the current position.
+                XYPosition ap = adjustPosition(p);
+
+                // If the position changed, or the board was refactored.
+                if (ap.getX() != pieceGrid.getX()
+                        || ap.getY() != pieceGrid.getY()
+                        || refactored == true)                    
+                {
+                    // Clear refactored flag.
+                    refactored = false;
+
+                    // Stop the old animations.
+                    stopAnimationAt(pieceGrid.getXYPosition());
+
+                    // Update piece grid position.
+                    pieceGrid.setX(ap.getX());
+                    pieceGrid.setY(ap.getY()); 
+
+                    // Start new animation.
+                    startAnimationAt(ap);
+                } // end if           
+            }
         }
     }
     
