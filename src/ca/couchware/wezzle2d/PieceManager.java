@@ -354,8 +354,7 @@ public class PieceManager implements
         if(isTileDropActive == true)
         {
             // If we are in the middle of a refactor.. return.
-            if(game.isActiveRefactor() == true)
-                return;
+            
             
             // find a random column and drop in a tile.
             int col = Util.random.nextInt(boardMan.getColumns());

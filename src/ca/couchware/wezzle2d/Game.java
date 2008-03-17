@@ -254,13 +254,6 @@ public class Game extends Canvas implements GameWindowCallback
         this.activateRefactor = true;
     }
     
-    
-    public boolean isActiveRefactor()
-    {
-        return this.activateRefactor;
-    }
-    
-    
    public  void clearRefactor()
    {
        // Set the refactor flag.
