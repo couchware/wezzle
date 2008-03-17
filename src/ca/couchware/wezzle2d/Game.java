@@ -29,7 +29,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
 	 * The manager in charge of maintaining the board.
 	 */
-	public BoardManager boardMan;
+	private BoardManager boardMan;
 	
 	/**
 	 * The manager in charge of moving the piece around with the
@@ -253,6 +253,13 @@ public class Game extends Canvas implements GameWindowCallback
         // Set the refactor flag.
         this.activateRefactor = true;
     }
+    
+    
+    public boolean isActiveRefactor()
+    {
+        return this.activateRefactor;
+    }
+    
     
    public  void clearRefactor()
    {

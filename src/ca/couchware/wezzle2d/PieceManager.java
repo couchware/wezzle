@@ -36,6 +36,16 @@ public class PieceManager implements
      */
     private boolean refactored = false;
     
+    /**
+     * Is the board Dropping in a tile?
+     */
+    private boolean isTileDropActive = false;
+    
+    /**
+     * The tile drop count.
+     */
+    private int tileDropCount = 0;
+    
 	/**
 	 * The current location of the mouse pointer.
 	 */
@@ -339,36 +349,43 @@ public class PieceManager implements
         
         // Whether or not the piece was rotated.
         boolean pieceRotated = false;
+            
+        // Drop in any tiles.
+        if(isTileDropActive == true)
+        {
+            // If we are in the middle of a refactor.. return.
+            if(game.isActiveRefactor() == true)
+                return;
+            
+            // find a random column and drop in a tile.
+            int col = Util.random.nextInt(boardMan.getColumns());
+            boardMan.createTile(col, TileEntity.class, TileEntity.randomColor());
+             
+            // Run a refactor.
+            game.runRefactor();
+             
+            // Check to see if we have more tiles to drop. If not stop tile dropping.
+            if(--this.tileDropCount <= 0 )
+                this.isTileDropActive = false; 
+        }
+        else{
         
         if (isMouseLeftReleased() == true)
         {            
             // Remove and score the piece.
-            int numRemoved = game.scoreMan.calculatePieceScore(commitPiece(p));
-            
-            System.out.println("num removed: "  + numRemoved);
-            
+            this.tileDropCount += game.scoreMan.calculatePieceScore(commitPiece(p));
+                
             // Increment the moves.
             game.moveMan.incrementMoveCount();
             
             // Play the sound.
             game.soundMan.play(SoundManager.CLICK);
+         
+            // Start a tile drop.
+            this.isTileDropActive = true;
             
-            // Refactor the board.
+            // Run a refactor.
             game.runRefactor();
-            
-            // Readd new tiles.
-            // Find an open row in the game board *********TEMP CODE CHANGE.
-            for(int i = 0; i < numRemoved; i++)
-            {
-                System.out.println("here");
-                int col = Util.random.nextInt(game.boardMan.getColumns());
-          
-                game.boardMan.createTile(col, TileEntity.class, TileEntity.randomColor());
-            
-                // refactor the board.
-                game.runRefactor();
-            }
-            
             
             // Reset flag.
             setMouseLeftReleased(false);
@@ -410,6 +427,7 @@ public class PieceManager implements
                 // Start new animation.
                 startAnimationAt(ap);
             } // end if           
+        }
         }
     }
     
