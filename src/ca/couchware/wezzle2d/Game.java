@@ -353,11 +353,15 @@ public class Game extends Canvas implements GameWindowCallback
                 }
                 else
                 {
-                   
+                   // Make sure the tiles are not still dropping.
                     if(pieceMan.isTileDropping() == false)
                     {
                         pieceMan.loadRandomPiece();   
                         pieceMan.setVisible(true);
+                        
+                        // Reset the mouse.
+                        pieceMan.setMouseLeftReleased(false);
+                        pieceMan.setMouseRightReleased(false);
                     }
                 }
 			} // end if

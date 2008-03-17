@@ -341,9 +341,10 @@ public class PieceManager implements
     
     public void updateLogic(final Game game)
     { 
-        // Ignore logic if not visible.
-        if (isVisible() == false && this.isTileDropActive == false)
-            return;
+       
+       // If the board is refactoring, do not logicify.
+       if(game.isRefactoring() == true)
+             return;
         
         // Grab the current mouse position.
         final XYPosition p = getMousePosition();                
@@ -356,9 +357,7 @@ public class PieceManager implements
         // that the board is locked while tiles are dropping.
         if(isTileDropActive == true)
         {        
-            // If it is still refactoring, return.
-            if(game.isRefactoring() == true)
-                return;
+            
             
             // find a random empty column and drop in a tile.
             int offset = Util.random.nextInt(boardMan.getColumns());
@@ -388,10 +387,6 @@ public class PieceManager implements
             if(--this.tileDropCount <= 0 )
             {
                 this.isTileDropActive = false;  
-                
-                 // Reset the mouse click flags.
-                setMouseLeftReleased(false);
-                setMouseRightReleased(false);
             }
         }
         else
