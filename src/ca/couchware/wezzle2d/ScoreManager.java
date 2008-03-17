@@ -152,11 +152,15 @@ import java.util.Set;
      * Requires documentation.
      * 
      * @param set A set of tiles.
+     * @return The number of pieces that have been scored.
      */
-    public void calculatePieceScore(Set indexSet)
+    public int calculatePieceScore(Set indexSet)
     {
-        //Sanity check.
+        // Sanity check.
         assert(indexSet != null);
+        
+        // The count.
+        int numPieces = 0;
         
         // Initilize deltaScore variable.
         int deltaScore = 0;
@@ -165,7 +169,10 @@ import java.util.Set;
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {
             if (it.next() != null)
+            {
                 deltaScore += POINTS_PER_PIECE_TILE;
+                numPieces++;
+            }
         }
             
         // Update the score if there is a score update.
@@ -178,6 +185,8 @@ import java.util.Set;
         {
             // Otherwise do nothing.
         }
+        
+        return numPieces;
     }
 
     /**

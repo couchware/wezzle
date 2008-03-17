@@ -29,7 +29,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
 	 * The manager in charge of maintaining the board.
 	 */
-	private BoardManager boardMan;
+	public BoardManager boardMan;
 	
 	/**
 	 * The manager in charge of moving the piece around with the

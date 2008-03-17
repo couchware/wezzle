@@ -223,7 +223,7 @@ public class PieceManager implements
         Set indexSet = getSelectedIndexSet(p);
         
         // Remove the tiles in the set.        
-        boardMan.removeTiles(indexSet);
+        boardMan.removeTiles(getSelectedIndexSet(p));
         
         // Return the set.
         return indexSet;
@@ -343,7 +343,9 @@ public class PieceManager implements
         if (isMouseLeftReleased() == true)
         {            
             // Remove and score the piece.
-            game.scoreMan.calculatePieceScore(commitPiece(p));
+            int numRemoved = game.scoreMan.calculatePieceScore(commitPiece(p));
+            
+            System.out.println("num removed: "  + numRemoved);
             
             // Increment the moves.
             game.moveMan.incrementMoveCount();
@@ -353,6 +355,20 @@ public class PieceManager implements
             
             // Refactor the board.
             game.runRefactor();
+            
+            // Readd new tiles.
+            // Find an open row in the game board *********TEMP CODE CHANGE.
+            for(int i = 0; i < numRemoved; i++)
+            {
+                System.out.println("here");
+                int col = Util.random.nextInt(game.boardMan.getColumns());
+          
+                game.boardMan.createTile(col, TileEntity.class, TileEntity.randomColor());
+            
+                // refactor the board.
+                game.runRefactor();
+            }
+            
             
             // Reset flag.
             setMouseLeftReleased(false);
