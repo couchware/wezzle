@@ -259,6 +259,19 @@ public class Game extends Canvas implements GameWindowCallback
        // Set the refactor flag.
        this.activateRefactor = false;
    }
+   
+   /**
+    * A method to check if any refactoring is happening.
+    * 
+    * @return Whether any refactoring is happing.
+    */
+   public boolean isRefactoring()
+   {
+       return (this.refactorDownInProgress || this.refactorLeftInProgress
+               || this.lineRemovalInProgress || this.bombRemovalInProgress
+               || this.activateBombRemoval || this.activateLineRemoval 
+               || this.activateRefactor);
+   }
 
 	/**
 	 * Notification that a frame is being rendered. Responsible for running game
@@ -340,8 +353,12 @@ public class Game extends Canvas implements GameWindowCallback
                 }
                 else
                 {
-                    pieceMan.loadRandomPiece();
-                    pieceMan.setVisible(true);
+                   
+                    if(pieceMan.isTileDropping() == false)
+                    {
+                        pieceMan.loadRandomPiece();   
+                        pieceMan.setVisible(true);
+                    }
                 }
 			} // end if
             

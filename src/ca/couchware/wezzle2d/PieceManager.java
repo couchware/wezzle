@@ -342,7 +342,7 @@ public class PieceManager implements
     public void updateLogic(final Game game)
     { 
         // Ignore logic if not visible.
-        if (isVisible() == false)
+        if (isVisible() == false && this.isTileDropActive == false)
             return;
         
         // Grab the current mouse position.
@@ -351,10 +351,14 @@ public class PieceManager implements
         // Whether or not the piece was rotated.
         boolean pieceRotated = false;
             
-        // Drop in any tiles. This if statement encompasses the entire function in order to ensure
+        // Drop in any tiles. This if statement encompasses the entire function 
+        // in order to ensure
         // that the board is locked while tiles are dropping.
         if(isTileDropActive == true)
-        {
+        {        
+            // If it is still refactoring, return.
+            if(game.isRefactoring() == true)
+                return;
             
             // find a random empty column and drop in a tile.
             int offset = Util.random.nextInt(boardMan.getColumns());
@@ -373,15 +377,17 @@ public class PieceManager implements
             // Sanity check.
             assert (index >= 0 && index < boardMan.getColumns());
             
-            boardMan.createTile(index, TileEntity.class, TileEntity.randomColor());
+            boardMan.createTile(index, TileEntity.class, 
+                    TileEntity.randomColor());
              
             // Run a refactor.
             game.runRefactor();
              
-            // Check to see if we have more tiles to drop. If not stop tile dropping.
+            // Check to see if we have more tiles to drop. 
+            // If not stop tile dropping.
             if(--this.tileDropCount <= 0 )
             {
-                this.isTileDropActive = false; 
+                this.isTileDropActive = false;  
                 
                  // Reset the mouse click flags.
                 setMouseLeftReleased(false);
@@ -404,10 +410,12 @@ public class PieceManager implements
 
                 // Start a tile drop.
                 this.isTileDropActive = true;
+                
+                this.setVisible(false);
 
                 // Run a refactor.
                 game.runRefactor();
-
+  
                 // Reset flag.
                 setMouseLeftReleased(false);
                 setMouseRightReleased(false);
@@ -492,6 +500,11 @@ public class PieceManager implements
     public synchronized void setMouseRightReleased(boolean mouseRightReleased)
     {
         this.mouseRightReleased = mouseRightReleased;
+    }
+    
+    public synchronized boolean isTileDropping()
+    {
+        return this.isTileDropActive;
     }
     
     //--------------------------------------------------------------------------
@@ -602,7 +615,7 @@ public class PieceManager implements
 
     public void setVisible(boolean visible)
     {
-        this.visible = visible;
+         this.visible = visible;
     }
 
     public boolean isVisible()
