@@ -5,11 +5,9 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -82,9 +80,24 @@ public class Game extends Canvas implements GameWindowCallback
     private boolean lineRemovalInProgress = false;
     
     /**
-     * The set of tiles that will be removed.
+     * The set of tile indices that will be removed.
      */
     private Set lineRemovalSet;
+    
+    /**
+     * If true, a bomb removal will be activated next loop.
+     */
+    private boolean activateBombRemoval = false;
+    
+    /**
+     * If true, a bomb removal is in progress.
+     */
+    private boolean bombRemovalInProgress = false;
+    
+    /**
+     * The set of bomb tile indices that will be removed.
+     */
+    private Set bombRemovalSet;
     
 	/**
 	 * The time at which the last rendering looped started from the point of
@@ -104,6 +117,11 @@ public class Game extends Canvas implements GameWindowCallback
 	/** The normal title of the window. */
 	private String windowTitle = "Wezzle";
 	
+    /**
+     * The text color.
+     */
+    private Color textColor = new Color(252, 233, 45);
+    
 	/** The timer text. */
 	private Text timerText;
         
@@ -166,9 +184,12 @@ public class Game extends Canvas implements GameWindowCallback
         // Initialize line index set.
         lineRemovalSet = new HashSet();
         
+        // Initialize bomb index set.
+        bombRemovalSet = new HashSet();
+        
 		// Create the board manager.
 		boardMan = new BoardManager(272, 139, 8, 10);
-		boardMan.generateBoard(40, 2, 6);
+		boardMan.generateBoard(40, 4, 6);
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
@@ -191,25 +212,25 @@ public class Game extends Canvas implements GameWindowCallback
 		timerText = ResourceFactory.get().getText();
 		timerText.setSize(50);
 		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
-		timerText.setColor(new Color(252, 233, 45 ));
+		timerText.setColor(textColor);
                 
         // Set up the score text.
         scoreText = ResourceFactory.get().getText();
         scoreText.setSize(20);
         scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        scoreText.setColor(new Color(252, 233, 45 ));
+        scoreText.setColor(textColor);
         
         // Set up the high score text.
         highScoreText = ResourceFactory.get().getText();
         highScoreText.setSize(20);
         highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        highScoreText.setColor(new Color(252, 233, 45 ));
+        highScoreText.setColor(textColor);
                 
          // Set up the move count text.
         moveCountText = ResourceFactory.get().getText();
         moveCountText.setSize(20);
         moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        moveCountText.setColor(new Color(252, 233, 45 ));
+        moveCountText.setColor(textColor);
                         		
 		// Create the time manager.
 		timeMan = new TimeManager();
@@ -306,52 +327,16 @@ public class Game extends Canvas implements GameWindowCallback
 				boardMan.synchronize();		
                 
                 // Look for matches.
-                HashSet set = new HashSet();
-                boardMan.findXMatch(set);
-                boardMan.findYMatch(set);
+                lineRemovalSet.clear();
+                boardMan.findXMatch(lineRemovalSet);
+                boardMan.findYMatch(lineRemovalSet);
                 
                 // If there are matches, score them, remove them and then
                 // refactor again.
-                if (set.size() > 0)
-                {
-                    // Calculate score and play the sound.
-                    scoreMan.calculateLineScore(set, 
-                            ScoreManager.TYPE_LINE, 1);
-                    soundMan.play(SoundManager.LINE);
-                    
-                    // Activate the tile removal.
-                    activateLineRemoval = true;
-                    lineRemovalSet = set;
-                    
-                    // Make sure bombs aren't removed (they get removed
-                    // in a different step).
-//                    Set bombSet = boardMan.scanBombs(set);
-//                    set.removeAll(bombSet);
-                    
-                    // Remove non-bombs.                    
-//                    boardMan.removeTiles(set);
-                                                            
-//                    while (bombSet.size() > 0)
-//                    {
-//                        // Get the tiles the bombs would affect.
-//                        Set affectedSet = boardMan.processBombs(bombSet);
-//                        scoreMan.calculateLineScore(affectedSet, 
-//                                ScoreManager.TYPE_BOMB, 1);
-//                                                
-//                        // Extract all the new bombs.
-//                        Set newBombSet = boardMan.scanBombs(affectedSet);                                                
-//                        newBombSet.removeAll(bombSet);
-//                        
-//                        // Remove all tiles that aren't new bombs.
-//                        affectedSet.removeAll(newBombSet);
-//                        boardMan.removeTiles(affectedSet);
-//
-//                        // Start again.
-//                        bombSet = newBombSet;
-//                    }                                       
-                                        
-                    // Refactor.
-//                    runRefactor();
+                if (lineRemovalSet.size() > 0)
+                {                                       
+                    // Activate the line removal.
+                    activateLineRemoval = true;                 
                 }
                 else
                 {
@@ -363,12 +348,83 @@ public class Game extends Canvas implements GameWindowCallback
             // Notify piece manager.
             pieceMan.notifyRefactored();
 		} // end if
-		
+		       
         // If a line removal was activated.
         if (activateLineRemoval == true)
         {
             // Clear flag.
             activateLineRemoval = false;
+
+            // Calculate score and play the sound.
+            scoreMan.calculateLineScore(lineRemovalSet, 
+                    ScoreManager.TYPE_LINE, 1);
+            soundMan.play(SoundManager.LINE);
+
+            // Make sure bombs aren't removed (they get removed
+            // in a different step).
+            bombRemovalSet = boardMan.scanBombs(lineRemovalSet);
+            lineRemovalSet.removeAll(bombRemovalSet);
+
+            // Start the line removal animations if there are any
+            // non-bomb tiles.
+            if (lineRemovalSet.size() > 0)
+            {
+                for (Iterator it = lineRemovalSet.iterator(); it.hasNext(); )
+                {
+                    TileEntity t = boardMan.getTile((Integer) it.next());
+                    t.setAnimation(new ZoomAnimation(t));
+                }
+
+                // Set the flag.
+                lineRemovalInProgress = true;
+            }
+            // Otherwise, start the bomb processing.
+            else
+            {
+                activateBombRemoval = true;
+            }
+        }
+
+        // If a line removal is in progress.
+        if (lineRemovalInProgress == true)
+        {
+            // Check to see if they're all done.
+            if (boardMan.getTile((Integer) lineRemovalSet.iterator().next())
+                    .getAnimation().isDone() == true)
+            {
+                // Remove the tiles from the board.
+                boardMan.removeTiles(lineRemovalSet);
+
+                // Line removal is completed.
+                lineRemovalInProgress = false;
+
+                // See if there are any bombs in the bomb set.
+                // If there are, activate the bomb removal.
+                if (bombRemovalSet.size() > 0)
+                    activateBombRemoval = true;
+                // Otherwise, start a new refactor.
+                else                        
+                    runRefactor();
+            }                        
+        } // end if
+                        
+        // If a bomb removal is in progress.
+        if (activateBombRemoval == true)
+        {
+            // Clear the flag.
+            activateBombRemoval = false;
+            
+            // Get the tiles the bombs would affect.
+            lineRemovalSet = boardMan.processBombs(bombRemovalSet);
+            scoreMan.calculateLineScore(lineRemovalSet, 
+                    ScoreManager.TYPE_BOMB, 1);
+
+            // Extract all the new bombs.
+            Set newBombRemovalSet = boardMan.scanBombs(lineRemovalSet);                                                
+            newBombRemovalSet.removeAll(bombRemovalSet);
+
+            // Remove all tiles that aren't new bombs.
+            lineRemovalSet.removeAll(newBombRemovalSet);
             
             // Start the line removal animations.
             for (Iterator it = lineRemovalSet.iterator(); it.hasNext(); )
@@ -376,13 +432,17 @@ public class Game extends Canvas implements GameWindowCallback
                 TileEntity t = boardMan.getTile((Integer) it.next());
                 t.setAnimation(new ZoomAnimation(t));
             }
+
+            // If other bombs were hit, they will be dealt with in another
+            // bomb removal cycle.
+            bombRemovalSet = newBombRemovalSet;
             
             // Set the flag.
-            lineRemovalInProgress = true;
+            bombRemovalInProgress = true;
         }
         
         // If a line removal is in progress.
-        if (lineRemovalInProgress)
+        if (bombRemovalInProgress == true)
         {
             // Check to see if they're all done.
             if (boardMan.getTile((Integer) lineRemovalSet.iterator().next())
@@ -391,12 +451,17 @@ public class Game extends Canvas implements GameWindowCallback
                 // Remove the tiles from the board.
                 boardMan.removeTiles(lineRemovalSet);
                 
-                // Line removal is completed.
-                lineRemovalInProgress = false;
+                // Bomb removal is completed.
+                bombRemovalInProgress = false;
                 
-                // Start a new refactor.
-                runRefactor();
-            }                        
+                // See if there are any bombs in the bomb set.
+                // If there are, activate the bomb removal.
+                if (bombRemovalSet.size() > 0)
+                    activateBombRemoval = true;
+                // Otherwise, start a new refactor.
+                else                
+                    runRefactor();
+            }  
         }
         
         // Animate all the pieces.
@@ -418,14 +483,12 @@ public class Game extends Canvas implements GameWindowCallback
         scoreText.draw(126, 400); 
         
         // Draw the high score text.
-        scoreText.setText(String.valueOf(this.scoreMan.getHighScore()));
-        scoreText.draw(126, 270);
+        highScoreText.setText(String.valueOf(this.scoreMan.getHighScore()));
+        highScoreText.draw(126, 270);
         
         // Draw the move count text.
         moveCountText.setText(String.valueOf(this.moveMan.getCurrentMoveCount()));
-        moveCountText.draw(669, 400);
-        
-//        t.animate(delta);
+        moveCountText.draw(669, 400);       
 		
 		// Handle the timer.
 		timeMan.incrementInternalTime(delta);
@@ -444,7 +507,7 @@ public class Game extends Canvas implements GameWindowCallback
 	{
 		System.exit(0);
 	}
-
+    
 	/**
 	 * The entry point into the game. We'll simply create an instance of class
 	 * which will start the display and game loop.
