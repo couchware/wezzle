@@ -27,7 +27,7 @@ public class BombTileEntity extends TileEntity
      * @param x
      * @param y
      */    
-    public BombTileEntity(BoardManager boardMan, final int color, 
+    public BombTileEntity(final BoardManager boardMan, final int color, 
             final int x, final int y)
     {
         // Invoke super.
