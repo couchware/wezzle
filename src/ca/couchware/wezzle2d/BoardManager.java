@@ -20,13 +20,18 @@ import java.util.logging.Logger;
  * 
  */
 
-public class BoardManager implements Drawable
+public class BoardManager
 {	
     /**
      * Whether or not this is visible.
      */
     private boolean visible;
         
+    /**
+     * The layer manager.
+     */
+    final private LayerManager layerMan;
+    
 	/**
 	 * The x-coordiante of the top left corner of the board.
 	 */
@@ -89,10 +94,15 @@ public class BoardManager implements Drawable
 	/**
 	 * The constructor.
 	 */
-	public BoardManager(final int x, final int y, final int columns, final int rows)
+	public BoardManager(final LayerManager layerMan,
+            final int x, final int y, 
+            final int columns, final int rows)
 	{
         // Board is initially visible.
         this.visible = true;
+        
+        // Keep reference to layer manager.
+        this.layerMan = layerMan;
         
 		// Set the cell width and height. Hard-coded to 32x32 for now.
 		this.cellWidth = 32;
@@ -471,6 +481,9 @@ public class BoardManager implements Drawable
 				y + (index / columns) * cellHeight);
 
             setTile(index, t);
+            
+            // Add the tile to the bottom layer too.
+            layerMan.add(t, 0);
         }
         catch (Exception ex)
         {
@@ -482,9 +495,12 @@ public class BoardManager implements Drawable
     {
         // Sanity check.
 		assert(index >= 0 && index < cells);
+
+        // Remove from layer manager.
+        layerMan.remove(getTile(index), 0);
         
         // Remove the tile.
-        setTile(index, null);
+        setTile(index, null);        
     }
     
     public void removeTile(final int column, final int row)
@@ -700,19 +716,19 @@ public class BoardManager implements Drawable
         return rows;
     }    
     
-	/**
-	 * Draw the board to the screen.
-	 */
-	public void draw()
-	{
-        // Don't draw if not visible.
-        if (isVisible() == false)
-            return;
-        
-		for (int i = 0; i < board.length; i++)
-			if (board[i] != null)
-				board[i].draw();
-	}
+//	/**
+//	 * Draw the board to the screen.
+//	 */
+//	public void draw()
+//	{
+//        // Don't draw if not visible.
+//        if (isVisible() == false)
+//            return;
+//        
+//		for (int i = 0; i < board.length; i++)
+//			if (board[i] != null)
+//				board[i].draw();
+//	}
 	
 	/**
 	 * Prints board to console (for debugging purposes).

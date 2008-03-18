@@ -120,16 +120,24 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	private long lastLoopTime = SystemTimer.getTime();
 	
-	/** The window that is being used to render the game. */
+	/** 
+     * The window that is being used to render the game. 
+     */
 	private GameWindow window;
 
-	/** The time since the last record of FPS. */
+	/** 
+     * The time since the last record of FPS. 
+     */
 	private long lastFramesPerSecondTime = 0;
 	
-	/** The recorded FPS. */
+	/** 
+     * The recorded FPS. 
+     */
 	private int framesPerSecond;
 
-	/** The normal title of the window. */
+	/** 
+     * The normal title of the window. 
+     */
 	private String windowTitle = "Wezzle";
 	
     /**
@@ -137,16 +145,24 @@ public class Game extends Canvas implements GameWindowCallback
      */
     private Color textColor = new Color(252, 233, 45);
     
-	/** The timer text. */
+	/** 
+     * The timer text. 
+     */
 	private Text timerText;
         
-    /** The score text. */
+    /** 
+     * The score text.
+     */
     private Text scoreText;
     
-    /** The high score text. */
+    /** 
+     * The high score text. 
+     */
     private Text highScoreText;
     
-    /** The move count text */
+    /** 
+     * The move count text.
+     */
     private Text moveCountText;
         
 	/**
@@ -202,12 +218,16 @@ public class Game extends Canvas implements GameWindowCallback
         // Initialize bomb index set.
         bombRemovalSet = new HashSet();
         
+        // Create the layer manager with 2 initial layers.
+        layerMan = new LayerManager(2);
+        
 		// Create the board manager.
-		boardMan = new BoardManager(272, 139, 8, 10);
+		boardMan = new BoardManager(layerMan, 272, 139, 8, 10);
 		boardMan.generateBoard(40, 10, 6);
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
+        layerMan.add(pieceMan, 1);
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
 	
@@ -222,16 +242,14 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the move manager.
         moveMan = new MoveManager();
-        
-        // Create the layer manager with 2 initial layers.
-        layerMan = new LayerManager(2);                                                                  
-        
+                                                                                          
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
         timerText.setXYPosition(400, 100);
 		timerText.setSize(50);
 		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
 		timerText.setColor(textColor);
+        layerMan.add(timerText, 0);
                 
         // Set up the score text.
         scoreText = ResourceFactory.get().getText();
@@ -239,6 +257,7 @@ public class Game extends Canvas implements GameWindowCallback
         scoreText.setSize(20);
         scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         scoreText.setColor(textColor);
+        layerMan.add(scoreText, 0);
         
         // Set up the high score text.
         highScoreText = ResourceFactory.get().getText();
@@ -246,6 +265,7 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreText.setSize(20);
         highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         highScoreText.setColor(textColor);
+        layerMan.add(highScoreText, 0);
                 
          // Set up the move count text.
         moveCountText = ResourceFactory.get().getText();
@@ -253,6 +273,7 @@ public class Game extends Canvas implements GameWindowCallback
         moveCountText.setSize(20);
         moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
         moveCountText.setColor(textColor);
+        layerMan.add(moveCountText, 0);
                         		
 		// Create the time manager.
 		timeMan = new TimeManager();
@@ -505,29 +526,24 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Animate all the pieces.
         boardMan.animateAll(delta);
-        
-		// Draw the board.
-		boardMan.draw();
-		
+        		
         // Update piece manager logic and then draw it.
         pieceMan.updateLogic(this);
-        pieceMan.draw();
 		
 		// Draw the timer text.
 		timerText.setText(String.valueOf(timeMan.getTime()));		
-		timerText.draw();                                
                 
         // Draw the score text.
-        scoreText.setText(String.valueOf(this.scoreMan.getTotalScore()));
-        scoreText.draw(); 
+        scoreText.setText(String.valueOf(scoreMan.getTotalScore()));
         
         // Draw the high score text.
-        highScoreText.setText(String.valueOf(this.scoreMan.getHighScore()));
-        highScoreText.draw();
+        highScoreText.setText(String.valueOf(scoreMan.getHighScore()));
         
         // Draw the move count text.
-        moveCountText.setText(String.valueOf(this.moveMan.getCurrentMoveCount()));
-        moveCountText.draw();       
+        moveCountText.setText(String.valueOf(moveMan.getCurrentMoveCount()));
+        
+        // Draw the layer manager.
+        layerMan.draw();
 		
 		// Handle the timer.
 		timeMan.incrementInternalTime(delta);
