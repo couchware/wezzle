@@ -69,7 +69,7 @@ public class ItemDescriptor
 		return this.itemClass;
 	}
 	
-	public void setItemClass(Class<?> itemClass)
+	public void setItemClass(Class itemClass)
 	{
 		this.itemClass = itemClass;
 	}
@@ -135,7 +135,7 @@ public class ItemDescriptor
 	/**
 	 * @return The maxAmount.
 	 */
-	public int getMaxAmount( int currentLevel )
+	public int getMaxAmount(int currentLevel)
 	{
 		return this.initialAmount + (currentLevel / 4);
 	}

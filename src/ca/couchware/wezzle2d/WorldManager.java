@@ -1,10 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.tile.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -19,14 +15,13 @@ public class WorldManager
 	/**
 	 * The property manager.
 	 */
-	private final PropertyManager propertyManager;
+	private final PropertyManager propertyMan;
 	
 	/**
 	 * The score manager.
 	 */
-	private final ScoreManager scoreManager;
+	private final ScoreManager scoreMan;
 	
-
 	/**
 	 * The current level
 	 */
@@ -62,32 +57,36 @@ public class WorldManager
 	 * @param board
 	 * @param scoreManager
 	 */
-	public WorldManager( PropertyManager pm, ScoreManager sm)
+	public WorldManager(final PropertyManager propertyMan, 
+            final ScoreManager scoreMan)
 	{		
 		// Store a reference to the score manager.
-		this.scoreManager = sm;
+		this.scoreMan = scoreMan;
 		
 		// Store a reference to the property manager.
-		this.propertyManager = pm;
+		this.propertyMan = propertyMan;
 		
 		// Load the properties;
-		this.difficulty = propertyManager.getIntegerProperty(PropertyManager.DIFFICULTY);
+		this.difficulty = propertyMan
+                .getIntegerProperty(PropertyManager.DIFFICULTY);
 		
-		// Ensure that we are atleast level 1.
+		// Ensure that we are at least level 1.
 		if (this.difficulty < 1)
 			this.difficulty = 1;
 		
-		this.displayName = propertyManager.getStringProperty(PropertyManager.DISPLAY_NAME);
-		this.totalLevels = propertyManager.getIntegerProperty(PropertyManager.NUM_LEVELS);
-		
-		
+		this.displayName = propertyMan
+                .getStringProperty(PropertyManager.DISPLAY_NAME);
+        
+		this.totalLevels = propertyMan
+                .getIntegerProperty(PropertyManager.NUM_LEVELS);
+				
 		// Set the starting level.
 		setCurrentLevel(this.difficulty);
 				
 		itemList = new LinkedList();
-//		itemList.add(new ItemDescriptor(TileNormal.class, 28, -1));
-//		itemList.add(new ItemDescriptor(TileBomb.class, 1, 50));
-//		itemList.add(new ItemDescriptor(TileMultiplier.class, 2, 50));		
+		itemList.add(new ItemDescriptor(TileEntity.class, 28, -1));
+		itemList.add(new ItemDescriptor(BombTileEntity.class, 1, 50));
+		itemList.add(new ItemDescriptor(Mult2xTileEntity.class, 2, 50));		
 	}
 		
 	/**
@@ -107,7 +106,7 @@ public class WorldManager
 		this.currentLevel = currentLevel;
 		
 		// Set the difference score.
-		scoreManager.setTargetLevelScore(generateTargetLevelScore(currentLevel));				
+		scoreMan.setTargetLevelScore(generateTargetLevelScore(currentLevel));				
 	}	
 	
 	/**
@@ -158,8 +157,7 @@ public class WorldManager
 	{
 		return itemList;
 	}
-	
-	
+		
 	/**
 	 * A method to generate a target score given the level. 
 	 * 
@@ -171,10 +169,6 @@ public class WorldManager
 		return currentLevel * 2000;
 	}
 
-    
-    
-    
-    
 //	/**
 //	 * Reset the game board.  This method will remove the old game board
 //	 * and replace it with a new one on the currently set level.
@@ -227,5 +221,4 @@ public class WorldManager
 //		executor.submit(r);
 //	}
 	
-
 }
