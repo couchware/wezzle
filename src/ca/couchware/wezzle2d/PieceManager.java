@@ -352,17 +352,18 @@ public class PieceManager implements
         // Grab the current mouse position.
         final XYPosition p = getMousePosition();                             
             
-        // Drop in any tiles. This if statement encompasses the entire function 
-        // in order to ensure
+        // Drop in any tiles that need to be dropped, one at a time. 
+        //
+        // The if statement encompasses the entire function in order to ensure
         // that the board is locked while tiles are dropping.
         if(isTileDropActive == true)
         {                               
             // Find a random empty column and drop in a tile.
-            // The algorithm is as follows:
-            // whenever there is a blockage, it is always contiguous
-            // so we find the first open column. generate a random number
-            // between 0 and maxColumns - openColumnIndex. Add the open 
-            // column index to it. and voila. random column.
+            // The algorithm to find the empty column is as follows:
+            // Whenever there is a blockage, it is always contiguous (XX---)
+            // so we find the first open column, generate a random number
+            // between 0 and maxColumns - openColumnIndex, add the open 
+            // column index to it, and voila! random column.
             
             int openColumnIndex = -1;
             
@@ -384,7 +385,8 @@ public class PieceManager implements
             // Make sure we have found a column.
             assert(openColumnIndex >= 0);
             
-            int index = Util.random.nextInt(boardMan.getColumns() - openColumnIndex) + openColumnIndex;
+            int index = Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
+                    + openColumnIndex;
             
             // Sanity check.
             assert (index >= 0 && index < boardMan.getColumns());
