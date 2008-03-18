@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.net.URL;
 
 import ca.couchware.wezzle2d.Text;
-import ca.couchware.wezzle2d.Util;
+import ca.couchware.wezzle2d.util.Util;
 
 /**
  * The Java2DText class provides a java2D implementation of the text interface.

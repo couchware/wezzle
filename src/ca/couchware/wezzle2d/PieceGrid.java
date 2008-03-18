@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.XYPosition;
 import java.util.Arrays;
 
 import ca.couchware.wezzle2d.piece.Piece;

@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.piece;
 
-import ca.couchware.wezzle2d.Util;
+import ca.couchware.wezzle2d.util.Util;
 
 /**
  * A piece class representing the Diagonal piece.

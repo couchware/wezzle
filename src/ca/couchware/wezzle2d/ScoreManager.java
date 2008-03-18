@@ -1,5 +1,9 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Mult2xTileEntity;
+import ca.couchware.wezzle2d.tile.BombTileEntity;
 import java.util.Iterator;
 import java.util.Set;
 

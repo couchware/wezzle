@@ -1,5 +1,8 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.BombTileEntity;
 import ca.couchware.wezzle2d.animation.ExplosionAnimation;
 import ca.couchware.wezzle2d.animation.JiggleFadeAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;

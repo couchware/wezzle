@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.util;
 
 /**
  * A class that represents an arbitrary (x, y) position.

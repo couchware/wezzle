@@ -1,5 +1,6 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.util;
 
+import ca.couchware.wezzle2d.*;
 import java.util.Random;
 
 public class Util

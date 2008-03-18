@@ -1,5 +1,8 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.XYPosition;
+import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.animation.PulseAnimation;
 import ca.couchware.wezzle2d.animation.Animation;
 import ca.couchware.wezzle2d.piece.Piece;

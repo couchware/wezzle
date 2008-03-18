@@ -1,4 +1,7 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.tile;
+
+import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.*;
 
 /**
  * A class representing a game tile.

@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.Util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

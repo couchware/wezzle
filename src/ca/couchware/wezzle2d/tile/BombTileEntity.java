@@ -1,4 +1,6 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.tile;
+
+import ca.couchware.wezzle2d.*;
 
 /**
  * A bomb tile.
