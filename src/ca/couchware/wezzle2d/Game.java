@@ -403,6 +403,10 @@ public class Game extends Canvas implements GameWindowCallback
                         pieceMan.loadRandomPiece();   
                         pieceMan.setVisible(true);
                         
+                        //Unpause the timer.
+                        timeMan.resetTimer();
+                        timeMan.unPause();
+                        
                         // Reset the mouse.
                         pieceMan.setMouseLeftReleased(false);
                         pieceMan.setMouseRightReleased(false);

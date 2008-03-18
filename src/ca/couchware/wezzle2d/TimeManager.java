@@ -160,7 +160,7 @@ public class TimeManager
 			this.currentTime--;
 			this.internalTime = 0;
             
-			if(this.currentTime < 0)
+			if(this.currentTime <= 0)
 			{
                 // Commit the piece.
                 game.pieceMan.initiateCommit(game);

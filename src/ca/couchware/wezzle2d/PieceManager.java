@@ -401,8 +401,6 @@ public class PieceManager implements
             if(--this.tileDropCount <= 0 )
             {
                 this.isTileDropActive = false; 
-                game.timeMan.resetTimer();
-                game.timeMan.unPause();
             }
         }
         else
