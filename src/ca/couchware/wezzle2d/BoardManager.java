@@ -7,10 +7,7 @@ import ca.couchware.wezzle2d.tile.BombTileEntity;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Manages the game board.  A replacement for the GameBoard class from
@@ -515,11 +512,8 @@ public class BoardManager
     
     public void removeTiles(final Set set)
     {
-        for (Iterator it = set.iterator(); it.hasNext(); )
-        {
-            removeTile((Integer) it.next());
-            it.remove();
-        }
+        for (Iterator it = set.iterator(); it.hasNext(); )        
+            removeTile((Integer) it.next());        
     }
 	
 	public TileEntity getTile(int index)

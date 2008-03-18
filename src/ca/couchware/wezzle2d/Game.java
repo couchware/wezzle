@@ -475,7 +475,7 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 if (t instanceof BombTileEntity)
                 {
-                    t.setAnimation(new ExplosionAnimation(t));
+                    t.setAnimation(new ExplosionAnimation(t, layerMan));
                     this.soundMan.play(SoundManager.BOMB);
                 }
                 else

@@ -53,15 +53,7 @@ public abstract class Animation
      * Determines how the entity should be changed based on how much time
      * has passed since last update.
      */
-    public abstract void nextFrame(long delta);
-    
-    /**
-     * Draws the animation.
-     */
-    public void draw()
-    {
-        entity.drawSprite();
-    }
+    public abstract void nextFrame(long delta);       
     
     /**
      * Performs cleanup to the animation so that it may remain in a consistent

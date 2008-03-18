@@ -14,7 +14,12 @@ public class ExplosionAnimation extends Animation
     /**
      * Path to the explosion sprite.
      */
-    final private String PATH = "resources/Explosion.png";
+    final private static String PATH = "resources/Explosion.png";
+    
+    /**
+     * Reference to the layer manager.
+     */
+    final private LayerManager layerMan;
     
     /**
      * The period of each frame.
@@ -60,10 +65,13 @@ public class ExplosionAnimation extends Animation
     /**
      * The constructor.
      */
-    public ExplosionAnimation(final Entity entity)
+    public ExplosionAnimation(final Entity entity, final LayerManager layerMan)
     {                
         // Invoke super constructor.
-        super(entity, FRAME_PERIOD);       
+        super(entity, FRAME_PERIOD);    
+        
+        // Set reference to layer manager.
+        this.layerMan = layerMan;
         
         // Load the explosion and centre it over the entity.
         explosion = new Entity(PATH, 0, 0);    
@@ -82,6 +90,9 @@ public class ExplosionAnimation extends Animation
         // Move it to the centre of the entity.
         explosion.setX(entity.getX() + (entity.getWidth() / 2) - 1);
         explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);
+        
+        // Add explosion to the layer manager.
+        layerMan.add(explosion, 1);
     }
 
     public void nextFrame(long delta)
@@ -131,7 +142,13 @@ public class ExplosionAnimation extends Animation
                     
                     // If the width is equal to 2, then we stop.
                     if (explosion.getWidth() <= 2)
+                    {
+                        // Remove explosion from layer manager.
+                        layerMan.remove(explosion, 1);
+                        
+                        // Set done flag.
                         done = true;
+                    }
                     
                     break;
                     
@@ -140,14 +157,5 @@ public class ExplosionAnimation extends Animation
                             Thread.currentThread());
             }
         } // end if          
-    }
-    
-    /**
-     * Draws the animation.
-     */
-    public void draw()
-    {        
-        entity.drawSprite();
-        explosion.drawSprite();
     }
 }

@@ -261,16 +261,8 @@ public class Entity implements Drawable
         if (isVisible() == false)
             return;
                         
-        if (animation == null)
-            drawSprite();
-        else
-            animation.draw();
-	}       
-    
-    public void drawSprite()
-    {
         sprite.draw((int) x, (int) y, width, height, theta, opacity);
-    }
+	}       
 
     public Animation getAnimation()
     {
