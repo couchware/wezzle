@@ -477,6 +477,10 @@ public class BoardManager
 				x + (index % columns) * cellWidth,
 				y + (index / columns) * cellHeight);
 
+            // If we're overwriting a tile, remove it first.
+            if (getTile(index) != null)
+                removeTile(index);
+            
             setTile(index, t);
             
             // Add the tile to the bottom layer too.
