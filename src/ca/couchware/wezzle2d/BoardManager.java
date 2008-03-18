@@ -184,7 +184,7 @@ public class BoardManager implements Drawable
 	 */
 	private void refactorBoard()
 	{
-		startShiftDown();
+		startShiftDown(200);
 		for (int i = 0; i < cells; i++)
 			if (board[i] != null)
 				board[i].setYMovement(rows * cellHeight);
@@ -192,7 +192,7 @@ public class BoardManager implements Drawable
 		
 		synchronize();
 		
-		startShiftLeft();
+		startShiftLeft(200);
 		for (int i = 0; i < cells; i++)
 			if (board[i] != null)
 				board[i].setXMovement(-columns * cellWidth);
@@ -323,27 +323,27 @@ public class BoardManager implements Drawable
 		board = newBoard;
 	}
 	
-	public void startShiftDown()
+	public void startShiftDown(final int speed)
 	{
 		// Start them moving down.
 		for (int i = 0; i < cells; i++)
 		{
 			if (board[i] != null)
 			{
-				board[i].setYMovement(200);
+				board[i].setYMovement(speed);
 				board[i].calculateBottomBound(countTilesBelowCell(i));
 			}
 		}
 	}
 	
-	public void startShiftLeft()
+	public void startShiftLeft(final int speed)
 	{
 		// Start them moving left.
 		for (int i = 0; i < cells; i++)
 		{
 			if (board[i] != null)
 			{
-				board[i].setXMovement(-200);
+				board[i].setXMovement(-speed);
 				board[i].calculateLeftBound(countTilesLeftOfCell(i));
 			}
 		}

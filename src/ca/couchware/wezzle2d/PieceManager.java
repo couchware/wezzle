@@ -356,10 +356,8 @@ public class PieceManager implements
         // in order to ensure
         // that the board is locked while tiles are dropping.
         if(isTileDropActive == true)
-        {        
-            
-            
-            // find a random empty column and drop in a tile.
+        {                               
+            // Find a random empty column and drop in a tile.
             int offset = Util.random.nextInt(boardMan.getColumns());
             int index = 0;
             
@@ -380,7 +378,7 @@ public class PieceManager implements
                     TileEntity.randomColor());
              
             // Run a refactor.
-            game.runRefactor();
+            game.runRefactor(300);
              
             // Check to see if we have more tiles to drop. 
             // If not stop tile dropping.
@@ -408,10 +406,11 @@ public class PieceManager implements
                 // Start a tile drop.
                 this.isTileDropActive = true;
                 
+                // Make visible.
                 this.setVisible(false);
 
                 // Run a refactor.
-                game.runRefactor();
+                game.runRefactor(200);
   
                 // Reset flag.
                 setMouseLeftReleased(false);

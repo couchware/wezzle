@@ -88,6 +88,11 @@ public class Game extends Canvas implements GameWindowCallback
 	private boolean refactorLeftInProgress = false;
     
     /**
+     * The speed of the upcoming refactor.
+     */
+    private int refactorSpeed = 0;
+    
+    /**
      * If true, a line removal will be activated next loop.
      */
     private boolean activateLineRemoval = false;
@@ -266,10 +271,11 @@ public class Game extends Canvas implements GameWindowCallback
 		// Nothing here yet.
 	}
     
-    public void runRefactor()
+    public void runRefactor(int speed)
     {
         // Set the refactor flag.
         this.activateRefactor = true;
+        this.refactorSpeed = speed;
     }
     
    public  void clearRefactor()
@@ -322,7 +328,7 @@ public class Game extends Canvas implements GameWindowCallback
             pieceMan.setVisible(false);
             
 			// Start down refactor.
-			boardMan.startShiftDown();
+			boardMan.startShiftDown(refactorSpeed);
 			refactorDownInProgress = true;
 			
 			// Clear flag.
@@ -341,7 +347,7 @@ public class Game extends Canvas implements GameWindowCallback
 				boardMan.synchronize();							
 				
 				// Start left refactor.
-				boardMan.startShiftLeft();
+				boardMan.startShiftLeft(refactorSpeed);
 				refactorLeftInProgress = true;								
 			}
 		} // end if
@@ -423,29 +429,6 @@ public class Game extends Canvas implements GameWindowCallback
                 activateBombRemoval = true;
             }
         }
-
-//        // If a line removal is in progress.
-//        if (lineRemovalInProgress == true)
-//        {
-//            // Check to see if they're all done.
-//            if (boardMan.getTile((Integer) tileRemovalSet.iterator().next())
-//                    .getAnimation().isDone() == true)
-//            {
-//                // Remove the tiles from the board.
-//                boardMan.removeTiles(tileRemovalSet);
-//
-//                // Line removal is completed.
-//                lineRemovalInProgress = false;
-//
-//                // See if there are any bombs in the bomb set.
-//                // If there are, activate the bomb removal.
-//                if (bombRemovalSet.size() > 0)
-//                    activateBombRemoval = true;
-//                // Otherwise, start a new refactor.
-//                else                        
-//                    runRefactor();
-//            }                        
-//        } // end if
                         
         // If a bomb removal is in progress.
         if (activateBombRemoval == true)
@@ -517,7 +500,7 @@ public class Game extends Canvas implements GameWindowCallback
                     activateBombRemoval = true;
                 // Otherwise, start a new refactor.
                 else                
-                    runRefactor();
+                    runRefactor(200);
             }  
         }
         
