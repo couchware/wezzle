@@ -358,18 +358,33 @@ public class PieceManager implements
         if(isTileDropActive == true)
         {                               
             // Find a random empty column and drop in a tile.
-            int offset = Util.random.nextInt(boardMan.getColumns());
-            int index = 0;
+            // The algorithm is as follows:
+            // whenever there is a blockage, it is always contiguous
+            // so we find the first open column. generate a random number
+            // between 0 and maxColumns - openColumnIndex. Add the open 
+            // column index to it. and voila. random column.
             
-            for (int i = 0; i < boardMan.getColumns(); i++)
+            int openColumnIndex = -1;
+            
+            // Find the first open column.
+            for(int i = 0; i < boardMan.getColumns(); i++)
             {
-                int j = (i + offset) % boardMan.getColumns();
-                if(boardMan.getTile(j) == null)
+                if(boardMan.getTile(i) == null)
                 {
-                    index = j;
+                    //We have found an open column.
+                    openColumnIndex = i;
                     break;
                 }
+                else
+                {
+                    // A tile exists here.. continue with the loop.
+                }
             }
+            
+            // Make sure we have found a column.
+            assert(openColumnIndex >= 0);
+            
+            int index = Util.random.nextInt(boardMan.getColumns() - openColumnIndex) + openColumnIndex;
             
             // Sanity check.
             assert (index >= 0 && index < boardMan.getColumns());
