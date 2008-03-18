@@ -47,7 +47,7 @@ public class Game extends Canvas implements GameWindowCallback
 	 * The manager in charge of moving the piece around with the
 	 * pointer and drawing the piece to the board.
 	 */
-	private PieceManager pieceMan;
+	public PieceManager pieceMan;
 	
     /** 
      * The manager in charge of loading and saving properties.
@@ -67,7 +67,7 @@ public class Game extends Canvas implements GameWindowCallback
 	/** 
 	 * The manager in charge of keeping track of the time. 
 	 */
-	private TimeManager timeMan;
+	public TimeManager timeMan;
 	
     /**
      * If true, refactor will be activated next loop.
@@ -546,7 +546,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.draw();
 		
 		// Handle the timer.
-		timeMan.incrementInternalTime(delta);
+		timeMan.incrementInternalTime(delta, this);
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))

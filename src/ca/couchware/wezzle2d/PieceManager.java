@@ -17,7 +17,6 @@ import java.awt.event.MouseMotionListener;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * The piece manager keeps track of where the mouse pointer is on the board
@@ -401,37 +400,16 @@ public class PieceManager implements
             // If not stop tile dropping.
             if(--this.tileDropCount <= 0 )
             {
-                this.isTileDropActive = false;  
+                this.isTileDropActive = false; 
+                game.timeMan.resetTimer();
+                game.timeMan.unPause();
             }
         }
         else
         {
             if (isMouseLeftReleased() == true)
             {            
-                // Remove and score the piece.
-                game.scoreMan.calculatePieceScore(commitPiece(p));
-
-                // Set the count to the piece size.
-                this.tileDropCount = this.piece.getSize();
-                        
-                // Increment the moves.
-                game.moveMan.incrementMoveCount();
-
-                // Play the sound.
-                game.soundMan.play(SoundManager.CLICK);
-
-                // Start a tile drop.
-                this.isTileDropActive = true;
-                
-                // Make visible.
-                this.setVisible(false);
-
-                // Run a refactor.
-                game.runRefactor(200);
-  
-                // Reset flag.
-                setMouseLeftReleased(false);
-                setMouseRightReleased(false);
+               initiateCommit(game);
             }
 
             if (isMouseRightReleased() == true)
@@ -471,6 +449,37 @@ public class PieceManager implements
                 } // end if           
             }
         }
+    }
+    
+    public void initiateCommit(final Game game)
+    {
+         // Remove and score the piece.
+        game.scoreMan.calculatePieceScore(commitPiece(this.getMousePosition()));
+
+        // Set the count to the piece size.
+        this.tileDropCount = this.piece.getSize();
+
+        // Increment the moves.
+        game.moveMan.incrementMoveCount();
+
+        // Play the sound.
+        game.soundMan.play(SoundManager.CLICK);
+
+        // Start a tile drop.
+        this.isTileDropActive = true;
+
+        // Make visible.
+        this.setVisible(false);
+
+        // Run a refactor.
+        game.runRefactor(200);
+
+        // Reset flag.
+        setMouseLeftReleased(false);
+        setMouseRightReleased(false);
+
+        // Reset timer.
+        game.timeMan.pause();
     }
     
     //--------------------------------------------------------------------------

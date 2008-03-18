@@ -22,6 +22,9 @@ public class TimeManager
 	
 	/** Holds the internal time for comparison to time increments. */
 	private long internalTime;
+    
+    /** is the game paused? */
+    private boolean paused;
 	
 	
 	
@@ -38,9 +41,9 @@ public class TimeManager
 		this.currentTime = initialTime;
 		this.initialTime = initialTime;
 		this.internalTime = 0;
+        this.paused = false;
 	}
-	
-	
+
 	/**
 	 * The Default constructor constructs a timer manager with an 
 	 * initial time of 20 seconds.
@@ -50,9 +53,7 @@ public class TimeManager
 		// Call the overloaded constructor.
 		this(20);
 	}
-	
-	
-	
+
 	/**
 	 * A method to set the time on the timer.
 	 * 
@@ -64,9 +65,7 @@ public class TimeManager
 		
 		this.currentTime = time;
 	}
-	
-	
-	
+
 	/**
 	 * Get the timer time.
 	 * @return The time.
@@ -76,28 +75,49 @@ public class TimeManager
 		return this.currentTime;
 	}
 	
-	
-	
 	/**
-	 * Reset the internal second count.
+	 * Reset the internal second count. I.e. the part that is modified by 
+     * delta.
 	 */
 	public void resetInternalTimer()
 	{
 		this.internalTime = 0;
 	}
-	
-	
-	
+
 	/**
 	 * Reset the timer.
 	 */
 	public void resetTimer()
 	{
 		this.currentTime = this.initialTime;
+        this.resetInternalTimer();
 	}
+    
+    /**
+     * Pause the timer.
+     */
+    public void pause()
+    {
+        this.paused = true;
+    }
 	
-	
-	
+    /**
+     * Unpause the timer.
+     */
+    public void unPause()
+    {
+        this.paused = false;
+    }
+    
+    /**
+     * Check if the timer is paused.
+     * @return Whether or not the timer is paused.
+     */
+    public boolean isPaused()
+    {
+        return this.paused;
+    }
+    
 	/**
 	 * Get the initial time.
 	 * @return The initial time.
@@ -106,9 +126,7 @@ public class TimeManager
 	{
 		return this.initialTime;
 	}
-	
-	
-	
+
 	/**
 	 * Set the initial time.
 	 * @param time The new time.
@@ -118,16 +136,18 @@ public class TimeManager
 		this.initialTime = time;
 	}
 	
-	
-	
 	/**
 	 * A method to increment the internal time. If a second has passed
 	 * the internal time goes to 0 and the current time is decremented.
 	 * 
 	 * @param offset The elapsed time.
 	 */
-	public void incrementInternalTime(long offset)
+	public void incrementInternalTime(long offset, final Game game)
 	{
+        // If the timer is paused, don't do anything.
+        if(this.paused)
+            return;
+        
 		assert(offset >= 0);
 		
 		this.internalTime += offset;
@@ -139,10 +159,11 @@ public class TimeManager
 			// and check if < 0.
 			this.currentTime--;
 			this.internalTime = 0;
-			
+            
 			if(this.currentTime < 0)
 			{
-				this.currentTime += this.initialTime;
+                // Commit the piece.
+                game.pieceMan.initiateCommit(game);
 			}	
 		}
 		else
