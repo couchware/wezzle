@@ -15,38 +15,76 @@ import ca.couchware.wezzle2d.util.Util;
  * The Java2DText class provides a java2D implementation of the text interface.
  * The font is hard coded as bubbleboy2 but maybe be changed in the future.
  * 
- * @author Kevin
+ * @author Kevin, Cameron
  *
  */
 
 public class Java2DText implements Text
 {
-	/** The URL. */
+    
+    /**
+     * The visibility of the text.
+     */
+    private boolean visible;
+    
+    /**
+     * The X-cooridinate of the text.
+     */
+    private int x;
+    
+    /**
+     * The Y-coordinate of the text.
+     */
+    private int y;
+    
+	/** 
+     * The URL. 
+     */
 	private URL url;
 	
-	/** The font. */
+	/** 
+     * The font. 
+     */
 	private Font font;
 	
-	/** The size of the font */
+	/** 
+     * The size of the font.
+     */
 	private float size;
 	
-	/** The color of the text */
+	/** 
+     * The color of the text .
+     */
 	private Color color;
 	
-	/** The text */
+	/** 
+     * The text.
+     */
 	private String text;
+    
+    /**
+     * The text layout instance.
+     */
 	private TextLayout textLayout;
 	
-	/** The game window to which this text is going to be drawn */
+	/** 
+     * The game window to which this text is going to be drawn 
+     */
 	private Java2DGameWindow window;	
 
-	/** The x offset for anchor. */
+	/** 
+     * The x offset for anchor. 
+     */
 	private int anchorX;
 	
-	/** The y offset for anchor. */
+	/** 
+     * The y offset for anchor. 
+     */
 	private int anchorY;
 	
-	/** The current anchor */
+	/**
+     * The current anchor 
+     */
 	private int currentAnchor;
 
 	/**
@@ -61,7 +99,12 @@ public class Java2DText implements Text
 	 */
 	public Java2DText(Java2DGameWindow window)
 	{
-		this.url = this.getClass().getClassLoader().getResource("resources/bubbleboy2.ttf");
+        // Initially visible.
+        this.visible = true;
+        
+		this.url = this.getClass().getClassLoader()
+                .getResource("resources/bubbleboy2.ttf");
+        
 		this.size = 24.0f;
 		this.color = Color.black;
 		this.text = "";
@@ -97,10 +140,11 @@ public class Java2DText implements Text
 	 * 
 	 * @param t The text.
 	 */
-	public void setText(String t)
+	public void setText(String text)
 	{
-		this.text = t;
-		this.textLayout = new TextLayout(t, font, window.getDrawGraphics().getFontRenderContext());
+		this.text = text;
+		this.textLayout = new TextLayout(text, font, 
+                window.getDrawGraphics().getFontRenderContext());
 		
 		// Recalculate the anchor points.
 		this.setAnchor(this.currentAnchor);
@@ -121,11 +165,37 @@ public class Java2DText implements Text
 	 * 
 	 * @param s The size.
 	 */
-	public void setSize(float s)
+	public void setSize(float size)
 	{
-		this.size = s;
+		this.size = size;
 		this.font = font.deriveFont(this.size);
 	}
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public void setX(int x)
+    {
+        this.x = x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public void setY(int y)
+    {
+        this.y = y;
+    }      
+    
+    public void setXYPosition(final int x, final int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
 	
 //	/**
 //	 * Gets the font.
@@ -160,9 +230,9 @@ public class Java2DText implements Text
 	 * 
 	 * @param c The color to set to.
 	 */
-	public void setColor(Color c)
+	public void setColor(Color color)
 	{
-		this.color = c;
+		this.color = color;
 	}
 	
 	/**
@@ -181,15 +251,9 @@ public class Java2DText implements Text
 			return;
 		
 		// Get the width and height of the font.
-//		Rectangle2D bounds = window.getFontMetrics(this.font).getStringBounds(this.text, window.getDrawGraphics());
-//		double strWidth = bounds.getWidth();		
-//		double strHeight = bounds.getHeight();
 		Rectangle2D bounds = textLayout.getBounds();
-		
-//		Util.handleMessage("" + bounds.getMinY(), null);
-		// window.getFontMetrics(this.font).getHeight();
-		
-		// The Y's.
+        
+		// The Y achors.
 		if((anchor & Text.BOTTOM) == Text.BOTTOM)
 		{
 			this.anchorY = 0;
@@ -207,7 +271,7 @@ public class Java2DText implements Text
 			Util.handleWarning("No Y anchor set!", Thread.currentThread());
 		}
 		
-		// The X's. 
+		// The X anchors. 
 		if((anchor & Text.LEFT) == Text.LEFT)
 		{
 			this.anchorX = (int) bounds.getMinX();
@@ -227,15 +291,12 @@ public class Java2DText implements Text
 	}
 	
 	/**
-	 * Draw the text onto the graphics context provided.
-	 * 
-	 * @param x The x location at which to draw the text.         
-	 * @param y The y location at which to draw the text.       
+	 * Draw the text onto the graphics context provided.	   
 	 */
-	public void draw(int x, int y)
+	public void draw()
 	{
 		// Return immediately is string is empty.
-		if (text.equals("") == true)
+		if (isVisible() == false || text.equals("") == true)
 			return;
 		
 		try
@@ -256,15 +317,22 @@ public class Java2DText implements Text
 			g.setFont(font);
 			g.setColor(this.color);			
 			
-//			g.drawLine(0, 100, 100, 100);
-//			TextLayout tl = new TextLayout(text, font, g.getFontRenderContext());
 			textLayout.draw(g, x - this.anchorX, y - this.anchorY);
-//			Util.handleMessage(tl.getBounds().toString(), null);
-//			g.drawString(this.text, 0, y - this.anchorY);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}		
 	}
+
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
+    }
+    
 }

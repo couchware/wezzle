@@ -1,11 +1,8 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.tile.BombTileEntity;
-import ca.couchware.wezzle2d.animation.ExplosionAnimation;
-import ca.couchware.wezzle2d.animation.JiggleFadeAnimation;
-import ca.couchware.wezzle2d.animation.ZoomAnimation;
+import ca.couchware.wezzle2d.tile.*;
+import ca.couchware.wezzle2d.animation.*;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -36,17 +33,27 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	private BoardManager boardMan;
 	
+    /**
+     * The layer manager.
+     */
+    public LayerManager layerMan;
+    
+    /** 
+     * The manager in charge of the moves. 
+     */
+    public MoveManager moveMan;	
+    
 	/**
 	 * The manager in charge of moving the piece around with the
 	 * pointer and drawing the piece to the board.
 	 */
 	private PieceManager pieceMan;
 	
-	/** 
-	 * The manager in charge of keeping track of the time. 
-	 */
-	private TimeManager timeMan;
-        
+    /** 
+     * The manager in charge of loading and saving properties.
+     */
+    public PropertyManager propertyMan;
+    
      /** 
       * The manager in charge of score.
       */
@@ -57,20 +64,10 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public SoundManager soundMan;
     
-    /** 
-     * The manager in charge of loading and saving properties.
-     */
-    public PropertyManager propertyMan;
-    
-    /** 
-     * The manager in charge of the moves. 
-     */
-    public MoveManager moveMan;	
-    
-    /**
-     * An array-list holding the animations that need to be drawn.
-     */
-    public ArrayList animationList;
+	/** 
+	 * The manager in charge of keeping track of the time. 
+	 */
+	private TimeManager timeMan;
 	
     /**
      * If true, refactor will be activated next loop.
@@ -111,11 +108,6 @@ public class Game extends Canvas implements GameWindowCallback
      * If true, a bomb removal will be activated next loop.
      */
     private boolean activateBombRemoval = false;
-    
-    /**
-     * If true, a bomb removal is in progress.
-     */
-    private boolean bombRemovalInProgress = false;
     
     /**
      * The set of bomb tile indices that will be removed.
@@ -220,7 +212,7 @@ public class Game extends Canvas implements GameWindowCallback
 		window.addMouseMotionListener(pieceMan);	
 	
         // Create the property manager. Must be done before Score manager.
-        this.propertyMan = new PropertyManager();
+        propertyMan = new PropertyManager();
         
         // Create the score manager.
         scoreMan = new ScoreManager(boardMan, propertyMan);
@@ -230,27 +222,34 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the move manager.
         moveMan = new MoveManager();
-                
+        
+        // Create the layer manager with 2 initial layers.
+        layerMan = new LayerManager(2);                                                                  
+        
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
+        timerText.setXYPosition(400, 100);
 		timerText.setSize(50);
 		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
 		timerText.setColor(textColor);
                 
         // Set up the score text.
         scoreText = ResourceFactory.get().getText();
+        scoreText.setXYPosition(126, 400); 
         scoreText.setSize(20);
         scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         scoreText.setColor(textColor);
         
         // Set up the high score text.
         highScoreText = ResourceFactory.get().getText();
+        highScoreText.setXYPosition(126, 270);
         highScoreText.setSize(20);
         highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         highScoreText.setColor(textColor);
                 
          // Set up the move count text.
         moveCountText = ResourceFactory.get().getText();
+        moveCountText.setXYPosition(669, 400);
         moveCountText.setSize(20);
         moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
         moveCountText.setColor(textColor);
@@ -516,19 +515,19 @@ public class Game extends Canvas implements GameWindowCallback
 		
 		// Draw the timer text.
 		timerText.setText(String.valueOf(timeMan.getTime()));		
-		timerText.draw(400, 100);                                
+		timerText.draw();                                
                 
         // Draw the score text.
         scoreText.setText(String.valueOf(this.scoreMan.getTotalScore()));
-        scoreText.draw(126, 400); 
+        scoreText.draw(); 
         
         // Draw the high score text.
         highScoreText.setText(String.valueOf(this.scoreMan.getHighScore()));
-        highScoreText.draw(126, 270);
+        highScoreText.draw();
         
         // Draw the move count text.
         moveCountText.setText(String.valueOf(this.moveMan.getCurrentMoveCount()));
-        moveCountText.draw(669, 400);       
+        moveCountText.draw();       
 		
 		// Handle the timer.
 		timeMan.incrementInternalTime(delta);
