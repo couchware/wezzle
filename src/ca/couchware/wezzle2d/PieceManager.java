@@ -394,8 +394,11 @@ public class PieceManager implements
             if (isMouseLeftReleased() == true)
             {            
                 // Remove and score the piece.
-                this.tileDropCount = game.scoreMan.calculatePieceScore(commitPiece(p));
+                game.scoreMan.calculatePieceScore(commitPiece(p));
 
+                // Set the count to the piece size.
+                this.tileDropCount = this.piece.getSize();
+                        
                 // Increment the moves.
                 game.moveMan.incrementMoveCount();
 
