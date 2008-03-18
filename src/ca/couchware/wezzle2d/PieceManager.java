@@ -347,10 +347,7 @@ public class PieceManager implements
              return;
         
         // Grab the current mouse position.
-        final XYPosition p = getMousePosition();                
-        
-        // Whether or not the piece was rotated.
-        boolean pieceRotated = false;
+        final XYPosition p = getMousePosition();                             
             
         // Drop in any tiles. This if statement encompasses the entire function 
         // in order to ensure
@@ -391,7 +388,6 @@ public class PieceManager implements
         }
         else
         {
-
             if (isMouseLeftReleased() == true)
             {            
                 // Remove and score the piece.
@@ -514,21 +510,7 @@ public class PieceManager implements
 	{
         // Don't draw if invisible.
         if (isVisible() == false)
-            return;
-        
-//        // Retrieve the current mouse position.
-//        final XYPosition p = getMousePosition();
-//        
-//        // If mouse is inside the board then update the piece grid location.
-//        if (isOnBoard(p) == true)
-//        {
-//            // Filter the current position.
-//            XYPosition ap = adjustPosition(p);
-//
-//            // Draw the piece there.
-//            pieceGrid.setX(ap.getX());
-//            pieceGrid.setY(ap.getY());  
-//        }        		            
+            return;                 
 		
 		// Draw the piece.
 		pieceGrid.draw();

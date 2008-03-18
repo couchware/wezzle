@@ -1,0 +1,152 @@
+package ca.couchware.wezzle2d.animation;
+
+import ca.couchware.wezzle2d.*;
+import java.awt.Dimension;
+
+/**
+ * An animation that starts an explosion in the middle of the entity.
+ * 
+ * @author cdmckay
+ */
+public class ExplosionAnimation extends Animation
+{    
+    /**
+     * Path to the explosion sprite.
+     */
+    final private String PATH = "resources/Explosion.png";
+    
+    /**
+     * The period of each frame.
+     */
+    final private static int FRAME_PERIOD = 15;
+    
+    /**
+     * The amount the explosion should expand per step.
+     */
+    final private static int EXPAND_STEP = 4;
+    
+    /**
+     * The amount the explosion should contract per step.
+     */
+    final private static int CONTRACT_STEP = 4;
+    
+    /**
+     * The explode down state.
+     */
+    final private static int EXPLODE_DOWN = 0;
+    
+    /**
+     * The explode up state.
+     */
+    final private static int EXPLODE_UP = 1;
+    
+    /**
+     * The maximum width the entity may become before switching 
+     * explode states.
+     */
+    final private int maxWidth;
+    
+    /**
+     * The current pulse state.
+     */
+    private int state;
+    
+    /**
+     * The explosion entity.
+     */
+    final Entity explosion;   
+    
+    /**
+     * The constructor.
+     */
+    public ExplosionAnimation(final Entity entity)
+    {                
+        // Invoke super constructor.
+        super(entity, FRAME_PERIOD);       
+        
+        // Load the explosion and centre it over the entity.
+        explosion = new Entity(PATH, 0, 0);    
+        explosion.setOpacity(50);
+        
+        // Set the initial pulse state.
+        state = EXPLODE_UP;
+         
+        // Set the maximum width.
+        maxWidth = explosion.getWidth();
+        
+        // Resize the explosion to be 2x2.
+        explosion.setWidth(2);
+        explosion.setHeight(2);
+        
+        // Move it to the centre of the entity.
+        explosion.setX(entity.getX() + (entity.getWidth() / 2) - 1);
+        explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);
+    }
+
+    public void nextFrame(long delta)
+    {
+        // Check if we're done, if we are, return.
+        if (isDone() == true)
+            return;
+        
+        // Add to counter.
+        counter += delta;
+        
+        // See if enough time has elapsed to advance the frame.
+        if (counter >= period)
+        {
+            // Increase the frame.
+            frame++;            
+            
+            // Remove the period time so the counter will work for ensuing
+            // frames.
+            counter -= period;
+            
+            // If we're pulsing down, reducing the size and translate slightly.
+            switch (state)
+            {
+                case EXPLODE_UP:
+                    
+                    explosion.setWidth(explosion.getWidth() + EXPAND_STEP);
+                    explosion.setX(explosion.getX() - EXPAND_STEP / 2);
+                    
+                    explosion.setHeight(explosion.getHeight() + EXPAND_STEP);
+                    explosion.setY(explosion.getY() - EXPAND_STEP /2);
+                    
+                    // If the width is equal to the maximum, then
+                    // change states.
+                    if (explosion.getWidth() == maxWidth)
+                        state = EXPLODE_DOWN;
+                    
+                    break;
+                
+                case EXPLODE_DOWN:
+                    
+                    explosion.setWidth(explosion.getWidth() - CONTRACT_STEP);
+                    explosion.setX(explosion.getX() + CONTRACT_STEP / 2);
+                    
+                    explosion.setHeight(explosion.getHeight() - CONTRACT_STEP);
+                    explosion.setY(explosion.getY() + CONTRACT_STEP / 2);  
+                    
+                    // If the width is equal to 2, then we stop.
+                    if (explosion.getWidth() <= 2)
+                        done = true;
+                    
+                    break;
+                    
+                default:
+                    Util.handleMessage("Unrecognized state.", 
+                            Thread.currentThread());
+            }
+        } // end if          
+    }
+    
+    /**
+     * Draws the animation.
+     */
+    public void draw()
+    {        
+        entity.drawSprite();
+        explosion.drawSprite();
+    }
+}

@@ -10,7 +10,6 @@ package ca.couchware.wezzle2d;
  */
 public interface Sprite
 {
-
 	/**
 	 * Get the width of the drawn sprite
 	 * 
@@ -23,7 +22,7 @@ public interface Sprite
 	 * 
 	 * @return The height in pixels of this sprite.
 	 */
-	public int getHeight();
+	public int getHeight();  
 
 	/**
 	 * Draw the sprite onto the graphics context provided.
@@ -46,5 +45,6 @@ public interface Sprite
      * @param width The width.
      * @param height The height.
 	 */
-    public void draw(int x, int y, int width, int height);
+    public void draw(int x, int y, int width, int height, 
+            double theta, int opacity);
 }

@@ -56,6 +56,14 @@ public abstract class Animation
     public abstract void nextFrame(long delta);
     
     /**
+     * Draws the animation.
+     */
+    public void draw()
+    {
+        entity.drawSprite();
+    }
+    
+    /**
      * Performs cleanup to the animation so that it may remain in a consistent
      * state even if it is called half-way through an animation.
      */

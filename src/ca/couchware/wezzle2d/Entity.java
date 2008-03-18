@@ -14,12 +14,22 @@ import ca.couchware.wezzle2d.animation.Animation;
  * 
  * @author Cameron McKay (based on code by Kevin Glass)
  */
-public abstract class Entity implements Drawable
+public class Entity implements Drawable
 {
     /** 
      * Is this visible? 
      */
     protected boolean visible;
+    
+     /**
+     * The rotation.
+     */
+    protected double theta = 0.0;
+    
+    /**
+     * The opacity (in percent).
+     */
+    protected int opacity = 100;
     
     /** 
      * The current x location of this entity. 
@@ -71,15 +81,14 @@ public abstract class Entity implements Drawable
 	 * @param y
 	 *            The initial y location of this entity
 	 */
-	public Entity(final String path, final int x, final int y, 
-            final int width, final int height) 
+	public Entity(final String path, final int x, final int y)           
 	{
         this.visible = true;
 		this.sprite = ResourceFactory.get().getSprite(path);
 		this.x = x;
 		this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = sprite.getWidth();
+        this.height = sprite.getHeight();
 	}
 
 	/**
@@ -203,17 +212,65 @@ public abstract class Entity implements Drawable
     {
         this.width = width;
     }
+
+   /**
+     * Sets the opacity of the sprite (in percent).
+     * @param opacity The opacity.
+     */
+    public void setOpacity(final int opacity)
+    {       
+        if (opacity < 0)
+            this.opacity = 0;
+        else if (opacity > 100)
+            this.opacity = 100;
+        else
+            this.opacity = opacity;
+    }
+    
+     /**
+     * Gets the opacity of the sprite.
+     * @return The opacity.
+     */
+    public int getOpacity()
+    {
+        return opacity;
+    }
     
     /**
-	 * Draw this entity to the graphics context provided.
+     * Rotates the image by theta.
+     */
+    public void setRotation(double theta)
+    {
+        this.theta = theta;
+    }
+    
+    /**
+     * Gets the current theta.
+     */
+    public double getRotation()
+    {
+        return this.theta;
+    }
+    
+    /**
+	 * Draw this entity to the graphics context unless it is not visible
+     * or an animation is attached (the animation will handle the drawing).
 	 */
 	public void draw()
 	{
         if (isVisible() == false)
             return;
-        
-		sprite.draw((int) x, (int) y, width, height);
-	}
+                        
+        if (animation == null)
+            drawSprite();
+        else
+            animation.draw();
+	}       
+    
+    public void drawSprite()
+    {
+        sprite.draw((int) x, (int) y, width, height, theta, opacity);
+    }
 
     public Animation getAnimation()
     {
@@ -237,6 +294,6 @@ public abstract class Entity implements Drawable
             return;
         
         // Pass through to the animation.
-        animation.nextFrame(delta);
+        animation.nextFrame(delta);        
     }
 }

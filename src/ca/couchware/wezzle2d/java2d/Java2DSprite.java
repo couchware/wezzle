@@ -5,6 +5,8 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 
 import ca.couchware.wezzle2d.Sprite;
+import java.awt.AlphaComposite;
+import java.awt.Composite;
 
 /**
  * A sprite to be displayed on the screen. Note that a sprite contains no state
@@ -15,11 +17,15 @@ import ca.couchware.wezzle2d.Sprite;
  * @author Kevin Glass
  */
 public class Java2DSprite implements Sprite
-{
-	/** The image to be drawn for this sprite */
+{    
+	/** 
+     * The image to be drawn for this sprite 
+     */
 	private Image image;
 	
-	/** The game window to which this sprite is going to be drawn */
+	/** 
+     * The game window to which this sprite is going to be drawn 
+     */
 	private Java2DGameWindow window;
 
 	/**
@@ -78,7 +84,8 @@ public class Java2DSprite implements Sprite
 		g.drawImage(image, x, y, null);
 	}
 
-    public void draw(int x, int y, int width, int height)
+    public void draw(int x, int y, int width, int height, 
+            double theta, int opacity)
     {
         Graphics2D g = window.getDrawGraphics();
 		
@@ -88,7 +95,29 @@ public class Java2DSprite implements Sprite
 				RenderingHints.VALUE_RENDER_QUALITY);
 		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
 				RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-		
-		g.drawImage(image, x, y, width, height, null);
+
+        // Opacity.
+        Composite c = null;
+        if (opacity != 1.0)
+        {
+            c = g.getComposite();
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
+                    ((float) opacity) / 100.0f));
+        }
+                
+        // Rotate the sprite.
+        if (theta != 0.0)
+            g.rotate(theta, x + width / 2, y + height / 2);       
+        
+        // Draw the sprite.
+		g.drawImage(image, x, y, width, height, null);                      
+        
+        // Rotate back.
+        if (theta != 0.0)
+            g.rotate(-theta, x + width / 2, y + height / 2);
+        
+        if (opacity != 1.0f)        
+            g.setComposite(c);
+            
     }
 }

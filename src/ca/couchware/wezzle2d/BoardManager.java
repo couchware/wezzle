@@ -373,7 +373,9 @@ public class BoardManager implements Drawable
     {
         for (int i = 0; i < cells; i++)
             if (board[i] != null)
-                board[i].animate(delta);
+            {
+                board[i].animate(delta);                
+            }
     }
 	
 	/**

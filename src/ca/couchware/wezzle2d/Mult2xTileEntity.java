@@ -47,6 +47,6 @@ public class Mult2xTileEntity extends TileEntity
         super.draw();
         
         // Draw bomb on top of it.
-        multSprite.draw((int) x, (int) y, width, height);
+        multSprite.draw((int) x, (int) y, width, height, theta, opacity);
     }
 }
