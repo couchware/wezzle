@@ -86,7 +86,9 @@ public class WorldManager
 		itemList = new LinkedList();
 		itemList.add(new ItemDescriptor(TileEntity.class, 28, -1));
 		itemList.add(new ItemDescriptor(BombTileEntity.class, 1, 50));
-		itemList.add(new ItemDescriptor(Mult2xTileEntity.class, 2, 50));		
+		itemList.add(new ItemDescriptor(Multiply2xTileEntity.class, 2, 50));
+        itemList.add(new ItemDescriptor(Multiply3xTileEntity.class, 2, 20));
+        itemList.add(new ItemDescriptor(Multiply4xTileEntity.class, 2, 10));
 	}
 		
 	/**

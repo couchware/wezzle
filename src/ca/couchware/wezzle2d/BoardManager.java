@@ -2,7 +2,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.tile.Mult2xTileEntity;
+import ca.couchware.wezzle2d.tile.Multiply2xTileEntity;
 import ca.couchware.wezzle2d.tile.BombTileEntity;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
@@ -147,7 +147,7 @@ public class BoardManager
         
         int k;
         for (k = j; k < normal + bomb + mult2x; k++)
-            this.createTile(k, Mult2xTileEntity.class, 
+            this.createTile(k, Multiply2xTileEntity.class, 
                     TileEntity.randomColor());
 		
 		shuffleBoard();
@@ -460,12 +460,15 @@ public class BoardManager
 		return count;
 	}
 	
-	public void createTile(final int index, final Class c, final int color)
+	public TileEntity createTile(final int index, final Class c, final int color)
 	{
          // Sanity check.
         assert (index >= 0 && index < cells);
         assert (c != null);
         assert (color >= 0 && color < TileEntity.NUMBER_OF_COLORS);
+        
+        // The new tile.
+        TileEntity t = null;
         
         try
         {           
@@ -473,23 +476,27 @@ public class BoardManager
             Constructor con = c.getConstructor(new Class[] { BoardManager.class, 
                 Integer.TYPE, Integer.TYPE, Integer.TYPE });
 
-            TileEntity t = (TileEntity) con.newInstance(this, color, 
+            t = (TileEntity) con.newInstance(this, color, 
 				x + (index % columns) * cellWidth,
-				y + (index / columns) * cellHeight);
-
-            // If we're overwriting a tile, remove it first.
-            if (getTile(index) != null)
-                removeTile(index);
-            
-            setTile(index, t);
-            
-            // Add the tile to the bottom layer too.
-            layerMan.add(t, 0);
+				y + (index / columns) * cellHeight);                            
         }
         catch (Exception ex)
         {
             Util.handleException(ex);
+            return null;
         }
+        
+        // If we're overwriting a tile, remove it first.
+        if (getTile(index) != null)
+            removeTile(index);
+
+        setTile(index, t);
+
+        // Add the tile to the bottom layer too.
+        layerMan.add(t, 0);        
+        
+        // Return the tile.
+        return t;
 	}
     
     public void removeTile(final int index)

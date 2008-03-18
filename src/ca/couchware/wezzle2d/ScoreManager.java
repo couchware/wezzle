@@ -2,7 +2,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.tile.Mult2xTileEntity;
+import ca.couchware.wezzle2d.tile.Multiply2xTileEntity;
 import ca.couchware.wezzle2d.tile.BombTileEntity;
 import java.util.Iterator;
 import java.util.Set;
@@ -106,7 +106,7 @@ import java.util.Set;
                 {
                     numNormal++;
                 }
-                else if (t.getClass() == Mult2xTileEntity.class)                    
+                else if (t.getClass() == Multiply2xTileEntity.class)                    
                 {
                     numMult2x++;
                 }

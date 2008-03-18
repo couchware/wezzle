@@ -8,12 +8,12 @@ import ca.couchware.wezzle2d.*;
  * @author cdmckay
  */
 
-public class Mult2xTileEntity extends TileEntity
+public class Multiply3xTileEntity extends TileEntity
 {
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = "resources/Item2x.png";
+    final private String PATH = "resources/Item3x.png";
     
     /**
      * The sprite representing the bomb graphic.
@@ -27,7 +27,7 @@ public class Mult2xTileEntity extends TileEntity
      * @param x
      * @param y
      */    
-    public Mult2xTileEntity(final BoardManager boardMan, final int color, 
+    public Multiply3xTileEntity(final BoardManager boardMan, final int color, 
             final int x, final int y)
     {
         // Invoke super.

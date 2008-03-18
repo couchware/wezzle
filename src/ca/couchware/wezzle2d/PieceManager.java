@@ -1,16 +1,9 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.XYPosition;
-import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.animation.PulseAnimation;
-import ca.couchware.wezzle2d.animation.Animation;
-import ca.couchware.wezzle2d.piece.Piece;
-import ca.couchware.wezzle2d.piece.PieceDash;
-import ca.couchware.wezzle2d.piece.PieceDiagonal;
-import ca.couchware.wezzle2d.piece.PieceDot;
-import ca.couchware.wezzle2d.piece.PieceL;
-import ca.couchware.wezzle2d.piece.PieceLine;
+import ca.couchware.wezzle2d.util.*;
+import ca.couchware.wezzle2d.tile.*;
+import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.piece.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -32,22 +25,32 @@ public class PieceManager implements
     /**
      * Whether or not this is visible.
      */
-    private boolean visible;
+    private boolean visible;       
     
     /**
-     * Was the board recently refactored?
+     * Is the board dropping in a tile?
      */
-    private boolean refactored = false;
+    private boolean tileDropInProgress = false;
     
     /**
-     * Is the board Dropping in a tile?
+     * Is the board animating the tile dropped?
      */
-    private boolean isTileDropActive = false;
+    private boolean tileDropAnimationInProgress = false;
     
     /**
      * The tile drop count.
      */
     private int tileDropCount = 0;
+    
+    /**
+     * The tile currently being dropped.
+     */
+    private TileEntity tileDropped;
+    
+     /**
+     * Was the board recently refactored?
+     */
+    private boolean refactored = false;
     
 	/**
 	 * The current location of the mouse pointer.
@@ -72,17 +75,7 @@ public class PieceManager implements
 	/**
 	 * The piece grid.  The graphical representation of the piece.
 	 */
-	private PieceGrid pieceGrid;
-    
-    /**
-     * The current piece column.
-     */
-    private int pieceColumn;
-    
-    /**
-     * The current piece row.
-     */
-    private int pieceRow;
+	private PieceGrid pieceGrid;       
 	
 	/**
 	 * The board manager the piece manager to attached to.
@@ -342,10 +335,9 @@ public class PieceManager implements
     //--------------------------------------------------------------------------
     
     public void updateLogic(final Game game)
-    { 
-       
-       // If the board is refactoring, do not logicify.
-       if(game.isRefactoring() == true)
+    {        
+        // If the board is refactoring, do not logicify.
+        if (game.isRefactoring() == true)
              return;
         
         // Grab the current mouse position.
@@ -355,54 +347,79 @@ public class PieceManager implements
         //
         // The if statement encompasses the entire function in order to ensure
         // that the board is locked while tiles are dropping.
-        if(isTileDropActive == true)
-        {                               
-            // Find a random empty column and drop in a tile.
-            // The algorithm to find the empty column is as follows:
-            // Whenever there is a blockage, it is always contiguous (XX---)
-            // so we find the first open column, generate a random number
-            // between 0 and maxColumns - openColumnIndex, add the open 
-            // column index to it, and voila! random column.
-            
-            int openColumnIndex = -1;
-            
-            // Find the first open column.
-            for(int i = 0; i < boardMan.getColumns(); i++)
+        if (tileDropInProgress == true)
+        {          
+            // Is the tile dropped currently being animated?
+            // If not, that means we need to drop a new one.            
+            if (tileDropAnimationInProgress == false)
             {
-                if(boardMan.getTile(i) == null)
+                // Find a random empty column and drop in a tile.
+                // The algorithm to find the empty column is as follows:
+                // Whenever there is a blockage, it is always contiguous (XX---)
+                // so we find the first open column, generate a random number
+                // between 0 and maxColumns - openColumnIndex, add the open 
+                // column index to it, and voila! random column.            
+                int openColumnIndex = -1;
+
+                // Find the first open column.
+                for (int i = 0; i < boardMan.getColumns(); i++)
                 {
-                    //We have found an open column.
-                    openColumnIndex = i;
-                    break;
-                }
-                else
-                {
-                    // A tile exists here.. continue with the loop.
-                }
-            }
-            
-            // Make sure we have found a column.
-            assert(openColumnIndex >= 0);
-            
-            int index = Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
-                    + openColumnIndex;
-            
-            // Sanity check.
-            assert (index >= 0 && index < boardMan.getColumns());
-            
-            boardMan.createTile(index, TileEntity.class, 
-                    TileEntity.randomColor());
-             
-            // Run a refactor.
-            game.runRefactor(300);
-             
-            // Check to see if we have more tiles to drop. 
-            // If not stop tile dropping.
-            if(--this.tileDropCount <= 0 )
+                    if(boardMan.getTile(i) == null)
+                    {
+                        //We have found an open column.
+                        openColumnIndex = i;
+                        break;
+                    }
+                    else
+                    {
+                        // A tile exists here... 
+                        // continue with the loop.
+                    }
+                } // end for
+
+                // Make sure we have found a column.
+                assert (openColumnIndex >= 0);
+
+                int index = 
+                        Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
+                        + openColumnIndex;
+
+                // Sanity check.
+                assert (index >= 0 && index < boardMan.getColumns());
+
+                // Create a new tile.
+                tileDropped = boardMan.createTile(index, TileEntity.class, 
+                        TileEntity.randomColor()); 
+
+                // Start the animation.
+                game.soundMan.play(SoundManager.BLEEP);
+                tileDropped.setAnimation(new ZoomInAnimation(tileDropped));
+                tileDropAnimationInProgress = true;
+            } 
+            // If we got here, the animating is in progress, so we need to check
+            // if it's done.  If it is, de-reference it and refactor.
+            else if (tileDropped.getAnimation().isDone() == true)
             {
-                this.isTileDropActive = false; 
+                // Clear the flag.
+                tileDropAnimationInProgress = false;
+                
+                // De-reference the tile dropped.
+                tileDropped = null;
+                
+                // Run refactor.
+                game.runRefactor(300);                
+                
+                // Decrement the number of tiles to drop.
+                tileDropCount--;
+                
+                // Check to see if we have more tiles to drop. 
+                // If not, stop tile dropping.
+                if (tileDropCount == 0 )                
+                    tileDropInProgress = false;                                  
             }
         }
+        // In this case, the tile drop is not activated, so proceed normally
+        // and handle mouse clicks and such.
         else
         {
             if (isMouseLeftReleased() == true)
@@ -445,8 +462,8 @@ public class PieceManager implements
                     // Start new animation.
                     startAnimationAt(ap);
                 } // end if           
-            }
-        }
+            } // end if
+        } // end if
     }
     
     public void initiateCommit(final Game game)
@@ -464,7 +481,7 @@ public class PieceManager implements
         game.soundMan.play(SoundManager.CLICK);
 
         // Start a tile drop.
-        this.isTileDropActive = true;
+        this.tileDropInProgress = true;
 
         // Make visible.
         this.setVisible(false);
@@ -524,7 +541,7 @@ public class PieceManager implements
     
     public synchronized boolean isTileDropping()
     {
-        return this.isTileDropActive;
+        return this.tileDropInProgress;
     }
     
     //--------------------------------------------------------------------------

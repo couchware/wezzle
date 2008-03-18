@@ -441,7 +441,7 @@ public class Game extends Canvas implements GameWindowCallback
                 for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
                 {
                     TileEntity t = boardMan.getTile((Integer) it.next());
-                    t.setAnimation(new ZoomAnimation(t));
+                    t.setAnimation(new ZoomOutAnimation(t));
                 }
 
                 // Set the flag.
