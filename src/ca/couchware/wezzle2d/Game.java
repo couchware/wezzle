@@ -583,7 +583,6 @@ public class Game extends Canvas implements GameWindowCallback
 	{
         if(this.propertyMan != null)
         {
-            System.out.println("Made it here");
             try
             {
                 propertyMan.saveProperties();

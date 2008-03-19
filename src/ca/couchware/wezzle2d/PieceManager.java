@@ -469,7 +469,7 @@ public class PieceManager implements
     public void initiateCommit(final Game game)
     {
          // Remove and score the piece.
-        game.scoreMan.calculatePieceScore(commitPiece(this.getMousePosition()));
+        game.scoreMan.calculatePieceScore(commitPiece(this.pieceGrid.getXYPosition()));
 
         // Set the count to the piece size.
         this.tileDropCount = this.piece.getSize();
