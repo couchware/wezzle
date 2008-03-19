@@ -160,6 +160,11 @@ public class Game extends Canvas implements GameWindowCallback
      */
     private Text highScoreText;
     
+    /**
+     * The level text.
+     */
+    private Text levelText;
+    
     /** 
      * The move count text.
      */
@@ -266,8 +271,16 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         highScoreText.setColor(textColor);
         layerMan.add(highScoreText, 0);
-                
-         // Set up the move count text.
+        
+        // Set up the level text.
+        levelText = ResourceFactory.get().getText();
+        levelText.setXYPosition(669, 270);
+        levelText.setSize(20);
+        levelText.setAnchor(Text.BOTTOM | Text.HCENTER);
+        levelText.setColor(textColor);
+        layerMan.add(levelText, 0);
+        
+        // Set up the move count text.
         moveCountText = ResourceFactory.get().getText();
         moveCountText.setXYPosition(669, 400);
         moveCountText.setSize(20);
@@ -542,6 +555,10 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Draw the high score text.
         highScoreText.setText(String.valueOf(scoreMan.getHighScore()));
+        
+        // Set the level text.
+        levelText.setText("N/A");
+        //levelText.setText(String.valueOf(worldMan.getCurrentLevel()));
         
         // Draw the move count text.
         moveCountText.setText(String.valueOf(moveMan.getCurrentMoveCount()));
