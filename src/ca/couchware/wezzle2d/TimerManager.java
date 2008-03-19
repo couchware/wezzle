@@ -1,7 +1,5 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.java2d.Java2DText;
-
 /**
  * The TimeManager is a class that manages the time for the Timer.
  * The class works as follows: An internal count is held starting at 0.
@@ -11,7 +9,7 @@ import ca.couchware.wezzle2d.java2d.Java2DText;
  * @author Kevin Grad
  *
  */
-public class TimeManager 
+public class TimerManager 
 {
 
 	/** The current time on the timer. */
@@ -26,15 +24,13 @@ public class TimeManager
     /** is the game paused? */
     private boolean paused;
 	
-	
-	
 	/**
 	 * The overloaded constructor created a timer manager with a passed in 
 	 * initial time.
 	 * 
 	 * @param initialTime The initial time on the timer.
 	 */
-	public TimeManager( int initialTime )
+	public TimerManager( int initialTime )
 	{
 		assert(initialTime > 0);
 		
@@ -48,7 +44,7 @@ public class TimeManager
 	 * The Default constructor constructs a timer manager with an 
 	 * initial time of 20 seconds.
 	 */
-	public TimeManager()
+	public TimerManager()
 	{
 		// Call the overloaded constructor.
 		this(20);
@@ -96,17 +92,9 @@ public class TimeManager
     /**
      * Pause the timer.
      */
-    public void pause()
+    public void setPaused(final boolean paused)
     {
-        this.paused = true;
-    }
-	
-    /**
-     * Unpause the timer.
-     */
-    public void unPause()
-    {
-        this.paused = false;
+        this.paused = paused;
     }
     
     /**
@@ -142,33 +130,28 @@ public class TimeManager
 	 * 
 	 * @param offset The elapsed time.
 	 */
-	public void incrementInternalTime(long offset, final Game game)
+	public void incrementInternalTime(long offset)
 	{
         // If the timer is paused, don't do anything.
-        if(this.paused)
+        if (paused == true)
             return;
         
-		assert(offset >= 0);
+		assert (offset >= 0);
 		
 		this.internalTime += offset;
 		
 		// Check to see if it has been a second.
-		if(this.internalTime >= 1000)
+		if (this.internalTime >= 1000)
 		{
-			// A second has elapsed, decrement the timer, reset the internal timer
-			// and check if < 0.
+			// A second has elapsed, decrement the current time and the
+            // internal time by 1000 (a second).
 			this.currentTime--;
-			this.internalTime = 0;
-            
-			if(this.currentTime <= 0)
-			{
-                // Commit the piece.
-                game.pieceMan.initiateCommit(game);
-			}	
+			this.internalTime -= 1000;            			
 		}
 		else
 		{
-			// Purposefully left blank. In this scenario nothing should be done.
+			// Purposefully left blank. 
+            // In this scenario nothing should be done.
 		}
 	}
 	

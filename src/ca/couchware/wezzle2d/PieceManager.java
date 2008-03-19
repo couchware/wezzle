@@ -414,8 +414,11 @@ public class PieceManager implements
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
-                if (tileDropCount == 0 )                
-                    tileDropInProgress = false;                                  
+                if (tileDropCount == 0)
+                {
+                    tileDropInProgress = false;
+//                    game.timerMan.resetTimer();
+                }
             }
         }
         // In this case, the tile drop is not activated, so proceed normally
@@ -468,7 +471,11 @@ public class PieceManager implements
     
     public void initiateCommit(final Game game)
     {
-         // Remove and score the piece.
+        // If a tile drop is already in progress, then return.
+        if (tileDropInProgress == true)
+            return;
+        
+        // Remove and score the piece.
         game.scoreMan.calculatePieceScore(commitPiece(this.pieceGrid.getXYPosition()));
 
         // Set the count to the piece size.
@@ -494,7 +501,7 @@ public class PieceManager implements
         setMouseRightReleased(false);
 
         // Reset timer.
-        game.timeMan.pause();
+        game.timerMan.setPaused(true);
     }
     
     //--------------------------------------------------------------------------
@@ -539,7 +546,7 @@ public class PieceManager implements
         this.mouseRightReleased = mouseRightReleased;
     }
     
-    public synchronized boolean isTileDropping()
+    public synchronized boolean isTileDropInProgress()
     {
         return this.tileDropInProgress;
     }

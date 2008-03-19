@@ -67,7 +67,7 @@ public class Game extends Canvas implements GameWindowCallback
 	/** 
 	 * The manager in charge of keeping track of the time. 
 	 */
-	public TimeManager timeMan;
+	public TimerManager timerMan;
 	
     /**
      * If true, refactor will be activated next loop.
@@ -228,7 +228,7 @@ public class Game extends Canvas implements GameWindowCallback
         
 		// Create the board manager.
 		boardMan = new BoardManager(layerMan, 272, 139, 8, 10);
-		boardMan.generateBoard(40, 10, 6);
+		boardMan.generateBoard(30, 20, 6);
 		
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
@@ -289,7 +289,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(moveCountText, 0);
                         		
 		// Create the time manager.
-		timeMan = new TimeManager();
+		timerMan = new TimerManager();
 
 		// Setup the initial game state.
 		startGame();
@@ -411,14 +411,14 @@ public class Game extends Canvas implements GameWindowCallback
                 else
                 {
                    // Make sure the tiles are not still dropping.
-                    if(pieceMan.isTileDropping() == false)
+                    if (pieceMan.isTileDropInProgress() == false)
                     {
                         pieceMan.loadRandomPiece();   
                         pieceMan.setVisible(true);
                         
-                        //Unpause the timer.
-                        timeMan.resetTimer();
-                        timeMan.unPause();
+                        // Unpause the timer.
+                        timerMan.resetTimer();
+                        timerMan.setPaused(false);
                         
                         // Reset the mouse.
                         pieceMan.setMouseLeftReleased(false);
@@ -544,11 +544,22 @@ public class Game extends Canvas implements GameWindowCallback
         // Animate all the pieces.
         boardMan.animateAll(delta);
         		
+        // Handle the timer.
+		timerMan.incrementInternalTime(delta);
+        
+        // Check to see if we should force a piece commit.
+        if (timerMan.getTime() < 0)
+        {
+            // Commit the piece.
+            timerMan.setTime(0);
+            pieceMan.initiateCommit(this);            
+        }
+        
         // Update piece manager logic and then draw it.
         pieceMan.updateLogic(this);
 		
 		// Draw the timer text.
-		timerText.setText(String.valueOf(timeMan.getTime()));		
+		timerText.setText(String.valueOf(timerMan.getTime()));		
                 
         // Draw the score text.
         scoreText.setText(String.valueOf(scoreMan.getTotalScore()));
@@ -564,10 +575,7 @@ public class Game extends Canvas implements GameWindowCallback
         moveCountText.setText(String.valueOf(moveMan.getCurrentMoveCount()));
         
         // Draw the layer manager.
-        layerMan.draw();
-		
-		// Handle the timer.
-		timeMan.incrementInternalTime(delta, this);
+        layerMan.draw();					
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
@@ -581,8 +589,8 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void windowClosed()
 	{
-        if(this.propertyMan != null)
-        {
+        if (this.propertyMan != null)
+        {            
             try
             {
                 propertyMan.saveProperties();
