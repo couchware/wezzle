@@ -80,9 +80,14 @@ public class SoundManager
     private final AudioClip[] bleepClip = new AudioClip[4];
 
     /**
+     * The click counter.
+     */
+    private int clickCounter;
+    
+    /**
      * The click clip.
      */
-    private final AudioClip clickClip;
+    private final AudioClip[] clickClip = new AudioClip[4];
 
     /**
      * The constructor.
@@ -105,7 +110,9 @@ public class SoundManager
                 bleepClip[i] = java.applet.Applet.newAudioClip(bleepUrl);
 
         // Initialize the click.
-        clickClip = java.applet.Applet.newAudioClip(clickUrl);
+        clickCounter = 0;
+         for (int i = 0; i < clickClip.length; i++)
+                clickClip[i] = java.applet.Applet.newAudioClip(clickUrl);
     }
     
     /**
@@ -117,38 +124,32 @@ public class SoundManager
         //Play the line sound. Blah.
         if (soundClip == LINE)
         {
-                Util.handleMessage("It's a normal!", Thread.currentThread());
-                synchronized (lineClip)
-                {
-                        lineClip[lineCounter].play();
-                        lineCounter = (lineCounter + 1) % lineClip.length;
-                }
+            Util.handleMessage("It's a normal!", Thread.currentThread());
+            
+            lineClip[lineCounter].play();
+            lineCounter = (lineCounter + 1) % lineClip.length;
         }
         else if (soundClip == BOMB)
         {
-                Util.handleMessage("It's a bomb!", Thread.currentThread());
-                synchronized (bombClip)
-                {
-                        bombClip[bombCounter].play();
-                        bombCounter = (bombCounter + 1) % bombClip.length;
-                }
+            Util.handleMessage("It's a bomb!", Thread.currentThread());
+
+            bombClip[bombCounter].play();
+            bombCounter = (bombCounter + 1) % bombClip.length;       
         }
         else if(soundClip == BLEEP)
         {
            Util.handleMessage("It's a bleep!", Thread.currentThread());
-            synchronized (bleepClip)
-            {
-                bleepClip[bleepCounter].play();
-                bleepCounter = (bleepCounter + 1) % bleepClip.length;
-            }
+           
+            bleepClip[bleepCounter].play();
+            bleepCounter = (bleepCounter + 1) % bleepClip.length;
         }
         else if(soundClip == CLICK)
         {
             Util.handleMessage("It's a click!", Thread.currentThread());
-            synchronized (clickClip)
-            {
-                clickClip.play();
-            } 
+            
+            clickClip[clickCounter].play();
+            clickCounter = (clickCounter + 1) % clickClip.length;
+            
         } // end if
     }
 }
