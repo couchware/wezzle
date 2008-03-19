@@ -39,6 +39,11 @@ import java.util.Set;
     final private BoardManager boardMan;
     
     /**
+     * The Property Manager.
+     */
+    final private PropertyManager propertyMan;
+    
+    /**
      * The score this level.
      */
     private int levelScore;
@@ -71,6 +76,7 @@ import java.util.Set;
     {
         // Store reference to board manager.
         this.boardMan = boardMan;
+        this.propertyMan = propertyMan;
         
         // Initialize the scores.
         this.totalScore = 0;
@@ -203,6 +209,7 @@ import java.util.Set;
     public void setHighScore(int highScore) 
     {	
         this.highScore = highScore;
+        this.propertyMan.setProperty(PropertyManager.HIGH_SCORE, String.valueOf(highScore));
     }
 
     /**
@@ -212,7 +219,7 @@ import java.util.Set;
     {
         try
         {
-          //      propertyManager.setProperty(PropertyManager.HIGH_SCORE, "0");
+            this.propertyMan.setProperty(PropertyManager.HIGH_SCORE, "0");
             this.setHighScore(0);
         }
         catch(Exception e)

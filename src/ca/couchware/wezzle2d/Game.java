@@ -581,6 +581,22 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void windowClosed()
 	{
+        if(this.propertyMan != null)
+        {
+            System.out.println("Made it here");
+            try
+            {
+                propertyMan.saveProperties();
+            }
+            catch(Exception e)
+            {
+                Util.handleException(e);
+            }
+        }
+        else
+        {
+            // Do nothin. The property man is not yet initialized.
+        }
 		System.exit(0);
 	}
     
