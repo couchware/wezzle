@@ -429,6 +429,15 @@ public class PieceManager implements
         // and handle mouse clicks and such.
         else
         {
+            
+            // Handle Level up.
+            if(game.scoreMan.getLevelScore() >= game.scoreMan.getTargetLevelScore())
+            {
+                Util.handleMessage("Level up!", Thread.currentThread());
+                game.worldMan.levelUp(game);
+                
+            }
+            
             if (isMouseLeftReleased() == true)
             {            
                initiateCommit(game);

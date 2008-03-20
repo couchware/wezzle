@@ -37,7 +37,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
 	 * The manager in charge of maintaining the board.
 	 */
-	private BoardManager boardMan;
+	public BoardManager boardMan;
 	
     /**
      * The layer manager.
@@ -69,6 +69,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The manager in charge of sound.
      */
     public SoundManager soundMan;
+    
+    /**
+     * The Manager in charge of the world.
+     */
+    public WorldManager worldMan;
     
 	/** 
 	 * The manager in charge of keeping track of the time. 
@@ -233,8 +238,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan = new LayerManager(2);
         
 		// Create the board manager.
-		boardMan = new BoardManager(layerMan, 272, 139, 8, 10);
-		boardMan.generateBoard(30, 20, 6);		        
+		boardMan = new BoardManager(layerMan, 272, 139, 8, 10);        
         
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
@@ -248,6 +252,12 @@ public class Game extends Canvas implements GameWindowCallback
         // Create the score manager.
         scoreMan = new ScoreManager(boardMan, propertyMan);
 
+        // Create the world manager.
+        worldMan = new WorldManager(propertyMan, scoreMan);
+        
+        // Generate the game board.
+        boardMan.generateBoard(worldMan.getItemList());		
+        
         // Create the sound manager.
         soundMan = new SoundManager();
         
@@ -581,8 +591,8 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreText.setText(String.valueOf(scoreMan.getHighScore()));
         
         // Set the level text.
-        levelText.setText("N/A");
-        //levelText.setText(String.valueOf(worldMan.getCurrentLevel()));
+        //levelText.setText("N/A");
+        levelText.setText(String.valueOf(worldMan.getCurrentLevel()));
         
         // Draw the move count text.
         moveCountText.setText(String.valueOf(moveMan.getCurrentMoveCount()));

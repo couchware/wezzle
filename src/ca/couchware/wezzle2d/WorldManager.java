@@ -85,7 +85,7 @@ public class WorldManager
 				
 		itemList = new LinkedList();
 		itemList.add(new ItemDescriptor(TileEntity.class, 28, -1));
-		itemList.add(new ItemDescriptor(BombTileEntity.class, 1, 50));
+		itemList.add(new ItemDescriptor(BombTileEntity.class, 5, 50));
 		itemList.add(new ItemDescriptor(Multiply2xTileEntity.class, 2, 50));
         itemList.add(new ItemDescriptor(Multiply3xTileEntity.class, 2, 20));
         itemList.add(new ItemDescriptor(Multiply4xTileEntity.class, 2, 10));
@@ -123,6 +123,15 @@ public class WorldManager
 		this.setCurrentLevel(currentLevel + 1);
 	}	
 	
+    
+    public void levelUp(final Game game)
+    {
+        this.incrementCurrentLevel();
+        scoreMan.setLevelScore(0);
+        game.boardMan.generateBoard(this.getItemList());
+    }
+    
+    
 	/**
 	 * Get the descriptor for the item at the specified index.
 	 * 

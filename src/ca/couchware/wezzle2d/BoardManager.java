@@ -7,6 +7,7 @@ import ca.couchware.wezzle2d.tile.BombTileEntity;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 /**
@@ -130,25 +131,39 @@ public class BoardManager
     //--------------------------------------------------------------------------
 	
 	/**
-	 * Generates a random game board with the given parameters.
-	 * @param tileMax
+	 * Generates a random game board with a linked list of item descriptors.
+     * 
+	 * @param items A linked liste of Item Descriptors.
 	 */
-	public void generateBoard(int normal, int bomb, int mult2x)
+	public void generateBoard(LinkedList items)
 	{
-		int i;
-        for (i = 0; i < normal; i++)
-			this.createTile(i, TileEntity.class, 
-                    TileEntity.randomColor());
+        assert(items.get(0) instanceof ItemDescriptor);
         
-        int j;
-        for (j = i; j < normal + bomb; j++)
-            this.createTile(j, BombTileEntity.class,
+        int count = 0;
+        for(int i = 0; i < items.size(); i++)
+        {
+            for(int j = 0; j < ((ItemDescriptor)items.get(i)).getInitialAmount(); j++)
+            {
+                this.createTile(count, ((ItemDescriptor)items.get(i)).getItemClass(), 
                     TileEntity.randomColor());
+                count++;
+            }
+        }
         
-        int k;
-        for (k = j; k < normal + bomb + mult2x; k++)
-            this.createTile(k, Multiply2xTileEntity.class, 
-                    TileEntity.randomColor());
+//		int i;
+//        for (i = 0; i < normal; i++)
+//			this.createTile(i, TileEntity.class, 
+//                    TileEntity.randomColor());
+//        
+//        int j;
+//        for (j = i; j < normal + bomb; j++)
+//            this.createTile(j, BombTileEntity.class,
+//                    TileEntity.randomColor());
+//        
+//        int k;
+//        for (k = j; k < normal + bomb + mult2x; k++)
+//            this.createTile(k, Multiply2xTileEntity.class, 
+//                    TileEntity.randomColor());
 		
 		shuffleBoard();
 		refactorBoard();
