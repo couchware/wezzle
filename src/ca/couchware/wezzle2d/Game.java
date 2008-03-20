@@ -602,9 +602,16 @@ public class Game extends Canvas implements GameWindowCallback
         if (pauseButton.wasPushed() == true)
         {
             if (boardMan.isVisible() == true)
+            {
                 boardMan.setVisible(false);
+                pieceMan.setVisible(false);
+            }
             else
+            {
                 boardMan.setVisible(true);
+                if (isRefactoring() == false)
+                    pieceMan.setVisible(true);
+            }
         }
         
         // Draw the layer manager.

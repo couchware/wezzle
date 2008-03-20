@@ -218,7 +218,8 @@ public class WorldManager
 		}
 		
 		// We should never get here.
-		Util.handleWarning("Random number out of range! (" + randomNumber + ").", Thread.currentThread());
+		Util.handleWarning("Random number out of range! (" + randomNumber + ").", 
+                Thread.currentThread());
 		return ((ItemDescriptor) itemList.get(0)).getItemClass();
 	}
 			
