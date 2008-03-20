@@ -426,8 +426,8 @@ public class Game extends Canvas implements GameWindowCallback
                     boardMan.findXMatch(tileRemovalSet);
                     boardMan.findYMatch(tileRemovalSet);
 
-                    // If there are matches, score them, remove them and then
-                    // refactor again.
+                    // If there are matches, score them, remove 
+                    // them and then refactor again.
                     if (tileRemovalSet.size() > 0)
                     {                                       
                         // Activate the line removal.
@@ -593,11 +593,18 @@ public class Game extends Canvas implements GameWindowCallback
             highScoreText.setText(String.valueOf(scoreMan.getHighScore()));
 
             // Set the level text.
-            //levelText.setText("N/A");
             levelText.setText(String.valueOf(worldMan.getCurrentLevel()));
 
             // Draw the move count text.
             moveCountText.setText(String.valueOf(moveMan.getCurrentMoveCount()));                            
+        }
+        
+        if (pauseButton.wasPushed() == true)
+        {
+            if (boardMan.isVisible() == true)
+                boardMan.setVisible(false);
+            else
+                boardMan.setVisible(true);
         }
         
         // Draw the layer manager.

@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d.button;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
-import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;

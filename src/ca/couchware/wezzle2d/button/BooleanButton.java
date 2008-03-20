@@ -41,14 +41,12 @@ public abstract class BooleanButton extends Button
     
     public void handleReleased()
     {
-        if (activated == true)
-        {
-            activated = false;            
-        }
-        else
-        {
-            activated = true;            
-        }
+        pushed = true;
+        
+        if (activated == true)        
+            activated = false;                    
+        else        
+            activated = true;                    
         
         state = STATE_HOVER;
     }

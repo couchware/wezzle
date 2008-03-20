@@ -771,21 +771,7 @@ public class BoardManager
     public void incrementNumItems()
     {
         this.numItems++;
-    }
-    
-//	/**
-//	 * Draw the board to the screen.
-//	 */
-//	public void draw()
-//	{
-//        // Don't draw if not visible.
-//        if (isVisible() == false)
-//            return;
-//        
-//		for (int i = 0; i < board.length; i++)
-//			if (board[i] != null)
-//				board[i].draw();
-//	}
+    }    
 	
 	/**
 	 * Prints board to console (for debugging purposes).
@@ -809,6 +795,16 @@ public class BoardManager
     public void setVisible(boolean visible)
     {
         this.visible = visible;
+        
+        for (int i = 0; i < board.length; i++)
+        {
+            if (board[i] != null)
+            {
+                board[i].setVisible(visible);
+                if (board[i].getAnimation() != null)
+                    board[i].getAnimation().setVisible(visible);
+            }
+        }
     }
 
     public boolean isVisible()

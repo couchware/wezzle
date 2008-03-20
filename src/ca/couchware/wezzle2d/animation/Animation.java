@@ -10,6 +10,11 @@ import ca.couchware.wezzle2d.*;
 public abstract class Animation 
 {
     /**
+     * Whether or not the animation is visible.
+     */
+    protected boolean visible;
+    
+    /**
      * The entity being animated.
      */
     protected Entity entity;
@@ -42,6 +47,9 @@ public abstract class Animation
         // Entity cannot be null.
         assert(entity != null);
         
+        // Animation is initially visible.
+        this.visible = true;
+        
         this.entity = entity;
         this.period = period;
         this.frame = 0;
@@ -72,4 +80,22 @@ public abstract class Animation
     {
         return done;
     }
+    
+    /**
+     * Checks the visibility of the animation.
+     * @return True if visible, false otherwise.
+     */
+    public boolean isVisible()
+    {
+        return visible;
+    }
+    
+    /**
+     * Sets the visibility of the animation.
+     * @param visible True if visible, false if not.
+     */
+    public void setVisible(final boolean visible)
+    {
+        this.visible = visible;
+    } 
 }

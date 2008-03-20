@@ -158,4 +158,12 @@ public class ExplosionAnimation extends Animation
             }
         } // end if          
     }
+    
+    public void setVisible(final boolean visible)
+    {
+        this.visible = visible;
+        
+        if (explosion != null)
+            explosion.setVisible(visible);
+    }
 }
