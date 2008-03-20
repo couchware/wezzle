@@ -68,6 +68,11 @@ public class BoardManager
 	 * The height of the board.
 	 */
 	final private int height;
+    
+    /**
+     * The number of items.
+     */
+    int numItems;
 	
 	/**
 	 * The width of a grid cell.
@@ -120,6 +125,9 @@ public class BoardManager
 		// Set the board width and height.
 		this.width = columns * cellWidth;
 		this.height = rows * cellHeight;
+        
+        //Set the number of items.
+        this.numItems = 0;
 		
 		// Initialize board.
 		board = new TileEntity[columns * rows];
@@ -483,6 +491,10 @@ public class BoardManager
         assert (c != null);
         assert (color >= 0 && color < TileEntity.NUMBER_OF_COLORS);
         
+        // If this is an item, increment the count.
+        if (c != TileEntity.class)
+            this.incrementNumItems();
+        
         // The new tile.
         TileEntity t = null;
         
@@ -520,6 +532,10 @@ public class BoardManager
         // Sanity check.
 		assert(index >= 0 && index < cells);
 
+        // If this is an item, decrement the item count.
+        if(getTile(index).getClass() != TileEntity.class)
+            this.decrementNumItems();
+        
         // Remove from layer manager.
         layerMan.remove(getTile(index), 0);
         
@@ -736,6 +752,26 @@ public class BoardManager
     {
         return rows;
     }    
+    
+    public int getNumItems()
+    {
+        return this.numItems;
+    }
+    
+    public void setNumItems(int num)
+    {
+        this.numItems = num;
+    }
+    
+    public void decrementNumItems()
+    {
+        this.numItems--;
+    }
+    
+    public void incrementNumItems()
+    {
+        this.numItems++;
+    }
     
 //	/**
 //	 * Draw the board to the screen.

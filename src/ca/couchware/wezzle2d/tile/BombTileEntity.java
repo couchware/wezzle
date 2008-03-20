@@ -37,6 +37,7 @@ public class BombTileEntity extends TileEntity
         bombSprite = ResourceFactory.get().getSprite(PATH);
     }
     
+    
     /**
      * Override that draw muthafucka.
      */

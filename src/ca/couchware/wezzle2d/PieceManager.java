@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 /**
@@ -391,9 +392,28 @@ public class PieceManager implements
                 // Sanity check.
                 assert (index >= 0 && index < boardMan.getColumns());
 
+                // Determine the type of tile to drop. This is done by 
+                // consulting the available tiles and their probabilities
+                // from the item list and checking to see if a special tile
+                // needs to be dropped.
+                
+                
+                
                 // Create a new tile.
-                tileDropped = boardMan.createTile(index, TileEntity.class, 
+                
+                // If there is only 1 item left (to ensure only 1 drop per drop 
+                // in) and we have less than the max number of items...
+                //  drop an item in. Otherwise drop a normal.
+                if(tileDropCount == 1 && game.boardMan.getNumItems() < game.worldMan.getNumMaxItems())
+                {
+                    tileDropped = boardMan.createTile(index, game.worldMan.pickRandomItem(), 
                         TileEntity.randomColor()); 
+                }
+                else
+                {
+                     tileDropped = boardMan.createTile(index, TileEntity.class, 
+                        TileEntity.randomColor()); 
+                }
 
                 // Start the animation.
                 game.soundMan.play(SoundManager.BLEEP);

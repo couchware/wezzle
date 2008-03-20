@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.tile.*;
+import ca.couchware.wezzle2d.util.Util;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -22,6 +23,11 @@ public class WorldManager
 	 */
 	private final ScoreManager scoreMan;
 	
+    /**
+     * The maximum items available for the level.
+     */
+    private int maxItems;
+    
 	/**
 	 * The current level
 	 */
@@ -82,6 +88,9 @@ public class WorldManager
 				
 		// Set the starting level.
 		setCurrentLevel(this.difficulty);
+        
+        // Set the max items.
+        this.maxItems = 5;
 				
 		itemList = new LinkedList();
 		itemList.add(new ItemDescriptor(TileEntity.class, 28, -1));
@@ -111,6 +120,22 @@ public class WorldManager
 		scoreMan.setTargetLevelScore(generateTargetLevelScore(currentLevel));				
 	}	
 	
+    /**
+     * @return the maximum number of items.
+     */
+    public int getNumMaxItems()
+    {
+        return this.maxItems;
+    }
+    
+     /**
+     * set the maximum number of items.
+     */
+    public void setNumMaxItems(int max)
+    {
+        this.maxItems = max;
+    }
+    
 	/**
 	 * Increment the level.
 	 */
@@ -159,6 +184,42 @@ public class WorldManager
         }
 		
 		return null;
+	}
+    
+    
+    public Class pickRandomItem()
+	{
+	
+		// Create an array representing the item distribution.
+		int dist[] = new int[itemList.size() + 1];
+		dist[0] = 0;
+		
+		// Determine the distribution.
+		int i = 1;
+		for (Iterator it = itemList.iterator(); it.hasNext();)
+		{
+            ItemDescriptor item = (ItemDescriptor) it.next();
+            
+			if (item.getProbability() == -1)
+				dist[i] = dist[i - 1];
+			else			
+				dist[i] = dist[i - 1] + item.getProbability();
+			
+			i++;
+		}
+		
+		// Pick a random number between 0 and dist[dist.length - 1].
+		int randomNumber = Util.random.nextInt(dist[dist.length - 1]);
+		
+		for (int j = 1; j < dist.length; j++)
+		{
+			if (randomNumber < dist[j])
+				return ((ItemDescriptor) itemList.get(j - 1)).getItemClass();
+		}
+		
+		// We should never get here.
+		Util.handleWarning("Random number out of range! (" + randomNumber + ").", Thread.currentThread());
+		return ((ItemDescriptor) itemList.get(0)).getItemClass();
 	}
 			
 	/**
