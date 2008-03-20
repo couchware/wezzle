@@ -15,7 +15,7 @@ public class Util
 	 * Write out to the log. If this is set to true, all messages and
 	 * errors will be written out to the log file.
 	 */
-	private static final boolean USE_LOG = true;
+	private static final boolean USE_LOG = false;
 	
 	/**
 	 * The random number generator.

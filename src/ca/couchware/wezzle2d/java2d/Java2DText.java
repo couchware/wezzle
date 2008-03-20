@@ -140,7 +140,7 @@ public class Java2DText implements Text
 	 * 
 	 * @param t The text.
 	 */
-	public void setText(String text)
+	public void setText(final String text)
 	{
 		this.text = text;
 		this.textLayout = new TextLayout(text, font, 
@@ -176,7 +176,7 @@ public class Java2DText implements Text
         return x;
     }
 
-    public void setX(int x)
+    public void setX(final int x)
     {
         this.x = x;
     }
@@ -186,7 +186,7 @@ public class Java2DText implements Text
         return y;
     }
 
-    public void setY(int y)
+    public void setY(final int y)
     {
         this.y = y;
     }      

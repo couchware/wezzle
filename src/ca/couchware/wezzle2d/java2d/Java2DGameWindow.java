@@ -237,7 +237,8 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 //			g.fillRect(0, 0, 800, 600);
 			
 			// Draw the current background.
-			Sprite s = ResourceFactory.get().getSprite("resources/Background1.png");
+			Sprite s = ResourceFactory.get()
+                    .getSprite("resources/Background1.png");
 			s.draw(0, 0);
 
 			if (callback != null)

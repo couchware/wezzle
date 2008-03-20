@@ -22,6 +22,10 @@ import java.util.Set;
 public class PieceManager implements 
         Drawable, MouseListener, MouseMotionListener
 {	
+    // -------------------------------------------------------------------------
+    // Constants
+    // -------------------------------------------------------------------------
+    
     /**
      * Whether or not this is visible.
      */
@@ -548,7 +552,17 @@ public class PieceManager implements
     
     public synchronized boolean isTileDropInProgress()
     {
-        return this.tileDropInProgress;
+        return tileDropInProgress;
+    }
+    
+    public void setVisible(boolean visible)
+    {
+         this.visible = visible;
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
     }
     
     //--------------------------------------------------------------------------
@@ -641,15 +655,5 @@ public class PieceManager implements
 	{	    
 		// Set the mouse position.
 		setMousePosition(e.getX(), e.getY());
-    }
-
-    public void setVisible(boolean visible)
-    {
-         this.visible = visible;
-    }
-
-    public boolean isVisible()
-    {
-        return visible;
     }
 }

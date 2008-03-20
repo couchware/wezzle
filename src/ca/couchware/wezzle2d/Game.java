@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.button.CircularBooleanButton;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
@@ -28,6 +29,11 @@ import java.util.Set;
  */
 public class Game extends Canvas implements GameWindowCallback
 {	    
+    /**
+     * The text color.
+     */
+    final public static Color TEXT_COLOR = new Color(252, 233, 45);
+    
     /**
 	 * The manager in charge of maintaining the board.
 	 */
@@ -69,6 +75,11 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public TimerManager timerMan;
 	
+    /**
+     * The pause button.
+     */
+    public CircularBooleanButton pauseButton;
+    
     /**
      * If true, refactor will be activated next loop.
      */
@@ -138,12 +149,7 @@ public class Game extends Canvas implements GameWindowCallback
 	/** 
      * The normal title of the window. 
      */
-	private String windowTitle = "Wezzle";
-	
-    /**
-     * The text color.
-     */
-    private Color textColor = new Color(252, 233, 45);
+	private String windowTitle = "Wezzle";	    
     
 	/** 
      * The timer text. 
@@ -228,8 +234,8 @@ public class Game extends Canvas implements GameWindowCallback
         
 		// Create the board manager.
 		boardMan = new BoardManager(layerMan, 272, 139, 8, 10);
-		boardMan.generateBoard(30, 20, 6);
-		
+		boardMan.generateBoard(30, 20, 6);		        
+        
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
         layerMan.add(pieceMan, 1);
@@ -247,13 +253,20 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the move manager.
         moveMan = new MoveManager();
-                                                                                          
+                                
+        // Create a new pause button.
+        pauseButton = new CircularBooleanButton(50, 50);
+        pauseButton.setText("Pause");
+        layerMan.add(pauseButton, 1);
+        window.addMouseListener(pauseButton);
+        window.addMouseMotionListener(pauseButton);
+        
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
         timerText.setXYPosition(400, 100);
 		timerText.setSize(50);
 		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
-		timerText.setColor(textColor);
+		timerText.setColor(TEXT_COLOR);
         layerMan.add(timerText, 0);
                 
         // Set up the score text.
@@ -261,7 +274,7 @@ public class Game extends Canvas implements GameWindowCallback
         scoreText.setXYPosition(126, 400); 
         scoreText.setSize(20);
         scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        scoreText.setColor(textColor);
+        scoreText.setColor(TEXT_COLOR);
         layerMan.add(scoreText, 0);
         
         // Set up the high score text.
@@ -269,7 +282,7 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreText.setXYPosition(126, 270);
         highScoreText.setSize(20);
         highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        highScoreText.setColor(textColor);
+        highScoreText.setColor(TEXT_COLOR);
         layerMan.add(highScoreText, 0);
         
         // Set up the level text.
@@ -277,7 +290,7 @@ public class Game extends Canvas implements GameWindowCallback
         levelText.setXYPosition(669, 270);
         levelText.setSize(20);
         levelText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        levelText.setColor(textColor);
+        levelText.setColor(TEXT_COLOR);
         layerMan.add(levelText, 0);
         
         // Set up the move count text.
@@ -285,7 +298,7 @@ public class Game extends Canvas implements GameWindowCallback
         moveCountText.setXYPosition(669, 400);
         moveCountText.setSize(20);
         moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        moveCountText.setColor(textColor);
+        moveCountText.setColor(TEXT_COLOR);
         layerMan.add(moveCountText, 0);
                         		
 		// Create the time manager.

@@ -34,4 +34,12 @@ public class XYPosition
 	{
 		return y;
 	}
+    
+    /**
+     * Converts it to a pretty string.
+     */
+    public String toString()
+    {
+        return "(" + x + "," + y + ")";
+    }
 }
