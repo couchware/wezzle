@@ -12,12 +12,35 @@ import java.awt.Color;
 public interface Text extends Drawable
 {
 	
-	public static int TOP = 1;
-	public static int VCENTER = 2;
-	public static int BOTTOM = 4;
-	public static int LEFT = 8;
-	public static int HCENTER = 16;
-	public static int RIGHT = 32;
+	/**
+     * Align at the vertical top.
+     */
+    final public static int TOP = 1;
+    
+    /**
+     * Align at the vertical center.
+     */
+	final public static int VCENTER = 2;
+    
+    /**
+     * Align at the vertical bottom.
+     */
+	final public static int BOTTOM = 4;
+    
+    /**
+     * Align at the horizontal left.
+     */
+	final public static int LEFT = 8;
+    
+    /**
+     * Align at the horizontal centre.
+     */
+	final public static int HCENTER = 16;
+    
+    /**
+     * Align at the horizontal right.
+     */
+	final public static int RIGHT = 32;
 	
     /**
      * Get the X-coordinate.

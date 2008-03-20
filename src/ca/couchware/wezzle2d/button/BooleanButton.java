@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.button;
 
 import java.awt.Shape;
+import java.awt.geom.RectangularShape;
 
 /**
  *
@@ -14,10 +15,12 @@ public abstract class BooleanButton extends Button
      */
     protected boolean activated;
         
-    public BooleanButton(final int x, final int y, final Shape shape)
+    public BooleanButton(final int x, final int y, 
+            final int width, final int height,
+            final RectangularShape shape)
     {
         // Invoke super.
-        super(x, y, shape);
+        super(x, y, width, height, shape);
         
         // Set the button to be initially deactivated.
         this.activated = false;

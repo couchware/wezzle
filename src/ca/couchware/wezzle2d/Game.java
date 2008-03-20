@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.button.CircularBooleanButton;
+import ca.couchware.wezzle2d.button.*;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
@@ -8,7 +8,6 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -265,8 +264,9 @@ public class Game extends Canvas implements GameWindowCallback
         moveMan = new MoveManager();
                                 
         // Create a new pause button.
-        pauseButton = new CircularBooleanButton(50, 50);
+        pauseButton = new CircularBooleanButton(18, 600 - 18);
         pauseButton.setText("Pause");
+        pauseButton.setAnchor(Button.BOTTOM | Button.LEFT);
         layerMan.add(pauseButton, 1);
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);

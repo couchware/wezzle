@@ -85,7 +85,7 @@ public class Java2DText implements Text
 	/**
      * The current anchor 
      */
-	private int currentAnchor;
+	private int anchor;
 
 	/**
 	 * The constructor loads the default text settings.
@@ -111,7 +111,7 @@ public class Java2DText implements Text
 		this.window = window;
 		
 		// Set the default anchors.
-		this.currentAnchor = (Text.TOP | Text.LEFT);
+		this.anchor = (Text.TOP | Text.LEFT);
 		
 		// Setup the font.
 		try
@@ -147,7 +147,7 @@ public class Java2DText implements Text
                 window.getDrawGraphics().getFontRenderContext());
 		
 		// Recalculate the anchor points.
-		this.setAnchor(this.currentAnchor);
+		this.setAnchor(this.anchor);
 	}
 	
 	/**
@@ -244,7 +244,7 @@ public class Java2DText implements Text
 	public void setAnchor(int anchor)
 	{
         // Remember the anchor.
-		this.currentAnchor = anchor;
+		this.anchor = anchor;
         
         // Return if there's no text.
 		if (text.equals("") == true)

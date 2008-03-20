@@ -29,7 +29,7 @@ public class CircularBooleanButton extends BooleanButton
     /**
      * The active sprite glow.
      */
-    final private Sprite spriteActive;
+    final private Sprite spriteGlow;
     
     /**
      * The hover sprite.
@@ -42,20 +42,22 @@ public class CircularBooleanButton extends BooleanButton
     final private Text buttonText;
 
     /**
-     * The constructor.
+     * Creates a button at the coordinates provided.
+     * @param x
+     * @param y
      */
     public CircularBooleanButton(final int x, final int y)
     {
         // Invoke super.
-        super(x, y, new Ellipse2D.Double(x, y, WIDTH, HEIGHT));
+        super(x, y, WIDTH, HEIGHT, new Ellipse2D.Double(x, y, WIDTH, HEIGHT));
         
         // Load the normal sprite.
         spriteNormal = ResourceFactory.get()
                 .getSprite("resources/Button_Normal.png");
         
         // Load the active sprite glow.
-        spriteActive = ResourceFactory.get()
-                .getSprite("resources/Button_Active.png");
+        spriteGlow = ResourceFactory.get()
+                .getSprite("resources/Button_Glow.png");
         
         // Load the hover sprite.
         spriteHover = ResourceFactory.get()
@@ -73,10 +75,10 @@ public class CircularBooleanButton extends BooleanButton
     {
         Rectangle bounds = shape.getBounds();
         
-        spriteNormal.draw(x - 18, y - 18);
+        spriteNormal.draw(x + offsetX, y + offsetY);
         
-        buttonText.setX(x + bounds.width / 2);
-        buttonText.setY(y + bounds.height / 2);
+        buttonText.setX(x + offsetX + bounds.width / 2);
+        buttonText.setY(y + offsetY + bounds.height / 2);
         buttonText.setText(text);
         buttonText.draw();
     }
@@ -84,7 +86,7 @@ public class CircularBooleanButton extends BooleanButton
 //    @Override
     public void drawActive()
     {
-        spriteActive.draw(x - 18, y - 18);
+        spriteGlow.draw(x + offsetX - 18, y + offsetY - 18);
         drawNormal();
     }
 
@@ -94,12 +96,12 @@ public class CircularBooleanButton extends BooleanButton
         Rectangle bounds = shape.getBounds();
         
         if (activated == true)
-            spriteActive.draw(x - 18, y - 18);
+            drawGlow();
         
-        spriteHover.draw(x - 18, y - 18);
+        spriteHover.draw(x + offsetX, y + offsetY);
         
-        buttonText.setX(x + bounds.width / 2);
-        buttonText.setY(y + bounds.height / 2);
+        buttonText.setX(x + offsetX + bounds.width / 2);
+        buttonText.setY(y + offsetY + bounds.height / 2);
         buttonText.setText(text);
         buttonText.draw();
     }
@@ -110,14 +112,19 @@ public class CircularBooleanButton extends BooleanButton
         Rectangle bounds = shape.getBounds();
         
         if (activated == true)
-            spriteActive.draw(x - 18, y - 18);
+            drawGlow();
         
-        spriteHover.draw(x - 18, y - 18);
+        spriteHover.draw(x + offsetX, y + offsetY);
         
-        buttonText.setX(x + bounds.width / 2);
-        buttonText.setY(y + bounds.height / 2 + 1);
+        buttonText.setX(x + offsetX + bounds.width / 2);
+        buttonText.setY(y + offsetY + bounds.height / 2 + 1);
         buttonText.setText(text);
         buttonText.draw();
     }
 
+    private void drawGlow()
+    {
+        spriteGlow.draw(x + offsetX - 18, y + offsetY - 18);
+    }
+    
 }
