@@ -253,7 +253,7 @@ public class Java2DText implements Text
 		// Get the width and height of the font.
 		Rectangle2D bounds = textLayout.getBounds();
         
-		// The Y achors.
+		// The Y anchors.
 		if((anchor & Text.BOTTOM) == Text.BOTTOM)
 		{
 			this.anchorY = 0;

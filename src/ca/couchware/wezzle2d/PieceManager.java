@@ -428,8 +428,7 @@ public class PieceManager implements
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.
         else
-        {
-            
+        {            
             // Handle Level up.
             if(game.scoreMan.getLevelScore() >= game.scoreMan.getTargetLevelScore())
             {

@@ -377,225 +377,228 @@ public class Game extends Canvas implements GameWindowCallback
 			framesPerSecond = 0;
 		}
 		
-		// See if we need to activate the refactor.
-		if (activateRefactor == true)
-		{            
-            // Hide piece.
-            pieceMan.setVisible(false);
-            
-			// Start down refactor.
-			boardMan.startShiftDown(refactorSpeed);
-			refactorDownInProgress = true;
-			
-			// Clear flag.
-			clearRefactor();
-		}
-		
-		// See if we're down refactoring.
-		if (refactorDownInProgress == true)
-		{
-			if (boardMan.moveAll(delta) == false)
-			{			
-                // Clear down flag.
-				refactorDownInProgress = false;
-                
-				// Synchronize board.
-				boardMan.synchronize();							
-				
-				// Start left refactor.
-				boardMan.startShiftLeft(refactorSpeed);
-				refactorLeftInProgress = true;								
-			}
-		} // end if
-		
-		// See if we're left refactoring.
-		if (refactorLeftInProgress == true)
-		{
-			if (boardMan.moveAll(delta) == false)
-			{
-                // Clear left flag.
-				refactorLeftInProgress = false;
-                
-				// Synchronize board.
-				boardMan.synchronize();		
-                
-                // Look for matches.
-                tileRemovalSet.clear();
-                boardMan.findXMatch(tileRemovalSet);
-                boardMan.findYMatch(tileRemovalSet);
-                
-                // If there are matches, score them, remove them and then
-                // refactor again.
-                if (tileRemovalSet.size() > 0)
-                {                                       
-                    // Activate the line removal.
-                    activateLineRemoval = true;                 
+        if (pauseButton.isActivated() == false)
+        {        
+            // See if we need to activate the refactor.
+            if (activateRefactor == true)
+            {            
+                // Hide piece.
+                pieceMan.setVisible(false);
+
+                // Start down refactor.
+                boardMan.startShiftDown(refactorSpeed);
+                refactorDownInProgress = true;
+
+                // Clear flag.
+                clearRefactor();
+            }
+
+            // See if we're down refactoring.
+            if (refactorDownInProgress == true)
+            {
+                if (boardMan.moveAll(delta) == false)
+                {			
+                    // Clear down flag.
+                    refactorDownInProgress = false;
+
+                    // Synchronize board.
+                    boardMan.synchronize();							
+
+                    // Start left refactor.
+                    boardMan.startShiftLeft(refactorSpeed);
+                    refactorLeftInProgress = true;								
                 }
+            } // end if
+
+            // See if we're left refactoring.
+            if (refactorLeftInProgress == true)
+            {
+                if (boardMan.moveAll(delta) == false)
+                {
+                    // Clear left flag.
+                    refactorLeftInProgress = false;
+
+                    // Synchronize board.
+                    boardMan.synchronize();		
+
+                    // Look for matches.
+                    tileRemovalSet.clear();
+                    boardMan.findXMatch(tileRemovalSet);
+                    boardMan.findYMatch(tileRemovalSet);
+
+                    // If there are matches, score them, remove them and then
+                    // refactor again.
+                    if (tileRemovalSet.size() > 0)
+                    {                                       
+                        // Activate the line removal.
+                        activateLineRemoval = true;                 
+                    }
+                    else
+                    {
+                       // Make sure the tiles are not still dropping.
+                        if (pieceMan.isTileDropInProgress() == false)
+                        {
+                            pieceMan.loadRandomPiece();   
+                            pieceMan.setVisible(true);
+
+                            // Unpause the timer.
+                            timerMan.resetTimer();
+                            timerMan.setPaused(false);
+
+                            // Reset the mouse.
+                            pieceMan.setMouseLeftReleased(false);
+                            pieceMan.setMouseRightReleased(false);
+                        }
+                    }
+                } // end if
+
+                // Notify piece manager.
+                pieceMan.notifyRefactored();
+            } // end if
+
+            // If a line removal was activated.
+            if (activateLineRemoval == true)
+            {
+                // Clear flag.
+                activateLineRemoval = false;
+
+                // Calculate score and play the sound.
+                scoreMan.calculateLineScore(tileRemovalSet, 
+                        ScoreManager.TYPE_LINE, 1);
+                soundMan.play(SoundManager.LINE);
+
+                // Make sure bombs aren't removed (they get removed
+                // in a different step).
+                bombRemovalSet = boardMan.scanBombs(tileRemovalSet);
+                tileRemovalSet.removeAll(bombRemovalSet);
+
+                // Start the line removal animations if there are any
+                // non-bomb tiles.
+                if (tileRemovalSet.size() > 0)
+                {
+                    for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
+                    {
+                        TileEntity t = boardMan.getTile((Integer) it.next());
+                        t.setAnimation(new ZoomOutAnimation(t));
+                    }
+
+                    // Set the flag.
+                    tileRemovalInProgress = true;
+                }
+                // Otherwise, start the bomb processing.
                 else
                 {
-                   // Make sure the tiles are not still dropping.
-                    if (pieceMan.isTileDropInProgress() == false)
-                    {
-                        pieceMan.loadRandomPiece();   
-                        pieceMan.setVisible(true);
-                        
-                        // Unpause the timer.
-                        timerMan.resetTimer();
-                        timerMan.setPaused(false);
-                        
-                        // Reset the mouse.
-                        pieceMan.setMouseLeftReleased(false);
-                        pieceMan.setMouseRightReleased(false);
-                    }
+                    activateBombRemoval = true;
                 }
-			} // end if
-            
-            // Notify piece manager.
-            pieceMan.notifyRefactored();
-		} // end if
-		       
-        // If a line removal was activated.
-        if (activateLineRemoval == true)
-        {
-            // Clear flag.
-            activateLineRemoval = false;
+            }
 
-            // Calculate score and play the sound.
-            scoreMan.calculateLineScore(tileRemovalSet, 
-                    ScoreManager.TYPE_LINE, 1);
-            soundMan.play(SoundManager.LINE);
-
-            // Make sure bombs aren't removed (they get removed
-            // in a different step).
-            bombRemovalSet = boardMan.scanBombs(tileRemovalSet);
-            tileRemovalSet.removeAll(bombRemovalSet);
-
-            // Start the line removal animations if there are any
-            // non-bomb tiles.
-            if (tileRemovalSet.size() > 0)
+            // If a bomb removal is in progress.
+            if (activateBombRemoval == true)
             {
+                // Clear the flag.
+                activateBombRemoval = false;
+
+                // Get the tiles the bombs would affect.
+                tileRemovalSet = boardMan.processBombs(bombRemovalSet);
+                scoreMan.calculateLineScore(tileRemovalSet, 
+                        ScoreManager.TYPE_BOMB, 1);
+
+                // Extract all the new bombs.
+                Set newBombRemovalSet = boardMan.scanBombs(tileRemovalSet);                                                
+                newBombRemovalSet.removeAll(bombRemovalSet);
+
+                // Remove all tiles that aren't new bombs.
+                tileRemovalSet.removeAll(newBombRemovalSet);
+
+                // Start the line removal animations.
                 for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
                 {
                     TileEntity t = boardMan.getTile((Integer) it.next());
-                    t.setAnimation(new ZoomOutAnimation(t));
+
+                    if (t instanceof BombTileEntity)
+                    {
+                        t.setAnimation(new ExplosionAnimation(t, layerMan));
+                        this.soundMan.play(SoundManager.BOMB);
+                    }
+                    else
+                        t.setAnimation(new JiggleFadeAnimation(t));
                 }
+
+                // If other bombs were hit, they will be dealt with in another
+                // bomb removal cycle.
+                bombRemovalSet = newBombRemovalSet;
 
                 // Set the flag.
                 tileRemovalInProgress = true;
             }
-            // Otherwise, start the bomb processing.
-            else
-            {
-                activateBombRemoval = true;
-            }
-        }
-                        
-        // If a bomb removal is in progress.
-        if (activateBombRemoval == true)
-        {
-            // Clear the flag.
-            activateBombRemoval = false;
-            
-            // Get the tiles the bombs would affect.
-            tileRemovalSet = boardMan.processBombs(bombRemovalSet);
-            scoreMan.calculateLineScore(tileRemovalSet, 
-                    ScoreManager.TYPE_BOMB, 1);
 
-            // Extract all the new bombs.
-            Set newBombRemovalSet = boardMan.scanBombs(tileRemovalSet);                                                
-            newBombRemovalSet.removeAll(bombRemovalSet);
-
-            // Remove all tiles that aren't new bombs.
-            tileRemovalSet.removeAll(newBombRemovalSet);
-            
-            // Start the line removal animations.
-            for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
+            // If a line removal is in progress.
+            if (tileRemovalInProgress == true)
             {
-                TileEntity t = boardMan.getTile((Integer) it.next());
-                
-                if (t instanceof BombTileEntity)
+                // Animation completed flag.
+                boolean animationInProgress = false;
+
+                // Check to see if they're all done.
+                for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
                 {
-                    t.setAnimation(new ExplosionAnimation(t, layerMan));
-                    this.soundMan.play(SoundManager.BOMB);
+                    if (boardMan.getTile((Integer) it.next()).getAnimation()
+                            .isDone() == false)
+                    {
+                        animationInProgress = true;
+                    }
                 }
-                else
-                    t.setAnimation(new JiggleFadeAnimation(t));
+
+                if (animationInProgress == false)
+                {
+                    // Remove the tiles from the board.
+                    boardMan.removeTiles(tileRemovalSet);
+
+                    // Bomb removal is completed.
+                    tileRemovalInProgress = false;
+
+                    // See if there are any bombs in the bomb set.
+                    // If there are, activate the bomb removal.
+                    if (bombRemovalSet.size() > 0)
+                        activateBombRemoval = true;
+                    // Otherwise, start a new refactor.
+                    else                
+                        runRefactor(200);
+                }  
             }
 
-            // If other bombs were hit, they will be dealt with in another
-            // bomb removal cycle.
-            bombRemovalSet = newBombRemovalSet;
-            
-            // Set the flag.
-            tileRemovalInProgress = true;
-        }
-        
-        // If a line removal is in progress.
-        if (tileRemovalInProgress == true)
-        {
-            // Animation completed flag.
-            boolean animationInProgress = false;
-            
-            // Check to see if they're all done.
-            for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
+            // Animate all the pieces.
+            boardMan.animateAll(delta);                
+
+            // Handle the timer.
+            timerMan.incrementInternalTime(delta);
+
+            // Check to see if we should force a piece commit.
+            if (timerMan.getTime() < 0)
             {
-                if (boardMan.getTile((Integer) it.next()).getAnimation()
-                        .isDone() == false)
-                {
-                    animationInProgress = true;
-                }
+                // Commit the piece.
+                timerMan.setTime(0);
+                pieceMan.initiateCommit(this);            
             }
-            
-            if (animationInProgress == false)
-            {
-                // Remove the tiles from the board.
-                boardMan.removeTiles(tileRemovalSet);
-                
-                // Bomb removal is completed.
-                tileRemovalInProgress = false;
-                
-                // See if there are any bombs in the bomb set.
-                // If there are, activate the bomb removal.
-                if (bombRemovalSet.size() > 0)
-                    activateBombRemoval = true;
-                // Otherwise, start a new refactor.
-                else                
-                    runRefactor(200);
-            }  
+
+            // Update piece manager logic and then draw it.
+            pieceMan.updateLogic(this);
+
+            // Draw the timer text.
+            timerText.setText(String.valueOf(timerMan.getTime()));		
+
+            // Draw the score text.
+            scoreText.setText(String.valueOf(scoreMan.getTotalScore()));
+
+            // Draw the high score text.
+            highScoreText.setText(String.valueOf(scoreMan.getHighScore()));
+
+            // Set the level text.
+            //levelText.setText("N/A");
+            levelText.setText(String.valueOf(worldMan.getCurrentLevel()));
+
+            // Draw the move count text.
+            moveCountText.setText(String.valueOf(moveMan.getCurrentMoveCount()));                            
         }
-        
-        // Animate all the pieces.
-        boardMan.animateAll(delta);
-        		
-        // Handle the timer.
-		timerMan.incrementInternalTime(delta);
-        
-        // Check to see if we should force a piece commit.
-        if (timerMan.getTime() < 0)
-        {
-            // Commit the piece.
-            timerMan.setTime(0);
-            pieceMan.initiateCommit(this);            
-        }
-        
-        // Update piece manager logic and then draw it.
-        pieceMan.updateLogic(this);
-		
-		// Draw the timer text.
-		timerText.setText(String.valueOf(timerMan.getTime()));		
-                
-        // Draw the score text.
-        scoreText.setText(String.valueOf(scoreMan.getTotalScore()));
-        
-        // Draw the high score text.
-        highScoreText.setText(String.valueOf(scoreMan.getHighScore()));
-        
-        // Set the level text.
-        //levelText.setText("N/A");
-        levelText.setText(String.valueOf(worldMan.getCurrentLevel()));
-        
-        // Draw the move count text.
-        moveCountText.setText(String.valueOf(moveMan.getCurrentMoveCount()));
         
         // Draw the layer manager.
         layerMan.draw();					
