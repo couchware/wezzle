@@ -154,8 +154,8 @@ public class WorldManager
 	{
 		for (Iterator it = itemList.iterator(); it.hasNext(); )
         {
-			if (((ItemDescriptor)it).getItemClass().equals(c))
-				return (ItemDescriptor)it;
+			if (((ItemDescriptor) it).getItemClass().equals(c))
+				return (ItemDescriptor) it;
         }
 		
 		return null;

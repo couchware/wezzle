@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.tile.Multiply2xTileEntity;
 import ca.couchware.wezzle2d.tile.BombTileEntity;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
@@ -133,19 +132,21 @@ public class BoardManager
 	/**
 	 * Generates a random game board with a linked list of item descriptors.
      * 
-	 * @param items A linked liste of Item Descriptors.
+	 * @param items A linked list of Item Descriptors.
 	 */
-	public void generateBoard(LinkedList items)
+	public void generateBoard(LinkedList itemList)
 	{
-        assert(items.get(0) instanceof ItemDescriptor);
+        assert(itemList.get(0) instanceof ItemDescriptor);
         
         int count = 0;
-        for(int i = 0; i < items.size(); i++)
+        for (int i = 0; i < itemList.size(); i++)
         {
-            for(int j = 0; j < ((ItemDescriptor)items.get(i)).getInitialAmount(); j++)
+            for (int j = 0; 
+                j < ((ItemDescriptor) itemList.get(i)).getInitialAmount(); j++)
             {
-                this.createTile(count, ((ItemDescriptor)items.get(i)).getItemClass(), 
-                    TileEntity.randomColor());
+                this.createTile(count, 
+                        ((ItemDescriptor) itemList.get(i)).getItemClass(), 
+                        TileEntity.randomColor());
                 count++;
             }
         }
