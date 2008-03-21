@@ -84,7 +84,7 @@ public class Java2DSprite implements Sprite
 		g.drawImage(image, x, y, null);
 	}
 
-    public void draw(int x, int y, int width, int height, 
+    public void draw(final int x, final int y, int width, int height, 
             double theta, int opacity)
     {
         Graphics2D g = window.getDrawGraphics();
@@ -98,7 +98,7 @@ public class Java2DSprite implements Sprite
 
         // Opacity.
         Composite c = null;
-        if (opacity != 1.0)
+        if (opacity != 100)
         {
             c = g.getComposite();
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
@@ -116,7 +116,8 @@ public class Java2DSprite implements Sprite
         if (theta != 0.0)
             g.rotate(-theta, x + width / 2, y + height / 2);
         
-        if (opacity != 1.0f)        
+        // Opacity.
+        if (opacity != 100)        
             g.setComposite(c);
             
     }

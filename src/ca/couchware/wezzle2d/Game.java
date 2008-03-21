@@ -284,7 +284,7 @@ public class Game extends Canvas implements GameWindowCallback
         scoreText.setXYPosition(126, 400); 
         scoreText.setSize(20);
         scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        scoreText.setColor(TEXT_COLOR);
+        scoreText.setColor(TEXT_COLOR);        
         layerMan.add(scoreText, 0);
         
         // Set up the high score text.
@@ -593,10 +593,10 @@ public class Game extends Canvas implements GameWindowCallback
             highScoreText.setText(String.valueOf(scoreMan.getHighScore()));
 
             // Set the level text.
-            levelText.setText(String.valueOf(worldMan.getCurrentLevel()));
+            levelText.setText(String.valueOf(worldMan.getLevel()));
 
             // Draw the move count text.
-            moveCountText.setText(String.valueOf(moveMan.getCurrentMoveCount()));                            
+            moveCountText.setText(String.valueOf(moveMan.getMoveCount()));                            
         }
         
         if (pauseButton.wasPushed() == true)

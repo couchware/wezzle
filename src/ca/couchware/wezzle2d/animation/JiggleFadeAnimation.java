@@ -26,10 +26,10 @@ public class JiggleFadeAnimation extends Animation
     final private static int OPACITY_STEP = 12;
     
     /**
-     * The minimum width the entity may become before switching 
+     * The minimum opacity the entity may become before switching 
      * pulse states.
      */
-    final private static int MIN_OPACITY = 0;
+    final private static int OPACITY_MIN = 0;
            
     /**
      * The constructor.
@@ -67,7 +67,7 @@ public class JiggleFadeAnimation extends Animation
                     Util.random.nextInt(JIGGLE_FACTOR) - JIGGLE_FACTOR / 2));
             
             // If we reach the minimum opacity, then we're done.            
-            if (Float.compare(entity.getOpacity(), MIN_OPACITY) == 0)
+            if (entity.getOpacity() == OPACITY_MIN)
                 done = true;
         } // end if          
     }

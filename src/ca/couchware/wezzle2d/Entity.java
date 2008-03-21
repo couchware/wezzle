@@ -213,8 +213,9 @@ public class Entity implements Drawable
         this.width = width;
     }
 
-   /**
+    /**
      * Sets the opacity of the sprite (in percent).
+     * 
      * @param opacity The opacity.
      */
     public void setOpacity(final int opacity)
@@ -227,8 +228,9 @@ public class Entity implements Drawable
             this.opacity = opacity;
     }
     
-     /**
+    /**
      * Gets the opacity of the sprite.
+     * 
      * @return The opacity.
      */
     public int getOpacity()

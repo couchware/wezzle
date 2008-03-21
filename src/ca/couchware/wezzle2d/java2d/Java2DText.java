@@ -10,6 +10,8 @@ import java.net.URL;
 
 import ca.couchware.wezzle2d.Text;
 import ca.couchware.wezzle2d.util.Util;
+import java.awt.AlphaComposite;
+import java.awt.Composite;
 
 /**
  * The Java2DText class provides a java2D implementation of the text interface.
@@ -19,24 +21,8 @@ import ca.couchware.wezzle2d.util.Util;
  *
  */
 
-public class Java2DText implements Text
-{
-    
-    /**
-     * The visibility of the text.
-     */
-    private boolean visible;
-    
-    /**
-     * The X-cooridinate of the text.
-     */
-    private int x;
-    
-    /**
-     * The Y-coordinate of the text.
-     */
-    private int y;
-    
+public class Java2DText extends Text
+{    
 	/** 
      * The URL. 
      */
@@ -45,22 +31,7 @@ public class Java2DText implements Text
 	/** 
      * The font. 
      */
-	private Font font;
-	
-	/** 
-     * The size of the font.
-     */
-	private float size;
-	
-	/** 
-     * The color of the text .
-     */
-	private Color color;
-	
-	/** 
-     * The text.
-     */
-	private String text;
+	private Font font;				
     
     /**
      * The text layout instance.
@@ -75,17 +46,12 @@ public class Java2DText implements Text
 	/** 
      * The x offset for anchor. 
      */
-	private int anchorX;
+	private int offsetX;
 	
 	/** 
      * The y offset for anchor. 
      */
-	private int anchorY;
-	
-	/**
-     * The current anchor 
-     */
-	private int anchor;
+	private int offsetY;		
 
 	/**
 	 * The constructor loads the default text settings.
@@ -99,19 +65,11 @@ public class Java2DText implements Text
 	 */
 	public Java2DText(Java2DGameWindow window)
 	{
-        // Initially visible.
-        this.visible = true;
+        // Invoke super.
+        super();
         
 		this.url = this.getClass().getClassLoader()
-                .getResource("resources/bubbleboy2.ttf");
-        
-		this.size = 24.0f;
-		this.color = Color.black;
-		this.text = "";
-		this.window = window;
-		
-		// Set the default anchors.
-		this.anchor = (Text.TOP | Text.LEFT);
+                .getResource("resources/bubbleboy2.ttf");        		
 		
 		// Setup the font.
 		try
@@ -123,16 +81,18 @@ public class Java2DText implements Text
 		{
 			e.printStackTrace();
 		}
-	}	
-
-	/**
-	 * Gets the text.
-	 * @return The text.
-	 */
-	public String getText()
-	{
-		return text;
-	}
+                        
+        // Setup some values.
+        setVisible(true);
+        setOpacity(100);
+        setSize(24.0f);
+		setColor(Color.BLACK);
+		this.text = "";
+		this.window = window;        
+		
+		// Set the default anchor.
+		this.anchor = TOP | LEFT;
+	}		
 	
 	/**
 	 * Set the text.
@@ -148,16 +108,7 @@ public class Java2DText implements Text
 		
 		// Recalculate the anchor points.
 		this.setAnchor(this.anchor);
-	}
-	
-	/**
-	 * Gets the size.
-	 * @return The size.
-	 */
-	public float getSize()
-	{
-		return size;
-	}
+	}		
 	
 	/**
 	 * Set the color of the text.
@@ -169,70 +120,6 @@ public class Java2DText implements Text
 	{
 		this.size = size;
 		this.font = font.deriveFont(this.size);
-	}
-
-    public int getX()
-    {
-        return x;
-    }
-
-    public void setX(final int x)
-    {
-        this.x = x;
-    }
-
-    public int getY()
-    {
-        return y;
-    }
-
-    public void setY(final int y)
-    {
-        this.y = y;
-    }      
-    
-    public void setXYPosition(final int x, final int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
-	
-//	/**
-//	 * Gets the font.
-//	 * @return The font.
-//	 */
-//	public Font getFont()
-//	{
-//		return font;
-//	}
-//
-//	/**
-//	 * Sets the font.
-//	 * @param font The font to set.
-//	 */
-//	public void setFont(Font font)
-//	{
-//		this.font = font;
-//	}
-
-	/**
-	 * Gets the color.
-	 * @return The color.
-	 */
-	public Color getColor()
-	{
-		return color;
-	}
-
-	/**
-	 * Set the text color.
-	 * The initial color is black.
-	 * 
-	 * @param c The color to set to.
-	 */
-	public void setColor(Color color)
-	{
-		this.color = color;
 	}
 	
 	/**
@@ -256,15 +143,15 @@ public class Java2DText implements Text
 		// The Y anchors.
 		if((anchor & Text.BOTTOM) == Text.BOTTOM)
 		{
-			this.anchorY = 0;
+			this.offsetY = 0;
 		}
 		else if((anchor & Text.VCENTER) == Text.VCENTER)
 		{
-			this.anchorY = (int) bounds.getCenterY();
+			this.offsetY = (int) bounds.getCenterY();
 		}
 		else if((anchor & Text.TOP) == Text.TOP)
 		{
-			this.anchorY = (int) bounds.getMinY();
+			this.offsetY = (int) bounds.getMinY();
 		}
 		else
 		{
@@ -274,15 +161,15 @@ public class Java2DText implements Text
 		// The X anchors. 
 		if((anchor & Text.LEFT) == Text.LEFT)
 		{
-			this.anchorX = (int) bounds.getMinX();
+			this.offsetX = (int) bounds.getMinX();
 		}
 		else if((anchor & Text.HCENTER) == Text.HCENTER)
 		{
-			this.anchorX = (int) bounds.getMaxX() / 2;			
+			this.offsetX = (int) bounds.getMaxX() / 2;			
 		}
 		else if((anchor & Text.RIGHT) == Text.RIGHT)
 		{
-			this.anchorX = (int) bounds.getMaxX();
+			this.offsetX = (int) bounds.getMaxX();
 		}
 		else
 		{
@@ -315,24 +202,27 @@ public class Java2DText implements Text
 			assert (font != null);
 			
 			g.setFont(font);
-			g.setColor(this.color);			
+			g.setColor(this.color);		
+            
+            // Opacity.
+            Composite c = null;
+            if (opacity != 100)
+            {
+                c = g.getComposite();
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
+                        ((float) opacity) / 100.0f));
+            }
 			
-			textLayout.draw(g, x - this.anchorX, y - this.anchorY);
+			textLayout.draw(g, x - offsetX, y - offsetY);
+            
+            // Opacity.
+            if (opacity != 100)        
+                g.setComposite(c);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}		
-	}
-
-    public void setVisible(boolean visible)
-    {
-        this.visible = visible;
-    }
-
-    public boolean isVisible()
-    {
-        return visible;
-    }
+	}   
     
 }

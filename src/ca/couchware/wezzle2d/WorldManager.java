@@ -103,7 +103,7 @@ public class WorldManager
 	/**
 	 * @return the currentLevel
 	 */
-	public int getCurrentLevel()
+	public int getLevel()
 	{
 		return currentLevel;
 	}	

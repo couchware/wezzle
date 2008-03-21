@@ -32,7 +32,7 @@ public class MoveManager
 	/**
 	 * @return the currentMoves
 	 */
-	public int getCurrentMoveCount()
+	public int getMoveCount()
 	{
 		return currentMoveCount;
 	}

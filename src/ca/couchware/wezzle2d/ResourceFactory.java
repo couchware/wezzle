@@ -127,7 +127,8 @@ public class ResourceFactory
 		{
 			case JAVA2D:
 			{
-				return Java2DSpriteStore.get().getSprite((Java2DGameWindow) window,
+				return Java2DSpriteStore.get().getSprite(
+                        (Java2DGameWindow) window,
 						path);
 			}		
 		}
