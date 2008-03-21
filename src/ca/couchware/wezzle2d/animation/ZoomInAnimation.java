@@ -29,6 +29,11 @@ public class ZoomInAnimation extends Animation
     final private static int ZOOM_STEP = 2;
     
     /**
+     * The entity being animated.
+     */
+    protected Entity entity;
+    
+    /**
      * The maximum width of the entity.  This will be the size it
      * zooms in to.
      */
@@ -40,7 +45,10 @@ public class ZoomInAnimation extends Animation
     public ZoomInAnimation(final Entity entity)
     {                
         // Invoke super constructor.
-        super(entity, FRAME_PERIOD);
+        super(FRAME_PERIOD);
+        
+        // Save a reference to the entity.
+        this.entity = entity;
         
         // Remember the width.
         maxWidth = entity.getWidth();

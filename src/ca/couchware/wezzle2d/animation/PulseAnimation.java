@@ -28,6 +28,11 @@ public class PulseAnimation extends Animation
     final private static int PULSE_UP = 1;
     
     /**
+     * The entity being animated.
+     */
+    protected Entity entity;
+    
+    /**
      * The minimum width the entity may become before switching 
      * pulse states.
      */
@@ -54,7 +59,10 @@ public class PulseAnimation extends Animation
     public PulseAnimation(final Entity entity)
     {                
         // Invoke super constructor.
-        super(entity, FRAME_PERIOD);       
+        super(FRAME_PERIOD);       
+        
+        // Save a reference to the entity.
+        this.entity = entity;
         
         // Set the initial pulse state.
         state = PULSE_DOWN;

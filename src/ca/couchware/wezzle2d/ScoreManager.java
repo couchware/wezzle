@@ -86,11 +86,13 @@ import java.util.Set;
 
     /**
      * Requires documentation.
+     * 
      * @param set
      * @param lineType
      * @param cascadeCount
+     * @return The change in score.
      */
-    public void calculateLineScore(Set set, int lineType, int cascadeCount)
+    public int calculateLineScore(Set set, int lineType, int cascadeCount)
     {
         // Initialize tile counts.
         int numNormal = 0;
@@ -135,6 +137,9 @@ import java.util.Set;
         
         // Update progress and text.
         updateScore(deltaScore);
+        
+        // Return the delta score.
+        return deltaScore;
     }
 
     /**
@@ -159,11 +164,12 @@ import java.util.Set;
     }
 
     /**
-     * Requires documentation.
+     * Calculates the score of the passes tiles, adds it to score manager's
+     * state and then returns it.
      * 
-     * @param set A set of tiles.
+     * @param set A set of tile indices.
      */
-    public void calculatePieceScore(Set indexSet)
+    public int calculatePieceScore(Set indexSet)
     {
         // Sanity check.
         assert(indexSet != null);
@@ -191,6 +197,8 @@ import java.util.Set;
             // Otherwise do nothing.
         }
         
+        // Return the score.
+        return deltaScore;
     }
 
     /**

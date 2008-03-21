@@ -152,7 +152,7 @@ public abstract class Text implements Drawable
 	 * 
 	 * @param t The text.
 	 */
-	public void setText(String text)
+	public void setText(final String text)
     {
         this.text = text;
     }

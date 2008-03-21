@@ -2,6 +2,8 @@ package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.XYPosition;
+import java.util.Set;
 
 /**
  * An animation that starts an explosion in the middle of the entity.
@@ -9,16 +11,11 @@ import ca.couchware.wezzle2d.util.Util;
  * @author cdmckay
  */
 public class FloatTextAnimation extends Animation
-{    
-    /**
-     * Reference to the layer manager.
-     */
-    final private LayerManager layerMan;
-    
+{            
     /**
      * The period of each frame.
      */
-    final private static int FRAME_PERIOD = 15;
+    final private static int FRAME_PERIOD = 60;
 
     /**
      * The amount of movement, per frame, in the X-direction.
@@ -29,17 +26,17 @@ public class FloatTextAnimation extends Animation
     /**
      * The amount of movement, per frame, in the Y-direction.
      */
-    final private static int Y_STEP = -4;        
+    final private static int Y_STEP = -1;        
     
     /**
      * The number of frames to stay opaque.
      */
-    final private static int OPAQUE_FRAME_MAX = 4;
+    final private static int OPAQUE_FRAME_MAX = 8;
     
     /**
      * The amount of opacity to reduce each step.
      */
-    final private static int OPACITY_STEP = 12;
+    final private static int OPACITY_STEP = 10;
     
     /**
      * The minimum opacity before the animation ends.
@@ -55,7 +52,12 @@ public class FloatTextAnimation extends Animation
      * The state where the text fades out.
      */
     final private static int STATE_FADE = 1;
-        
+       
+    /**
+     * Reference to the layer manager.
+     */
+    final private LayerManager layerMan;
+    
     /**
      * The current pulse state.
      */
@@ -70,23 +72,32 @@ public class FloatTextAnimation extends Animation
      * The number of opaque frames that have passed.
      */
     private int opaqueFrameCount;
-    
+
     /**
-     * The constructor.
+     * Creates a floating text animation centered at (x,y) with the specified
+     * text and size.
+     * 
+     * @param x
+     * @param y
+     * @param layerMan
+     * @param text
+     * @param size
      */
-    public FloatTextAnimation(final Entity entity, final LayerManager layerMan,
+    public FloatTextAnimation(final int x, final int y, 
+            final LayerManager layerMan,
             final String text, final float size)
     {                
         // Invoke super constructor.
-        super(entity, FRAME_PERIOD);    
+        super(FRAME_PERIOD);    
         
         // Set reference to layer manager.
         this.layerMan = layerMan;
         
+        // Determine the left-mo
+        
         // Load the explosion and centre it over the entity.
         floatText = ResourceFactory.get().getText();
-        floatText.setX(entity.getX() + entity.getWidth() / 2);
-        floatText.setY(entity.getY() + entity.getHeight() / 2);
+        floatText.setXYPosition(x, y);
         floatText.setAnchor(Text.VCENTER | Text.HCENTER);
         floatText.setColor(Game.TEXT_COLOR);
         floatText.setText(text);
@@ -100,6 +111,13 @@ public class FloatTextAnimation extends Animation
         
         // Add the floating text to the layer manager.
         layerMan.add(floatText, 1);
+    }
+    
+    public FloatTextAnimation(final XYPosition p,
+            final LayerManager layerMan,
+            final String text, final float size)
+    {
+        this(p.x, p.y, layerMan, text, size);
     }
 
     public void nextFrame(long delta)
@@ -140,16 +158,19 @@ public class FloatTextAnimation extends Animation
                     break;
                 
                 case STATE_FADE:
-                                                           
-                    // If the width is equal to 2, then we stop.
-//                    if (floatText <= 2)
-//                    {
-//                        // Remove explosion from layer manager.
-//                        layerMan.remove(explosion, 1);
-//                        
-//                        // Set done flag.
-//                        done = true;
-//                    }
+                                                    
+                    // Reduce the opacity.
+                    floatText.setOpacity(floatText.getOpacity() - OPACITY_STEP);
+                    
+                    // If the opacity reaches the minimum, stop the animation.
+                    if (floatText.getOpacity() == OPACITY_MIN)
+                    {
+                        // Remove explosion from layer manager.
+                        layerMan.remove(floatText, 1);
+                        
+                        // Set done flag.
+                        done = true;
+                    }
                     
                     break;
                     
@@ -166,4 +187,5 @@ public class FloatTextAnimation extends Animation
         if (floatText != null)
             floatText.setVisible(visible);
     }
+    
 }

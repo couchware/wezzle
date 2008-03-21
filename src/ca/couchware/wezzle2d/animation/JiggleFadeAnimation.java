@@ -9,7 +9,7 @@ import ca.couchware.wezzle2d.*;
  * @author cdmckay
  */
 public class JiggleFadeAnimation extends Animation
-{     
+{         
     /**
      * The period of each frame.
      */
@@ -30,14 +30,22 @@ public class JiggleFadeAnimation extends Animation
      * pulse states.
      */
     final private static int OPACITY_MIN = 0;
-           
+        
+    /**
+     * The entity being animated.
+     */
+    protected Entity entity;
+    
     /**
      * The constructor.
      */
     public JiggleFadeAnimation(final Entity entity)
     {                
         // Invoke super constructor.
-        super(entity, FRAME_PERIOD);
+        super(FRAME_PERIOD);
+        
+        // Save a reference to the entity.
+        this.entity = entity;
     }
 
     public void nextFrame(long delta)

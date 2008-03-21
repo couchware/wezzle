@@ -12,12 +12,7 @@ public abstract class Animation
     /**
      * Whether or not the animation is visible.
      */
-    protected boolean visible;
-    
-    /**
-     * The entity being animated.
-     */
-    protected Entity entity;
+    protected boolean visible;       
     
     /**
      * The amount of time per frame.
@@ -42,15 +37,12 @@ public abstract class Animation
     /**
      * The default constructor.
      */
-    public Animation(final Entity entity, final int period)
-    {
-        // Entity cannot be null.
-        assert(entity != null);
-        
+    public Animation(final int period)
+    {        
         // Animation is initially visible.
         this.visible = true;
         
-        this.entity = entity;
+        // Set some defaults.
         this.period = period;
         this.frame = 0;
         this.counter = 0;

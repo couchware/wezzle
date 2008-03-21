@@ -221,25 +221,6 @@ public class PieceManager implements
                 boardMan.getY() + (row * boardMan.getCellHeight()));
 	}
     
-    /**
-     * Commits the current piece to the current location.  This will result
-     * in all tiles covered by the piece to be removed and a refactor will
-     * be initiated.
-     * 
-     * @param p The position of the piece.
-     */
-    public Set commitPiece(XYPosition p)
-    {
-        // Get the set of selected tiles.
-        Set indexSet = getSelectedIndexSet(p);
-        
-        // Remove the tiles in the set.        
-        boardMan.removeTiles(getSelectedIndexSet(p));
-        
-        // Return the set.
-        return indexSet;
-    }
-    
     public Set getSelectedIndexSet(XYPosition p)
     {
          // Create a set.
@@ -404,10 +385,13 @@ public class PieceManager implements
                 // If there is only 1 item left (to ensure only 1 drop per drop 
                 // in) and we have less than the max number of items...
                 //  drop an item in. Otherwise drop a normal.
-                if(tileDropCount == 1 && game.boardMan.getNumItems() < game.worldMan.getNumMaxItems())
+                if (tileDropCount == 1 
+                        && game.boardMan.getNumberOfItems() 
+                            < game.worldMan.getNumMaxItems())
                 {
-                    tileDropped = boardMan.createTile(index, game.worldMan.pickRandomItem(), 
-                        TileEntity.randomColor()); 
+                    tileDropped = boardMan.createTile(index, 
+                            game.worldMan.pickRandomItem(), 
+                            TileEntity.randomColor()); 
                 }
                 else
                 {
@@ -438,11 +422,8 @@ public class PieceManager implements
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
-                if (tileDropCount == 0)
-                {
-                    tileDropInProgress = false;
-//                    game.timerMan.resetTimer();
-                }
+                if (tileDropCount == 0)                
+                    tileDropInProgress = false;                
             }
         }
         // In this case, the tile drop is not activated, so proceed normally
@@ -507,8 +488,22 @@ public class PieceManager implements
         if (tileDropInProgress == true)
             return;
         
+        // Get the indices of the committed pieces.
+        final Set indexSet = 
+                getSelectedIndexSet(this.pieceGrid.getXYPosition());
+        
         // Remove and score the piece.
-        game.scoreMan.calculatePieceScore(commitPiece(this.pieceGrid.getXYPosition()));
+        int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
+        
+        // Determine the centre point.
+        final XYPosition p = game.boardMan.determineCenterPoint(indexSet);
+        
+        // Add score SCT.
+        game.animationMan.add(new FloatTextAnimation(p.x, p.y, game.layerMan,
+                String.valueOf(deltaScore), 12));
+        
+        // Remove the tiles.
+        game.boardMan.removeTiles(indexSet);
 
         // Set the count to the piece size.
         this.tileDropCount = this.piece.getSize();

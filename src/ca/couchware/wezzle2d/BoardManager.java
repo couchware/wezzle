@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.BombTileEntity;
+import ca.couchware.wezzle2d.util.XYPosition;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -72,7 +73,7 @@ public class BoardManager
     /**
      * The number of items.
      */
-    int numItems;
+    int numberOfItems;
 	
 	/**
 	 * The width of a grid cell.
@@ -127,7 +128,7 @@ public class BoardManager
 		this.height = rows * cellHeight;
         
         //Set the number of items.
-        this.numItems = 0;
+        this.numberOfItems = 0;
 		
 		// Initialize board.
 		board = new TileEntity[columns * rows];
@@ -404,7 +405,7 @@ public class BoardManager
     /**
      * Animates all tiles with an animation.
      */
-    public void animateAll(long delta)
+    public void animate(long delta)
     {
         for (int i = 0; i < cells; i++)
             if (board[i] != null)
@@ -493,7 +494,7 @@ public class BoardManager
         
         // If this is an item, increment the count.
         if (c != TileEntity.class)
-            this.incrementNumItems();
+            this.incrementNumberOfItems();
         
         // The new tile.
         TileEntity t = null;
@@ -534,7 +535,7 @@ public class BoardManager
 
         // If this is an item, decrement the item count.
         if(getTile(index).getClass() != TileEntity.class)
-            this.decrementNumItems();
+            this.decrementNumberOfItems();
         
         // Remove from layer manager.
         layerMan.remove(getTile(index), 0);
@@ -753,26 +754,90 @@ public class BoardManager
         return rows;
     }    
     
-    public int getNumItems()
+    public int getNumberOfItems()
     {
-        return this.numItems;
+        return this.numberOfItems;
     }
     
-    public void setNumItems(int num)
+    public void setNumberOfItems(final int numberOfItems)
     {
-        this.numItems = num;
+        this.numberOfItems = numberOfItems;
     }
     
-    public void decrementNumItems()
+    public void decrementNumberOfItems()
     {
-        this.numItems--;
+        this.numberOfItems--;
     }
     
-    public void incrementNumItems()
+    public void incrementNumberOfItems()
     {
-        this.numItems++;
+        this.numberOfItems++;
     }    
 	
+    public boolean isVisible()
+    {
+        return visible;
+    }
+    
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
+        
+        for (int i = 0; i < board.length; i++)
+        {
+            if (board[i] != null)
+            {
+                board[i].setVisible(visible);
+                if (board[i].getAnimation() != null)
+                    board[i].getAnimation().setVisible(visible);
+            }
+        }
+    }
+
+    /**
+     * Determines the centrepoint of a group of tiles.  Used for determine
+     * position of SCT.
+     * 
+     * @param indexSet
+     * @return
+     */
+    public XYPosition determineCenterPoint(final Set indexSet)
+    {
+        // The furthest left, right, up and down locations.
+        int l = Integer.MAX_VALUE;
+        int r = 0;
+        int u = Integer.MAX_VALUE;
+        int d = 0;
+
+        // The x and y coordinate of the centre of the tiles.
+        int cx, cy;
+
+        // Determine centre of tiles.
+        for (Iterator it = indexSet.iterator(); it.hasNext(); )            
+        {     
+            TileEntity t = getTile(((Integer) it.next()).intValue());         
+
+            if (t.getX() < l) 
+                l = t.getX();
+
+            if (t.getX() + t.getWidth() > r) 
+                r = t.getX() + t.getWidth();
+
+            if (t.getY() < u)
+                u = t.getY();
+
+            if (t.getY() + t.getHeight() > d)
+                d = t.getY() + t.getHeight();
+        }
+
+        // Assigned centre.
+        cx = l + (r - l) / 2;
+        cy = u + (d - u) / 2;
+        
+        // Return centerpoint.
+        return new XYPosition(cx, cy);
+    }
+    
 	/**
 	 * Prints board to console (for debugging purposes).
 	 */
@@ -792,23 +857,4 @@ public class BoardManager
 		System.out.println();
 	}
 
-    public void setVisible(boolean visible)
-    {
-        this.visible = visible;
-        
-        for (int i = 0; i < board.length; i++)
-        {
-            if (board[i] != null)
-            {
-                board[i].setVisible(visible);
-                if (board[i].getAnimation() != null)
-                    board[i].getAnimation().setVisible(visible);
-            }
-        }
-    }
-
-    public boolean isVisible()
-    {
-        return visible;
-    }
 }

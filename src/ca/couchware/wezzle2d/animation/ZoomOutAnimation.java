@@ -24,14 +24,22 @@ public class ZoomOutAnimation extends Animation
      * The amount the entity size is changed by per step (in pixels).
      */
     final private static int ZOOM_STEP = 2;
-           
+
+    /**
+     * The entity being animated.
+     */
+    protected Entity entity;
+    
     /**
      * The constructor.
      */
     public ZoomOutAnimation(final Entity entity)
     {                
         // Invoke super constructor.
-        super(entity, FRAME_PERIOD);
+        super(FRAME_PERIOD);
+        
+        // Save a reference to the entity.
+        this.entity = entity;
     }
 
     public void nextFrame(long delta)

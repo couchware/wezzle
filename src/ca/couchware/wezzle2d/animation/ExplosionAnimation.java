@@ -14,12 +14,7 @@ public class ExplosionAnimation extends Animation
     /**
      * Path to the explosion sprite.
      */
-    final private static String PATH = "resources/Explosion.png";
-    
-    /**
-     * Reference to the layer manager.
-     */
-    final private LayerManager layerMan;
+    final private static String PATH = "resources/Explosion.png";       
     
     /**
      * The period of each frame.
@@ -47,6 +42,16 @@ public class ExplosionAnimation extends Animation
     final private static int EXPLODE_UP = 1;
     
     /**
+     * The entity being animated.
+     */
+    protected Entity entity;
+    
+    /**
+     * Reference to the layer manager.
+     */
+    final private LayerManager layerMan;
+    
+    /**
      * The maximum width the entity may become before switching 
      * explode states.
      */
@@ -68,7 +73,10 @@ public class ExplosionAnimation extends Animation
     public ExplosionAnimation(final Entity entity, final LayerManager layerMan)
     {                
         // Invoke super constructor.
-        super(entity, FRAME_PERIOD);    
+        super(FRAME_PERIOD);    
+        
+        // Save a reference to the entity.
+        this.entity = entity;
         
         // Set reference to layer manager.
         this.layerMan = layerMan;

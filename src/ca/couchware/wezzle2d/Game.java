@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.button.*;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -32,6 +33,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The text color.
      */
     final public static Color TEXT_COLOR = new Color(252, 233, 45);
+  
+    /**
+     * The animation manager in charge of animations.
+     */
+    public AnimationManager animationMan;
     
     /**
 	 * The manager in charge of maintaining the board.
@@ -235,6 +241,9 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the layer manager with 2 initial layers.
         layerMan = new LayerManager(2);
+        
+        // Create the animation manager.
+        animationMan = new AnimationManager();
         
 		// Create the board manager.
 		boardMan = new BoardManager(layerMan, 272, 139, 8, 10);        
@@ -462,16 +471,24 @@ public class Game extends Canvas implements GameWindowCallback
                 // Clear flag.
                 activateLineRemoval = false;
 
-                // Calculate score and play the sound.
-                scoreMan.calculateLineScore(tileRemovalSet, 
-                        ScoreManager.TYPE_LINE, 1);
+                // Calculate score.
+                final int deltaScore = scoreMan.calculateLineScore(
+                        tileRemovalSet, 
+                        ScoreManager.TYPE_LINE, 1);                               
+                
+                // Show the SCT.
+                animationMan.add(new FloatTextAnimation(
+                        boardMan.determineCenterPoint(tileRemovalSet), 
+                        layerMan, String.valueOf(deltaScore), 12));
+                
+                // Play the sound.
                 soundMan.play(SoundManager.LINE);
 
                 // Make sure bombs aren't removed (they get removed
                 // in a different step).
                 bombRemovalSet = boardMan.scanBombs(tileRemovalSet);
-                tileRemovalSet.removeAll(bombRemovalSet);
-
+                tileRemovalSet.removeAll(bombRemovalSet);                
+                
                 // Start the line removal animations if there are any
                 // non-bomb tiles.
                 if (tileRemovalSet.size() > 0)
@@ -498,10 +515,22 @@ public class Game extends Canvas implements GameWindowCallback
                 // Clear the flag.
                 activateBombRemoval = false;
 
+                // Used below.
+                int deltaScore = 0;
+                
                 // Get the tiles the bombs would affect.
                 tileRemovalSet = boardMan.processBombs(bombRemovalSet);
-                scoreMan.calculateLineScore(tileRemovalSet, 
+                deltaScore = scoreMan.calculateLineScore(tileRemovalSet, 
                         ScoreManager.TYPE_BOMB, 1);
+                
+                // Show the SCT.
+                animationMan.add(new FloatTextAnimation(
+                        boardMan.determineCenterPoint(tileRemovalSet), 
+                        layerMan, String.valueOf(deltaScore), 12));
+                
+                
+                // Play the sound.
+                soundMan.play(SoundManager.BOMB);
 
                 // Extract all the new bombs.
                 Set newBombRemovalSet = boardMan.scanBombs(tileRemovalSet);                                                
@@ -517,8 +546,7 @@ public class Game extends Canvas implements GameWindowCallback
 
                     if (t instanceof BombTileEntity)
                     {
-                        t.setAnimation(new ExplosionAnimation(t, layerMan));
-                        this.soundMan.play(SoundManager.BOMB);
+                        t.setAnimation(new ExplosionAnimation(t, layerMan));                        
                     }
                     else
                         t.setAnimation(new JiggleFadeAnimation(t));
@@ -567,7 +595,10 @@ public class Game extends Canvas implements GameWindowCallback
             }
 
             // Animate all the pieces.
-            boardMan.animateAll(delta);                
+            boardMan.animate(delta);    
+            
+            // Animation all animations.
+            animationMan.animate(delta);
 
             // Handle the timer.
             timerMan.incrementInternalTime(delta);
