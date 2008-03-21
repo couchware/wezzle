@@ -644,7 +644,7 @@ public class Game extends Canvas implements GameWindowCallback
             moveCountText.setText(String.valueOf(moveMan.getMoveCount()));                            
         }
         
-        if (pauseButton.wasPushed() == true)
+        if (pauseButton.wasClicked() == true)
         {
             if (pauseButton.isActivated() == true)
             {

@@ -36,7 +36,7 @@ public class FloatTextAnimation extends Animation
     /**
      * The amount of opacity to reduce each step.
      */
-    final private static int OPACITY_STEP = 10;
+    final private static int OPACITY_STEP = 8;
     
     /**
      * The minimum opacity before the animation ends.

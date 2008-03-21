@@ -135,6 +135,12 @@ public abstract class Button implements
 	 */
 	protected XYPosition mousePosition;
     
+     /**
+     * Was the button just pushed?  This flag is cleared once it
+     * is read.
+     */
+    protected boolean clicked;
+    
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -257,6 +263,13 @@ public abstract class Button implements
     {        
         state = STATE_NORMAL;
     }
+    
+    public boolean wasClicked()
+    {
+        boolean value = clicked;
+        clicked = false;
+        return value;
+    }    
         
     //--------------------------------------------------------------------------
     // Getters and Setters

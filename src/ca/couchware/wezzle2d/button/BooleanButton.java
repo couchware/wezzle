@@ -12,13 +12,7 @@ public abstract class BooleanButton extends Button
     /**
      * Is the button currently activated?
      */
-    protected boolean activated;
-    
-    /**
-     * Was the button just pushed?  This flag is cleared once it
-     * is read.
-     */
-    protected boolean pushed;
+    protected boolean activated;       
     
     /**
      * The constructor.
@@ -41,7 +35,7 @@ public abstract class BooleanButton extends Button
     
     public void handleReleased()
     {
-        pushed = true;
+        clicked = true;
         
         if (activated == true)        
             activated = false;                    
@@ -79,12 +73,5 @@ public abstract class BooleanButton extends Button
     {
         this.activated = activated;
     }
-
-    public boolean wasPushed()
-    {
-        boolean value = pushed;
-        pushed = false;
-        return value;
-    }    
     
 }

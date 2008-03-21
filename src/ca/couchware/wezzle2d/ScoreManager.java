@@ -1,9 +1,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.tile.Multiply2xTileEntity;
-import ca.couchware.wezzle2d.tile.BombTileEntity;
+import ca.couchware.wezzle2d.tile.*;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -117,9 +115,9 @@ import java.util.Set;
         // Initialize tile counts.
         int numNormal = 0;
         int numBomb = 0;
-        int numMult4x = 0;
-        int numMult3x = 0;
-        int numMult2x = 0;		
+        int numMultiply4x = 0;
+        int numMultiply3x = 0;
+        int numMultiply2x = 0;		
 		
         // Cycle through the set counting the pieces.
         for (Iterator it = set.iterator(); it.hasNext();)
@@ -136,7 +134,15 @@ import java.util.Set;
                 }
                 else if (t.getClass() == Multiply2xTileEntity.class)                    
                 {
-                    numMult2x++;
+                    numMultiply2x++;
+                }
+                else if (t.getClass() == Multiply3xTileEntity.class)                    
+                {
+                    numMultiply3x++;
+                }
+                else if (t.getClass() == Multiply4xTileEntity.class)                    
+                {
+                    numMultiply4x++;
                 }
                 else if (t.getClass() == BombTileEntity.class)
                 {
@@ -146,11 +152,17 @@ import java.util.Set;
         } // end for
 
         // Change this when we add bombs and multipliers.
-        int deltaScore = (int) (calculateLineTilePoints(numNormal + numBomb + numMult2x + numMult3x + numMult4x, lineType)
+        int deltaScore = (int) (calculateLineTilePoints(
+                numNormal 
+                + numBomb 
+                + numMultiply2x 
+                + numMultiply3x 
+                + numMultiply4x, 
+                lineType)
                 *  Math.pow(1.5, numBomb)
-                *  Math.pow(2, numMult2x)
-                *  Math.pow(3, numMult3x)
-                *  Math.pow(4, numMult4x)
+                *  Math.pow(2, numMultiply2x)
+                *  Math.pow(3, numMultiply3x)
+                *  Math.pow(4, numMultiply4x)
                 * cascadeCount);
 
         Util.handleMessage("cascadeCount == " + cascadeCount, Thread.currentThread());
