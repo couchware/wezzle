@@ -34,6 +34,26 @@ import java.util.Set;
     final private static int POINTS_PER_PIECE_TILE = 10;
 
     /**
+	 * The minimal score for which the font size is minimal.
+	 */
+	private static int FLOAT_TEXT_SCORE_MIN = 50;
+
+	/**
+	 * The maximal score for which the font size is maximal.
+	 */
+	private static int FLOAT_TEXT_SCORE_MAX = 3000;
+	
+	/**
+	 * The minimum font size for a score pop-up.
+	 */
+	private static float FLOAT_TEXT_FONT_SIZE_MIN = 20.0f;
+	
+	/**
+	 * The maximum font size for a score pop-up.
+	 */
+	private static float FLOAT_TEXT_FONT_SIZE_MAX = 50.0f;
+    
+    /**
      * The board manager.
      */
     final private BoardManager boardMan;
@@ -293,10 +313,7 @@ import java.util.Set;
     public void setTargetTotalScore(int targetTotalScore)
     {
         this.targetTotalScore = targetTotalScore;
-    }
-
-   
-
+    }  
     
     /**
      * A method to update all the scores.
@@ -312,5 +329,36 @@ import java.util.Set;
 
             if(totalScore > highScore)
                     setHighScore(totalScore);
+    }
+    
+    /**
+     * A method for calculating the font size for a float text based on
+     * the magnitude of the score.
+     * 
+     * @param deltaScore The score to use.
+     * @return The font size appropriate for the passed score.
+     */
+    public float determineFontSize(final int deltaScore)
+    {
+        // Determine font size.
+        float fontSize = 0;
+
+        if (deltaScore < FLOAT_TEXT_SCORE_MIN)
+            fontSize = FLOAT_TEXT_FONT_SIZE_MIN;
+        else if (deltaScore > FLOAT_TEXT_SCORE_MAX)
+            fontSize = FLOAT_TEXT_FONT_SIZE_MAX;
+        else
+        {
+            double scorePercent = 
+                    (double) (deltaScore - FLOAT_TEXT_SCORE_MIN) 
+                    / (double) (FLOAT_TEXT_SCORE_MAX - FLOAT_TEXT_SCORE_MIN);
+            
+            fontSize = FLOAT_TEXT_FONT_SIZE_MIN 
+                    + (float) 
+                    ((FLOAT_TEXT_FONT_SIZE_MAX - FLOAT_TEXT_FONT_SIZE_MIN) 
+                    * scorePercent);
+        }
+        
+        return fontSize;
     }
 }

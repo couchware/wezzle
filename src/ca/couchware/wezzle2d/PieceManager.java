@@ -494,13 +494,12 @@ public class PieceManager implements
         
         // Remove and score the piece.
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
-        
-        // Determine the centre point.
-        final XYPosition p = game.boardMan.determineCenterPoint(indexSet);
-        
+                
         // Add score SCT.
-        game.animationMan.add(new FloatTextAnimation(p.x, p.y, game.layerMan,
-                String.valueOf(deltaScore), 12));
+        game.animationMan.add(new FloatTextAnimation(
+                game.boardMan.determineCenterPoint(indexSet), game.layerMan,
+                String.valueOf(deltaScore), 
+                game.scoreMan.determineFontSize(deltaScore)));
         
         // Remove the tiles.
         game.boardMan.removeTiles(indexSet);

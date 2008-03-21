@@ -522,7 +522,7 @@ public class BoardManager
         setTile(index, t);
 
         // Add the tile to the bottom layer too.
-        layerMan.add(t, 0);        
+        layerMan.add(t, Game.LAYER_TILE);        
         
         // Return the tile.
         return t;
@@ -538,7 +538,7 @@ public class BoardManager
             this.decrementNumberOfItems();
         
         // Remove from layer manager.
-        layerMan.remove(getTile(index), 0);
+        layerMan.remove(getTile(index), Game.LAYER_TILE);
         
         // Remove the tile.
         setTile(index, null);        

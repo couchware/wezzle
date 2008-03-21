@@ -83,12 +83,12 @@ public class Java2DText extends Text
 		}
                         
         // Setup some values.
+        this.text = "";
+		this.window = window;
         setVisible(true);
         setOpacity(100);
         setSize(24.0f);
-		setColor(Color.BLACK);
-		this.text = "";
-		this.window = window;        
+		setColor(Color.BLACK);		        
 		
 		// Set the default anchor.
 		this.anchor = TOP | LEFT;
@@ -119,7 +119,7 @@ public class Java2DText extends Text
 	public void setSize(float size)
 	{
 		this.size = size;
-		this.font = font.deriveFont(this.size);
+		this.font = font.deriveFont(this.size);       
 	}
 	
 	/**

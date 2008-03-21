@@ -100,7 +100,7 @@ public class ExplosionAnimation extends Animation
         explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);
         
         // Add explosion to the layer manager.
-        layerMan.add(explosion, 1);
+        layerMan.add(explosion, Game.LAYER_EFFECT);
     }
 
     public void nextFrame(long delta)
@@ -152,7 +152,7 @@ public class ExplosionAnimation extends Animation
                     if (explosion.getWidth() <= 2)
                     {
                         // Remove explosion from layer manager.
-                        layerMan.remove(explosion, 1);
+                        layerMan.remove(explosion, Game.LAYER_EFFECT);
                         
                         // Set done flag.
                         done = true;

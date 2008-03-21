@@ -28,6 +28,11 @@ public class LayerManager implements Drawable
     private HashMap layerMap;
     
     /**
+     * The list of hidden layers.
+     */
+    private HashMap hiddenLayerMap;
+    
+    /**
      * The constructor.
      */
     public LayerManager(int numberOfLayers)
@@ -35,15 +40,21 @@ public class LayerManager implements Drawable
         // Must have at least 1 layer.
         assert(numberOfLayers > 0);
         
-        // Initialize layer list.
+        // Initialize layer map.
         layerMap = new HashMap();
+        
+        // Initialize hidden layer map.
+        hiddenLayerMap = new HashMap();
         
         // Record number of layers.
         this.numberOfLayers = numberOfLayers;
         
         // Create layers.
         for (int i = 0; i < numberOfLayers; i++)
-            layerMap.put(new Integer(i), new LinkedList());                
+        {
+            layerMap.put(new Integer(i), new LinkedList());
+            hiddenLayerMap.put(new Integer(i), Boolean.FALSE);
+        }        
     }
     
     /**
@@ -66,6 +77,7 @@ public class LayerManager implements Drawable
             
             // Increase the layer count.
             layerMap.put(layer, new LinkedList());
+            hiddenLayerMap.put(layer, new Boolean(false));
         }
 
         // Add the element to the layer.
@@ -76,7 +88,7 @@ public class LayerManager implements Drawable
      * Remove an element from the layer specified.
      * @return True if the element was removed, false if it was not found.
      */
-    public boolean remove(final Drawable element, final Integer layer)
+    public boolean remove(final Drawable element, final int layer)
     {
         // Get the layer.
         LinkedList layerList = (LinkedList) layerMap.get(layer);
@@ -94,6 +106,16 @@ public class LayerManager implements Drawable
             return false;
     }    
     
+    public void hide(final int layer)
+    {
+        hiddenLayerMap.put(new Integer(layer), Boolean.TRUE);
+    }
+    
+    public void show(final int layer)
+    {
+        hiddenLayerMap.put(new Integer(layer), Boolean.FALSE);
+    }
+    
     /**
      * Draws the layers to screen, in order from 0 to N (where N is the number
      * of layers).
@@ -104,7 +126,8 @@ public class LayerManager implements Drawable
         for (int i = 0; i < numberOfLayers; i++)
         {
             // Check if layer exists, if it doesn't, skip this iteration.
-            if (layerMap.containsKey(new Integer(i)) == false)
+            if (((Boolean) hiddenLayerMap.get(new Integer(i))) == Boolean.TRUE
+                    || layerMap.containsKey(new Integer(i)) == false)
                 continue;
             
             // Grab this layer.

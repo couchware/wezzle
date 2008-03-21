@@ -100,8 +100,10 @@ public class FloatTextAnimation extends Animation
         floatText.setXYPosition(x, y);
         floatText.setAnchor(Text.VCENTER | Text.HCENTER);
         floatText.setColor(Game.TEXT_COLOR);
-        floatText.setText(text);
         floatText.setSize(size);
+        floatText.setText(text);        
+        
+        Util.handleMessage("Font size is " + size + ".", Thread.currentThread());
                         
         // Set the initial pulse state.
         state = STATE_OPAQUE;
@@ -110,7 +112,7 @@ public class FloatTextAnimation extends Animation
         opaqueFrameCount = 0;
         
         // Add the floating text to the layer manager.
-        layerMan.add(floatText, 1);
+        layerMan.add(floatText, Game.LAYER_EFFECT);
     }
     
     public FloatTextAnimation(final XYPosition p,

@@ -35,6 +35,21 @@ public class Game extends Canvas implements GameWindowCallback
     final public static Color TEXT_COLOR = new Color(252, 233, 45);
   
     /**
+     * The board layer.
+     */
+    final public static int LAYER_TILE = 0;
+    
+    /**
+     * The effects layer.
+     */
+    final public static int LAYER_EFFECT = 1;
+    
+    /**
+     * The UI layer.
+     */
+    final public static int LAYER_UI = 2;
+    
+    /**
      * The animation manager in charge of animations.
      */
     public AnimationManager animationMan;
@@ -239,8 +254,8 @@ public class Game extends Canvas implements GameWindowCallback
         // Initialize bomb index set.
         bombRemovalSet = new HashSet();
         
-        // Create the layer manager with 2 initial layers.
-        layerMan = new LayerManager(2);
+        // Create the layer manager.
+        layerMan = new LayerManager(3);
         
         // Create the animation manager.
         animationMan = new AnimationManager();
@@ -250,7 +265,7 @@ public class Game extends Canvas implements GameWindowCallback
         
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
-        layerMan.add(pieceMan, 1);
+        layerMan.add(pieceMan, LAYER_EFFECT);
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
 	
@@ -276,7 +291,7 @@ public class Game extends Canvas implements GameWindowCallback
         pauseButton = new CircularBooleanButton(18, 600 - 18);
         pauseButton.setText("Pause");
         pauseButton.setAnchor(Button.BOTTOM | Button.LEFT);
-        layerMan.add(pauseButton, 1);
+        layerMan.add(pauseButton, LAYER_UI);
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);
         
@@ -286,7 +301,7 @@ public class Game extends Canvas implements GameWindowCallback
 		timerText.setSize(50);
 		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
 		timerText.setColor(TEXT_COLOR);
-        layerMan.add(timerText, 0);
+        layerMan.add(timerText, LAYER_UI);
                 
         // Set up the score text.
         scoreText = ResourceFactory.get().getText();
@@ -294,7 +309,7 @@ public class Game extends Canvas implements GameWindowCallback
         scoreText.setSize(20);
         scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         scoreText.setColor(TEXT_COLOR);        
-        layerMan.add(scoreText, 0);
+        layerMan.add(scoreText, LAYER_UI);
         
         // Set up the high score text.
         highScoreText = ResourceFactory.get().getText();
@@ -302,7 +317,7 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreText.setSize(20);
         highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
         highScoreText.setColor(TEXT_COLOR);
-        layerMan.add(highScoreText, 0);
+        layerMan.add(highScoreText, LAYER_UI);
         
         // Set up the level text.
         levelText = ResourceFactory.get().getText();
@@ -310,7 +325,7 @@ public class Game extends Canvas implements GameWindowCallback
         levelText.setSize(20);
         levelText.setAnchor(Text.BOTTOM | Text.HCENTER);
         levelText.setColor(TEXT_COLOR);
-        layerMan.add(levelText, 0);
+        layerMan.add(levelText, LAYER_UI);
         
         // Set up the move count text.
         moveCountText = ResourceFactory.get().getText();
@@ -318,7 +333,7 @@ public class Game extends Canvas implements GameWindowCallback
         moveCountText.setSize(20);
         moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
         moveCountText.setColor(TEXT_COLOR);
-        layerMan.add(moveCountText, 0);
+        layerMan.add(moveCountText, LAYER_UI);
                         		
 		// Create the time manager.
 		timerMan = new TimerManager();
@@ -479,7 +494,8 @@ public class Game extends Canvas implements GameWindowCallback
                 // Show the SCT.
                 animationMan.add(new FloatTextAnimation(
                         boardMan.determineCenterPoint(tileRemovalSet), 
-                        layerMan, String.valueOf(deltaScore), 12));
+                        layerMan, String.valueOf(deltaScore), 
+                        scoreMan.determineFontSize(deltaScore)));
                 
                 // Play the sound.
                 soundMan.play(SoundManager.LINE);
@@ -526,9 +542,9 @@ public class Game extends Canvas implements GameWindowCallback
                 // Show the SCT.
                 animationMan.add(new FloatTextAnimation(
                         boardMan.determineCenterPoint(tileRemovalSet), 
-                        layerMan, String.valueOf(deltaScore), 12));
-                
-                
+                        layerMan, String.valueOf(deltaScore), 
+                        scoreMan.determineFontSize(deltaScore)));
+                                
                 // Play the sound.
                 soundMan.play(SoundManager.BOMB);
 
@@ -544,10 +560,8 @@ public class Game extends Canvas implements GameWindowCallback
                 {
                     TileEntity t = boardMan.getTile((Integer) it.next());
 
-                    if (t instanceof BombTileEntity)
-                    {
-                        t.setAnimation(new ExplosionAnimation(t, layerMan));                        
-                    }
+                    if (t instanceof BombTileEntity)                    
+                        t.setAnimation(new ExplosionAnimation(t, layerMan));                                            
                     else
                         t.setAnimation(new JiggleFadeAnimation(t));
                 }
@@ -632,16 +646,15 @@ public class Game extends Canvas implements GameWindowCallback
         
         if (pauseButton.wasPushed() == true)
         {
-            if (boardMan.isVisible() == true)
+            if (pauseButton.isActivated() == true)
             {
-                boardMan.setVisible(false);
-                pieceMan.setVisible(false);
+                layerMan.hide(LAYER_TILE);
+                layerMan.hide(LAYER_EFFECT);
             }
             else
             {
-                boardMan.setVisible(true);
-                if (isRefactoring() == false)
-                    pieceMan.setVisible(true);
+                layerMan.show(LAYER_TILE);
+                layerMan.show(LAYER_EFFECT);
             }
         }
         
