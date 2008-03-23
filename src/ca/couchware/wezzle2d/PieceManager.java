@@ -498,7 +498,8 @@ public class PieceManager implements
         // Add score SCT.
         game.animationMan.add(new FloatTextAnimation(
                 game.boardMan.determineCenterPoint(indexSet), game.layerMan,
-                String.valueOf(deltaScore), 
+                String.valueOf(deltaScore),
+                Game.SCORE_PIECE_COLOR,
                 game.scoreMan.determineFontSize(deltaScore)));
         
         // Remove the tiles.

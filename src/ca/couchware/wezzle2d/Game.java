@@ -33,6 +33,21 @@ public class Game extends Canvas implements GameWindowCallback
      * The text color.
      */
     final public static Color TEXT_COLOR = new Color(252, 233, 45);
+    
+    /**
+     * The line score color.
+     */
+    final public static Color SCORE_LINE_COLOR = new Color(252, 233, 45);
+    
+    /**
+     * The piece score color.
+     */
+    final public static Color SCORE_PIECE_COLOR = new Color(240, 240, 240);
+    
+    /**
+     * The bomb score color.
+     */ 
+    final public static Color SCORE_BOMB_COLOR = new Color(255, 127, 0);
   
     /**
      * The board layer.
@@ -494,7 +509,9 @@ public class Game extends Canvas implements GameWindowCallback
                 // Show the SCT.
                 animationMan.add(new FloatTextAnimation(
                         boardMan.determineCenterPoint(tileRemovalSet), 
-                        layerMan, String.valueOf(deltaScore), 
+                        layerMan, 
+                        String.valueOf(deltaScore),
+                        SCORE_LINE_COLOR,
                         scoreMan.determineFontSize(deltaScore)));
                 
                 // Play the sound.
@@ -542,7 +559,9 @@ public class Game extends Canvas implements GameWindowCallback
                 // Show the SCT.
                 animationMan.add(new FloatTextAnimation(
                         boardMan.determineCenterPoint(tileRemovalSet), 
-                        layerMan, String.valueOf(deltaScore), 
+                        layerMan, 
+                        String.valueOf(deltaScore),
+                        SCORE_BOMB_COLOR,
                         scoreMan.determineFontSize(deltaScore)));
                                 
                 // Play the sound.

@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.animation;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
+import java.awt.Color;
 import java.util.Set;
 
 /**
@@ -85,7 +86,9 @@ public class FloatTextAnimation extends Animation
      */
     public FloatTextAnimation(final int x, final int y, 
             final LayerManager layerMan,
-            final String text, final float size)
+            final String text, 
+            final Color color,
+            final float size)
     {                
         // Invoke super constructor.
         super(FRAME_PERIOD);    
@@ -99,7 +102,7 @@ public class FloatTextAnimation extends Animation
         floatText = ResourceFactory.get().getText();
         floatText.setXYPosition(x, y);
         floatText.setAnchor(Text.VCENTER | Text.HCENTER);
-        floatText.setColor(Game.TEXT_COLOR);
+        floatText.setColor(color);
         floatText.setSize(size);
         floatText.setText(text);        
         
@@ -117,9 +120,11 @@ public class FloatTextAnimation extends Animation
     
     public FloatTextAnimation(final XYPosition p,
             final LayerManager layerMan,
-            final String text, final float size)
+            final String text, 
+            final Color color,
+            final float size)
     {
-        this(p.x, p.y, layerMan, text, size);
+        this(p.x, p.y, layerMan, text, color, size);
     }
 
     public void nextFrame(long delta)
