@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.Text;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
+import java.awt.font.FontRenderContext;
 
 /**
  * The Java2DText class provides a java2D implementation of the text interface.
@@ -51,8 +52,13 @@ public class Java2DText extends Text
 	/** 
      * The y offset for anchor. 
      */
-	private int offsetY;		
-
+	private int offsetY;	
+    
+    /**
+     * Do we need to update the text layout?
+     */
+    private boolean updateTextLayoutNextDraw = false;
+    
 	/**
 	 * The constructor loads the default text settings.
 	 * The default settings are:
@@ -82,9 +88,9 @@ public class Java2DText extends Text
 			e.printStackTrace();
 		}
                         
-        // Setup some values.
-        this.text = "";
+        // Setup some values.       
 		this.window = window;
+        setText(text);
         setVisible(true);
         setOpacity(100);
         setSize(24.0f);
@@ -102,12 +108,18 @@ public class Java2DText extends Text
 	 */
 	public void setText(final String text)
 	{
-		this.text = text;
-		this.textLayout = new TextLayout(text, font, 
-                window.getDrawGraphics().getFontRenderContext());
+        // Set the text.
+		this.text = text;        
+        
+        // Get rid of old layout.
+        this.textLayout = null;
+        
+        // Schedule a text layout update.
+        this.updateTextLayoutNextDraw = true;
 		
 		// Recalculate the anchor points.
-		this.setAnchor(this.anchor);
+		// The anchor will be automatically recalculated with the next 
+        // text layout update.
 	}		
 	
 	/**
@@ -118,8 +130,15 @@ public class Java2DText extends Text
 	 */
 	public void setSize(float size)
 	{
+        // Update size.
 		this.size = size;
-		this.font = font.deriveFont(this.size);       
+        
+        // Derive font with updated size.
+		this.font = font.deriveFont(this.size);
+        
+        // Update the text layout.
+        this.textLayout = null;
+        this.updateTextLayoutNextDraw = true;
 	}
 	
 	/**
@@ -133,8 +152,10 @@ public class Java2DText extends Text
         // Remember the anchor.
 		this.anchor = anchor;
         
-        // Return if there's no text.
-		if (text.equals("") == true)
+        // Return if there's no text or text layout object.
+		if (text == null 
+                || text.equals("") == true 
+                || textLayout == null)
 			return;
 		
 		// Get the width and height of the font.
@@ -177,6 +198,20 @@ public class Java2DText extends Text
 		}					
 	}
 	
+    /**
+     * Updates the text layout instance.
+     * @param frctx The current font render context.
+     */
+    private void updateTextLayout(final FontRenderContext frctx)
+    {      
+        // Create new text layout.
+		this.textLayout = new TextLayout(text, font, frctx);
+        
+        // Update anchor.
+        this.setAnchor(this.anchor);
+    }
+    
+    
 	/**
 	 * Draw the text onto the graphics context provided.	   
 	 */
@@ -195,6 +230,16 @@ public class Java2DText extends Text
 			g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
 					RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 			
+            // Update the text layout if flagged.
+            if (updateTextLayoutNextDraw == true)
+            {
+                // Clear the flag.
+                updateTextLayoutNextDraw = false;
+                
+                // Update it.
+                updateTextLayout(g.getFontRenderContext());
+            }
+            
 			// Test url.
 			assert (url != null);
 						
@@ -221,7 +266,7 @@ public class Java2DText extends Text
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			Util.handleException(e);
 		}		
 	}   
     

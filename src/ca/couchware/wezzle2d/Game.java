@@ -215,6 +215,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The move count text.
      */
     private Text moveCountText;
+    
+    /**
+     * The "Paused" text.
+     */
+    private Text pausedText;
         
 	/**
 	 * Construct our game and set it running.
@@ -309,6 +314,16 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(pauseButton, LAYER_UI);
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);
+        
+        // Create the "Paused" text.
+        pausedText = ResourceFactory.get().getText();
+        pausedText.setXYPosition(400, 300);
+		pausedText.setSize(40);
+		pausedText.setAnchor(Text.VCENTER | Text.HCENTER);
+		pausedText.setColor(TEXT_COLOR);
+        pausedText.setText("Paused");
+        pausedText.setVisible(false);
+        layerMan.add(pausedText, LAYER_UI);
         
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
@@ -668,12 +683,14 @@ public class Game extends Canvas implements GameWindowCallback
             if (pauseButton.isActivated() == true)
             {
                 layerMan.hide(LAYER_TILE);
-                layerMan.hide(LAYER_EFFECT);
+                layerMan.hide(LAYER_EFFECT);                
+                pausedText.setVisible(true);
             }
             else
             {
                 layerMan.show(LAYER_TILE);
                 layerMan.show(LAYER_EFFECT);
+                pausedText.setVisible(false);
             }
         }
         
