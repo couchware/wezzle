@@ -186,7 +186,7 @@ public class Java2DText extends Text
 		}
 		else if((anchor & Text.HCENTER) == Text.HCENTER)
 		{
-			this.offsetX = (int) bounds.getMaxX() / 2;			
+			this.offsetX = (int) (bounds.getMinX() + bounds.getWidth() / 2);			
 		}
 		else if((anchor & Text.RIGHT) == Text.RIGHT)
 		{

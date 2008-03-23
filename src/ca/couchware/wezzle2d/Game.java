@@ -317,9 +317,9 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the "Paused" text.
         pausedText = ResourceFactory.get().getText();
-        pausedText.setXYPosition(400, 300);
+        pausedText.setXYPosition(400, 300);      
 		pausedText.setSize(40);
-		pausedText.setAnchor(Text.VCENTER | Text.HCENTER);
+		pausedText.setAnchor(Text.HCENTER | Text.VCENTER);
 		pausedText.setColor(TEXT_COLOR);
         pausedText.setText("Paused");
         pausedText.setVisible(false);
