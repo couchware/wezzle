@@ -327,7 +327,7 @@ public class Game extends Canvas implements GameWindowCallback
         
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();
-        timerText.setXYPosition(400, 100);
+        timerText.setXYPosition(404, 100);
 		timerText.setSize(50);
 		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
 		timerText.setColor(TEXT_COLOR);
@@ -430,6 +430,26 @@ public class Game extends Canvas implements GameWindowCallback
 			lastFramesPerSecondTime = 0;
 			framesPerSecond = 0;
 		}
+        
+        if (pauseButton.wasClicked() == true)
+        {
+            if (pauseButton.isActivated() == true)
+            {
+                layerMan.hide(LAYER_TILE);
+                layerMan.hide(LAYER_EFFECT);                
+                pausedText.setVisible(true);
+            }
+            else
+            {
+                layerMan.show(LAYER_TILE);
+                layerMan.show(LAYER_EFFECT);
+                pausedText.setVisible(false);
+                
+                // Clear clicks.
+                pieceMan.setMouseLeftReleased(false);
+                pieceMan.setMouseRightReleased(false);
+            }
+        }
 		
         if (pauseButton.isActivated() == false)
         {        
@@ -676,23 +696,7 @@ public class Game extends Canvas implements GameWindowCallback
 
             // Draw the move count text.
             moveCountText.setText(String.valueOf(moveMan.getMoveCount()));                            
-        }
-        
-        if (pauseButton.wasClicked() == true)
-        {
-            if (pauseButton.isActivated() == true)
-            {
-                layerMan.hide(LAYER_TILE);
-                layerMan.hide(LAYER_EFFECT);                
-                pausedText.setVisible(true);
-            }
-            else
-            {
-                layerMan.show(LAYER_TILE);
-                layerMan.show(LAYER_EFFECT);
-                pausedText.setVisible(false);
-            }
-        }
+        }                
         
         // Draw the layer manager.
         layerMan.draw();					

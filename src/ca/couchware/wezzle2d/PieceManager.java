@@ -561,6 +561,11 @@ public class PieceManager implements
     public synchronized void setMouseLeftReleased(boolean mouseLeftReleased)
     {
         this.mouseLeftReleased = mouseLeftReleased;
+        
+        if (mouseLeftReleased == true)
+            Util.handleMessage("Left mouse set.", Thread.currentThread());
+        else
+            Util.handleMessage("Left mouse cleared.", Thread.currentThread());
     }
 
     public synchronized boolean isMouseRightReleased()
