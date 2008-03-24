@@ -237,6 +237,7 @@ public class Game extends Canvas implements GameWindowCallback
 		{
 			public void run()
 			{
+                Util.handleMessage("Game Starting...", Thread.currentThread());
 				window = ResourceFactory.get().getGameWindow();
 				window.setResolution(800, 600);
 				window.setGameWindowCallback(Game.this);
