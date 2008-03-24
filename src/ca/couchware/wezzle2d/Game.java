@@ -1,17 +1,23 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.button.*;
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -63,6 +69,16 @@ public class Game extends Canvas implements GameWindowCallback
      * The UI layer.
      */
     final public static int LAYER_UI = 2;
+    
+    /**
+     * The build nunber path.
+     */
+    final public static String BUILD_NUMBER_PATH = "build.number";
+    
+    /**
+     * The current build number.
+     */
+    public String buildNumber;
     
     /**
      * The animation manager in charge of animations.
@@ -186,10 +202,15 @@ public class Game extends Canvas implements GameWindowCallback
      */
 	private int framesPerSecond;
 
+    /**
+     * The name of the application.
+     */
+    private String applicationName = "Wezzle";
+    
 	/** 
      * The normal title of the window. 
      */
-	private String windowTitle = "Wezzle";	    
+	private String windowTitle = applicationName;	    
     
 	/** 
      * The timer text. 
@@ -220,6 +241,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The "Paused" text.
      */
     private Text pausedText;
+    
+    /**
+     * The version text.
+     */
+    private Text versionText;
         
 	/**
 	 * Construct our game and set it running.
@@ -230,14 +256,42 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public Game(int renderingType) 
 	{
+        // Get the build number.
+        Properties buildProperties = new Properties();
+        File f = new File(BUILD_NUMBER_PATH);
+        
+        if (f.exists() == true)
+        {
+            try
+            {
+                buildProperties.load(new FileInputStream(f));
+                buildNumber = 
+                        (String) buildProperties.getProperty("build.number");
+            }
+            catch (Exception e)
+            {
+                Util.handleException(e);
+                buildNumber = "???";
+            }
+        }
+        else
+        {
+            Util.handleWarning("Could not find build number!", 
+                    Thread.currentThread());
+            buildNumber = "???";
+        }
+        
+        // Print the build number.
+        Util.handleMessage("Wezzle Build " + buildNumber, 
+                Thread.currentThread());
+        
 		// Create a window based on a chosen rendering method.
-		ResourceFactory.get().setRenderingType(renderingType);		
-
+		ResourceFactory.get().setRenderingType(renderingType);		        
+        
 		final Runnable r = new Runnable()
 		{
 			public void run()
-			{
-                Util.handleMessage("Game Starting...", Thread.currentThread());
+			{                             
 				window = ResourceFactory.get().getGameWindow();
 				window.setResolution(800, 600);
 				window.setGameWindowCallback(Game.this);
@@ -325,6 +379,15 @@ public class Game extends Canvas implements GameWindowCallback
         pausedText.setText("Paused");
         pausedText.setVisible(false);
         layerMan.add(pausedText, LAYER_UI);
+              
+        // Set up the version text.
+		versionText = ResourceFactory.get().getText();
+        versionText.setXYPosition(800 - 10, 600 - 10);
+		versionText.setSize(12);
+		versionText.setAnchor(Text.BOTTOM | Text.RIGHT);
+		versionText.setColor(TEXT_COLOR);
+        versionText.setText(applicationName + " Build " + buildNumber);
+        layerMan.add(versionText, LAYER_UI);
         
 		// Set up the timer text.
 		timerText = ResourceFactory.get().getText();

@@ -84,7 +84,7 @@ public class WorldManager
                 .getStringProperty(PropertyManager.DISPLAY_NAME);
         
 		this.totalLevels = propertyMan
-                .getIntegerProperty(PropertyManager.NUM_LEVELS);
+                .getIntegerProperty(PropertyManager.NUMBER_OF_LEVELS);
 				
 		// Set the starting level.
 		setCurrentLevel(this.difficulty);

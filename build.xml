@@ -5,7 +5,10 @@
 <project name="Wezzle2D" default="default" basedir=".">
     <description>Builds, tests, and runs the project Wezzle2D.</description>
     <import file="nbproject/build-impl.xml"/>
-	<buildnumber/>
+	<buildnumber file="build.number" />
+	<target name="-post-compile">
+		<copy file="${basedir}/build.number" todir="${src.dir}"/>
+    </target>
     <!--
 
     There exist several targets which are by default empty and which can be 

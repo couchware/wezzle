@@ -13,7 +13,6 @@ import javax.jnlp.UnavailableServiceException;
 
 /**
  * A wrapper class for writing out and reading in properties from files.
- * Will be using XML files.
  * 
  * @author Kevin
  */
@@ -22,25 +21,27 @@ public class PropertyManager
 	/**
 	 * The high score key.
 	 */
-	public static final String HIGH_SCORE = "High Score";
-	public static final String DIFFICULTY = "Difficulty";
-	public static final String DISPLAY_NAME = "Display Name";
-	public static final String NUM_LEVELS = "Number of Levels";
-	public static final String DIR_PATH = System.getProperty("user.home") + "/Wezzle";
+	public static final String HIGH_SCORE = "wezzle.highScore";
+	public static final String DIFFICULTY = "wezzle.difficulty";
+	public static final String DISPLAY_NAME = "wezzle.displayName";
+	public static final String NUMBER_OF_LEVELS = "wezzle.numberOfLevels";
+	
+    public static final String DIR_PATH = 
+            System.getProperty("user.home") + "/Wezzle";
 	
 	PersistenceService pService;
 	
 	private String filePath;
 	private Properties properties;
 	
-	private boolean webstart;
+	private boolean webStart;
 		
 	/**
 	 * The default Constructor.
 	 */
 	public PropertyManager()
 	{
-		this("/settings.xml");		
+		this("/settings.txt");		
 	}
 	
 	/**
@@ -51,10 +52,10 @@ public class PropertyManager
 		// Create new properties.
 		this.properties = new Properties();
 
-		// Webstart.
-		this.webstart = true;
+		// WebStart.
+		this.webStart = true;
 		
-		//Check webstart
+		//Check WebStart.
 		try
 		{
 			// Only create a property manager if this isn't the WebStart version.
@@ -66,7 +67,7 @@ public class PropertyManager
 			this.setWebStart();
 		}
 		
-		if (this.webstart == false)
+		if (this.webStart == false)
 		{
 			// Check if the directory exists.
 			File dir = new File(DIR_PATH);
@@ -94,7 +95,8 @@ public class PropertyManager
 				}
 				catch(Exception e)
 				{
-					Util.handleWarning("Url is " + f.getAbsolutePath(), Thread.currentThread());
+					Util.handleWarning("Url is " + f.getAbsolutePath(), 
+                            Thread.currentThread());
 					Util.handleException(e);
 				}
 			}
@@ -103,7 +105,7 @@ public class PropertyManager
 				// Get the url.
 				try
 				{
-					this.properties.loadFromXML(new FileInputStream(this.filePath));
+					this.properties.load(new FileInputStream(this.filePath));
 				}
 				catch(Exception e)
 				{
@@ -119,7 +121,8 @@ public class PropertyManager
 	 */
 	public void checkWebStart() throws UnavailableServiceException
 	{
-		this.pService = (PersistenceService)ServiceManager.lookup("javax.jnlp.PersistenceService"); 		
+		this.pService = (PersistenceService) ServiceManager
+                .lookup("javax.jnlp.PersistenceService"); 		
 	}
 	
 	// ---------------------------------------------------------------------------
@@ -132,7 +135,7 @@ public class PropertyManager
 	 */
 	public void saveProperties() throws IOException
 	{
-		this.properties.storeToXML(new FileOutputStream(this.filePath), "Save");
+		this.properties.store(new FileOutputStream(this.filePath), "Save");
 		
 	}
 	
@@ -148,7 +151,8 @@ public class PropertyManager
 	
 	/**
 	 * Get a property. It is the programmers responsibility to cast the
-	 * returned property to whatever it should be. This function returns an  object.
+	 * returned property to whatever it should be. 
+     * This function returns an object.
 	 * 
 	 * @param key The properties key.
 	 * @return The property
@@ -217,11 +221,11 @@ public class PropertyManager
 	
 	public void setWebStart()
 	{
-		this.webstart = false;
+		this.webStart = false;
 	}
 	
-	public boolean isWebstart()
+	public boolean isWebStart()
 	{
-		return this.webstart;
+		return this.webStart;
 	}
 }
