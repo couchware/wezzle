@@ -377,9 +377,7 @@ public class PieceManager implements
                 // consulting the available tiles and their probabilities
                 // from the item list and checking to see if a special tile
                 // needs to be dropped.
-                
-                
-                
+                                                
                 // Create a new tile.
                 
                 // If there is only 1 item left (to ensure only 1 drop per drop 
