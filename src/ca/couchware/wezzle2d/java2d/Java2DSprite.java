@@ -118,7 +118,54 @@ public class Java2DSprite implements Sprite
         
         // Opacity.
         if (opacity != 100)        
-            g.setComposite(c);
-            
+            g.setComposite(c);            
     }
+
+    /**
+     * TODO Needs documentation. Rotation has not been tested for this method.
+     * 
+     * @param x
+     * @param y
+     * @param clipX
+     * @param clipY
+     * @param clipWidth
+     * @param clipHeight
+     * @param theta
+     * @param opacity
+     */
+    public void drawRegion(int x, int y, int rx, int ry, 
+            int rwidth, int rheight, int opacity)
+    {
+        Graphics2D g = window.getDrawGraphics();
+		
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_RENDERING, 
+				RenderingHints.VALUE_RENDER_QUALITY);
+		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+				RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+
+        // Set the clip.
+        g.setClip(x, y, rwidth, rheight);
+        
+        // Opacity.
+        Composite c = null;
+        if (opacity != 100)
+        {
+            c = g.getComposite();
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
+                    ((float) opacity) / 100.0f));
+        }                       
+        
+        // Draw the sprite.
+		g.drawImage(image, x - rx, y - ry, null);                                     
+        
+        // Opacity.
+        if (opacity != 100)        
+            g.setComposite(c); 
+        
+        // Clear the clip.
+        g.setClip(null);
+    }        
+    
 }

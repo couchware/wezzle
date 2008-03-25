@@ -264,6 +264,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The version text.
      */
     private Text versionText;
+    
+    /**
+     * The progress bar.
+     */
+    private ProgressBar progressBar;
         
 	/**
 	 * Construct our game and set it running.
@@ -382,6 +387,9 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the move manager.
         moveMan = new MoveManager();
+        
+        // Create the time manager.
+		timerMan = new TimerManager();
                                 
         // Create a new pause button.
         pauseButton = new CircularBooleanButton(18, 600 - 18);
@@ -449,10 +457,11 @@ public class Game extends Canvas implements GameWindowCallback
         moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
         moveCountText.setColor(TEXT_COLOR);
         layerMan.add(moveCountText, LAYER_UI);
-                        		
-		// Create the time manager.
-		timerMan = new TimerManager();
-
+             
+        // Create the progress bar.
+        progressBar = new ProgressBar(307, 499, true);
+        layerMan.add(progressBar, LAYER_UI);
+        
 		// Setup the initial game state.
 		startGame();
 	}

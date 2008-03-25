@@ -35,8 +35,8 @@ public interface Sprite
 	public void draw(int x, int y);    
     
     /**
-	 * Draw the sprite onto the graphics context provided and
-     * resizes to the width and height provided.
+	 * Draw the sprite, scaled to the width and height provided, rotated by
+     * theta, with the given opacity percentage (as an integer).
 	 * 
 	 * @param x
 	 *            The x location at which to draw the sprite.
@@ -45,6 +45,23 @@ public interface Sprite
      * @param width The width.
      * @param height The height.
 	 */
-    public void draw(int x, int y, int width, int height, 
+    public void draw(int x, int y, 
+            int width, int height, 
             double theta, int opacity);
+    
+    /**
+     * Draw the the region of the sprite to the the coordinate provided with
+     * the given opacity.
+     * 
+     * @param x
+     * @param y
+     * @param rx
+     * @param ry
+     * @param rwidth
+     * @param rheight
+     * @param opacity
+     */
+    public void drawRegion(int x, int y, int rx, int ry, 
+            int rwidth, int rheight,
+            int opacity);
 }

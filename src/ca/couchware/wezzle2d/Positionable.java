@@ -3,12 +3,44 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.util.XYPosition;
 
 /**
- * An interface inplemented by classes that are positionable.
+ * An interface inplemented by classes that are positionable.  A positionable
+ * class has an x,y coordinate, a width and height, and is capable
+ * of being anchored on any of the given anchor points.
  * 
  * @author cdmckay
  */
 public interface Positionable 
 {
+    /**
+     * Align at the vertical top.
+     */
+    final public static int TOP = 1;
+    
+    /**
+     * Align at the vertical center.
+     */
+	final public static int VCENTER = 2;
+    
+    /**
+     * Align at the vertical bottom.
+     */
+	final public static int BOTTOM = 4;
+    
+    /**
+     * Align at the horizontal left.
+     */
+	final public static int LEFT = 8;
+    
+    /**
+     * Align at the horizontal centre.
+     */
+	final public static int HCENTER = 16;
+    
+    /**
+     * Align at the horizontal right.
+     */
+	final public static int RIGHT = 32;
+    
     /**
      * Get the x-coordinate.
      * 
@@ -58,4 +90,46 @@ public interface Positionable
      * @param p
      */
     public void setXYPosition(final XYPosition p);
+    
+    /**
+     * Get the width.
+     * 
+     * @return The width.
+     */
+    public int getWidth();
+    
+    /**
+     * Sets the width.
+     * 
+     * @param width The width.
+     */
+    public void setWidth(final int width);
+    
+    /**
+     * Gets the height.
+     * 
+     * @return The height.
+     */
+    public int getHeight();
+    
+    /**
+     * Sets the height.
+     * 
+     * @param height The height.
+     */
+    public void setHeight(final int height);
+    
+    /**
+     * Gets the anchor location.
+     * 
+     * @return An integer bitmask representing the anchor location.
+     */
+    public int getAnchor();
+    
+    /**
+     * Sets the anchor location.
+     * 
+     * @param bitmask An integer bitmask representing the anchor location.
+     */
+    public void setAnchor(final int bitmask);
 }
