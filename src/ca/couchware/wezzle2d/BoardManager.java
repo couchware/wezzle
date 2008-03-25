@@ -121,7 +121,7 @@ public class BoardManager
 		this.cells = columns * rows;
 		
 		// Set the minimum match length.
-		this.minimumMatch = 4;
+		this.minimumMatch = 3;
 		
 		// Set the board width and height.
 		this.width = columns * cellWidth;
@@ -145,6 +145,8 @@ public class BoardManager
 	 */
 	public void generateBoard(LinkedList itemList)
 	{
+        // Make sure the board is clean.
+        this.clearBoard();
         assert(itemList.get(0) instanceof ItemDescriptor);
         
         int count = 0;
@@ -202,6 +204,20 @@ public class BoardManager
 		} // end while	
 	}
 	
+    
+    /**
+     * Clear the board of all tiles.
+     */
+    public void clearBoard()
+    {
+        for(int i = 0; i < (this.getRows() * this.getColumns()); i++)
+        {
+            if(this.getTile(i) != null)
+                this.removeTile(i);
+        }
+    }
+    
+    
 	/**
 	 * Shuffles the board randomly.
 	 */
