@@ -6,8 +6,8 @@
     <description>Builds, tests, and runs the project Wezzle2D.</description>
     <import file="nbproject/build-impl.xml"/>
 	<buildnumber file="build.number" />
-	<target name="-post-compile">
-		<copy file="${basedir}/build.number" todir="${src.dir}"/>
+	<target name="-pre-compile">
+		<copy file="${basedir}/build.number" todir="${src.dir}/resources"/>
     </target>
     <!--
 
