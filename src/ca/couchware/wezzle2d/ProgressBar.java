@@ -91,6 +91,21 @@ public class ProgressBar implements Drawable, Positionable
 	private int width;
     
     /**
+     * The alignment bitmask.
+     */
+    private int alignment;
+    
+    /**
+     * The x offset.
+     */
+    private int offsetX;
+    
+    /**
+     * The y offset.
+     */
+    private int offsetY;
+    
+    /**
      * Create a progress bar with the top-left coordinate at the position
      * specified.  Optionally may have text under it.
      * 
@@ -98,7 +113,7 @@ public class ProgressBar implements Drawable, Positionable
      * @param y
      * @param withText
      */    
-    public ProgressBar(int x, int y, boolean withText)
+    public ProgressBar(int x, int y, int width, boolean withText)
     {
         // Set coordinates.
         setX(x);
@@ -106,9 +121,12 @@ public class ProgressBar implements Drawable, Positionable
         
         // Set progress to 0.
         // Set progressMax to 100.
-        progress = 4;
-        progressMax = 100;        
-        width = 100;
+        this.progress = 0;
+        this.progressMax = 100;        
+        this.width = width;
+        
+        // Set initial alignment.
+        this.alignment = TOP | LEFT;
         
         // Add text if specified.
 		if (withText == true)
@@ -120,7 +138,7 @@ public class ProgressBar implements Drawable, Positionable
 			progressText = ResourceFactory.get().getText();
 			
 			// Set text attributes.
-			progressText.setXYPosition(x, y + 50);
+			progressText.setXYPosition(x + width / 2, y + 40);
             progressText.setSize(14);
             progressText.setAnchor(Text.VCENTER | Text.HCENTER);
             progressText.setColor(Game.TEXT_COLOR);
@@ -142,6 +160,10 @@ public class ProgressBar implements Drawable, Positionable
         if (withText == true)
             progressText.draw();
         
+        // Adjust the local x and y.
+        int alignedX = x + offsetX;
+        int alignedY = y + offsetY;
+        
         // Draw the bar.
         if (progressWidth == 0)
             return;        
@@ -150,13 +172,13 @@ public class ProgressBar implements Drawable, Positionable
             int w = progressWidth / 2;
             
             leftSprite.drawRegion(
-                    x, y, 
+                    alignedX, alignedY, 
                     0, 0, 
                     w, leftSprite.getHeight(), 
                     100);                 
             
             rightSprite.drawRegion(                    
-                    x + w, y,
+                    alignedX + w, alignedY,
                     rightSprite.getWidth() - w, 0,
                     w, rightSprite.getHeight(), 
                     100);
@@ -165,10 +187,10 @@ public class ProgressBar implements Drawable, Positionable
         }
         else
         {
-            leftSprite.draw(x, y);
+            leftSprite.draw(alignedX, alignedY);
             for (int i = 4; i < progressWidth - 4; i++)
-                middleSprite.draw(x + i, y);
-            rightSprite.draw(x + progressWidth - 4, y);
+                middleSprite.draw(alignedX + i, alignedY);
+            rightSprite.draw(alignedX + progressWidth - 4, alignedY);
         }
     }
 
@@ -302,14 +324,58 @@ public class ProgressBar implements Drawable, Positionable
                 Thread.currentThread());
     }
 
-    public int getAnchor()
+    public int getAlignment()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return alignment;
     }
 
-    public void setAnchor(int bitmask)
+    public void setAlignment(int alignment)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Remember the alignment.
+		this.alignment = alignment;
+        
+		// The Y alignment.
+		if((alignment & BOTTOM) == BOTTOM)
+		{
+			this.offsetY = 0;
+		}
+		else if((alignment & VCENTER) == VCENTER)
+		{
+			this.offsetY = -getHeight() / 2;
+		}
+		else if((alignment & TOP) == TOP)
+		{
+			this.offsetY = -getHeight();
+		}
+		else
+		{
+			Util.handleWarning("No Y alignment set!", Thread.currentThread());
+		}
+		
+		// The X alignment. 
+		if((alignment & LEFT) == LEFT)
+		{
+			this.offsetX = 0;
+		}
+		else if((alignment & HCENTER) == HCENTER)
+		{
+			this.offsetX = -width / 2;			
+		}
+		else if((alignment & RIGHT) == RIGHT)
+		{
+			this.offsetX = -width;
+		}
+		else
+		{
+			Util.handleWarning("No X alignment set!", Thread.currentThread());
+		}	
+        
+        // Update the text if necessary.
+        if (withText == true)
+        {
+            progressText.setX(progressText.getX() + offsetX);
+            progressText.setY(progressText.getY() + offsetY);
+        }
     }
     
 }

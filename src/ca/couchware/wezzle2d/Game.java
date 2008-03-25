@@ -155,6 +155,11 @@ public class Game extends Canvas implements GameWindowCallback
     public CircularBooleanButton pauseButton;
     
     /**
+     * The progress bar.
+     */
+    public ProgressBar progressBar;
+    
+    /**
      * If true, refactor will be activated next loop.
      */
 	private boolean activateRefactor = false;
@@ -263,12 +268,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The version text.
      */
-    private Text versionText;
-    
-    /**
-     * The progress bar.
-     */
-    private ProgressBar progressBar;
+    private Text versionText;        
         
 	/**
 	 * Construct our game and set it running.
@@ -377,7 +377,7 @@ public class Game extends Canvas implements GameWindowCallback
         scoreMan = new ScoreManager(boardMan, propertyMan);
 
         // Create the world manager.
-        worldMan = new WorldManager(propertyMan, scoreMan);
+        worldMan = new WorldManager(propertyMan);
         
         // Generate the game board.
         boardMan.generateBoard(worldMan.getItemList());		
@@ -459,7 +459,9 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(moveCountText, LAYER_UI);
              
         // Create the progress bar.
-        progressBar = new ProgressBar(307, 499, true);
+        progressBar = new ProgressBar(400, 508, 186, true);
+        progressBar.setAlignment(Positionable.VCENTER | Positionable.HCENTER);
+        progressBar.setProgressMax(scoreMan.getTargetLevelScore());
         layerMan.add(progressBar, LAYER_UI);
         
 		// Setup the initial game state.
@@ -789,7 +791,10 @@ public class Game extends Canvas implements GameWindowCallback
             levelText.setText(String.valueOf(worldMan.getLevel()));
 
             // Draw the move count text.
-            moveCountText.setText(String.valueOf(moveMan.getMoveCount()));                            
+            moveCountText.setText(String.valueOf(moveMan.getMoveCount()));
+            
+            // Update the progress bar.
+            progressBar.setProgress(scoreMan.getLevelScore());
         }                
         
         // Draw the layer manager.

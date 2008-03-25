@@ -120,16 +120,16 @@ public interface Positionable
     public void setHeight(final int height);
     
     /**
-     * Gets the anchor location.
+     * Gets the alignment.
      * 
-     * @return An integer bitmask representing the anchor location.
+     * @return An integer bitmask representing the alignment.
      */
-    public int getAnchor();
+    public int getAlignment();
     
     /**
-     * Sets the anchor location.
+     * Sets the alignment.
      * 
-     * @param bitmask An integer bitmask representing the anchor location.
+     * @param bitmask An integer bitmask representing the alignment.
      */
-    public void setAnchor(final int bitmask);
+    public void setAlignment(final int alignment);
 }

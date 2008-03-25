@@ -16,12 +16,7 @@ public class WorldManager
 	/**
 	 * The property manager.
 	 */
-	private final PropertyManager propertyMan;
-	
-	/**
-	 * The score manager.
-	 */
-	private final ScoreManager scoreMan;
+	private final PropertyManager propertyMan;	
 	
     /**
      * The maximum items available for the level.
@@ -63,12 +58,8 @@ public class WorldManager
 	 * @param board
 	 * @param scoreManager
 	 */
-	public WorldManager(final PropertyManager propertyMan, 
-            final ScoreManager scoreMan)
-	{		
-		// Store a reference to the score manager.
-		this.scoreMan = scoreMan;
-		
+	public WorldManager(final PropertyManager propertyMan)
+	{						
 		// Store a reference to the property manager.
 		this.propertyMan = propertyMan;
 		
@@ -93,11 +84,11 @@ public class WorldManager
         this.maxItems = 5;
 				
 		itemList = new LinkedList();
-		itemList.add(new ItemDescriptor(TileEntity.class, 28, -1));
-		itemList.add(new ItemDescriptor(BombTileEntity.class, 5, 50));
+		itemList.add(new ItemDescriptor(TileEntity.class, 28, 20));
+		itemList.add(new ItemDescriptor(BombTileEntity.class, 2, 50));
 		itemList.add(new ItemDescriptor(Multiply2xTileEntity.class, 2, 50));
-        itemList.add(new ItemDescriptor(Multiply3xTileEntity.class, 2, 20));
-        itemList.add(new ItemDescriptor(Multiply4xTileEntity.class, 2, 10));
+        itemList.add(new ItemDescriptor(Multiply3xTileEntity.class, 0, 20));
+        itemList.add(new ItemDescriptor(Multiply4xTileEntity.class, 0, 10));
 	}
 		
 	/**
@@ -114,10 +105,7 @@ public class WorldManager
 	public void setCurrentLevel(int currentLevel)
 	{
 		// Set the level.
-		this.currentLevel = currentLevel;
-		
-		// Set the difference score.
-		scoreMan.setTargetLevelScore(generateTargetLevelScore(currentLevel));				
+		this.currentLevel = currentLevel;								
 	}	
 	
     /**
@@ -152,7 +140,12 @@ public class WorldManager
     public void levelUp(final Game game)
     {
         this.incrementCurrentLevel();
-        scoreMan.setLevelScore(0);
+        
+        game.scoreMan.setLevelScore(0);        
+		game.scoreMan.setTargetLevelScore(
+                generateTargetLevelScore(currentLevel));
+        
+        game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
         game.boardMan.generateBoard(this.getItemList());
     }
     
