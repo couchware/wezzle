@@ -455,11 +455,11 @@ public class PieceManager implements
                 game.runRefactor(300);                
                 
                 // Decrement the number of tiles to drop.
-                tileDropCount--;
+                tileDropCount-= 2;
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
-                if (tileDropCount == 0)                
+                if (tileDropCount <= 0)                
                     tileDropInProgress = false;                
             }
         }
