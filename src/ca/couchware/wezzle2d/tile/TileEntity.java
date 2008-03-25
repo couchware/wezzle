@@ -48,7 +48,8 @@ public class TileEntity extends Entity
 	public TileEntity(BoardManager boardMan, int color, int x, int y) 
 	{
 		// Invoke super.		
-		super("resources/Tile" + toColorString(color) + ".png", x, y);                
+		super(Game.SPRITES_PATH + "/Tile" + toColorString(color) + ".png", 
+                x, y);                
 						
 		// Set board manager and color reference.
 		this.boardMan = boardMan;	
@@ -103,7 +104,8 @@ public class TileEntity extends Entity
 	 */
 	public void calculateBottomBound(int tilesInColumn)
 	{
-		this.bottomBound = boardMan.getY() + boardMan.getHeight() - (tilesInColumn * boardMan.getCellHeight());
+		this.bottomBound = boardMan.getY() + boardMan.getHeight() 
+                - (tilesInColumn * boardMan.getCellHeight());
 		this.bottomBound -= boardMan.getCellHeight();
 	}
 	
@@ -140,7 +142,8 @@ public class TileEntity extends Entity
 				return "Yellow";
 				
 			default:
-				Util.handleWarning("Unknown color number. Defaulting to 'Red'.", Thread.currentThread());
+				Util.handleWarning("Unknown color number. Defaulting to 'Red'.", 
+                        Thread.currentThread());
 				return "Red";
 		}
     }

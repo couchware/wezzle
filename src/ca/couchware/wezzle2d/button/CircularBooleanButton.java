@@ -53,15 +53,15 @@ public class CircularBooleanButton extends BooleanButton
         
         // Load the normal sprite.
         spriteNormal = ResourceFactory.get()
-                .getSprite("resources/Button_Normal.png");
+                .getSprite(Game.SPRITES_PATH + "/Button_Normal.png");
         
         // Load the active sprite glow.
         spriteGlow = ResourceFactory.get()
-                .getSprite("resources/Button_Glow.png");
+                .getSprite(Game.SPRITES_PATH + "/Button_Glow.png");
         
         // Load the hover sprite.
         spriteHover = ResourceFactory.get()
-                .getSprite("resources/Button_Hover.png");
+                .getSprite(Game.SPRITES_PATH + "/Button_Hover.png");
         
         // Create the button text.
         buttonText = ResourceFactory.get().getText();        

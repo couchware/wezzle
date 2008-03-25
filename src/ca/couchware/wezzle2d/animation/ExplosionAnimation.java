@@ -14,7 +14,7 @@ public class ExplosionAnimation extends Animation
     /**
      * Path to the explosion sprite.
      */
-    final private static String PATH = "resources/Explosion.png";       
+    final private static String PATH = Game.SPRITES_PATH + "/Explosion.png";       
     
     /**
      * The period of each frame.

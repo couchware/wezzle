@@ -1,22 +1,16 @@
 package ca.couchware.wezzle2d.java2d;
 
-import java.awt.BorderLayout;
+import ca.couchware.wezzle2d.Game;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.RenderingHints;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import ca.couchware.wezzle2d.GameWindow;
 import ca.couchware.wezzle2d.GameWindowCallback;
@@ -233,12 +227,10 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 			// Get hold of a graphics context for the accelerated
 			// surface and black it out.
 			g = (Graphics2D) strategy.getDrawGraphics();            
-//			g.setColor(Color.black);
-//			g.fillRect(0, 0, 800, 600);
 			
 			// Draw the current background.
 			Sprite s = ResourceFactory.get()
-                    .getSprite("resources/Background1.png");
+                    .getSprite(Game.SPRITES_PATH + "/Background1.png");
 			s.draw(0, 0);
 
 			if (callback != null)

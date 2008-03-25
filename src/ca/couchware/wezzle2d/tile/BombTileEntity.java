@@ -13,7 +13,7 @@ public class BombTileEntity extends TileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = "resources/ItemBomb.png";
+    final private String PATH = Game.SPRITES_PATH + "/ItemBomb.png";
     
     /**
      * The sprite representing the bomb graphic.

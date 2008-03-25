@@ -13,7 +13,7 @@ public class Multiply4xTileEntity extends TileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = "resources/Item4x.png";
+    final private String PATH = Game.SPRITES_PATH + "/Item4x.png";
     
     /**
      * The sprite representing the bomb graphic.

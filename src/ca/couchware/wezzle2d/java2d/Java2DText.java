@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.java2d;
 
+import ca.couchware.wezzle2d.Game;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -75,7 +76,7 @@ public class Java2DText extends Text
         super();
         
 		this.url = this.getClass().getClassLoader()
-                .getResource("resources/bubbleboy2.ttf");        		
+                .getResource(Game.FONTS_PATH + "/bubbleboy2.ttf");        		
 		
 		// Setup the font.
 		try
