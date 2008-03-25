@@ -507,7 +507,7 @@ public class PieceManager implements
         game.boardMan.removeTiles(indexSet);
 
         // Set the count to the piece size.
-        this.tileDropCount = this.piece.getSize();
+        this.tileDropCount = game.worldMan.calculateDropNumber(game, this.piece.getSize());
 
         // Increment the moves.
         game.moveMan.incrementMoveCount();

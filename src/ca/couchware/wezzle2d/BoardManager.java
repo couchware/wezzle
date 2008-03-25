@@ -789,7 +789,20 @@ public class BoardManager
     {
         this.numberOfItems++;
     }    
-	
+
+     public int getNumberOfTiles()
+    {
+        int counter = 0;
+        for(int i = 0; i < this.rows * this.columns; i++)
+        {
+            if(this.getTile(i) != null)
+                counter++;
+        }
+        
+        return counter;
+    }
+    
+    
     public boolean isVisible()
     {
         return visible;

@@ -23,6 +23,17 @@ public class WorldManager
      */
     private int maxItems;
     
+    /**
+     * The percentage of tiles to maintain.
+     */
+    private int tileRatio = 35;
+    
+    
+    /**
+     * The minimum drop.
+     */
+    private int minimumDrop = 1;
+    
 	/**
 	 * The current level
 	 */
@@ -177,7 +188,33 @@ public class WorldManager
 		
 		return null;
 	}
+       
+    /**
+     * 
+     * @param game The game.
+     * @param pieceSize The size of the piece consumed.
+     * @return The number of tiles do drop.
+     */
+    public int calculateDropNumber(final Game game, int pieceSize)
+    {
+        float tiles = game.boardMan.getNumberOfTiles();
+        float totalSpots = game.boardMan.getColumns() * game.boardMan.getRows();
         
+        // We are low.
+        if( (tiles / totalSpots) * 100 < this.tileRatio)
+        {
+            return pieceSize + (this.currentLevel / 3) + 3;
+        }// We are high.
+        else if (totalSpots - tiles < 10)
+        {
+            return this.minimumDrop + (this.currentLevel / 3);
+        }
+        else// We are just right.
+        {
+            return pieceSize + (this.currentLevel / 3);
+        }
+    }
+     
     public Class pickRandomItem()
 	{	
 		// Create an array representing the item distribution.
