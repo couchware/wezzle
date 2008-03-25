@@ -78,7 +78,7 @@ public class WorldManager
                 .getIntegerProperty(PropertyManager.NUMBER_OF_LEVELS);
 				
 		// Set the starting level.
-		setCurrentLevel(this.difficulty);
+		setCurrentLevel(1);
         
         // Set the max items.
         this.maxItems = 5;
@@ -135,10 +135,9 @@ public class WorldManager
 		// Increment the level.
 		this.setCurrentLevel(currentLevel + 1);
 	}	
-	
-    
+	    
     public void levelUp(final Game game)
-    {
+    {        
         this.incrementCurrentLevel();
         
         game.scoreMan.setLevelScore(0);        
@@ -178,11 +177,9 @@ public class WorldManager
 		
 		return null;
 	}
-    
-    
+        
     public Class pickRandomItem()
-	{
-	
+	{	
 		// Create an array representing the item distribution.
 		int dist[] = new int[itemList.size() + 1];
 		dist[0] = 0;
@@ -211,8 +208,10 @@ public class WorldManager
 		}
 		
 		// We should never get here.
-		Util.handleWarning("Random number out of range! (" + randomNumber + ").", 
+		Util.handleWarning(
+                "Random number out of range! (" + randomNumber + ").", 
                 Thread.currentThread());
+        
 		return ((ItemDescriptor) itemList.get(0)).getItemClass();
 	}
 			
@@ -230,61 +229,14 @@ public class WorldManager
 	 * @param currentLevel The level to generate the score for.
 	 * @return The score.
 	 */
-	private int generateTargetLevelScore(int currentLevel)
+	public int generateTargetLevelScore(int currentLevel)
 	{
 		return currentLevel * 2000;
 	}
-
-//	/**
-//	 * Reset the game board.  This method will remove the old game board
-//	 * and replace it with a new one on the currently set level.
-//	 * 
-//	 * @param line1 The first line of the message shown.
-//	 * @param line2 The second line of the message shown.
-//	 */
-//	private void resetGameBoard(final GameBoard board, final String line1, final String line2)
-//	{
-//		// Update the board in another thread.
-//		Runnable r = new Runnable()
-//		{			
-//			public void run()
-//			{																		
-//				// Animate hide.
-//				board.hideTileLayerUsingAnimation();
-//
-//				// Reset the game board.
-//				board.reset();
-//				
-//				// Animate some text.
-//				final Animation a = new AnimationTextZoom(board, 
-//						board.getWidth() / 2, 
-//						board.getHeight() / 2,
-//						line1,
-//						line2);
-//				
-//				// Add it to the manager.
-//				animationManager.addAnimation(a);
-//				
-//				// Add to um.
-////				board.getComponent().getUpdateManager().getUpdateRunnableQueue().invokeLater(r);
-//				
-//				// Wait for it to finish.
-//				while(a.isDone() == false)
-//					Time.waitUntilNextTimeStep();											
-//															
-//				// Generate a new board.									
-//				board.generateGameBoard(itemList);
-//				
-//				// Animate show.
-//				board.showTileLayerUsingAnimation();
-//				
-//				// Fire level started event.
-//				fireLevelStartedEvent(new LevelEvent(this, getCurrentLevel()));								
-//			}
-//		};
-//		
-//		// Execute the worker.
-//		executor.submit(r);
-//	}
+    
+    public int generateTargetLevelScore()
+    {
+        return generateTargetLevelScore(currentLevel);
+    }
 	
 }

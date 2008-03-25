@@ -1,4 +1,6 @@
 package ca.couchware.wezzle2d;
+
+import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Color;
 
 
@@ -9,38 +11,8 @@ import java.awt.Color;
  * @author Kevin
  *
  */
-public abstract class Text implements Drawable
+public abstract class Text implements Drawable, Positionable
 {
-	
-	/**
-     * Align at the vertical top.
-     */
-    final public static int TOP = 1;
-    
-    /**
-     * Align at the vertical center.
-     */
-	final public static int VCENTER = 2;
-    
-    /**
-     * Align at the vertical bottom.
-     */
-	final public static int BOTTOM = 4;
-    
-    /**
-     * Align at the horizontal left.
-     */
-	final public static int LEFT = 8;
-    
-    /**
-     * Align at the horizontal centre.
-     */
-	final public static int HCENTER = 16;
-    
-    /**
-     * Align at the horizontal right.
-     */
-	final public static int RIGHT = 32;
     
     /**
      * The visibility of the text.
@@ -75,7 +47,7 @@ public abstract class Text implements Drawable
     /**
      * The current anchor. 
      */
-	protected int anchor;
+	protected int alignment;
     
     /**
      * The current opacity (in percent, from 0 to 100).
@@ -92,6 +64,7 @@ public abstract class Text implements Drawable
     
     /**
      * Get the X-coordinate.
+     * 
      * @return The X-coordinate.
      */
     public int getX()
@@ -101,6 +74,7 @@ public abstract class Text implements Drawable
     
     /**
      * Set the X-coordinate.
+     * 
      * @param x
      */
     public void setX(final int x)
@@ -110,6 +84,7 @@ public abstract class Text implements Drawable
 
     /**
      * Get the Y-coordinate.
+     * 
      * @return The Y-coordinate.
      */
     public int getY()
@@ -119,6 +94,7 @@ public abstract class Text implements Drawable
 
     /**
      * Set the Y-coordinate.
+     * 
      * @param y
      */
     public void setY(final int y)
@@ -127,7 +103,29 @@ public abstract class Text implements Drawable
     }        
     
     /**
+     * Get the XY position.
+     * 
+     * @return The XY position.
+     */
+    public XYPosition getXYPosition()
+    {
+        return new XYPosition(x, y);
+    }
+
+    /**
+     * Sets the XY-coordinates.
+     * 
+     * @param p
+     */
+    public void setXYPosition(XYPosition p)
+    {
+        setX(p.x);
+        setY(p.y);
+    }
+    
+    /**
      * Set the XY-coordinates.
+     * 
      * @param x
      * @param y
      */
@@ -203,9 +201,9 @@ public abstract class Text implements Drawable
      * 
      * @return The current anchor bitmask.
      */
-    public int getAnchor()
+    public int getAlignment()
     {
-        return anchor;
+        return alignment;
     }
     
 	/**
@@ -214,9 +212,9 @@ public abstract class Text implements Drawable
 	 * @param x The x anchor coordinate with respect to the top left corner of the text box.
 	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
 	 */
-	public void setAnchor(final int anchor)
+	public void setAlignment(final int alignment)
     {
-        this.anchor = anchor;
+        this.alignment = this.alignment;
     }
     
     /**

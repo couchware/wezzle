@@ -140,7 +140,7 @@ public class ProgressBar implements Drawable, Positionable
 			// Set text attributes.
 			progressText.setXYPosition(x + width / 2, y + 40);
             progressText.setSize(14);
-            progressText.setAnchor(Text.VCENTER | Text.HCENTER);
+            progressText.setAlignment(Text.VCENTER | Text.HCENTER);
             progressText.setColor(Game.TEXT_COLOR);
             progressText.setText(progress + "/" + progressMax);
 		}	

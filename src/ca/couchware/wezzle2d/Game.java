@@ -403,7 +403,7 @@ public class Game extends Canvas implements GameWindowCallback
         pausedText = ResourceFactory.get().getText();
         pausedText.setXYPosition(400, 300);      
 		pausedText.setSize(40);
-		pausedText.setAnchor(Text.HCENTER | Text.VCENTER);
+		pausedText.setAlignment(Text.HCENTER | Text.VCENTER);
 		pausedText.setColor(TEXT_COLOR);
         pausedText.setText("Paused");
         pausedText.setVisible(false);
@@ -413,7 +413,7 @@ public class Game extends Canvas implements GameWindowCallback
 		versionText = ResourceFactory.get().getText();
         versionText.setXYPosition(800 - 10, 600 - 10);
 		versionText.setSize(12);
-		versionText.setAnchor(Text.BOTTOM | Text.RIGHT);
+		versionText.setAlignment(Text.BOTTOM | Text.RIGHT);
 		versionText.setColor(TEXT_COLOR);
         versionText.setText(applicationName + " Build " + buildNumber);
         layerMan.add(versionText, LAYER_UI);
@@ -422,7 +422,7 @@ public class Game extends Canvas implements GameWindowCallback
 		timerText = ResourceFactory.get().getText();
         timerText.setXYPosition(404, 100);
 		timerText.setSize(50);
-		timerText.setAnchor(Text.BOTTOM | Text.HCENTER);
+		timerText.setAlignment(Text.BOTTOM | Text.HCENTER);
 		timerText.setColor(TEXT_COLOR);
         layerMan.add(timerText, LAYER_UI);
                 
@@ -430,15 +430,17 @@ public class Game extends Canvas implements GameWindowCallback
         scoreText = ResourceFactory.get().getText();
         scoreText.setXYPosition(126, 400); 
         scoreText.setSize(20);
-        scoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
-        scoreText.setColor(TEXT_COLOR);        
+        scoreText.setAlignment(Text.BOTTOM | Text.HCENTER);
+        scoreText.setColor(TEXT_COLOR);     
+        scoreMan.setTargetLevelScore(
+                worldMan.generateTargetLevelScore());
         layerMan.add(scoreText, LAYER_UI);
         
         // Set up the high score text.
         highScoreText = ResourceFactory.get().getText();
         highScoreText.setXYPosition(126, 270);
         highScoreText.setSize(20);
-        highScoreText.setAnchor(Text.BOTTOM | Text.HCENTER);
+        highScoreText.setAlignment(Text.BOTTOM | Text.HCENTER);
         highScoreText.setColor(TEXT_COLOR);
         layerMan.add(highScoreText, LAYER_UI);
         
@@ -446,7 +448,7 @@ public class Game extends Canvas implements GameWindowCallback
         levelText = ResourceFactory.get().getText();
         levelText.setXYPosition(669, 270);
         levelText.setSize(20);
-        levelText.setAnchor(Text.BOTTOM | Text.HCENTER);
+        levelText.setAlignment(Text.BOTTOM | Text.HCENTER);
         levelText.setColor(TEXT_COLOR);
         layerMan.add(levelText, LAYER_UI);
         
@@ -454,13 +456,13 @@ public class Game extends Canvas implements GameWindowCallback
         moveCountText = ResourceFactory.get().getText();
         moveCountText.setXYPosition(669, 400);
         moveCountText.setSize(20);
-        moveCountText.setAnchor(Text.BOTTOM | Text.HCENTER);
+        moveCountText.setAlignment(Text.BOTTOM | Text.HCENTER);
         moveCountText.setColor(TEXT_COLOR);
         layerMan.add(moveCountText, LAYER_UI);
              
         // Create the progress bar.
         progressBar = new ProgressBar(400, 508, 186, true);
-        progressBar.setAlignment(Positionable.VCENTER | Positionable.HCENTER);
+        progressBar.setAlignment(ProgressBar.VCENTER | ProgressBar.HCENTER);
         progressBar.setProgressMax(scoreMan.getTargetLevelScore());
         layerMan.add(progressBar, LAYER_UI);
         

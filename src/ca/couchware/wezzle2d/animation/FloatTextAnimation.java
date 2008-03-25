@@ -101,7 +101,7 @@ public class FloatTextAnimation extends Animation
         // Load the explosion and centre it over the entity.
         floatText = ResourceFactory.get().getText();
         floatText.setXYPosition(x, y);
-        floatText.setAnchor(Text.VCENTER | Text.HCENTER);
+        floatText.setAlignment(Text.VCENTER | Text.HCENTER);
         floatText.setColor(color);
         floatText.setSize(size);
         floatText.setText(text);        

@@ -67,7 +67,7 @@ public class CircularBooleanButton extends BooleanButton
         buttonText = ResourceFactory.get().getText();        
         buttonText.setSize(22);
         buttonText.setColor(Game.TEXT_COLOR);
-        buttonText.setAnchor(Text.HCENTER | Text.VCENTER);                
+        buttonText.setAlignment(Text.HCENTER | Text.VCENTER);                
     }
     
     @Override

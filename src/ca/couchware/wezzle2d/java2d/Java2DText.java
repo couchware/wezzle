@@ -98,7 +98,7 @@ public class Java2DText extends Text
 		setColor(Color.BLACK);		        
 		
 		// Set the default anchor.
-		this.anchor = TOP | LEFT;
+		this.alignment = TOP | LEFT;
 	}		
 	
 	/**
@@ -115,7 +115,7 @@ public class Java2DText extends Text
         // Get rid of old layout.
         this.textLayout = null;
         
-        // Schedule a text layout update.
+        // Schedule a text layout update if necessary.        
         this.updateTextLayoutNextDraw = true;
 		
 		// Recalculate the anchor points.
@@ -148,10 +148,10 @@ public class Java2DText extends Text
 	 * @param x The x anchor coordinate with respect to the top left corner of the text box.
 	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
 	 */
-	public void setAnchor(int anchor)
+	public void setAlignment(int alignment)
 	{
         // Remember the anchor.
-		this.anchor = anchor;
+		this.alignment = alignment;
         
         // Return if there's no text or text layout object.
 		if (text == null 
@@ -162,40 +162,40 @@ public class Java2DText extends Text
 		// Get the width and height of the font.
 		Rectangle2D bounds = textLayout.getBounds();
         
-		// The Y anchors.
-		if((anchor & Text.BOTTOM) == Text.BOTTOM)
+		// The Y alignment.
+		if((alignment & BOTTOM) == BOTTOM)
 		{
 			this.offsetY = 0;
 		}
-		else if((anchor & Text.VCENTER) == Text.VCENTER)
+		else if((alignment & VCENTER) == VCENTER)
 		{
 			this.offsetY = (int) bounds.getCenterY();
 		}
-		else if((anchor & Text.TOP) == Text.TOP)
+		else if((alignment & TOP) == TOP)
 		{
 			this.offsetY = (int) bounds.getMinY();
 		}
 		else
 		{
-			Util.handleWarning("No Y anchor set!", Thread.currentThread());
+			Util.handleWarning("No Y alignment set!", Thread.currentThread());
 		}
 		
-		// The X anchors. 
-		if((anchor & Text.LEFT) == Text.LEFT)
+		// The X alignment. 
+		if((alignment & LEFT) == LEFT)
 		{
 			this.offsetX = (int) bounds.getMinX();
 		}
-		else if((anchor & Text.HCENTER) == Text.HCENTER)
+		else if((alignment & HCENTER) == HCENTER)
 		{
 			this.offsetX = (int) (bounds.getMinX() + bounds.getWidth() / 2);			
 		}
-		else if((anchor & Text.RIGHT) == Text.RIGHT)
+		else if((alignment & RIGHT) == RIGHT)
 		{
 			this.offsetX = (int) bounds.getMaxX();
 		}
 		else
 		{
-			Util.handleWarning("No X anchor set!", Thread.currentThread());
+			Util.handleWarning("No X alignment set!", Thread.currentThread());
 		}					
 	}
 	
@@ -206,12 +206,11 @@ public class Java2DText extends Text
     private void updateTextLayout(final FontRenderContext frctx)
     {      
         // Create new text layout.
-		this.textLayout = new TextLayout(text, font, frctx);
+		this.textLayout = new TextLayout(text, font, frctx);                
         
         // Update anchor.
-        this.setAnchor(this.anchor);
-    }
-    
+        this.setAlignment(alignment);
+    }    
     
 	/**
 	 * Draw the text onto the graphics context provided.	   
@@ -255,7 +254,8 @@ public class Java2DText extends Text
             if (opacity != 100)
             {
                 c = g.getComposite();
-                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
+                g.setComposite(
+                        AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
                         ((float) opacity) / 100.0f));
             }
 			
@@ -269,6 +269,54 @@ public class Java2DText extends Text
 		{
 			Util.handleException(e);
 		}		
-	}   
+	}
+
+    /**
+     * This method is not supported.  Do not use.
+     */
+    public int getWidth()
+    {
+        // This is not supported.
+        Util.handleWarning("getWidth() is not supported for text!", 
+                Thread.currentThread());
+        
+        return -1;
+    }
+
+    /**
+     * This method is not supported.  Do not use.
+     * 
+     * @param width
+     */
+    public void setWidth(int width)
+    {
+        // This is not supported.
+        Util.handleWarning("Attempted to change width of text!", 
+                Thread.currentThread());
+    }
+
+    /**
+     * This method is not supported.  Do not use.
+     */
+    public int getHeight()
+    {
+        // This is not supported.
+        Util.handleWarning("getHeight() is not supported for text!", 
+                Thread.currentThread());
+        
+        return -1;
+    }
+
+    /**
+     * This method is not supported.  Do not use.
+     * 
+     * @param height
+     */
+    public void setHeight(int height)
+    {
+        // This is not supported.
+        Util.handleWarning("Attempted to change height of text!", 
+                Thread.currentThread());
+    }
     
 }
