@@ -25,26 +25,26 @@ public class SoundManager
     /**
      * Path to the line audio clip.
      */
-    private final URL lineUrl = this.getClass()
-            .getClassLoader().getResource("resources/SoundLine.wav");
+    private final URL lineUrl = this.getClass().getClassLoader()
+            .getResource(Game.SOUNDS_PATH + "/SoundLine.wav");
 
     /**
      * Path to the bomb audio clip.
      */
-    private final URL bombUrl = this.getClass()
-            .getClassLoader().getResource("resources/SoundExplosion.wav");
+    private final URL bombUrl = this.getClass().getClassLoader()
+            .getResource(Game.SOUNDS_PATH + "/SoundExplosion.wav");
 
     /**
      * Path to the bleep audio clip.
      */
-    private final URL bleepUrl = this.getClass()
-            .getClassLoader().getResource( "resources/SoundBleep.wav");
+    private final URL bleepUrl = this.getClass().getClassLoader()
+            .getResource(Game.SOUNDS_PATH + "/SoundBleep.wav");
 
     /**
      * Path to the click audio clip.
      */
-    private final URL clickUrl = this.getClass()
-            .getClassLoader().getResource("resources/SoundClick.wav");
+    private final URL clickUrl = this.getClass().getClassLoader()
+            .getResource(Game.SOUNDS_PATH + "/SoundClick.wav");
 
     /**
      * The current line clip we are playing.

@@ -15,19 +15,19 @@ public class ProgressBar implements Drawable, Positionable
      * The path to the left sprite.
      */
     final private static String PATH_SPRITE_LEFT = 
-            "resources/ProgressBar_LeftEnd.png";
+            Game.SPRITES_PATH + "/ProgressBar_LeftEnd.png";
     
     /**
      * The path to the right sprite.
      */
     final private static String PATH_SPRITE_RIGHT =
-            "resources/ProgressBar_RightEnd.png";
+            Game.SPRITES_PATH + "/ProgressBar_RightEnd.png";
     
     /**
      * The path to the middle sprite.
      */
     final private static String PATH_SPRITE_MIDDLE =
-            "resources/ProgressBar_Middle.png";
+            Game.SPRITES_PATH + "/ProgressBar_Middle.png";
     
     /**
      * Is the progress bar visible?

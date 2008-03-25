@@ -9,15 +9,12 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -34,7 +31,27 @@ import java.util.logging.Logger;
  * @author Kevin Glass
  */
 public class Game extends Canvas implements GameWindowCallback
-{	    
+{	  
+    /**
+     * The path to the resources.
+     */
+    final public static String RESOURCES_PATH = "resources";
+
+    /**
+     * The path to the fonts.
+     */
+    final public static String FONTS_PATH = RESOURCES_PATH + "/fonts";
+    
+    /**
+     * The path to the sprites.
+     */
+    final public static String SPRITES_PATH = RESOURCES_PATH + "/sprites";
+    
+    /**
+     * The path to the sounds.
+     */
+    final public static String SOUNDS_PATH = RESOURCES_PATH + "/sounds";
+    
     /**
      * The text color.
      */
@@ -73,7 +90,8 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The build nunber path.
      */
-    final public static String BUILD_NUMBER_PATH = "build.number";
+    final public static String BUILD_NUMBER_PATH = 
+            RESOURCES_PATH + "/build.number";
     
     /**
      * The current build number.
@@ -258,7 +276,9 @@ public class Game extends Canvas implements GameWindowCallback
 	{
         // Get the build number.
         Properties buildProperties = new Properties();
-        File f = new File(BUILD_NUMBER_PATH);
+        URL url = this.getClass().getClassLoader()
+                .getResource(BUILD_NUMBER_PATH);
+        File f = new File(url.getFile());
         
         if (f.exists() == true)
         {
@@ -276,7 +296,8 @@ public class Game extends Canvas implements GameWindowCallback
         }
         else
         {
-            Util.handleWarning("Could not find build number!", 
+            Util.handleWarning("Could not find build number at: "
+                    + BUILD_NUMBER_PATH + "!",
                     Thread.currentThread());
             buildNumber = "???";
         }

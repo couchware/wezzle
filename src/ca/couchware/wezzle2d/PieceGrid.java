@@ -18,7 +18,7 @@ public class PieceGrid implements Drawable
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = "resources/Selector.png";
+    final private String PATH = Game.SPRITES_PATH + "/Selector.png";
     
 	/**
 	 * The current structure of the piece, representing by a 2D 
