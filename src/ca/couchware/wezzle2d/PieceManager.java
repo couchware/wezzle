@@ -50,7 +50,7 @@ public class PieceManager implements
     /**
      * The tile currently being dropped.
      */
-    private TileEntity tileDropped;
+    private TileEntity tileDropped[];
     
      /**
      * Was the board recently refactored?
@@ -362,22 +362,39 @@ public class PieceManager implements
                         // continue with the loop.
                     }
                 } // end for
+                 
+               
 
                 // Make sure we have found a column.
                 assert (openColumnIndex >= 0);
 
-                int index = 
+                int index1 = 
                         Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
                         + openColumnIndex;
+                
+                int index2 = 0;
+                while(true)
+                {
+                     
+                     index2 =  Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
+                        + openColumnIndex;
+                    
+                    if(index2 != index1)
+                        break;
+                }
 
                 // Sanity check.
-                assert (index >= 0 && index < boardMan.getColumns());
+                assert (index1 >= 0 && index1 < boardMan.getColumns());
+                assert (index2 >= 0 && index2 < boardMan.getColumns());
+                assert (index1 != index2);
 
                 // Determine the type of tile to drop. This is done by 
                 // consulting the available tiles and their probabilities
                 // from the item list and checking to see if a special tile
-                // needs to be dropped.
-                                                
+                // needs to be dropped.      
+                
+                tileDropped = new TileEntity[2];
+
                 // Create a new tile.
                 
                 // If there is only 1 item left (to ensure only 1 drop per drop 
@@ -387,24 +404,46 @@ public class PieceManager implements
                         && game.boardMan.getNumberOfItems() 
                             < game.worldMan.getNumMaxItems())
                 {
-                    tileDropped = boardMan.createTile(index, 
+                    tileDropped[0] = boardMan.createTile(index1, 
+                            game.worldMan.pickRandomItem(), 
+                            TileEntity.randomColor()); 
+                    
+                    tileDropped[1] = null;
+                }
+                else if (tileDropCount == 2
+                        && game.boardMan.getNumberOfItems() 
+                            < game.worldMan.getNumMaxItems())
+                {
+                     tileDropped[0] = boardMan.createTile(index1, TileEntity.class, 
+                        TileEntity.randomColor()); 
+                     
+                      tileDropped[1] = boardMan.createTile(index2, 
                             game.worldMan.pickRandomItem(), 
                             TileEntity.randomColor()); 
                 }
                 else
                 {
-                     tileDropped = boardMan.createTile(index, TileEntity.class, 
+                     tileDropped[0] = boardMan.createTile(index1, TileEntity.class, 
+                        TileEntity.randomColor()); 
+                     
+                      tileDropped[1] = boardMan.createTile(index2, TileEntity.class, 
                         TileEntity.randomColor()); 
                 }
 
                 // Start the animation.
                 game.soundMan.play(SoundManager.BLEEP);
-                tileDropped.setAnimation(new ZoomInAnimation(tileDropped));
+                tileDropped[0].setAnimation(new ZoomInAnimation(tileDropped[0]));
+               
+                if(tileDropped[1] != null)
+                    tileDropped[1].setAnimation(new ZoomInAnimation(tileDropped[1]));
                 tileDropAnimationInProgress = true;
             } 
             // If we got here, the animating is in progress, so we need to check
             // if it's done.  If it is, de-reference it and refactor.
-            else if (tileDropped.getAnimation().isDone() == true)
+            else if ((tileDropped[0].getAnimation().isDone() == true && 
+                    tileDropped[1] == null) ||
+                    (tileDropped[0].getAnimation().isDone() == true && 
+                   tileDropped[1].getAnimation().isDone() == true))
             {
                 // Clear the flag.
                 tileDropAnimationInProgress = false;
