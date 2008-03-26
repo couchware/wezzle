@@ -329,7 +329,6 @@ public class PieceManager implements
         // Grab the current mouse position.
         final XYPosition p = getMousePosition();  
         
-        int numToDropIn = game.worldMan.dropInConcurrentAmount;
             
         // Drop in any tiles that need to be dropped, one at a time. 
         //
@@ -349,6 +348,8 @@ public class PieceManager implements
                 // column index to it, and voila! random column.            
                 int openColumnIndex = -1;
                 
+                // The number of pieces to drop in.
+                int numToDropIn = game.worldMan.dropInConcurrentAmount;
                
 
                 // Count the openColumns.
@@ -392,25 +393,27 @@ public class PieceManager implements
                 
                 
                 // Generate the indices.
-                
-                int count = 1;
-                while(true)
+                if(openColumns != 1)
                 {
-                    index[count] =  Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
-                        + openColumnIndex;
-                    
-                    boolean test = true;
-                    for(int i = 0; i < count; i++)
+                    int count = 1;
+                    while(true)
                     {
-                        if(index[count] == index[i])
-                            test = false;
+                        index[count] =  Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
+                            + openColumnIndex;
+
+                        boolean test = true;
+                        for(int i = 0; i < count; i++)
+                        {
+                            if(index[count] == index[i])
+                                test = false;
+                        }
+
+                        if(test == true)
+                            count++;
+
+                        if(count >= index.length)
+                             break;
                     }
-                    
-                    if(test == true)
-                        count++;
-                     
-                    if(count >= index.length)
-                         break;
                 }
 
                 // Sanity check.
@@ -489,14 +492,25 @@ public class PieceManager implements
                 // Clear the flag.
                 tileDropAnimationInProgress = false;
                 
-                // De-reference the tile dropped.
-                tileDropped = null;
+               
                 
                 // Run refactor.
                 game.startRefactor(300);                
                 
-                // Decrement the number of tiles to drop by 2.
-                tileDropCount-= numToDropIn;
+                // Decrement the number of tiles by the number of tiles that are
+                // not null in the array.
+                
+                int numToDecrement = 0;
+                for(int i = 0; i < tileDropped.length; i++)
+                {
+                    if(tileDropped[i] != null)
+                        numToDecrement++;
+                }
+                
+                tileDropCount-= numToDecrement;
+                
+                // De-reference the tile dropped.
+                tileDropped = null;
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
