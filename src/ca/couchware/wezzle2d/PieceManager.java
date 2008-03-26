@@ -479,7 +479,7 @@ public class PieceManager implements
                 game.startRefactor(300);                
                 
                 // Decrement the number of tiles to drop by 2.
-                tileDropCount-= 2;
+                tileDropCount-= game.worldMan.dropInConcurrentAmount;
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
