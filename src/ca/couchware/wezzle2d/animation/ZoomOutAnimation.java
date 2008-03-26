@@ -91,7 +91,10 @@ public class ZoomOutAnimation extends Animation
             
             // If we reach the minimum size, then we're done.
             if (entity.getWidth() == MIN_WIDTH)
+            {                
                 done = true;
+                break;
+            }
         } // end if          
     }
 }

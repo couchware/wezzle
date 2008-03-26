@@ -55,7 +55,7 @@ public class WorldManager
     /**
      * The percentage of tiles to maintain.
      */
-    private int tileRatio = 35;
+    private int tileRatio = 80;
     
     /**
      * The minimum drop.

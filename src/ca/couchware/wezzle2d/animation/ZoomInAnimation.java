@@ -115,7 +115,10 @@ public class ZoomInAnimation extends Animation
             
             // If we reach the minimum size, then we're done.
             if (entity.getWidth() == maxWidth)
+            {
                 done = true;
+                break;
+            }
         } // end if          
     }
 }
