@@ -7,6 +7,7 @@ import ca.couchware.wezzle2d.piece.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -46,6 +47,11 @@ public class PieceManager implements
      * The tile drop count.
      */
     private int tileDropCount = 0;
+    
+    /**
+     * The index list.
+     */
+    private ArrayList indexList;
     
     /**
      * The tile currently being dropped.
@@ -123,6 +129,10 @@ public class PieceManager implements
         // Move the piece there.
         pieceGrid.setX(ap.getX());
         pieceGrid.setY(ap.getY());
+        
+        // Create the index list.
+        this.indexList = new ArrayList();
+        
 	}	
     
     //--------------------------------------------------------------------------
@@ -340,86 +350,40 @@ public class PieceManager implements
             // If not, that means we need to drop a new one.            
             if (tileDropAnimationInProgress == false)
             {
-                // Find a random empty column and drop in a tile.
-                // The algorithm to find the empty column is as follows:
-                // Whenever there is a blockage, it is always contiguous (XX---)
-                // so we find the first open column, generate a random number
-                // between 0 and maxColumns - openColumnIndex, add the open 
-                // column index to it, and voila! random column.            
-                int openColumnIndex = -1;
-                
                 // The number of pieces to drop in.
                 int numToDropIn = game.worldMan.dropInConcurrentAmount;
-               
-
-                // Count the openColumns.
+              
+                // Count the openColumns and build a list of all open indeces.
+                indexList.clear();
                 int openColumns = 0;
                 for (int i = 0; i < boardMan.getColumns(); i++)
                 {
                     if(boardMan.getTile(i) == null)
                     {
                         openColumns++;
+                        indexList.add(new Integer(i));
                     }
                 }
                 
+                // Automatically adjust the number of pieces to fall in based
+                // on the number of open columns.
                 if(numToDropIn > openColumns)
                     numToDropIn = openColumns;
-                
-                // Find the first open column.
-                for (int i = 0; i < boardMan.getColumns(); i++)
-                {
-                    if(boardMan.getTile(i) == null)
-                    {
-                        //We have found an open column.
-                        openColumnIndex = i;
-                        break;
-                    }
-                    else
-                    {
-                        // A tile exists here... 
-                        // continue with the loop.
-                    }
-                } // end for                                
-
-                // Make sure we have found a column.
-                assert (openColumnIndex >= 0);
-                
+                              
+                // The indices, corresponds 1:1 with the tileDropped.
                 int[] index = new int[numToDropIn];
                 
-                index[0] = 
-                        Util.random.nextInt(boardMan.getColumns() 
-                        - openColumnIndex) 
-                        + openColumnIndex;
+                assert(index.length <= indexList.size());
                 
-                
-                // Generate the indices.
-                if(openColumns != 1)
+                // Generate the indices. pick a random index from the available
+                // indices in the indexList.
+                for(int i = 0; i < index.length; i++)
                 {
-                    int count = 1;
-                    while(true)
-                    {
-                        index[count] =  Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
-                            + openColumnIndex;
-
-                        boolean test = true;
-                        for(int i = 0; i < count; i++)
-                        {
-                            if(index[count] == index[i])
-                                test = false;
-                        }
-
-                        if(test == true)
-                            count++;
-
-                        if(count >= index.length)
-                             break;
-                    }
+                    int randIndex =  Util.random.nextInt(indexList.size());
+                    index[i] = Integer.parseInt(indexList.get(randIndex).toString());
+                    indexList.remove(randIndex);
                 }
-
-                // Sanity check.
-//                assert (index1 >= 0 && index1 < boardMan.getColumns());
-//                assert (index2 >= 0 && index2 < boardMan.getColumns());
-//                assert (index1 != index2);
+                
 
                 // Determine the type of tile to drop. This is done by 
                 // consulting the available tiles and their probabilities
@@ -469,9 +433,7 @@ public class PieceManager implements
                     {
                      tileDropped[i] = boardMan.createTile(index[i], TileEntity.class, 
                         TileEntity.randomColor()); 
-                    }
-                     
-                     
+                    }                 
                 }
 
                 // Start the animation.
@@ -491,9 +453,7 @@ public class PieceManager implements
             {
                 // Clear the flag.
                 tileDropAnimationInProgress = false;
-                
-               
-                
+                               
                 // Run refactor.
                 game.startRefactor(300);                
                 

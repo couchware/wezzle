@@ -161,6 +161,14 @@ public class WorldManager
         
         game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
         game.boardMan.generateBoard(this.getItemList());
+        
+        // Change the timer.
+        int time = game.timerMan.getInitialTime();
+        
+        if(time > 5)
+            time --;
+        
+        game.timerMan.setInitialTime(time);
     }
     
     
