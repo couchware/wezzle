@@ -32,6 +32,7 @@ import java.util.Set;
  */
 public class Game extends Canvas implements GameWindowCallback
 {	  
+    
     /**
      * The path to the resources.
      */
@@ -204,11 +205,27 @@ public class Game extends Canvas implements GameWindowCallback
      */
     private Set bombRemovalSet;
     
+    /**
+     * If true, the board show animation will be activated next loop.
+     */
+    private boolean activateBoardShowAnimation = false;
+    
+    /**
+     * If true, the board hide animation will be activated next loop.
+     */
+    private boolean activateBoardHideAnimation = false;
+    
+    /**
+     * The animation that will indicate whether the board animation is 
+     * complete.
+     */
+    private Animation boardAnimation = null;
+    
 	/**
 	 * The time at which the last rendering looped started from the point of
 	 * view of the game logic.
 	 */
-	private long lastLoopTime = SystemTimer.getTime();
+	private long lastLoopTime;
 	
 	/** 
      * The window that is being used to render the game. 
@@ -380,7 +397,8 @@ public class Game extends Canvas implements GameWindowCallback
         worldMan = new WorldManager(propertyMan);
         
         // Generate the game board.
-        boardMan.generateBoard(worldMan.getItemList());		
+        boardMan.generateBoard(worldMan.getItemList());         
+        startBoardShowAnimation();
         
         // Create the sound manager.
         soundMan = new SoundManager();
@@ -476,34 +494,55 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	private void startGame()
 	{		
-		// Nothing here yet.
+		lastLoopTime = SystemTimer.getTime();
 	}
     
-    public void runRefactor(int speed)
+    /**
+     * Start a refactor with the given speed.
+     * 
+     * @param speed
+     */
+    public void startRefactor(int speed)
     {
         // Set the refactor flag.
         this.activateRefactor = true;
         this.refactorSpeed = speed;
     }
     
-   public  void clearRefactor()
-   {
+    /**
+     * Clear the refactor flag.
+     */
+    public void clearRefactor()
+    {
        // Set the refactor flag.
        this.activateRefactor = false;
-   }
+    }      
    
-   /**
-    * A method to check if any refactoring is happening.
-    * 
-    * @return Whether any refactoring is happing.
-    */
-   public boolean isRefactoring()
-   {
+    /**
+     * A method to check whether the board is busy.
+     * 
+     * @return True if it is, false otherwise.
+     */
+    public boolean isBusy()
+    {
        return (this.refactorDownInProgress || this.refactorLeftInProgress
                || this.tileRemovalInProgress
                || this.activateBombRemoval || this.activateLineRemoval 
-               || this.activateRefactor);
-   }
+               || this.activateRefactor
+               || this.boardAnimation != null);
+    }
+    
+    public void startBoardShowAnimation()
+    {
+        // Set the flag.
+        activateBoardShowAnimation = true;
+    }
+    
+    public void clearBoardShowAnimation()
+    {
+        // Clear the flag.
+        activateBoardShowAnimation = false;
+    }
 
 	/**
 	 * Notification that a frame is being rendered. Responsible for running game
@@ -550,7 +589,31 @@ public class Game extends Canvas implements GameWindowCallback
         }
 		
         if (pauseButton.isActivated() == false)
-        {        
+        {   
+            // Check to see if we should be animating the board.
+            if (activateBoardShowAnimation == true)
+            {
+                // Start board show animation.
+                boardAnimation = boardMan.animateShow(animationMan);                
+                
+                // Hide the piece.
+                pieceMan.setVisible(false);
+                
+                // Clear flag.
+                clearBoardShowAnimation();                                
+            }
+            
+            // Check on board animation.
+            if (boardAnimation != null && boardAnimation.isDone() == true)
+            {
+                // Clear the board animation.
+                boardAnimation = null;
+                
+                // Show the piece.
+                pieceMan.setVisible(true);
+                pieceMan.clearMouseButtons();
+            }
+            
             // See if we need to activate the refactor.
             if (activateRefactor == true)
             {            
@@ -756,7 +819,7 @@ public class Game extends Canvas implements GameWindowCallback
                         activateBombRemoval = true;
                     // Otherwise, start a new refactor.
                     else                
-                        runRefactor(200);
+                        startRefactor(200);
                 }  
             }
 
@@ -779,6 +842,9 @@ public class Game extends Canvas implements GameWindowCallback
 
             // Update piece manager logic and then draw it.
             pieceMan.updateLogic(this);
+            
+            // Update world manager logic.
+            worldMan.updateLogic(this);
 
             // Draw the timer text.
             timerText.setText(String.valueOf(timerMan.getTime()));		

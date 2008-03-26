@@ -15,6 +15,11 @@ public abstract class Animation
     protected boolean visible;       
     
     /**
+     * The amount of delay before starting.
+     */
+    protected int delay;
+    
+    /**
      * The amount of time per frame.
      */
     protected int period;
@@ -75,6 +80,7 @@ public abstract class Animation
     
     /**
      * Checks the visibility of the animation.
+     * 
      * @return True if visible, false otherwise.
      */
     public boolean isVisible()
@@ -84,10 +90,33 @@ public abstract class Animation
     
     /**
      * Sets the visibility of the animation.
+     * 
      * @param visible True if visible, false if not.
      */
     public void setVisible(final boolean visible)
     {
         this.visible = visible;
-    } 
+    }
+
+    /**
+     * Get the amount of delay.
+     * 
+     * @return The amount of delay, in ms.
+     */
+    public int getDelay()
+    {
+        return delay;
+    }
+
+    /**
+     * Set the amount of delay.  This should be set before the animation
+     * is started.
+     * 
+     * @param delay
+     */
+    public void setDelay(int delay)
+    {
+        this.delay = delay;
+    }
+        
 }

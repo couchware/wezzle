@@ -69,6 +69,24 @@ public class ZoomInAnimation extends Animation
         if (isDone() == true)
             return;
         
+        // Is there any delay left?
+        if (delay > 0)
+        {
+            // See if this delta will eliminate the delay.
+            if (delta > delay)
+            {
+                // If it will, subtract the remaing delay from the delta.
+                delay = 0;
+                delta -= delay;
+            }
+            // Otherwise, subtract delta from delay and we're done.
+            else
+            {
+                delay -= delta;
+                return;
+            }
+        }
+        
         // Add to counter.
         counter += delta;
         

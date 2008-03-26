@@ -204,12 +204,14 @@ public class WorldManager
         if( (tiles / totalSpots) * 100 < this.tileRatio)
         {
             return pieceSize + (this.currentLevel / 3) + 3;
-        }// We are high.
+        }
+        // We are high.
         else if (totalSpots - tiles < 10)
         {
             return this.minimumDrop + (this.currentLevel / 3);
         }
-        else// We are just right.
+        // We are just right.
+        else
         {
             return pieceSize + (this.currentLevel / 3);
         }
@@ -270,10 +272,26 @@ public class WorldManager
 	{
 		return currentLevel * 2000;
 	}
-    
+        
     public int generateTargetLevelScore()
     {
         return generateTargetLevelScore(currentLevel);
+    }
+    
+    public void updateLogic(final Game game)
+    {
+        // Make sure there's no tile drop happening.
+        if (game.pieceMan.isTileDropInProgress() == false
+                && game.isBusy() == false)
+        {
+            // Handle Level up.
+            if (game.scoreMan.getLevelScore() 
+                    >= game.scoreMan.getTargetLevelScore())
+            {
+                Util.handleMessage("Level up!", Thread.currentThread());
+                this.levelUp(game);
+            }
+        } // end if
     }
 	
 }

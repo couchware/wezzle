@@ -1,9 +1,8 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.tile.BombTileEntity;
-import ca.couchware.wezzle2d.util.XYPosition;
+import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.tile.*;
+import ca.couchware.wezzle2d.util.*;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -160,22 +159,7 @@ public class BoardManager
                         TileEntity.randomColor());
                 count++;
             }
-        }
-        
-//		int i;
-//        for (i = 0; i < normal; i++)
-//			this.createTile(i, TileEntity.class, 
-//                    TileEntity.randomColor());
-//        
-//        int j;
-//        for (j = i; j < normal + bomb; j++)
-//            this.createTile(j, BombTileEntity.class,
-//                    TileEntity.randomColor());
-//        
-//        int k;
-//        for (k = j; k < normal + bomb + mult2x; k++)
-//            this.createTile(k, Multiply2xTileEntity.class, 
-//                    TileEntity.randomColor());
+        }      
 		
 		shuffleBoard();
 		refactorBoard();
@@ -203,8 +187,7 @@ public class BoardManager
 				break;
 		} // end while	
 	}
-	
-    
+	    
     /**
      * Clear the board of all tiles.
      */
@@ -216,8 +199,7 @@ public class BoardManager
                 this.removeTile(i);
         }
     }
-    
-    
+        
 	/**
 	 * Shuffles the board randomly.
 	 */
@@ -570,9 +552,9 @@ public class BoardManager
         removeTile(column + (row * columns));
     }
     
-    public void removeTiles(final Set set)
+    public void removeTiles(final Set indexSet)
     {
-        for (Iterator it = set.iterator(); it.hasNext(); )        
+        for (Iterator it = indexSet.iterator(); it.hasNext(); )        
             removeTile((Integer) it.next());        
     }
 	
@@ -702,6 +684,56 @@ public class BoardManager
         
         // Return the set.
         return bombSet;
+    }
+    
+    /**
+     * Animates the showing of the board.
+     * 
+     * @param animationMan The animation manager to add the animations to.
+     * @return An animation that can be checked for doneness.
+     */
+    public Animation animateShow(final AnimationManager animationMan)
+    {
+        // Sanity check.
+        assert(animationMan != null);
+        
+        // The amount of delay between each row.
+        int delay = 0;
+        
+        // True if a tile was found this row.
+        boolean tileFound = false;
+        
+        // Count the number of tiles.
+        int tileCount = 0;
+        
+        // Add the animations.
+        for (int i = 0; i < cells; i++)
+		{
+			TileEntity t = getTile(i);
+			
+			if (t != null)		
+			{	
+                Animation a = new ZoomInAnimation(t);
+                a.setDelay(delay);
+                t.setAnimation(a);
+                
+                tileFound = true;
+                tileCount++;
+			}
+			
+			if (tileFound == true && (i + 1) % columns == 0)
+            {
+                tileFound = false;
+				delay += 250;
+            }
+        }
+        
+        // If there are any tiles, there at least must be a tile in the bottom
+        // left corner.
+        if (tileCount > 0)
+            return getTile(0, rows - 1).getAnimation();
+        else
+            return null;
     }
 
     //--------------------------------------------------------------------------

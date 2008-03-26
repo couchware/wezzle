@@ -323,7 +323,7 @@ public class PieceManager implements
     public void updateLogic(final Game game)
     {        
         // If the board is refactoring, do not logicify.
-        if (game.isRefactoring() == true)
+        if (game.isBusy() == true)
              return;
         
         // Grab the current mouse position.
@@ -361,23 +361,23 @@ public class PieceManager implements
                         // A tile exists here... 
                         // continue with the loop.
                     }
-                } // end for
-                 
-               
+                } // end for                                
 
                 // Make sure we have found a column.
                 assert (openColumnIndex >= 0);
 
                 int index1 = 
-                        Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
+                        Util.random.nextInt(boardMan.getColumns() 
+                        - openColumnIndex) 
                         + openColumnIndex;
                 
                 int index2 = 0;
-                while(true)
-                {
-                     
-                     index2 =  Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
-                        + openColumnIndex;
+                
+                while (true)
+                {                     
+                    index2 =  Util.random.nextInt(boardMan.getColumns() 
+                            - openColumnIndex) 
+                            + openColumnIndex;
                     
                     if(index2 != index1)
                         break;
@@ -400,9 +400,8 @@ public class PieceManager implements
                 // If there is only 1 item left (to ensure only 1 drop per drop 
                 // in) and we have less than the max number of items...
                 //  drop an item in. Otherwise drop a normal.
-                if (tileDropCount == 1 
-                        && game.boardMan.getNumberOfItems() 
-                            < game.worldMan.getNumMaxItems())
+                if (tileDropCount == 1 && game.boardMan.getNumberOfItems() 
+                        < game.worldMan.getNumMaxItems())
                 {
                     tileDropped[0] = boardMan.createTile(index1, 
                             game.worldMan.pickRandomItem(), 
@@ -410,14 +409,14 @@ public class PieceManager implements
                     
                     tileDropped[1] = null;
                 }
-                else if (tileDropCount == 2
-                        && game.boardMan.getNumberOfItems() 
-                            < game.worldMan.getNumMaxItems())
+                else if (tileDropCount == 2 && game.boardMan.getNumberOfItems() 
+                        < game.worldMan.getNumMaxItems())
                 {
-                     tileDropped[0] = boardMan.createTile(index1, TileEntity.class, 
-                        TileEntity.randomColor()); 
+                    tileDropped[0] = boardMan.createTile(index1, 
+                            TileEntity.class, 
+                            TileEntity.randomColor()); 
                      
-                      tileDropped[1] = boardMan.createTile(index2, 
+                    tileDropped[1] = boardMan.createTile(index2, 
                             game.worldMan.pickRandomItem(), 
                             TileEntity.randomColor()); 
                 }
@@ -432,18 +431,23 @@ public class PieceManager implements
 
                 // Start the animation.
                 game.soundMan.play(SoundManager.BLEEP);
-                tileDropped[0].setAnimation(new ZoomInAnimation(tileDropped[0]));
+                tileDropped[0].setAnimation(
+                        new ZoomInAnimation(tileDropped[0]));
                
-                if(tileDropped[1] != null)
-                    tileDropped[1].setAnimation(new ZoomInAnimation(tileDropped[1]));
+                if (tileDropped[1] != null)
+                {
+                    tileDropped[1].setAnimation(
+                            new ZoomInAnimation(tileDropped[1]));
+                }
+                
                 tileDropAnimationInProgress = true;
             } 
             // If we got here, the animating is in progress, so we need to check
             // if it's done.  If it is, de-reference it and refactor.
-            else if ((tileDropped[0].getAnimation().isDone() == true && 
-                    tileDropped[1] == null) ||
-                    (tileDropped[0].getAnimation().isDone() == true && 
-                   tileDropped[1].getAnimation().isDone() == true))
+            else if ((tileDropped[0].getAnimation().isDone() == true 
+                    && tileDropped[1] == null) 
+                    || (tileDropped[0].getAnimation().isDone() == true 
+                    && tileDropped[1].getAnimation().isDone() == true))
             {
                 // Clear the flag.
                 tileDropAnimationInProgress = false;
@@ -452,7 +456,7 @@ public class PieceManager implements
                 tileDropped = null;
                 
                 // Run refactor.
-                game.runRefactor(300);                
+                game.startRefactor(300);                
                 
                 // Decrement the number of tiles to drop.
                 tileDropCount-= 2;
@@ -466,16 +470,7 @@ public class PieceManager implements
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.
         else
-        {            
-            // Handle Level up.
-            if(game.scoreMan.getLevelScore() 
-                    >= game.scoreMan.getTargetLevelScore())
-            {
-                Util.handleMessage("Level up!", Thread.currentThread());
-                game.worldMan.levelUp(game);
-                
-            }
-            
+        {                                    
             if (isMouseLeftReleased() == true)
             {            
                initiateCommit(game);
@@ -559,7 +554,7 @@ public class PieceManager implements
         this.setVisible(false);
 
         // Run a refactor.
-        game.runRefactor(200);
+        game.startRefactor(200);
 
         // Reset flag.
         setMouseLeftReleased(false);
@@ -614,6 +609,12 @@ public class PieceManager implements
     public synchronized void setMouseRightReleased(boolean mouseRightReleased)
     {
         this.mouseRightReleased = mouseRightReleased;
+    }
+    
+    public void clearMouseButtons()
+    {
+        setMouseLeftReleased(false);
+        setMouseRightReleased(false);
     }
     
     public synchronized boolean isTileDropInProgress()
