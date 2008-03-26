@@ -263,7 +263,8 @@ public class BoardManager
 			// Check if we have a match.
 			if (j >= minimumMatch)
 			{
-				Util.handleMessage("XMatch of length " + j + " found.", Thread.currentThread());
+				Util.handleMessage("XMatch of length " + j + " found.",
+                        Thread.currentThread());
 				
 				// Copy all matched locations to the linked list.
 				for (int k = i; k < i + j; k++)				
@@ -271,7 +272,7 @@ public class BoardManager
 				
 				i += j - 1;
 			}
-		}
+		} // end for
 	}
 	
 	/**
@@ -699,6 +700,7 @@ public class BoardManager
         
         // The amount of delay between each row.
         int delay = 0;
+        int deltaDelay = 200;
         
         // True if a tile was found this row.
         boolean tileFound = false;
@@ -713,7 +715,7 @@ public class BoardManager
 			
 			if (t != null)		
 			{	
-                Animation a = new ZoomInAnimation(t);
+                Animation a = new FadeInAnimation(t);
                 a.setDelay(delay);
                 t.setAnimation(a);
                 
@@ -724,7 +726,58 @@ public class BoardManager
 			if (tileFound == true && (i + 1) % columns == 0)
             {
                 tileFound = false;
-				delay += 250;
+				delay += deltaDelay;
+            }
+        }
+        
+        // If there are any tiles, there at least must be a tile in the bottom
+        // left corner.
+        if (tileCount > 0)
+            return getTile(0, rows - 1).getAnimation();
+        else
+            return null;
+    }
+    
+    /**
+     * Animates the hiding of the board.
+     * 
+     * @param animationMan The animation manager to add the animations to.
+     * @return An animation that can be checked for doneness.
+     */
+    public Animation animateHide(final AnimationManager animationMan)
+    {
+        // Sanity check.
+        assert(animationMan != null);
+        
+        // The amount of delay between each row.
+        int delay = 0;
+        int deltaDelay = 200;
+        
+        // True if a tile was found this row.
+        boolean tileFound = false;
+        
+        // Count the number of tiles.
+        int tileCount = 0;
+        
+        // Add the animations.
+        for (int i = 0; i < cells; i++)
+		{
+			TileEntity t = getTile(i);
+			
+			if (t != null)		
+			{	
+                Animation a = new FadeOutAnimation(t);
+                a.setDelay(delay);
+                t.setAnimation(a);
+                
+                tileFound = true;
+                tileCount++;
+			}
+			
+			if (tileFound == true && (i + 1) % columns == 0)
+            {
+                tileFound = false;
+				delay += deltaDelay;
             }
         }
         
@@ -833,8 +886,7 @@ public class BoardManager
         
         return counter;
     }
-    
-    
+        
     public boolean isVisible()
     {
         return visible;
@@ -842,17 +894,7 @@ public class BoardManager
     
     public void setVisible(boolean visible)
     {
-        this.visible = visible;
-        
-        for (int i = 0; i < board.length; i++)
-        {
-            if (board[i] != null)
-            {
-                board[i].setVisible(visible);
-                if (board[i].getAnimation() != null)
-                    board[i].getAnimation().setVisible(visible);
-            }
-        }
+        this.visible = visible;        
     }
 
     /**

@@ -277,21 +277,5 @@ public class WorldManager
     {
         return generateTargetLevelScore(currentLevel);
     }
-    
-    public void updateLogic(final Game game)
-    {
-        // Make sure there's no tile drop happening.
-        if (game.pieceMan.isTileDropInProgress() == false
-                && game.isBusy() == false)
-        {
-            // Handle Level up.
-            if (game.scoreMan.getLevelScore() 
-                    >= game.scoreMan.getTargetLevelScore())
-            {
-                Util.handleMessage("Level up!", Thread.currentThread());
-                this.levelUp(game);
-            }
-        } // end if
-    }
 	
 }

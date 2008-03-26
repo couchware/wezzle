@@ -24,7 +24,7 @@ import java.util.Set;
     /**
      * The amount of point per tile in a line.
      */
-    final private static int POINTS_PER_LINE_TILE = 50;
+    final private static int POINTS_PER_LINE_TILE = 500;
 
     /** 
      * The amount of point per tile in a piece.

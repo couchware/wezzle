@@ -397,7 +397,8 @@ public class Game extends Canvas implements GameWindowCallback
         worldMan = new WorldManager(propertyMan);
         
         // Generate the game board.
-        boardMan.generateBoard(worldMan.getItemList());         
+        boardMan.generateBoard(worldMan.getItemList());
+        boardMan.setVisible(false);
         startBoardShowAnimation();
         
         // Create the sound manager.
@@ -543,6 +544,18 @@ public class Game extends Canvas implements GameWindowCallback
         // Clear the flag.
         activateBoardShowAnimation = false;
     }
+    
+    public void startBoardHideAnimation()
+    {
+        // Set the flag.
+        activateBoardHideAnimation = true;
+    }
+    
+    public void clearBoardHideAnimation()
+    {
+        // Clear the flag.
+        activateBoardHideAnimation = false;
+    }
 
 	/**
 	 * Notification that a frame is being rendered. Responsible for running game
@@ -590,27 +603,80 @@ public class Game extends Canvas implements GameWindowCallback
 		
         if (pauseButton.isActivated() == false)
         {   
-            // Check to see if we should be animating the board.
+            // See if it's time to level-up.
+            if (pieceMan.isTileDropInProgress() == false
+                    && isBusy() == false)
+            {
+                // Handle Level up.
+                if (scoreMan.getLevelScore() 
+                        >= scoreMan.getTargetLevelScore())
+                {
+                    // See if the board is still visible.
+                    if (boardMan.isVisible() == true)
+                    {
+                        // Start the hide animation.
+                        startBoardHideAnimation();
+                    }
+                    else
+                    {                
+                        Util.handleMessage("Level up!", Thread.currentThread());
+                        worldMan.levelUp(this);
+
+                        // Start the show animation.
+                        startBoardShowAnimation();
+                    }
+                }
+            } // end if
+            
+            // Check to see if we should be showing the board.
             if (activateBoardShowAnimation == true)
             {
                 // Start board show animation.
                 boardAnimation = boardMan.animateShow(animationMan);                
                 
                 // Hide the piece.
-                pieceMan.setVisible(false);
+                pieceMan.setVisible(false);                               
                 
                 // Clear flag.
                 clearBoardShowAnimation();                                
             }
             
+            // Check to see if we should be hiding the board.
+            if (activateBoardHideAnimation == true)
+            {
+                // Start board hide animation.
+                boardAnimation = boardMan.animateHide(animationMan);                
+                
+                // Hide the piece.
+                pieceMan.setVisible(false);                               
+                
+                // Clear flag.
+                clearBoardHideAnimation();                                
+            }
+            
             // Check on board animation.
             if (boardAnimation != null && boardAnimation.isDone() == true)
             {
+                // Set animation visible depending on what animation
+                // was just performed.
+                if (boardAnimation instanceof FadeInAnimation)   
+                {
+                    boardMan.setVisible(true);
+                    pieceMan.setVisible(true);
+                }
+                else if (boardAnimation instanceof FadeOutAnimation)
+                {
+                    boardMan.setVisible(false);
+                    pieceMan.setVisible(false);
+                }
+                else
+                    throw new RuntimeException(
+                            "Unrecognized board animation class.");
+                
                 // Clear the board animation.
                 boardAnimation = null;
                 
                 // Show the piece.
-                pieceMan.setVisible(true);
                 pieceMan.clearMouseButtons();
             }
             
@@ -830,7 +896,8 @@ public class Game extends Canvas implements GameWindowCallback
             animationMan.animate(delta);
 
             // Handle the timer.
-            timerMan.incrementInternalTime(delta);
+            if (boardMan.isVisible() == true)
+                timerMan.incrementInternalTime(delta);
 
             // Check to see if we should force a piece commit.
             if (timerMan.getTime() < 0)
@@ -843,9 +910,6 @@ public class Game extends Canvas implements GameWindowCallback
             // Update piece manager logic and then draw it.
             pieceMan.updateLogic(this);
             
-            // Update world manager logic.
-            worldMan.updateLogic(this);
-
             // Draw the timer text.
             timerText.setText(String.valueOf(timerMan.getTime()));		
 
