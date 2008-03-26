@@ -65,7 +65,7 @@ public class WorldManager
     /**
      * The number of pieces to drop in concurrently.
      */
-    public int dropInConcurrentAmount = 3;
+    public int dropInConcurrentAmount = 4;
 	
 	/**
 	 * The constructor.

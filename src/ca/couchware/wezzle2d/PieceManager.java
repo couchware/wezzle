@@ -327,7 +327,9 @@ public class PieceManager implements
              return;
         
         // Grab the current mouse position.
-        final XYPosition p = getMousePosition();                             
+        final XYPosition p = getMousePosition();  
+        
+        int numToDropIn = game.worldMan.dropInConcurrentAmount;
             
         // Drop in any tiles that need to be dropped, one at a time. 
         //
@@ -346,7 +348,22 @@ public class PieceManager implements
                 // between 0 and maxColumns - openColumnIndex, add the open 
                 // column index to it, and voila! random column.            
                 int openColumnIndex = -1;
+                
+               
 
+                // Count the openColumns.
+                int openColumns = 0;
+                for (int i = 0; i < boardMan.getColumns(); i++)
+                {
+                    if(boardMan.getTile(i) == null)
+                    {
+                        openColumns++;
+                    }
+                }
+                
+                if(numToDropIn > openColumns)
+                    numToDropIn = openColumns;
+                
                 // Find the first open column.
                 for (int i = 0; i < boardMan.getColumns(); i++)
                 {
@@ -366,7 +383,7 @@ public class PieceManager implements
                 // Make sure we have found a column.
                 assert (openColumnIndex >= 0);
                 
-                int[] index = new int[game.worldMan.dropInConcurrentAmount];
+                int[] index = new int[numToDropIn];
                 
                 index[0] = 
                         Util.random.nextInt(boardMan.getColumns() 
@@ -406,7 +423,7 @@ public class PieceManager implements
                 // from the item list and checking to see if a special tile
                 // needs to be dropped.      
                 
-                tileDropped = new TileEntity[game.worldMan.dropInConcurrentAmount];
+                tileDropped = new TileEntity[numToDropIn];
 
                 // Create a new tile.
                 
@@ -479,7 +496,7 @@ public class PieceManager implements
                 game.startRefactor(300);                
                 
                 // Decrement the number of tiles to drop by 2.
-                tileDropCount-= game.worldMan.dropInConcurrentAmount;
+                tileDropCount-= numToDropIn;
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
