@@ -71,7 +71,13 @@ public class WorldManager
      * The minimum timer value.
      */
     private int timerMin = 5;
+    
+    /**
+     * The initial timer value.
+     */
 	
+    private int initialTimer = 15;
+    
 	/**
 	 * The constructor.
 	 * @param fragment
@@ -136,6 +142,15 @@ public class WorldManager
         return this.maxItems;
     }
     
+    /**
+     * Get the initial timer value.
+     * @return The initial timer.
+     */
+    public int getInitialTimer()
+    {
+        return this.initialTimer;
+    }
+    
      /**
      * set the maximum number of items.
      */
@@ -165,7 +180,8 @@ public class WorldManager
                 generateTargetLevelScore(currentLevel));
         
         game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
-        game.boardMan.generateBoard(this.getItemList());
+       
+//        game.boardMan.generateBoard(this.getItemList());
         
         // Change the timer.
         int time = game.timerMan.getInitialTime();
@@ -297,7 +313,7 @@ public class WorldManager
 	 */
 	public int generateTargetLevelScore(int currentLevel)
 	{
-		return currentLevel * 2000;
+		return currentLevel * 1200;
 	}
         
     public int generateTargetLevelScore()

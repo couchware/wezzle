@@ -416,7 +416,7 @@ public class Game extends Canvas implements GameWindowCallback
         moveMan = new MoveManager();
         
         // Create the time manager.
-		timerMan = new TimerManager();
+		timerMan = new TimerManager(worldMan.getInitialTimer());
                                 
         // Create a new pause button.
         pauseButton = new CircularBooleanButton(18, 600 - 18);
@@ -642,19 +642,19 @@ public class Game extends Canvas implements GameWindowCallback
                         >= scoreMan.getTargetLevelScore())
                 {
                     // See if the board is still visible.
-                    if (boardMan.isVisible() == true)
-                    {
-                        // Start the hide animation.
-                        startBoardHideAnimation();
-                    }
-                    else
-                    {                
+//                    if (boardMan.isVisible() == true)
+//                    {
+//                        // Start the hide animation.
+//                        startBoardHideAnimation();
+//                    }
+//                    else
+//                    {                
                         Util.handleMessage("Level up!", Thread.currentThread());
                         worldMan.levelUp(this);
 
-                        // Start the show animation.
-                        startBoardShowAnimation();
-                    }
+//                        // Start the show animation.
+//                        startBoardShowAnimation();
+//                    }
                 }
             } // end if
             
