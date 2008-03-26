@@ -90,16 +90,19 @@ public class ZoomInAnimation extends Animation
         // Add to counter.
         counter += delta;
         
-        // See if enough time has elapsed to advance the frame.
-        if (counter >= period)
+        // Set the number of frames that have passed to 0.
+        frames = 0;
+        
+        // See how many frames have passed.
+        while (counter >= period)
         {
-            // Increase the frame.
-            frame++;            
-            
-            // Remove the period time so the counter will work for ensuing
-            // frames.
+            frames++;
             counter -= period;
-            
+        }                
+        
+        // See if enough time has elapsed to advance the frame.
+        for (int i = 0; i < frames; i++)
+        {                          
             // Make it visible if it's not already.
             entity.setVisible(true);
             

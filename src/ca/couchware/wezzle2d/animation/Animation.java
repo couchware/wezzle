@@ -27,7 +27,7 @@ public abstract class Animation
     /**
      * The current frame.
      */
-    protected int frame;
+    protected int frames;
     
     /**
      * The internal time counter (in ms).
@@ -49,7 +49,7 @@ public abstract class Animation
         
         // Set some defaults.
         this.period = period;
-        this.frame = 0;
+        this.frames = 0;
         this.counter = 0;
         this.done = false;
     }

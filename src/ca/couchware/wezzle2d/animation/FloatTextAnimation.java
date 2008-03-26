@@ -140,7 +140,7 @@ public class FloatTextAnimation extends Animation
         if (counter >= period)
         {
             // Increase the frame.
-            frame++;            
+            frames++;            
             
             // Remove the period time so the counter will work for ensuing
             // frames.

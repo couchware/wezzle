@@ -86,7 +86,7 @@ public class PulseAnimation extends Animation
         if (counter >= period)
         {
             // Increase the frame.
-            frame++;            
+            frames++;            
             
             // Remove the period time so the counter will work for ensuing
             // frames.
@@ -124,7 +124,7 @@ public class PulseAnimation extends Animation
                         state = PULSE_DOWN;
                         
                         // Reset frame count.
-                        frame = 0;
+                        frames = 0;
                     }
                     
                     break;
@@ -147,7 +147,7 @@ public class PulseAnimation extends Animation
         entity.setY(p.getY());
         
         // Reset frame and counter.
-        frame = 0;
+        frames = 0;
         counter = 0;
     }
 }
