@@ -409,7 +409,7 @@ public class PieceManager implements
                     tileDropped[0] = boardMan.createTile(index[0], 
                             game.worldMan.pickRandomItem(), 
                             TileEntity.randomColor()); 
-                    for(int i = 0; i < tileDropped.length; i++)
+                    for(int i = 1; i < tileDropped.length; i++)
                      tileDropped[i] = null;
                 }
                 else if (tileDropCount <= tileDropped.length
