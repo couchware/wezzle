@@ -365,35 +365,38 @@ public class PieceManager implements
 
                 // Make sure we have found a column.
                 assert (openColumnIndex >= 0);
-
-                int index1 = 
+                
+                int[] index = new int[game.worldMan.dropInConcurrentAmount];
+                
+                index[0] = 
                         Util.random.nextInt(boardMan.getColumns() 
                         - openColumnIndex) 
                         + openColumnIndex;
                 
-                int index2 = 0;
-                
-                while (true)
-                {                     
-                    index2 =  Util.random.nextInt(boardMan.getColumns() 
-                            - openColumnIndex) 
-                            + openColumnIndex;
+                int count = 1;
+                while(true)
+                {
+                    index[count] =  Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
+                        + openColumnIndex;
                     
-                    if(index2 != index1)
-                        break;
+                    if(index[count] != index[count-1])
+                        count++;
+                     
+                    if(count >= index.length)
+                         break;
                 }
 
                 // Sanity check.
-                assert (index1 >= 0 && index1 < boardMan.getColumns());
-                assert (index2 >= 0 && index2 < boardMan.getColumns());
-                assert (index1 != index2);
+//                assert (index1 >= 0 && index1 < boardMan.getColumns());
+//                assert (index2 >= 0 && index2 < boardMan.getColumns());
+//                assert (index1 != index2);
 
                 // Determine the type of tile to drop. This is done by 
                 // consulting the available tiles and their probabilities
                 // from the item list and checking to see if a special tile
                 // needs to be dropped.      
                 
-                tileDropped = new TileEntity[2];
+                tileDropped = new TileEntity[game.worldMan.dropInConcurrentAmount];
 
                 // Create a new tile.
                 
@@ -403,51 +406,54 @@ public class PieceManager implements
                 if (tileDropCount == 1 && game.boardMan.getNumberOfItems() 
                         < game.worldMan.getNumMaxItems())
                 {
-                    tileDropped[0] = boardMan.createTile(index1, 
+                    tileDropped[0] = boardMan.createTile(index[0], 
                             game.worldMan.pickRandomItem(), 
                             TileEntity.randomColor()); 
-                    
-                    tileDropped[1] = null;
+                    for(int i = 0; i < tileDropped.length; i++)
+                     tileDropped[i] = null;
                 }
-                else if (tileDropCount == 2 && game.boardMan.getNumberOfItems() 
-                        < game.worldMan.getNumMaxItems())
+                else if (tileDropCount <= tileDropped.length
+                        && game.boardMan.getNumberOfItems() 
+                            < game.worldMan.getNumMaxItems())
+
                 {
-                    tileDropped[0] = boardMan.createTile(index1, 
-                            TileEntity.class, 
-                            TileEntity.randomColor()); 
-                     
-                    tileDropped[1] = boardMan.createTile(index2, 
+                    // Drop in the first x amount.
+                    for(int i = 0; i < tileDropCount-1; i++)
+                    {
+                     tileDropped[i] = boardMan.createTile(index[i], TileEntity.class, 
+                        TileEntity.randomColor()); 
+
+                    }
+                     // Drop in the item tile.
+                    tileDropped[tileDropped.length-1] = boardMan.createTile(index[tileDropped.length-1], 
                             game.worldMan.pickRandomItem(), 
                             TileEntity.randomColor()); 
                 }
                 else
                 {
-                     tileDropped[0] = boardMan.createTile(index1, TileEntity.class, 
+                    for(int i = 0; i < tileDropped.length; i++)
+                    {
+                     tileDropped[i] = boardMan.createTile(index[i], TileEntity.class, 
                         TileEntity.randomColor()); 
+                    }
                      
-                      tileDropped[1] = boardMan.createTile(index2, TileEntity.class, 
-                        TileEntity.randomColor()); 
+                     
                 }
 
                 // Start the animation.
                 game.soundMan.play(SoundManager.BLEEP);
-                tileDropped[0].setAnimation(
-                        new ZoomInAnimation(tileDropped[0]));
-               
-                if (tileDropped[1] != null)
+           
+                for(int i = 0; i < tileDropped.length; i++)
                 {
-                    tileDropped[1].setAnimation(
-                            new ZoomInAnimation(tileDropped[1]));
+                    if(tileDropped[i] != null)
+                        tileDropped[i].setAnimation(new ZoomInAnimation(tileDropped[i]));
                 }
-                
+
                 tileDropAnimationInProgress = true;
             } 
             // If we got here, the animating is in progress, so we need to check
             // if it's done.  If it is, de-reference it and refactor.
-            else if ((tileDropped[0].getAnimation().isDone() == true 
-                    && tileDropped[1] == null) 
-                    || (tileDropped[0].getAnimation().isDone() == true 
-                    && tileDropped[1].getAnimation().isDone() == true))
+            else if (checkAnimationDone(tileDropped))
             {
                 // Clear the flag.
                 tileDropAnimationInProgress = false;
@@ -458,7 +464,7 @@ public class PieceManager implements
                 // Run refactor.
                 game.startRefactor(300);                
                 
-                // Decrement the number of tiles to drop.
+                // Decrement the number of tiles to drop by 2.
                 tileDropCount-= 2;
                 
                 // Check to see if we have more tiles to drop. 
@@ -563,6 +569,25 @@ public class PieceManager implements
         // Reset timer.
         game.timerMan.setPaused(true);
     }
+    
+    /**
+     * Check if an array of animations is done.
+     * @param tiles
+     * @return
+     */
+    private boolean checkAnimationDone(TileEntity [] tiles)
+    {   
+        for(int i = 0; i < tiles.length; i++)
+        {
+            if(tiles[i] == null)
+                continue;
+            else if(tiles[i].getAnimation().isDone() == false)
+                return false;  
+        }
+        
+        return true;
+    }
+    
     
     //--------------------------------------------------------------------------
     // Getters and Setters

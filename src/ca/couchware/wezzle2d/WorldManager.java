@@ -16,23 +16,7 @@ public class WorldManager
 	/**
 	 * The property manager.
 	 */
-	private final PropertyManager propertyMan;	
-	
-    /**
-     * The maximum items available for the level.
-     */
-    private int maxItems;
-    
-    /**
-     * The percentage of tiles to maintain.
-     */
-    private int tileRatio = 35;
-    
-    
-    /**
-     * The minimum drop.
-     */
-    private int minimumDrop = 1;
+	private final PropertyManager propertyMan;
     
 	/**
 	 * The current level
@@ -62,6 +46,26 @@ public class WorldManager
 	 * The difficulty level
 	 */
 	private int difficulty;	
+    
+      /**
+     * The maximum items available for the level.
+     */
+    private int maxItems;
+    
+    /**
+     * The percentage of tiles to maintain.
+     */
+    private int tileRatio = 35;
+    
+    /**
+     * The minimum drop.
+     */
+    private int minimumDrop = 1;
+    
+    /**
+     * The number of pieces to drop in concurrently.
+     */
+    public int dropInConcurrentAmount = 2;
 	
 	/**
 	 * The constructor.
@@ -200,10 +204,12 @@ public class WorldManager
         float tiles = game.boardMan.getNumberOfTiles();
         float totalSpots = game.boardMan.getColumns() * game.boardMan.getRows();
         
-        // We are low.
+        // We are low. drop in a percentage of the tiles, increasing if there 
+        // are fewer tiles.
         if( (tiles / totalSpots) * 100 < this.tileRatio)
         {
-            return pieceSize + (this.currentLevel / 3) + 3;
+            return pieceSize + (this.currentLevel / 3) +
+                    (int)((totalSpots - tiles)* 0.1f) + this.minimumDrop;
         }
         // We are high.
         else if (totalSpots - tiles < 10)
@@ -213,7 +219,7 @@ public class WorldManager
         // We are just right.
         else
         {
-            return pieceSize + (this.currentLevel / 3);
+            return pieceSize + (this.currentLevel / 3) + this.minimumDrop;
         }
     }
      
