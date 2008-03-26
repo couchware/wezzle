@@ -351,7 +351,7 @@ public class PieceManager implements
             if (tileDropAnimationInProgress == false)
             {
                 // The number of pieces to drop in.
-                int numToDropIn = game.worldMan.dropInConcurrentAmount;
+                int numToDropIn = game.worldMan.getParallelDropInAmount();
               
                 // Count the openColumns and build a list of all open indeces.
                 indexList.clear();

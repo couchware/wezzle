@@ -65,7 +65,12 @@ public class WorldManager
     /**
      * The number of pieces to drop in concurrently.
      */
-    public int dropInConcurrentAmount = 4;
+    private int parallelDropInAmount = 4;
+    
+    /**
+     * The minimum timer value.
+     */
+    private int timerMin = 5;
 	
 	/**
 	 * The constructor.
@@ -165,12 +170,20 @@ public class WorldManager
         // Change the timer.
         int time = game.timerMan.getInitialTime();
         
-        if(time > 5)
+        if(time > this.timerMin)
             time --;
         
         game.timerMan.setInitialTime(time);
     }
     
+    /**
+     * Get the parallel drop in amount.
+     * @return The amount.
+     */
+    public int getParallelDropInAmount()
+    {
+        return this.parallelDropInAmount;
+    }
     
 	/**
 	 * Get the descriptor for the item at the specified index.
