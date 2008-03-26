@@ -65,7 +65,7 @@ public class WorldManager
     /**
      * The number of pieces to drop in concurrently.
      */
-    public int dropInConcurrentAmount = 2;
+    public int dropInConcurrentAmount = 3;
 	
 	/**
 	 * The constructor.
@@ -97,7 +97,7 @@ public class WorldManager
         
         // Set the max items.
         this.maxItems = 5;
-				
+        
 		itemList = new LinkedList();
 		itemList.add(new ItemDescriptor(TileEntity.class, 28, 20));
 		itemList.add(new ItemDescriptor(BombTileEntity.class, 2, 50));

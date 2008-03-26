@@ -373,13 +373,23 @@ public class PieceManager implements
                         - openColumnIndex) 
                         + openColumnIndex;
                 
+                
+                // Generate the indices.
+                
                 int count = 1;
                 while(true)
                 {
                     index[count] =  Util.random.nextInt(boardMan.getColumns() - openColumnIndex) 
                         + openColumnIndex;
                     
-                    if(index[count] != index[count-1])
+                    boolean test = true;
+                    for(int i = 0; i < count-1; i++)
+                    {
+                        if(index[count] == index[i])
+                            test = false;
+                    }
+                    
+                    if(test == true)
                         count++;
                      
                     if(count >= index.length)
@@ -406,9 +416,12 @@ public class PieceManager implements
                 if (tileDropCount == 1 && game.boardMan.getNumberOfItems() 
                         < game.worldMan.getNumMaxItems())
                 {
+                    // The tile is an item.
                     tileDropped[0] = boardMan.createTile(index[0], 
                             game.worldMan.pickRandomItem(), 
                             TileEntity.randomColor()); 
+                    
+                    // Null out the rest.
                     for(int i = 1; i < tileDropped.length; i++)
                      tileDropped[i] = null;
                 }
@@ -431,6 +444,7 @@ public class PieceManager implements
                 }
                 else
                 {
+                    // They are all normals.
                     for(int i = 0; i < tileDropped.length; i++)
                     {
                      tileDropped[i] = boardMan.createTile(index[i], TileEntity.class, 
