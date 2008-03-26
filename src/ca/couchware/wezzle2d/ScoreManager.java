@@ -158,11 +158,10 @@ import java.util.Set;
                 + numMultiply2x 
                 + numMultiply3x 
                 + numMultiply4x, 
-                lineType)
-                *  Math.pow(1.5, numBomb)
-                *  Math.pow(2, numMultiply2x)
-                *  Math.pow(3, numMultiply3x)
-                *  Math.pow(4, numMultiply4x)
+                lineType)              
+                * Math.pow(2, numMultiply2x)
+                * Math.pow(3, numMultiply3x)
+                * Math.pow(4, numMultiply4x)
                 * cascadeCount);
 
         Util.handleMessage("cascadeCount == " + cascadeCount, Thread.currentThread());

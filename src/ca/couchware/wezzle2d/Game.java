@@ -221,6 +221,11 @@ public class Game extends Canvas implements GameWindowCallback
      */
     private Animation boardAnimation = null;
     
+    /**
+     * The number of cascades thus far.
+     */
+    private int cascadeCount;
+    
 	/**
 	 * The time at which the last rendering looped started from the point of
 	 * view of the game logic.
@@ -366,6 +371,9 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void initialize()
 	{
+        // Set cascade count to 0.
+        cascadeCount = 0;
+        
         // Initialize line index set.
         tileRemovalSet = new HashSet();
         
@@ -526,11 +534,29 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public boolean isBusy()
     {
-       return (this.refactorDownInProgress || this.refactorLeftInProgress
-               || this.tileRemovalInProgress
-               || this.activateBombRemoval || this.activateLineRemoval 
-               || this.activateRefactor
+       return (isRefactoring()               
+               || isTileRemoving()
                || this.boardAnimation != null);
+    }
+    
+    /**
+     * Checks whether a refactor is, or is about to be, in progress.
+     */
+    public boolean isRefactoring()
+    {
+        return this.activateRefactor 
+                || this.refactorDownInProgress 
+                || this.refactorLeftInProgress;
+    }
+    
+    /**
+     * Checks whether tiles are, or are about to be, removed.
+     */
+    public boolean isTileRemoving()
+    {
+        return this.activateLineRemoval               
+               || this.activateBombRemoval 
+               || this.tileRemovalInProgress;
     }
     
     public void startBoardShowAnimation()
@@ -581,8 +607,11 @@ public class Game extends Canvas implements GameWindowCallback
 			framesPerSecond = 0;
 		}
         
+        // If the pause button was just clicked.
         if (pauseButton.wasClicked() == true)
         {
+            // If it was clicked on, then hide the board and
+            // show the paused text.
             if (pauseButton.isActivated() == true)
             {
                 layerMan.hide(LAYER_TILE);
@@ -601,6 +630,7 @@ public class Game extends Canvas implements GameWindowCallback
             }
         }
 		
+        
         if (pauseButton.isActivated() == false)
         {   
             // See if it's time to level-up.
@@ -759,14 +789,18 @@ public class Game extends Canvas implements GameWindowCallback
 
             // If a line removal was activated.
             if (activateLineRemoval == true)
-            {
+            {                
                 // Clear flag.
                 activateLineRemoval = false;
 
+                // Increment cascade.
+                cascadeCount++;
+                
                 // Calculate score.
                 final int deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
-                        ScoreManager.TYPE_LINE, 1);                               
+                        ScoreManager.TYPE_LINE,
+                        cascadeCount);                               
                 
                 // Show the SCT.
                 animationMan.add(new FloatTextAnimation(
@@ -809,14 +843,19 @@ public class Game extends Canvas implements GameWindowCallback
             {
                 // Clear the flag.
                 activateBombRemoval = false;
+                
+                // Increment cascade.
+                cascadeCount++;
 
                 // Used below.
                 int deltaScore = 0;
                 
                 // Get the tiles the bombs would affect.
                 tileRemovalSet = boardMan.processBombs(bombRemovalSet);
-                deltaScore = scoreMan.calculateLineScore(tileRemovalSet, 
-                        ScoreManager.TYPE_BOMB, 1);
+                deltaScore = scoreMan.calculateLineScore(
+                        tileRemovalSet, 
+                        ScoreManager.TYPE_BOMB, 
+                        cascadeCount);
                 
                 // Show the SCT.
                 animationMan.add(new FloatTextAnimation(
@@ -888,6 +927,12 @@ public class Game extends Canvas implements GameWindowCallback
                         startRefactor(200);
                 }  
             }
+            
+            // See if we should clear the cascade count.
+            if (isRefactoring() == false 
+                    && isTileRemoving() == false
+                    && pieceMan.isTileDropInProgress() == false)
+                cascadeCount = 0;
 
             // Animate all the pieces.
             boardMan.animate(delta);    
@@ -974,4 +1019,14 @@ public class Game extends Canvas implements GameWindowCallback
 		Game g = new Game(ResourceFactory.JAVA2D);
 		g.startRendering();		
 	}
+
+    /**
+     * Get the current cascade count.
+     * @return The current cascade count.
+     */
+    public int getCascadeCount()
+    {
+        return cascadeCount;
+    }
+        
 }

@@ -5,7 +5,7 @@ import ca.couchware.wezzle2d.util.XYPosition;
 /**
  * An interface inplemented by classes that are positionable.  A positionable
  * class has an x,y coordinate, a width and height, and is capable
- * of being anchored on any of the given anchor points.
+ * of being aligned on any of the given alignment points.
  * 
  * @author cdmckay
  */

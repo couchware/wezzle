@@ -72,7 +72,7 @@ public class BoardManager
     /**
      * The number of items.
      */
-    int numberOfItems;
+    private int numberOfItems;
 	
 	/**
 	 * The width of a grid cell.

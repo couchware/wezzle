@@ -47,7 +47,7 @@ public class WorldManager
 	 */
 	private int difficulty;	
     
-      /**
+    /**
      * The maximum items available for the level.
      */
     private int maxItems;
