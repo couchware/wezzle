@@ -383,7 +383,7 @@ public class PieceManager implements
                         + openColumnIndex;
                     
                     boolean test = true;
-                    for(int i = 0; i < count-1; i++)
+                    for(int i = 0; i < count; i++)
                     {
                         if(index[count] == index[i])
                             test = false;
