@@ -248,15 +248,14 @@ public class WorldManager
             return pieceSize + (this.currentLevel / 3) +
                     (int)((totalSpots - tiles)* 0.1f) + this.minimumDrop;
         }
-//        // We are high.
-//        else if (totalSpots - tiles < 10)
-//        {
-//            return pieceSize + this.minimumDrop + (this.currentLevel / 3);
-//        }
-        // We are just right.
         else
         {
-            return pieceSize + (this.currentLevel / 3) + this.minimumDrop;
+            if(this.currentLevel > 15)
+            {
+                return pieceSize + 5 + (this.currentLevel - 15) + this.minimumDrop;
+            }
+            else
+                return pieceSize + (this.currentLevel / 3) + this.minimumDrop;
         }
     }
      
