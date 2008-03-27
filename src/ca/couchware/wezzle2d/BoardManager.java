@@ -894,6 +894,8 @@ public class BoardManager
     
     public void setVisible(boolean visible)
     {
+        Util.handleMessage("Board Manager is visible: " + visible + ".",
+                Thread.currentThread());
         this.visible = visible;        
     }
 

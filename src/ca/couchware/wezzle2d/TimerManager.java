@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.Util;
+
 /**
  * The TimeManager is a class that manages the time for the Timer.
  * The class works as follows: An internal count is held starting at 0.
@@ -131,10 +133,10 @@ public class TimerManager
 	 * @param offset The elapsed time.
 	 */
 	public void incrementInternalTime(long offset)
-	{
+	{                
         // If the timer is paused, don't do anything.
         if (paused == true)
-            return;
+            return;                
         
 		assert (offset >= 0);
 		

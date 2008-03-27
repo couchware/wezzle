@@ -725,9 +725,19 @@ public class Game extends Canvas implements GameWindowCallback
                 // If game over is in progress, make a new board and start.
                 if (gameOverInProgress == true)
                 {
+                    // Create board and make it invisible.
                     boardMan.generateBoard(worldMan.getItemList());
                     boardMan.setVisible(false);
                     
+                    // Unpause the game.
+                    // Don't worry! The game won't pass updates to the 
+                    // timer unless the board is shown.  In hindsight, this
+                    // is kind of crappy, but whatever, we'll make it prettier
+                    // one day.
+                    timerMan.setPaused(false);
+                    
+                    // Start the board show animation.  This will
+                    // make the board visible when it's done.
                     startBoardShowAnimation();
                     
                     // Clear the flag.
@@ -828,8 +838,7 @@ public class Game extends Canvas implements GameWindowCallback
                             timerMan.setPaused(false);
 
                             // Reset the mouse.
-                            pieceMan.setMouseLeftReleased(false);
-                            pieceMan.setMouseRightReleased(false);
+                            pieceMan.clearMouseButtons();
                         }
                     }
                 } // end if
