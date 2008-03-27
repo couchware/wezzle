@@ -641,7 +641,7 @@ public class Game extends Canvas implements GameWindowCallback
                 if (scoreMan.getLevelScore() 
                         >= scoreMan.getTargetLevelScore())
                 {           
-                    Util.handleMessage("Level up!", Thread.currentThread());
+                    Util.handleMessage("Level up!!!", Thread.currentThread());
                     worldMan.levelUp(this);
                     
                     final XYPosition p = levelText.getXYPosition();
