@@ -646,6 +646,8 @@ public class Game extends Canvas implements GameWindowCallback
                     
                     final XYPosition p = levelText.getXYPosition();
                     
+                    soundMan.play(SoundManager.LEVEL_UP);
+                    
                     animationMan.add(new FloatTextAnimation(
                             p.x, p.y - 20,                            
                             layerMan,

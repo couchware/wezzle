@@ -21,6 +21,7 @@ public class SoundManager
     public final static int LINE = 2;
     public final static int BLEEP = 3;
     public final static int CLICK = 4;
+    public final static int LEVEL_UP = 5;
     
     /**
      * Path to the line audio clip.
@@ -45,6 +46,12 @@ public class SoundManager
      */
     private final URL clickUrl = this.getClass().getClassLoader()
             .getResource(Game.SOUNDS_PATH + "/SoundClick.wav");
+    
+    /**
+     * Path to the level-up audio clip.
+     */
+    private final URL levelUpUrl = this.getClass().getClassLoader()
+            .getResource(Game.SOUNDS_PATH + "/SoundLevelUp.wav");
 
     /**
      * The current line clip we are playing.
@@ -88,6 +95,16 @@ public class SoundManager
      * The click clip.
      */
     private final AudioClip[] clickClip = new AudioClip[4];
+    
+    /**
+     * The level-up counter.
+     */
+    private int levelUpCounter;
+    
+    /**
+     * The level-up clip.
+     */
+    private final AudioClip[] levelUpClip = new AudioClip[4];
 
     /**
      * The constructor.
@@ -111,8 +128,13 @@ public class SoundManager
 
         // Initialize the click.
         clickCounter = 0;
-         for (int i = 0; i < clickClip.length; i++)
+        for (int i = 0; i < clickClip.length; i++)
                 clickClip[i] = java.applet.Applet.newAudioClip(clickUrl);
+        
+        // Initialize the level-up.
+        levelUpCounter = 0;
+        for (int i = 0; i < levelUpClip.length; i++)
+                levelUpClip[i] = java.applet.Applet.newAudioClip(levelUpUrl);
     }
     
     /**
@@ -149,6 +171,14 @@ public class SoundManager
             
             clickClip[clickCounter].play();
             clickCounter = (clickCounter + 1) % clickClip.length;
+            
+        }
+        else if(soundClip == LEVEL_UP)
+        {
+            Util.handleMessage("It's a level-up!", Thread.currentThread());
+            
+            levelUpClip[levelUpCounter].play();
+            levelUpCounter = (levelUpCounter + 1) % levelUpClip.length;
             
         } // end if
     }
