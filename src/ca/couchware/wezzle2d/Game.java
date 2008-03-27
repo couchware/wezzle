@@ -222,6 +222,16 @@ public class Game extends Canvas implements GameWindowCallback
     private Animation boardAnimation = null;
     
     /**
+     * If true, the game will end next loop.
+     */
+    private boolean activateGameOver = false;
+            
+    /**
+     * Is a game over routine in progress?
+     */
+    private boolean gameOverInProgress = false;
+    
+    /**
      * The number of cascades thus far.
      */
     private int cascadeCount;
@@ -582,6 +592,17 @@ public class Game extends Canvas implements GameWindowCallback
         // Clear the flag.
         activateBoardHideAnimation = false;
     }
+    
+    public void startGameOver()
+    {
+        Util.handleMessage("Game over!", Thread.currentThread());
+        activateGameOver = true;
+    }
+    
+    public void clearGameOver()
+    {
+        activateGameOver = false;
+    }
 
 	/**
 	 * Notification that a frame is being rendered. Responsible for running game
@@ -657,30 +678,23 @@ public class Game extends Canvas implements GameWindowCallback
                 }
             } // end if
             
-            // Check to see if we should be showing the board.
-            if (activateBoardShowAnimation == true)
+            // See if it's game ovaries.
+            if (activateGameOver == true)
             {
-                // Start board show animation.
-                boardAnimation = boardMan.animateShow(animationMan);                
-                
-                // Hide the piece.
-                pieceMan.setVisible(false);                               
-                
                 // Clear flag.
-                clearBoardShowAnimation();                                
-            }
-            
-            // Check to see if we should be hiding the board.
-            if (activateBoardHideAnimation == true)
-            {
-                // Start board hide animation.
-                boardAnimation = boardMan.animateHide(animationMan);                
+                clearGameOver();
                 
-                // Hide the piece.
-                pieceMan.setVisible(false);                               
+                // Reset a bunch of stuff.
+                timerMan.resetTimer();
+                scoreMan.setLevelScore(0);
+                scoreMan.setTotalScore(0);
+                moveMan.setMoveCount(0);
                 
-                // Clear flag.
-                clearBoardHideAnimation();                                
+                // Set in progress flag.
+                gameOverInProgress = true;
+                
+                // Hide the board.
+                startBoardHideAnimation();                
             }
             
             // Check on board animation.
@@ -705,9 +719,47 @@ public class Game extends Canvas implements GameWindowCallback
                 // Clear the board animation.
                 boardAnimation = null;
                 
-                // Show the piece.
+                // Claer mouse button presses.
                 pieceMan.clearMouseButtons();
+                
+                // If game over is in progress, make a new board and start.
+                if (gameOverInProgress == true)
+                {
+                    boardMan.generateBoard(worldMan.getItemList());
+                    boardMan.setVisible(false);
+                    
+                    startBoardShowAnimation();
+                    
+                    // Clear the flag.
+                    gameOverInProgress = false;
+                }
             }
+            
+            // Check to see if we should be showing the board.
+            if (activateBoardShowAnimation == true)
+            {
+                // Start board show animation.
+                boardAnimation = boardMan.animateShow(animationMan);                
+                
+                // Hide the piece.
+                pieceMan.setVisible(false);                               
+                
+                // Clear flag.
+                clearBoardShowAnimation();                                
+            }
+            
+            // Check to see if we should be hiding the board.
+            if (activateBoardHideAnimation == true)
+            {
+                // Start board hide animation.
+                boardAnimation = boardMan.animateHide(animationMan);                
+                
+                // Hide the piece.
+                pieceMan.setVisible(false);                               
+                
+                // Clear flag.
+                clearBoardHideAnimation();                                
+            }                        
             
             // See if we need to activate the refactor.
             if (activateRefactor == true)
@@ -1019,13 +1071,6 @@ public class Game extends Canvas implements GameWindowCallback
 		g.startRendering();		
 	}
 
-    /**
-     * Get the current cascade count.
-     * @return The current cascade count.
-     */
-    public int getCascadeCount()
-    {
-        return cascadeCount;
-    }
+    
         
 }

@@ -12,13 +12,11 @@ package ca.couchware.wezzle2d;
 
 public class MoveManager 
 {	
-
-	
+    
 	/**
 	 * The current move.
 	 */
 	private int currentMoveCount;
-	
 	
 	/**
 	 * The constructor.
@@ -56,8 +54,9 @@ public class MoveManager
 	/**
 	 * @param currentMoves the currentMoves to set.
 	 */
-	public void setCurrentMoveCount(int currentMoveCount)
+	public void setMoveCount(int currentMoveCount)
 	{
 		this.currentMoveCount = currentMoveCount;
-	}		
+	}	
+    
 }
