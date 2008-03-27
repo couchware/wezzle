@@ -421,7 +421,7 @@ public class Game extends Canvas implements GameWindowCallback
         // Create a new pause button.
         pauseButton = new CircularBooleanButton(18, 600 - 18);
         pauseButton.setText("Pause");
-        pauseButton.setAnchor(Button.BOTTOM | Button.LEFT);
+        pauseButton.setAlignment(Button.BOTTOM | Button.LEFT);
         layerMan.add(pauseButton, LAYER_UI);
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);
@@ -625,12 +625,12 @@ public class Game extends Canvas implements GameWindowCallback
                 pausedText.setVisible(false);
                 
                 // Clear clicks.
-                pieceMan.setMouseLeftReleased(false);
-                pieceMan.setMouseRightReleased(false);
+                pieceMan.clearMouseButtons();
             }
         }
 		
-        
+        // If the pause button is not on, then we proceed with the
+        // normal game loop.
         if (pauseButton.isActivated() == false)
         {   
             // See if it's time to level-up.
@@ -640,21 +640,18 @@ public class Game extends Canvas implements GameWindowCallback
                 // Handle Level up.
                 if (scoreMan.getLevelScore() 
                         >= scoreMan.getTargetLevelScore())
-                {
-                    // See if the board is still visible.
-//                    if (boardMan.isVisible() == true)
-//                    {
-//                        // Start the hide animation.
-//                        startBoardHideAnimation();
-//                    }
-//                    else
-//                    {                
-                        Util.handleMessage("Level up!", Thread.currentThread());
-                        worldMan.levelUp(this);
-
-//                        // Start the show animation.
-//                        startBoardShowAnimation();
-//                    }
+                {           
+                    Util.handleMessage("Level up!", Thread.currentThread());
+                    worldMan.levelUp(this);
+                    
+                    final XYPosition p = levelText.getXYPosition();
+                    
+                    animationMan.add(new FloatTextAnimation(
+                            p.x, p.y - 20,                            
+                            layerMan,
+                            "Level up!", 
+                            Game.TEXT_COLOR,
+                            30));                            
                 }
             } // end if
             

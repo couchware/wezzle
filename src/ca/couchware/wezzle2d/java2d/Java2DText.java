@@ -151,7 +151,7 @@ public class Java2DText extends Text
 	public void setAlignment(int alignment)
 	{
         // Remember the anchor.
-		this.alignment = alignment;
+		this.alignment = alignment;                
         
         // Return if there's no text or text layout object.
 		if (text == null 
@@ -224,7 +224,8 @@ public class Java2DText extends Text
 		try
 		{
 			// Get the graphics.
-			Graphics2D g = window.getDrawGraphics();			
+			Graphics2D g = window.getDrawGraphics();
+            
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
@@ -272,15 +273,24 @@ public class Java2DText extends Text
 	}
 
     /**
-     * This method is not supported.  Do not use.
+     * This method will only work when the Graphics2D instance is available.
+     * @return The width of the text.
      */
     public int getWidth()
     {
-        // This is not supported.
-        Util.handleWarning("getWidth() is not supported for text!", 
-                Thread.currentThread());
+        // See if the graphics are available.
+        Graphics2D g = window.getDrawGraphics();
         
-        return -1;
+        // If we don't, throw an exception.
+        if (g == null)
+        {
+            throw new IllegalStateException("Graphics2D is not availabe yet!");            
+        }
+        else
+        {
+            updateTextLayout(g.getFontRenderContext());
+            return (int) textLayout.getBounds().getWidth();
+        } // end if     
     }
 
     /**
@@ -290,21 +300,30 @@ public class Java2DText extends Text
      */
     public void setWidth(int width)
     {
-        // This is not supported.
-        Util.handleWarning("Attempted to change width of text!", 
-                Thread.currentThread());
+        // This is not supported.        
+        throw new UnsupportedOperationException(
+                "Width should be changed via the size and text attributes.");
     }
 
     /**
-     * This method is not supported.  Do not use.
+     * This method will only work when the Graphics2D instance is available.
+     * @return The height of the text.
      */
     public int getHeight()
     {
-        // This is not supported.
-        Util.handleWarning("getHeight() is not supported for text!", 
-                Thread.currentThread());
+        // See if the graphics are available.
+        Graphics2D g = window.getDrawGraphics();
         
-        return -1;
+        // If we don't, throw an exception.
+        if (g == null)
+        {
+            throw new IllegalStateException("Graphics2D is not availabe yet!");            
+        }
+        else
+        {
+            updateTextLayout(g.getFontRenderContext());
+            return (int) textLayout.getBounds().getHeight();
+        } // end if 
     }
 
     /**
@@ -314,9 +333,9 @@ public class Java2DText extends Text
      */
     public void setHeight(int height)
     {
-        // This is not supported.
-        Util.handleWarning("Attempted to change height of text!", 
-                Thread.currentThread());
+        // This is not supported.        
+        throw new UnsupportedOperationException(
+                "Height should be changed via the size and text attribute.");
     }
     
 }

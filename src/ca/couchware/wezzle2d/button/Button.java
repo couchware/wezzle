@@ -103,7 +103,7 @@ public abstract class Button implements
     /**
      * The current anchor.
      */
-    protected int anchor;
+    protected int alignment;
     
     /**
      * The x offset from the anchor.
@@ -165,7 +165,7 @@ public abstract class Button implements
         this.height = height;
         
         // Set default anchor.
-        this.anchor = TOP | LEFT;
+        this.alignment = TOP | LEFT;
         
         // Save shape reference.
         this.shape = shape;               
@@ -354,53 +354,53 @@ public abstract class Button implements
     }    
     
     /**
-	 * Set the anchor of the button. 
-     * The anchor is initially set to the top left. 
+	 * Set the alignment of the button. 
+     * The alignment is initially set to the top left. 
 	 * 
-	 * @param x The x anchor coordinate with respect 
+	 * @param x The x alignment coordinate with respect 
      * to the top left corner of the button.
-	 * @param y The y anchor coordinate with respect 
+	 * @param y The y alignment coordinate with respect 
      * to the top left corner of the button.
 	 */
-	public void setAnchor(int anchor)
+	public void setAlignment(final int alignment)
 	{
         // Remember the anchor.
-		this.anchor = anchor;               
+		this.alignment = alignment;               
 				
 		// The Y anchors.
-		if((anchor & Button.BOTTOM) == Button.BOTTOM)
+		if((alignment & BOTTOM) == BOTTOM)
 		{
 			this.offsetY = -height;
 		}
-		else if((anchor & Button.VCENTER) == Button.VCENTER)
+		else if((alignment & VCENTER) == VCENTER)
 		{
 			this.offsetY = -height / 2;
 		}
-		else if((anchor & Button.TOP) == Button.TOP)
+		else if((alignment & TOP) == TOP)
 		{
 			this.offsetY = 0;
 		}
 		else
 		{
-			Util.handleWarning("No Y anchor set!", Thread.currentThread());
+			Util.handleWarning("No Y alignment set!", Thread.currentThread());
 		}
 		
 		// The X anchors. 
-		if((anchor & Button.LEFT) == Button.LEFT)
+		if((alignment & LEFT) == LEFT)
 		{
 			this.offsetX = 0;
 		}
-		else if((anchor & Button.HCENTER) == Button.HCENTER)
+		else if((alignment & HCENTER) == HCENTER)
 		{
 			this.offsetX = width / 2;			
 		}
-		else if((anchor & Button.RIGHT) == Button.RIGHT)
+		else if((alignment & RIGHT) == RIGHT)
 		{
 			this.offsetX = width;
 		}
 		else
 		{
-			Util.handleWarning("No X anchor set!", Thread.currentThread());
+			Util.handleWarning("No X alignment set!", Thread.currentThread());
 		}			
         
         // Move the shape.

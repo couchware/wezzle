@@ -1,6 +1,8 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.Animation;
+import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.XYPosition;
 
 /**
  * An entity represents any element that appears in the game. The entity is
@@ -14,7 +16,7 @@ import ca.couchware.wezzle2d.animation.Animation;
  * 
  * @author Cameron McKay (based on code by Kevin Glass)
  */
-public class Entity implements Drawable
+public class Entity implements Drawable, Positionable
 {
     /** 
      * Is this visible? 
@@ -50,6 +52,21 @@ public class Entity implements Drawable
      * The current height of the entity.
      */
     protected int height;
+    
+    /**
+     * The alignment of the entity.
+     */
+    protected int alignment;
+    
+    /**
+     * The x-offset.
+     */
+    protected int offsetX;
+    
+    /**
+     * The y-offset.
+     */
+    protected int offsetY;
 	
 	/** 
      * The sprite that represents this entity.
@@ -89,6 +106,7 @@ public class Entity implements Drawable
 		this.y = y;
         this.width = sprite.getWidth();
         this.height = sprite.getHeight();
+        this.alignment = TOP | LEFT;
 	}
 
 	/**
@@ -105,6 +123,16 @@ public class Entity implements Drawable
 		y += (delta * dy) / 1000;
 	}	
 	
+    /**
+	 * Get the horizontal speed of this entity
+	 * 
+	 * @return The horizontal speed of this entity (pixels/s).
+	 */
+	public double getXMovement()
+	{
+		return dx;
+	}
+    
 	/**
 	 * Set the horizontal speed of this entity
 	 * 
@@ -116,6 +144,16 @@ public class Entity implements Drawable
 		this.dx = dx;
 	}
 
+    /**
+	 * Get the vertical speed of this entity
+	 * 
+	 * @return The vertical speed of this entity (pixels/ms).
+	 */
+	public double getYMovement()
+	{
+		return dy;
+	}
+    
 	/**
 	 * Set the vertical speed of this entity
 	 * 
@@ -127,53 +165,27 @@ public class Entity implements Drawable
 		this.dy = dy;
 	}
 
-	/**
-	 * Get the horizontal speed of this entity
-	 * 
-	 * @return The horizontal speed of this entity (pixels/s).
-	 */
-	public double getXMovement()
-	{
-		return dx;
-	}
-
-	/**
-	 * Get the vertical speed of this entity
-	 * 
-	 * @return The vertical speed of this entity (pixels/ms).
-	 */
-	public double getYMovement()
-	{
-		return dy;
-	}
-	
+    /**
+     * Sets the visibility of the entity.
+     * 
+     * @param visible
+     */
     public void setVisible(boolean visible)
     {
         this.visible = visible;
     }
 
+    /**
+     * Gets the visibility of the entity.
+     * 
+     * @return
+     */
     public boolean isVisible()
     {
         return visible;
     }
-    
-	/**
-	 * @param x The x to set.
-	 */
-	public void setX(int x)
-	{
-		this.x = x;
-	}
-
-	/**
-	 * @param y The y to set.
-	 */
-	public void setY(int y)
-	{
-		this.y = y;
-	}
-
-	/**
+        
+    /**
 	 * Get the x location of this entity.
 	 * 
 	 * @return The x location of this entity.
@@ -182,6 +194,14 @@ public class Entity implements Drawable
 	{
 		return (int) x;
 	}
+    
+	/**
+	 * @param x The x to set.
+	 */
+	public void setX(final int x)
+	{
+		this.x = x;
+	}       		
 
 	/**
 	 * Get the y location of this entity.
@@ -192,6 +212,31 @@ public class Entity implements Drawable
 	{
 		return (int) y;
 	}
+    
+    /**
+	 * @param y The y to set.
+	 */
+	public void setY(final int y)
+	{
+		this.y = y;
+	}
+    
+    public XYPosition getXYPosition()
+    {
+        return new XYPosition((int) x, (int) y);
+    }
+
+    public void setXYPosition(int x, int y)
+    {
+        setX(x);
+        setY(y);
+    }
+
+    public void setXYPosition(XYPosition p)
+    {
+        setX(p.x);
+        setY(p.y);
+    }
 
     public int getHeight()
     {
@@ -263,7 +308,8 @@ public class Entity implements Drawable
         if (isVisible() == false)
             return;
                         
-        sprite.draw((int) x, (int) y, width, height, theta, opacity);
+        sprite.draw((int) x + offsetX, (int) y + offsetY, 
+                width, height, theta, opacity);
 	}       
 
     public Animation getAnimation()
@@ -289,5 +335,52 @@ public class Entity implements Drawable
         
         // Pass through to the animation.
         animation.nextFrame(delta);        
+    }   
+
+    public int getAlignment()
+    {
+        return alignment;
+    }
+
+    public void setAlignment(final int alignment)
+    {
+        // Remember the anchor.
+		this.alignment = alignment;               
+				
+		// The Y anchors.
+		if((alignment & BOTTOM) == BOTTOM)
+		{
+			this.offsetY = -height;
+		}
+		else if((alignment & VCENTER) == VCENTER)
+		{
+			this.offsetY = -height / 2;
+		}
+		else if((alignment & TOP) == TOP)
+		{
+			this.offsetY = 0;
+		}
+		else
+		{
+			Util.handleWarning("No Y alignment set!", Thread.currentThread());
+		}
+		
+		// The X anchors. 
+		if((alignment & LEFT) == LEFT)
+		{
+			this.offsetX = 0;
+		}
+		else if((alignment & HCENTER) == HCENTER)
+		{
+			this.offsetX = width / 2;			
+		}
+		else if((alignment & RIGHT) == RIGHT)
+		{
+			this.offsetX = width;
+		}
+		else
+		{
+			Util.handleWarning("No X alignment set!", Thread.currentThread());
+		}		
     }
 }
