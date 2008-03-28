@@ -36,6 +36,11 @@ public class ProgressBar implements Drawable, Positionable
     private boolean visible;
     
     /**
+     * Is it dirty (i.e. does it need to be redrawn)?
+     */
+    private boolean dirty;
+    
+    /**
      * Does the progress bar have text?
      */
     private boolean withText;
@@ -152,6 +157,9 @@ public class ProgressBar implements Drawable, Positionable
         
         // Initialize.
         setProgress(progress);
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     public void draw()
@@ -171,17 +179,19 @@ public class ProgressBar implements Drawable, Positionable
         {
             int w = progressWidth / 2;
             
-            leftSprite.drawRegion(
-                    alignedX, alignedY, 
+            leftSprite.drawClipped(
+                    alignedX, alignedY,
+                    leftSprite.getWidth(), leftSprite.getHeight(),
                     0, 0, 
                     w, leftSprite.getHeight(), 
-                    100);                 
+                    0.0, 100);                 
             
-            rightSprite.drawRegion(                    
+            rightSprite.drawClipped(                    
                     alignedX + w, alignedY,
+                    rightSprite.getWidth(), rightSprite.getHeight(),
                     rightSprite.getWidth() - w, 0,
                     w, rightSprite.getHeight(), 
-                    100);
+                    0.0, 100);
             
             return;
         }
@@ -197,6 +207,9 @@ public class ProgressBar implements Drawable, Positionable
     public void setVisible(boolean visible)
     {
         this.visible = visible;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     public boolean isVisible()
@@ -212,6 +225,9 @@ public class ProgressBar implements Drawable, Positionable
     public void setX(int x)
     {
         this.x = x;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     public int getY()
@@ -222,6 +238,9 @@ public class ProgressBar implements Drawable, Positionable
     public void setY(int y)
     {
         this.y = y;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     public XYPosition getXYPosition()
@@ -260,6 +279,9 @@ public class ProgressBar implements Drawable, Positionable
 		
 		// Update the progress.
 		this.progressMax = progressMax;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}
     
     /**
@@ -284,6 +306,9 @@ public class ProgressBar implements Drawable, Positionable
 		this.progressWidth = (int) ((double) width 
                 * ((double) progress / (double) progressMax));
 		this.progressWidth = progressWidth > width ? width : progressWidth; 
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}
 	
 	public void increaseProgress(int deltaProgress)
@@ -300,6 +325,9 @@ public class ProgressBar implements Drawable, Positionable
     public void setWidth(int width)
     {
         this.width = width;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     public int getWidthMax()
@@ -310,6 +338,9 @@ public class ProgressBar implements Drawable, Positionable
     public void setWidthMax(int progressWidth)
     {
         this.progressWidth = progressWidth;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }    
 
     public int getHeight()
@@ -319,9 +350,9 @@ public class ProgressBar implements Drawable, Positionable
 
     public void setHeight(int height)
     {
-        // Warn.
-        Util.handleWarning("Attempted to set height on progress bar.", 
-                Thread.currentThread());
+        // Wig out.
+        throw new UnsupportedOperationException(
+                "Height cannot be set on progress bar.");
     }
 
     public int getAlignment()
@@ -376,6 +407,19 @@ public class ProgressBar implements Drawable, Positionable
             progressText.setX(progressText.getX() + offsetX);
             progressText.setY(progressText.getY() + offsetY);
         }
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
+    }
+    
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
     }
     
 }

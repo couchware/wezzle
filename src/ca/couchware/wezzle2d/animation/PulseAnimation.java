@@ -79,19 +79,40 @@ public class PulseAnimation extends Animation
 
     public void nextFrame(long delta)
     {
+        // Is there any delay left?
+        if (delay > 0)
+        {
+            // See if this delta will eliminate the delay.
+            if (delta > delay)
+            {
+                // If it will, subtract the remaing delay from the delta.
+                delay = 0;
+                delta -= delay;
+            }
+            // Otherwise, subtract delta from delay and we're done.
+            else
+            {
+                delay -= delta;
+                return;
+            }
+        }
+        
         // Add to counter.
         counter += delta;
         
-        // See if enough time has elapsed to advance the frame.
-        if (counter >= period)
+        // Set the number of frames that have passed to 0.
+        frames = 0;
+        
+        // See how many frames have passed.
+        while (counter >= period)
         {
-            // Increase the frame.
-            frames++;            
-            
-            // Remove the period time so the counter will work for ensuing
-            // frames.
+            frames++;
             counter -= period;
-            
+        }                
+        
+        // Advance the number of frames.
+        for (int i = 0; i < frames; i++)
+        {             
             // If we're pulsing down, reducing the size and translate slightly.
             switch (state)
             {

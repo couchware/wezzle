@@ -23,6 +23,11 @@ public class Entity implements Drawable, Positionable
      */
     protected boolean visible;
     
+    /**
+     * Is it dirty (i.e. does it need to be redrawn)?
+     */
+    protected boolean dirty;
+    
      /**
      * The rotation.
      */
@@ -107,6 +112,9 @@ public class Entity implements Drawable, Positionable
         this.width = sprite.getWidth();
         this.height = sprite.getHeight();
         this.alignment = TOP | LEFT;
+        
+        // Set dirty so it will be drawn.
+        setDirty(true);
 	}
 
 	/**
@@ -121,6 +129,9 @@ public class Entity implements Drawable, Positionable
 		// Update the location of the entity based on move speeds.
 		x += (delta * dx) / 1000;
 		y += (delta * dy) / 1000;
+        
+        // Set dirty so it will be drawn.
+        setDirty(true);
 	}	
 	
     /**
@@ -173,6 +184,9 @@ public class Entity implements Drawable, Positionable
     public void setVisible(boolean visible)
     {
         this.visible = visible;
+        
+        // Set dirty so it will be drawn.
+        setDirty(true);
     }
 
     /**
@@ -201,6 +215,9 @@ public class Entity implements Drawable, Positionable
 	public void setX(final int x)
 	{
 		this.x = x;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}       		
 
 	/**
@@ -219,6 +236,9 @@ public class Entity implements Drawable, Positionable
 	public void setY(final int y)
 	{
 		this.y = y;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}
     
     public XYPosition getXYPosition()
@@ -246,6 +266,9 @@ public class Entity implements Drawable, Positionable
     public void setHeight(int height)
     {
         this.height = height;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     public int getWidth()
@@ -256,6 +279,9 @@ public class Entity implements Drawable, Positionable
     public void setWidth(int width)
     {
         this.width = width;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     /**
@@ -271,6 +297,9 @@ public class Entity implements Drawable, Positionable
             this.opacity = 100;
         else
             this.opacity = opacity;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     /**
@@ -289,6 +318,9 @@ public class Entity implements Drawable, Positionable
     public void setRotation(double theta)
     {
         this.theta = theta;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     /**
@@ -320,6 +352,9 @@ public class Entity implements Drawable, Positionable
     public void setAnimation(Animation animation)
     {
         this.animation = animation;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }        
     
     /**
@@ -334,7 +369,10 @@ public class Entity implements Drawable, Positionable
             return;
         
         // Pass through to the animation.
-        animation.nextFrame(delta);        
+        animation.nextFrame(delta);  
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }   
 
     public int getAlignment()
@@ -381,6 +419,19 @@ public class Entity implements Drawable, Positionable
 		else
 		{
 			Util.handleWarning("No X alignment set!", Thread.currentThread());
-		}		
+		}	
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
+    }
+
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
     }
 }

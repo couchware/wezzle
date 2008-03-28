@@ -18,7 +18,7 @@ public class PieceGrid implements Drawable
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = Game.SPRITES_PATH + "/Selector.png";
+    final private String PATH = Game.SPRITES_PATH + "/Selector.png";        
     
 	/**
 	 * The current structure of the piece, representing by a 2D 
@@ -38,6 +38,11 @@ public class PieceGrid implements Drawable
      * Whether or not this is visible.
      */
     private boolean visible;
+    
+    /**
+     * Is it dirty (i.e. does it need to be redrawn)?
+     */
+    private boolean dirty;
     
     /**
      * The board manager reference.
@@ -84,6 +89,9 @@ public class PieceGrid implements Drawable
 		for (int i = 0; i < sprites.length; i++)
 			for (int j = 0; j < sprites[0].length; j++)
 				sprites[i][j] = ResourceFactory.get().getSprite(PATH);
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}	
 	
     /**
@@ -94,6 +102,9 @@ public class PieceGrid implements Drawable
 	{
 		// Save the new array.
 		this.structure = structure;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}
 
     public int getX()
@@ -104,6 +115,9 @@ public class PieceGrid implements Drawable
     public void setX(int x) 
     {
         this.x = x;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     public int getY() 
@@ -114,6 +128,9 @@ public class PieceGrid implements Drawable
     public void setY(int y) 
     {
         this.y = y;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     public XYPosition getXYPosition()
@@ -147,10 +164,23 @@ public class PieceGrid implements Drawable
     public void setVisible(boolean visible)
     {
         this.visible = visible;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     public boolean isVisible()
     {
         return visible;
+    }
+    
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
     }
 }

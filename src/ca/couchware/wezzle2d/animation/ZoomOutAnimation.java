@@ -12,7 +12,7 @@ public class ZoomOutAnimation extends Animation
     /**
      * The period of each frame.
      */
-    final private static int FRAME_PERIOD = 18;
+    final private static int FRAME_PERIOD = 36;
     
     /**
      * The minimum width the entity may become before the animation
@@ -23,7 +23,7 @@ public class ZoomOutAnimation extends Animation
      /**
      * The amount the entity size is changed by per step (in pixels).
      */
-    final private static int ZOOM_STEP = 2;
+    final private static int ZOOM_STEP = 4;
 
     /**
      * The entity being animated.

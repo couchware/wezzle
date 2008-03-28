@@ -127,4 +127,14 @@ public class CircularBooleanButton extends BooleanButton
         spriteGlow.draw(x + offsetX - 18, y + offsetY - 18);
     }
     
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
+    }
+    
 }

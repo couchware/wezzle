@@ -81,6 +81,11 @@ public abstract class Button implements
     protected boolean visible;
     
     /**
+     * Is it dirty (i.e. does it need to be redrawn)?
+     */
+    protected boolean dirty;
+    
+    /**
      * The current x position.
      */
     protected int x;
@@ -174,7 +179,10 @@ public abstract class Button implements
         this.text = "";
         
         // Set the initial state.
-        this.state = STATE_NORMAL;               
+        this.state = STATE_NORMAL;        
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     // -------------------------------------------------------------------------
@@ -246,22 +254,34 @@ public abstract class Button implements
     {
         if (state == STATE_PRESSED)
             state = STATE_HOVER;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     public void handlePressed()
     {        
         state = STATE_PRESSED;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }            
     
     public void handleMouseOn()
     {
         if (state != STATE_PRESSED)
             state = STATE_HOVER;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }        
     
     public void handleMouseOff()
     {        
         state = STATE_NORMAL;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     public boolean wasClicked()
@@ -407,6 +427,16 @@ public abstract class Button implements
         shape.setFrame(x + offsetX, y + offsetY,
                 shape.getWidth(), shape.getHeight());
 	}
+    
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
+    }
     
     //--------------------------------------------------------------------------
     // Events

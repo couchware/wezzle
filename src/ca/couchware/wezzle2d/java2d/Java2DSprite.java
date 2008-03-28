@@ -7,6 +7,7 @@ import java.awt.RenderingHints;
 import ca.couchware.wezzle2d.Sprite;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
+import java.awt.Rectangle;
 
 /**
  * A sprite to be displayed on the screen. Note that a sprite contains no state
@@ -133,8 +134,11 @@ public class Java2DSprite implements Sprite
      * @param theta
      * @param opacity
      */
-    public void drawRegion(int x, int y, int rx, int ry, 
-            int rwidth, int rheight, int opacity)
+    public void drawClipped(int x, int y, 
+            int width, int height,
+            int rx, int ry, 
+            int rwidth, int rheight, 
+            double theta, int opacity)
     {
         Graphics2D g = window.getDrawGraphics();
 		
@@ -146,6 +150,7 @@ public class Java2DSprite implements Sprite
 				RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 
         // Set the clip.
+        Rectangle r = g.getClipBounds();
         g.setClip(x, y, rwidth, rheight);
         
         // Opacity.
@@ -157,15 +162,23 @@ public class Java2DSprite implements Sprite
                     ((float) opacity) / 100.0f));
         }                       
         
+        // Rotate the sprite.
+        if (theta != 0.0)
+            g.rotate(theta, x + width / 2, y + height / 2);    
+        
         // Draw the sprite.
-		g.drawImage(image, x - rx, y - ry, null);                                     
+		g.drawImage(image, x - rx, y - ry, width, height, null);                                     
+        
+        // Rotate back.
+        if (theta != 0.0)
+            g.rotate(-theta, x + width / 2, y + height / 2);
         
         // Opacity.
         if (opacity != 100)        
             g.setComposite(c); 
         
         // Clear the clip.
-        g.setClip(null);
+        g.setClip(r);
     }        
     
 }

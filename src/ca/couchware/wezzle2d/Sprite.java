@@ -61,7 +61,9 @@ public interface Sprite
      * @param rheight
      * @param opacity
      */
-    public void drawRegion(int x, int y, int rx, int ry, 
-            int rwidth, int rheight,
-            int opacity);
+    public void drawClipped(int x, int y, 
+            int width, int height,
+            int rx, int ry, 
+            int rwidth, int rheight, 
+            double theta, int opacity);
 }

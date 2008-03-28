@@ -20,6 +20,11 @@ public abstract class Text implements Drawable, Positionable
     protected boolean visible;
     
     /**
+     * Is it dirty (i.e. does it need to be redrawn)?
+     */
+    protected boolean dirty;
+    
+    /**
      * The X-cooridinate of the text.
      */
     protected int x;
@@ -80,6 +85,9 @@ public abstract class Text implements Drawable, Positionable
     public void setX(final int x)
     {
         this.x = x;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     /**
@@ -89,7 +97,7 @@ public abstract class Text implements Drawable, Positionable
      */
     public int getY()
     {
-        return y;
+        return y;        
     }
 
     /**
@@ -100,6 +108,9 @@ public abstract class Text implements Drawable, Positionable
     public void setY(final int y)
     {
         this.y = y;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }        
     
     /**
@@ -131,8 +142,8 @@ public abstract class Text implements Drawable, Positionable
      */
     public void setXYPosition(final int x, final int y)
     {
-        this.x = x;
-        this.y = y;
+        setX(x);
+        setY(y);                
     }
     
     /**
@@ -153,6 +164,9 @@ public abstract class Text implements Drawable, Positionable
 	public void setText(final String text)
     {
         this.text = text;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 	
     /**
@@ -173,6 +187,9 @@ public abstract class Text implements Drawable, Positionable
 	public void setSize(final float size)
     {
         this.size = size;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }        
 	
     /**
@@ -182,7 +199,7 @@ public abstract class Text implements Drawable, Positionable
      */
     public Color getColor()
     {
-        return color;
+        return color;        
     }
     
 	/**
@@ -194,6 +211,9 @@ public abstract class Text implements Drawable, Positionable
 	public void setColor(final Color color)
     {
         this.color = color;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 	
     /**
@@ -215,6 +235,9 @@ public abstract class Text implements Drawable, Positionable
 	public void setAlignment(final int alignment)
     {
         this.alignment = this.alignment;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     /**
@@ -225,6 +248,9 @@ public abstract class Text implements Drawable, Positionable
     public void setVisible(boolean visible)
     {
         this.visible = visible;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
 
     /**
@@ -250,6 +276,9 @@ public abstract class Text implements Drawable, Positionable
             this.opacity = 100;
         else
             this.opacity = opacity;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
     }
     
     /**
@@ -260,6 +289,16 @@ public abstract class Text implements Drawable, Positionable
     public int getOpacity()
     {
         return opacity;
+    }
+    
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
     }
 		
 }

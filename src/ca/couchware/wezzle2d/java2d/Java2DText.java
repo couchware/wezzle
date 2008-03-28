@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.Text;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
+import java.awt.FontMetrics;
 import java.awt.font.FontRenderContext;
 
 /**
@@ -99,6 +100,9 @@ public class Java2DText extends Text
 		
 		// Set the default anchor.
 		this.alignment = TOP | LEFT;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}		
 	
 	/**
@@ -121,6 +125,9 @@ public class Java2DText extends Text
 		// Recalculate the anchor points.
 		// The anchor will be automatically recalculated with the next 
         // text layout update.
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}		
 	
 	/**
@@ -140,6 +147,9 @@ public class Java2DText extends Text
         // Update the text layout.
         this.textLayout = null;
         this.updateTextLayoutNextDraw = true;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}
 	
 	/**
@@ -196,7 +206,10 @@ public class Java2DText extends Text
 		else
 		{
 			Util.handleWarning("No X alignment set!", Thread.currentThread());
-		}					
+		}		
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
 	}
 	
     /**
@@ -219,18 +232,18 @@ public class Java2DText extends Text
 	{
 		// Return immediately is string is empty.
 		if (isVisible() == false || text.equals("") == true)
-			return;
+			return;                
 		
 		try
 		{
 			// Get the graphics.
 			Graphics2D g = window.getDrawGraphics();
-            
+                        
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-					RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-			
+					RenderingHints.VALUE_FRACTIONALMETRICS_ON);			            
+            
             // Update the text layout if flagged.
             if (updateTextLayoutNextDraw == true)
             {
@@ -288,7 +301,16 @@ public class Java2DText extends Text
         }
         else
         {
-            updateTextLayout(g.getFontRenderContext());
+            // Update the text layout if flagged.
+            if (updateTextLayoutNextDraw == true)
+            {
+                // Clear the flag.
+                updateTextLayoutNextDraw = false;
+                
+                // Update it.
+                updateTextLayout(g.getFontRenderContext());
+            }
+            
             return (int) textLayout.getBounds().getWidth();
         } // end if     
     }
@@ -321,7 +343,16 @@ public class Java2DText extends Text
         }
         else
         {
-            updateTextLayout(g.getFontRenderContext());
+            // Update the text layout if flagged.
+            if (updateTextLayoutNextDraw == true)
+            {
+                // Clear the flag.
+                updateTextLayoutNextDraw = false;
+                
+                // Update it.
+                updateTextLayout(g.getFontRenderContext());
+            }
+            
             return (int) textLayout.getBounds().getHeight();
         } // end if 
     }

@@ -125,13 +125,15 @@ public class LayerManager implements Drawable
         // Cycle through all the layers, drawing them.
         for (int i = 0; i < numberOfLayers; i++)
         {
+            Integer index = new Integer(i);
+            
             // Check if layer exists, if it doesn't, skip this iteration.
-            if (((Boolean) hiddenLayerMap.get(new Integer(i))) == Boolean.TRUE
-                    || layerMap.containsKey(new Integer(i)) == false)
+            if (((Boolean) hiddenLayerMap.get(index)) == Boolean.TRUE
+                    || layerMap.containsKey(index) == false)
                 continue;
             
             // Grab this layer.
-            LinkedList layerList = (LinkedList) layerMap.get(new Integer(i));
+            LinkedList layerList = (LinkedList) layerMap.get(index);
             
             // Draw its contents.
             for (Iterator it = layerList.iterator(); it.hasNext(); )
@@ -145,6 +147,16 @@ public class LayerManager implements Drawable
     }
 
     public boolean isVisible()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setDirty(boolean dirty)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean isDirty()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

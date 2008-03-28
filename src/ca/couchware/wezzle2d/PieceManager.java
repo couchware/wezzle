@@ -33,6 +33,11 @@ public class PieceManager implements
     private boolean visible;       
     
     /**
+     * Is it dirty (i.e. does it need to be redrawn)?
+     */
+    private boolean dirty;
+    
+    /**
      * Is the board dropping in a tile?
      */
     private boolean tileDropInProgress = false;
@@ -694,6 +699,16 @@ public class PieceManager implements
     public boolean isVisible()
     {
         return visible;
+    }
+    
+    public void setDirty(boolean dirty)
+    {
+        pieceGrid.setDirty(dirty);
+    }
+
+    public boolean isDirty()
+    {
+        return pieceGrid.isDirty();
     }
     
     //--------------------------------------------------------------------------
