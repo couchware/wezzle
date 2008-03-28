@@ -180,6 +180,12 @@ public class PieceManager implements
 			default:
 				throw new RuntimeException("Unrecognized piece number.");
 		}
+        
+        // Rotate it up to 3 times.
+        int numberOfRotations = Util.random.nextInt(4) + 1;
+        
+        for (int i = 0; i <= numberOfRotations; i++)
+            piece.rotate();
 	}
     
     /**
