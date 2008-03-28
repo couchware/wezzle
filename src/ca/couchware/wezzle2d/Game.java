@@ -313,26 +313,18 @@ public class Game extends Canvas implements GameWindowCallback
 	{
         // Get the build number.
         Properties buildProperties = new Properties();
-        URL url = this.getClass().getClassLoader()
-                .getResource(BUILD_NUMBER_PATH);
-        File f = new File(url.getFile());
-        
-        if (f.exists() == true)
+        URL url = Thread.currentThread().getContextClassLoader()
+                .getResource(BUILD_NUMBER_PATH);      
+               
+        try
         {
-            try
-            {
-                buildProperties.load(new FileInputStream(f));
-                buildNumber = 
-                        (String) buildProperties.getProperty("build.number");
-            }
-            catch (Exception e)
-            {
-                Util.handleException(e);
-                buildNumber = "???";
-            }
+            buildProperties.load(url.openStream());
+            buildNumber = 
+                    (String) buildProperties.getProperty("build.number");
         }
-        else
+        catch (Exception e)
         {
+            Util.handleException(e);
             Util.handleWarning("Could not find build number at: "
                     + BUILD_NUMBER_PATH + "!",
                     Thread.currentThread());
