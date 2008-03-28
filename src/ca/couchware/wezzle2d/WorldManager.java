@@ -76,7 +76,18 @@ public class WorldManager
      * The initial timer value.
      */
 	
-    private int initialTimer = 15;
+    private int initialTimer = 20;
+    
+    
+    /**
+     * The level at which the difficulty begins to increase.
+     */
+    private int difficultyIncreaseLevel = 15;
+    
+    /**
+     * The number of levels before the difficulty level increases.
+     */
+    private int levelDifficultySpeed = 3;
     
 	/**
 	 * The constructor.
@@ -241,29 +252,44 @@ public class WorldManager
         float tiles = game.boardMan.getNumberOfTiles();
         float totalSpots = game.boardMan.getColumns() * game.boardMan.getRows();
         
+        // The number of tiles for the current level.
+        int levelDrop = (this.currentLevel / this.levelDifficultySpeed);
+        
+        // Check for difficulty ramp up.
+        if(this.currentLevel > this.difficultyIncreaseLevel)
+            levelDrop = (this.difficultyIncreaseLevel / this.levelDifficultySpeed);
+        
+        // The percent of the board to readd.
+        int  boardPercentage = (int)((totalSpots - tiles) * 0.1f); 
+        
         // We are low. drop in a percentage of the tiles, increasing if there 
         // are fewer tiles.
         if( (tiles / totalSpots) * 100 < this.tileRatio)
         {
-             if(this.currentLevel > 9)
+            // If we are past the level ramp up point, drop in more.
+            if(this.currentLevel > this.difficultyIncreaseLevel)
             {
-                  return pieceSize + 3 + (this.currentLevel - 10) +
-                    (int)((totalSpots - tiles)* 0.1f) + this.minimumDrop;
+                  return pieceSize +  levelDrop 
+                    + (this.currentLevel - this.difficultyIncreaseLevel) 
+                    + boardPercentage + this.minimumDrop;
             }
             else
             {
-                return pieceSize + (this.currentLevel / 3) +
-                    (int)((totalSpots - tiles)* 0.1f) + this.minimumDrop;
+                return pieceSize + levelDrop + boardPercentage 
+                        + this.minimumDrop;
             }
         }
         else
         {
-            if(this.currentLevel > 9)
+            // If we are past the level ramp up point, drop in more.
+            if(this.currentLevel > this.difficultyIncreaseLevel)
             {
-                return pieceSize + 3 + (this.currentLevel - 10) + this.minimumDrop;
+                return pieceSize + levelDrop
+                    + (this.currentLevel - this.difficultyIncreaseLevel) 
+                    + this.minimumDrop;
             }
             else
-                return pieceSize + (this.currentLevel / 3) + this.minimumDrop;
+                return pieceSize + levelDrop + this.minimumDrop;
         }
     }
      
