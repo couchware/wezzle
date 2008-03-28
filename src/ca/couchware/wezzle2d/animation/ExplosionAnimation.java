@@ -177,6 +177,9 @@ public class ExplosionAnimation extends Animation
                         
                         // Set done flag.
                         done = true;
+                        
+                        // Break.
+                        break;
                     }
                     
                     break;
