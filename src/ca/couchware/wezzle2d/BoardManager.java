@@ -70,6 +70,11 @@ public class BoardManager
 	final private int height;
     
     /**
+     * The number of tiles.
+     */
+    private int numberOfTiles;
+    
+    /**
      * The number of items.
      */
     private int numberOfItems;
@@ -126,7 +131,10 @@ public class BoardManager
 		this.width = columns * cellWidth;
 		this.height = rows * cellHeight;
         
-        //Set the number of items.
+        // Set the number of tiles.
+        this.numberOfTiles = 0;
+        
+        // Set the number of items.
         this.numberOfItems = 0;
 		
 		// Initialize board.
@@ -350,7 +358,20 @@ public class BoardManager
 //				}
 			}
 		}
+        
+        // The new number of tiles.
+        int newNumberOfTiles = 0;
+        
+        // Count the number of tiles on the new board.
+        for (int i = 0; i < cells; i++)        
+            if (newBoard[i] != null)
+                newNumberOfTiles++;        
 		
+        // Make sure the tile count hasn't changed.
+        if (newNumberOfTiles != numberOfTiles)
+            throw new IllegalStateException("Expected " + numberOfTiles + ", "
+                    + "Found " + newNumberOfTiles + ".");
+        
 		board = newBoard;
 	}
 	
@@ -519,6 +540,9 @@ public class BoardManager
             removeTile(index);
 
         setTile(index, t);
+        
+        // Increment tile count.
+        numberOfTiles++;
 
         // Add the tile to the bottom layer too.
         layerMan.add(t, Game.LAYER_TILE);        
@@ -540,7 +564,10 @@ public class BoardManager
         layerMan.remove(getTile(index), Game.LAYER_TILE);
         
         // Remove the tile.
-        setTile(index, null);        
+        setTile(index, null);  
+        
+        // Decrement tile counter.
+        numberOfTiles--;
     }
     
     public void removeTile(final int column, final int row)

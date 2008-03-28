@@ -331,12 +331,8 @@ public class PieceManager implements
     {        
         // If the board is refactoring, do not logicify.
         if (game.isBusy() == true)
-             return;
-        
-        // Grab the current mouse position.
-        final XYPosition p = getMousePosition();  
-        
-            
+             return;                 
+                    
         // Drop in any tiles that need to be dropped, one at a time. 
         //
         // The if statement encompasses the entire function in order to ensure
@@ -498,7 +494,7 @@ public class PieceManager implements
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
-                if (tileDropCount <= 0)                
+                if (tileDropCount == 0)                
                     tileDropInProgress = false;
                 else if (tileDropCount < 0)
                 {
@@ -513,7 +509,10 @@ public class PieceManager implements
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.
         else
-        {                                    
+        {      
+            // Grab the current mouse position.
+            final XYPosition p = getMousePosition();             
+            
             if (isMouseLeftReleased() == true)
             {            
                initiateCommit(game);
@@ -601,10 +600,9 @@ public class PieceManager implements
         game.startRefactor(200);
 
         // Reset flag.
-        setMouseLeftReleased(false);
-        setMouseRightReleased(false);
+        clearMouseButtons();
 
-        // Reset timer.
+        // Pause timer.
         game.timerMan.setPaused(true);
     }
     
@@ -773,8 +771,8 @@ public class PieceManager implements
 
 	public void mouseDragged(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-		
+		// Set the mouse position.
+		setMousePosition(e.getX(), e.getY());
 	}
 
 	/**
