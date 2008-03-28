@@ -245,9 +245,9 @@ public class WorldManager
         // are fewer tiles.
         if( (tiles / totalSpots) * 100 < this.tileRatio)
         {
-             if(this.currentLevel > 15)
+             if(this.currentLevel > 9)
             {
-                  return pieceSize + 5 + (this.currentLevel - 15) +
+                  return pieceSize + 3 + (this.currentLevel - 10) +
                     (int)((totalSpots - tiles)* 0.1f) + this.minimumDrop;
             }
             else
@@ -258,9 +258,9 @@ public class WorldManager
         }
         else
         {
-            if(this.currentLevel > 15)
+            if(this.currentLevel > 9)
             {
-                return pieceSize + 5 + (this.currentLevel - 15) + this.minimumDrop;
+                return pieceSize + 3 + (this.currentLevel - 10) + this.minimumDrop;
             }
             else
                 return pieceSize + (this.currentLevel / 3) + this.minimumDrop;
