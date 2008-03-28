@@ -517,8 +517,7 @@ public class PieceManager implements
             {            
                initiateCommit(game);
             }
-
-            if (isMouseRightReleased() == true)
+            else if (isMouseRightReleased() == true)
             {
                 // Rotate the piece.            
                 stopAnimationAt(pieceGrid.getXYPosition());
@@ -526,11 +525,10 @@ public class PieceManager implements
                 startAnimationAt(pieceGrid.getXYPosition());
 
                 // Reset flag.
-                setMouseRightReleased(false);
+                clearMouseButtons();
             }
-
             // Animate selected pieces.
-            if (isOnBoard(p) == true)
+            else if (isOnBoard(p) == true)
             {
                 // Filter the current position.
                 XYPosition ap = adjustPosition(p);
