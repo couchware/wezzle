@@ -76,13 +76,13 @@ public class WorldManager
      * The initial timer value.
      */
 	
-    private int initialTimer = 20;
+    private int initialTimer = 15;
     
     
     /**
      * The level at which the difficulty begins to increase.
      */
-    private int difficultyIncreaseLevel = 15;
+    private int difficultyIncreaseLevel = 9;
     
     /**
      * The number of levels before the difficulty level increases.
