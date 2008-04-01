@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +33,16 @@ import java.util.Set;
  */
 public class Game extends Canvas implements GameWindowCallback
 {	  
+    
+    /**
+     * The width of the screen.
+     */
+    final public static int SCREEN_WIDTH = 800;
+    
+    /**
+     * The height of the screen .
+     */
+    final public static int SCREEN_HEIGHT = 600;
     
     /**
      * The path to the resources.
@@ -74,19 +85,24 @@ public class Game extends Canvas implements GameWindowCallback
     final public static Color SCORE_BOMB_COLOR = new Color(255, 127, 0);
   
     /**
+     * The background layer.
+     */
+    final public static int LAYER_BACKGROUND = 0;
+    
+    /**
      * The board layer.
      */
-    final public static int LAYER_TILE = 0;
+    final public static int LAYER_TILE = 1;
     
     /**
      * The effects layer.
      */
-    final public static int LAYER_EFFECT = 1;
+    final public static int LAYER_EFFECT = 2;
     
     /**
      * The UI layer.
      */
-    final public static int LAYER_UI = 2;
+    final public static int LAYER_UI = 3;
     
     /**
      * The build nunber path.
@@ -267,6 +283,11 @@ public class Game extends Canvas implements GameWindowCallback
      */
 	private String windowTitle = applicationName;	    
     
+    /**
+     * The background sprite.
+     */
+    private Entity background;
+    
 	/** 
      * The timer text. 
      */
@@ -349,7 +370,7 @@ public class Game extends Canvas implements GameWindowCallback
 			public void run()
 			{                             
 				window = ResourceFactory.get().getGameWindow();
-				window.setResolution(800, 600);
+				window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
 				window.setGameWindowCallback(Game.this);
 				window.setTitle(windowTitle);
 			}		
@@ -388,8 +409,8 @@ public class Game extends Canvas implements GameWindowCallback
         // Initialize bomb index set.
         bombRemovalSet = new HashSet();
         
-        // Create the layer manager.
-        layerMan = new LayerManager(3);
+        // Create the layer manager.   
+        layerMan = new LayerManager(window, 4);        
         
         // Create the animation manager.
         animationMan = new AnimationManager();
@@ -425,7 +446,11 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the time manager.
 		timerMan = new TimerManager(worldMan.getInitialTimer());
-                                
+                    
+        // Draw the current background.
+		background = new Entity(SPRITES_PATH + "/background1.png", 0, 0);
+        layerMan.add(background, LAYER_BACKGROUND);
+        
         // Create a new pause button.
         pauseButton = new CircularBooleanButton(18, 600 - 18);
         pauseButton.setText("Pause");
@@ -606,7 +631,7 @@ public class Game extends Canvas implements GameWindowCallback
 	 * Notification that a frame is being rendered. Responsible for running game
 	 * logic and rendering the scene.
 	 */
-	public void frameRendering()
+	public boolean frameRendering()
 	{
 		SystemTimer.sleep(lastLoopTime + 10 - SystemTimer.getTime());
 
@@ -627,7 +652,7 @@ public class Game extends Canvas implements GameWindowCallback
 		}
         
         // If the pause button was just clicked.
-        if (pauseButton.wasClicked() == true)
+        if (pauseButton.clicked() == true)
         {
             // If it was clicked on, then hide the board and
             // show the paused text.
@@ -742,12 +767,18 @@ public class Game extends Canvas implements GameWindowCallback
                     gameOverInProgress = false;
                 }
             }
+            else if (boardAnimation != null && boardAnimation.isDone() == false)
+            {
+                // Board is still dirty due to animation.
+                boardMan.setDirty(true);
+            }
             
             // Check to see if we should be showing the board.
             if (activateBoardShowAnimation == true)
             {
                 // Start board show animation.
-                boardAnimation = boardMan.animateShow(animationMan);                
+                boardAnimation = boardMan.animateShow(animationMan);     
+                boardMan.setDirty(true);
                 
                 // Hide the piece.
                 pieceMan.setVisible(false);                               
@@ -760,7 +791,8 @@ public class Game extends Canvas implements GameWindowCallback
             if (activateBoardHideAnimation == true)
             {
                 // Start board hide animation.
-                boardAnimation = boardMan.animateHide(animationMan);                
+                boardAnimation = boardMan.animateHide(animationMan); 
+                boardMan.setDirty(true);
                 
                 // Hide the piece.
                 pieceMan.setVisible(false);                               
@@ -1031,15 +1063,30 @@ public class Game extends Canvas implements GameWindowCallback
             // Update the progress bar.
             progressBar.setProgress(scoreMan.getLevelScore());
         }                
+                
+        // Whether or not the frame was updated.
+        boolean updated = false;
         
-        // Draw the layer manager.
-        layerMan.draw();					
+        // If the background is dirty, then redraw everything.
+        if (background.isDirty() == true)
+        {            
+            layerMan.draw();
+            background.setDirty(false);
+            updated = true;
+        }
+        // Otherwise, only draw what needs to be redrawn.
+        else
+        {           
+            updated = layerMan.drawRegion(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);         
+        }
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
 		{
 			System.exit(0);
 		}
+        
+        return updated;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d;
 
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
@@ -32,6 +34,14 @@ public interface GameWindow
 	 */
 	public void setResolution(int x, int y);
 
+    public void drawClip(Shape s);
+    
+    public void setClip(Rectangle r);
+    
+    public Shape getClip();
+    
+    public void clearClip();
+    
 	/**
 	 * Start the game window rendering the display
 	 */

@@ -3,6 +3,8 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.animation.Animation;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
+import java.awt.Rectangle;
+import java.awt.Shape;
 
 /**
  * An entity represents any element that appears in the game. The entity is
@@ -48,6 +50,9 @@ public class Entity implements Drawable, Positionable
      */
 	protected double y;
     
+    protected double x_;
+    protected double y_;
+    
     /** 
      * The current width of the entity.
      */
@@ -57,6 +62,11 @@ public class Entity implements Drawable, Positionable
      * The current height of the entity.
      */
     protected int height;
+    
+    /**
+     * The current draw rectangle.
+     */
+    protected Rectangle drawRect;
     
     /**
      * The alignment of the entity.
@@ -107,14 +117,22 @@ public class Entity implements Drawable, Positionable
 	{
         this.visible = true;
 		this.sprite = ResourceFactory.get().getSprite(path);
+        
 		this.x = x;
 		this.y = y;
+        
+        this.x_ = x;
+        this.y_ = y;
+        
         this.width = sprite.getWidth();
         this.height = sprite.getHeight();
+        
         this.alignment = TOP | LEFT;
         
+//        this.drawRect = new Rectangle(x, y, width, height);
+        
         // Set dirty so it will be drawn.
-        setDirty(true);
+        setDirty(true);                
 	}
 
 	/**
@@ -126,9 +144,16 @@ public class Entity implements Drawable, Positionable
 	 */
 	public void move(long delta)
 	{
-		// Update the location of the entity based on move speeds.
-		x += (delta * dx) / 1000;
-		y += (delta * dy) / 1000;
+        double newX = x + (delta * dx) / 1000;
+        double newY = y + (delta * dy) / 1000;
+        				        
+        // Update draw rectangle.
+//        updateDrawRectX((int) newX);
+//        updateDrawRectY((int) newY);
+        
+        // Update the location of the entity based on move speeds.		
+        x = newX;
+        y = newY;
         
         // Set dirty so it will be drawn.
         setDirty(true);
@@ -213,12 +238,27 @@ public class Entity implements Drawable, Positionable
 	 * @param x The x to set.
 	 */
 	public void setX(final int x)
-	{
-		this.x = x;
+	{        
+//        updateDrawRectX(x);
+                    
+		this.x = x;                
         
         // Set dirty so it will be drawn.        
         setDirty(true);
-	}       		
+	}
+    
+//    protected void updateDrawRectX(int x)
+//    {
+//        // Update draw rectangle.
+//        drawRect.setBounds(getX(), getY(), width + 1, height + 1);
+//        
+//        if (x > getX())
+//            drawRect.add(x + width + 1, y);
+//        else
+//            drawRect.add(x, y);
+//        
+//        drawRect.translate(offsetX, offsetY);
+//    }
 
 	/**
 	 * Get the y location of this entity.
@@ -226,7 +266,7 @@ public class Entity implements Drawable, Positionable
 	 * @return The y location of this entity.
 	 */
 	public int getY()
-	{
+	{               
 		return (int) y;
 	}
     
@@ -235,11 +275,26 @@ public class Entity implements Drawable, Positionable
 	 */
 	public void setY(final int y)
 	{
+//        updateDrawRectY(y);
+        
 		this.y = y;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
 	}
+    
+//    protected void updateDrawRectY(int y)
+//    {
+//         // Update draw rectangle.
+//        drawRect.setBounds(getX(), getY(), width + 1, height + 1);
+//        
+//        if (y > getY())
+//            drawRect.add(x, y + height + 1);
+//        else
+//            drawRect.add(x, y);
+//        
+//        drawRect.translate(offsetX, offsetY);
+//    }
     
     public XYPosition getXYPosition()
     {
@@ -337,13 +392,16 @@ public class Entity implements Drawable, Positionable
 	 */
 	public void draw()
 	{
+        this.x_ = x;
+        this.y_ = y;
+        
         if (isVisible() == false)
             return;
                         
         sprite.draw((int) x + offsetX, (int) y + offsetY, 
-                width, height, theta, opacity);
-	}       
-
+                width, height, theta, opacity);                
+	}     
+    
     public Animation getAnimation()
     {
         return animation;
@@ -365,7 +423,7 @@ public class Entity implements Drawable, Positionable
     public void animate(long delta)
     {
         // Ignore if we have no animation.
-        if (animation == null)
+        if (animation == null || animation.isDone() == true)
             return;
         
         // Pass through to the animation.
@@ -427,6 +485,7 @@ public class Entity implements Drawable, Positionable
 
     public void setDirty(boolean dirty)
     {
+//        Util.handleMessage("I'm dirty!", null);        
         this.dirty = dirty;
     }
 
@@ -434,4 +493,24 @@ public class Entity implements Drawable, Positionable
     {
         return dirty;
     }
+    
+    public Rectangle getDrawRect()
+    {
+        Rectangle rect = new Rectangle((int) x_, (int) y_, 
+                width + 2, height + 2);
+        
+        if ((int) x_ != (int) x || (int) y_ != (int) y)
+            rect.add(new Rectangle((int) x, (int) y, width + 2, height + 2));
+        
+        rect.translate(offsetX, offsetY);
+        
+        return rect;
+    }
+
+    public void resetDrawRect()
+    {
+        x_ = x;
+        y_ = y;
+    }
+    
 }

@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.Game;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -17,6 +18,8 @@ import ca.couchware.wezzle2d.GameWindowCallback;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.Sprite;
 import ca.couchware.wezzle2d.util.Keyboard;
+import java.awt.Color;
+import java.awt.Rectangle;
 
 /**
  * An implementation of GameWindow which uses Java 2D rendering to produce the
@@ -222,26 +225,71 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	 */
 	private void gameLoop()
 	{
+        // Did the screen get updated?
+        boolean updated = false;
+        
 		while (gameRunning)
 		{						
 			// Get hold of a graphics context for the accelerated
 			// surface and black it out.
-			g = (Graphics2D) strategy.getDrawGraphics();            
-			
-			// Draw the current background.
-			Sprite s = ResourceFactory.get()
-                    .getSprite(Game.SPRITES_PATH + "/Background1.png");
-			s.draw(0, 0);
-
+			g = (Graphics2D) strategy.getDrawGraphics();            						
+            
 			if (callback != null)
 			{
-				callback.frameRendering();
+				updated = callback.frameRendering();
 			}
 
 			// Finally, we've completed drawing so clear up the graphics
 			// and flip the buffer over.
-			g.dispose();
-			strategy.show();
+            if (updated == true)
+            {                         
+                g.dispose();
+                strategy.show();
+            }
 		}
 	}
+    
+    public void drawClip(Shape s)
+    {
+        // Make sure setClip was called corectly.
+        if (g == null)
+            throw new RuntimeException(
+                    "setClip must be called during frameRendering().");
+                        
+        if (s != null)        
+        {
+            g.setColor(Color.WHITE);                       
+            g.draw(s);
+        }
+    }    
+    
+    public void setClip(Rectangle r)
+    {
+        // Make sure setClip was called corectly.
+        if (g == null)
+            throw new RuntimeException(
+                    "setClip must be called during frameRendering().");
+                        
+        g.setClip(r);        
+    }
+    
+    public Shape getClip()
+    {
+        // Make sure getClip was called corectly.
+        if (g == null)
+            throw new RuntimeException(
+                    "getClip must be called during frameRendering().");
+        
+        return g.getClip();
+    }
+    
+    public void clearClip()
+    {
+         // Make sure getClip was called corectly.
+        if (g == null)
+            throw new RuntimeException(
+                    "clearClip must be called during frameRendering().");
+        
+        g.setClip(null);
+    }
 }

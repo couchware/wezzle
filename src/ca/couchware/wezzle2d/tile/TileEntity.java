@@ -60,7 +60,7 @@ public class TileEntity extends Entity
 	 * Override move.
 	 */
 	public void move(long delta)
-	{
+	{        
 		if (dy != 0)
 		{
 			// Move the tile.
@@ -87,7 +87,12 @@ public class TileEntity extends Entity
 				x = leftBound;
 				dx = 0;
 			}
-		}		
+		}	
+        
+//        updateDrawRectX((int) newX);
+//        updateDrawRectY((int) newY);                
+        
+        setDirty(true);
 	}
 	
 	/**

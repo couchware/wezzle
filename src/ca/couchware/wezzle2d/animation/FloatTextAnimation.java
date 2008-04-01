@@ -95,18 +95,17 @@ public class FloatTextAnimation extends Animation
         
         // Set reference to layer manager.
         this.layerMan = layerMan;
-        
-        // Determine the left-mo
-        
+              
         // Load the explosion and centre it over the entity.
         floatText = ResourceFactory.get().getText();
         floatText.setXYPosition(x, y);
         floatText.setAlignment(Text.VCENTER | Text.HCENTER);
         floatText.setColor(color);
         floatText.setSize(size);
-        floatText.setText(text);        
+        floatText.setText(text);   
         
-        Util.handleMessage("Font size is " + size + ".", Thread.currentThread());
+        // Reset the draw rectangle.
+        floatText.resetDrawRect();               
                         
         // Set the initial pulse state.
         state = STATE_OPAQUE;

@@ -134,7 +134,7 @@ public class Java2DSprite implements Sprite
      * @param theta
      * @param opacity
      */
-    public void drawClipped(int x, int y, 
+    public void drawRegion(int x, int y, 
             int width, int height,
             int rx, int ry, 
             int rwidth, int rheight, 

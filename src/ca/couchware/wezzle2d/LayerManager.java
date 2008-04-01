@@ -1,6 +1,8 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.java2d.Java2DText;
 import ca.couchware.wezzle2d.util.Util;
+import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,12 +16,12 @@ import java.util.LinkedList;
  */
 public class LayerManager implements Drawable
 {
-
+    
     /**
      * The number of layers.
      */
     private int numberOfLayers;
-    
+        
     /**
      * The hash map of layer linked lists.
      * Using 1.5 generics, this would be
@@ -33,12 +35,21 @@ public class LayerManager implements Drawable
     private HashMap hiddenLayerMap;
     
     /**
+     * The game window.  Used when drawing regions of the screen.
+     */
+    private GameWindow window;
+    
+    /**
      * The constructor.
      */
-    public LayerManager(int numberOfLayers)
+    public LayerManager(GameWindow window, int numberOfLayers)
     {
         // Must have at least 1 layer.
-        assert(numberOfLayers > 0);
+        assert(window != null);
+        assert(numberOfLayers > 0);       
+        
+        // Set the window reference.
+        this.window = window;                
         
         // Initialize layer map.
         layerMap = new HashMap();
@@ -108,12 +119,28 @@ public class LayerManager implements Drawable
     
     public void hide(final int layer)
     {
-        hiddenLayerMap.put(new Integer(layer), Boolean.TRUE);
+        Integer index = new Integer(layer);
+        
+        hiddenLayerMap.put(index, Boolean.TRUE);
+        
+        // Grab the layer.
+        final LinkedList layerList = (LinkedList) layerMap.get(index);
+        
+        for (Iterator it = layerList.iterator(); it.hasNext(); )
+            ((Drawable) it.next()).setDirty(true);
     }
     
     public void show(final int layer)
     {
-        hiddenLayerMap.put(new Integer(layer), Boolean.FALSE);
+        Integer index = new Integer(layer);
+        
+        hiddenLayerMap.put(index, Boolean.FALSE);
+        
+        // Grab the layer.
+        final LinkedList layerList = (LinkedList) layerMap.get(index);
+        
+        for (Iterator it = layerList.iterator(); it.hasNext(); )
+            ((Drawable) it.next()).setDirty(true);
     }
     
     /**
@@ -137,8 +164,97 @@ public class LayerManager implements Drawable
             
             // Draw its contents.
             for (Iterator it = layerList.iterator(); it.hasNext(); )
+            {
                 ((Drawable) it.next()).draw();
+            }           
         }            
+    }
+    
+    /**
+     * Draws anything dirty in that region.
+     * 
+     * @param rx
+     * @param ry
+     * @param rwidth
+     * @param rheight
+     */
+    public boolean drawRegion(int rx, int ry, int rwidth, int rheight)
+    {
+        Rectangle region = new Rectangle(rx, ry, rwidth, rheight);
+        Rectangle clip = null;
+        
+        // Cycle through all the layers, drawing them.
+        for (int i = 0; i < numberOfLayers; i++)
+        {
+            Integer index = new Integer(i);
+            
+            // Check if layer exists, if it doesn't, skip this iteration.
+            if (layerMap.containsKey(index) == false)
+                continue;
+            
+            // Grab this layer.
+            LinkedList layerList = (LinkedList) layerMap.get(index);
+            
+            // See if it's in the region.
+            for (Iterator it = layerList.iterator(); it.hasNext(); )
+            {
+                Drawable d = (Drawable) it.next();
+                
+                if (d.isDirty() == false)
+                    continue;                                
+                
+                // Clear dirtiness.
+                d.setDirty(false);
+                
+                Rectangle r = d.getDrawRect();                
+                
+                if (r == null || r.getMinX() < 0 || r.getMinY() < 0)
+                {
+                    Util.handleWarning("Offending class is " 
+                            + d.getClass().getSimpleName(), 
+                            Thread.currentThread());
+                    Util.handleWarning("Rectangle is " + r,
+                            Thread.currentThread());
+                }
+                
+                if (region.intersects(r) == true)
+                {   
+//                    Util.handleWarning("Offending class is " 
+//                            + d.getClass().getSimpleName(), 
+//                            Thread.currentThread());
+//                    Util.handleWarning("Rectangle is " + r,
+//                            Thread.currentThread());
+                    
+//                    if (d instanceof Java2DText)
+//                    {
+//                        Java2DText j = (Java2DText) d;
+//                        Util.handleWarning(j.getText(), 
+//                            Thread.currentThread());
+//                    }
+                    
+                    if (clip == null)
+                        clip = new Rectangle(r);
+                    else
+                        clip.add(r);
+                }
+            }           
+        }      
+             
+        if (clip != null)
+        {
+            //Util.handleMessage(clip.toString(), Thread.currentThread());
+            
+            window.setClip(clip);
+            draw();            
+            window.clearClip();
+            //window.drawClip(clip);
+                        
+            return true;
+        }        
+        else
+        {
+            return false;
+        }
     }
 
     public void setVisible(boolean visible)
@@ -157,6 +273,16 @@ public class LayerManager implements Drawable
     }
 
     public boolean isDirty()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Rectangle getDrawRect()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void resetDrawRect()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

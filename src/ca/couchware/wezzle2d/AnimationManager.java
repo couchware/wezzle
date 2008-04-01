@@ -38,6 +38,11 @@ public class AnimationManager
         return animationList.contains(a);
     }
     
+    public Iterator iterator()
+    {
+        return animationList.iterator();
+    }
+    
     public void animate(final long delta)
     {
         for (Iterator it = animationList.iterator(); it.hasNext(); ) 

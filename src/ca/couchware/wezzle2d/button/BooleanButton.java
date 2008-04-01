@@ -43,17 +43,23 @@ public abstract class BooleanButton extends Button
             activated = true;                    
         
         state = STATE_HOVER;
+        
+        setDirty(true);
     }
     
     public void handlePressed()
     {        
         state = STATE_PRESSED;
+        
+        setDirty(true);
     }            
     
     public void handleMouseOn()
     {
         if (state != STATE_PRESSED)
             state = STATE_HOVER;
+        
+        setDirty(true);
     }        
     
     public void handleMouseOff()
@@ -62,11 +68,13 @@ public abstract class BooleanButton extends Button
             state = STATE_ACTIVE;
         else
             state = STATE_NORMAL;
+        
+        setDirty(true);
     }
 
     public boolean isActivated()
     {
-        return activated;
+        return activated;                
     }
 
     public void setActivated(boolean activated)

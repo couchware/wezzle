@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
+import java.awt.Rectangle;
 
 /**
  * A class for representing progress bars of any length 
@@ -59,6 +60,14 @@ public class ProgressBar implements Drawable, Positionable
      * The y-coordinate.
      */
     private int y;
+    
+    private int x_;
+    private int y_;
+    
+    /**
+     * The current draw rectangle.
+     */
+    protected Rectangle drawRect;
     
     /**
      * The left sprite.
@@ -119,16 +128,24 @@ public class ProgressBar implements Drawable, Positionable
      * @param withText
      */    
     public ProgressBar(int x, int y, int width, boolean withText)
-    {
-        // Set coordinates.
-        setX(x);
-        setY(y);   
-        
+    {                   
         // Set progress to 0.
         // Set progressMax to 100.
         this.progress = 0;
         this.progressMax = 100;        
         this.width = width;
+                      
+        // Load the sprites.
+        leftSprite = ResourceFactory.get().getSprite(PATH_SPRITE_LEFT);
+        rightSprite = ResourceFactory.get().getSprite(PATH_SPRITE_RIGHT);
+        middleSprite = ResourceFactory.get().getSprite(PATH_SPRITE_MIDDLE);
+               
+        // Set coordinates.
+        this.x = x;
+        this.y = y;
+        
+        this.x_ = x;
+        this.y_ = y;
         
         // Set initial alignment.
         this.alignment = TOP | LEFT;
@@ -148,12 +165,7 @@ public class ProgressBar implements Drawable, Positionable
             progressText.setAlignment(Text.VCENTER | Text.HCENTER);
             progressText.setColor(Game.TEXT_COLOR);
             progressText.setText(progress + "/" + progressMax);
-		}	
-        
-        // Load the sprites.
-        leftSprite = ResourceFactory.get().getSprite(PATH_SPRITE_LEFT);
-        rightSprite = ResourceFactory.get().getSprite(PATH_SPRITE_RIGHT);
-        middleSprite = ResourceFactory.get().getSprite(PATH_SPRITE_MIDDLE);
+		}	                
         
         // Initialize.
         setProgress(progress);
@@ -164,6 +176,9 @@ public class ProgressBar implements Drawable, Positionable
     
     public void draw()
     {
+        x_ = x;
+        y_ = y;
+        
         // Draw the text.
         if (withText == true)
             progressText.draw();
@@ -179,14 +194,14 @@ public class ProgressBar implements Drawable, Positionable
         {
             int w = progressWidth / 2;
             
-            leftSprite.drawClipped(
+            leftSprite.drawRegion(
                     alignedX, alignedY,
                     leftSprite.getWidth(), leftSprite.getHeight(),
                     0, 0, 
                     w, leftSprite.getHeight(), 
                     0.0, 100);                 
             
-            rightSprite.drawClipped(                    
+            rightSprite.drawRegion(                    
                     alignedX + w, alignedY,
                     rightSprite.getWidth(), rightSprite.getHeight(),
                     rightSprite.getWidth() - w, 0,
@@ -223,7 +238,7 @@ public class ProgressBar implements Drawable, Positionable
     }
 
     public void setX(int x)
-    {
+    {        
         this.x = x;
         
         // Set dirty so it will be drawn.        
@@ -236,7 +251,7 @@ public class ProgressBar implements Drawable, Positionable
     }
 
     public void setY(int y)
-    {
+    {       
         this.y = y;
         
         // Set dirty so it will be drawn.        
@@ -297,6 +312,10 @@ public class ProgressBar implements Drawable, Positionable
 	 */
 	public void setProgress(int progress)
 	{
+        // Don't do anything if it's the same.
+        if (this.progress == progress)
+            return;
+        
 		// Update the text, if needed.
 		if (withText == true)
 			progressText.setText(progress + "/" + progressMax);
@@ -323,19 +342,19 @@ public class ProgressBar implements Drawable, Positionable
     }
 
     public void setWidth(int width)
-    {
+    {       
         this.width = width;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
     }
     
-    public int getWidthMax()
+    public int getProgressWidth()
     {
         return progressWidth;
     }
 
-    public void setWidthMax(int progressWidth)
+    public void setProgressWidth(int progressWidth)
     {
         this.progressWidth = progressWidth;
         
@@ -406,8 +425,8 @@ public class ProgressBar implements Drawable, Positionable
         {
             progressText.setX(progressText.getX() + offsetX);
             progressText.setY(progressText.getY() + offsetY);
-        }
-        
+        }               
+                
         // Set dirty so it will be drawn.        
         setDirty(true);
     }
@@ -420,6 +439,29 @@ public class ProgressBar implements Drawable, Positionable
     public boolean isDirty()
     {
         return dirty;
+    }
+    
+    public Rectangle getDrawRect()
+    {
+        Rectangle rect = new Rectangle(x_, y_, 
+                width + 2, getHeight() + 2);
+        
+        if (x_ != x || y_ != y)
+            rect.add(new Rectangle(x, y, width + 2, getHeight() + 2));
+        
+        rect.translate(offsetX, offsetY);
+        
+        // Add the text too.
+        if (withText == true)
+            rect.add(progressText.getDrawRect());
+        
+        return rect;
+    }
+    
+    public void resetDrawRect()
+    {
+        x_ = x;
+        y_ = y;
     }
     
 }

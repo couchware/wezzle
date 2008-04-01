@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.piece.*;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -119,7 +120,9 @@ public class PieceManager implements
         mouseRightReleased = false;
         
         // Create new piece entity at the origin of the board.
-		pieceGrid = new PieceGrid(boardMan, 0, 0);
+		pieceGrid = new PieceGrid(boardMan, 
+                boardMan.getX() + boardMan.getCellWidth(),
+                boardMan.getY() + boardMan.getCellHeight());
         
         // Load a random piece.
         loadRandomPiece();
@@ -802,4 +805,15 @@ public class PieceManager implements
 		// Set the mouse position.
 		setMousePosition(e.getX(), e.getY());
     }
+
+    public Rectangle getDrawRect()
+    {
+        return pieceGrid.getDrawRect();
+    }
+    
+    public void resetDrawRect()
+    {
+        pieceGrid.resetDrawRect();
+    }
+    
 }

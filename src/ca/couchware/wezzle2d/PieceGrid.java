@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.XYPosition;
+import java.awt.Rectangle;
 import java.util.Arrays;
 
 import ca.couchware.wezzle2d.piece.Piece;
@@ -59,8 +60,27 @@ public class PieceGrid implements Drawable
      */
     private int y;
     
+    private int x_;
+    private int y_;
+    
+    /**
+     * The width.
+     */
+    private int width;
+    
+    /**
+     * The height.
+     */
+    private int height;
+    
+//    /**
+//     * The draw rectangle.
+//     */
+//    private Rectangle drawRect;
+    
 	/**
 	 * The constructor.  Initializes the structure and sprites arrays.
+     * 
 	 * @param path
 	 * @param x
 	 * @param y
@@ -77,6 +97,9 @@ public class PieceGrid implements Drawable
         this.x = x;
         this.y = y;
         
+        this.x_ = x;
+        this.y_ = y;
+                
 		// Create an blank out the structure.
 		structure = new Boolean[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 		
@@ -89,6 +112,16 @@ public class PieceGrid implements Drawable
 		for (int i = 0; i < sprites.length; i++)
 			for (int j = 0; j < sprites[0].length; j++)
 				sprites[i][j] = ResourceFactory.get().getSprite(PATH);
+        
+        // Set the width and height.
+        width = boardMan.getCellWidth() * Piece.MAX_COLUMNS;
+        height = boardMan.getCellHeight() * Piece.MAX_ROWS;
+        
+        // Create the drawing rectangle.
+//        this.drawRect = new Rectangle(x, y, width, height);
+//        this.drawRect.translate(
+//                -boardMan.getCellWidth(),
+//                -boardMan.getCellHeight());
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -114,11 +147,28 @@ public class PieceGrid implements Drawable
 
     public void setX(int x) 
     {
+//        updateDrawRectX(x);
+        
         this.x = x;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
     }
+    
+//    protected void updateDrawRectX(int x)
+//    {
+//        // Update draw rectangle.
+//        drawRect.setBounds(getX(), getY(), width + 1, height + 1);
+//        
+//        if (x > getX())
+//            drawRect.add(x + width + 1, y);
+//        else
+//            drawRect.add(x, y);                   
+//        
+//        drawRect.translate(
+//                -boardMan.getCellWidth(),
+//                -boardMan.getCellHeight());
+//    }
 
     public int getY() 
     {
@@ -127,11 +177,28 @@ public class PieceGrid implements Drawable
 
     public void setY(int y) 
     {
+//        updateDrawRectY(y);
+        
         this.y = y;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
     }
+    
+//    protected void updateDrawRectY(int y)
+//    {
+//         // Update draw rectangle.
+//        drawRect.setBounds(getX(), getY(), width + 1, height + 1);
+//        
+//        if (y > getY())
+//            drawRect.add(x, y + height + 1);
+//        else
+//            drawRect.add(x, y);     
+//        
+//        drawRect.translate(
+//                -boardMan.getCellWidth(),
+//                -boardMan.getCellHeight());
+//    }
     
     public XYPosition getXYPosition()
     {
@@ -143,6 +210,10 @@ public class PieceGrid implements Drawable
      */
 	public void draw()
 	{
+        // Make current (x,y) the old onee.
+        x_ = x;
+        y_ = y;
+        
         // Don't draw if we're not visible.
         if (isVisible() == false)
             return;
@@ -183,4 +254,23 @@ public class PieceGrid implements Drawable
     {
         return dirty;
     }
+
+    public Rectangle getDrawRect()
+    {
+        Rectangle rect = new Rectangle(x_, y_, width + 1, height + 1);
+        
+        if (x_ != x || y_ != y)
+            rect.add(new Rectangle(x, y, width + 1, height + 1));
+        
+        rect.translate(-boardMan.getCellWidth(), -boardMan.getCellHeight());
+        
+        return rect;
+    }
+    
+    public void resetDrawRect()
+    {
+        x_ = x;
+        y_ = y;
+    }
+    
 }

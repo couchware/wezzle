@@ -23,6 +23,11 @@ public class BoardManager
      * Whether or not this is visible.
      */
     private boolean visible;
+    
+    /**
+     * Whether or not the board needs to be drawn.
+     */
+    private boolean dirty;
         
     /**
      * The layer manager.
@@ -419,6 +424,9 @@ public class BoardManager
 					moreMovement = true;
 			}
 		
+        // Dirty board.
+        setDirty(true);
+        
 		return moreMovement;
 	}
     
@@ -547,6 +555,9 @@ public class BoardManager
         // Add the tile to the bottom layer too.
         layerMan.add(t, Game.LAYER_TILE);        
         
+        // Dirty board.
+        setDirty(true);
+        
         // Return the tile.
         return t;
 	}
@@ -568,6 +579,9 @@ public class BoardManager
         
         // Decrement tile counter.
         numberOfTiles--;
+        
+        // Dirty board.
+        setDirty(true);
     }
     
     public void removeTile(final int column, final int row)
@@ -988,5 +1002,15 @@ public class BoardManager
 		
 		System.out.println();
 	}
+    
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
+    }
 
 }

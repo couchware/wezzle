@@ -13,7 +13,7 @@ import ca.couchware.wezzle2d.Text;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
-import java.awt.FontMetrics;
+import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 
 /**
@@ -45,16 +45,6 @@ public class Java2DText extends Text
      * The game window to which this text is going to be drawn 
      */
 	private Java2DGameWindow window;	
-
-	/** 
-     * The x offset for anchor. 
-     */
-	private int offsetX;
-	
-	/** 
-     * The y offset for anchor. 
-     */
-	private int offsetY;	
     
     /**
      * Do we need to update the text layout?
@@ -113,6 +103,10 @@ public class Java2DText extends Text
 	 */
 	public void setText(final String text)
 	{
+        // Return if the text is the same.
+        if (text != null && text.equals(this.text) == true)
+            return;
+        
         // Set the text.
 		this.text = text;        
         
@@ -179,11 +173,11 @@ public class Java2DText extends Text
 		}
 		else if((alignment & VCENTER) == VCENTER)
 		{
-			this.offsetY = (int) bounds.getCenterY();
+			this.offsetY = (int) -bounds.getCenterY();
 		}
 		else if((alignment & TOP) == TOP)
 		{
-			this.offsetY = (int) bounds.getMinY();
+			this.offsetY = (int) -bounds.getMinY();
 		}
 		else
 		{
@@ -193,15 +187,15 @@ public class Java2DText extends Text
 		// The X alignment. 
 		if((alignment & LEFT) == LEFT)
 		{
-			this.offsetX = (int) bounds.getMinX();
+			this.offsetX = (int) -bounds.getMinX();
 		}
 		else if((alignment & HCENTER) == HCENTER)
 		{
-			this.offsetX = (int) (bounds.getMinX() + bounds.getWidth() / 2);			
+			this.offsetX = (int) -(bounds.getMinX() + bounds.getWidth() / 2);			
 		}
 		else if((alignment & RIGHT) == RIGHT)
 		{
-			this.offsetX = (int) bounds.getMaxX();
+			this.offsetX = (int) -bounds.getMaxX();
 		}
 		else
 		{
@@ -216,8 +210,18 @@ public class Java2DText extends Text
      * Updates the text layout instance.
      * @param frctx The current font render context.
      */
-    private void updateTextLayout(final FontRenderContext frctx)
+    private void updateTextLayout(final Graphics2D g)
     {      
+        // Set the font.
+        g.setFont(font);  
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        
+        // Get the render context.
+        FontRenderContext frctx = g.getFontRenderContext();
+        
         // Create new text layout.
 		this.textLayout = new TextLayout(text, font, frctx);                
         
@@ -230,6 +234,12 @@ public class Java2DText extends Text
 	 */
 	public void draw()
 	{
+        x_ = x;
+        y_ = y;
+        
+        width_ = getWidth();
+        height_ = getHeight();
+        
 		// Return immediately is string is empty.
 		if (isVisible() == false || text.equals("") == true)
 			return;                
@@ -237,12 +247,7 @@ public class Java2DText extends Text
 		try
 		{
 			// Get the graphics.
-			Graphics2D g = window.getDrawGraphics();
-                        
-			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-					RenderingHints.VALUE_FRACTIONALMETRICS_ON);			            
+			Graphics2D g = window.getDrawGraphics();                        				            
             
             // Update the text layout if flagged.
             if (updateTextLayoutNextDraw == true)
@@ -251,12 +256,9 @@ public class Java2DText extends Text
                 updateTextLayoutNextDraw = false;
                 
                 // Update it.
-                updateTextLayout(g.getFontRenderContext());
+                updateTextLayout(g);
             }
-            
-			// Test url.
-			assert (url != null);
-						
+            			
 			// Test font.
 			assert (font != null);
 			
@@ -273,11 +275,14 @@ public class Java2DText extends Text
                         ((float) opacity) / 100.0f));
             }
 			
-			textLayout.draw(g, x - offsetX, y - offsetY);
+			textLayout.draw(g, x + offsetX, y + offsetY);
             
             // Opacity.
             if (opacity != 100)        
                 g.setComposite(c);
+            
+            // No longer dirty.
+            setDirty(false);
 		}
 		catch(Exception e)
 		{
@@ -308,10 +313,10 @@ public class Java2DText extends Text
                 updateTextLayoutNextDraw = false;
                 
                 // Update it.
-                updateTextLayout(g.getFontRenderContext());
+                updateTextLayout(g);
             }
             
-            return (int) textLayout.getBounds().getWidth();
+            return (int) textLayout.getBounds().getMaxX();
         } // end if     
     }
 
@@ -349,8 +354,8 @@ public class Java2DText extends Text
                 // Clear the flag.
                 updateTextLayoutNextDraw = false;
                 
-                // Update it.
-                updateTextLayout(g.getFontRenderContext());
+                // Update it.                
+                updateTextLayout(g);
             }
             
             return (int) textLayout.getBounds().getHeight();

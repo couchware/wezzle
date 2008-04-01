@@ -1,7 +1,9 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Color;
+import java.awt.Rectangle;
 
 
 /**
@@ -34,6 +36,17 @@ public abstract class Text implements Drawable, Positionable
      */
     protected int y;
     
+    protected int x_;
+    protected int y_;
+    
+    protected int width_;
+    protected int height_;
+    
+    /**
+     * The draw rectangle.
+     */
+    protected Rectangle drawRect;
+    
     /** 
      * The size of the font.
      */
@@ -54,6 +67,16 @@ public abstract class Text implements Drawable, Positionable
      */
 	protected int alignment;
     
+    /** 
+     * The x offset for anchor. 
+     */
+	protected int offsetX;
+	
+	/** 
+     * The y offset for anchor. 
+     */
+	protected int offsetY;	
+    
     /**
      * The current opacity (in percent, from 0 to 100).
      */
@@ -64,7 +87,14 @@ public abstract class Text implements Drawable, Positionable
      */
     public Text()
     {
-        // Intentionally empty.
+        this.x = 0;
+        this.y = 0;
+        
+        this.x_ = 0;
+        this.y_ = 0;
+        
+        this.width_ = 0;
+        this.height_ = 0;
     }    
     
     /**
@@ -234,7 +264,7 @@ public abstract class Text implements Drawable, Positionable
 	 */
 	public void setAlignment(final int alignment)
     {
-        this.alignment = this.alignment;
+        this.alignment = alignment;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -289,7 +319,7 @@ public abstract class Text implements Drawable, Positionable
     public int getOpacity()
     {
         return opacity;
-    }
+    }        
     
     public void setDirty(boolean dirty)
     {
@@ -299,6 +329,28 @@ public abstract class Text implements Drawable, Positionable
     public boolean isDirty()
     {
         return dirty;
+    }
+    
+    public Rectangle getDrawRect()
+    {
+        Rectangle rect = new Rectangle(x_, y_, width_ + 2, height_ + 2);
+                
+        rect.add(new Rectangle(x, y, getWidth() + 2, getHeight() + 2));
+
+        rect.translate(0, -(getHeight() + 2));
+        rect.translate(offsetX, offsetY);
+        
+        if (rect.getMinX() < 0 || rect.getMinY() < 0)
+            Util.handleWarning("Offending text is " + text,
+                    Thread.currentThread());
+        
+        return rect;
+    }
+    
+    public void resetDrawRect()
+    {
+        x_ = x;
+        y_ = y;
     }
 		
 }

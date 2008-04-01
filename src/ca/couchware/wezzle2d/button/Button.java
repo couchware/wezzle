@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.button;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -95,6 +96,9 @@ public abstract class Button implements
      */
     protected int y;
     
+    protected int x_;
+    protected int y_;
+    
     /**
      * The width of the button.  This is what is used to set the anchor.
      */
@@ -104,6 +108,11 @@ public abstract class Button implements
      * The height of the button.  This is what is used to set the anchor.
      */
     protected int height;
+    
+    /**
+     * The draw rectangle.
+     */
+    protected Rectangle drawRect;
     
     /**
      * The current anchor.
@@ -165,6 +174,9 @@ public abstract class Button implements
         this.x = x;
         this.y = y;
         
+        this.x_ = x;
+        this.y_ = y;
+        
         // Set the dimensions.
         this.width = width;
         this.height = height;
@@ -211,6 +223,9 @@ public abstract class Button implements
     
     public void draw()
     {
+        x_ = x;
+        y_ = y;
+        
         // Don't draw if not visible.
         if (isVisible() == false)
             return;
@@ -284,7 +299,7 @@ public abstract class Button implements
         setDirty(true);
     }
     
-    public boolean wasClicked()
+    public boolean clicked()
     {
         boolean value = clicked;
         clicked = false;
@@ -421,7 +436,7 @@ public abstract class Button implements
 		else
 		{
 			Util.handleWarning("No X alignment set!", Thread.currentThread());
-		}			
+		}			                
         
         // Move the shape.
         shape.setFrame(x + offsetX, y + offsetY,
@@ -436,6 +451,25 @@ public abstract class Button implements
     public boolean isDirty()
     {
         return dirty;
+    }
+    
+    public Rectangle getDrawRect()
+    {
+        Rectangle rect = new Rectangle(x_, y_, 
+                width + 2, height + 2);
+        
+        if (x_ != x || y_ != y)
+            rect.add(new Rectangle(x, y, width + 2, height + 2));
+        
+        rect.translate(offsetX, offsetY);
+        
+        return rect;
+    }  
+    
+    public void resetDrawRect()
+    {
+        x_ = x;
+        y_ = y;
     }
     
     //--------------------------------------------------------------------------

@@ -99,6 +99,9 @@ public class ExplosionAnimation extends Animation
         explosion.setX(entity.getX() + (entity.getWidth() / 2) - 1);
         explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);
         
+        // Reset the draw rectangle.
+        explosion.resetDrawRect();
+        
         // Add explosion to the layer manager.
         layerMan.add(explosion, Game.LAYER_EFFECT);
     }

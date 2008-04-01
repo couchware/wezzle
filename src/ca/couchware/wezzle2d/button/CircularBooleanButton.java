@@ -19,7 +19,7 @@ public class CircularBooleanButton extends BooleanButton
     /**
      * The height of the click button area.
      */
-    final private static int HEIGHT = 106;   
+    final private static int HEIGHT = 106;           
     
     /**
      * The normal sprite.
@@ -67,7 +67,11 @@ public class CircularBooleanButton extends BooleanButton
         buttonText = ResourceFactory.get().getText();        
         buttonText.setSize(22);
         buttonText.setColor(Game.TEXT_COLOR);
-        buttonText.setAlignment(Text.HCENTER | Text.VCENTER);                
+        buttonText.setAlignment(Text.HCENTER | Text.VCENTER);      
+        
+        // Create the draw rectangle.
+        drawRect = 
+                new Rectangle(x - 18, y - 18, x + width + 18, y + height + 18);
     }
     
     @Override
@@ -137,4 +141,18 @@ public class CircularBooleanButton extends BooleanButton
         return dirty;
     }
     
+    public Rectangle getDrawRect()
+    {
+        Rectangle rect = new Rectangle(x_ - 18, y_ - 18, 
+                width + 36 + 2, height + 36 + 2);
+        
+        if (x_ != x || y_ != y)
+            rect.add(new Rectangle(x - 18, y - 18,
+                    width + 36 + 2, height + 36 + 2));
+        
+        rect.translate(offsetX, offsetY);
+        
+        return rect;
+    }  
+
 }
