@@ -26,17 +26,7 @@ public class PieceManager implements
 {	
     // -------------------------------------------------------------------------
     // Constants
-    // -------------------------------------------------------------------------
-    
-    /**
-     * Whether or not this is visible.
-     */
-    private boolean visible;       
-    
-    /**
-     * Is it dirty (i.e. does it need to be redrawn)?
-     */
-    private boolean dirty;
+    // -------------------------------------------------------------------------       
     
     /**
      * Is the board dropping in a tile?
@@ -71,17 +61,17 @@ public class PieceManager implements
 	/**
 	 * The current location of the mouse pointer.
 	 */
-	private XYPosition mousePosition;
+	private volatile XYPosition mousePosition;
 	
     /**
      * Was the left mouse button clicked?
      */
-    private boolean mouseLeftReleased;
+    private volatile boolean mouseLeftReleased;
     
     /**
      * Was the right mouse button clicked?
      */
-    private boolean mouseRightReleased;
+    private volatile boolean mouseRightReleased;
     
     /**
      * The current piece.
@@ -108,10 +98,7 @@ public class PieceManager implements
 	 * @param boardMan The board manager.
 	 */
 	public PieceManager(BoardManager boardMan)
-	{
-        // Set visible.
-        this.visible = true;
-        
+	{       
 		// Set the reference.
 		this.boardMan = boardMan;
         
@@ -644,7 +631,7 @@ public class PieceManager implements
 	 * Gets the mousePosition.
 	 * @return The mousePosition.
 	 */
-	public synchronized XYPosition getMousePosition()
+	public XYPosition getMousePosition()
 	{
 		return mousePosition;
 	}
@@ -653,17 +640,17 @@ public class PieceManager implements
 	 * Sets the mousePosition.
 	 * @param mousePosition The mousePosition to set.
 	 */
-	public synchronized void setMousePosition(int x, int y)
+	public void setMousePosition(int x, int y)
 	{
 		this.mousePosition = new XYPosition(x, y);
 	}
 
-    public synchronized boolean isMouseLeftReleased()
+    public boolean isMouseLeftReleased()
     {
         return mouseLeftReleased;
     }
 
-    public synchronized void setMouseLeftReleased(boolean mouseLeftReleased)
+    public void setMouseLeftReleased(boolean mouseLeftReleased)
     {
         this.mouseLeftReleased = mouseLeftReleased;
         
@@ -673,12 +660,12 @@ public class PieceManager implements
             Util.handleMessage("Left mouse cleared.", Thread.currentThread());
     }
 
-    public synchronized boolean isMouseRightReleased()
+    public boolean isMouseRightReleased()
     {
         return mouseRightReleased;
     }
 
-    public synchronized void setMouseRightReleased(boolean mouseRightReleased)
+    public void setMouseRightReleased(boolean mouseRightReleased)
     {
         this.mouseRightReleased = mouseRightReleased;
     }
@@ -689,19 +676,19 @@ public class PieceManager implements
         setMouseRightReleased(false);
     }
     
-    public synchronized boolean isTileDropInProgress()
+    public boolean isTileDropInProgress()
     {
         return tileDropInProgress;
     }
     
     public void setVisible(boolean visible)
     {
-         this.visible = visible;
+         pieceGrid.setVisible(visible);
     }
 
     public boolean isVisible()
     {
-        return visible;
+        return pieceGrid.isVisible();
     }
     
     public void setDirty(boolean dirty)
