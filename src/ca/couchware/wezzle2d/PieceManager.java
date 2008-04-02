@@ -180,7 +180,10 @@ public class PieceManager implements
         int numberOfRotations = Util.random.nextInt(4) + 1;
         
         for (int i = 0; i <= numberOfRotations; i++)
+        {
             piece.rotate();
+            pieceGrid.setDirty(true);
+        }
 	}
     
     /**
@@ -522,7 +525,10 @@ public class PieceManager implements
             {
                 // Rotate the piece.            
                 stopAnimationAt(pieceGrid.getXYPosition());
+                
                 piece.rotate();
+                pieceGrid.setDirty(true);
+                
                 startAnimationAt(pieceGrid.getXYPosition());
 
                 // Reset flag.
