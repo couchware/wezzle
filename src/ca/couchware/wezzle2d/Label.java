@@ -13,7 +13,7 @@ import java.awt.Rectangle;
  * @author Kevin
  *
  */
-public abstract class Text implements Drawable, Positionable
+public abstract class Label implements Drawable, Positionable
 {
     
     /**
@@ -85,7 +85,7 @@ public abstract class Text implements Drawable, Positionable
     /**
      * The constructor.
      */
-    public Text()
+    public Label()
     {
         this.x = 0;
         this.y = 0;

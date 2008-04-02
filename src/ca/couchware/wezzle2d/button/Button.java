@@ -137,7 +137,7 @@ public abstract class Button implements
     /**
      * The button text.
      */
-    protected String text;
+    protected String text;       
     
     /**
      * The current state of the button.

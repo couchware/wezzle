@@ -2,7 +2,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
 import ca.couchware.wezzle2d.java2d.Java2DSpriteStore;
-import ca.couchware.wezzle2d.java2d.Java2DText;
+import ca.couchware.wezzle2d.java2d.Java2DLabel;
 
 /**
  * A central reference point for creating resources for use in the game. The
@@ -143,7 +143,7 @@ public class ResourceFactory
 	 *
 	 * @return A Text object that can be modified and drawn to screen.
 	 */
-	public Text getText()
+	public Label getText()
 	{
 		if (window == null)
 		{
@@ -155,7 +155,7 @@ public class ResourceFactory
 		{
 			case JAVA2D:
 			{
-				return new Java2DText((Java2DGameWindow) window);
+				return new Java2DLabel((Java2DGameWindow) window);
 			}		
 		}
 

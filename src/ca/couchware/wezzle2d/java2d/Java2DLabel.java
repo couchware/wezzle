@@ -9,7 +9,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.net.URL;
 
-import ca.couchware.wezzle2d.Text;
+import ca.couchware.wezzle2d.Label;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
@@ -24,7 +24,7 @@ import java.awt.font.FontRenderContext;
  *
  */
 
-public class Java2DText extends Text
+public class Java2DLabel extends Label
 {    
 	/** 
      * The URL. 
@@ -61,7 +61,7 @@ public class Java2DText extends Text
 	 * 
 	 * @param window The game window to be drawn to.
 	 */
-	public Java2DText(Java2DGameWindow window)
+	public Java2DLabel(Java2DGameWindow window)
 	{
         // Invoke super.
         super();

@@ -49,7 +49,7 @@ public class ProgressBar implements Drawable, Positionable
     /**
      * The progress text.
      */
-    private Text progressText;
+    private Label progressText;
     
     /**
      * The x-coordinate.
@@ -162,7 +162,7 @@ public class ProgressBar implements Drawable, Positionable
 			// Set text attributes.
 			progressText.setXYPosition(x + width / 2, y + 40);
             progressText.setSize(14);
-            progressText.setAlignment(Text.VCENTER | Text.HCENTER);
+            progressText.setAlignment(Label.VCENTER | Label.HCENTER);
             progressText.setColor(Game.TEXT_COLOR);
             progressText.setText(progress + "/" + progressMax);
 		}	                

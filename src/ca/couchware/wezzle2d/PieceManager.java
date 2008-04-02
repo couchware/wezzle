@@ -583,7 +583,7 @@ public class PieceManager implements
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
                 
         // Add score SCT.
-        game.animationMan.add(new FloatTextAnimation(
+        game.animationMan.add(new FloatLabelAnimation(
                 game.boardMan.determineCenterPoint(indexSet), game.layerMan,
                 String.valueOf(deltaScore),
                 Game.SCORE_PIECE_COLOR,

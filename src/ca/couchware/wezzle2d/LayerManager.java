@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.java2d.Java2DText;
+import ca.couchware.wezzle2d.java2d.Java2DLabel;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
 import java.util.HashMap;

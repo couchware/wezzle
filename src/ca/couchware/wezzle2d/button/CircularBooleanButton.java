@@ -39,7 +39,7 @@ public class CircularBooleanButton extends BooleanButton
     /**
      * The button text.
      */
-    final private Text buttonText;
+    final private Label buttonLabel;
 
     /**
      * Creates a button at the coordinates provided.
@@ -64,10 +64,10 @@ public class CircularBooleanButton extends BooleanButton
                 .getSprite(Game.SPRITES_PATH + "/Button_Hover.png");
         
         // Create the button text.
-        buttonText = ResourceFactory.get().getText();        
-        buttonText.setSize(22);
-        buttonText.setColor(Game.TEXT_COLOR);
-        buttonText.setAlignment(Text.HCENTER | Text.VCENTER);      
+        buttonLabel = ResourceFactory.get().getText();        
+        buttonLabel.setSize(22);
+        buttonLabel.setColor(Game.TEXT_COLOR);
+        buttonLabel.setAlignment(Label.HCENTER | Label.VCENTER);      
         
         // Create the draw rectangle.
         drawRect = 
@@ -81,10 +81,10 @@ public class CircularBooleanButton extends BooleanButton
         
         spriteNormal.draw(x + offsetX, y + offsetY);
         
-        buttonText.setX(x + offsetX + bounds.width / 2);
-        buttonText.setY(y + offsetY + bounds.height / 2);
-        buttonText.setText(text);
-        buttonText.draw();
+        buttonLabel.setX(x + offsetX + bounds.width / 2);
+        buttonLabel.setY(y + offsetY + bounds.height / 2);
+        buttonLabel.setText(text);
+        buttonLabel.draw();
     }
 
 //    @Override
@@ -104,10 +104,10 @@ public class CircularBooleanButton extends BooleanButton
         
         spriteHover.draw(x + offsetX, y + offsetY);
         
-        buttonText.setX(x + offsetX + bounds.width / 2);
-        buttonText.setY(y + offsetY + bounds.height / 2);
-        buttonText.setText(text);
-        buttonText.draw();
+        buttonLabel.setX(x + offsetX + bounds.width / 2);
+        buttonLabel.setY(y + offsetY + bounds.height / 2);
+        buttonLabel.setText(text);
+        buttonLabel.draw();
     }
 
 //    @Override
@@ -120,16 +120,26 @@ public class CircularBooleanButton extends BooleanButton
         
         spriteHover.draw(x + offsetX, y + offsetY);
         
-        buttonText.setX(x + offsetX + bounds.width / 2);
-        buttonText.setY(y + offsetY + bounds.height / 2 + 1);
-        buttonText.setText(text);
-        buttonText.draw();
+        buttonLabel.setX(x + offsetX + bounds.width / 2);
+        buttonLabel.setY(y + offsetY + bounds.height / 2 + 1);
+        buttonLabel.setText(text);
+        buttonLabel.draw();
     }
 
     private void drawGlow()
     {
         spriteGlow.draw(x + offsetX - 18, y + offsetY - 18);
     }
+    
+    /**
+     * Get the label object for this button.
+     * 
+     * @return The label object.
+     */
+    public Label getLabel()
+    {
+        return buttonLabel;
+    }   
     
     public void setDirty(boolean dirty)
     {
@@ -153,6 +163,6 @@ public class CircularBooleanButton extends BooleanButton
         rect.translate(offsetX, offsetY);
         
         return rect;
-    }  
+    }        
 
 }

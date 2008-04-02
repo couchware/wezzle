@@ -291,37 +291,37 @@ public class Game extends Canvas implements GameWindowCallback
 	/** 
      * The timer text. 
      */
-	private Text timerText;
+	private Label timerLabel;
         
     /** 
      * The score text.
      */
-    private Text scoreText;
+    private Label scoreLabel;
     
     /** 
      * The high score text. 
      */
-    private Text highScoreText;
+    private Label highScoreLabel;
     
     /**
      * The level text.
      */
-    private Text levelText;
+    private Label levelLabel;
     
     /** 
      * The move count text.
      */
-    private Text moveCountText;
+    private Label movesLabel;
     
     /**
      * The "Paused" text.
      */
-    private Text pausedText;
+    private Label pausedLabel;
     
     /**
      * The version text.
      */
-    private Text versionText;        
+    private Label versionLabel;        
         
 	/**
 	 * Construct our game and set it running.
@@ -460,65 +460,65 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseMotionListener(pauseButton);
         
         // Create the "Paused" text.
-        pausedText = ResourceFactory.get().getText();
-        pausedText.setXYPosition(400, 300);      
-		pausedText.setSize(30);
-		pausedText.setAlignment(Text.HCENTER | Text.VCENTER);
-		pausedText.setColor(TEXT_COLOR);
-        pausedText.setText("Paused");
-        pausedText.setVisible(false);
-        layerMan.add(pausedText, LAYER_UI);
+        pausedLabel = ResourceFactory.get().getText();
+        pausedLabel.setXYPosition(400, 300);      
+		pausedLabel.setSize(30);
+		pausedLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+		pausedLabel.setColor(TEXT_COLOR);
+        pausedLabel.setText("Paused");
+        pausedLabel.setVisible(false);
+        layerMan.add(pausedLabel, LAYER_UI);
               
         // Set up the version text.
-		versionText = ResourceFactory.get().getText();
-        versionText.setXYPosition(800 - 10, 600 - 10);
-		versionText.setSize(12);
-		versionText.setAlignment(Text.BOTTOM | Text.RIGHT);
-		versionText.setColor(TEXT_COLOR);
-        versionText.setText(applicationName + " Build " + buildNumber);
-        layerMan.add(versionText, LAYER_UI);
+		versionLabel = ResourceFactory.get().getText();
+        versionLabel.setXYPosition(800 - 10, 600 - 10);
+		versionLabel.setSize(12);
+		versionLabel.setAlignment(Label.BOTTOM | Label.RIGHT);
+		versionLabel.setColor(TEXT_COLOR);
+        versionLabel.setText(applicationName + " Build " + buildNumber);
+        layerMan.add(versionLabel, LAYER_UI);
         
 		// Set up the timer text.
-		timerText = ResourceFactory.get().getText();
-        timerText.setXYPosition(404, 100);
-		timerText.setSize(50);
-		timerText.setAlignment(Text.BOTTOM | Text.HCENTER);
-		timerText.setColor(TEXT_COLOR);
-        layerMan.add(timerText, LAYER_UI);
+		timerLabel = ResourceFactory.get().getText();
+        timerLabel.setXYPosition(404, 100);
+		timerLabel.setSize(50);
+		timerLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
+		timerLabel.setColor(TEXT_COLOR);
+        layerMan.add(timerLabel, LAYER_UI);
                 
         // Set up the score text.
-        scoreText = ResourceFactory.get().getText();
-        scoreText.setXYPosition(126, 400); 
-        scoreText.setSize(20);
-        scoreText.setAlignment(Text.BOTTOM | Text.HCENTER);
-        scoreText.setColor(TEXT_COLOR);     
+        scoreLabel = ResourceFactory.get().getText();
+        scoreLabel.setXYPosition(126, 400); 
+        scoreLabel.setSize(20);
+        scoreLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
+        scoreLabel.setColor(TEXT_COLOR);     
         scoreMan.setTargetLevelScore(
                 worldMan.generateTargetLevelScore());
-        layerMan.add(scoreText, LAYER_UI);
+        layerMan.add(scoreLabel, LAYER_UI);
         
         // Set up the high score text.
-        highScoreText = ResourceFactory.get().getText();
-        highScoreText.setXYPosition(126, 270);
-        highScoreText.setSize(20);
-        highScoreText.setAlignment(Text.BOTTOM | Text.HCENTER);
-        highScoreText.setColor(TEXT_COLOR);
-        layerMan.add(highScoreText, LAYER_UI);
+        highScoreLabel = ResourceFactory.get().getText();
+        highScoreLabel.setXYPosition(126, 270);
+        highScoreLabel.setSize(20);
+        highScoreLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
+        highScoreLabel.setColor(TEXT_COLOR);
+        layerMan.add(highScoreLabel, LAYER_UI);
         
         // Set up the level text.
-        levelText = ResourceFactory.get().getText();
-        levelText.setXYPosition(669, 270);
-        levelText.setSize(20);
-        levelText.setAlignment(Text.BOTTOM | Text.HCENTER);
-        levelText.setColor(TEXT_COLOR);
-        layerMan.add(levelText, LAYER_UI);
+        levelLabel = ResourceFactory.get().getText();
+        levelLabel.setXYPosition(669, 270);
+        levelLabel.setSize(20);
+        levelLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
+        levelLabel.setColor(TEXT_COLOR);
+        layerMan.add(levelLabel, LAYER_UI);
         
         // Set up the move count text.
-        moveCountText = ResourceFactory.get().getText();
-        moveCountText.setXYPosition(669, 400);
-        moveCountText.setSize(20);
-        moveCountText.setAlignment(Text.BOTTOM | Text.HCENTER);
-        moveCountText.setColor(TEXT_COLOR);
-        layerMan.add(moveCountText, LAYER_UI);
+        movesLabel = ResourceFactory.get().getText();
+        movesLabel.setXYPosition(669, 400);
+        movesLabel.setSize(20);
+        movesLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
+        movesLabel.setColor(TEXT_COLOR);
+        layerMan.add(movesLabel, LAYER_UI);
              
         // Create the progress bar.
         progressBar = new ProgressBar(400, 508, 186, true);
@@ -658,15 +658,19 @@ public class Game extends Canvas implements GameWindowCallback
             // show the paused text.
             if (pauseButton.isActivated() == true)
             {
+                pauseButton.setText("Resume");
+                pauseButton.getLabel().setSize(18);
                 layerMan.hide(LAYER_TILE);
                 layerMan.hide(LAYER_EFFECT);                
-                pausedText.setVisible(true);
+                pausedLabel.setVisible(true);
             }
             else
             {
+                pauseButton.setText("Pause");
+                pauseButton.getLabel().setSize(22);
                 layerMan.show(LAYER_TILE);
                 layerMan.show(LAYER_EFFECT);
-                pausedText.setVisible(false);
+                pausedLabel.setVisible(false);
                 
                 // Clear clicks.
                 pieceMan.clearMouseButtons();
@@ -688,11 +692,11 @@ public class Game extends Canvas implements GameWindowCallback
                     Util.handleMessage("Level up!!!", Thread.currentThread());
                     worldMan.levelUp(this);
                     
-                    final XYPosition p = levelText.getXYPosition();
+                    final XYPosition p = levelLabel.getXYPosition();
                     
                     soundMan.play(SoundManager.LEVEL_UP);
                     
-                    animationMan.add(new FloatTextAnimation(
+                    animationMan.add(new FloatLabelAnimation(
                             p.x, p.y - 20,                            
                             layerMan,
                             "Level up!", 
@@ -893,7 +897,7 @@ public class Game extends Canvas implements GameWindowCallback
                         cascadeCount);                               
                 
                 // Show the SCT.
-                animationMan.add(new FloatTextAnimation(
+                animationMan.add(new FloatLabelAnimation(
                         boardMan.determineCenterPoint(tileRemovalSet), 
                         layerMan, 
                         String.valueOf(deltaScore),
@@ -948,7 +952,7 @@ public class Game extends Canvas implements GameWindowCallback
                         cascadeCount);
                 
                 // Show the SCT.
-                animationMan.add(new FloatTextAnimation(
+                animationMan.add(new FloatLabelAnimation(
                         boardMan.determineCenterPoint(tileRemovalSet), 
                         layerMan, 
                         String.valueOf(deltaScore),
@@ -1046,19 +1050,19 @@ public class Game extends Canvas implements GameWindowCallback
             pieceMan.updateLogic(this);
             
             // Draw the timer text.
-            timerText.setText(String.valueOf(timerMan.getTime()));		
+            timerLabel.setText(String.valueOf(timerMan.getTime()));		
 
             // Draw the score text.
-            scoreText.setText(String.valueOf(scoreMan.getTotalScore()));
+            scoreLabel.setText(String.valueOf(scoreMan.getTotalScore()));
 
             // Draw the high score text.
-            highScoreText.setText(String.valueOf(scoreMan.getHighScore()));
+            highScoreLabel.setText(String.valueOf(scoreMan.getHighScore()));
 
             // Set the level text.
-            levelText.setText(String.valueOf(worldMan.getLevel()));
+            levelLabel.setText(String.valueOf(worldMan.getLevel()));
 
             // Draw the move count text.
-            moveCountText.setText(String.valueOf(moveMan.getMoveCount()));
+            movesLabel.setText(String.valueOf(moveMan.getMoveCount()));
             
             // Update the progress bar.
             progressBar.setProgress(scoreMan.getLevelScore());

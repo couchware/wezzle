@@ -11,7 +11,7 @@ import java.util.Set;
  * 
  * @author cdmckay
  */
-public class FloatTextAnimation extends Animation
+public class FloatLabelAnimation extends Animation
 {            
     /**
      * The period of each frame.
@@ -67,7 +67,7 @@ public class FloatTextAnimation extends Animation
     /**
      * The explosion entity.
      */
-    final Text floatText;
+    final Label floatLabel;
     
     /**
      * The number of opaque frames that have passed.
@@ -84,7 +84,7 @@ public class FloatTextAnimation extends Animation
      * @param text
      * @param size
      */
-    public FloatTextAnimation(final int x, final int y, 
+    public FloatLabelAnimation(final int x, final int y, 
             final LayerManager layerMan,
             final String text, 
             final Color color,
@@ -97,15 +97,15 @@ public class FloatTextAnimation extends Animation
         this.layerMan = layerMan;
               
         // Load the explosion and centre it over the entity.
-        floatText = ResourceFactory.get().getText();
-        floatText.setXYPosition(x, y);
-        floatText.setAlignment(Text.VCENTER | Text.HCENTER);
-        floatText.setColor(color);
-        floatText.setSize(size);
-        floatText.setText(text);   
+        floatLabel = ResourceFactory.get().getText();
+        floatLabel.setXYPosition(x, y);
+        floatLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        floatLabel.setColor(color);
+        floatLabel.setSize(size);
+        floatLabel.setText(text);   
         
         // Reset the draw rectangle.
-        floatText.resetDrawRect();               
+        floatLabel.resetDrawRect();               
                         
         // Set the initial pulse state.
         state = STATE_OPAQUE;
@@ -114,10 +114,10 @@ public class FloatTextAnimation extends Animation
         opaqueFrameCount = 0;
         
         // Add the floating text to the layer manager.
-        layerMan.add(floatText, Game.LAYER_EFFECT);
+        layerMan.add(floatLabel, Game.LAYER_EFFECT);
     }
     
-    public FloatTextAnimation(final XYPosition p,
+    public FloatLabelAnimation(final XYPosition p,
             final LayerManager layerMan,
             final String text, 
             final Color color,
@@ -146,8 +146,8 @@ public class FloatTextAnimation extends Animation
             counter -= period;
             
             // Move text.
-            floatText.setX(floatText.getX() + X_STEP);
-            floatText.setY(floatText.getY() + Y_STEP);
+            floatLabel.setX(floatLabel.getX() + X_STEP);
+            floatLabel.setY(floatLabel.getY() + Y_STEP);
             
             // If we're pulsing down, reducing the size and translate slightly.
             switch (state)
@@ -166,13 +166,13 @@ public class FloatTextAnimation extends Animation
                 case STATE_FADE:
                                                     
                     // Reduce the opacity.
-                    floatText.setOpacity(floatText.getOpacity() - OPACITY_STEP);
+                    floatLabel.setOpacity(floatLabel.getOpacity() - OPACITY_STEP);
                     
                     // If the opacity reaches the minimum, stop the animation.
-                    if (floatText.getOpacity() == OPACITY_MIN)
+                    if (floatLabel.getOpacity() == OPACITY_MIN)
                     {
                         // Remove explosion from layer manager.
-                        layerMan.remove(floatText, 1);
+                        layerMan.remove(floatLabel, 1);
                         
                         // Set done flag.
                         done = true;
@@ -190,8 +190,8 @@ public class FloatTextAnimation extends Animation
     public void setVisible(final boolean visible)
     {
         this.visible = visible;        
-        if (floatText != null)
-            floatText.setVisible(visible);
+        if (floatLabel != null)
+            floatLabel.setVisible(visible);
     }
     
 }
