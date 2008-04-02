@@ -23,16 +23,14 @@ public class LayerManager
     private int numberOfLayers;
         
     /**
-     * The hash map of layer linked lists.
-     * Using 1.5 generics, this would be
-     *     HashMap<Integer, LinkedList<Drawable>>.
+     * TODO Add documentation.
      */
-    private ArrayList masterLayerList;
+    private LinkedList[] layers;
     
     /**
      * The list of hidden layers.
      */
-    private ArrayList hiddenLayerList;
+    private boolean[] hiddenLayers;
     
     /**
      * The game window.  Used when drawing regions of the screen.
@@ -51,20 +49,20 @@ public class LayerManager
         // Set the window reference.
         this.window = window;                
         
-        // Initialize layer arraylist.
-        masterLayerList = new ArrayList(numberOfLayers);
-        
-        // Initialize hidden layer map.
-        hiddenLayerList = new ArrayList(numberOfLayers);
-        
         // Record number of layers.
         this.numberOfLayers = numberOfLayers;
+        
+        // Initialize layer arraylist.
+        layers = new LinkedList[numberOfLayers];
+        
+        // Initialize hidden layer map.
+        hiddenLayers = new boolean[numberOfLayers];
         
         // Create layers.
         for (int i = 0; i < numberOfLayers; i++)
         {
-            masterLayerList.add(i, new LinkedList());
-            hiddenLayerList.add(i, Boolean.FALSE);
+            layers[i] = new LinkedList();
+            hiddenLayers[i] = false;
         }        
     }
     
@@ -78,7 +76,7 @@ public class LayerManager
             return;
 
         // Add the element to the layer.
-        ((LinkedList) masterLayerList.get(layer)).add(element);        
+        ((LinkedList) layers[layer]).add(element);        
     }
     
     /**
@@ -86,9 +84,12 @@ public class LayerManager
      * @return True if the element was removed, false if it was not found.
      */
     public boolean remove(final Drawable element, final int layer)
-    {                
+    {   
+        if (layerExists(layer) == false)
+            return false;
+        
         // Get the layer.
-        final LinkedList layerList = (LinkedList) masterLayerList.get(layer);
+        final LinkedList layerList = (LinkedList) layers[layer];
         
         // Get the index.
         int index = layerList.indexOf(element);
@@ -104,13 +105,14 @@ public class LayerManager
     }    
     
     public void hide(final int layer)
-    {
-        Integer index = new Integer(layer);
+    {             
+        if (layerExists(layer) == false)
+            return;
         
-        hiddenLayerList.set(index, Boolean.TRUE);
+        hiddenLayers[layer] = true;
         
         // Grab the layer.
-        final LinkedList layerList = (LinkedList) masterLayerList.get(index);
+        final LinkedList layerList = (LinkedList) layers[layer];
         
         for (Iterator it = layerList.iterator(); it.hasNext(); )
             ((Drawable) it.next()).setDirty(true);
@@ -118,12 +120,13 @@ public class LayerManager
     
     public void show(final int layer)
     {
-        Integer index = new Integer(layer);
+        if (layerExists(layer) == false)
+            return;
         
-        hiddenLayerList.set(index, Boolean.FALSE);
+        hiddenLayers[layer] = false;
         
         // Grab the layer.
-        final LinkedList layerList = (LinkedList) masterLayerList.get(index);
+        final LinkedList layerList = (LinkedList) layers[layer];
         
         for (Iterator it = layerList.iterator(); it.hasNext(); )
             ((Drawable) it.next()).setDirty(true);
@@ -139,11 +142,11 @@ public class LayerManager
         for (int i = 0; i < numberOfLayers; i++)
         {                        
             // Check if layer exists, if it doesn't, skip this iteration.
-            if (((Boolean) hiddenLayerList.get(i)) == Boolean.TRUE)                    
+            if (hiddenLayers[i] == true)                 
                 continue;
             
             // Grab this layer.
-            final LinkedList layerList = (LinkedList) masterLayerList.get(i);
+            final LinkedList layerList = (LinkedList) layers[i];
             
             // Draw its contents.
             for (Iterator it = layerList.iterator(); it.hasNext(); )
@@ -170,7 +173,7 @@ public class LayerManager
         for (int i = 0; i < numberOfLayers; i++)
         {                                             
             // Grab this layer.
-            LinkedList layerList = (LinkedList) masterLayerList.get(i);
+            LinkedList layerList = (LinkedList) layers[i];
             
             // See if it's in the region.
             for (Iterator it = layerList.iterator(); it.hasNext(); )
@@ -240,7 +243,7 @@ public class LayerManager
         assert(layer >= 0);
         
         // Check if layer exists then error out.
-        if (layer >= masterLayerList.size())
+        if (layer >= layers.length)
         {                        
             Util.handleMessage("Layer " + layer + " does not exist.", 
                     Thread.currentThread());
