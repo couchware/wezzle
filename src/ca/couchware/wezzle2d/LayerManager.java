@@ -138,6 +138,13 @@ public class LayerManager
      */
     public void draw()
     {
+        Rectangle clip;
+        
+        if (window.getClip() !=  null)
+            clip = window.getClip().getBounds();
+        else
+            clip = null;
+                
         // Cycle through all the layers, drawing them.
         for (int i = 0; i < numberOfLayers; i++)
         {                        
@@ -151,7 +158,10 @@ public class LayerManager
             // Draw its contents.
             for (Iterator it = layerList.iterator(); it.hasNext(); )
             {
-                ((Drawable) it.next()).draw();
+                Drawable d = (Drawable) it.next();
+                
+                if (clip == null || d.getDrawRect().intersects(clip))
+                        d.draw();                
             }           
         }            
     }
@@ -227,7 +237,7 @@ public class LayerManager
             window.setClip(clip);
             draw();            
             window.clearClip();
-            //window.drawClip(clip);
+//            window.drawClip(clip);
                         
             return true;
         }        

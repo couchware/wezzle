@@ -14,7 +14,7 @@ import ca.couchware.wezzle2d.piece.Piece;
  *
  */
 
-public class PieceGrid implements Drawable
+public class PieceGrid implements Drawable, Positionable
 {
     /**
      * Path to the piece selector sprite.
@@ -271,6 +271,48 @@ public class PieceGrid implements Drawable
     {
         x_ = x;
         y_ = y;
+    }
+
+    public void setXYPosition(int x, int y)
+    {
+        setX(x);
+        setY(y);
+    }
+
+    public void setXYPosition(XYPosition p)
+    {
+        setX(p.x);
+        setY(p.y);
+    }
+
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public void setWidth(int width)
+    {
+        throw new UnsupportedOperationException("You may not adjust this property.");
+    }
+
+    public int getHeight()
+    {
+        return height;
+    }
+
+    public void setHeight(int height)
+    {
+        throw new UnsupportedOperationException("You may not adjust this property.");
+    }
+
+    public int getAlignment()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setAlignment(int alignment)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }

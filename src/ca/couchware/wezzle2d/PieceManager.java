@@ -177,13 +177,16 @@ public class PieceManager implements
 		}
         
         // Rotate it up to 3 times.
-        int numberOfRotations = Util.random.nextInt(4) + 1;
+        int numberOfRotations = Util.random.nextInt(4);
         
         for (int i = 0; i <= numberOfRotations; i++)
         {
-            piece.rotate();
-            pieceGrid.setDirty(true);
+            piece.rotate();            
         }
+        
+        pieceGrid.setXYPosition(adjustPosition(
+                pieceGrid.getXYPosition()));
+        pieceGrid.setDirty(true);
 	}
     
     /**
@@ -527,6 +530,8 @@ public class PieceManager implements
                 stopAnimationAt(pieceGrid.getXYPosition());
                 
                 piece.rotate();
+                pieceGrid.setXYPosition(adjustPosition(
+                    pieceGrid.getXYPosition()));
                 pieceGrid.setDirty(true);
                 
                 startAnimationAt(pieceGrid.getXYPosition());
