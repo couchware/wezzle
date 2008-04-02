@@ -1,8 +1,8 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.java2d.Java2DLabel;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,7 +14,7 @@ import java.util.LinkedList;
  * 
  * @author cdmckay
  */
-public class LayerManager implements Drawable
+public class LayerManager
 {
     
     /**
@@ -27,12 +27,12 @@ public class LayerManager implements Drawable
      * Using 1.5 generics, this would be
      *     HashMap<Integer, LinkedList<Drawable>>.
      */
-    private HashMap layerMap;
+    private ArrayList masterLayerList;
     
     /**
      * The list of hidden layers.
      */
-    private HashMap hiddenLayerMap;
+    private ArrayList hiddenLayerList;
     
     /**
      * The game window.  Used when drawing regions of the screen.
@@ -51,11 +51,11 @@ public class LayerManager implements Drawable
         // Set the window reference.
         this.window = window;                
         
-        // Initialize layer map.
-        layerMap = new HashMap();
+        // Initialize layer arraylist.
+        masterLayerList = new ArrayList(numberOfLayers);
         
         // Initialize hidden layer map.
-        hiddenLayerMap = new HashMap();
+        hiddenLayerList = new ArrayList(numberOfLayers);
         
         // Record number of layers.
         this.numberOfLayers = numberOfLayers;
@@ -63,8 +63,8 @@ public class LayerManager implements Drawable
         // Create layers.
         for (int i = 0; i < numberOfLayers; i++)
         {
-            layerMap.put(new Integer(i), new LinkedList());
-            hiddenLayerMap.put(new Integer(i), Boolean.FALSE);
+            masterLayerList.add(i, new LinkedList());
+            hiddenLayerList.add(i, Boolean.FALSE);
         }        
     }
     
@@ -74,25 +74,11 @@ public class LayerManager implements Drawable
      */
     public void add(final Drawable element, final int layer)
     {            
-        // Sanity check.
-        assert(layer >= 0);
-        
-        // Check if layer exists.  If it does not, add it.
-        if (layerMap.containsKey(new Integer(layer)) == false)
-        {                        
-            Util.handleMessage("Layer " + layer + " created.", 
-                    Thread.currentThread());
-            
-            // Increase layer count.
-            this.numberOfLayers = layer + 1;
-            
-            // Increase the layer count.
-            layerMap.put(layer, new LinkedList());
-            hiddenLayerMap.put(layer, new Boolean(false));
-        }
+        if (layerExists(layer) == false)
+            return;
 
         // Add the element to the layer.
-        ((LinkedList) layerMap.get(new Integer(layer))).add(element);        
+        ((LinkedList) masterLayerList.get(layer)).add(element);        
     }
     
     /**
@@ -100,9 +86,9 @@ public class LayerManager implements Drawable
      * @return True if the element was removed, false if it was not found.
      */
     public boolean remove(final Drawable element, final int layer)
-    {
+    {                
         // Get the layer.
-        LinkedList layerList = (LinkedList) layerMap.get(layer);
+        final LinkedList layerList = (LinkedList) masterLayerList.get(layer);
         
         // Get the index.
         int index = layerList.indexOf(element);
@@ -121,10 +107,10 @@ public class LayerManager implements Drawable
     {
         Integer index = new Integer(layer);
         
-        hiddenLayerMap.put(index, Boolean.TRUE);
+        hiddenLayerList.set(index, Boolean.TRUE);
         
         // Grab the layer.
-        final LinkedList layerList = (LinkedList) layerMap.get(index);
+        final LinkedList layerList = (LinkedList) masterLayerList.get(index);
         
         for (Iterator it = layerList.iterator(); it.hasNext(); )
             ((Drawable) it.next()).setDirty(true);
@@ -134,10 +120,10 @@ public class LayerManager implements Drawable
     {
         Integer index = new Integer(layer);
         
-        hiddenLayerMap.put(index, Boolean.FALSE);
+        hiddenLayerList.set(index, Boolean.FALSE);
         
         // Grab the layer.
-        final LinkedList layerList = (LinkedList) layerMap.get(index);
+        final LinkedList layerList = (LinkedList) masterLayerList.get(index);
         
         for (Iterator it = layerList.iterator(); it.hasNext(); )
             ((Drawable) it.next()).setDirty(true);
@@ -151,16 +137,13 @@ public class LayerManager implements Drawable
     {
         // Cycle through all the layers, drawing them.
         for (int i = 0; i < numberOfLayers; i++)
-        {
-            Integer index = new Integer(i);
-            
+        {                        
             // Check if layer exists, if it doesn't, skip this iteration.
-            if (((Boolean) hiddenLayerMap.get(index)) == Boolean.TRUE
-                    || layerMap.containsKey(index) == false)
+            if (((Boolean) hiddenLayerList.get(i)) == Boolean.TRUE)                    
                 continue;
             
             // Grab this layer.
-            LinkedList layerList = (LinkedList) layerMap.get(index);
+            final LinkedList layerList = (LinkedList) masterLayerList.get(i);
             
             // Draw its contents.
             for (Iterator it = layerList.iterator(); it.hasNext(); )
@@ -185,15 +168,9 @@ public class LayerManager implements Drawable
         
         // Cycle through all the layers, drawing them.
         for (int i = 0; i < numberOfLayers; i++)
-        {
-            Integer index = new Integer(i);
-            
-            // Check if layer exists, if it doesn't, skip this iteration.
-            if (layerMap.containsKey(index) == false)
-                continue;
-            
+        {                                             
             // Grab this layer.
-            LinkedList layerList = (LinkedList) layerMap.get(index);
+            LinkedList layerList = (LinkedList) masterLayerList.get(i);
             
             // See if it's in the region.
             for (Iterator it = layerList.iterator(); it.hasNext(); )
@@ -256,35 +233,24 @@ public class LayerManager implements Drawable
             return false;
         }
     }
-
-    public void setVisible(boolean visible)
+    
+    private boolean layerExists(int layer)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean isVisible()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setDirty(boolean dirty)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean isDirty()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Rectangle getDrawRect()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void resetDrawRect()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Sanity check.
+        assert(layer >= 0);
+        
+        // Check if layer exists then error out.
+        if (layer >= masterLayerList.size())
+        {                        
+            Util.handleMessage("Layer " + layer + " does not exist.", 
+                    Thread.currentThread());
+                        
+            throw new RuntimeException("Non-existant layer number.");                        
+        }
+        else
+        {
+            return true;
+        }
     }
 
 }
