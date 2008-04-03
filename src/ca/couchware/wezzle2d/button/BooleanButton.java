@@ -72,7 +72,8 @@ public abstract class BooleanButton extends Button
             state = STATE_ACTIVE;
             setDirty(true);
         }
-        else if (state != STATE_NORMAL)
+        else if (activated == false 
+                && state != STATE_NORMAL)
         {
             state = STATE_NORMAL;
             setDirty(true);
