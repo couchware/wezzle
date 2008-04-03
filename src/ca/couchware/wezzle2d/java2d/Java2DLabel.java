@@ -234,8 +234,8 @@ public class Java2DLabel extends Label
 	 */
 	public void draw()
 	{
-        x_ = x;
-        y_ = y;
+        x_ = x + offsetX;
+        y_ = y + offsetY;
         
         width_ = getWidth();
         height_ = getHeight();
@@ -289,6 +289,58 @@ public class Java2DLabel extends Label
 			Util.handleException(e);
 		}		
 	}
+    
+    public int getOffsetX()
+    {   
+        // See if the graphics are available.
+        Graphics2D g = window.getDrawGraphics();
+        
+        // If we don't, throw an exception.
+        if (g == null)
+        {
+            throw new IllegalStateException("Graphics2D is not availabe yet!");            
+        }
+        else
+        {
+            // Update the text layout if flagged.
+            if (updateTextLayoutNextDraw == true)
+            {
+                // Clear the flag.
+                updateTextLayoutNextDraw = false;
+                
+                // Update it.
+                updateTextLayout(g);
+            }
+            
+            return offsetX;
+        } // end if                 
+    }
+
+    public int getOffsetY()
+    {
+        // See if the graphics are available.
+        Graphics2D g = window.getDrawGraphics();
+        
+        // If we don't, throw an exception.
+        if (g == null)
+        {
+            throw new IllegalStateException("Graphics2D is not availabe yet!");            
+        }
+        else
+        {
+            // Update the text layout if flagged.
+            if (updateTextLayoutNextDraw == true)
+            {
+                // Clear the flag.
+                updateTextLayoutNextDraw = false;
+                
+                // Update it.
+                updateTextLayout(g);
+            }
+            
+            return offsetY;
+        } // end if
+    }
 
     /**
      * This method will only work when the Graphics2D instance is available.

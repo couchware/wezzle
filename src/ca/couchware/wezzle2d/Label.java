@@ -330,15 +330,14 @@ public abstract class Label implements Drawable, Positionable
     {
         return dirty;
     }
-    
+
     public Rectangle getDrawRect()
     {
-        Rectangle rect = new Rectangle(x_, y_, width_ + 2, height_ + 2);
-                
-        rect.add(new Rectangle(x, y, getWidth() + 2, getHeight() + 2));
-
+        Rectangle rect = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);                       
+        rect.translate(offsetX, offsetY);  
+        
+        rect.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));                             
         rect.translate(0, -(getHeight() + 2));
-        rect.translate(offsetX, offsetY);
         
         if (rect.getMinX() < 0 || rect.getMinY() < 0)
             Util.handleWarning("Offending text is " + text,
@@ -351,6 +350,9 @@ public abstract class Label implements Drawable, Positionable
     {
         x_ = x;
         y_ = y;
+        
+        width_ = getWidth();
+        height_ =  getHeight();
     }
 		
 }

@@ -713,6 +713,7 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Reset a bunch of stuff.
                 timerMan.resetTimer();
+                worldMan.setCurrentLevel(1);
                 scoreMan.setLevelScore(0);
                 scoreMan.setTotalScore(0);
                 moveMan.setMoveCount(0);

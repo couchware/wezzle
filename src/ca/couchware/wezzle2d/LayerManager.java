@@ -237,7 +237,7 @@ public class LayerManager
             window.setClip(clip);
             draw();            
             window.clearClip();
-//            window.drawClip(clip);
+            //window.drawClip(clip);
                         
             return true;
         }        

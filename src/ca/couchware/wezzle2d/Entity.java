@@ -50,7 +50,14 @@ public class Entity implements Drawable, Positionable
      */
 	protected double y;
     
+    /**
+     * The previous x location.
+     */
     protected double x_;
+    
+    /**
+     * The previous y location.
+     */
     protected double y_;
     
     /** 
@@ -62,6 +69,16 @@ public class Entity implements Drawable, Positionable
      * The current height of the entity.
      */
     protected int height;
+    
+    /**
+     * The previous width.
+     */
+    protected int width_;
+    
+    /**
+     * The previous height.
+     */
+    protected int height_;
     
     /**
      * The current draw rectangle.
@@ -127,9 +144,10 @@ public class Entity implements Drawable, Positionable
         this.width = sprite.getWidth();
         this.height = sprite.getHeight();
         
-        this.alignment = TOP | LEFT;
+        this.width_ = width;
+        this.height_ = height;
         
-//        this.drawRect = new Rectangle(x, y, width, height);
+        this.alignment = TOP | LEFT;        
         
         // Set dirty so it will be drawn.
         setDirty(true);                
@@ -146,11 +164,7 @@ public class Entity implements Drawable, Positionable
 	{
         double newX = x + (delta * dx) / 1000;
         double newY = y + (delta * dy) / 1000;
-        				        
-        // Update draw rectangle.
-//        updateDrawRectX((int) newX);
-//        updateDrawRectY((int) newY);
-        
+        				           
         // Update the location of the entity based on move speeds.		
         x = newX;
         y = newY;
@@ -238,27 +252,12 @@ public class Entity implements Drawable, Positionable
 	 * @param x The x to set.
 	 */
 	public void setX(final int x)
-	{        
-//        updateDrawRectX(x);
-                    
+	{                            
 		this.x = x;                
         
         // Set dirty so it will be drawn.        
         setDirty(true);
 	}
-    
-//    protected void updateDrawRectX(int x)
-//    {
-//        // Update draw rectangle.
-//        drawRect.setBounds(getX(), getY(), width + 1, height + 1);
-//        
-//        if (x > getX())
-//            drawRect.add(x + width + 1, y);
-//        else
-//            drawRect.add(x, y);
-//        
-//        drawRect.translate(offsetX, offsetY);
-//    }
 
 	/**
 	 * Get the y location of this entity.
@@ -275,26 +274,11 @@ public class Entity implements Drawable, Positionable
 	 */
 	public void setY(final int y)
 	{
-//        updateDrawRectY(y);
-        
 		this.y = y;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
 	}
-    
-//    protected void updateDrawRectY(int y)
-//    {
-//         // Update draw rectangle.
-//        drawRect.setBounds(getX(), getY(), width + 1, height + 1);
-//        
-//        if (y > getY())
-//            drawRect.add(x, y + height + 1);
-//        else
-//            drawRect.add(x, y);
-//        
-//        drawRect.translate(offsetX, offsetY);
-//    }
     
     public XYPosition getXYPosition()
     {
@@ -392,8 +376,11 @@ public class Entity implements Drawable, Positionable
 	 */
 	public void draw()
 	{
-        this.x_ = x;
-        this.y_ = y;
+        this.x_ = x + offsetX;
+        this.y_ = y + offsetY;
+        
+        this.width_ = width;
+        this.height_ = height;
         
         if (isVisible() == false)
             return;
@@ -496,21 +483,27 @@ public class Entity implements Drawable, Positionable
     
     public Rectangle getDrawRect()
     {
-        Rectangle rect = new Rectangle((int) x_, (int) y_, 
-                width + 2, height + 2);
+        Rectangle rect1 = new Rectangle((int) x_, (int) y_, 
+                width_ + 2, height_ + 2);
         
         if ((int) x_ != (int) x || (int) y_ != (int) y)
-            rect.add(new Rectangle((int) x, (int) y, width + 2, height + 2));
+        {
+            Rectangle rect2 = new Rectangle((int) x, (int) y, 
+                    width + 2, height + 2);        
+            rect2.translate(offsetX, offsetY);            
+            rect1.add(rect2);
+        }
         
-        rect.translate(offsetX, offsetY);
-        
-        return rect;
+        return rect1;
     }
 
     public void resetDrawRect()
     {
         x_ = x;
         y_ = y;
+        
+        width_ = width;
+        height_ = height;
     }
     
 }
