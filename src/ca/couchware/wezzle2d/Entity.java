@@ -485,14 +485,11 @@ public class Entity implements Drawable, Positionable
     {
         Rectangle rect1 = new Rectangle((int) x_, (int) y_, 
                 width_ + 2, height_ + 2);
-        
-        if ((int) x_ != (int) x || (int) y_ != (int) y)
-        {
-            Rectangle rect2 = new Rectangle((int) x, (int) y, 
-                    width + 2, height + 2);        
-            rect2.translate(offsetX, offsetY);            
-            rect1.add(rect2);
-        }
+                
+        Rectangle rect2 = new Rectangle((int) x, (int) y, 
+                width + 2, height + 2);        
+        rect2.translate(offsetX, offsetY);            
+        rect1.add(rect2);
         
         return rect1;
     }
