@@ -13,11 +13,6 @@ import java.awt.Dimension;
 public class PulseAnimation extends Animation
 {    
     /**
-     * The period of each frame.
-     */
-    final private static int FRAME_PERIOD = 120;
-    
-    /**
      * The pulse down state.
      */
     final private static int PULSE_DOWN = 0;
@@ -56,10 +51,10 @@ public class PulseAnimation extends Animation
     /**
      * The constructor.
      */
-    public PulseAnimation(final Entity entity)
+    public PulseAnimation(final Entity entity, final int period)
     {                
         // Invoke super constructor.
-        super(FRAME_PERIOD);       
+        super(period);       
         
         // Save a reference to the entity.
         this.entity = entity;
@@ -171,4 +166,15 @@ public class PulseAnimation extends Animation
         frames = 0;
         counter = 0;
     }
+
+    public int getPeriod()
+    {
+        return period;
+    }
+
+    public void setPeriod(int period)
+    {
+        this.period = period;
+    }        
+    
 }

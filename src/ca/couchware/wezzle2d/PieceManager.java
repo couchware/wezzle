@@ -292,7 +292,7 @@ public class PieceManager implements
        return (y - boardMan.getY()) / boardMan.getCellHeight(); 
     }
     
-    private void startAnimationAt(final XYPosition p)
+    private void startAnimationAt(final XYPosition p, int period)
     {
         // Add new animations.
         Set indexSet = getSelectedIndexSet(p);
@@ -305,7 +305,27 @@ public class PieceManager implements
                 continue;
 
             // Make sure they have a pulse animation.                   
-            t.setAnimation(new PulseAnimation(t));           
+            t.setAnimation(new PulseAnimation(t, period));           
+        }
+    }
+    
+    private void adjustAnimationAt(final XYPosition p, int period)
+    {
+        Set indexSet = getSelectedIndexSet(p);
+        for (Iterator it = indexSet.iterator(); it.hasNext(); )
+        {                    
+            final TileEntity t = boardMan.getTile((Integer) it.next());
+
+            // Skip if this is not a tile.
+            if (t == null)                    
+                continue;
+                        
+            Animation a = t.getAnimation();
+            
+            if (a == null || a instanceof PulseAnimation == false)
+                continue;
+            
+            ((PulseAnimation) a).setPeriod(period);
         }
     }
     
@@ -335,7 +355,7 @@ public class PieceManager implements
     //--------------------------------------------------------------------------
     
     public void updateLogic(final Game game)
-    {        
+    {                     
         // If the board is refactoring, do not logicify.
         if (game.isBusy() == true)
              return;                 
@@ -532,9 +552,9 @@ public class PieceManager implements
                 piece.rotate();
                 pieceGrid.setXYPosition(adjustPosition(
                     pieceGrid.getXYPosition()));
-                pieceGrid.setDirty(true);
+                pieceGrid.setDirty(true);                                
                 
-                startAnimationAt(pieceGrid.getXYPosition());
+                startAnimationAt(pieceGrid.getXYPosition(), 120);
 
                 // Reset flag.
                 clearMouseButtons();
@@ -545,6 +565,11 @@ public class PieceManager implements
                 // Filter the current position.
                 XYPosition ap = adjustPosition(p);
 
+                int period = Util.scaleInt(
+                        0, game.timerMan.getInitialTime(), 
+                        20, 120, 
+                        game.timerMan.getTime());
+                
                 // If the position changed, or the board was refactored.
                 if (ap.getX() != pieceGrid.getX()
                         || ap.getY() != pieceGrid.getY()
@@ -558,11 +583,15 @@ public class PieceManager implements
 
                     // Update piece grid position.
                     pieceGrid.setX(ap.getX());
-                    pieceGrid.setY(ap.getY()); 
-
-                    // Start new animation.
-                    startAnimationAt(ap);
-                } // end if           
+                    pieceGrid.setY(ap.getY());                    
+                                        
+                    // Start new animation.                    
+                    startAnimationAt(ap, period);
+                } 
+                else
+                {                                        
+                    adjustAnimationAt(pieceGrid.getXYPosition(), period);
+                }
             } // end if
         } // end if
     }

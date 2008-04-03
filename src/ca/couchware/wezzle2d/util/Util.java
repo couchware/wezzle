@@ -115,24 +115,6 @@ public class Util
 			LogManager.appendToLog(output);
 	}
 	
-//	/**
-//	 * A method for transposing square 1D arrays in-place.
-//	 */
-//	public static void transpose(Object[] array)
-//	{
-//		assert array != null;
-//		
-//		int columns = (int) Math.sqrt(array.length);
-//		
-//		for (int i = 0; i < arrays.length; i++)
-//		{
-//			int column = i % columns;
-//			int row = i / columns;
-//			
-//			
-//		}
-//	}
-	
 	/**
 	 * A method for transposing square 2D arrays in-place.
 	 */
@@ -168,4 +150,24 @@ public class Util
 		array[c1][r1] = array[c2][r2];
 		array[c2][r2] = swap;
 	}
+    
+    public static int scaleInt(int fromLower, int fromUpper,
+            int toLower, int toUpper, int fromNumber)
+    {
+        assert(fromUpper > fromLower);
+        assert(toUpper > toLower);
+        
+        if (fromNumber < fromLower)
+            return toLower;
+        else if (fromNumber > fromUpper)
+            return toUpper;
+        
+        int fromRange = fromUpper - fromLower;
+        double fromFraction = (double) (fromNumber - fromLower)
+                / (double) fromRange;
+        
+        int toRange = toUpper - toLower;
+        
+        return toLower + (int) (((double) toRange) * fromFraction);
+    }
 }
