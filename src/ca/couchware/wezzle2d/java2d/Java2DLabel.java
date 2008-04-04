@@ -220,7 +220,7 @@ public class Java2DLabel extends Label
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+                RenderingHints.VALUE_FRACTIONALMETRICS_ON);        
         
         // Get the render context.
         FontRenderContext frctx = g.getFontRenderContext();

@@ -84,9 +84,10 @@ public class FloatLabelAnimation extends Animation
      * @param size
      */
     public FloatLabelAnimation(final int x, final int y, 
-            final int stepX, final int stepY,
+            final int stepX, final int stepY,            
             final LayerManager layerMan,
             final String text, 
+            final int alignment,
             final Color color,
             final float size)
     {                
@@ -103,7 +104,7 @@ public class FloatLabelAnimation extends Animation
         // Load the explosion and centre it over the entity.
         floatLabel = ResourceFactory.get().getText();
         floatLabel.setXYPosition(x, y);
-        floatLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        floatLabel.setAlignment(alignment);
         floatLabel.setColor(color);
         floatLabel.setSize(size);
         floatLabel.setText(text);   
@@ -122,13 +123,14 @@ public class FloatLabelAnimation extends Animation
     }
     
     public FloatLabelAnimation(final XYPosition p,
-            final int stepX, final int stepY,
-            final LayerManager layerMan,
+            final int stepX, final int stepY,            
+            final LayerManager layerMan,            
             final String text, 
+            final int alignment,
             final Color color,
             final float size)
     {
-        this(p.x, p.y, stepX, stepY, layerMan, text, color, size);
+        this(p.x, p.y, stepX, stepY, layerMan, text, alignment, color, size);
     }
 
     public void nextFrame(long delta)

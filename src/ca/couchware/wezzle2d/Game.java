@@ -703,6 +703,7 @@ public class Game extends Canvas implements GameWindowCallback
                                 + boardMan.getCellHeight() / 2,
                             1, 0, layerMan,
                             "Level Up!", 
+                            Label.LEFT | Label.VCENTER,
                             Game.TEXT_COLOR,
                             26));                            
                 }
@@ -905,6 +906,7 @@ public class Game extends Canvas implements GameWindowCallback
                         boardMan.determineCenterPoint(tileRemovalSet),                         
                         0, -1, layerMan, 
                         String.valueOf(deltaScore),
+                        Label.HCENTER | Label.VCENTER,
                         SCORE_LINE_COLOR,
                         scoreMan.determineFontSize(deltaScore)));
                 
@@ -960,6 +962,7 @@ public class Game extends Canvas implements GameWindowCallback
                         boardMan.determineCenterPoint(tileRemovalSet), 
                         0, -1, layerMan, 
                         String.valueOf(deltaScore),
+                        Label.HCENTER | Label.VCENTER,
                         SCORE_BOMB_COLOR,
                         scoreMan.determineFontSize(deltaScore)));
                                 

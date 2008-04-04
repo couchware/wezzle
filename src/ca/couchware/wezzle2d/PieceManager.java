@@ -613,6 +613,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 game.boardMan.determineCenterPoint(indexSet), 
                 0, -1, game.layerMan,
                 String.valueOf(deltaScore),
+                Label.HCENTER | Label.VCENTER,
                 Game.SCORE_PIECE_COLOR,
                 game.scoreMan.determineFontSize(deltaScore)));
         
