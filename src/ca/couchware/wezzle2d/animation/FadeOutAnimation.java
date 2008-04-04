@@ -69,15 +69,9 @@ public class FadeOutAnimation extends Animation
         // Add to counter.
         counter += delta;
         
-        // Set the number of frames that have passed to 0.
-        frames = 0;
-        
         // See how many frames have passed.
-        while (counter >= period)
-        {
-            frames++;
-            counter -= period;
-        }        
+        frames = (int) counter / period;
+        counter = counter % period; 
         
         // Advance the number of frames.
         for (int i = 0; i < frames; i++)
@@ -87,7 +81,10 @@ public class FadeOutAnimation extends Animation
             
             // If we reach the minimum size, then we're done.
             if (entity.getOpacity() == OPACITY_MIN)
+            {
                 done = true;
+                break;
+            }
         } // end if          
     }
 }

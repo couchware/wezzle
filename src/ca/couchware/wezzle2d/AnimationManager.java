@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.Animation;
+import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -53,5 +54,7 @@ public class AnimationManager
             else
                 a.nextFrame(delta);
         }
+        
+        //Util.handleMessage(animationList.size() + "", Thread.currentThread());
     }
 }

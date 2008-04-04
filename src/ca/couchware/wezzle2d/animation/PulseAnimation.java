@@ -95,17 +95,11 @@ public class PulseAnimation extends Animation
         // Add to counter.
         counter += delta;
         
-        // Set the number of frames that have passed to 0.
-        frames = 0;
-        
         // See how many frames have passed.
-        while (counter >= period)
-        {
-            frames++;
-            counter -= period;
-        }                
+        frames = (int) counter / period;
+        counter = counter % period;          
         
-        // Advance the number of frames.
+        // Advance the number of frames.        
         for (int i = 0; i < frames; i++)
         {             
             // If we're pulsing down, reducing the size and translate slightly.

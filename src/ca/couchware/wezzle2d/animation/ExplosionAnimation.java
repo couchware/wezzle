@@ -132,18 +132,18 @@ public class ExplosionAnimation extends Animation
         
         // Add to counter.
         counter += delta;
-        
-        // Set the number of frames that have passed to 0.
-        frames = 0;
-        
+               
         // See how many frames have passed.
-        while (counter >= period)
-        {
-            frames++;
-            counter -= period;
-        }                
+        frames = (int) counter / period;
+        counter = counter % period;
+        
+        if (frames > 1)
+                Util.handleMessage(
+                        "Explosion skipped " + (frames - 1) + " frames.", 
+                        Thread.currentThread());
         
         // Advance the number of frames.
+        animation:
         for (int i = 0; i < frames; i++)
         {                 
             // If we're pulsing down, reducing the size and translate slightly.
@@ -176,13 +176,18 @@ public class ExplosionAnimation extends Animation
                     if (explosion.getWidth() <= 2)
                     {
                         // Remove explosion from layer manager.
-                        layerMan.remove(explosion, Game.LAYER_EFFECT);
+                        if (layerMan.remove(explosion, Game.LAYER_EFFECT)
+                                == false)
+                        {
+                            throw new IllegalStateException(
+                                    "Could not removed explosion from layer manager!");
+                        }
                         
                         // Set done flag.
                         done = true;
                         
                         // Break.
-                        break;
+                        break animation;
                     }
                     
                     break;

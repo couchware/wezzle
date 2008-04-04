@@ -142,16 +142,14 @@ public class FloatLabelAnimation extends Animation
         // Add to counter.
         counter += delta;
         
+        // See how many frames have passed.
+        frames = (int) counter / period;
+        counter = counter % period;
+        
         // See if enough time has elapsed to advance the frame.
-        if (counter >= period)
-        {
-            // Increase the frame.
-            frames++;            
-            
-            // Remove the period time so the counter will work for ensuing
-            // frames.
-            counter -= period;
-            
+        animation:
+        for (int i = 0; i < frames; i++)
+        {                                   
             // Move text.
             floatLabel.setX(floatLabel.getX() + stepX);
             floatLabel.setY(floatLabel.getY() + stepY);
@@ -183,6 +181,7 @@ public class FloatLabelAnimation extends Animation
                         
                         // Set done flag.
                         done = true;
+                        break animation;                       
                     }
                     
                     break;
