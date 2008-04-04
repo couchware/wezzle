@@ -701,10 +701,10 @@ public class Game extends Canvas implements GameWindowCallback
                                 + boardMan.getCellWidth() / 2,
                             pieceMan.getPieceGrid().getY() 
                                 + boardMan.getCellHeight() / 2,
-                            layerMan,
+                            1, 0, layerMan,
                             "Level Up!", 
                             Game.TEXT_COLOR,
-                            28));                            
+                            26));                            
                 }
             } // end if
             
@@ -902,8 +902,8 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Show the SCT.
                 animationMan.add(new FloatLabelAnimation(
-                        boardMan.determineCenterPoint(tileRemovalSet), 
-                        layerMan, 
+                        boardMan.determineCenterPoint(tileRemovalSet),                         
+                        0, -1, layerMan, 
                         String.valueOf(deltaScore),
                         SCORE_LINE_COLOR,
                         scoreMan.determineFontSize(deltaScore)));
@@ -958,7 +958,7 @@ public class Game extends Canvas implements GameWindowCallback
                 // Show the SCT.
                 animationMan.add(new FloatLabelAnimation(
                         boardMan.determineCenterPoint(tileRemovalSet), 
-                        layerMan, 
+                        0, -1, layerMan, 
                         String.valueOf(deltaScore),
                         SCORE_BOMB_COLOR,
                         scoreMan.determineFontSize(deltaScore)));

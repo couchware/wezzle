@@ -16,18 +16,7 @@ public class FloatLabelAnimation extends Animation
     /**
      * The period of each frame.
      */
-    final private static int FRAME_PERIOD = 60;
-
-    /**
-     * The amount of movement, per frame, in the X-direction.
-     */
-    final private static int X_STEP = 0;        
-
-    
-    /**
-     * The amount of movement, per frame, in the Y-direction.
-     */
-    final private static int Y_STEP = -1;        
+    final private static int FRAME_PERIOD = 60;      
     
     /**
      * The number of frames to stay opaque.
@@ -73,6 +62,16 @@ public class FloatLabelAnimation extends Animation
      * The number of opaque frames that have passed.
      */
     private int opaqueFrameCount;
+    
+    /**
+     * The x step.
+     */
+    final int stepX;
+    
+    /**
+     * The y step.
+     */
+    final int stepY;
 
     /**
      * Creates a floating text animation centered at (x,y) with the specified
@@ -85,6 +84,7 @@ public class FloatLabelAnimation extends Animation
      * @param size
      */
     public FloatLabelAnimation(final int x, final int y, 
+            final int stepX, final int stepY,
             final LayerManager layerMan,
             final String text, 
             final Color color,
@@ -92,6 +92,10 @@ public class FloatLabelAnimation extends Animation
     {                
         // Invoke super constructor.
         super(FRAME_PERIOD);    
+        
+        // Set the steps.
+        this.stepX = stepX;
+        this.stepY = stepY;
         
         // Set reference to layer manager.
         this.layerMan = layerMan;
@@ -118,12 +122,13 @@ public class FloatLabelAnimation extends Animation
     }
     
     public FloatLabelAnimation(final XYPosition p,
+            final int stepX, final int stepY,
             final LayerManager layerMan,
             final String text, 
             final Color color,
             final float size)
     {
-        this(p.x, p.y, layerMan, text, color, size);
+        this(p.x, p.y, stepX, stepY, layerMan, text, color, size);
     }
 
     public void nextFrame(long delta)
@@ -146,8 +151,8 @@ public class FloatLabelAnimation extends Animation
             counter -= period;
             
             // Move text.
-            floatLabel.setX(floatLabel.getX() + X_STEP);
-            floatLabel.setY(floatLabel.getY() + Y_STEP);
+            floatLabel.setX(floatLabel.getX() + stepX);
+            floatLabel.setY(floatLabel.getY() + stepY);
             
             // If we're pulsing down, reducing the size and translate slightly.
             switch (state)

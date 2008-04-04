@@ -610,7 +610,8 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 
         // Add score SCT.
         game.animationMan.add(new FloatLabelAnimation(
-                game.boardMan.determineCenterPoint(indexSet), game.layerMan,
+                game.boardMan.determineCenterPoint(indexSet), 
+                0, -1, game.layerMan,
                 String.valueOf(deltaScore),
                 Game.SCORE_PIECE_COLOR,
                 game.scoreMan.determineFontSize(deltaScore)));
