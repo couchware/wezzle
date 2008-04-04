@@ -329,15 +329,17 @@ public abstract class Label implements Drawable, Positionable
     public boolean isDirty()
     {
         return dirty;
-    }
+    }        
 
+    public abstract int getLetterHeight();
+    
     public Rectangle getDrawRect()
     {
         Rectangle rect = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);                       
         rect.translate(offsetX, offsetY);  
         
         rect.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));                             
-        rect.translate(0, -(getHeight() + 2));
+        rect.translate(0, -(getLetterHeight() + 1));
         
         if (rect.getMinX() < 0 || rect.getMinY() < 0)
             Util.handleWarning("Offending text is " + text,

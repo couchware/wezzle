@@ -12,9 +12,12 @@ import java.net.URL;
 import ca.couchware.wezzle2d.Label;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Composite;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 
 /**
  * The Java2DText class provides a java2D implementation of the text interface.
@@ -262,8 +265,7 @@ public class Java2DLabel extends Label
 			// Test font.
 			assert (font != null);
 			
-			g.setFont(font);
-			g.setColor(this.color);		
+			g.setFont(font);			
             
             // Opacity.
             Composite c = null;
@@ -275,6 +277,12 @@ public class Java2DLabel extends Label
                         ((float) opacity) / 100.0f));
             }
 			
+            g.setColor(Color.BLACK);
+            
+            textLayout.draw(g, x + offsetX + 1, y + offsetY + 1);
+            
+            g.setColor(this.color);		
+            
 			textLayout.draw(g, x + offsetX, y + offsetY);
             
             // Opacity.
@@ -424,6 +432,32 @@ public class Java2DLabel extends Label
         // This is not supported.        
         throw new UnsupportedOperationException(
                 "Height should be changed via the size and text attribute.");
+    }
+    
+    public int getLetterHeight()
+    {
+        // See if the graphics are available.
+        Graphics2D g = window.getDrawGraphics();
+        
+        // If we don't, throw an exception.
+        if (g == null)
+        {
+            throw new IllegalStateException("Graphics2D is not availabe yet!");            
+        }
+        else
+        {
+            // Update the text layout if flagged.
+            if (updateTextLayoutNextDraw == true)
+            {
+                // Clear the flag.
+                updateTextLayoutNextDraw = false;
+                
+                // Update it.                
+                updateTextLayout(g);
+            }
+                        
+            return (int) -textLayout.getBounds().getMinY();
+        } // end if 
     }
     
 }

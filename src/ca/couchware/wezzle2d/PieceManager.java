@@ -21,8 +21,7 @@ import java.util.Set;
  *
  */
 
-public class PieceManager implements 
-        Drawable, MouseListener, MouseMotionListener
+public class PieceManager implements MouseListener, MouseMotionListener
 {	
     // -------------------------------------------------------------------------
     // Constants
@@ -633,7 +632,7 @@ public class PieceManager implements
         this.tileDropInProgress = true;
 
         // Make visible.
-        this.setVisible(false);
+        pieceGrid.setVisible(false);
 
         // Run a refactor.
         game.startRefactor(200);
@@ -720,44 +719,11 @@ public class PieceManager implements
     {
         return tileDropInProgress;
     }
-    
-    public void setVisible(boolean visible)
-    {
-         pieceGrid.setVisible(visible);
-    }
 
-    public boolean isVisible()
+    public PieceGrid getPieceGrid()
     {
-        return pieceGrid.isVisible();
-    }
-    
-    public void setDirty(boolean dirty)
-    {
-        pieceGrid.setDirty(dirty);
-    }
-
-    public boolean isDirty()
-    {
-        return pieceGrid.isDirty();
-    }
-    
-    //--------------------------------------------------------------------------
-    // Draw
-    //--------------------------------------------------------------------------
-    
-	/**
-	 * Draws the piece to the screen at the current cursor
-	 * location.
-	 */
-	public void draw()
-	{
-        // Don't draw if invisible.
-        if (isVisible() == false)
-            return;                 
-		
-		// Draw the piece.
-		pieceGrid.draw();
-	}
+        return pieceGrid;
+    }        
     
     //--------------------------------------------------------------------------
     // Events
@@ -831,16 +797,6 @@ public class PieceManager implements
 	{	    
 		// Set the mouse position.
 		setMousePosition(e.getX(), e.getY());
-    }
-
-    public Rectangle getDrawRect()
-    {
-        return pieceGrid.getDrawRect();
-    }
-    
-    public void resetDrawRect()
-    {
-        pieceGrid.resetDrawRect();
     }
     
 }

@@ -68,7 +68,7 @@ public class Game extends Canvas implements GameWindowCallback
      * The text color.
      */
     final public static Color TEXT_COLOR = new Color(252, 233, 45);
-    
+        
     /**
      * The line score color.
      */
@@ -420,7 +420,7 @@ public class Game extends Canvas implements GameWindowCallback
         
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
-        layerMan.add(pieceMan, LAYER_EFFECT);
+        layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
 	
@@ -697,11 +697,14 @@ public class Game extends Canvas implements GameWindowCallback
                     soundMan.play(SoundManager.LEVEL_UP);
                     
                     animationMan.add(new FloatLabelAnimation(
-                            p.x, p.y - 20,                            
+                            pieceMan.getPieceGrid().getX() 
+                                + boardMan.getCellWidth() / 2,
+                            pieceMan.getPieceGrid().getY() 
+                                + boardMan.getCellHeight() / 2,
                             layerMan,
-                            "Level up!", 
+                            "Level Up!", 
                             Game.TEXT_COLOR,
-                            30));                            
+                            28));                            
                 }
             } // end if
             
@@ -733,12 +736,12 @@ public class Game extends Canvas implements GameWindowCallback
                 if (boardAnimation instanceof FadeInAnimation)   
                 {
                     boardMan.setVisible(true);
-                    pieceMan.setVisible(true);
+                    pieceMan.getPieceGrid().setVisible(true);
                 }
                 else if (boardAnimation instanceof FadeOutAnimation)
                 {
                     boardMan.setVisible(false);
-                    pieceMan.setVisible(false);
+                    pieceMan.getPieceGrid().setVisible(false);
                 }
                 else
                     throw new RuntimeException(
@@ -786,7 +789,7 @@ public class Game extends Canvas implements GameWindowCallback
                 boardMan.setDirty(true);
                 
                 // Hide the piece.
-                pieceMan.setVisible(false);                               
+                pieceMan.getPieceGrid().setVisible(false);                               
                 
                 // Clear flag.
                 clearBoardShowAnimation();                                
@@ -800,7 +803,7 @@ public class Game extends Canvas implements GameWindowCallback
                 boardMan.setDirty(true);
                 
                 // Hide the piece.
-                pieceMan.setVisible(false);                               
+                pieceMan.getPieceGrid().setVisible(false);                               
                 
                 // Clear flag.
                 clearBoardHideAnimation();                                
@@ -810,7 +813,7 @@ public class Game extends Canvas implements GameWindowCallback
             if (activateRefactor == true)
             {            
                 // Hide piece.
-                pieceMan.setVisible(false);
+                pieceMan.getPieceGrid().setVisible(false);
 
                 // Start down refactor.
                 boardMan.startShiftDown(refactorSpeed);
@@ -866,7 +869,7 @@ public class Game extends Canvas implements GameWindowCallback
                         if (pieceMan.isTileDropInProgress() == false)
                         {                            
                             pieceMan.loadRandomPiece();   
-                            pieceMan.setVisible(true);
+                            pieceMan.getPieceGrid().setVisible(true);
 
                             // Unpause the timer.
                             timerMan.resetTimer();
