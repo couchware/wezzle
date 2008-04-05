@@ -720,7 +720,11 @@ public class Game extends Canvas implements GameWindowCallback
                 timerMan.resetTimer();
                 worldMan.setCurrentLevel(1);
                 scoreMan.setLevelScore(0);
-                scoreMan.setTotalScore(0);
+                scoreMan.setTargetLevelScore(
+                        worldMan.generateTargetLevelScore(1));                
+                progressBar.setProgressMax(
+                        scoreMan.getTargetLevelScore());
+                scoreMan.setTotalScore(0);                
                 moveMan.setMoveCount(0);
                 
                 // Set in progress flag.
