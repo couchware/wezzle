@@ -101,6 +101,7 @@ public class ExplosionAnimation extends Animation
         
         // Reset the draw rectangle.
         explosion.resetDrawRect();
+        explosion.setDirty(true);
         
         // Add explosion to the layer manager.
         layerMan.add(explosion, Game.LAYER_EFFECT);
@@ -193,8 +194,7 @@ public class ExplosionAnimation extends Animation
                     break;
                     
                 default:
-                    Util.handleMessage("Unrecognized state.", 
-                            Thread.currentThread());
+                    throw new IllegalStateException("Unrecognized state.");
             }
         } // end if          
     }

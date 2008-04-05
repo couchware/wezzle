@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -98,6 +99,11 @@ public class BoardManager
 	 * The array representing the game board.
 	 */
 	private TileEntity[] board;
+    
+    /**
+     * An array representing the scratch board.
+     */
+    private TileEntity[] scratchBoard;
 	
     //--------------------------------------------------------------------------
     // Constructor
@@ -143,7 +149,8 @@ public class BoardManager
         this.numberOfItems = 0;
 		
 		// Initialize board.
-		board = new TileEntity[columns * rows];
+		board = new TileEntity[cells];
+        scratchBoard = new TileEntity[cells];
 	}
     
     //--------------------------------------------------------------------------
@@ -206,9 +213,9 @@ public class BoardManager
      */
     public void clearBoard()
     {
-        for(int i = 0; i < (this.getRows() * this.getColumns()); i++)
+        for (int i = 0; i < cells; i++)
         {
-            if(this.getTile(i) != null)
+            if (this.getTile(i) != null)
                 this.removeTile(i);
         }
     }
@@ -345,7 +352,8 @@ public class BoardManager
 	 */
 	public void synchronize()
 	{				
-		TileEntity[] newBoard = new TileEntity[columns * rows];
+//		TileEntity[] newBoard = new TileEntity[columns * rows];
+        Arrays.fill(scratchBoard, null);
 		
 		for (int i = 0; i < cells; i++)
 		{			
@@ -358,7 +366,7 @@ public class BoardManager
 												
 //				if (column + (row * columns) != i)
 //				{
-					newBoard[column + (row * columns)] = board[i];
+					scratchBoard[column + (row * columns)] = board[i];
 //					board[i] = null;
 //				}
 			}
@@ -369,7 +377,7 @@ public class BoardManager
         
         // Count the number of tiles on the new board.
         for (int i = 0; i < cells; i++)        
-            if (newBoard[i] != null)
+            if (scratchBoard[i] != null)
                 newNumberOfTiles++;        
 		
         // Make sure the tile count hasn't changed.
@@ -377,7 +385,10 @@ public class BoardManager
             throw new IllegalStateException("Expected " + numberOfTiles + ", "
                     + "Found " + newNumberOfTiles + ".");
         
-		board = newBoard;
+        // Trade-sies!
+        TileEntity[] swapBoard = board;
+		board = scratchBoard;
+        scratchBoard = swapBoard;
 	}
 	
 	public void startShiftDown(final int speed)

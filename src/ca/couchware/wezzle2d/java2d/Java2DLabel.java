@@ -305,6 +305,9 @@ public class Java2DLabel extends Label
                 updateTextLayout(g);
             }
             
+            // Null reference.
+            g = null;
+            
             return offsetX;
         } // end if                 
     }
@@ -330,6 +333,9 @@ public class Java2DLabel extends Label
                 // Update it.
                 updateTextLayout(g);
             }
+            
+            // Null reference.
+            g = null;
             
             return offsetY;
         } // end if
@@ -360,6 +366,9 @@ public class Java2DLabel extends Label
                 // Update it.
                 updateTextLayout(g);
             }
+            
+            // Null reference.
+            g = null;
             
             return (int) textLayout.getBounds().getMaxX();
         } // end if     
@@ -403,6 +412,9 @@ public class Java2DLabel extends Label
                 updateTextLayout(g);
             }
             
+            // Null reference.
+            g = null;
+            
             return (int) textLayout.getBounds().getHeight();
         } // end if 
     }
@@ -441,6 +453,9 @@ public class Java2DLabel extends Label
                 updateTextLayout(g);
             }
                         
+            // Null reference.
+            g = null;
+            
             return (int) -textLayout.getBounds().getMinY();
         } // end if 
     }

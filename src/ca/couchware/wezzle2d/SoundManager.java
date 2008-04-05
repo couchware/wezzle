@@ -142,8 +142,8 @@ public class SoundManager
      * @param soundClip The soundclip to play.
      */
     public void play(int soundClip)
-    {
-        //Play the line sound. Blah.
+    {                
+        // Play the line sound. Blah.
         if (soundClip == LINE)
         {
             Util.handleMessage("It's a normal!", Thread.currentThread());
