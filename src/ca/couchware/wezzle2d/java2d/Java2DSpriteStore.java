@@ -12,6 +12,7 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import ca.couchware.wezzle2d.Sprite;
+import ca.couchware.wezzle2d.util.Util;
 
 /**
  * A resource manager for sprites in the game. Its often quite important how and
@@ -79,7 +80,8 @@ public class Java2DSpriteStore
 
 			if (url == null)
 			{
-				fail("Can't find ref: " + path);
+				Util.handleMessage("Can't find path: " + path, 
+                        Thread.currentThread());
 			}
 
 			// use ImageIO to read the image in
@@ -87,13 +89,15 @@ public class Java2DSpriteStore
 		}
 		catch (IOException e)
 		{
-			fail("Failed to load: " + path);
+			Util.handleMessage("Failed to load: " + path,
+                    Thread.currentThread());
 		}
 
 		// Create an accelerated image of the right size to store our sprite in.
 		GraphicsConfiguration gc = GraphicsEnvironment
 				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration();
+        
 		Image image = gc.createCompatibleImage(sourceImage.getWidth(),
 				sourceImage.getHeight(), Transparency.TRANSLUCENT);
 
@@ -105,19 +109,5 @@ public class Java2DSpriteStore
 		sprites.put(path, sprite);
 
 		return sprite;
-	}
-
-	/**
-	 * Utility method to handle resource loading failure
-	 * 
-	 * @param message
-	 *            The message to display on failure
-	 */
-	private void fail(String message)
-	{
-		// we're pretty dramatic here, if a resource isn't available
-		// we dump the message and exit the game
-		System.err.println(message);
-		System.exit(0);
 	}
 }
