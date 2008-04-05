@@ -12,12 +12,11 @@ import java.net.URL;
 import ca.couchware.wezzle2d.Label;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Composite;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * The Java2DText class provides a java2D implementation of the text interface.
@@ -37,7 +36,7 @@ public class Java2DLabel extends Label
 	/** 
      * The font. 
      */
-	private Font font;				
+	private Font font;       
     
     /**
      * The text layout instance.
@@ -68,21 +67,7 @@ public class Java2DLabel extends Label
 	{
         // Invoke super.
         super();
-        
-		this.url = this.getClass().getClassLoader()
-                .getResource(Game.FONTS_PATH + "/bubbleboy2.ttf");        		
-		
-		// Setup the font.
-		try
-		{			
-			this.font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());	
-			this.font = font.deriveFont(this.size);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-                        
+        		
         // Setup some values.       
 		this.window = window;
         setText(text);
@@ -96,8 +81,8 @@ public class Java2DLabel extends Label
         
         // Set dirty so it will be drawn.        
         setDirty(true);
-	}		
-	
+	}			
+    
 	/**
 	 * Set the text.
 	 * Recalculate any anchor points.
@@ -139,7 +124,7 @@ public class Java2DLabel extends Label
 		this.size = size;
         
         // Derive font with updated size.
-		this.font = font.deriveFont(this.size);
+		this.font = Java2DFontStore.get().getFont(new Integer((int) size));
         
         // Update the text layout.
         this.textLayout = null;

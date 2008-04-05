@@ -6,10 +6,8 @@ import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashSet;
@@ -340,7 +338,10 @@ public class Game extends Canvas implements GameWindowCallback
             URL url = this.getClass().getClassLoader()
                 .getResource(BUILD_NUMBER_PATH);  
             
-            buildProperties.load(url.openStream());
+            InputStream in = url.openStream();
+            buildProperties.load(in);
+            in.close();
+            
             buildNumber = 
                     (String) buildProperties.getProperty("build.number");
         }
@@ -854,6 +855,7 @@ public class Game extends Canvas implements GameWindowCallback
 
                     // Look for matches.
                     tileRemovalSet.clear();
+                    
                     boardMan.findXMatch(tileRemovalSet);
                     boardMan.findYMatch(tileRemovalSet);
 
@@ -915,7 +917,7 @@ public class Game extends Canvas implements GameWindowCallback
 
                 // Make sure bombs aren't removed (they get removed
                 // in a different step).
-                bombRemovalSet = boardMan.scanBombs(tileRemovalSet);
+                boardMan.scanBombs(tileRemovalSet, bombRemovalSet);
                 tileRemovalSet.removeAll(bombRemovalSet);                
                 
                 // Start the line removal animations if there are any
@@ -951,7 +953,7 @@ public class Game extends Canvas implements GameWindowCallback
                 int deltaScore = 0;
                 
                 // Get the tiles the bombs would affect.
-                tileRemovalSet = boardMan.processBombs(bombRemovalSet);
+                boardMan.processBombs(bombRemovalSet, tileRemovalSet);
                 deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
                         ScoreManager.TYPE_BOMB, 
@@ -970,7 +972,8 @@ public class Game extends Canvas implements GameWindowCallback
                 soundMan.play(SoundManager.BOMB);
 
                 // Extract all the new bombs.
-                Set newBombRemovalSet = boardMan.scanBombs(tileRemovalSet);                                                
+                Set newBombRemovalSet = new HashSet();
+                boardMan.scanBombs(tileRemovalSet, newBombRemovalSet);                                                
                 newBombRemovalSet.removeAll(bombRemovalSet);
 
                 // Remove all tiles that aren't new bombs.

@@ -56,13 +56,13 @@ public class Java2DSpriteStore
 	 * @return A sprite instance containing an accelerate image of the request
 	 *         reference
 	 */
-	public Sprite getSprite(Java2DGameWindow window, String ref)
+	public Sprite getSprite(Java2DGameWindow window, String path)
 	{
 		// if we've already got the sprite in the cache
 		// then just return the existing version
-		if (sprites.get(ref) != null)
+		if (sprites.get(path) != null)
 		{
-			return (Sprite) sprites.get(ref);
+			return (Sprite) sprites.get(path);
 		}
 
 		// otherwise, go away and grab the sprite from the resource
@@ -75,11 +75,11 @@ public class Java2DSpriteStore
 			// from the appropriate place, this helps with deploying the game
 			// with things like webstart. You could equally do a file look
 			// up here.
-			URL url = this.getClass().getClassLoader().getResource(ref);
+			URL url = this.getClass().getClassLoader().getResource(path);
 
 			if (url == null)
 			{
-				fail("Can't find ref: " + ref);
+				fail("Can't find ref: " + path);
 			}
 
 			// use ImageIO to read the image in
@@ -87,7 +87,7 @@ public class Java2DSpriteStore
 		}
 		catch (IOException e)
 		{
-			fail("Failed to load: " + ref);
+			fail("Failed to load: " + path);
 		}
 
 		// Create an accelerated image of the right size to store our sprite in.
@@ -102,7 +102,7 @@ public class Java2DSpriteStore
 
 		// create a sprite, add it the cache then return it
 		Sprite sprite = new Java2DSprite(window, image);
-		sprites.put(ref, sprite);
+		sprites.put(path, sprite);
 
 		return sprite;
 	}

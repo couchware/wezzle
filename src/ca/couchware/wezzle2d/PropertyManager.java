@@ -105,7 +105,9 @@ public class PropertyManager
 				// Get the url.
 				try
 				{
-					this.properties.load(new FileInputStream(this.filePath));
+                    FileInputStream in = new FileInputStream(filePath);
+					this.properties.load(in);
+                    in.close();
 				}
 				catch(Exception e)
 				{
@@ -135,7 +137,9 @@ public class PropertyManager
 	 */
 	public void saveProperties() throws IOException
 	{
-		this.properties.store(new FileOutputStream(this.filePath), "Save");
+        FileOutputStream out = new FileOutputStream(this.filePath);
+		this.properties.store(out, "Save");
+        out.close();
 		
 	}
 	

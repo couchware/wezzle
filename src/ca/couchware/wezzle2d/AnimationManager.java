@@ -51,8 +51,8 @@ public class AnimationManager
             Animation a = (Animation) it.next();
             if (a.isDone() == true)
                 it.remove();
-            else
-                a.nextFrame(delta);
+            else            
+                a.nextFrame(delta);            
         }
         
         //Util.handleMessage(animationList.size() + "", Thread.currentThread());

@@ -115,7 +115,7 @@ public class WorldManager
                 .getIntegerProperty(PropertyManager.NUMBER_OF_LEVELS);
 				
 		// Set the starting level.
-		setCurrentLevel(1);
+		setCurrentLevel(10);
         
         // Set the max items.
         this.maxItems = 5;

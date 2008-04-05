@@ -535,7 +535,9 @@ public class BoardManager
 
             t = (TileEntity) con.newInstance(this, color, 
 				x + (index % columns) * cellWidth,
-				y + (index / columns) * cellHeight);                            
+				y + (index / columns) * cellHeight);          
+            
+            con = null;
         }
         catch (Exception ex)
         {
@@ -666,10 +668,10 @@ public class BoardManager
 	 * @param bombIndex     
      * @return The set of indices (including the bomb) affected by the bomb.
 	 */
-	private Set<Integer> processBomb(final int bombIndex)
-	{		
+	private Set processBomb(final int bombIndex)
+	{	                
 		// List of additional bomb tiles.
-		Set<Integer> affectedTileSet = new HashSet<Integer>();		
+		Set affectedSet = new HashSet();		
 		
 		// Return if bomb is null.
 		if (getTile(bombIndex) == null)
@@ -686,48 +688,50 @@ public class BoardManager
 						&& (bombIndex / columns) + j < this.getRows())
 				{
 					if (getTile(bombIndex % columns + i, bombIndex / columns + j) != null)
-						affectedTileSet.add(new Integer(bombIndex + i + (j * columns)));														
+						affectedSet.add(new Integer(bombIndex + i + (j * columns)));														
 				}
 			} // end for i
 		} // end for j
 				
 		// Pass back affected tiles.
-		return affectedTileSet;
+		return affectedSet;
 	}
 
 	/**
-	 * Feeds all the bombs in the bomb processor.
+	 * Feeds all the bombs in the bomb processor and then returns those results
+     * in the cleared out affected set parameter.
      * 
 	 * @param bombTileSet
-     * @return A list of a bombs triggered by the bombs blast.
+     * @param affectedSet
 	 */
-	public Set<Integer> processBombs(Set bombSet)
+	public void processBombs(Set bombSet, Set affectedSet)
 	{				
 		// A list of tiles affected by the blast.
-		Set affectedSet = new HashSet();				
+		affectedSet.clear();
 		
 		// Gather affected tiles.
 		for (Iterator<Integer> it = bombSet.iterator(); it.hasNext(); )		
 			affectedSet.addAll(this.processBomb(it.next()));			
-		
-		// Return the set of tiles affected by these bombs.
-		return affectedSet;
 	}
     
-    public Set scanBombs(Set tileSet)
+    /**
+     * Scans the tile set for bombs and places them in the bomb set,
+     * clearing it first.
+     * 
+     * @param tileSet
+     * @param bombRemovalSet
+     */
+    public void scanBombs(Set tileSet, Set bombSet)
     {
-        // The set of indices that have bombs.
-        Set bombSet = new HashSet();
+        // Clear the set.
+        bombSet.clear();
         
         for (Iterator it = tileSet.iterator(); it.hasNext(); )
         {
             Integer index = (Integer) it.next();
             if (getTile(index).getClass() == BombTileEntity.class)            
                 bombSet.add(index);                            
-        } // end for
-        
-        // Return the set.
-        return bombSet;
+        } // end for                
     }
     
     /**
