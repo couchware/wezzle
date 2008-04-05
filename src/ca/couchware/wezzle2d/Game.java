@@ -449,7 +449,7 @@ public class Game extends Canvas implements GameWindowCallback
 		timerMan = new TimerManager(worldMan.getInitialTimer());
                     
         // Draw the current background.
-		background = new Entity(SPRITES_PATH + "/background1.png", 0, 0);
+		background = new Entity(SPRITES_PATH + "/Background1.png", 0, 0);
         layerMan.add(background, LAYER_BACKGROUND);
         
         // Create a new pause button.
@@ -1139,8 +1139,16 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public static void main(String argv[])
 	{		
-		Game g = new Game(ResourceFactory.JAVA2D);
-		g.startRendering();		
+		try
+        {
+            Game g = new Game(ResourceFactory.JAVA2D);
+            g.startRendering();
+        }
+        catch (Exception e)
+        {
+            Util.handleException(e);
+        }
+
 	}
 
     
