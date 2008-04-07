@@ -41,7 +41,7 @@ public class Util
         StringWriter out = new StringWriter();
         
 		out.write("[Exception] (" + System.currentTimeMillis() + ") " 
-                + method + " - \"" + e.getMessage() + "\"");                
+                + method + " - \"" + e.getMessage() + "\"" + Game.NL);                
 		e.printStackTrace(new PrintWriter(out, true));
         
 		System.err.println(out.toString());

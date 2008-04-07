@@ -34,6 +34,11 @@ public class Game extends Canvas implements GameWindowCallback
 {	  
     
     /**
+     * The platform specific newline character.
+     */
+    public static String NL = System.getProperty("line.separator");
+               
+    /**
      * The width of the screen.
      */
     final public static int SCREEN_WIDTH = 800;
