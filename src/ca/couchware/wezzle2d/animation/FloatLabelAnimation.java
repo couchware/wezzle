@@ -177,7 +177,10 @@ public class FloatLabelAnimation extends Animation
                     if (floatLabel.getOpacity() == OPACITY_MIN)
                     {
                         // Remove explosion from layer manager.
-                        layerMan.remove(floatLabel, 1);
+                        if (layerMan.remove(floatLabel, Game.LAYER_EFFECT) 
+                                == false)
+                            throw new IllegalStateException(
+                                    "Could not remove label from layer.");
                         
                         // Set done flag.
                         done = true;

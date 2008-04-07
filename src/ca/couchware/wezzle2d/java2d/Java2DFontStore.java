@@ -45,7 +45,9 @@ public class Java2DFontStore
 		{
 			return (Font) fonts.get(size);
 		}
-        // If the size is on, load it from the ttf file.
+        // If the size is one, load it from the ttf file.
+        // Note for retarded persons: The font size 1 is only created once.
+        // All ensuing invocations will use the cached version.
         else if (size == 1)
         {            
             try
@@ -64,7 +66,7 @@ public class Java2DFontStore
                 Util.handleException(e);
             }
         }
-        // Otherwise, derive all other fonts from the size 1.
+        // Otherwise, derive all other fonts from the size 1.        
         else
         {
             Util.handleMessage("Font size " + size + " created.", 
