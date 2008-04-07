@@ -1,6 +1,8 @@
 package ca.couchware.wezzle2d.util;
 
 import ca.couchware.wezzle2d.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Random;
 
 public class Util
@@ -9,7 +11,7 @@ public class Util
 	 * Use stack traces.  Allow for easier debugging but they
 	 * affect performance.
 	 */
-	private static final boolean USE_STACK_TRACE = false;
+	private static final boolean USE_STACK_TRACE = true;
 	
 	/**
 	 * Write out to the log. If this is set to true, all messages and
@@ -27,48 +29,25 @@ public class Util
 	 * @param message The error message.
 	 * @param t The current thread, usually Thread.currentThread().
 	 */
-	public static void handleError(String message, Thread t)
-	{
-		String method;
-		
-		if (USE_STACK_TRACE == true)
-			method = t.getStackTrace()[2].getMethodName();
-		else
-			method = "Unknown";
-		
-		String output = "[Error] (" + System.currentTimeMillis() + ") " + method + "() - \"" + message + "\"";
-		
-		System.err.println(output);
-		
-		if (USE_LOG == true)
-			LogManager.appendToLog(output);
-			
-		Thread.dumpStack();		
-	
-	}
-	
-	/**
-	 * Prints an error to standard error and dumps the stack.
-	 * @param message The error message.
-	 * @param t The current thread, usually Thread.currentThread().
-	 */
 	public static void handleException(Exception e)
 	{
 		String method;
 		
 		if (USE_STACK_TRACE == true)
-			method = e.getStackTrace()[2].getMethodName();
+			method = e.getStackTrace()[3].getMethodName();
 		else
 			method = "Unknown";
 		
-		String output = "[Exception] (" + System.currentTimeMillis() + ") " + method + " - \"" + e.getMessage() + "\"";
-		
-		System.err.println(output);
+        StringWriter out = new StringWriter();
+        
+		out.write("[Exception] (" + System.currentTimeMillis() + ") " 
+                + method + " - \"" + e.getMessage() + "\"");                
+		e.printStackTrace(new PrintWriter(out, true));
+        
+		System.err.println(out.toString());
 		
 		if (USE_LOG == true)
-			LogManager.appendToLog(output);
-		
-		e.printStackTrace();			
+			LogManager.appendToLog(out.toString());				
 	}
 	
 	/**
@@ -81,11 +60,12 @@ public class Util
 		String method;
 		
 		if (USE_STACK_TRACE == true)
-			method = t.getStackTrace()[2].getMethodName();
+			method = t.getStackTrace()[3].getMethodName();
 		else
 			method = "Unknown";
 		
-		String output = "[Warning] (" + System.currentTimeMillis() + ") " + method + "() - \"" + message + "\"";
+		String output = "[Warning] (" + System.currentTimeMillis() + ") " 
+                + method + "() - \"" + message + "\"";        
 		
 		System.err.println(output);
 		
@@ -103,7 +83,7 @@ public class Util
 		String method;
 		
 		if (USE_STACK_TRACE == true)
-			method = t.getStackTrace()[2].getMethodName();
+			method = t.getStackTrace()[3].getMethodName();
 		else
 			method = "Unknown";
 		

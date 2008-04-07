@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
@@ -360,7 +361,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
         
         // Print the build number.
-        Util.handleMessage("Wezzle Build " + buildNumber, 
+        Util.handleMessage("Wezzle Build " + buildNumber + " @ " + (new Date()),
                 Thread.currentThread());
         
 		// Create a window based on a chosen rendering method.
@@ -1149,7 +1150,4 @@ public class Game extends Canvas implements GameWindowCallback
             Util.handleException(e);
         }
 	}
-
-    
-        
 }

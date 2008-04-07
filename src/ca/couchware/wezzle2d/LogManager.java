@@ -15,6 +15,11 @@ public class LogManager
 	// Static Attributes
 	// ---------------------------------------------------------------------------
 	
+    /**
+     * The platform specific newline character.
+     */
+    public static String newline = System.getProperty("line.separator");
+    
 	/**
 	 * The file path to the log file.
 	 */
@@ -93,7 +98,7 @@ public class LogManager
 	{
 		try
 		{
-			writer.write(text + "\n");
+			writer.write(text + newline);
 			writer.flush();
 		}
 		catch(Exception e)
