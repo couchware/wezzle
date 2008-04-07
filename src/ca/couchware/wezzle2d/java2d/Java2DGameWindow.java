@@ -129,13 +129,33 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 
 				// Add a listener to respond to the user closing the window. If they
 				// do we'd like to exit the game.
+               
 				frame.addWindowListener(new WindowAdapter()
 				{
+                    @Override
 					public void windowClosing(WindowEvent e)
 					{
 						if (callback != null)
 						{
 							callback.windowClosed();
+						}
+						else
+						{
+							System.exit(0);
+						}
+					}
+				});
+                
+                // Add a listener to respond to the user minimizing the window.
+				// If they do we'd like to pause the game.
+                frame.addWindowListener(new WindowAdapter()
+				{
+                    @Override
+					public void windowDeactivated(WindowEvent e)
+					{
+						if (callback != null)
+						{
+							callback.windowDeactivated();
 						}
 						else
 						{

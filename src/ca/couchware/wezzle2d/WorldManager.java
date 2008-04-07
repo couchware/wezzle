@@ -186,9 +186,15 @@ public class WorldManager
     {        
         this.incrementCurrentLevel();
         
-        game.scoreMan.setLevelScore(0);        
-		game.scoreMan.setTargetLevelScore(
-                generateTargetLevelScore(currentLevel));
+        int currentLevelScore = game.scoreMan.getLevelScore() - 
+                game.scoreMan.getTargetLevelScore();
+        int targetLevelScore = generateTargetLevelScore(currentLevel);
+        
+        if(currentLevelScore > targetLevelScore / 2)
+            currentLevelScore = targetLevelScore / 2;
+        
+        game.scoreMan.setLevelScore(currentLevelScore);        
+		game.scoreMan.setTargetLevelScore(targetLevelScore);
         
         game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
        

@@ -546,6 +546,33 @@ public class Game extends Canvas implements GameWindowCallback
 		lastLoopTime = SystemTimer.getTime();
 	}
     
+     /**
+     * A private helper method to handle game pausing.
+     */
+    private void pauseGame()
+    {
+        pauseButton.setText("Resume");
+        pauseButton.getLabel().setSize(18);
+        layerMan.hide(LAYER_TILE);
+        layerMan.hide(LAYER_EFFECT);                
+        pausedLabel.setVisible(true);
+    }
+    
+    /**
+     * A private helper method to handle game resuming.
+     */
+    private void resumeGame()
+    {
+        pauseButton.setText("Pause");
+        pauseButton.getLabel().setSize(22);
+        layerMan.show(LAYER_TILE);
+        layerMan.show(LAYER_EFFECT);
+        pausedLabel.setVisible(false);
+
+        // Clear clicks.
+        pieceMan.clearMouseButtons();
+    }
+    
     /**
      * Start a refactor with the given speed.
      * 
@@ -665,22 +692,11 @@ public class Game extends Canvas implements GameWindowCallback
             // show the paused text.
             if (pauseButton.isActivated() == true)
             {
-                pauseButton.setText("Resume");
-                pauseButton.getLabel().setSize(18);
-                layerMan.hide(LAYER_TILE);
-                layerMan.hide(LAYER_EFFECT);                
-                pausedLabel.setVisible(true);
+                this.pauseGame();
             }
             else
             {
-                pauseButton.setText("Pause");
-                pauseButton.getLabel().setSize(22);
-                layerMan.show(LAYER_TILE);
-                layerMan.show(LAYER_EFFECT);
-                pausedLabel.setVisible(false);
-                
-                // Clear clicks.
-                pieceMan.clearMouseButtons();
+                this.resumeGame();
             }
         }
 		
@@ -1136,6 +1152,16 @@ public class Game extends Canvas implements GameWindowCallback
 		System.exit(0);
 	}
     
+    /**
+     * Notification that the game window has been deactivated in some way.
+     */
+    public void windowDeactivated()
+    {
+        this.pauseButton.setActivated(true);
+        this.pauseGame();
+    }
+    
+    
 	/**
 	 * The entry point into the game. We'll simply create an instance of class
 	 * which will start the display and game loop.
@@ -1155,4 +1181,6 @@ public class Game extends Canvas implements GameWindowCallback
             Util.handleException(e);
         }
 	}
+    
+  
 }
