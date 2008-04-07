@@ -264,18 +264,15 @@ public class Java2DLabel extends Label
 			
             g.setColor(Color.BLACK);
             
-            textLayout.draw(g, x + offsetX + 1, y + offsetY + 1);
+            textLayout.draw(g, x + offsetX + 1, y + offsetY + 1);            
             
             g.setColor(this.color);		
             
-			textLayout.draw(g, x + offsetX, y + offsetY);
+			textLayout.draw(g, x + offsetX, y + offsetY);            
             
             // Opacity.
             if (opacity != 100)        
-                g.setComposite(c);
-            
-            // No longer dirty.
-            setDirty(false);
+                g.setComposite(c);            
 		}
 		catch(Exception e)
 		{

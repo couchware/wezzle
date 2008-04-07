@@ -1139,16 +1139,15 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public static void main(String argv[])
 	{		
-		try
+        try
         {
             Game g = new Game(ResourceFactory.JAVA2D);
-            g.startRendering();
+            g.startRendering();		
         }
         catch (Exception e)
         {
             Util.handleException(e);
         }
-
 	}
 
     

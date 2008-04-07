@@ -15,9 +15,8 @@ import javax.swing.JPanel;
 
 import ca.couchware.wezzle2d.GameWindow;
 import ca.couchware.wezzle2d.GameWindowCallback;
-import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.Sprite;
 import ca.couchware.wezzle2d.util.Keyboard;
+import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
 
@@ -165,12 +164,12 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 		catch (InterruptedException e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Util.handleException(e);
 		}
 		catch (InvocationTargetException e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Util.handleException(e);
 		}		
 
 		// If we have a callback registered then notify
@@ -241,11 +240,10 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 
 			// Finally, we've completed drawing so clear up the graphics
 			// and flip the buffer over.
-            if (updated == true)
-            {                         
-                g.dispose();
-                strategy.show();
-            }
+            g.dispose();
+            
+            if (updated == true)                                                     
+                strategy.show();            
 		}
 	}
     
