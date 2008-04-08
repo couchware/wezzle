@@ -69,6 +69,11 @@ public class Game extends Canvas implements GameWindowCallback
     final public static String SOUNDS_PATH = RESOURCES_PATH + "/sounds";
     
     /**
+     * The path to the music.
+     */
+    final public static String MUSIC_PATH = RESOURCES_PATH + "/music";
+    
+    /**
      * The text color.
      */
     final public static Color TEXT_COLOR = new Color(252, 233, 45);
@@ -159,6 +164,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The manager in charge of sound.
      */
     public SoundManager soundMan;
+    
+    /**
+     * The manager in charge of music.
+     */
+    public MusicManager musicMan;
     
     /**
      * The Manager in charge of the world.
@@ -447,6 +457,10 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the sound manager.
         soundMan = new SoundManager();
+        
+        // Create the music manager.
+        musicMan = new MusicManager();
+        musicMan.play();
         
         // Create the move manager.
         moveMan = new MoveManager();
