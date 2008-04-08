@@ -795,6 +795,11 @@ public class Game extends Canvas implements GameWindowCallback
                     // one day.
                     timerMan.setPaused(false);
                     
+                    // Reset the timer. And the score.
+                    timerMan.setInitialTime(worldMan.getInitialTimer());
+                    timerMan.resetTimer();
+                    scoreMan.setLevelScore(0);
+                    
                     // Start the board show animation.  This will
                     // make the board visible when it's done.
                     startBoardShowAnimation();
