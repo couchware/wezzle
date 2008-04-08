@@ -26,7 +26,12 @@ public interface GameWindowCallback
 	public void windowClosed();
     
     /**
-     * Notification that the game window has been minimized.
+     * Notification that the game window has been deactivated.
      */
     public void windowDeactivated();
+    
+    /**
+     * Notification that the game window has been reactivated.
+     */
+    public void windowReactivated();
 }

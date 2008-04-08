@@ -1178,8 +1178,17 @@ public class Game extends Canvas implements GameWindowCallback
     {
         this.pauseButton.setActivated(true);
         this.pauseGame();
+        this.background.setDirty(true);
     }
     
+     /**
+     * Notification that the game window has been reactivated in some way.
+     */
+    public void windowReactivated()
+    {
+        //Force a background redraw.
+        this.background.setDirty(true);
+    }
     
 	/**
 	 * The entry point into the game. We'll simply create an instance of class

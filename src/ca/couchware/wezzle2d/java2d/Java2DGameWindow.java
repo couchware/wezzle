@@ -163,6 +163,24 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 						}
 					}
 				});
+                
+                  // Add a listener to respond to the user minimizing the window.
+				// If they do we'd like to pause the game.
+                frame.addWindowListener(new WindowAdapter()
+				{
+                    @Override
+					public void windowDeiconified(WindowEvent e)
+					{
+						if (callback != null)
+						{
+							callback.windowReactivated();
+						}
+						else
+						{
+							System.exit(0);
+						}
+					}
+				});
 
 				// Request the focus so key events come to us.
 				requestFocus();
