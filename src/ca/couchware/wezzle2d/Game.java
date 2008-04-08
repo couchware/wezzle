@@ -1195,10 +1195,11 @@ public class Game extends Canvas implements GameWindowCallback
      /**
      * Notification that the game window has been reactivated in some way.
      */
-    public void windowReactivated()
+    public void windowActivated()
     {
         //Force a background redraw.
-        this.background.setDirty(true);
+        if(this.background != null)
+            this.background.setDirty(true);
     }
     
 	/**

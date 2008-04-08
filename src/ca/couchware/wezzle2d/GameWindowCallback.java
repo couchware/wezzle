@@ -33,5 +33,5 @@ public interface GameWindowCallback
     /**
      * Notification that the game window has been reactivated.
      */
-    public void windowReactivated();
+    public void windowActivated();
 }

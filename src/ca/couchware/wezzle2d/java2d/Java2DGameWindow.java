@@ -169,11 +169,11 @@ public class Java2DGameWindow extends Canvas implements GameWindow
                 frame.addWindowListener(new WindowAdapter()
 				{
                     @Override
-					public void windowDeiconified(WindowEvent e)
+					public void windowActivated(WindowEvent e)
 					{
 						if (callback != null)
 						{
-							callback.windowReactivated();
+							callback.windowActivated();
 						}
 						else
 						{
