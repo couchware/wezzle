@@ -169,12 +169,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The manager in charge of music.
      */
-    public MusicManager musicMan;
-    
-    /** 
-     * A flag to see if music is playing.
-     */
-    public boolean musicPlayingInProgress = false;
+    public MusicManager musicMan;       
     
     /**
      * The Manager in charge of the world.
@@ -747,7 +742,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
 		
         // If the music stopped playing, play the next song.
-        if(this.musicPlayingInProgress == false)
+        if (musicMan.isMusicPlaying() == false)
         {
             musicMan.playNext();
         }

@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.Util;
 import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import javazoom.jl.player.Player;
@@ -18,15 +19,20 @@ public class MusicManager
     /** The song number we are one */
     private int songNum;
     
-    /** The game */
-    private Game game;
-
-    // constructor creates the song list.
+    /**
+     * Is the music playing?
+     */
+    private volatile boolean musicPlayingInProgress;
+      
+    /**
+     * Creates the song list.
+     */
     public MusicManager() 
     {        
-        //initiate the array list and song number.
+        // Initiate the array list and song number.
         this.songList = new ArrayList();
         this.songNum = 0;
+        this.musicPlayingInProgress = false;
        
         // Add some music. Note that the order songs play is the reverse of the
         // order in which they were added. i.e. The last song added is the 
@@ -34,10 +40,7 @@ public class MusicManager
         this.songList.add(new Song("Prelude", Game.MUSIC_PATH 
                 + "/PreludeinCMinorRemix.mp3"));
         this.songList.add(new Song("Tron", Game.MUSIC_PATH 
-                + "/IntergalacticTron.mp3"));
-        
-        
-       
+                + "/IntergalacticTron.mp3"));                       
     }
     
     /**
@@ -49,8 +52,7 @@ public class MusicManager
     {
         this.songList.add(newSong);
     }
-    
-    
+        
     /**
      * A method to remove a song by it's key value.
      * Note: this method does not set the song to null.
@@ -61,14 +63,13 @@ public class MusicManager
     public boolean removeSong (final String key)
     {
          // Find and remove the song.
-        for(int i = 0; i < songList.size(); i++)
+        for (int i = 0; i < songList.size(); i++)
         {
             if(((Song) songList.get(i)).getKey().equals(key))
             {
                 songList.remove(i); 
                 return true;
             }
-
         }
         
         return false;
@@ -85,9 +86,9 @@ public class MusicManager
     public Song getSong(final String key)
     {
          // find and return the song.
-        for(int i = 0; i < songList.size(); i++)
+        for (int i = 0; i < songList.size(); i++)
         {
-            if(((Song) songList.get(i)).getKey().equals(key))
+            if (((Song) songList.get(i)).getKey().equals(key))
             {
                 return (Song) songList.get(i); 
             }
@@ -104,7 +105,8 @@ public class MusicManager
     public void playSong(final String key)
     {
         // Flag music playing.
-        game.musicPlayingInProgress = true;
+        //game.musicPlayingInProgress = true;
+        setMusicPlaying(true);
         
         // Play the song in the background.
         new Thread() 
@@ -125,7 +127,8 @@ public class MusicManager
                         
                     }
                     // Signal song is done.
-                    game.musicPlayingInProgress = false;
+                    //game.musicPlayingInProgress = false;
+                    setMusicPlaying(false);
                 }
                 catch (Exception e) 
                 { 
@@ -134,16 +137,15 @@ public class MusicManager
             }
         }.start();
     }
-
-  
- 
+   
     /**
      * A method to cycle through the list of songs. One at a time.
      */
     public void playNext() 
     {
         // Flag music playing in game.
-        game.musicPlayingInProgress = true;
+        //game.musicPlayingInProgress = true;
+        setMusicPlaying(true);
         
         // Determine the next song to play.
         this.songNum = (this.songNum + 1) % this.songList.size();
@@ -160,13 +162,25 @@ public class MusicManager
                     ((Song) songList.get(songNum)).getPlayer().play(); 
                     
                     // Signal song is done.
-                    game.musicPlayingInProgress = false;
+                    //game.musicPlayingInProgress = false;
+                    setMusicPlaying(false);
                 }
                 catch (Exception e) 
                 { 
-                    System.out.println(e); 
+                    Util.handleException(e); 
                 }
             }
         }.start();
     }
+
+    public boolean isMusicPlaying()
+    {
+        return musicPlayingInProgress;
+    }
+
+    public void setMusicPlaying(boolean musicPlayingInProgress)
+    {
+        this.musicPlayingInProgress = musicPlayingInProgress;
+    }    
+    
 }
