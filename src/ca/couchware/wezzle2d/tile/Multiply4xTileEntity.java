@@ -49,6 +49,6 @@ public class Multiply4xTileEntity extends TileEntity
         super.draw();
         
         // Draw bomb on top of it.
-        multSprite.draw((int) x, (int) y, width, height, theta, opacity);
+        multSprite.draw((int) x2, (int) y2, width, height, theta, opacity);
     }
 }

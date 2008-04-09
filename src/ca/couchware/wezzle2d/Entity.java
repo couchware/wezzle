@@ -4,7 +4,6 @@ import ca.couchware.wezzle2d.animation.Animation;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Rectangle;
-import java.awt.Shape;
 
 /**
  * An entity represents any element that appears in the game. The entity is
@@ -18,7 +17,7 @@ import java.awt.Shape;
  * 
  * @author Cameron McKay (based on code by Kevin Glass)
  */
-public class Entity implements Drawable, Positionable
+public abstract class Entity implements Drawable, Positionable
 {
     /** 
      * Is this visible? 
@@ -43,177 +42,57 @@ public class Entity implements Drawable, Positionable
     /** 
      * The current x location of this entity. 
      */
-    protected double x;
+    protected int x = 0;
 	
 	/** 
      * The current y location of this entity .
      */
-	protected double y;
+	protected int y = 0;
     
     /**
      * The previous x location.
      */
-    protected double x_;
+    protected int x_ = x;
     
     /**
      * The previous y location.
      */
-    protected double y_;
+    protected int y_ = y;
     
     /** 
      * The current width of the entity.
      */
-    protected int width;
+    protected int width = 0;
     
     /**
      * The current height of the entity.
      */
-    protected int height;
+    protected int height = 0;
     
     /**
      * The previous width.
      */
-    protected int width_;
+    protected int width_ = width;
     
     /**
      * The previous height.
      */
-    protected int height_;
-    
-    /**
-     * The current draw rectangle.
-     */
-    protected Rectangle drawRect;
+    protected int height_ = height;      
     
     /**
      * The alignment of the entity.
      */
-    protected int alignment;
+    protected int alignment = TOP | LEFT;
     
     /**
      * The x-offset.
      */
-    protected int offsetX;
+    protected int offsetX = 0;
     
     /**
      * The y-offset.
      */
-    protected int offsetY;
-	
-	/** 
-     * The sprite that represents this entity.
-     */
-	protected Sprite sprite;
-    
-    /**
-     * The animation attached to this entity.
-     */
-    protected Animation animation;
-	
-	/** 
-     * The current speed of this entity horizontally (pixels/s). 
-     */
-	protected double dx;
-	
-	/** 
-     * The current speed of this entity vertically (pixels/s). 
-     */
-	protected double dy;
-
-	/**
-	 * Construct a entity based on a sprite image and a location.
-	 * 
-	 * @param path
-	 *            The reference to the image to be displayed for this entity
-	 * @param x
-	 *            The initial x location of this entity
-	 * @param y
-	 *            The initial y location of this entity
-	 */
-	public Entity(final String path, final int x, final int y)           
-	{
-        this.visible = true;
-		this.sprite = ResourceFactory.get().getSprite(path);
-        
-		this.x = x;
-		this.y = y;
-        
-        this.x_ = x;
-        this.y_ = y;
-        
-        this.width = sprite.getWidth();
-        this.height = sprite.getHeight();
-        
-        this.width_ = width;
-        this.height_ = height;
-        
-        this.alignment = TOP | LEFT;        
-        
-        // Set dirty so it will be drawn.
-        setDirty(true);                
-	}
-
-	/**
-	 * Request that this entity move itself based on a certain amount of time
-	 * passing.
-	 * 
-	 * @param delta
-	 *            The amount of time that has passed in milliseconds.
-	 */
-	public void move(long delta)
-	{
-        double newX = x + (delta * dx) / 1000;
-        double newY = y + (delta * dy) / 1000;
-        				           
-        // Update the location of the entity based on move speeds.		
-        x = newX;
-        y = newY;
-        
-        // Set dirty so it will be drawn.
-        setDirty(true);
-	}	
-	
-    /**
-	 * Get the horizontal speed of this entity
-	 * 
-	 * @return The horizontal speed of this entity (pixels/s).
-	 */
-	public double getXMovement()
-	{
-		return dx;
-	}
-    
-	/**
-	 * Set the horizontal speed of this entity
-	 * 
-	 * @param dx
-	 *            The horizontal speed of this entity (pixels/s).
-	 */
-	public void setXMovement(double dx)
-	{
-		this.dx = dx;
-	}
-
-    /**
-	 * Get the vertical speed of this entity
-	 * 
-	 * @return The vertical speed of this entity (pixels/ms).
-	 */
-	public double getYMovement()
-	{
-		return dy;
-	}
-    
-	/**
-	 * Set the vertical speed of this entity
-	 * 
-	 * @param dy
-	 *            The vertical speed of this entity (pixels/s).
-	 */
-	public void setYMovement(double dy)
-	{
-		this.dy = dy;
-	}
+    protected int offsetY = 0;		
 
     /**
      * Sets the visibility of the entity.
@@ -245,7 +124,7 @@ public class Entity implements Drawable, Positionable
 	 */
 	public int getX()
 	{
-		return (int) x;
+		return x;
 	}
     
 	/**
@@ -266,7 +145,7 @@ public class Entity implements Drawable, Positionable
 	 */
 	public int getY()
 	{               
-		return (int) y;
+		return y;
 	}
     
     /**
@@ -282,7 +161,7 @@ public class Entity implements Drawable, Positionable
     
     public XYPosition getXYPosition()
     {
-        return new XYPosition((int) x, (int) y);
+        return new XYPosition(getX(), getY());
     }
 
     public void setXYPosition(int x, int y)
@@ -374,51 +253,7 @@ public class Entity implements Drawable, Positionable
 	 * Draw this entity to the graphics context unless it is not visible
      * or an animation is attached (the animation will handle the drawing).
 	 */
-	public void draw()
-	{
-        this.x_ = x + offsetX;
-        this.y_ = y + offsetY;
-        
-        this.width_ = width;
-        this.height_ = height;
-        
-        if (isVisible() == false)
-            return;
-                        
-        sprite.draw((int) x + offsetX, (int) y + offsetY, 
-                width, height, theta, opacity);                
-	}     
-    
-    public Animation getAnimation()
-    {
-        return animation;
-    }
-
-    public void setAnimation(Animation animation)
-    {
-        this.animation = animation;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }        
-    
-    /**
-     * Advances the animation depending on the amount of time that has passed.
-     * 
-     * @param delta The amount of time that has passed.
-     */
-    public void animate(long delta)
-    {
-        // Ignore if we have no animation.
-        if (animation == null || animation.isDone() == true)
-            return;
-        
-        // Pass through to the animation.
-        animation.nextFrame(delta);  
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }   
+    public abstract void draw();    	
 
     public int getAlignment()
     {
@@ -472,7 +307,6 @@ public class Entity implements Drawable, Positionable
 
     public void setDirty(boolean dirty)
     {
-//        Util.handleMessage("I'm dirty!", null);        
         this.dirty = dirty;
     }
 
@@ -483,11 +317,9 @@ public class Entity implements Drawable, Positionable
     
     public Rectangle getDrawRect()
     {
-        Rectangle rect1 = new Rectangle((int) x_, (int) y_, 
-                width_ + 2, height_ + 2);
-                
-        Rectangle rect2 = new Rectangle((int) x, (int) y, 
-                width + 2, height + 2);        
+        Rectangle rect1 = new Rectangle(x_, y_, width_ + 2, height_ + 2);                
+        Rectangle rect2 = new Rectangle(x, y, width + 2, height + 2);        
+        
         rect2.translate(offsetX, offsetY);            
         rect1.add(rect2);
         

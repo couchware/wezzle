@@ -9,7 +9,8 @@ import javazoom.jl.player.Player;
  * @author Kevin
  */
 
-public class MusicManager {
+public class MusicManager 
+{
   
     /** The list of songs */
     private ArrayList songList;
@@ -21,9 +22,8 @@ public class MusicManager {
     private Game game;
 
     // constructor creates the song list.
-    public MusicManager(final Game game) 
-    {
-        this.game = game;
+    public MusicManager() 
+    {        
         //initiate the array list and song number.
         this.songList = new ArrayList();
         this.songNum = 0;

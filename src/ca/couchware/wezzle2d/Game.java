@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.challenge.*;
 import ca.couchware.wezzle2d.button.*;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
@@ -241,6 +242,11 @@ public class Game extends Canvas implements GameWindowCallback
     private Set bombRemovalSet;
     
     /**
+     * The number of lines cleared this cycle.
+     */
+    private int lineCount;
+    
+    /**
      * If true, the board show animation will be activated next loop.
      */
     private boolean activateBoardShowAnimation = false;
@@ -270,7 +276,7 @@ public class Game extends Canvas implements GameWindowCallback
      * The number of cascades thus far.
      */
     private int cascadeCount;
-    
+        
 	/**
 	 * The time at which the last rendering looped started from the point of
 	 * view of the game logic.
@@ -342,6 +348,11 @@ public class Game extends Canvas implements GameWindowCallback
      */
     private Label versionLabel;        
         
+    /**
+     * A test challenge.
+     */
+    ChallengeEntity challenge;
+    
 	/**
 	 * Construct our game and set it running.
 	 * 
@@ -422,8 +433,11 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void initialize()
 	{
+        // Set line count to 0.
+        lineCount = 0;
+        
         // Set cascade count to 0.
-        cascadeCount = 0;
+        cascadeCount = 0;                
         
         // Initialize line index set.
         tileRemovalSet = new HashSet();
@@ -464,7 +478,7 @@ public class Game extends Canvas implements GameWindowCallback
         soundMan = new SoundManager();
         
         // Create the music manager.
-        musicMan = new MusicManager(this);
+        musicMan = new MusicManager();
         
         // Create the move manager.
         moveMan = new MoveManager();
@@ -473,12 +487,13 @@ public class Game extends Canvas implements GameWindowCallback
 		timerMan = new TimerManager(worldMan.getInitialTimer());
                     
         // Draw the current background.
-		background = new Entity(SPRITES_PATH + "/Background1.png", 0, 0);
+		background = new GraphicEntity(SPRITES_PATH + "/Background1.png", 0, 0);
         layerMan.add(background, LAYER_BACKGROUND);
         
         // Create a new pause button.
         pauseButton = new CircularBooleanButton(18, 600 - 18);
         pauseButton.setText("Pause");
+        pauseButton.getLabel().setSize(18);
         pauseButton.setAlignment(Button.BOTTOM | Button.LEFT);
         layerMan.add(pauseButton, LAYER_UI);
         window.addMouseListener(pauseButton);
@@ -551,6 +566,9 @@ public class Game extends Canvas implements GameWindowCallback
         progressBar.setProgressMax(scoreMan.getTargetLevelScore());
         layerMan.add(progressBar, LAYER_UI);
         
+        challenge = new GetXLinesInYMovesChallenge(498, 19, 5, 10);
+        layerMan.add(challenge, LAYER_UI);
+        
 		// Setup the initial game state.
 		startGame();
 	}
@@ -582,7 +600,7 @@ public class Game extends Canvas implements GameWindowCallback
     private void resumeGame()
     {
         pauseButton.setText("Pause");
-        pauseButton.getLabel().setSize(22);
+        pauseButton.getLabel().setSize(18);
         layerMan.show(LAYER_TILE);
         layerMan.show(LAYER_EFFECT);
         pausedLabel.setVisible(false);
@@ -678,6 +696,16 @@ public class Game extends Canvas implements GameWindowCallback
     {
         activateGameOver = false;
     }
+
+    public int getCascadeCount()
+    {
+        return cascadeCount;
+    }
+
+    public int getLineCount()
+    {
+        return lineCount;
+    }        
 
 	/**
 	 * Notification that a frame is being rendered. Responsible for running game
@@ -912,8 +940,8 @@ public class Game extends Canvas implements GameWindowCallback
                     // Look for matches.
                     tileRemovalSet.clear();
                     
-                    boardMan.findXMatch(tileRemovalSet);
-                    boardMan.findYMatch(tileRemovalSet);
+                    lineCount += boardMan.findXMatch(tileRemovalSet);
+                    lineCount += boardMan.findYMatch(tileRemovalSet);
 
                     // If there are matches, score them, remove 
                     // them and then refactor again.
@@ -1115,6 +1143,9 @@ public class Game extends Canvas implements GameWindowCallback
             // Update piece manager logic and then draw it.
             pieceMan.updateLogic(this);
             
+            // Check the challenge logic.
+            challenge.updateLogic(this);
+            
             // Draw the timer text.
             timerLabel.setText(String.valueOf(timerMan.getTime()));		
 
@@ -1132,6 +1163,9 @@ public class Game extends Canvas implements GameWindowCallback
             
             // Update the progress bar.
             progressBar.setProgress(scoreMan.getLevelScore());
+            
+            // Reset the line count.
+            lineCount = 0;
         }                
                 
         // Whether or not the frame was updated.

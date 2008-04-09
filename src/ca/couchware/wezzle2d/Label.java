@@ -13,39 +13,8 @@ import java.awt.Rectangle;
  * @author Kevin
  *
  */
-public abstract class Label implements Drawable, Positionable
+public abstract class Label extends Entity
 {
-    
-    /**
-     * The visibility of the text.
-     */
-    protected boolean visible;
-    
-    /**
-     * Is it dirty (i.e. does it need to be redrawn)?
-     */
-    protected boolean dirty;
-    
-    /**
-     * The X-cooridinate of the text.
-     */
-    protected int x;
-    
-    /**
-     * The Y-coordinate of the text.
-     */
-    protected int y;
-    
-    protected int x_;
-    protected int y_;
-    
-    protected int width_;
-    protected int height_;
-    
-    /**
-     * The draw rectangle.
-     */
-    protected Rectangle drawRect;
     
     /** 
      * The size of the font.
@@ -60,27 +29,7 @@ public abstract class Label implements Drawable, Positionable
     /** 
      * The text.
      */
-	protected String text;
-    
-    /**
-     * The current anchor. 
-     */
-	protected int alignment;
-    
-    /** 
-     * The x offset for anchor. 
-     */
-	protected int offsetX;
-	
-	/** 
-     * The y offset for anchor. 
-     */
-	protected int offsetY;	
-    
-    /**
-     * The current opacity (in percent, from 0 to 100).
-     */
-    protected int opacity;
+	protected String text;        
 	
     /**
      * The constructor.

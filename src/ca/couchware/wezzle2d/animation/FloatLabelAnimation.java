@@ -4,7 +4,6 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Color;
-import java.util.Set;
 
 /**
  * An animation that starts an explosion in the middle of the entity.

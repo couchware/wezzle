@@ -67,11 +67,7 @@ public class CircularBooleanButton extends BooleanButton
         buttonLabel = ResourceFactory.get().getText();        
         buttonLabel.setSize(22);
         buttonLabel.setColor(Game.TEXT_COLOR);
-        buttonLabel.setAlignment(Label.HCENTER | Label.VCENTER);      
-        
-        // Create the draw rectangle.
-        drawRect = 
-                new Rectangle(x - 18, y - 18, x + width + 18, y + height + 18);
+        buttonLabel.setAlignment(Label.HCENTER | Label.VCENTER);                     
     }
     
     @Override

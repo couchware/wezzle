@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.tile;
 
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
+import java.awt.Rectangle;
 
 /**
  * A class representing a game tile.
@@ -9,8 +10,9 @@ import ca.couchware.wezzle2d.*;
  *
  */
 
-public class TileEntity extends Entity
+public class TileEntity extends GraphicEntity implements Movable
 {
+    
     final public static int COLOR_BLUE = 0;
 	final public static int COLOR_GREEN = 1;
 	final public static int COLOR_PURPLE = 2;
@@ -38,7 +40,29 @@ public class TileEntity extends Entity
 	 * The current left bound.
 	 */
 	protected int leftBound;
+    
+    /**
+     * Make x a double.
+     */
+    protected double x2;
+    protected double x2_;
+    
+    /**
+     * Make y a double.
+     */
+    protected double y2;
+    protected double y2_;
+    
+    /** 
+     * The current speed of this entity horizontally (pixels/s). 
+     */
+	protected double dx;
 	
+	/** 
+     * The current speed of this entity vertically (pixels/s). 
+     */
+	protected double dy;
+    
 	/**
 	 * Creates a tile at (x,y) with the specified color.
 	 * @param color
@@ -51,6 +75,13 @@ public class TileEntity extends Entity
 		super(Game.SPRITES_PATH + "/Tile" + toColorString(color) + ".png", 
                 x, y);                
 						
+        // Set the position.
+        this.x2 = x;
+        this.y2 = y;
+        
+        this.x2_ = x;
+        this.y2_ = y;
+        
 		// Set board manager and color reference.
 		this.boardMan = boardMan;	
 		this.color = color;
@@ -64,13 +95,13 @@ public class TileEntity extends Entity
 		if (dy != 0)
 		{
 			// Move the tile.
-			y += (delta * dy) / 1000;
+			y2 += (delta * dy) / 1000;
 			
 			// Make sure we haven't exceeded our bound.
 			// If we have, stop moving.
-			if (y > bottomBound)
+			if (y2 > bottomBound)
 			{
-				y = bottomBound;
+				y2 = bottomBound;
 				dy = 0;
 			}
 		}	
@@ -78,23 +109,104 @@ public class TileEntity extends Entity
 		if (dx != 0)
 		{						
 			// Move the tile.
-			x += (delta * dx) / 1000;
+			x2 += (delta * dx) / 1000;
 			
 			// Make sure we haven't exceeded our bound.
 			// If we have, stop moving.
-			if (x < leftBound)
+			if (x2 < leftBound)
 			{
-				x = leftBound;
+				x2 = leftBound;
 				dx = 0;
 			}
-		}	
+		}	                   
         
-//        updateDrawRectX((int) newX);
-//        updateDrawRectY((int) newY);                
+        setDirty(true);
+    }
+    
+    /**
+	 * Get the x location of this entity.
+	 * 
+	 * @return The x location of this entity.
+	 */
+	public int getX()
+	{
+		return (int) x2;
+	}
+    
+	/**
+	 * @param x The x to set.
+	 */
+	public void setX(final int x)
+	{                            		
+        this.x2 = x;
         
+        // Set dirty so it will be drawn.        
+        setDirty(true);
+	}
+
+	/**
+	 * Get the y location of this entity.
+	 * 
+	 * @return The y location of this entity.
+	 */
+	public int getY()
+	{               
+		return (int) y2;
+	}
+    
+    /**
+	 * @param y The y to set.
+	 */
+	public void setY(final int y)
+	{		
+        this.y2 = y;
+        
+        // Set dirty so it will be drawn.        
         setDirty(true);
 	}
 	
+    /**
+	 * Get the horizontal speed of this entity
+	 * 
+	 * @return The horizontal speed of this entity (pixels/s).
+	 */
+	public double getXMovement()
+	{
+		return dx;
+	}
+    
+	/**
+	 * Set the horizontal speed of this entity
+	 * 
+	 * @param dx
+	 *            The horizontal speed of this entity (pixels/s).
+	 */
+	public void setXMovement(double dx)
+	{
+		this.dx = dx;
+	}
+
+    /**
+	 * Get the vertical speed of this entity
+	 * 
+	 * @return The vertical speed of this entity (pixels/ms).
+	 */
+	public double getYMovement()
+	{
+		return dy;
+	}
+    
+	/**
+	 * Set the vertical speed of this entity
+	 * 
+	 * @param dy
+	 *            The vertical speed of this entity (pixels/s).
+	 */
+	public void setYMovement(double dy)
+	{
+		this.dy = dy;
+	}
+    
 	/**
 	 * Gets the color.
 	 * @return The color.
@@ -152,4 +264,43 @@ public class TileEntity extends Entity
 				return "Red";
 		}
     }
+    
+    public void draw()
+	{
+        this.x2_ = x2 + offsetX;
+        this.y2_ = y2 + offsetY;
+        
+        this.width_ = width;
+        this.height_ = height;
+        
+        if (isVisible() == false)
+            return;
+                        
+        sprite.draw((int) x2 + offsetX, (int) y2 + offsetY, 
+                width, height, theta, opacity);                
+	}   
+    
+    public Rectangle getDrawRect()
+    {
+        Rectangle rect1 = new Rectangle((int) x2_, (int) y2_, 
+                width_ + 2, height_ + 2);                
+        
+        Rectangle rect2 = new Rectangle((int) x2, (int) y2, 
+                width + 2, height + 2);        
+        
+        rect2.translate(offsetX, offsetY);            
+        rect1.add(rect2);
+        
+        return rect1;
+    }
+
+    public void resetDrawRect()
+    {
+        x2_ = x2;
+        y2_ = y2;
+        
+        width_ = width;
+        height_ = height;
+    }
+    
 }

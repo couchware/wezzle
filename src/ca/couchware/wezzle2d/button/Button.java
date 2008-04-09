@@ -107,12 +107,7 @@ public abstract class Button implements
     /**
      * The height of the button.  This is what is used to set the anchor.
      */
-    protected int height;
-    
-    /**
-     * The draw rectangle.
-     */
-    protected Rectangle drawRect;
+    protected int height;        
     
     /**
      * The current anchor.

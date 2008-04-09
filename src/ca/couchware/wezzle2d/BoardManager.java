@@ -254,10 +254,15 @@ public class BoardManager
 	/**
 	 * Searches for all matches in the X-direction and returns a linked list
 	 * with the indices of the matches.
+     * 
 	 * @param set The linked list that will be filled with indices.
+     * @return The number of matches found.
 	 */
-	public void findXMatch(Set set)
+	public int findXMatch(Set set)
 	{
+        // The line count.
+        int lineCount = 0;
+        
 		// Cycle through the board looking for a match in the X-direction.
 		for (int i = 0; i < cells; i++)
 		{
@@ -285,6 +290,8 @@ public class BoardManager
 			{
 				Util.handleMessage("XMatch of length " + j + " found.",
                         Thread.currentThread());
+                
+                lineCount++;
 				
 				// Copy all matched locations to the linked list.
 				for (int k = i; k < i + j; k++)				
@@ -293,15 +300,23 @@ public class BoardManager
 				i += j - 1;
 			}
 		} // end for
+        
+        // Return the line count.
+        return lineCount;
 	}
 	
 	/**
 	 * Searches for all matches in the Y-direction and returns a set
 	 * with the indices of the matches.
+     * 
 	 * @param set The linked list that will be filled with indices.
+     * @return The number of matches found.
 	 */
-	public void findYMatch(Set set)
+	public int findYMatch(Set set)
 	{
+        // The number of matches found.
+        int lineCount = 0;
+        
 		// Cycle through the board looking for a match in the Y-direction.
 		for (int i = 0; i < cells; i++)
 		{
@@ -336,6 +351,8 @@ public class BoardManager
 			{
 				Util.handleMessage("YMatch of length " + j + " found.", Thread.currentThread());
 				
+                lineCount++;
+                
 				// Copy all matched locations to the linked list.
 				for (int k = i; k < i + j; k++)				
 					set.add(new Integer(Util.pseudoTranspose(k, columns, rows)));				
@@ -343,6 +360,9 @@ public class BoardManager
 				i += j - 1;
 			}
 		}
+        
+        // Return the number of matches found.
+        return lineCount;
 	}
 	
 	/**

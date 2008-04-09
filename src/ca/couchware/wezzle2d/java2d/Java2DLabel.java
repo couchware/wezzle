@@ -211,7 +211,8 @@ public class Java2DLabel extends Label
         FontRenderContext frctx = g.getFontRenderContext();
         
         // Create new text layout.
-		this.textLayout = new TextLayout(text, font, frctx);                
+        if (text != null)
+            this.textLayout = new TextLayout(text, font, frctx);                
         
         // Update anchor.
         this.setAlignment(alignment);
@@ -229,7 +230,7 @@ public class Java2DLabel extends Label
         height_ = getHeight();
         
 		// Return immediately is string is empty.
-		if (isVisible() == false || text.equals("") == true)
+		if (isVisible() == false || text == null || text.equals("") == true)
 			return;                
 		
 		try
@@ -367,7 +368,10 @@ public class Java2DLabel extends Label
             // Null reference.
             g = null;
             
-            return (int) textLayout.getBounds().getMaxX();
+            if (textLayout != null)
+                return (int) textLayout.getBounds().getMaxX();
+            else
+                return 0;
         } // end if     
     }
 
@@ -412,7 +416,10 @@ public class Java2DLabel extends Label
             // Null reference.
             g = null;
             
-            return (int) textLayout.getBounds().getHeight();
+            if (textLayout != null)
+                return (int) textLayout.getBounds().getMaxX();
+            else
+                return 0;
         } // end if 
     }
 
