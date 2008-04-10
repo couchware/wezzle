@@ -21,6 +21,11 @@ import java.util.Set;
 public class BoardManager
 {	
     /**
+     * The path to the board background graphic.
+     */
+    final private String PATH = Game.SPRITES_PATH + "/Board.png";
+    
+    /**
      * Whether or not this is visible.
      */
     private boolean visible;
@@ -151,6 +156,10 @@ public class BoardManager
 		// Initialize board.
 		board = new TileEntity[cells];
         scratchBoard = new TileEntity[cells];
+        
+        // Create the board background graphic.
+        GraphicEntity entity = new GraphicEntity(PATH, x - 12, y - 12);
+        layerMan.add(entity, Game.LAYER_BACKGROUND);
 	}
     
     //--------------------------------------------------------------------------

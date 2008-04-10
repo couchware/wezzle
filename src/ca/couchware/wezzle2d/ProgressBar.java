@@ -14,6 +14,19 @@ public class ProgressBar implements Drawable, Positionable
 {
 
     /**
+     * The availble progress bar widths.
+     */
+    final public static int WIDTH_200 = 0;
+    //final public static int WIDTH_400 = 1;
+    //final public static int WIDTH_600 = 2;
+    
+    /**
+     * The path to the progress bar container for 200 pixel bar.
+     */    
+    final private static String PATH_CONTAINER_200 =
+            Game.SPRITES_PATH + "/ProgressBarContainer_200.png";
+    
+    /**
      * The path to the left sprite.
      */
     final private static String PATH_SPRITE_LEFT = 
@@ -65,9 +78,9 @@ public class ProgressBar implements Drawable, Positionable
     private int y_;
     
     /**
-     * The current draw rectangle.
-     */
-    protected Rectangle drawRect;
+     * The container sprite.
+     */   
+    private Sprite containerSprite;
     
     /**
      * The left sprite.
@@ -100,9 +113,9 @@ public class ProgressBar implements Drawable, Positionable
 	private int progressWidth;
     
     /**
-	 * The width at which the clip element is at maximum progress.
+	 * The width at which the element is at maximum progress.
 	 */
-	private int width;
+	private int progressMaxWidth;
     
     /**
      * The alignment bitmask.
@@ -120,6 +133,16 @@ public class ProgressBar implements Drawable, Positionable
     private int offsetY;
     
     /**
+     * The inner x padding of the progress bar container.
+     */
+    private int padX;
+    
+    /**
+     * The inner y padding of the progress bar container.
+     */
+    private int padY;
+    
+    /**
      * Create a progress bar with the top-left coordinate at the position
      * specified.  Optionally may have text under it.
      * 
@@ -127,18 +150,36 @@ public class ProgressBar implements Drawable, Positionable
      * @param y
      * @param withText
      */    
-    public ProgressBar(int x, int y, int width, boolean withText)
+    public ProgressBar(int x, int y, int type, boolean withText)
     {                   
         // Set progress to 0.
         // Set progressMax to 100.
         this.progress = 0;
-        this.progressMax = 100;        
-        this.width = width;
+        this.progressMax = 100;  
+        
+        switch (type)
+        {
+            case WIDTH_200:
+                
+                // Set width max.
+                this.progressMaxWidth = 200 - 14;
+                
+                 // Load the container sprite.
+                containerSprite = 
+                        ResourceFactory.get().getSprite(PATH_CONTAINER_200);
+                padX = 7;
+                padY = 7;
+                
+                break;
+                
+            default:
+                throw new IllegalArgumentException("Unknown width type!");
+        }        
                       
         // Load the sprites.
         leftSprite = ResourceFactory.get().getSprite(PATH_SPRITE_LEFT);
         rightSprite = ResourceFactory.get().getSprite(PATH_SPRITE_RIGHT);
-        middleSprite = ResourceFactory.get().getSprite(PATH_SPRITE_MIDDLE);
+        middleSprite = ResourceFactory.get().getSprite(PATH_SPRITE_MIDDLE);     
                
         // Set coordinates.
         this.x = x;
@@ -160,7 +201,7 @@ public class ProgressBar implements Drawable, Positionable
 			progressText = ResourceFactory.get().getText();
 			
 			// Set text attributes.
-			progressText.setXYPosition(x + width / 2, y + 40);
+			progressText.setXYPosition(x + getWidth() / 2, y + 47);
             progressText.setSize(14);
             progressText.setAlignment(Label.VCENTER | Label.HCENTER);
             progressText.setColor(Game.TEXT_COLOR);
@@ -179,13 +220,16 @@ public class ProgressBar implements Drawable, Positionable
         x_ = x;
         y_ = y;
         
+        // Draw the container.
+        containerSprite.draw(x + offsetX, y + offsetY);
+        
         // Draw the text.
         if (withText == true)
             progressText.draw();
         
         // Adjust the local x and y.
-        int alignedX = x + offsetX;
-        int alignedY = y + offsetY;
+        int alignedX = x + padX + offsetX;
+        int alignedY = y + padY + offsetY;
         
         // Draw the bar.
         if (progressWidth == 0)
@@ -322,9 +366,9 @@ public class ProgressBar implements Drawable, Positionable
 		
 		// Update the progress.
 		this.progress = progress;	
-		this.progressWidth = (int) ((double) width 
+		this.progressWidth = (int) ((double) progressMaxWidth 
                 * ((double) progress / (double) progressMax));
-		this.progressWidth = progressWidth > width ? width : progressWidth; 
+		this.progressWidth = progressWidth > progressMaxWidth ? progressMaxWidth : progressWidth; 
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -338,12 +382,12 @@ public class ProgressBar implements Drawable, Positionable
 
     public int getWidth()
     {
-        return width;
+        return containerSprite.getWidth();
     }
 
     public void setWidth(int width)
     {       
-        this.width = width;
+        this.progressMaxWidth = width;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -364,7 +408,7 @@ public class ProgressBar implements Drawable, Positionable
 
     public int getHeight()
     {
-        return middleSprite.getHeight();
+        return containerSprite.getHeight();
     }
 
     public void setHeight(int height)
@@ -409,11 +453,11 @@ public class ProgressBar implements Drawable, Positionable
 		}
 		else if((alignment & HCENTER) == HCENTER)
 		{
-			this.offsetX = -width / 2;			
+			this.offsetX = -progressMaxWidth / 2;			
 		}
 		else if((alignment & RIGHT) == RIGHT)
 		{
-			this.offsetX = -width;
+			this.offsetX = -progressMaxWidth;
 		}
 		else
 		{
@@ -444,10 +488,10 @@ public class ProgressBar implements Drawable, Positionable
     public Rectangle getDrawRect()
     {
         Rectangle rect = new Rectangle(x_, y_, 
-                width + 2, getHeight() + 2);
+                progressMaxWidth + 2, getHeight() + 2);
         
         if (x_ != x || y_ != y)
-            rect.add(new Rectangle(x, y, width + 2, getHeight() + 2));
+            rect.add(new Rectangle(x, y, progressMaxWidth + 2, getHeight() + 2));
         
         rect.translate(offsetX, offsetY);
         
