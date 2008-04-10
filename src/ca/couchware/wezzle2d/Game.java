@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.sound.MusicManager;
+import ca.couchware.wezzle2d.sound.SoundManager;
 import ca.couchware.wezzle2d.challenge.*;
 import ca.couchware.wezzle2d.button.*;
 import ca.couchware.wezzle2d.util.*;
@@ -802,12 +804,24 @@ public class Game extends Canvas implements GameWindowCallback
                 this.resumeGame();
             }
         }
+        
+        if (menuButton.clicked() == true)
+        {
+            if(menuButton.isActivated() == true)
+            {
+                musicMan.pause();
+            }
+            else
+            {
+                musicMan.resume();
+            }
+        }
 		
         // If the music stopped playing, play the next song.
-//        if (musicMan.isMusicPlaying() == false)
-//        {
-//            musicMan.playNext();
-//        }        
+        if (musicMan.isMusicPlaying() == false)
+        {
+            musicMan.playNext();
+        }        
         
         // If the pause button is not on, then we proceed with the
         // normal game loop.
@@ -1263,6 +1277,17 @@ public class Game extends Canvas implements GameWindowCallback
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
 		{
 			System.exit(0);
+		}
+        
+        // If up or down have been pressed
+        if (window.isKeyPressed(KeyEvent.VK_UP))
+		{
+			musicMan.increaseVolume();
+		}
+        
+        if (window.isKeyPressed(KeyEvent.VK_DOWN))
+		{
+			musicMan.decreaseVolume();
 		}
         
         return updated;

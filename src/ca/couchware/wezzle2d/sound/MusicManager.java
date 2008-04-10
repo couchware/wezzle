@@ -1,9 +1,10 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.sound;
 
+import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.sound.Song;
 import ca.couchware.wezzle2d.util.Util;
 import java.io.BufferedInputStream;
 import java.util.ArrayList;
-import javazoom.jl.player.Player;
 
 /**
  * A class to handle background music.
@@ -19,11 +20,24 @@ public class MusicManager
     /** The song number we are one */
     private int songNum;
     
+    /** A variable to check if the song is paused */
+    private boolean paused = false;
+    
     /**
      * Is the music playing?
      */
     private volatile boolean musicPlayingInProgress;
       
+    /**
+     * The volume level.
+     * range: -80.0 - 6.0206
+     */
+    
+    private float volume;
+    
+    /** How much to adjust the volume by */
+    private static final float volumeAdjustment = 0.5f;
+    
     /**
      * Creates the song list.
      */
@@ -40,7 +54,10 @@ public class MusicManager
         this.songList.add(new Song("Prelude", Game.MUSIC_PATH 
                 + "/PreludeinCMinorRemix.mp3"));
         this.songList.add(new Song("Tron", Game.MUSIC_PATH 
-                + "/IntergalacticTron.mp3"));                       
+                + "/IntergalacticTron.mp3")); 
+        
+        // Get the default volume.
+        this.volume = ((Song) songList.get(0)).getVolume();
     }
     
     /**
@@ -121,18 +138,24 @@ public class MusicManager
                     {
                         if(((Song) songList.get(i)).getKey().equals(key))
                         {
-                            ((Song) songList.get(i)).getPlayer().play(); 
+                            // Adjust the song number.
+                            songNum = i;
+                            
+                            // Set the volume.
+                            ((Song) songList.get(songNum)).setVolume(volume);
+                            
+                            // Play the song.
+                            ((Song) songList.get(i)).play(); 
                             break;
                         }
                         
                     }
                     // Signal song is done.
-                    //game.musicPlayingInProgress = false;
                     setMusicPlaying(false);
                 }
                 catch (Exception e) 
                 { 
-                    System.out.println(e); 
+                    Util.handleException(e); 
                 }
             }
         }.start();
@@ -158,11 +181,14 @@ public class MusicManager
             {
                 try 
                 { 
+                    
+                    // Set the volume.
+                    ((Song) songList.get(songNum)).setVolume(volume);
+                    
                     // Play the current song.
-                    ((Song) songList.get(songNum)).getPlayer().play(); 
+                    ((Song) songList.get(songNum)).play(); 
                     
                     // Signal song is done.
-                    //game.musicPlayingInProgress = false;
                     setMusicPlaying(false);
                 }
                 catch (Exception e) 
@@ -183,4 +209,70 @@ public class MusicManager
         this.musicPlayingInProgress = musicPlayingInProgress;
     }    
     
+    /**
+     * Pause the song.
+     */
+    public void pause()
+    {
+       ((Song) this.songList.get(this.songNum)).pausePressed();
+       this.paused = true;
+    }
+    
+    /**
+     * Resume the song.
+     */
+    public void resume()
+    {
+        ((Song) this.songList.get(this.songNum)).playPressed();
+        this.paused = false;
+    }
+    
+    /**
+     * Return whether or not the song is paused.
+     * @return true if paused, false otherwise.
+     */
+    public boolean isPaused()
+    {
+        return this.paused;
+    }
+    
+    /** 
+     * A method to increase the volume of the song.
+     */
+    public void increaseVolume()
+    {
+        // Adjust the volume.
+        this.volume += volumeAdjustment;
+        
+        // Max volume.
+        if(this.volume > 6.0206f)
+            this.volume = 6.0206f;
+        
+        // Adjust the current playing song.
+        if(this.musicPlayingInProgress == true)
+        {
+            ((Song) this.songList.get(this.songNum)).setVolume(this.volume);
+        }
+            
+    }
+    
+    /**
+     * A method to decrease the volume of the song
+     */
+    public void decreaseVolume()
+    {
+         // Adjust the volume.
+        this.volume -= volumeAdjustment;
+        
+        // Min volume.
+        if(this.volume < -80.0f)
+            this.volume = -80.0f;
+        
+        // Adjust the current playing song.
+        if(this.musicPlayingInProgress == true)
+        {
+            ((Song) this.songList.get(this.songNum)).setVolume(this.volume);
+        }
+            
+    }
 }
