@@ -417,7 +417,7 @@ public class Java2DLabel extends Label
             g = null;
             
             if (textLayout != null)
-                return (int) textLayout.getBounds().getMaxX();
+                return (int) textLayout.getBounds().getHeight();
             else
                 return 0;
         } // end if 

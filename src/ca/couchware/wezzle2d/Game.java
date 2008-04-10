@@ -187,6 +187,11 @@ public class Game extends Canvas implements GameWindowCallback
     public CircularBooleanButton pauseButton;
     
     /**
+     * The menu button.
+     */
+    public CircularBooleanButton menuButton;
+    
+    /**
      * The progress bar.
      */
     public ProgressBar progressBar;
@@ -346,7 +351,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * A test challenge.
      */
-    ChallengeEntity challenge;
+    Challenge challenge;
     
 	/**
 	 * Construct our game and set it running.
@@ -494,6 +499,14 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);
         
+        menuButton = new CircularBooleanButton(800 - 18, 600 - 18);
+        menuButton.setText("Menu");
+        menuButton.getLabel().setSize(18);
+        menuButton.setAlignment(Button.BOTTOM | Button.RIGHT);
+        layerMan.add(menuButton, LAYER_UI);
+        window.addMouseListener(menuButton);
+        window.addMouseMotionListener(menuButton);
+        
         // Create the "Paused" text.
         pausedLabel = ResourceFactory.get().getText();
         pausedLabel.setXYPosition(400, 300);      
@@ -506,9 +519,9 @@ public class Game extends Canvas implements GameWindowCallback
               
         // Set up the version text.
 		versionLabel = ResourceFactory.get().getText();
-        versionLabel.setXYPosition(800 - 10, 600 - 10);
+        versionLabel.setXYPosition(800 - 10, 10);
 		versionLabel.setSize(12);
-		versionLabel.setAlignment(Label.BOTTOM | Label.RIGHT);
+		versionLabel.setAlignment(Label.TOP | Label.RIGHT);
 		versionLabel.setColor(TEXT_COLOR);
         versionLabel.setText(applicationName + " Build " + buildNumber);
         layerMan.add(versionLabel, LAYER_UI);
@@ -561,7 +574,7 @@ public class Game extends Canvas implements GameWindowCallback
         progressBar.setProgressMax(scoreMan.getTargetLevelScore());
         layerMan.add(progressBar, LAYER_UI);
         
-        challenge = new GetXLinesInYMovesChallenge(498, 19, 5, 10);
+        challenge = new XLinesYMovesChallenge(498, 19, 5, 10);
         layerMan.add(challenge, LAYER_UI);
         
 		// Setup the initial game state.
@@ -742,11 +755,10 @@ public class Game extends Canvas implements GameWindowCallback
         }
 		
         // If the music stopped playing, play the next song.
-        if (musicMan.isMusicPlaying() == false)
-        {
-            musicMan.playNext();
-        }
-        
+//        if (musicMan.isMusicPlaying() == false)
+//        {
+//            musicMan.playNext();
+//        }        
         
         // If the pause button is not on, then we proceed with the
         // normal game loop.
@@ -1138,8 +1150,30 @@ public class Game extends Canvas implements GameWindowCallback
             // Update piece manager logic and then draw it.
             pieceMan.updateLogic(this);
             
-            // Check the challenge logic.
-            challenge.updateLogic(this);
+            // Check the challenge logic.            
+            if (challenge != null)
+            {                                
+                if (challenge.isDone() == true)
+                {                                        
+                    if (challenge.getAnimation() == null)
+                    {
+                        challenge.setAnimation(new FadeOutAnimation(challenge));
+                        animationMan.add(challenge.getAnimation());
+                    }
+                    else if (challenge.getAnimation().isDone() == true)
+                    {
+                        if (challenge.isVisible() == true)
+                            challenge.setVisible(false); 
+                        else
+                        {
+                            layerMan.remove(challenge, LAYER_UI);
+                            challenge = null;
+                        }
+                    }                    
+                }                
+                else
+                    challenge.updateLogic(this, delta);
+            }
             
             // Draw the timer text.
             timerLabel.setText(String.valueOf(timerMan.getTime()));		

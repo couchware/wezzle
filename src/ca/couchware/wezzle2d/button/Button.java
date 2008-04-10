@@ -422,11 +422,11 @@ public abstract class Button implements
 		}
 		else if((alignment & HCENTER) == HCENTER)
 		{
-			this.offsetX = width / 2;			
+			this.offsetX = -width / 2;			
 		}
 		else if((alignment & RIGHT) == RIGHT)
 		{
-			this.offsetX = width;
+			this.offsetX = -width;
 		}
 		else
 		{

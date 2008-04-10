@@ -6,7 +6,7 @@ import ca.couchware.wezzle2d.Game;
  *
  * @author cdmckay
  */
-public class GetXLinesInYMovesChallenge extends ChallengeEntity
+public class XLinesYMovesChallenge extends Challenge
 {
     /**
      * The total number of lines.
@@ -31,12 +31,7 @@ public class GetXLinesInYMovesChallenge extends ChallengeEntity
     /**
      * Used to keep track of moves.
      */
-    protected int lastMoveSeen;
-    
-    /**
-     * The reward.
-     */
-    protected int reward;
+    protected int lastMoveSeen;        
     
     /**
      * Creates a challenge that will require the user to
@@ -47,7 +42,7 @@ public class GetXLinesInYMovesChallenge extends ChallengeEntity
      * @param totalLines The X in the description.
      * @param totalMoves The Y in the description.
      */
-    public GetXLinesInYMovesChallenge(final int x, final int y,
+    public XLinesYMovesChallenge(final int x, final int y,
             final int totalLines, final int totalMoves)
     {
         // Invoke super.
@@ -85,7 +80,7 @@ public class GetXLinesInYMovesChallenge extends ChallengeEntity
     }
     
     protected void updateLines(int lineDelta)
-    {
+    {       
         // Add the line increase.
         lines += lineDelta;
         
@@ -102,7 +97,7 @@ public class GetXLinesInYMovesChallenge extends ChallengeEntity
     }
     
     protected void updateMoves(int moveDelta)
-    {
+    {        
         // Add the move increase.
         moves += moveDelta;
         
@@ -120,10 +115,13 @@ public class GetXLinesInYMovesChallenge extends ChallengeEntity
     
     protected void updateProgress(int lines, int moves)
     {
-        
+        if (lines == totalLines)
+            pass();
+        else if (moves == totalMoves)
+            fail();
     }
     
-    public void updateLogic(final Game game)
+    public void challengeLogic(final Game game)
     {
         // See if we've run yet.
         // If we haven't, record the current move (the 0 move) and then
@@ -131,13 +129,20 @@ public class GetXLinesInYMovesChallenge extends ChallengeEntity
         if (lastMoveSeen == -1)        
             lastMoveSeen = game.moveMan.getMoveCount();                
         
+        // Determine the line delta.
+        int lineDelta = game.getLineCount();
+        
         // Determine the move delta.
         int moveDelta = game.moveMan.getMoveCount() - lastMoveSeen;
-        lastMoveSeen = game.moveMan.getMoveCount();
+        lastMoveSeen = game.moveMan.getMoveCount();               
         
         // See if there were any lines found.
-        updateLines(game.getLineCount());
-        updateMoves(moveDelta);
+        if (lineDelta != 0 || moveDelta != 0)
+        {
+            updateLines(lineDelta);
+            updateMoves(moveDelta);
+            updateProgress(lines, moves);
+        }
     }
     
 }

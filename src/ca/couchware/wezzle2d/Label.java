@@ -43,87 +43,8 @@ public abstract class Label extends Entity
         this.y_ = 0;
         
         this.width_ = 0;
-        this.height_ = 0;
-    }    
-    
-    /**
-     * Get the X-coordinate.
-     * 
-     * @return The X-coordinate.
-     */
-    public int getX()
-    {
-        return x;
-    }
-    
-    /**
-     * Set the X-coordinate.
-     * 
-     * @param x
-     */
-    public void setX(final int x)
-    {
-        this.x = x;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    /**
-     * Get the Y-coordinate.
-     * 
-     * @return The Y-coordinate.
-     */
-    public int getY()
-    {
-        return y;        
-    }
-
-    /**
-     * Set the Y-coordinate.
-     * 
-     * @param y
-     */
-    public void setY(final int y)
-    {
-        this.y = y;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.height_ = 0;                
     }        
-    
-    /**
-     * Get the XY position.
-     * 
-     * @return The XY position.
-     */
-    public XYPosition getXYPosition()
-    {
-        return new XYPosition(x, y);
-    }
-
-    /**
-     * Sets the XY-coordinates.
-     * 
-     * @param p
-     */
-    public void setXYPosition(XYPosition p)
-    {
-        setX(p.x);
-        setY(p.y);
-    }
-    
-    /**
-     * Set the XY-coordinates.
-     * 
-     * @param x
-     * @param y
-     */
-    public void setXYPosition(final int x, final int y)
-    {
-        setX(x);
-        setY(y);                
-    }
     
     /**
      * Gets the text.
@@ -194,92 +115,7 @@ public abstract class Label extends Entity
         // Set dirty so it will be drawn.        
         setDirty(true);
     }
-	
-    /**
-     * Get the current anchor of the text box.
-     * 
-     * @return The current anchor bitmask.
-     */
-    public int getAlignment()
-    {
-        return alignment;
-    }
-    
-	/**
-	 * Set the anchor of the text box. The anchor is initially set to the top left. 
-	 * 
-	 * @param x The x anchor coordinate with respect to the top left corner of the text box.
-	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
-	 */
-	public void setAlignment(final int alignment)
-    {
-        this.alignment = alignment;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-    
-    /**
-     * Sets the visibility.
-     * 
-     * @param visible True for visible, false for not.
-     */
-    public void setVisible(boolean visible)
-    {
-        this.visible = visible;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    /**
-     * Gets the visibility.
-     * 
-     * @return True for visible, false for not.
-     */
-    public boolean isVisible()
-    {
-        return visible;
-    }
-    
-    /**
-     * Sets the opacity of the sprite (in percent).
-     * 
-     * @param opacity The opacity.
-     */
-    public void setOpacity(final int opacity)
-    {       
-        if (opacity < 0)
-            this.opacity = 0;
-        else if (opacity > 100)
-            this.opacity = 100;
-        else
-            this.opacity = opacity;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-    
-    /**
-     * Gets the opacity of the sprite.
-     * 
-     * @return The opacity.
-     */
-    public int getOpacity()
-    {
-        return opacity;
-    }        
-    
-    public void setDirty(boolean dirty)
-    {
-        this.dirty = dirty;
-    }
-
-    public boolean isDirty()
-    {
-        return dirty;
-    }        
-
+	    
     public abstract int getLetterHeight();
     
     public Rectangle getDrawRect()
@@ -303,7 +139,7 @@ public abstract class Label extends Entity
         y_ = y;
         
         width_ = getWidth();
-        height_ =  getHeight();
+        height_ = getHeight();
     }
 		
 }

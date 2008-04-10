@@ -22,12 +22,12 @@ public abstract class Entity implements Drawable, Positionable
     /** 
      * Is this visible? 
      */
-    protected boolean visible;
+    protected boolean visible = true;
     
     /**
      * Is it dirty (i.e. does it need to be redrawn)?
      */
-    protected boolean dirty;
+    protected boolean dirty = true;
     
      /**
      * The rotation.
