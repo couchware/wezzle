@@ -25,6 +25,11 @@ public class SoundManager
     public final static int LEVEL_UP = 5;
     
     /**
+     * Are we paused?
+     */
+    private boolean paused = false;
+    
+    /**
      * Path to the line audio clip.
      */
     private final URL lineUrl = this.getClass().getClassLoader()
@@ -143,7 +148,11 @@ public class SoundManager
      * @param soundClip The soundclip to play.
      */
     public void play(int soundClip)
-    {                
+    {     
+        // If we're paused, don't play the clip.
+        if (paused == true)
+            return;
+        
         // Play the line sound. Blah.
         if (soundClip == LINE)
         {
@@ -183,5 +192,16 @@ public class SoundManager
             
         } // end if
     }
+
+    public boolean isPaused()
+    {
+        return paused;
+    }
+
+    public void setPaused(boolean paused)
+    {
+        this.paused = paused;
+    }        
+    
 }
 

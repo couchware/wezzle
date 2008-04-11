@@ -209,12 +209,12 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The menu button.
      */
-    public RectangularBooleanButton menuButton;
+    public RectangularBooleanButton soundButton;
     
     /**
      * The exit button.
      */
-    public RectangularBooleanButton exitButton;
+    public RectangularBooleanButton musicButton;
     
     /**
      * The progress bar.
@@ -300,7 +300,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The number of cascades thus far.
      */
-    private int cascadeCount;
+    private int cascadeCount;         
         
 	/**
 	 * The time at which the last rendering looped started from the point of
@@ -534,21 +534,21 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);
         
-        menuButton = new RectangularBooleanButton(668, 299);
-        menuButton.setText("Menu");
-        menuButton.getLabel().setSize(18);
-        menuButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(menuButton, LAYER_UI);
-        window.addMouseListener(menuButton);
-        window.addMouseMotionListener(menuButton);
+        soundButton = new RectangularBooleanButton(668, 299);
+        soundButton.setText("Sound ON");
+        soundButton.getLabel().setSize(18);
+        soundButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(soundButton, LAYER_UI);
+        window.addMouseListener(soundButton);
+        window.addMouseMotionListener(soundButton);
         
-        exitButton = new RectangularBooleanButton(668, 387);
-        exitButton.setText("Exit");
-        exitButton.getLabel().setSize(18);
-        exitButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(exitButton, LAYER_UI);
-        window.addMouseListener(exitButton);
-        window.addMouseMotionListener(exitButton);
+        musicButton = new RectangularBooleanButton(668, 387);
+        musicButton.setText("Music ON");
+        musicButton.getLabel().setSize(18);
+        musicButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(musicButton, LAYER_UI);
+        window.addMouseListener(musicButton);
+        window.addMouseMotionListener(musicButton);
         
         // Create the "Paused" text.
         pausedLabel = ResourceFactory.get().getText();
@@ -805,15 +805,31 @@ public class Game extends Canvas implements GameWindowCallback
             }
         }
         
-        if (menuButton.clicked() == true)
+        if (musicButton.clicked() == true)
         {
-            if(menuButton.isActivated() == true)
+            if (musicButton.isActivated() == true)
             {
-                musicMan.pause();
+                musicButton.setText("Music OFF");                
+                musicMan.setPaused(true);
             }
             else
             {
-                musicMan.resume();
+                musicButton.setText("Music ON");                
+                musicMan.setPaused(false);
+            }
+        }
+        
+        if (soundButton.clicked() == true)
+        {
+            if (soundButton.isActivated() == true)
+            {
+                soundButton.setText("Sound OFF");                
+                soundMan.setPaused(true);
+            }
+            else
+            {
+                soundButton.setText("Sound ON");                
+                soundMan.setPaused(false);
             }
         }
 		
@@ -1212,32 +1228,7 @@ public class Game extends Canvas implements GameWindowCallback
 
             // Update piece manager logic and then draw it.
             pieceMan.updateLogic(this);
-            
-            // Check the challenge logic.            
-//            if (challenge != null)
-//            {                                
-//                if (challenge.isDone() == true)
-//                {                                        
-//                    if (challenge.getAnimation() == null)
-//                    {
-//                        challenge.setAnimation(new FadeOutAnimation(challenge));
-//                        animationMan.add(challenge.getAnimation());
-//                    }
-//                    else if (challenge.getAnimation().isDone() == true)
-//                    {
-//                        if (challenge.isVisible() == true)
-//                            challenge.setVisible(false); 
-//                        else
-//                        {
-//                            layerMan.remove(challenge, LAYER_UI);
-//                            challenge = null;
-//                        }
-//                    }                    
-//                }                
-//                else
-//                    challenge.updateLogic(this, delta);
-//            }
-            
+                       
             // Draw the timer text.
             timerLabel.setText(String.valueOf(timerMan.getTime()));		
 

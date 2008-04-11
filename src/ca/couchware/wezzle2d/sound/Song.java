@@ -47,8 +47,12 @@ public class Song
     /** if the volume has changed */
     private boolean changed;
 
-
- 
+    /**
+     * The constructor.
+     * 
+     * @param key
+     * @param path
+     */
     public Song(String key, String path)
     {
         // The associated key.
@@ -59,15 +63,13 @@ public class Song
             .getResource(path);
         
         // Check the URL.
-        if(file == null)
-            throw new RuntimeException("URL ERROR: " + path 
+        if (file == null)
+            throw new RuntimeException("Url Error: " + path 
                     + " does not exist.");
         
         loadSong();
         
-        this.changed = false;
-        
-       
+        this.changed = false;               
     }
     
     /**
@@ -140,23 +142,7 @@ public class Song
         {
            Util.handleException(e);   
         }
-    }
-    
-    
-    // on the user thread:
-    public void pausePressed() 
-    {
-        paused = true;
-    }
- 
-    public void playPressed() 
-    {
-        synchronized(lock) 
-        {
-            paused = false;
-            lock.notifyAll();
-        }
-    }
+    }        
 
     /**
      * A method to reset the song.
@@ -203,10 +189,39 @@ public class Song
             Util.handleException(e);
         }
     }
-    
-     //--------------------------------------------------------------------------
+       
+    //--------------------------------------------------------------------------
     // Getters and setters.
     //--------------------------------------------------------------------------
+    
+    /**
+     * Is the current song paused?
+     * 
+     * @return
+     */
+    public boolean isPaused()
+    {
+        return paused;
+    } 
+    
+    /**
+     * Pauses the current song playing.
+     * 
+     * @param paused
+     */
+    public void setPaused(boolean paused)
+    {
+        if (paused == true)
+            this.paused = true;
+        else
+        {
+            synchronized (lock) 
+            {
+                this.paused = false;
+                lock.notifyAll();
+            }
+        } // end if                   
+    }
     
     /**
      * A method to toggle that the volume has changed.

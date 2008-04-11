@@ -213,21 +213,12 @@ public class MusicManager
     /**
      * Pause the song.
      */
-    public void pause()
+    public void setPaused(boolean paused)
     {
-       ((Song) this.songList.get(this.songNum)).pausePressed();
-       this.paused = true;
+        this.paused = paused;                    
+        ((Song) this.songList.get(this.songNum)).setPaused(paused);        
     }
-    
-    /**
-     * Resume the song.
-     */
-    public void resume()
-    {
-        ((Song) this.songList.get(this.songNum)).playPressed();
-        this.paused = false;
-    }
-    
+        
     /**
      * Return whether or not the song is paused.
      * @return true if paused, false otherwise.
@@ -246,16 +237,15 @@ public class MusicManager
         this.volume += volumeAdjustment;
         
         // Max volume.
-        if(this.volume > 6.0206f)
+        if (this.volume > 6.0206f)
             this.volume = 6.0206f;
         
         // Adjust the current playing song.
-        if(this.musicPlayingInProgress == true)
+        if (this.musicPlayingInProgress == true)
         {
             ((Song) this.songList.get(this.songNum)).setVolume(this.volume);
             ((Song) this.songList.get(this.songNum)).setChanged();
-        }
-            
+        }            
     }
     
     /**
