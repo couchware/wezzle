@@ -159,6 +159,7 @@ public class BoardManager
         
         // Create the board background graphic.
         GraphicEntity entity = new GraphicEntity(PATH, x - 12, y - 12);
+        entity.setOpacity(90);
         layerMan.add(entity, Game.LAYER_BACKGROUND);
 	}
     

@@ -221,7 +221,9 @@ public class ProgressBar implements Drawable, Positionable
         y_ = y;
         
         // Draw the container.
-        containerSprite.draw(x + offsetX, y + offsetY);
+        containerSprite.draw(x + offsetX, y + offsetY,
+                containerSprite.getWidth(), containerSprite.getHeight(),
+                0.0, 90);
         
         // Draw the text.
         if (withText == true)

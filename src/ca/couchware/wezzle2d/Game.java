@@ -484,7 +484,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan = new LayerManager(window, 4);        
         
         // Draw the current background.
-		background = new GraphicEntity(SPRITES_PATH + "/Background1.png", 0, 0);
+		background = new GraphicEntity(SPRITES_PATH + "/Background2.png", 0, 0);
         layerMan.add(background, LAYER_BACKGROUND);
         
         // Create the animation manager.
