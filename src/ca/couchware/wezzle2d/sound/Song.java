@@ -43,6 +43,9 @@ public class Song
     
     /** the volume control */
     FloatControl volume = null;
+    
+    /** if the volume has changed */
+    private boolean changed;
 
 
  
@@ -61,6 +64,8 @@ public class Song
                     + " does not exist.");
         
         loadSong();
+        
+        this.changed = false;
         
        
     }
@@ -90,8 +95,13 @@ public class Song
                 {
                     while ((nBytesRead = decodedIn.read(data, 0, data.length)) != -1) 
                     {	
-                        // The volume control;
-                        volume = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+                        // The volume control, apply only if volume has changed.
+                        if(changed == true)
+                        {
+                            volume = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+                            // Reset the flag.
+                            changed = false;
+                        }
                         while (paused) 
                         {
                             if(line.isRunning()) 
@@ -194,8 +204,20 @@ public class Song
         }
     }
     
+     //--------------------------------------------------------------------------
+    // Getters and setters.
+    //--------------------------------------------------------------------------
+    
     /**
-     * A metho to increase the volume.
+     * A method to toggle that the volume has changed.
+     */
+    public void setChanged()
+    {
+        this.changed = true;
+    }
+    
+    /**
+     * A method to increase the volume.
      * @param volume The new volume value.
      */
     public void setVolume(float volume)
@@ -218,11 +240,6 @@ public class Song
         return 0.0f;
     }
    
-    
-    //--------------------------------------------------------------------------
-    // Getters
-    //--------------------------------------------------------------------------
-    
     public String getKey()
     {
         return this.key;

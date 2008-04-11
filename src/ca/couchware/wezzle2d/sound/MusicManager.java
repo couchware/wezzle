@@ -252,6 +252,7 @@ public class MusicManager
         if(this.musicPlayingInProgress == true)
         {
             ((Song) this.songList.get(this.songNum)).setVolume(this.volume);
+            ((Song) this.songList.get(this.songNum)).setChanged();
         }
             
     }
@@ -272,6 +273,7 @@ public class MusicManager
         if(this.musicPlayingInProgress == true)
         {
             ((Song) this.songList.get(this.songNum)).setVolume(this.volume);
+            ((Song) this.songList.get(this.songNum)).setChanged();
         }
             
     }
