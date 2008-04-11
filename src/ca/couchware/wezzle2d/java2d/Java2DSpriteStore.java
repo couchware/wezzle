@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import ca.couchware.wezzle2d.Sprite;
 import ca.couchware.wezzle2d.util.Util;
+import java.awt.image.VolatileImage;
 
 /**
  * A resource manager for sprites in the game. Its often quite important how and
@@ -94,20 +95,21 @@ public class Java2DSpriteStore
 		}
 
 		// Create an accelerated image of the right size to store our sprite in.
-		GraphicsConfiguration gc = GraphicsEnvironment
-				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-				.getDefaultConfiguration();
-        
-		Image image = gc.createCompatibleImage(sourceImage.getWidth(),
-				sourceImage.getHeight(), Transparency.TRANSLUCENT);
-
-		// draw our source image into the accelerated image
-		image.getGraphics().drawImage(sourceImage, 0, 0, null);
+//		GraphicsConfiguration gc = GraphicsEnvironment
+//				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+//				.getDefaultConfiguration();
+//        
+//		Image image = gc.createCompatibleImage(sourceImage.getWidth(),
+//				sourceImage.getHeight(), Transparency.TRANSLUCENT);
+//
+//		// draw our source image into the accelerated image
+//		image.getGraphics().drawImage(sourceImage, 0, 0, null);
 
 		// create a sprite, add it the cache then return it
-		Sprite sprite = new Java2DSprite(window, image);
+		Sprite sprite = new Java2DSprite(window, sourceImage);
 		sprites.put(path, sprite);
 
 		return sprite;
-	}
+	}                
+    
 }

@@ -1260,7 +1260,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
         // Otherwise, only draw what needs to be redrawn.
         else
-        {           
+        {                       
             updated = layerMan.drawRegion(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);         
         }
 		
