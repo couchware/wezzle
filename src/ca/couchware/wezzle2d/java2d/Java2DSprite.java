@@ -270,25 +270,29 @@ public class Java2DSprite implements Sprite
             int transparency)
     {
         // The graphics environment/configuration.
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+        GraphicsEnvironment ge = 
+                GraphicsEnvironment.getLocalGraphicsEnvironment();
+        
+        GraphicsConfiguration gc = 
+                ge.getDefaultScreenDevice().getDefaultConfiguration();
         
         // The volatile image.
-        VolatileImage image = null;
-        image = gc.createCompatibleVolatileImage(width, height, transparency);
+        VolatileImage newImage = null;
+        newImage = 
+                gc.createCompatibleVolatileImage(width, height, transparency);
 
         // Check to make sure the image is valid.
-        int valid = image.validate(gc);
+        int valid = newImage.validate(gc);
 
         // If it's not, try again until we get an image.
         if (valid == VolatileImage.IMAGE_INCOMPATIBLE)
         {
-            image = this.createVolatileImage(width, height, transparency);
-            return image;
+            newImage = this.createVolatileImage(width, height, transparency);
+            return newImage;
         }
 
         // Return the volatile image.
-        return image;
+        return newImage;
     }
     
     /**
