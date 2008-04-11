@@ -1,9 +1,7 @@
 package ca.couchware.wezzle2d.sound;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.sound.Song;
 import ca.couchware.wezzle2d.util.Util;
-import java.io.BufferedInputStream;
 import java.util.ArrayList;
 
 /**
@@ -44,17 +42,20 @@ public class MusicManager
     public MusicManager() 
     {        
         // Initiate the array list and song number.
-        this.songList = new ArrayList();
-        this.songNum = 0;
+        this.songList = new ArrayList();        
         this.musicPlayingInProgress = false;
        
-        // Add some music. Note that the order songs play is the reverse of the
-        // order in which they were added. i.e. The last song added is the 
-        // first song played.
-        this.songList.add(new Song("Prelude", Game.MUSIC_PATH 
-                + "/PreludeinCMinorRemix.mp3"));
-        this.songList.add(new Song("Tron", Game.MUSIC_PATH 
+        // Add some music.  This is the order they will play in, but it will
+        // not necessarily start on the first song.
+        this.songList.add(new Song("Turning The Page", Game.MUSIC_PATH 
+                + "/TurningThePage.mp3"));
+        this.songList.add(new Song("Taking a Stroll", Game.MUSIC_PATH 
+                + "/TakingAStroll.mp3"));
+        this.songList.add(new Song("Intergalactic Tron", Game.MUSIC_PATH 
                 + "/IntergalacticTron.mp3")); 
+        
+        // Randomly pick a starting song.
+        this.songNum = Util.random.nextInt(songList.size());
         
         // Get the default volume.
         this.volume = ((Song) songList.get(0)).getVolume();
@@ -77,12 +78,12 @@ public class MusicManager
      * @param key The key of the associated song.
      * @return true if the song was removed, false otherwise.
      */
-    public boolean removeSong (final String key)
+    public boolean removeSong (final String index)
     {
-         // Find and remove the song.
+        // Find and remove the song.
         for (int i = 0; i < songList.size(); i++)
         {
-            if(((Song) songList.get(i)).getKey().equals(key))
+            if(((Song) songList.get(i)).getKey().equals(index))
             {
                 songList.remove(i); 
                 return true;
