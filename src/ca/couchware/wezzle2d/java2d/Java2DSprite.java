@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 
 import ca.couchware.wezzle2d.Sprite;
+import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.Rectangle;
@@ -28,6 +29,11 @@ public class Java2DSprite implements Sprite
      * The game window to which this sprite is going to be drawn 
      */
 	private Java2DGameWindow window;
+    
+    /**
+     * The last alpha composite.
+     */
+    private AlphaComposite alpha;
 
 	/**
 	 * Create a new sprite based on an image
@@ -40,7 +46,8 @@ public class Java2DSprite implements Sprite
 	public Java2DSprite(Java2DGameWindow window, Image image)
 	{
 		this.image = image;
-		this.window = window;
+	    this.window = window;
+        this.alpha = null;
 	}
 
 	/**
@@ -62,6 +69,31 @@ public class Java2DSprite implements Sprite
 	{
 		return image.getHeight(null);
 	}
+    
+        
+    private AlphaComposite getComposite(int opacity)
+    {   
+        // If we have a cached composite.
+        if (alpha != null)
+        {
+            // Determine the cached opacity integer.
+            int cachedOpacity  = (int) (alpha.getAlpha() * 100);
+            
+            // If they're equal, then return the cache.
+            if (cachedOpacity == opacity)
+            {
+//                Util.handleMessage("Using cached opacity.", 
+//                        Thread.currentThread());
+                return alpha;            
+            }
+        }                
+        
+        // Create new alpha composite and return it.
+        alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
+                    ((float) opacity) / 100.0f);
+        
+        return alpha;                               
+    }
 
 	/**
 	 * Draw the sprite onto the graphics context provided.
@@ -102,8 +134,7 @@ public class Java2DSprite implements Sprite
         if (opacity != 100)
         {
             c = g.getComposite();
-            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
-                    ((float) opacity) / 100.0f));
+            g.setComposite(getComposite(opacity));
         }
                 
         // Rotate the sprite.
@@ -158,8 +189,7 @@ public class Java2DSprite implements Sprite
         if (opacity != 100)
         {
             c = g.getComposite();
-            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
-                    ((float) opacity) / 100.0f));
+            g.setComposite(getComposite(opacity));
         }                       
         
         // Rotate the sprite.
