@@ -490,10 +490,10 @@ public class ProgressBar implements Drawable, Positionable
     public Rectangle getDrawRect()
     {
         Rectangle rect = new Rectangle(x_, y_, 
-                progressMaxWidth + 2, getHeight() + 2);
+                getWidth() + 2, getHeight() + 2);
         
         if (x_ != x || y_ != y)
-            rect.add(new Rectangle(x, y, progressMaxWidth + 2, getHeight() + 2));
+            rect.add(new Rectangle(x, y, getWidth() + 2, getHeight() + 2));
         
         rect.translate(offsetX, offsetY);
         
