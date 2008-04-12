@@ -2,9 +2,6 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -25,7 +22,7 @@ public class LayerManager
     /**
      * TODO Add documentation.
      */
-    private LinkedList[] layers;
+    private LinkedList<Drawable>[] layers;
     
     /**
      * The list of hidden layers.
@@ -36,6 +33,12 @@ public class LayerManager
      * The game window.  Used when drawing regions of the screen.
      */
     private GameWindow window;
+    
+    /**
+     * The remove clip.  This clip is used to make sure that things that are
+     * removed are drawn over.
+     */
+    private Rectangle removeClip;
     
     /**
      * The constructor.
@@ -53,7 +56,7 @@ public class LayerManager
         this.numberOfLayers = numberOfLayers;
         
         // Initialize layer arraylist.
-        layers = new LinkedList[numberOfLayers];
+        layers = (LinkedList<Drawable>[]) new LinkedList[numberOfLayers];
         
         // Initialize hidden layer map.
         hiddenLayers = new boolean[numberOfLayers];
@@ -61,9 +64,12 @@ public class LayerManager
         // Create layers.
         for (int i = 0; i < numberOfLayers; i++)
         {
-            layers[i] = new LinkedList();
+            layers[i] = new LinkedList<Drawable>();
             hiddenLayers[i] = false;
         }        
+        
+        // Initialize remove clip.
+        this.removeClip = new Rectangle();
     }
     
     /**
@@ -76,7 +82,7 @@ public class LayerManager
             return;
 
         // Add the element to the layer.
-        ((LinkedList) layers[layer]).add(element);        
+        layers[layer].add(element);        
     }
     
     /**
@@ -89,7 +95,7 @@ public class LayerManager
             return false;
         
         // Get the layer.
-        final LinkedList layerList = (LinkedList) layers[layer];
+        final LinkedList<Drawable> layerList = layers[layer];
         
         // Get the index.
         int index = layerList.indexOf(element);
@@ -97,6 +103,7 @@ public class LayerManager
         // If the index is -1, the element is not in this layer.
         if (index != -1)
         {
+            getRemoveClip().add(layerList.get(index).getDrawRect());
             layerList.remove(index);
             return true;
         }
@@ -112,10 +119,10 @@ public class LayerManager
         hiddenLayers[layer] = true;
         
         // Grab the layer.
-        final LinkedList layerList = (LinkedList) layers[layer];
+        final LinkedList<Drawable> layerList = layers[layer];
         
-        for (Iterator it = layerList.iterator(); it.hasNext(); )
-            ((Drawable) it.next()).setDirty(true);
+        for (Drawable d : layerList)
+            d.setDirty(true);
     }
     
     public void show(final int layer)
@@ -126,10 +133,10 @@ public class LayerManager
         hiddenLayers[layer] = false;
         
         // Grab the layer.
-        final LinkedList layerList = (LinkedList) layers[layer];
+        final LinkedList<Drawable> layerList = layers[layer];
         
-        for (Iterator it = layerList.iterator(); it.hasNext(); )
-            ((Drawable) it.next()).setDirty(true);
+        for (Drawable d : layerList)
+            d.setDirty(true);
     }
     
     /**
@@ -153,17 +160,15 @@ public class LayerManager
                 continue;
             
             // Grab this layer.
-            final LinkedList layerList = (LinkedList) layers[i];
+            final LinkedList<Drawable> layerList = layers[i];
             
             // Draw its contents.
-            for (Iterator it = layerList.iterator(); it.hasNext(); )
+            for (Drawable d : layerList)
             {
-                Drawable d = (Drawable) it.next();
-                
-                if (clip == null || d.getDrawRect().intersects(clip))
+                if (clip == null || d.getDrawRect().intersects(clip) == true)
                         d.draw();                
             }           
-        }            
+        } // end for            
     }
     
     /**
@@ -183,13 +188,11 @@ public class LayerManager
         for (int i = 0; i < numberOfLayers; i++)
         {                                             
             // Grab this layer.
-            LinkedList layerList = (LinkedList) layers[i];
+            LinkedList<Drawable> layerList = layers[i];
             
             // See if it's in the region.
-            for (Iterator it = layerList.iterator(); it.hasNext(); )
+            for (Drawable d : layerList)
             {
-                Drawable d = (Drawable) it.next();
-                
                 if (d.isDirty() == false)
                     continue;                                
                 
@@ -228,7 +231,17 @@ public class LayerManager
                         clip.add(r);
                 }
             }           
-        }      
+        }     
+        
+        // If the remove clip is not empty.
+        if (getRemoveClip().isEmpty() == false)
+        {
+            // See if there's a clip to add to, or if we need to make one.
+            if (clip == null)
+                clip = getRemoveClip();
+            else
+                clip.add(getRemoveClip());
+        }
              
         if (clip != null)
         {
@@ -238,7 +251,10 @@ public class LayerManager
             draw();            
             window.clearClip();
             //window.drawClip(clip);
-                        
+               
+            // Reset the remove clip.
+            resetRemoveClip();
+            
             return true;
         }        
         else
@@ -247,6 +263,12 @@ public class LayerManager
         }
     }
     
+    /**
+     * Checks for existance of the passed layer number.
+     * 
+     * @param layer
+     * @return
+     */
     private boolean layerExists(int layer)
     {
         // Sanity check.
@@ -254,16 +276,24 @@ public class LayerManager
         
         // Check if layer exists then error out.
         if (layer >= layers.length)
-        {                        
-            Util.handleMessage("Layer " + layer + " does not exist.", 
-                    Thread.currentThread());
-                        
-            throw new RuntimeException("Non-existant layer number.");                        
+        {                                   
+            return false;                    
         }
         else
         {
             return true;
         }
+    }
+
+    public Rectangle getRemoveClip()
+    {
+        return removeClip;
+    }   
+    
+    public void resetRemoveClip()
+    {
+        if (removeClip.isEmpty() == false)
+            removeClip = new Rectangle();
     }
 
 }

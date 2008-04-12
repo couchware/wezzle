@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.animation.Animation;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Rectangle;
