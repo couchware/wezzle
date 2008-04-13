@@ -1,5 +1,5 @@
 
-package ca.couchware.wezzle2d.sound;
+package ca.couchware.wezzle2d.music;
 import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.io.*;

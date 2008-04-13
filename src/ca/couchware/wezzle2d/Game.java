@@ -1,8 +1,7 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.sound.MusicManager;
+import ca.couchware.wezzle2d.music.MusicManager;
 import ca.couchware.wezzle2d.sound.SoundManager;
-import ca.couchware.wezzle2d.challenge.*;
 import ca.couchware.wezzle2d.button.*;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
@@ -381,12 +380,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The version text.
      */
-    private Label versionLabel;        
-        
-    /**
-     * A test challenge.
-     */
-    Challenge challenge;
+    private Label versionLabel;                  
     
 	/**
 	 * Construct our game and set it running.

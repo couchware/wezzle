@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d.sound;
+package ca.couchware.wezzle2d.music;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
@@ -13,7 +13,7 @@ public class MusicManager
 {
   
     /** The list of songs */
-    private ArrayList songList;
+    private ArrayList<Song> songList;
     
     /** The song number we are one */
     private int songNum;
@@ -41,7 +41,7 @@ public class MusicManager
     public MusicManager() 
     {        
         // Initiate the array list and song number.
-        this.songList = new ArrayList();        
+        this.songList = new ArrayList<Song>();        
         this.musicPlayingInProgress = false;
        
         // Add some music.  This is the order they will play in, but it will
@@ -57,7 +57,7 @@ public class MusicManager
         this.songNum = Util.random.nextInt(songList.size());
         
         // Get the default volume.
-        this.volume = ((Song) songList.get(0)).getVolume();
+        this.volume = songList.get(0).getVolume();
     }
     
     /**
@@ -65,9 +65,9 @@ public class MusicManager
      * 
      * @param newSong The new song.
      */
-    public void addSong(Song newSong)
+    public void addSong(Song song)
     {
-        this.songList.add(newSong);
+        this.songList.add(song);
     }
         
     /**
@@ -77,16 +77,16 @@ public class MusicManager
      * @param key The key of the associated song.
      * @return true if the song was removed, false otherwise.
      */
-    public boolean removeSong (final String index)
+    public boolean removeSong (final String key)
     {
         // Find and remove the song.
         for (int i = 0; i < songList.size(); i++)
         {
-            if(((Song) songList.get(i)).getKey().equals(index))
+            if (songList.get(i).getKey().equals(key) == true)
             {
                 songList.remove(i); 
                 return true;
-            }
+            }           
         }
         
         return false;
@@ -105,9 +105,9 @@ public class MusicManager
          // find and return the song.
         for (int i = 0; i < songList.size(); i++)
         {
-            if (((Song) songList.get(i)).getKey().equals(key))
+            if (songList.get(i).getKey().equals(key) == true)
             {
-                return (Song) songList.get(i); 
+                return songList.get(i); 
             }
         }
         
@@ -136,16 +136,16 @@ public class MusicManager
                     // Play the song.
                     for(int i = 0; i < songList.size(); i++)
                     {
-                        if(((Song) songList.get(i)).getKey().equals(key))
+                        if(songList.get(i).getKey().equals(key) == true)
                         {
                             // Adjust the song number.
                             songNum = i;
                             
                             // Set the volume.
-                            ((Song) songList.get(songNum)).setVolume(volume);
+                            songList.get(songNum).setVolume(volume);
                             
                             // Play the song.
-                            ((Song) songList.get(i)).play(); 
+                            songList.get(i).play(); 
                             break;
                         }
                         
@@ -167,7 +167,6 @@ public class MusicManager
     public void playNext() 
     {
         // Flag music playing in game.
-        //game.musicPlayingInProgress = true;
         setMusicPlaying(true);
         
         // Determine the next song to play.
@@ -182,10 +181,10 @@ public class MusicManager
                 try 
                 {                     
                     // Set the volume.
-                    ((Song) songList.get(songNum)).setVolume(volume);
+                    songList.get(songNum).setVolume(volume);
                     
                     // Play the current song.
-                    ((Song) songList.get(songNum)).play(); 
+                    songList.get(songNum).play(); 
                     
                     // Signal song is done.
                     setMusicPlaying(false);
@@ -214,7 +213,7 @@ public class MusicManager
     public void setPaused(boolean paused)
     {
         this.paused = paused;                    
-        ((Song) this.songList.get(this.songNum)).setPaused(paused);        
+        this.songList.get(this.songNum).setPaused(paused);        
     }
         
     /**
@@ -241,8 +240,8 @@ public class MusicManager
         // Adjust the current playing song.
         if (this.musicPlayingInProgress == true)
         {
-            ((Song) this.songList.get(this.songNum)).setVolume(this.volume);
-            ((Song) this.songList.get(this.songNum)).setChanged();
+            this.songList.get(this.songNum).setVolume(this.volume);
+            this.songList.get(this.songNum).setChanged();
         }            
     }
     
@@ -255,14 +254,14 @@ public class MusicManager
         this.volume -= volumeAdjustment;
         
         // Min volume.
-        if(this.volume < -80.0f)
+        if (this.volume < -80.0f)
             this.volume = -80.0f;
         
         // Adjust the current playing song.
-        if(this.musicPlayingInProgress == true)
+        if (this.musicPlayingInProgress == true)
         {
-            ((Song) this.songList.get(this.songNum)).setVolume(this.volume);
-            ((Song) this.songList.get(this.songNum)).setChanged();
+            this.songList.get(this.songNum).setVolume(this.volume);
+            this.songList.get(this.songNum).setChanged();
         }            
     }
 }
