@@ -55,6 +55,11 @@ public class ProgressBar implements Drawable, Positionable
     private boolean dirty;
     
     /**
+     * The cached draw rectangle.
+     */
+    private Rectangle drawRect;
+    
+    /**
      * Does the progress bar have text?
      */
     private boolean withText;
@@ -480,6 +485,9 @@ public class ProgressBar implements Drawable, Positionable
     public void setDirty(boolean dirty)
     {
         this.dirty = dirty;
+        
+        // Null the draw rect, so it'll be re-generated.
+        this.drawRect = null;
     }
 
     public boolean isDirty()
@@ -489,19 +497,25 @@ public class ProgressBar implements Drawable, Positionable
     
     public Rectangle getDrawRect()
     {
-        Rectangle rect = new Rectangle(x_, y_, 
-                getWidth() + 2, getHeight() + 2);
+        // If the draw rect is null, generate it.
+        if (drawRect == null)
+        {
+            Rectangle rect = new Rectangle(x_, y_, 
+                    getWidth() + 2, getHeight() + 2);
+
+            if (x_ != x || y_ != y)
+                rect.add(new Rectangle(x, y, getWidth() + 2, getHeight() + 2));
+
+            rect.translate(offsetX, offsetY);
+
+            // Add the text too.
+            if (withText == true)
+                rect.add(progressText.getDrawRect());
+            
+            drawRect = rect;
+        }
         
-        if (x_ != x || y_ != y)
-            rect.add(new Rectangle(x, y, getWidth() + 2, getHeight() + 2));
-        
-        rect.translate(offsetX, offsetY);
-        
-        // Add the text too.
-        if (withText == true)
-            rect.add(progressText.getDrawRect());
-        
-        return rect;
+        return drawRect;
     }
     
     public void resetDrawRect()

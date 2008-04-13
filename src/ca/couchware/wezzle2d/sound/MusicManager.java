@@ -29,8 +29,7 @@ public class MusicManager
     /**
      * The volume level.
      * range: -80.0 - 6.0206
-     */
-    
+     */    
     private float volume;
     
     /** How much to adjust the volume by */
@@ -174,15 +173,14 @@ public class MusicManager
         // Determine the next song to play.
         this.songNum = (this.songNum + 1) % this.songList.size();
         
-        // run in new thread to play in background
+        // Run in new thread to play in background.
         new Thread() 
         {
             @Override
             public void run() 
             {
                 try 
-                { 
-                    
+                {                     
                     // Set the volume.
                     ((Song) songList.get(songNum)).setVolume(volume);
                     
@@ -265,7 +263,6 @@ public class MusicManager
         {
             ((Song) this.songList.get(this.songNum)).setVolume(this.volume);
             ((Song) this.songList.get(this.songNum)).setChanged();
-        }
-            
+        }            
     }
 }

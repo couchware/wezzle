@@ -120,17 +120,23 @@ public abstract class Label extends Entity
     
     public Rectangle getDrawRect()
     {
-        Rectangle rect = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);                       
-        rect.translate(offsetX, offsetY);  
+        // If the draw rect is null, generate it.
+        if (drawRect == null)
+        {
+            Rectangle rect = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);                       
+            rect.translate(offsetX, offsetY);  
+
+            rect.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));                             
+            rect.translate(0, -(getLetterHeight() + 1));
+
+            if (rect.getMinX() < 0 || rect.getMinY() < 0)
+                Util.handleWarning("Offending text is " + text,
+                        Thread.currentThread());
         
-        rect.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));                             
-        rect.translate(0, -(getLetterHeight() + 1));
-        
-        if (rect.getMinX() < 0 || rect.getMinY() < 0)
-            Util.handleWarning("Offending text is " + text,
-                    Thread.currentThread());
-        
-        return rect;
+            drawRect = rect;
+        }
+               
+        return drawRect;
     }
     
     public void resetDrawRect()

@@ -28,6 +28,11 @@ public abstract class Entity implements Drawable, Positionable
      */
     protected boolean dirty = true;
     
+    /**
+     * The cached draw rectangle.
+     */
+    protected Rectangle drawRect;
+    
      /**
      * The rotation.
      */
@@ -307,6 +312,9 @@ public abstract class Entity implements Drawable, Positionable
     public void setDirty(boolean dirty)
     {
         this.dirty = dirty;
+        
+        // Set draw rect to null so it'll be regenerated.
+        this.drawRect = null;
     }
 
     public boolean isDirty()
@@ -316,13 +324,24 @@ public abstract class Entity implements Drawable, Positionable
     
     public Rectangle getDrawRect()
     {
-        Rectangle rect1 = new Rectangle(x_, y_, width_ + 2, height_ + 2);                
-        Rectangle rect2 = new Rectangle(x, y, width + 2, height + 2);        
+        // Check if the draw rect is null.  If it is, generate a new one.
+        if (drawRect == null)
+        {        
+            Rectangle rect1 = new Rectangle(x_, y_, width_ + 2, height_ + 2);                
+            Rectangle rect2 = new Rectangle(x, y, width + 2, height + 2);        
+
+            rect2.translate(offsetX, offsetY);            
+            rect1.add(rect2);
+            
+            drawRect = rect1;
+        }
+        else
+        {
+//            Util.handleMessage("Using cached draw-rect.", 
+//                    Thread.currentThread());
+        }
         
-        rect2.translate(offsetX, offsetY);            
-        rect1.add(rect2);
-        
-        return rect1;
+        return drawRect;
     }
 
     public void resetDrawRect()

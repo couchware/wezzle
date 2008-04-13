@@ -19,12 +19,10 @@ public class TileEntity extends GraphicEntity implements Movable
 	final public static int COLOR_RED = 3;		
 	final public static int COLOR_YELLOW = 4;
 	
-	final public static int NUMBER_OF_COLORS = 5;        
-    
     /**
-     * The square root of 2.
+     * The number of possible tile colours.
      */
-    final private static double SQRT_2 = Math.sqrt(2);
+	final public static int NUMBER_OF_COLORS = 5;               
 	
 	/**
 	 * The associated board manager.
@@ -289,24 +287,30 @@ public class TileEntity extends GraphicEntity implements Movable
     @Override
     public Rectangle getDrawRect()
     {
-        int w2 = ((width * 3) / 2 + 1);        
-        int h2 = ((height * 3) / 2 + 1);
+        // If the draw rect is null, generate it.
+        if (drawRect == null)
+        {
+            int w2 = ((width * 3) / 2 + 1);        
+            int h2 = ((height * 3) / 2 + 1);
+
+            int w2_ = ((width_ * 3) / 2 + 1);        
+            int h2_ = ((height_ * 3) / 2 + 1);
+
+            Rectangle rect1 = new Rectangle((int) x2_, (int) y2_, 
+                    w2_ + 2, h2_ + 2);                
+            rect1.translate(-(w2_ - width_) / 2, -(h2_ - height_) / 2);
+
+            Rectangle rect2 = new Rectangle((int) x2, (int) y2, 
+                    w2 + 2, h2 + 2);        
+            rect2.translate(-(w2 - width) / 2, -(h2 - height) / 2);
+
+            rect2.translate(offsetX, offsetY);            
+            rect1.add(rect2);
+            
+            drawRect = rect1;
+        }
         
-        int w2_ = ((width_ * 3) / 2 + 1);        
-        int h2_ = ((height_ * 3) / 2 + 1);
-        
-        Rectangle rect1 = new Rectangle((int) x2_, (int) y2_, 
-                w2_ + 2, h2_ + 2);                
-        rect1.translate(-(w2_ - width_) / 2, -(h2_ - height_) / 2);
-        
-        Rectangle rect2 = new Rectangle((int) x2, (int) y2, 
-                w2 + 2, h2 + 2);        
-        rect2.translate(-(w2 - width) / 2, -(h2 - height) / 2);
-        
-        rect2.translate(offsetX, offsetY);            
-        rect1.add(rect2);
-        
-        return rect1;
+        return drawRect;
     }
 
     @Override

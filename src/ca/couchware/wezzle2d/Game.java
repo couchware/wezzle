@@ -1335,7 +1335,10 @@ public class Game extends Canvas implements GameWindowCallback
 	 *            The arguments that are passed into our game
 	 */
 	public static void main(String argv[])
-	{		
+	{		        
+        System.setProperty("sun.java2d.translaccel", "true");
+        System.setProperty("sun.java2d.ddforcevram", "true");   
+        
         try
         {
             Game g = new Game(ResourceFactory.JAVA2D);
