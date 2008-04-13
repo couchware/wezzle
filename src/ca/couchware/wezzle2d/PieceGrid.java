@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Rectangle;
 import java.util.Arrays;
 
@@ -14,7 +13,7 @@ import ca.couchware.wezzle2d.piece.Piece;
  *
  */
 
-public class PieceGrid implements Drawable, Positionable
+public class PieceGrid extends Entity
 {
     /**
      * Path to the piece selector sprite.
@@ -33,50 +32,12 @@ public class PieceGrid implements Drawable, Positionable
 	 * structure.  Each cell is only drawn if the corresponding structure
 	 * cell is true.
 	 */
-	private Sprite[][] sprites;
-    
-    /**
-     * Whether or not this is visible.
-     */
-    private boolean visible;
-    
-    /**
-     * Is it dirty (i.e. does it need to be redrawn)?
-     */
-    private boolean dirty;
+	private Sprite[][] sprites;      
     
     /**
      * The board manager reference.
      */
-    final private BoardManager boardMan;
-	
-    /**
-     * The X-coordinate of the top left corner of the piece grid.
-     */
-    private int x;
-    
-    /**
-     * The Y-coordinate of the top let corner of the piece grid.
-     */
-    private int y;
-    
-    private int x_;
-    private int y_;
-    
-    /**
-     * The width.
-     */
-    private int width;
-    
-    /**
-     * The height.
-     */
-    private int height;
-    
-//    /**
-//     * The draw rectangle.
-//     */
-//    private Rectangle drawRect;
+    final private BoardManager boardMan;	    
     
 	/**
 	 * The constructor.  Initializes the structure and sprites arrays.
@@ -115,16 +76,7 @@ public class PieceGrid implements Drawable, Positionable
         
         // Set the width and height.
         width = boardMan.getCellWidth() * Piece.MAX_COLUMNS;
-        height = boardMan.getCellHeight() * Piece.MAX_ROWS;
-        
-        // Create the drawing rectangle.
-//        this.drawRect = new Rectangle(x, y, width, height);
-//        this.drawRect.translate(
-//                -boardMan.getCellWidth(),
-//                -boardMan.getCellHeight());
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
+        height = boardMan.getCellHeight() * Piece.MAX_ROWS;                              
 	}	
 	
     /**
@@ -139,72 +91,7 @@ public class PieceGrid implements Drawable, Positionable
         // Set dirty so it will be drawn.        
         setDirty(true);
 	}
-
-    public int getX()
-    {
-        return x;
-    }
-
-    public void setX(int x) 
-    {
-//        updateDrawRectX(x);
-        
-        this.x = x;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-    
-//    protected void updateDrawRectX(int x)
-//    {
-//        // Update draw rectangle.
-//        drawRect.setBounds(getX(), getY(), width + 1, height + 1);
-//        
-//        if (x > getX())
-//            drawRect.add(x + width + 1, y);
-//        else
-//            drawRect.add(x, y);                   
-//        
-//        drawRect.translate(
-//                -boardMan.getCellWidth(),
-//                -boardMan.getCellHeight());
-//    }
-
-    public int getY() 
-    {
-        return y;
-    }
-
-    public void setY(int y) 
-    {
-//        updateDrawRectY(y);
-        
-        this.y = y;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-    
-//    protected void updateDrawRectY(int y)
-//    {
-//         // Update draw rectangle.
-//        drawRect.setBounds(getX(), getY(), width + 1, height + 1);
-//        
-//        if (y > getY())
-//            drawRect.add(x, y + height + 1);
-//        else
-//            drawRect.add(x, y);     
-//        
-//        drawRect.translate(
-//                -boardMan.getCellWidth(),
-//                -boardMan.getCellHeight());
-//    }
-    
-    public XYPosition getXYPosition()
-    {
-        return new XYPosition(x, y);
-    }
-    
+   
     /**
      * Draw the piece grid at the predefined location x,y.
      */
@@ -230,74 +117,29 @@ public class PieceGrid implements Drawable, Positionable
                 } // end if
             } // end for
         } // end for			
-	}
-
-    public void setVisible(boolean visible)
-    {
-        this.visible = visible;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    public boolean isVisible()
-    {
-        return visible;
-    }
-    
-    public void setDirty(boolean dirty)
-    {
-        this.dirty = dirty;
-    }
-
-    public boolean isDirty()
-    {
-        return dirty;
-    }
+	}   
 
     public Rectangle getDrawRect()
     {
-        Rectangle rect = new Rectangle(x_, y_, width + 1, height + 1);
-        
-        if (x_ != x || y_ != y)
-            rect.add(new Rectangle(x, y, width + 1, height + 1));
-        
-        rect.translate(-boardMan.getCellWidth(), -boardMan.getCellHeight());
-        
-        return rect;
-    }
-    
-    public void resetDrawRect()
-    {
-        x_ = x;
-        y_ = y;
-    }
+        // If the draw rect is null, generate it.
+        if (drawRect == null)
+        {
+            Rectangle rect = new Rectangle(x_, y_, width + 1, height + 1);
 
-    public void setXYPosition(int x, int y)
-    {
-        setX(x);
-        setY(y);
-    }
+            if (x_ != x || y_ != y)
+                rect.add(new Rectangle(x, y, width + 1, height + 1));
 
-    public void setXYPosition(XYPosition p)
-    {
-        setX(p.x);
-        setY(p.y);
-    }
+            rect.translate(-boardMan.getCellWidth(), -boardMan.getCellHeight());
+            
+            drawRect = rect;
+        }
 
-    public int getWidth()
-    {
-        return width;
-    }
+        return drawRect;
+    }    
 
     public void setWidth(int width)
     {
         throw new UnsupportedOperationException("You may not adjust this property.");
-    }
-
-    public int getHeight()
-    {
-        return height;
     }
 
     public void setHeight(int height)
