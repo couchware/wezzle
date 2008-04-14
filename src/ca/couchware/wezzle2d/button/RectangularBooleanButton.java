@@ -46,7 +46,7 @@ public class RectangularBooleanButton extends BooleanButton
                 .getSprite(Game.SPRITES_PATH + "/RectangularButton_Normal.png");             
         
         // Create the button text.
-        buttonLabel = ResourceFactory.get().getText();        
+        buttonLabel = ResourceFactory.get().getLabel(0, 0);        
         buttonLabel.setSize(22);
         buttonLabel.setColor(Game.TEXT_COLOR);
         buttonLabel.setAlignment(Label.HCENTER | Label.VCENTER);                     

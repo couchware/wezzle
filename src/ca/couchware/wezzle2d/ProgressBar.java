@@ -203,10 +203,10 @@ public class ProgressBar implements Drawable, Positionable
 			this.withText = withText;
 			
 			// Create progress text.		
-			progressText = ResourceFactory.get().getText();
+			progressText = ResourceFactory.get().getLabel(
+                    x + getWidth() / 2, y + 47);
 			
-			// Set text attributes.
-			progressText.setXYPosition(x + getWidth() / 2, y + 47);
+			// Set text attributes.			
             progressText.setSize(14);
             progressText.setAlignment(Label.VCENTER | Label.HCENTER);
             progressText.setColor(Game.TEXT_COLOR);

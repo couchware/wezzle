@@ -2,15 +2,13 @@ package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.XYPosition;
-import java.awt.Color;
 
 /**
  * An animation that starts an explosion in the middle of the entity.
  * 
  * @author cdmckay
  */
-public class FloatLabelAnimation extends Animation
+public class FloatFadeOutAnimation extends Animation
 {            
     /**
      * The period of each frame.
@@ -53,9 +51,9 @@ public class FloatLabelAnimation extends Animation
     private int state;
     
     /**
-     * The explosion entity.
+     * The entity being float faded.
      */
-    final Label floatLabel;
+    final Entity entity;
     
     /**
      * The number of opaque frames that have passed.
@@ -82,13 +80,10 @@ public class FloatLabelAnimation extends Animation
      * @param text
      * @param size
      */
-    public FloatLabelAnimation(final int x, final int y, 
+    public FloatFadeOutAnimation(
             final int stepX, final int stepY,            
             final LayerManager layerMan,
-            final String text, 
-            final int alignment,
-            final Color color,
-            final float size)
+            final Entity entity)
     {                
         // Invoke super constructor.
         super(FRAME_PERIOD);    
@@ -99,17 +94,20 @@ public class FloatLabelAnimation extends Animation
         
         // Set reference to layer manager.
         this.layerMan = layerMan;
+        
+        // Set a reference to the entity.
+        this.entity = entity;
               
         // Load the explosion and centre it over the entity.
-        floatLabel = ResourceFactory.get().getText();
-        floatLabel.setXYPosition(x, y);
-        floatLabel.setAlignment(alignment);
-        floatLabel.setColor(color);
-        floatLabel.setSize(size);
-        floatLabel.setText(text);   
+//        floatLabel = ResourceFactory.get().getText();
+//        floatLabel.setXYPosition(x, y);
+//        floatLabel.setAlignment(alignment);
+//        floatLabel.setColor(color);
+//        floatLabel.setSize(size);
+//        floatLabel.setText(text);   
         
         // Reset the draw rectangle.
-        floatLabel.resetDrawRect();               
+//        floatLabel.resetDrawRect();               
                         
         // Set the initial pulse state.
         state = STATE_OPAQUE;
@@ -118,19 +116,8 @@ public class FloatLabelAnimation extends Animation
         opaqueFrameCount = 0;
         
         // Add the floating text to the layer manager.
-        layerMan.add(floatLabel, Game.LAYER_EFFECT);
-    }
-    
-    public FloatLabelAnimation(final XYPosition p,
-            final int stepX, final int stepY,            
-            final LayerManager layerMan,            
-            final String text, 
-            final int alignment,
-            final Color color,
-            final float size)
-    {
-        this(p.x, p.y, stepX, stepY, layerMan, text, alignment, color, size);
-    }
+        layerMan.add(entity, Game.LAYER_EFFECT);
+    }       
 
     public void nextFrame(long delta)
     {
@@ -150,8 +137,8 @@ public class FloatLabelAnimation extends Animation
         for (int i = 0; i < frames; i++)
         {                                   
             // Move text.
-            floatLabel.setX(floatLabel.getX() + stepX);
-            floatLabel.setY(floatLabel.getY() + stepY);
+            entity.setX(entity.getX() + stepX);
+            entity.setY(entity.getY() + stepY);
             
             // If we're pulsing down, reducing the size and translate slightly.
             switch (state)
@@ -170,16 +157,16 @@ public class FloatLabelAnimation extends Animation
                 case STATE_FADE:
                                                     
                     // Reduce the opacity.
-                    floatLabel.setOpacity(floatLabel.getOpacity() - OPACITY_STEP);
+                    entity.setOpacity(entity.getOpacity() - OPACITY_STEP);
                     
                     // If the opacity reaches the minimum, stop the animation.
-                    if (floatLabel.getOpacity() == OPACITY_MIN)
+                    if (entity.getOpacity() == OPACITY_MIN)
                     {
                         // Remove explosion from layer manager.
-                        if (layerMan.remove(floatLabel, Game.LAYER_EFFECT) 
+                        if (layerMan.remove(entity, Game.LAYER_EFFECT) 
                                 == false)
                             throw new IllegalStateException(
-                                    "Could not remove label from layer.");
+                                    "Could not remove entity from layer.");
                         
                         // Set done flag.
                         done = true;
@@ -195,11 +182,12 @@ public class FloatLabelAnimation extends Animation
         } // end if          
     }
     
+    @Override
     public void setVisible(final boolean visible)
     {
         this.visible = visible;        
-        if (floatLabel != null)
-            floatLabel.setVisible(visible);
+        if (entity != null)
+            entity.setVisible(visible);
     }
     
 }

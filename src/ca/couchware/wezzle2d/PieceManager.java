@@ -609,13 +609,19 @@ public class PieceManager implements MouseListener, MouseMotionListener
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
                 
         // Add score SCT.
-        game.animationMan.add(new FloatLabelAnimation(
-                game.boardMan.determineCenterPoint(indexSet), 
-                0, -1, game.layerMan,
-                String.valueOf(deltaScore),
-                Label.HCENTER | Label.VCENTER,
-                Game.SCORE_PIECE_COLOR,
-                game.scoreMan.determineFontSize(deltaScore)));
+        XYPosition p = boardMan.determineCenterPoint(indexSet);
+        Label label = ResourceFactory.get().getLabel(p.x, p.y);        
+        label.setText(String.valueOf(deltaScore));
+        label.setAlignment(Label.HCENTER | Label.VCENTER);
+        label.setColor(Game.SCORE_PIECE_COLOR);
+        label.setSize(game.scoreMan.determineFontSize(deltaScore));
+        
+        game.animationMan.add(new FloatFadeOutAnimation(                
+                0, -1, game.layerMan, label));
+        
+        // Release references.
+        p = null;
+        label = null;
         
         // Remove the tiles.
         game.boardMan.removeTiles(indexSet);

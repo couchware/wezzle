@@ -143,7 +143,7 @@ public class ResourceFactory
 	 *
 	 * @return A Text object that can be modified and drawn to screen.
 	 */
-	public Label getText()
+	public Label getLabel(final int x, final int y)
 	{
 		if (window == null)
 		{
@@ -155,7 +155,8 @@ public class ResourceFactory
 		{
 			case JAVA2D:
 			{
-				return new Java2DLabel((Java2DGameWindow) window);
+				return new Java2DLabel((Java2DGameWindow) window,
+                        x, y);
 			}		
 		}
 

@@ -545,8 +545,7 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseMotionListener(musicButton);
         
         // Create the "Paused" text.
-        pausedLabel = ResourceFactory.get().getText();
-        pausedLabel.setXYPosition(400, 300);      
+        pausedLabel = ResourceFactory.get().getLabel(400, 300);        
 		pausedLabel.setSize(30);
 		pausedLabel.setAlignment(Label.HCENTER | Label.VCENTER);
 		pausedLabel.setColor(TEXT_COLOR);
@@ -555,8 +554,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(pausedLabel, LAYER_UI);
               
         // Set up the version text.
-		versionLabel = ResourceFactory.get().getText();
-        versionLabel.setXYPosition(800 - 10, 600 - 10);
+		versionLabel = ResourceFactory.get().getLabel(800 - 10, 600 - 10);        
 		versionLabel.setSize(12);
 		versionLabel.setAlignment(Label.BOTTOM | Label.RIGHT);
 		versionLabel.setColor(TEXT_COLOR);
@@ -564,8 +562,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(versionLabel, LAYER_UI);
         
 		// Set up the timer text.
-		timerLabel = ResourceFactory.get().getText();
-        timerLabel.setXYPosition(404, 100);
+		timerLabel = ResourceFactory.get().getLabel(404, 100);        
 		timerLabel.setSize(50);
 		timerLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
 		timerLabel.setColor(TEXT_COLOR);
@@ -577,8 +574,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(levelHeader, LAYER_UI);
         
         // Set up the level text.
-        levelLabel = ResourceFactory.get().getText();
-        levelLabel.setXYPosition(126, 210);
+        levelLabel = ResourceFactory.get().getLabel(126, 210);        
         levelLabel.setSize(20);
         levelLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
         levelLabel.setColor(TEXT_COLOR);
@@ -591,8 +587,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(highScoreHeader, LAYER_UI);
                         
         // Set up the high score text.
-        highScoreLabel = ResourceFactory.get().getText();
-        highScoreLabel.setXYPosition(126, 337);
+        highScoreLabel = ResourceFactory.get().getLabel(126, 337);        
         highScoreLabel.setSize(20);
         highScoreLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
         highScoreLabel.setColor(TEXT_COLOR);
@@ -604,8 +599,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(scoreHeader, LAYER_UI);
         
         // Set up the score text.
-        scoreLabel = ResourceFactory.get().getText();
-        scoreLabel.setXYPosition(126, 460); 
+        scoreLabel = ResourceFactory.get().getLabel(126, 460);        
         scoreLabel.setSize(20);
         scoreLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
         scoreLabel.setColor(TEXT_COLOR);     
@@ -852,16 +846,22 @@ public class Game extends Canvas implements GameWindowCallback
                     
                     soundMan.play(SoundManager.LEVEL_UP);
                     
-                    animationMan.add(new FloatLabelAnimation(
-                            pieceMan.getPieceGrid().getX() 
-                                + boardMan.getCellWidth() / 2,
-                            pieceMan.getPieceGrid().getY() 
-                                + boardMan.getCellHeight() / 2,
-                            1, 0, layerMan,
-                            "Level Up!", 
-                            Label.LEFT | Label.VCENTER,
-                            Game.TEXT_COLOR,
-                            26));                            
+                    int x = pieceMan.getPieceGrid().getX() 
+                            + boardMan.getCellWidth() / 2;
+                    
+                    int y = pieceMan.getPieceGrid().getY() 
+                            + boardMan.getCellHeight() / 2;
+                    
+                    Label label = ResourceFactory.get().getLabel(x, y);                                                
+                    label.setText("Level Up!");
+                    label.setAlignment(Label.LEFT | Label.VCENTER);
+                    label.setColor(Game.TEXT_COLOR);
+                    label.setSize(26);
+                    
+                    animationMan.add(new FloatFadeOutAnimation(                            
+                            1, 0, layerMan, label));      
+                    
+                    label = null;
                 }
             } // end if
             
@@ -1068,13 +1068,19 @@ public class Game extends Canvas implements GameWindowCallback
                         cascadeCount);                               
                 
                 // Show the SCT.
-                animationMan.add(new FloatLabelAnimation(
-                        boardMan.determineCenterPoint(tileRemovalSet),                         
-                        0, -1, layerMan, 
-                        String.valueOf(deltaScore),
-                        Label.HCENTER | Label.VCENTER,
-                        SCORE_LINE_COLOR,
-                        scoreMan.determineFontSize(deltaScore)));
+                XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                Label label = ResourceFactory.get().getLabel(p.x, p.y);                
+                label.setText(String.valueOf(deltaScore));
+                label.setAlignment( Label.HCENTER | Label.VCENTER);
+                label.setColor(SCORE_LINE_COLOR);
+                label.setSize(scoreMan.determineFontSize(deltaScore));
+                
+                animationMan.add(new FloatFadeOutAnimation(                                             
+                        0, -1, layerMan, label));
+                
+                // Release references.
+                p = null;
+                label = null;                
                 
                 // Play the sound.
                 soundMan.play(SoundManager.LINE);
@@ -1124,13 +1130,19 @@ public class Game extends Canvas implements GameWindowCallback
                         cascadeCount);
                 
                 // Show the SCT.
-                animationMan.add(new FloatLabelAnimation(
-                        boardMan.determineCenterPoint(tileRemovalSet), 
-                        0, -1, layerMan, 
-                        String.valueOf(deltaScore),
-                        Label.HCENTER | Label.VCENTER,
-                        SCORE_BOMB_COLOR,
-                        scoreMan.determineFontSize(deltaScore)));
+                XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                Label label = ResourceFactory.get().getLabel(p.x, p.y);
+                label.setText(String.valueOf(deltaScore));
+                label.setAlignment( Label.HCENTER | Label.VCENTER);
+                label.setColor(SCORE_BOMB_COLOR);
+                label.setSize(scoreMan.determineFontSize(deltaScore));
+                
+                animationMan.add(new FloatFadeOutAnimation(                         
+                        0, -1, layerMan, label));
+                
+                // Release references.
+                p = null;
+                label = null;                
                                 
                 // Play the sound.
                 soundMan.play(SoundManager.BOMB);

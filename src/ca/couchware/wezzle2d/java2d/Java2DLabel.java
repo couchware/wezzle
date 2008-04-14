@@ -63,10 +63,10 @@ public class Java2DLabel extends Label
 	 * 
 	 * @param window The game window to be drawn to.
 	 */
-	public Java2DLabel(Java2DGameWindow window)
+	public Java2DLabel(Java2DGameWindow window, final int x, final int y)
 	{
         // Invoke super.
-        super();
+        super(x, y);
         		
         // Setup some values.       
 		this.window = window;

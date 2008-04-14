@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Color;
 import java.awt.Rectangle;
 
@@ -34,13 +33,13 @@ public abstract class Label extends Entity
     /**
      * The constructor.
      */
-    public Label()
+    public Label(final int x, final int y)
     {
-        this.x = 0;
-        this.y = 0;
+        this.x = x;
+        this.y = y;
         
-        this.x_ = 0;
-        this.y_ = 0;
+        this.x_ = x;
+        this.y_ = y;
         
         this.width_ = 0;
         this.height_ = 0;                
