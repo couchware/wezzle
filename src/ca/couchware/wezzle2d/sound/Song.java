@@ -1,5 +1,5 @@
 
-package ca.couchware.wezzle2d.music;
+package ca.couchware.wezzle2d.sound;
 import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.io.*;
@@ -43,9 +43,10 @@ public class Song
     
     /** the volume control */
     FloatControl volume = null;
+
     
-    /** The current volume */
-    private float currentVolume;
+    /** if the volume has changed */
+    private boolean changed;
 
     /**
      * The constructor.
@@ -68,9 +69,8 @@ public class Song
                     + " does not exist.");
         
         loadSong();
-         
-        this.currentVolume = 0.0f;
-                    
+        
+        this.changed = false;               
     }
     
     /**
@@ -98,10 +98,14 @@ public class Song
                 {
                     while ((nBytesRead = decodedIn.read(data, 0, data.length)) != -1) 
                     {	
-                        // The volume control, must apply to every line of data.
-                        volume = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
-                        volume.setValue(this.currentVolume);
-                        
+                        // The volume control, apply only if volume has changed.
+                        if(changed == true)
+                        {
+                            volume = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+                   
+                            // Reset the flag.
+                            changed = false;
+                        }
                         while (paused) 
                         {
                             if(line.isRunning()) 
@@ -222,12 +226,22 @@ public class Song
     }
     
     /**
+     * A method to toggle that the volume has changed.
+     */
+    public void setChanged()
+    {
+        this.changed = true;
+    }
+    
+    /**
      * A method to increase the volume.
      * @param volume The new volume value.
      */
     public void setVolume(float volume)
-    {  
-        this.currentVolume = volume;
+    {
+        if(this.volume != null)
+            this.volume.setValue(volume);
+        
     }
     
     /**
@@ -236,7 +250,11 @@ public class Song
      */
     public float getVolume()
     {
-        return this.currentVolume;
+        if(this.volume != null)
+            return this.volume.getValue();
+        
+        //Otherwise return a default value.
+        return 0.0f;
     }
    
     public String getKey()

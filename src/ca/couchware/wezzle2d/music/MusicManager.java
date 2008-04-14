@@ -12,6 +12,9 @@ import java.util.ArrayList;
 public class MusicManager 
 {
   
+    /** A link to the property manager. */
+    private PropertyManager propMan;
+    
     /** The list of songs */
     private ArrayList<Song> songList;
     
@@ -38,8 +41,10 @@ public class MusicManager
     /**
      * Creates the song list.
      */
-    public MusicManager() 
+    public MusicManager(PropertyManager propMan) 
     {        
+        // The property manager.
+        this.propMan= propMan;
         // Initiate the array list and song number.
         this.songList = new ArrayList<Song>();        
         this.musicPlayingInProgress = false;
@@ -57,7 +62,7 @@ public class MusicManager
         this.songNum = Util.random.nextInt(songList.size());
         
         // Get the default volume.
-        this.volume = songList.get(0).getVolume();
+        this.volume = propMan.getFloatProperty(PropertyManager.VOLUME);
     }
     
     /**
@@ -145,7 +150,7 @@ public class MusicManager
                             songList.get(songNum).setVolume(volume);
                             
                             // Play the song.
-                            songList.get(i).play(); 
+                            songList.get(songNum).play(); 
                             break;
                         }
                         
@@ -237,11 +242,13 @@ public class MusicManager
         if (this.volume > 6.0206f)
             this.volume = 6.0206f;
         
+        // Adjust the property;
+        propMan.setProperty(PropertyManager.VOLUME, Float.toString(this.volume));
+        
         // Adjust the current playing song.
         if (this.musicPlayingInProgress == true)
         {
             this.songList.get(this.songNum).setVolume(this.volume);
-            this.songList.get(this.songNum).setChanged();
         }            
     }
     
@@ -257,11 +264,13 @@ public class MusicManager
         if (this.volume < -80.0f)
             this.volume = -80.0f;
         
+         // Adjust the property;
+        propMan.setProperty(PropertyManager.VOLUME, Float.toString(this.volume));
+        
         // Adjust the current playing song.
         if (this.musicPlayingInProgress == true)
         {
             this.songList.get(this.songNum).setVolume(this.volume);
-            this.songList.get(this.songNum).setChanged();
         }            
     }
 }

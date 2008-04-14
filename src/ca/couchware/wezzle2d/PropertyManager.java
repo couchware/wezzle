@@ -25,6 +25,7 @@ public class PropertyManager
 	public static final String DIFFICULTY = "wezzle.difficulty";
 	public static final String DISPLAY_NAME = "wezzle.displayName";
 	public static final String NUMBER_OF_LEVELS = "wezzle.numberOfLevels";
+    public static final String VOLUME = "wezzle.volume";
 	
     public static final String DIR_PATH = 
             System.getProperty("user.home") + "/Wezzle";
@@ -187,6 +188,23 @@ public class PropertyManager
 		}
 		
 		return Integer.parseInt(this.properties.get(key).toString());
+	}
+    
+    /**
+	 * Get a float property. 
+	 * 
+	 * @param key The properties key.
+	 * @return The property
+	 */
+	public float getFloatProperty(String key)
+	{
+		// If the property doesnt exist, set it to 0.
+		if (this.properties.get(key) == null)
+		{
+			this.setProperty(key, "0.0f");
+		}
+		
+		return Float.parseFloat(this.properties.get(key).toString());
 	}
 	
 	/**

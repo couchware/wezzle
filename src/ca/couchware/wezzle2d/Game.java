@@ -516,7 +516,7 @@ public class Game extends Canvas implements GameWindowCallback
         soundMan = new SoundManager();
         
         // Create the music manager.
-        musicMan = new MusicManager();
+        musicMan = new MusicManager(propertyMan);
         
         // Create the move manager.
         moveMan = new MoveManager();
