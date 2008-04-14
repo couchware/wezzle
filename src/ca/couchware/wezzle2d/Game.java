@@ -1094,10 +1094,15 @@ public class Game extends Canvas implements GameWindowCallback
                 // non-bomb tiles.
                 if (tileRemovalSet.size() > 0)
                 {
+                    int i = 0;
                     for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
                     {
+                        i++;
                         TileEntity t = boardMan.getTile((Integer) it.next());
-                        t.setAnimation(new ZoomOutAnimation(t));
+//                        t.setAnimation(new ZoomOutAnimation(t));                        
+                        int angle = i % 2 == 0 ? 70 : 180 - 70;                        
+                        t.setAnimation(new JumpFadeOutAnimation(
+                                0.3, angle, 0.001, 800, layerMan, t));
                     }
 
                     // Set the flag.
@@ -1163,7 +1168,7 @@ public class Game extends Canvas implements GameWindowCallback
                     if (t instanceof BombTileEntity)                    
                         t.setAnimation(new ExplosionAnimation(t, layerMan));                                            
                     else
-                        t.setAnimation(new JiggleFadeAnimation(t));
+                        t.setAnimation(new JiggleFadeOutAnimation(t));
                 }
 
                 // If other bombs were hit, they will be dealt with in another

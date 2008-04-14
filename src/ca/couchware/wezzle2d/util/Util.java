@@ -150,4 +150,24 @@ public class Util
         
         return toLower + (int) (((double) toRange) * fromFraction);
     }
+    
+    public static double scaleDouble(double fromLower, double fromUpper,
+            double toLower, double toUpper, double fromNumber)
+    {
+        assert(fromUpper > fromLower);
+        assert(toUpper > toLower);
+        
+        if (fromNumber < fromLower)
+            return toLower;
+        else if (fromNumber > fromUpper)
+            return toUpper;
+        
+        double fromRange = fromUpper - fromLower;
+        double fromFraction = (double) (fromNumber - fromLower)
+                / (double) fromRange;
+        
+        double toRange = toUpper - toLower;
+        
+        return toLower + (((double) toRange) * fromFraction);
+    }
 }

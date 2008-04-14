@@ -8,7 +8,7 @@ import ca.couchware.wezzle2d.*;
  * 
  * @author cdmckay
  */
-public class JiggleFadeAnimation extends Animation
+public class JiggleFadeOutAnimation extends Animation
 {         
     /**
      * The period of each frame.
@@ -39,7 +39,7 @@ public class JiggleFadeAnimation extends Animation
     /**
      * The constructor.
      */
-    public JiggleFadeAnimation(final Entity entity)
+    public JiggleFadeOutAnimation(final Entity entity)
     {                
         // Invoke super constructor.
         super(FRAME_PERIOD);
