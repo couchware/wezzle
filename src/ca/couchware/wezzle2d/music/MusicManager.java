@@ -62,7 +62,7 @@ public class MusicManager
         this.songNum = Util.random.nextInt(songList.size());
         
         // Get the default volume.
-        this.volume = propMan.getFloatProperty(PropertyManager.VOLUME);
+        this.volume = propMan.getFloatProperty(PropertyManager.KEY_VOLUME);
     }
     
     /**
@@ -243,7 +243,7 @@ public class MusicManager
             this.volume = 6.0206f;
         
         // Adjust the property;
-        propMan.setProperty(PropertyManager.VOLUME, Float.toString(this.volume));
+        propMan.setProperty(PropertyManager.KEY_VOLUME, Float.toString(this.volume));
         
         // Adjust the current playing song.
         if (this.musicPlayingInProgress == true)
@@ -265,7 +265,7 @@ public class MusicManager
             this.volume = -80.0f;
         
          // Adjust the property;
-        propMan.setProperty(PropertyManager.VOLUME, Float.toString(this.volume));
+        propMan.setProperty(PropertyManager.KEY_VOLUME, Float.toString(this.volume));
         
         // Adjust the current playing song.
         if (this.musicPlayingInProgress == true)

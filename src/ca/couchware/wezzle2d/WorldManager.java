@@ -27,16 +27,6 @@ public class WorldManager
 	// XML Instance Attributes
 	// ---------------------------------------------------------------------------
 	
-	/** 
-	 * The display name of the world.
-	 */
-	private String displayName;
-	
-	/**
-	 * The number of levels in this world.
-	 */
-	private int totalLevels;
-	
 	/**
 	 * The item list
 	 */
@@ -102,17 +92,11 @@ public class WorldManager
 		
 		// Load the properties;
 		this.difficulty = propertyMan
-                .getIntegerProperty(PropertyManager.DIFFICULTY);
+                .getIntegerProperty(PropertyManager.KEY_DIFFICULTY);
 		
 		// Ensure that we are at least level 1.
 		if (this.difficulty < 1)
 			this.difficulty = 1;
-		
-		this.displayName = propertyMan
-                .getStringProperty(PropertyManager.DISPLAY_NAME);
-        
-		this.totalLevels = propertyMan
-                .getIntegerProperty(PropertyManager.NUMBER_OF_LEVELS);
 				
 		// Set the starting level.
 		setCurrentLevel(1);

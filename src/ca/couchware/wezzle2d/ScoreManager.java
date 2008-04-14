@@ -99,7 +99,7 @@ import java.util.Set;
         // Initialize the scores.
         this.totalScore = 0;
         this.levelScore = 0;
-        this.highScore = propertyMan.getIntegerProperty(PropertyManager.HIGH_SCORE);
+        this.highScore = propertyMan.getIntegerProperty(PropertyManager.KEY_HIGH_SCORE);
     }
 
     /**
@@ -248,7 +248,7 @@ import java.util.Set;
     public void setHighScore(int highScore) 
     {	
         this.highScore = highScore;
-        this.propertyMan.setProperty(PropertyManager.HIGH_SCORE, String.valueOf(highScore));
+        this.propertyMan.setProperty(PropertyManager.KEY_HIGH_SCORE, String.valueOf(highScore));
     }
 
     /**
@@ -258,7 +258,7 @@ import java.util.Set;
     {
         try
         {
-            this.propertyMan.setProperty(PropertyManager.HIGH_SCORE, "0");
+            this.propertyMan.setProperty(PropertyManager.KEY_HIGH_SCORE, "0");
             this.setHighScore(0);
         }
         catch(Exception e)

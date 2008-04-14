@@ -21,15 +21,15 @@ public class PropertyManager
 	/**
 	 * The high score key.
 	 */
-	public static final String HIGH_SCORE = "wezzle.highScore";
-	public static final String DIFFICULTY = "wezzle.difficulty";
-	public static final String DISPLAY_NAME = "wezzle.displayName";
-	public static final String NUMBER_OF_LEVELS = "wezzle.numberOfLevels";
-    public static final String VOLUME = "wezzle.volume";
-    public static final String MUSIC = "wezzle.music";
-    public static final String SOUND = "wezzle.sound";
-    public static final String ON = "on";
-    public static final String OFF = "off";
+	public static final String KEY_HIGH_SCORE = "wezzle.highScore";
+	public static final String KEY_DIFFICULTY = "wezzle.difficulty";
+	public static final String KEY_DISPLAY_NAME = "wezzle.displayName";
+	public static final String KEY_NUMBER_OF_LEVELS = "wezzle.numberOfLevels";
+    public static final String KEY_VOLUME = "wezzle.volume";
+    public static final String KEY_MUSIC = "wezzle.music";
+    public static final String KEY_SOUND = "wezzle.sound";
+    public static final String VALUE_ON = "on";
+    public static final String VALUE_OFF = "off";
 	
     public static final String DIR_PATH = 
             System.getProperty("user.home") + "/Wezzle";
@@ -95,7 +95,7 @@ public class PropertyManager
 				{
 					// If the file doesn't exist, create one with highscore 0.
 					f.createNewFile();
-					this.setProperty(HIGH_SCORE, "0");
+					this.setProperty(KEY_HIGH_SCORE, "0");
 					this.saveProperties();				
 				}
 				catch(Exception e)
@@ -206,7 +206,7 @@ public class PropertyManager
       
         if (this.properties.get(key) == null)
 		{
-            if (key.equals(PropertyManager.VOLUME))
+            if (key.equals(PropertyManager.KEY_VOLUME))
                 this.setProperty(key, "-1.5f");
             else
                 this.setProperty(key, "0.0f");

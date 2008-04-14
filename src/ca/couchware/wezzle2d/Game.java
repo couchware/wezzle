@@ -542,8 +542,8 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseMotionListener(soundButton);
         
           // Check the properties.
-        if (propertyMan.getStringProperty(PropertyManager.SOUND).equals(
-                PropertyManager.OFF))
+        if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND).equals(
+                PropertyManager.VALUE_OFF))
         {
             this.pauseSound();
         }
@@ -557,8 +557,8 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseMotionListener(musicButton);
         
           // Check the properties.
-        if (propertyMan.getStringProperty(PropertyManager.MUSIC).equals(
-                PropertyManager.OFF))
+        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC).equals(
+                PropertyManager.VALUE_OFF))
         {
            this.pauseMusic();
         }
@@ -661,7 +661,7 @@ public class Game extends Canvas implements GameWindowCallback
         musicMan.setPaused(true);
 
         // Set the property.
-        propertyMan.setProperty(PropertyManager.MUSIC, PropertyManager.OFF);
+        propertyMan.setProperty(PropertyManager.KEY_MUSIC, PropertyManager.VALUE_OFF);
         
         // Activate the button.
         musicButton.setActivated(true);
@@ -677,7 +677,7 @@ public class Game extends Canvas implements GameWindowCallback
         musicMan.setPaused(false);
 
         // Set the property.
-        propertyMan.setProperty(PropertyManager.MUSIC, PropertyManager.ON);
+        propertyMan.setProperty(PropertyManager.KEY_MUSIC, PropertyManager.VALUE_ON);
     }
     
      /**
@@ -690,7 +690,7 @@ public class Game extends Canvas implements GameWindowCallback
         soundMan.setPaused(true);
 
         // Set the property.
-        propertyMan.setProperty(PropertyManager.SOUND, PropertyManager.OFF);
+        propertyMan.setProperty(PropertyManager.KEY_SOUND, PropertyManager.VALUE_OFF);
         
          // Activate the button.
         soundButton.setActivated(true);
@@ -707,7 +707,7 @@ public class Game extends Canvas implements GameWindowCallback
         soundMan.setPaused(false);
 
         // Set the property.
-        propertyMan.setProperty(PropertyManager.SOUND, PropertyManager.ON);
+        propertyMan.setProperty(PropertyManager.KEY_SOUND, PropertyManager.VALUE_ON);
     }
     
      /**
