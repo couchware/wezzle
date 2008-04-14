@@ -26,6 +26,10 @@ public class PropertyManager
 	public static final String DISPLAY_NAME = "wezzle.displayName";
 	public static final String NUMBER_OF_LEVELS = "wezzle.numberOfLevels";
     public static final String VOLUME = "wezzle.volume";
+    public static final String MUSIC = "wezzle.music";
+    public static final String SOUND = "wezzle.sound";
+    public static final String ON = "on";
+    public static final String OFF = "off";
 	
     public static final String DIR_PATH = 
             System.getProperty("user.home") + "/Wezzle";
@@ -203,7 +207,7 @@ public class PropertyManager
         if (this.properties.get(key) == null)
 		{
             if (key.equals(PropertyManager.VOLUME))
-                this.setProperty(key, "-17.5f");
+                this.setProperty(key, "-1.5f");
             else
                 this.setProperty(key, "0.0f");
 		}
@@ -219,10 +223,10 @@ public class PropertyManager
 	 */
 	public String getStringProperty(String key)
 	{
-		// If the property doesn't exist, set it to 0.
+		// If the property doesn't exist, set it to on.
 		if (this.properties.get(key) == null)
 		{
-			this.setProperty(key, "0");
+			this.setProperty(key, "on");
 		}
 		
 		return this.properties.get(key).toString();

@@ -541,6 +541,13 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseListener(soundButton);
         window.addMouseMotionListener(soundButton);
         
+          // Check the properties.
+        if (propertyMan.getStringProperty(PropertyManager.SOUND).equals(
+                PropertyManager.OFF))
+        {
+            this.pauseSound();
+        }
+        
         musicButton = new RectangularBooleanButton(668, 387);
         musicButton.setText("Music ON");
         musicButton.getLabel().setSize(18);
@@ -548,6 +555,13 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(musicButton, LAYER_UI);
         window.addMouseListener(musicButton);
         window.addMouseMotionListener(musicButton);
+        
+          // Check the properties.
+        if (propertyMan.getStringProperty(PropertyManager.MUSIC).equals(
+                PropertyManager.OFF))
+        {
+           this.pauseMusic();
+        }
         
         // Create the "Paused" text.
         pausedLabel = ResourceFactory.get().getLabel(400, 300);        
@@ -622,6 +636,9 @@ public class Game extends Canvas implements GameWindowCallback
 //        layerMan.add(challenge, LAYER_UI);
         
 		// Setup the initial game state.
+        
+      
+        
 		startGame();
 	}
 
@@ -634,6 +651,65 @@ public class Game extends Canvas implements GameWindowCallback
 		lastLoopTime = SystemTimer.getTime();
 	}
     
+    /**
+     * A private helper method to handle music pausing.
+     */
+    private void pauseMusic()
+    {
+         // Set the button.
+        musicButton.setText("Music OFF");                
+        musicMan.setPaused(true);
+
+        // Set the property.
+        propertyMan.setProperty(PropertyManager.MUSIC, PropertyManager.OFF);
+        
+        // Activate the button.
+        musicButton.setActivated(true);
+    }
+    
+    /**
+     * A private helper method to handle music resuming.
+     */
+    private void resumeMusic()
+    {
+        // Set the button.
+        musicButton.setText("Music ON");                
+        musicMan.setPaused(false);
+
+        // Set the property.
+        propertyMan.setProperty(PropertyManager.MUSIC, PropertyManager.ON);
+    }
+    
+     /**
+     * A private helper method to handle music pausing.
+     */
+    private void pauseSound()
+    {
+         // Set the button.
+        soundButton.setText("Sound OFF");                
+        soundMan.setPaused(true);
+
+        // Set the property.
+        propertyMan.setProperty(PropertyManager.SOUND, PropertyManager.OFF);
+        
+         // Activate the button.
+        soundButton.setActivated(true);
+     
+    }
+    
+    /**
+     * A private helper method to handle sound resuming.
+     */
+    private void resumeSound()
+    {
+        // Set the button.
+        soundButton.setText("Sound ON");                
+        soundMan.setPaused(false);
+
+        // Set the property.
+        propertyMan.setProperty(PropertyManager.SOUND, PropertyManager.ON);
+    }
+    
      /**
      * A private helper method to handle game pausing.
      */
@@ -644,6 +720,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.hide(LAYER_TILE);
         layerMan.hide(LAYER_EFFECT);                
         pausedLabel.setVisible(true);
+        pauseButton.setActivated(true);
     }
     
     /**
@@ -797,32 +874,29 @@ public class Game extends Canvas implements GameWindowCallback
                 this.resumeGame();
             }
         }
-        
+        // Music button.
         if (musicButton.clicked() == true)
         {
             if (musicButton.isActivated() == true)
             {
-                musicButton.setText("Music OFF");                
-                musicMan.setPaused(true);
+                this.pauseMusic();
             }
             else
             {
-                musicButton.setText("Music ON");                
-                musicMan.setPaused(false);
+                this.resumeMusic();
             }
         }
         
+        // Sound button.
         if (soundButton.clicked() == true)
         {
             if (soundButton.isActivated() == true)
             {
-                soundButton.setText("Sound OFF");                
-                soundMan.setPaused(true);
+               this.pauseSound();
             }
             else
             {
-                soundButton.setText("Sound ON");                
-                soundMan.setPaused(false);
+                this.resumeSound();
             }
         }
 		
@@ -1351,7 +1425,6 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public void windowDeactivated()
     {
-        this.pauseButton.setActivated(true);
         this.pauseGame();
         this.background.setDirty(true);
     }
@@ -1364,6 +1437,7 @@ public class Game extends Canvas implements GameWindowCallback
         //Force a background redraw.
         if (this.background != null)
             this.background.setDirty(true);
+        
     }
     
 	/**

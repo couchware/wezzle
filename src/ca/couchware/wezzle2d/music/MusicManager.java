@@ -204,7 +204,7 @@ public class MusicManager
 
     public boolean isMusicPlaying()
     {
-        return musicPlayingInProgress;
+        return (musicPlayingInProgress || this.paused);
     }
 
     public void setMusicPlaying(boolean musicPlayingInProgress)
