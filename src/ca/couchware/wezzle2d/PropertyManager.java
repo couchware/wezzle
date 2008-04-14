@@ -199,9 +199,13 @@ public class PropertyManager
 	public float getFloatProperty(String key)
 	{
 		// If the property doesnt exist, set it to 0.
-		if (this.properties.get(key) == null)
+      
+        if (this.properties.get(key) == null)
 		{
-			this.setProperty(key, "0.0f");
+            if (key.equals(PropertyManager.VOLUME))
+                this.setProperty(key, "-17.5f");
+            else
+                this.setProperty(key, "0.0f");
 		}
 		
 		return Float.parseFloat(this.properties.get(key).toString());
