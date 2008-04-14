@@ -243,7 +243,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * If true, a line removal will be activated next loop.
      */
-    private boolean activateLineRemoval = false;
+    private boolean activateLineRemoval = false;        
     
     /**
      * If true, a line removal is in progress.
@@ -253,7 +253,12 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The set of tile indices that will be removed.
      */
-    private Set tileRemovalSet;
+    private Set<Integer> tileRemovalSet;
+    
+    /**
+     * If true, uses jump animation instead of zoom.
+     */
+    private boolean tileRemovalUseJumpAnimation = false;
     
     /**
      * If true, a bomb removal will be activated next loop.
@@ -263,7 +268,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The set of bomb tile indices that will be removed.
      */
-    private Set bombRemovalSet;
+    private Set<Integer> bombRemovalSet;
     
     /**
      * The number of lines cleared this cycle.
@@ -469,10 +474,10 @@ public class Game extends Canvas implements GameWindowCallback
         cascadeCount = 0;                
         
         // Initialize line index set.
-        tileRemovalSet = new HashSet();
+        tileRemovalSet = new HashSet<Integer>();
         
         // Initialize bomb index set.
-        bombRemovalSet = new HashSet();
+        bombRemovalSet = new HashSet<Integer>();
         
         // Create the layer manager.   
         layerMan = new LayerManager(window, 4);        
@@ -838,11 +843,26 @@ public class Game extends Canvas implements GameWindowCallback
                 // Handle Level up.
                 if (scoreMan.getLevelScore() 
                         >= scoreMan.getTargetLevelScore())
-                {           
+                {    
+                    // Hide piece.                    
+                    pieceMan.getPieceGrid().setVisible(false);
+                    pieceMan.stopAnimation();
+                    
                     Util.handleMessage("Level up!!!", Thread.currentThread());
                     worldMan.levelUp(this);
                     
-                    final XYPosition p = levelLabel.getXYPosition();
+                    this.activateLineRemoval = true;
+                    this.tileRemovalUseJumpAnimation = true;
+                    tileRemovalSet.clear();
+
+                    int j = boardMan.getRows() - 1;
+                    for (int i = 0; i < boardMan.getColumns(); i++)
+                    {                         
+                        int index = i + (j * boardMan.getColumns());
+                        if (boardMan.getTile(index) != null)
+                            tileRemovalSet.add(
+                                    new Integer(index));
+                    }                                        
                     
                     soundMan.play(SoundManager.LEVEL_UP);
                     
@@ -1097,13 +1117,21 @@ public class Game extends Canvas implements GameWindowCallback
                     int i = 0;
                     for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
                     {
-                        i++;
                         TileEntity t = boardMan.getTile((Integer) it.next());
-//                        t.setAnimation(new ZoomOutAnimation(t));                        
-                        int angle = i % 2 == 0 ? 70 : 180 - 70;                        
-                        t.setAnimation(new JumpFadeOutAnimation(
+                                            
+                        if (tileRemovalUseJumpAnimation == true)
+                        {
+                            i++;
+                            int angle = i % 2 == 0 ? 70 : 180 - 70;                        
+                            t.setAnimation(new JumpFadeOutAnimation(
                                 0.3, angle, 0.001, 800, layerMan, t));
+                        }
+                        else                        
+                            t.setAnimation(new ZoomOutAnimation(t));                        
                     }
+                    
+                    // Clear the animation flag.
+                    tileRemovalUseJumpAnimation = false;
 
                     // Set the flag.
                     tileRemovalInProgress = true;
@@ -1153,7 +1181,7 @@ public class Game extends Canvas implements GameWindowCallback
                 soundMan.play(SoundManager.BOMB);
 
                 // Extract all the new bombs.
-                Set newBombRemovalSet = new HashSet();
+                Set newBombRemovalSet = new HashSet<Integer>();
                 boardMan.scanBombs(tileRemovalSet, newBombRemovalSet);                                                
                 newBombRemovalSet.removeAll(bombRemovalSet);
 
@@ -1334,7 +1362,7 @@ public class Game extends Canvas implements GameWindowCallback
     public void windowActivated()
     {
         //Force a background redraw.
-        if(this.background != null)
+        if (this.background != null)
             this.background.setDirty(true);
     }
     
@@ -1347,8 +1375,8 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public static void main(String argv[])
 	{		        
-        System.setProperty("sun.java2d.translaccel", "true");
-        System.setProperty("sun.java2d.ddforcevram", "true");   
+//        System.setProperty("sun.java2d.translaccel", "true");
+//        System.setProperty("sun.java2d.ddforcevram", "true");   
         
         try
         {

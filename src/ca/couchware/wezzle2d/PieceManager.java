@@ -328,6 +328,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
         }
     }
     
+    public void stopAnimation()
+    {
+        stopAnimationAt(pieceGrid.getXYPosition());
+    }
+    
     private void stopAnimationAt(final XYPosition p)
     {
         // Remove old animations.
