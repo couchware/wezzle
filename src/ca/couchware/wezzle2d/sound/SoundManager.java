@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * The class also defines the constants BOMB, LINE, BLEEP, CLICK for the
  * sounds that are available.
  * 
- * @author Kevin
+ * @author Kevin, Cameron
  */
 
 
@@ -23,20 +23,31 @@ public class SoundManager
     public final static String KEY_LINE = "line";
     public final static String KEY_BLEEP = "bleep";
     public final static String KEY_CLICK = "click";
-    public final static String KEY_LEVEL_UP = "level up";
+    public final static String KEY_LEVEL_UP = "levelUp";
     
-    /** The number of buffers for the effect. */
-    private static int numBuffers = 4;
+    /** 
+     * The number of buffers for the effect. 
+     */
+    private static int NUM_BUFFERS = 4;
+      
+    /** 
+     * A link to the property manager. 
+     */
+    private PropertyManager propertyMan;
     
-  
-    /** A link to the property manager. */
-    private PropertyManager propMan;
+    /** 
+     * The list of effects.
+     */   
+    private ArrayList<SoundEffect[]> effectsList;
     
-    /** The list of effects */
-    private ArrayList<SoundEffect[]> effectList;
-    private ArrayList<Integer> bufferNumList;
+    /**
+     * The current buffer.
+     */
+    private ArrayList<Integer> bufferPointerList;
    
-    /** Determine if the sound is on or off */
+    /** 
+     * Determine if the sound is on or off.
+     */
     private boolean paused;
       
     /**
@@ -45,20 +56,22 @@ public class SoundManager
      */    
     private float volume;
     
-    /** How much to adjust the volume by */
-    private static final float volumeAdjustment = 0.5f;
+    /** 
+     * How much to adjust the volume by.
+     */
+    private static final float VOLUME_STEP = 0.5f;
     
     /**
      * Creates the effect list.
      */
-    public SoundManager(PropertyManager propMan) 
+    public SoundManager(PropertyManager propertyMan) 
     {        
         // The property manager.
-        this.propMan= propMan;
+        this.propertyMan= propertyMan;
         
         // Initiate the array list.
-        this.effectList = new ArrayList<SoundEffect[]>(); 
-        this.bufferNumList = new ArrayList<Integer>();
+        this.effectsList = new ArrayList<SoundEffect[]>(); 
+        this.bufferPointerList = new ArrayList<Integer>();
         
         // Add some Sound effects. MUST USE addsound effect as it 
         // handles buffering.
@@ -76,18 +89,20 @@ public class SoundManager
         
         this.addSoundEffect(SoundManager.KEY_LEVEL_UP,
                 Game.SOUNDS_PATH + "/SoundLevelUp.wav");
-     
-        
+             
         // Get the default volume.
-        this.volume = propMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME);
+        this.volume = propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME);
         
-        // Paused or not.
-        String check = propMan.getStringProperty(PropertyManager.KEY_SOUND);
-        
-        if(check.equals(PropertyManager.VALUE_OFF))
+        // Check if paused or not.
+        if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
+                .equals(PropertyManager.VALUE_OFF))
+        {
             this.paused = true;
+        }
         else
+        {
             this.paused = false;
+        }
     }
     
     /**
@@ -97,38 +112,38 @@ public class SoundManager
      */
     public void addSoundEffect(String key, String path)
     {
-        SoundEffect effects[] = new SoundEffect[numBuffers];
-        for(int i = 0; i < effects.length; i++)
+        SoundEffect effects[] = new SoundEffect[NUM_BUFFERS];
+        for (int i = 0; i < effects.length; i++)
             effects[i] = new SoundEffect(key, path);
         
         // Add the effect.
-        this.effectList.add(effects);
+        this.effectsList.add(effects);
         
-        // Add the corresponding buffer.
-        this.bufferNumList.add(new Integer(0));
+        // Add the corresponding buffer pointer.
+        this.bufferPointerList.add(new Integer(0));
     }
         
     /**
      * A method to remove an effect by it's key value.
      * Note: this method does not set the effect to null.
      * 
-     * @param key The key of the associated effect.
-     * @return true if the effect was removed, false otherwise.
+     * @param key The key of the effect to remove.
+     * @return True if the effect was removed, false otherwise.
      */
-    public boolean removeEffect (final String key)
+    public boolean removeSoundEffect (final String key)
     {
-        // Find and remove the effect.
-        for (int i = 0; i < effectList.size(); i++)
+        // Find and remove the effect.        
+        for (int i = 0; i < effectsList.size(); i++)
         {
-            if (effectList.get(i)[0].getKey().equals(key) == true)
+            if (effectsList.get(i)[0].getKey().equals(key) == true)
             {
                 // Remove the effect and its buffer num list.
-                effectList.remove(i); 
-                bufferNumList.remove(i);
+                effectsList.remove(i); 
+                bufferPointerList.remove(i);
                 return true;
             }           
         }
-        
+                        
         return false;
     }
     
@@ -142,29 +157,26 @@ public class SoundManager
      * @return The effect or null if the key was not found.
      */
     public SoundEffect getSoundEffect(final String key)
-    {
-        synchronized(this)
+    {        
+        // Find and return the effect.
+        for (int i = 0; i < effectsList.size(); i++)
         {
-             // find and return the effect.
-            for (int i = 0; i < effectList.size(); i++)
+            if (effectsList.get(i)[0].getKey().equals(key) == true)
             {
-                if (effectList.get(i)[0].getKey().equals(key) == true)
-                {
-                    // The current buffer.
-                    int bufferNum = bufferNumList.get(i);
+                // The current buffer.
+                int bufferNum = bufferPointerList.get(i);
 
-                    // The next buffer
-                    int nextBufNum = (bufferNum + 1) % numBuffers;
-                    
-                    // Set the next buffer to be used.
-                    bufferNumList.set(i, new Integer(nextBufNum));
+                // The next buffer
+                int nextBufferNum = (bufferNum + 1) % NUM_BUFFERS;
 
-                    // Return the proper buffered effect.
-                    return effectList.get(i)[bufferNum]; 
-                }
+                // Set the next buffer to be used.
+                bufferPointerList.set(i, new Integer(nextBufferNum));
+
+                // Return the proper buffered effect.
+                return effectsList.get(i)[bufferNum]; 
             }
         }
-        
+                
         return null;
     }
     
@@ -175,9 +187,12 @@ public class SoundManager
      */
     public void playSoundEffect(final String key)
     {
-        // If paused, dont play.
-        if(this.paused)
+        // If paused, don't play.
+        if (this.paused == true)
             return;
+        
+        // Get the sound effect to play.
+        final SoundEffect effect = getSoundEffect(key);
         
         // Play the effect in the background.
         new Thread() 
@@ -187,14 +202,10 @@ public class SoundManager
             {
                 try 
                 { 
-                    synchronized(this)
-                    {
-                        // Play the effect. MUST USED get soundeffect as
-                        // it handles buffering.
-                        SoundEffect currentEffect = getSoundEffect(key);
-                        currentEffect.setVolume(volume);
-                        currentEffect.play();
-                    }
+                    // Play the effect. MUST USE get soundeffect as
+                    // it handles buffering.
+                    effect.setVolume(volume);
+                    effect.play();
                 }
                 catch (Exception e) 
                 { 
@@ -202,9 +213,7 @@ public class SoundManager
                 }
             }
         }.start();
-    }
-   
-  
+    }     
     
     /** 
      * A method to increase the volume of the sound.
@@ -212,14 +221,14 @@ public class SoundManager
     public void increaseVolume()
     {
         // Adjust the volume.
-        this.volume += volumeAdjustment;
+        this.volume += VOLUME_STEP;
         
         // Max volume.
         if (this.volume > 6.0206f)
             this.volume = 6.0206f;
         
         // Adjust the property;
-        propMan.setProperty(PropertyManager.KEY_SOUND_VOLUME, Float.toString(this.volume));        
+        propertyMan.setProperty(PropertyManager.KEY_SOUND_VOLUME, Float.toString(this.volume));        
     }
     
     /**
@@ -227,16 +236,16 @@ public class SoundManager
      */
     public void decreaseVolume()
     {
-         // Adjust the volume.
-        this.volume -= volumeAdjustment;
+        // Adjust the volume.
+        this.volume -= VOLUME_STEP;
         
         // Min volume.
         if (this.volume < -80.0f)
             this.volume = -80.0f;
         
-         // Adjust the property;
-        propMan.setProperty(PropertyManager.KEY_SOUND_VOLUME, Float.toString(this.volume));
-        
+        // Adjust the property;
+        propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
+                Float.toString(this.volume));
     }
     
     /**
@@ -246,8 +255,7 @@ public class SoundManager
     public void setPaused(boolean paused)
     {
         this.paused = paused;
-    }
-    
+    }    
     
 }
 

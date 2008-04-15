@@ -12,16 +12,24 @@ import java.util.ArrayList;
 public class MusicManager 
 {
   
-    /** A link to the property manager. */
+    /** 
+     * A link to the property manager. 
+     */
     private PropertyManager propMan;
     
-    /** The list of songs */
+    /** 
+     * The list of songs.
+     */
     private ArrayList<Song> songList;
     
-    /** The song number we are one */
+    /** 
+     * The song number we are one 
+     */
     private int songNum;
     
-    /** A variable to check if the song is paused */
+    /** 
+     * A variable to check if the song is paused.
+     */
     private boolean paused = false;
     
     /**
@@ -35,8 +43,10 @@ public class MusicManager
      */    
     private float volume;
     
-    /** How much to adjust the volume by */
-    private static final float volumeAdjustment = 0.5f;
+    /** 
+     * How much to adjust the volume by.
+     */
+    private static final float VOLUME_STEP = 0.5f;
     
     /**
      * Creates the song list.
@@ -236,7 +246,7 @@ public class MusicManager
     public void increaseVolume()
     {
         // Adjust the volume.
-        this.volume += volumeAdjustment;
+        this.volume += VOLUME_STEP;
         
         // Max volume.
         if (this.volume > 6.0206f)
@@ -258,7 +268,7 @@ public class MusicManager
     public void decreaseVolume()
     {
          // Adjust the volume.
-        this.volume -= volumeAdjustment;
+        this.volume -= VOLUME_STEP;
         
         // Min volume.
         if (this.volume < -80.0f)

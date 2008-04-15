@@ -33,7 +33,7 @@ public class Song
     AudioInputStream decodedIn;
     
     /** The url for the file */
-     URL file;
+    URL url;
              
     /** The lock */
     Object lock = new Object();
@@ -59,18 +59,18 @@ public class Song
         this.key = key;
         
         // Load the reserouce.
-        file = this.getClass().getClassLoader()
+        url = this.getClass().getClassLoader()
             .getResource(path);
         
         // Check the URL.
-        if (file == null)
+        if (url == null)
             throw new RuntimeException("Url Error: " + path 
                     + " does not exist.");
         
         loadSong();
          
-        this.currentVolume = 0.0f;
-                    
+        // Set the current volumne.
+        this.currentVolume = 0.0f;                    
     }
     
     /**
@@ -86,15 +86,17 @@ public class Song
     {
         try
         {
-            if(line != null) {
+            if(line != null) 
+            {
 				line.open(decodedFormat);
 				byte[] data = new byte[4096];
-				// Start
+				
+                // Start
 				line.start();
                 
 				int nBytesRead;
                 
-                synchronized(lock)
+                synchronized (lock)
                 {
                     while ((nBytesRead = decodedIn.read(data, 0, data.length)) != -1) 
                     {	
@@ -104,7 +106,7 @@ public class Song
                         
                         while (paused) 
                         {
-                            if(line.isRunning()) 
+                            if (line.isRunning()) 
                             {
                                 line.stop();
                             }
@@ -126,6 +128,7 @@ public class Song
                         line.write(data, 0, nBytesRead);
                     }
                 }
+                
 				// The song is done, close it.
 				line.drain();
 				line.stop();
@@ -157,20 +160,20 @@ public class Song
         try
         {
             // Create the Audio Stream.
-            in = AudioSystem.getAudioInputStream(file.openStream());
+            in = AudioSystem.getAudioInputStream(url.openStream());
 
             // The base audio format.
             AudioFormat baseFormat = in.getFormat();
             
             // decode the format so we can play it.
             decodedFormat = new AudioFormat(
-            AudioFormat.Encoding.PCM_SIGNED, // Encoding to use
-            baseFormat.getSampleRate(),	  // sample rate (same as base format)
-            16,				  // sample size in bits (thx to Javazoom)
-            baseFormat.getChannels(),	  // # of Channels
-            baseFormat.getChannels()*2,	  // Frame Size
-            baseFormat.getSampleRate(),	  // Frame Rate
-            false				  // Big Endian
+                AudioFormat.Encoding.PCM_SIGNED, // Encoding to use
+                baseFormat.getSampleRate(),	  // sample rate (same as base format)
+                16,				  // sample size in bits (thx to Javazoom)
+                baseFormat.getChannels(),	  // # of Channels
+                baseFormat.getChannels()*2,	  // Frame Size
+                baseFormat.getSampleRate(),	  // Frame Rate
+                false				  // Big Endian
             );
 
             // The decoded input stream.

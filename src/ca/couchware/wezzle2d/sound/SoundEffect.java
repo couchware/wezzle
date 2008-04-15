@@ -1,10 +1,9 @@
-
 package ca.couchware.wezzle2d.sound;
+
 import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.io.*;
 import javax.sound.sampled.*;
-
 
 /**
  * A class to hold a Effect that will be payed by the music manager.
@@ -17,26 +16,45 @@ import javax.sound.sampled.*;
 
 public class SoundEffect 
 {
-    /** The Effect's key */
+    /** 
+     * The key identifer.
+     */
     private String key;
      
-    /** A line of media */
+    /** 
+     * A line of sound.
+     */
     SourceDataLine line;
     
-    /** The decoded audio format */
+    /** 
+     * The decoded audio format 
+     */
     AudioFormat format;
     
-    /** The input stream from the file */
+    /** 
+     * The audio input stream from the file.
+     */
     AudioInputStream in;
 
-    /** The url for the file */
-     URL file;
+    /** 
+     * The url for the file. 
+     */
+    URL url;
              
-    /** the volume control */
-    FloatControl volume = null;
+    /** 
+     * The volume control.
+     */
+    FloatControl volumeControl = null;
 
-    /** the volume */
+    /** 
+     * The volume.
+     */
     private float currentVolume;
+    
+    /**
+     * A variable indicating whether or not the effect is currently playing.
+     */
+    private boolean playing;
 
     /**
      * The constructor.
@@ -50,16 +68,19 @@ public class SoundEffect
         this.key = key;
         
         // Load the reserouce.
-        file = this.getClass().getClassLoader()
+        url = this.getClass().getClassLoader()
             .getResource(path);
         
         // Check the URL.
-        if (file == null)
+        if (url == null)
             throw new RuntimeException("Url Error: " + path 
                     + " does not exist.");
         
-        loadEffect();
-                  
+        // The effect is not currently playing.
+        setPlaying(false);
+        
+        // Load the effect.
+        loadEffect();                  
     }
     
     /**
@@ -72,13 +93,23 @@ public class SoundEffect
      * 
      */
     public void play()
-    {
-        try
+    {        
+        // Don't play if we're already playing.
+        synchronized (this)
         {
-            
-            if(line != null) {
+            if (playing == true)            
+                return;
+            else
+                playing = true;
+        }
+                
+        try
+        {            
+            if (line != null) 
+            {
 				line.open(format);
 				byte[] data = new byte[4096];
+                
 				// Start
 				line.start();
                 
@@ -86,11 +117,12 @@ public class SoundEffect
 
                 while ((nBytesRead = in.read(data, 0, data.length)) != -1) 
                 {	
-                    volume = (FloatControl) line.getControl
-                            (FloatControl.Type.MASTER_GAIN);
-                    volume.setValue(this.currentVolume);
+                    volumeControl = (FloatControl) line.getControl(
+                            FloatControl.Type.MASTER_GAIN);
+                    
+                    volumeControl.setValue(getVolume());
 
-                    if(!line.isRunning()) 
+                    if (!line.isRunning()) 
                     {
                         line.start();
                     }
@@ -98,14 +130,17 @@ public class SoundEffect
                     line.write(data, 0, nBytesRead);
                 }
                 
-				// The Effect is done, close it.
+				// The effect is done, close it.                
 				line.drain();
 				line.stop();
 				line.close();
-				in.close();
+				in.close();                
                 
-                // The Effect is done, have to reload it so we can play again.
+                // The effect is done, have to reload it so we can play again.
                 loadEffect();
+                
+                // We're done playing.
+                setPlaying(false);
 			}
         }
         catch(Exception e)
@@ -117,7 +152,7 @@ public class SoundEffect
     /**
      * A method to reset the Effect.
      */
-    public void loadEffect()
+    private void loadEffect()
     {
         // Make sure everything is null.
         line = null;
@@ -126,17 +161,15 @@ public class SoundEffect
         // Load the Effect.
         try
         {
-            // Create the Audio Stream.
-            in = AudioSystem.getAudioInputStream(file.openStream());
+            // Create the audio stream.
+            in = AudioSystem.getAudioInputStream(url.openStream());
 
             // The base audio format.
             format = in.getFormat();
             
-            //Set up a line of audio data from our decoded stream.
+            // Set up a line of audio data from our decoded stream.
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-            line = (SourceDataLine) AudioSystem.getLine(info);
-            
-            
+            line = (SourceDataLine) AudioSystem.getLine(info);                        
         }
         catch(Exception e)
         {
@@ -145,31 +178,58 @@ public class SoundEffect
     }
        
     //--------------------------------------------------------------------------
-    // Getters and setters.
+    // Getters and Setters
     //--------------------------------------------------------------------------
    
     /**
-     * A method to increase the volume.
+     * A method to set the volume.
+     * 
      * @param volume The new volume value.
      */
-    public void setVolume(float volume)
+    public synchronized void setVolume(float volume)
     {
         this.currentVolume = volume;     
     }
     
     /**
-     * A method to get the volume of the Effect.
+     * A method to get the volume of the effect.
+     * 
      * @return the volume.
      */
-    public float getVolume()
+    public synchronized float getVolume()
     {
        // Return the volume
         return this.currentVolume;
     }
    
+    /**
+     * The the sound effect key.
+     * 
+     * @return
+     */
     public String getKey()
     {
         return this.key;
     }
+
+    /**
+     * Is the effect playing?
+     * 
+     * @return True if it is playing, false otherwise.
+     */    
+    public synchronized boolean isPlaying()
+    {        
+        return playing;
+    }
+
+    /**
+     * Sets whether or not the effect is playing.
+     * 
+     * @param playing
+     */
+    private synchronized void setPlaying(boolean playing)
+    {
+        this.playing = playing;
+    }    
     
 }
