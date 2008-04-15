@@ -62,20 +62,20 @@ public class SoundManager
         
         // Add some Sound effects. MUST USE addsound effect as it 
         // handles buffering.
-        this.addSoundEffect(new SoundEffect(SoundManager.KEY_LINE,
-               Game.SOUNDS_PATH + "/SoundLine.wav"));
+        this.addSoundEffect(SoundManager.KEY_LINE,
+               Game.SOUNDS_PATH + "/SoundLine.wav");
         
-        this.addSoundEffect(new SoundEffect(SoundManager.KEY_BOMB,
-                Game.SOUNDS_PATH + "/SoundExplosion.wav"));
+        this.addSoundEffect(SoundManager.KEY_BOMB,
+                Game.SOUNDS_PATH + "/SoundExplosion.wav");
         
-        this.addSoundEffect(new SoundEffect(SoundManager.KEY_BLEEP,
-                Game.SOUNDS_PATH + "/SoundBleep.wav"));
+        this.addSoundEffect(SoundManager.KEY_BLEEP,
+                Game.SOUNDS_PATH + "/SoundBleep.wav");
         
-        this.addSoundEffect(new SoundEffect(SoundManager.KEY_CLICK,
-                Game.SOUNDS_PATH + "/SoundClick.wav"));
+        this.addSoundEffect(SoundManager.KEY_CLICK,
+                Game.SOUNDS_PATH + "/SoundClick.wav");
         
-        this.addSoundEffect(new SoundEffect(SoundManager.KEY_LEVEL_UP,
-                Game.SOUNDS_PATH + "/SoundLevelUp.wav"));
+        this.addSoundEffect(SoundManager.KEY_LEVEL_UP,
+                Game.SOUNDS_PATH + "/SoundLevelUp.wav");
      
         
         // Get the default volume.
@@ -95,11 +95,11 @@ public class SoundManager
      * 
      * @param effect The new effect.
      */
-    public void addSoundEffect(SoundEffect effect)
+    public void addSoundEffect(String key, String path)
     {
         SoundEffect effects[] = new SoundEffect[numBuffers];
         for(int i = 0; i < effects.length; i++)
-            effects[i] = effect;
+            effects[i] = new SoundEffect(key, path);
         
         // Add the effect.
         this.effectList.add(effects);
@@ -155,8 +155,6 @@ public class SoundManager
 
                     // The next buffer
                     int nextBufNum = (bufferNum + 1) % numBuffers;
-
-                    System.out.println("Next Buffer: " + nextBufNum);
                     
                     // Set the next buffer to be used.
                     bufferNumList.set(i, new Integer(nextBufNum));

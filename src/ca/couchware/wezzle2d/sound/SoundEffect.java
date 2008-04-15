@@ -83,20 +83,20 @@ public class SoundEffect
 				line.start();
                 
 				int nBytesRead;
-                
-                    while ((nBytesRead = in.read(data, 0, data.length)) != -1) 
-                    {	
-                        volume = (FloatControl) line.getControl
-                                (FloatControl.Type.MASTER_GAIN);
-                        volume.setValue(this.currentVolume);
-                       
-                        if(!line.isRunning()) 
-                        {
-                            line.start();
-                        }
-		
-                        line.write(data, 0, nBytesRead);
+
+                while ((nBytesRead = in.read(data, 0, data.length)) != -1) 
+                {	
+                    volume = (FloatControl) line.getControl
+                            (FloatControl.Type.MASTER_GAIN);
+                    volume.setValue(this.currentVolume);
+
+                    if(!line.isRunning()) 
+                    {
+                        line.start();
                     }
+
+                    line.write(data, 0, nBytesRead);
+                }
                 
 				// The Effect is done, close it.
 				line.drain();
