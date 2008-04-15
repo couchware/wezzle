@@ -67,7 +67,7 @@ public class SoundManager
     public SoundManager(PropertyManager propertyMan) 
     {        
         // The property manager.
-        this.propertyMan= propertyMan;
+        this.propertyMan = propertyMan;
         
         // Initiate the array list.
         this.effectsList = new ArrayList<SoundEffect[]>(); 

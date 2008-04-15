@@ -15,7 +15,7 @@ public class MusicManager
     /** 
      * A link to the property manager. 
      */
-    private PropertyManager propMan;
+    private PropertyManager propertyMan;
     
     /** 
      * The list of songs.
@@ -35,7 +35,7 @@ public class MusicManager
     /**
      * Is the music playing?
      */
-    private volatile boolean musicPlayingInProgress;
+    private volatile boolean playing;
       
     /**
      * The volume level.
@@ -51,28 +51,31 @@ public class MusicManager
     /**
      * Creates the song list.
      */
-    public MusicManager(PropertyManager propMan) 
+    public MusicManager(PropertyManager propertyMan) 
     {        
         // The property manager.
-        this.propMan= propMan;
+        this.propertyMan = propertyMan;
+        
         // Initiate the array list and song number.
-        this.songList = new ArrayList<Song>();        
-        this.musicPlayingInProgress = false;
+        this.songList = new ArrayList<Song>();      
+        
+        // The music is not playing.
+        this.playing = false;
        
         // Add some music.  This is the order they will play in, but it will
         // not necessarily start on the first song.
         this.songList.add(new Song("Turning The Page", Game.MUSIC_PATH 
-                + "/TurningThePage.mp3"));
+                + "/TurningThePage.ogg"));
         this.songList.add(new Song("Taking a Stroll", Game.MUSIC_PATH 
-                + "/TakingAStroll.mp3"));
+                + "/TakingAStroll.ogg"));
         this.songList.add(new Song("Intergalactic Tron", Game.MUSIC_PATH 
-                + "/IntergalacticTron.mp3")); 
+                + "/IntergalacticTron.ogg")); 
         
         // Randomly pick a starting song.
         this.songNum = Util.random.nextInt(songList.size());
         
         // Get the default volume.
-        this.volume = propMan.getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME);
+        this.volume = propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME);
     }
     
     /**
@@ -136,9 +139,8 @@ public class MusicManager
      */
     public void playSong(final String key)
     {
-        // Flag music playing.
-        //game.musicPlayingInProgress = true;
-        setMusicPlaying(true);
+        // Flag music playing.        
+        setPlaying(true);
         
         // Play the song in the background.
         new Thread() 
@@ -166,7 +168,7 @@ public class MusicManager
                         
                     }
                     // Signal song is done.
-                    setMusicPlaying(false);
+                    setPlaying(false);
                 }
                 catch (Exception e) 
                 { 
@@ -182,7 +184,7 @@ public class MusicManager
     public void playNext() 
     {
         // Flag music playing in game.
-        setMusicPlaying(true);
+        setPlaying(true);
         
         // Determine the next song to play.
         this.songNum = (this.songNum + 1) % this.songList.size();
@@ -196,13 +198,13 @@ public class MusicManager
                 try 
                 {                     
                     // Set the volume.
-                    songList.get(songNum).setVolume(volume);
+                    songList.get(songNum).setVolume(getVolume());
                     
                     // Play the current song.
                     songList.get(songNum).play(); 
                     
                     // Signal song is done.
-                    setMusicPlaying(false);
+                    setPlaying(false);
                 }
                 catch (Exception e) 
                 { 
@@ -212,14 +214,24 @@ public class MusicManager
         }.start();
     }
 
-    public boolean isMusicPlaying()
+    /**
+     * Is the music playing?
+     * 
+     * @return True if it is, false otherwise.
+     */
+    public boolean isPlaying()
     {
-        return (musicPlayingInProgress || this.paused);
+        return (playing || this.paused);
     }
 
-    public void setMusicPlaying(boolean musicPlayingInProgress)
+    /**
+     * Sets whether or not the music is playing.
+     * 
+     * @param playing
+     */
+    private void setPlaying(boolean playing)
     {
-        this.musicPlayingInProgress = musicPlayingInProgress;
+        this.playing = playing;
     }    
     
     /**
@@ -228,7 +240,7 @@ public class MusicManager
     public void setPaused(boolean paused)
     {
         this.paused = paused;                    
-        this.songList.get(this.songNum).setPaused(paused);        
+        this.songList.get(songNum).setPaused(paused);        
     }
         
     /**
@@ -239,6 +251,16 @@ public class MusicManager
     {
         return this.paused;
     }
+
+    /**
+     * Gets the current volume.
+     * 
+     * @return
+     */
+    public synchronized float getVolume()
+    {
+        return volume;
+    }  
     
     /** 
      * A method to increase the volume of the song.
@@ -253,10 +275,11 @@ public class MusicManager
             this.volume = 6.0206f;
         
         // Adjust the property;
-        propMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, Float.toString(this.volume));
+        propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
+                Float.toString(this.volume));
         
         // Adjust the current playing song.
-        if (this.musicPlayingInProgress == true)
+        if (isPlaying() == true)
         {
             this.songList.get(this.songNum).setVolume(this.volume);
         }            
@@ -275,12 +298,13 @@ public class MusicManager
             this.volume = -80.0f;
         
          // Adjust the property;
-        propMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, Float.toString(this.volume));
+        propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
+                Float.toString(this.volume));
         
         // Adjust the current playing song.
-        if (this.musicPlayingInProgress == true)
+        if (this.playing == true)
         {
-            this.songList.get(this.songNum).setVolume(this.volume);
+            this.songList.get(this.songNum).setVolume(volume);
         }            
     }
 }
