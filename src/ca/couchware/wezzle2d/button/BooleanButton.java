@@ -28,7 +28,7 @@ public abstract class BooleanButton extends Button
     {
         // Invoke super.
         super(x, y, width, height, shape);
-        
+                
         // Set the button to be initially deactivated.
         this.activated = false;
     }      
@@ -92,6 +92,8 @@ public abstract class BooleanButton extends Button
     public void setActivated(boolean activated)
     {
         this.activated = activated;
+        state = STATE_ACTIVE;
+        setDirty(true);
     }
     
 }

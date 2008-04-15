@@ -786,7 +786,7 @@ public class Game extends Canvas implements GameWindowCallback
         gameOverRestartButton.getLabel().setSize(18);
         gameOverRestartButton.setAlignment(Button.VCENTER | Button.HCENTER);
         gameOverRestartButton.setVisible(false);
-        layerMan.add(gameOverRestartButton, LAYER_UI);        ;
+        layerMan.add(gameOverRestartButton, LAYER_UI);
         
         // Create continue button.
         gameOverContinueButton = new RectangularBooleanButton(400, 406);
@@ -861,7 +861,8 @@ public class Game extends Canvas implements GameWindowCallback
         musicMan.setPaused(true);
 
         // Set the property.
-        propertyMan.setProperty(PropertyManager.KEY_MUSIC, PropertyManager.VALUE_OFF);
+        propertyMan.setProperty(PropertyManager.KEY_MUSIC, 
+                PropertyManager.VALUE_OFF);
         
         // Activate the button.
         musicButton.setActivated(true);
@@ -1144,7 +1145,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
 		
         // If the music stopped playing, play the next song.
-        if (musicMan.isPlaying() == false)
+        if (musicMan.isPlaying() == false && musicMan.isPaused() == false)
         {
             musicMan.playNext();
         }        

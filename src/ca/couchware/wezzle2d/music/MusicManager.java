@@ -75,7 +75,8 @@ public class MusicManager
         this.songNum = Util.random.nextInt(songList.size());
         
         // Get the default volume.
-        this.volume = propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME);
+        this.volume = propertyMan
+                .getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME);
     }
     
     /**
@@ -243,12 +244,7 @@ public class MusicManager
     public void setPaused(boolean paused)
     {
         this.paused = paused;                    
-        this.songList.get(songNum).setPaused(paused);  
-        
-        if (paused == true)
-            setPlaying(false);
-        else
-            setPlaying(true);
+        this.songList.get(songNum).setPaused(paused);                 
     }
         
     /**

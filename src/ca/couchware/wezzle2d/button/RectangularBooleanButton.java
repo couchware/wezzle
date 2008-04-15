@@ -79,7 +79,7 @@ public class RectangularBooleanButton extends BooleanButton
 
 //    @Override
     public void drawActive()
-    {
+    {        
         spriteNormal.draw(x + offsetX, y + offsetY, 
                 width, height, 0.0, activeOpacity);
         
@@ -98,7 +98,7 @@ public class RectangularBooleanButton extends BooleanButton
 //    @Override
     public void drawPressed()
     {
-       spriteNormal.draw(x + offsetX, y + offsetY, width, height, 0.0, 70);
+        spriteNormal.draw(x + offsetX, y + offsetY, width, height, 0.0, 70);
         
         buttonLabel.setX(x + offsetX + width / 2);
         buttonLabel.setY(y + offsetY + height / 2 + 1);
@@ -124,6 +124,7 @@ public class RectangularBooleanButton extends BooleanButton
     public void setActiveOpacity(int activeOpacity)
     {
         this.activeOpacity = activeOpacity;
+        setDirty(true);
     }
 
     public int getNormalOpacity()
@@ -134,19 +135,7 @@ public class RectangularBooleanButton extends BooleanButton
     public void setNormalOpacity(int normalOpacity)
     {
         this.normalOpacity = normalOpacity;
-    }        
-    
-    @Override
-    public Rectangle getDrawRect()
-    {
-        Rectangle rect = new Rectangle(x_, y_, width + 2, height + 2);
-        
-        if (x_ != x || y_ != y)
-            rect.add(new Rectangle(x, y, width + 2, height + 2));
-        
-        rect.translate(offsetX, offsetY);
-        
-        return rect;
-    }        
+        setDirty(true);
+    }               
 
 }

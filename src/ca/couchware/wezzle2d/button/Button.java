@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d.button;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -13,44 +12,13 @@ import java.awt.geom.RectangularShape;
  * 
  * @author cdmckay
  */
-public abstract class Button implements 
-        Drawable, 
+public abstract class Button extends Entity implements        
         MouseListener, 
         MouseMotionListener
 {
     // -------------------------------------------------------------------------
     // Constants
-    // -------------------------------------------------------------------------
-     
-    /**
-     * Align at the vertical top.
-     */
-    final public static int TOP = 1;
-    
-    /**
-     * Align at the vertical center.
-     */
-	final public static int VCENTER = 2;
-    
-    /**
-     * Align at the vertical bottom.
-     */
-	final public static int BOTTOM = 4;
-    
-    /**
-     * Align at the horizontal left.
-     */
-	final public static int LEFT = 8;
-    
-    /**
-     * Align at the horizontal centre.
-     */
-	final public static int HCENTER = 16;
-    
-    /**
-     * Align at the horizontal right.
-     */
-	final public static int RIGHT = 32;
+    // -------------------------------------------------------------------------        
     
     /**
      * The normal state.
@@ -74,55 +42,7 @@ public abstract class Button implements
     
     // -------------------------------------------------------------------------
     // Instance Attributes
-    // -------------------------------------------------------------------------        
-    
-    /**
-     * Whether or not the button is visible.
-     */
-    protected boolean visible;
-    
-    /**
-     * Is it dirty (i.e. does it need to be redrawn)?
-     */
-    protected boolean dirty;
-    
-    /**
-     * The current x position.
-     */
-    protected int x;
-    
-    /**
-     * The current y position.
-     */
-    protected int y;
-    
-    protected int x_;
-    protected int y_;
-    
-    /**
-     * The width of the button.  This is what is used to set the anchor.
-     */
-    protected int width;
-    
-    /**
-     * The height of the button.  This is what is used to set the anchor.
-     */
-    protected int height;        
-    
-    /**
-     * The current anchor.
-     */
-    protected int alignment;
-    
-    /**
-     * The x offset from the anchor.
-     */
-    protected int offsetX;
-    
-    /**
-     * The y offset from the anchor.
-     */
-    protected int offsetY;
+    // -------------------------------------------------------------------------               
     
     /**
      * The shape of the button.
@@ -321,19 +241,7 @@ public abstract class Button implements
 	public synchronized void setMousePosition(final int x, final int y)
 	{
 		this.mousePosition = new XYPosition(x, y);
-	}
-    
-    public boolean isVisible()
-    {
-        return visible;
-    }
-    
-    public void setVisible(final boolean visible)
-    {
-        this.visible = visible;
-        
-        setDirty(true);
-    }    
+	}       
 
     public String getText()
     {
@@ -343,47 +251,9 @@ public abstract class Button implements
     public void setText(String text)
     {
         this.text = text;
+        
+        setDirty(true);
     }
-
-    public int getHeight()
-    {
-        return height;
-    }
-
-    public void setHeight(final int height)
-    {
-        this.height = height;
-    }
-
-    public int getWidth()
-    {
-        return width;
-    }
-
-    public void setWidth(final int width)
-    {
-        this.width = width;
-    }
-
-    public int getX()
-    {
-        return x;
-    }
-
-    public void setX(final int x)
-    {
-        this.x = x;
-    }
-
-    public int getY()
-    {
-        return y;
-    }
-
-    public void setY(final int y)
-    {
-        this.y = y;
-    }    
     
     /**
 	 * Set the alignment of the button. 
@@ -394,80 +264,16 @@ public abstract class Button implements
 	 * @param y The y alignment coordinate with respect 
      * to the top left corner of the button.
 	 */
+    @Override
 	public void setAlignment(final int alignment)
 	{
-        // Remember the anchor.
-		this.alignment = alignment;               
-				
-		// The Y anchors.
-		if((alignment & BOTTOM) == BOTTOM)
-		{
-			this.offsetY = -height;
-		}
-		else if((alignment & VCENTER) == VCENTER)
-		{
-			this.offsetY = -height / 2;
-		}
-		else if((alignment & TOP) == TOP)
-		{
-			this.offsetY = 0;
-		}
-		else
-		{
-			Util.handleWarning("No Y alignment set!", Thread.currentThread());
-		}
-		
-		// The X anchors. 
-		if((alignment & LEFT) == LEFT)
-		{
-			this.offsetX = 0;
-		}
-		else if((alignment & HCENTER) == HCENTER)
-		{
-			this.offsetX = -width / 2;			
-		}
-		else if((alignment & RIGHT) == RIGHT)
-		{
-			this.offsetX = -width;
-		}
-		else
-		{
-			Util.handleWarning("No X alignment set!", Thread.currentThread());
-		}			                
+        // Invoke super.
+        super.setAlignment(alignment);	                
         
         // Move the shape.
         shape.setFrame(x + offsetX, y + offsetY,
                 shape.getWidth(), shape.getHeight());
-	}
-    
-    public void setDirty(boolean dirty)
-    {
-        this.dirty = dirty;
-    }
-
-    public boolean isDirty()
-    {
-        return dirty;
-    }
-    
-    public Rectangle getDrawRect()
-    {
-        Rectangle rect = new Rectangle(x_, y_, 
-                width + 2, height + 2);
-        
-        if (x_ != x || y_ != y)
-            rect.add(new Rectangle(x, y, width + 2, height + 2));
-        
-        rect.translate(offsetX, offsetY);
-        
-        return rect;
-    }  
-    
-    public void resetDrawRect()
-    {
-        x_ = x;
-        y_ = y;
-    }
+	}             
     
     //--------------------------------------------------------------------------
     // Events
