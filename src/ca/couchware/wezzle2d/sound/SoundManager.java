@@ -156,6 +156,8 @@ public class SoundManager
                     // The next buffer
                     int nextBufNum = (bufferNum + 1) % numBuffers;
 
+                    System.out.println("Next Buffer: " + nextBufNum);
+                    
                     // Set the next buffer to be used.
                     bufferNumList.set(i, new Integer(nextBufNum));
 
