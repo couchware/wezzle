@@ -1144,7 +1144,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
 		
         // If the music stopped playing, play the next song.
-        if (musicMan.isMusicPlaying() == false)
+        if (musicMan.isPlaying() == false)
         {
             musicMan.playNext();
         }        

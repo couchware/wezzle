@@ -60,7 +60,7 @@ public class MusicManager
         this.songList = new ArrayList<Song>();      
         
         // The music is not playing.
-        this.playing = false;
+        setPlaying(false);
        
         // Add some music.  This is the order they will play in, but it will
         // not necessarily start on the first song.
@@ -189,6 +189,9 @@ public class MusicManager
         // Determine the next song to play.
         this.songNum = (this.songNum + 1) % this.songList.size();
         
+        // Grab that song.
+        final Song song = songList.get(songNum);
+        
         // Run in new thread to play in background.
         new Thread() 
         {
@@ -198,10 +201,10 @@ public class MusicManager
                 try 
                 {                     
                     // Set the volume.
-                    songList.get(songNum).setVolume(getVolume());
+                    song.setVolume(getVolume());
                     
                     // Play the current song.
-                    songList.get(songNum).play(); 
+                    song.play(); 
                     
                     // Signal song is done.
                     setPlaying(false);
@@ -219,9 +222,9 @@ public class MusicManager
      * 
      * @return True if it is, false otherwise.
      */
-    public boolean isPlaying()
+    public synchronized boolean isPlaying()
     {
-        return (playing || this.paused);
+        return playing;
     }
 
     /**
@@ -229,7 +232,7 @@ public class MusicManager
      * 
      * @param playing
      */
-    private void setPlaying(boolean playing)
+    private synchronized void setPlaying(boolean playing)
     {
         this.playing = playing;
     }    
@@ -240,7 +243,12 @@ public class MusicManager
     public void setPaused(boolean paused)
     {
         this.paused = paused;                    
-        this.songList.get(songNum).setPaused(paused);        
+        this.songList.get(songNum).setPaused(paused);  
+        
+        if (paused == true)
+            setPlaying(false);
+        else
+            setPlaying(true);
     }
         
     /**
@@ -265,7 +273,7 @@ public class MusicManager
     /** 
      * A method to increase the volume of the song.
      */
-    public void increaseVolume()
+    public synchronized void increaseVolume()
     {
         // Adjust the volume.
         this.volume += VOLUME_STEP;
@@ -288,7 +296,7 @@ public class MusicManager
     /**
      * A method to decrease the volume of the song
      */
-    public void decreaseVolume()
+    public synchronized void decreaseVolume()
     {
          // Adjust the volume.
         this.volume -= VOLUME_STEP;
@@ -302,7 +310,7 @@ public class MusicManager
                 Float.toString(this.volume));
         
         // Adjust the current playing song.
-        if (this.playing == true)
+        if (isPlaying() == true)
         {
             this.songList.get(this.songNum).setVolume(volume);
         }            
