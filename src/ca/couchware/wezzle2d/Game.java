@@ -1698,7 +1698,10 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public void windowDeactivated()
     {
-        this.pauseGame();
+        // Don't pause game if we're showing the game over screen.
+        if (gameOverInProgress == false)
+            this.pauseGame();
+        
         this.background.setDirty(true);
     }
     
@@ -1709,8 +1712,7 @@ public class Game extends Canvas implements GameWindowCallback
     {
         //Force a background redraw.
         if (this.background != null)
-            this.background.setDirty(true);
-        
+            this.background.setDirty(true);        
     }
     
 	/**
