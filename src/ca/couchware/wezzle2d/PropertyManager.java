@@ -22,12 +22,11 @@ public class PropertyManager
 	 * The high score key.
 	 */
 	public static final String KEY_HIGH_SCORE = "wezzle.highScore";
-	public static final String KEY_DIFFICULTY = "wezzle.difficulty";
-	public static final String KEY_DISPLAY_NAME = "wezzle.displayName";
-	public static final String KEY_NUMBER_OF_LEVELS = "wezzle.numberOfLevels";
-    public static final String KEY_VOLUME = "wezzle.volume";
+	public static final String KEY_DIFFICULTY = "wezzle.difficulty";		
     public static final String KEY_MUSIC = "wezzle.music";
+    public static final String KEY_MUSIC_VOLUME = "wezzle.musicVolume";
     public static final String KEY_SOUND = "wezzle.sound";
+    public static final String KEY_SOUND_VOLUME = "wezzle.soundVolume";
     public static final String VALUE_ON = "on";
     public static final String VALUE_OFF = "off";
 	
@@ -143,7 +142,7 @@ public class PropertyManager
 	public void saveProperties() throws IOException
 	{
         FileOutputStream out = new FileOutputStream(this.filePath);
-		this.properties.store(out, "Save");
+		this.properties.store(out, "Wezzle Settings File");
         out.close();
 		
 	}
@@ -206,7 +205,7 @@ public class PropertyManager
       
         if (this.properties.get(key) == null)
 		{
-            if (key.equals(PropertyManager.KEY_VOLUME))
+            if (key.equals(PropertyManager.KEY_MUSIC_VOLUME))
                 this.setProperty(key, "-1.5f");
             else
                 this.setProperty(key, "0.0f");

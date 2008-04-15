@@ -34,6 +34,9 @@ import java.util.Set;
  */
 public class Game extends Canvas implements GameWindowCallback
 {	  
+    //--------------------------------------------------------------------------
+    // Static Attributes
+    //--------------------------------------------------------------------------
     
     /**
      * The platform specific newline character.
@@ -139,6 +142,10 @@ public class Game extends Canvas implements GameWindowCallback
     final public static String BUILD_NUMBER_PATH = 
             RESOURCES_PATH + "/build.number";
     
+    //--------------------------------------------------------------------------
+    // Public Attributes
+    //--------------------------------------------------------------------------
+    
     /**
      * The current build number.
      */
@@ -220,6 +227,10 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public ProgressBar progressBar;
     
+    //--------------------------------------------------------------------------
+    // Private Attributes
+    //--------------------------------------------------------------------------
+    
     /**
      * If true, refactor will be activated next loop.
      */
@@ -268,12 +279,19 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The set of bomb tile indices that will be removed.
      */
-    private Set<Integer> bombRemovalSet;
+    private Set<Integer> bombRemovalSet;       
     
     /**
-     * The number of lines cleared this cycle.
+     * The number of lines cleared this cycle, where a cycle is defined as the
+     * period from the moment the piece is clicked, to when the board finally
+     * stops finding lines.
      */
-    private int lineCount;
+    private int cycleLineCount;
+    
+    /**
+     * The total number of lines cleared.
+     */
+    private int totalLineCount;
     
     /**
      * If true, the board show animation will be activated next loop.
@@ -350,7 +368,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The score header graphic.
      */
-    private GraphicEntity scoreHeader;
+    private GraphicEntity scoreHeaderLabel;
     
     /** 
      * The score text.
@@ -360,7 +378,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The high score header graphic.
      */
-    private GraphicEntity highScoreHeader;
+    private GraphicEntity highScoreHeaderLabel;
     
     /** 
      * The high score text. 
@@ -380,12 +398,56 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The "Paused" text.
      */
-    private Label pausedLabel;
+    private Label pausedHeaderLabel;
+    
+    /**
+     * The amount of moves, shown on the paused screen.
+     */
+    private Label pausedMovesLabel;
+    
+    /**
+     * The number of lines, shown on the paused screen.
+     */
+    private Label pausedLinesLabel;
+    
+    /**
+     * The number of lines per move, shown on the paused screen.
+     */
+    private Label pausedLinesPerMoveLabel;
     
     /**
      * The version text.
      */
-    private Label versionLabel;                  
+    private Label versionLabel;     
+        
+    /**
+     * The game over header.
+     */
+    private Label gameOverHeaderLabel;
+    
+    /**
+     * The game over final score header.
+     */
+    private Label gameOverFinalScoreHeaderLabel;
+    
+    /**
+     * The game over final score.
+     */
+    private Label gameOverFinalScoreLabel;
+    
+    /**
+     * The game over restart button.
+     */
+    private RectangularBooleanButton gameOverRestartButton;
+    
+    /**
+     * The game over continue button.
+     */
+    private RectangularBooleanButton gameOverContinueButton;
+    
+    //--------------------------------------------------------------------------
+    // Constructor
+    //--------------------------------------------------------------------------
     
 	/**
 	 * Construct our game and set it running.
@@ -467,8 +529,15 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public void initialize()
 	{
-        // Set line count to 0.
-        lineCount = 0;
+        //----------------------------------------------------------------------
+        // Initialize attributes.
+        //----------------------------------------------------------------------
+        
+        // Set the cycle line count to 0.
+        cycleLineCount = 0;
+        
+        // Set the total line count to 0.       
+        totalLineCount = 0;
         
         // Set cascade count to 0.
         cascadeCount = 0;                
@@ -478,6 +547,10 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Initialize bomb index set.
         bombRemovalSet = new HashSet<Integer>();
+        
+        //----------------------------------------------------------------------
+        // Initialize managers.
+        //----------------------------------------------------------------------
         
         // Create the layer manager.   
         layerMan = new LayerManager(window, 4);        
@@ -524,8 +597,13 @@ public class Game extends Canvas implements GameWindowCallback
         // Create the time manager.
 		timerMan = new TimerManager(worldMan.getInitialTimer());                            
         
+        //----------------------------------------------------------------------
+        // Initialize buttons.
+        //----------------------------------------------------------------------
+        
         // Create a new pause button.
         pauseButton = new RectangularBooleanButton(668, 211);
+        pauseButton.setNormalOpacity(70);
         pauseButton.setText("Pause");
         pauseButton.getLabel().setSize(18);
         pauseButton.setAlignment(Button.VCENTER | Button.HCENTER);        
@@ -533,7 +611,9 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);
         
+        // Create the sound on/off button.
         soundButton = new RectangularBooleanButton(668, 299);
+        soundButton.setNormalOpacity(70);
         soundButton.setText("Sound ON");
         soundButton.getLabel().setSize(18);
         soundButton.setAlignment(Button.VCENTER | Button.HCENTER);
@@ -541,14 +621,16 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseListener(soundButton);
         window.addMouseMotionListener(soundButton);
         
-          // Check the properties.
-        if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND).equals(
-                PropertyManager.VALUE_OFF))
+        // Check the properties.
+        if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
+                .equals(PropertyManager.VALUE_OFF))
         {
             this.pauseSound();
         }
         
+        // Create music on/off button.
         musicButton = new RectangularBooleanButton(668, 387);
+        musicButton.setNormalOpacity(70);
         musicButton.setText("Music ON");
         musicButton.getLabel().setSize(18);
         musicButton.setAlignment(Button.VCENTER | Button.HCENTER);
@@ -556,21 +638,49 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseListener(musicButton);
         window.addMouseMotionListener(musicButton);
         
-          // Check the properties.
-        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC).equals(
-                PropertyManager.VALUE_OFF))
+        // Check the properties.
+        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
+                .equals(PropertyManager.VALUE_OFF))
         {
            this.pauseMusic();
         }
         
+        //----------------------------------------------------------------------
+        // Initialize labels.
+        //----------------------------------------------------------------------
+        
         // Create the "Paused" text.
-        pausedLabel = ResourceFactory.get().getLabel(400, 300);        
-		pausedLabel.setSize(30);
-		pausedLabel.setAlignment(Label.HCENTER | Label.VCENTER);
-		pausedLabel.setColor(TEXT_COLOR);
-        pausedLabel.setText("Paused");
-        pausedLabel.setVisible(false);
-        layerMan.add(pausedLabel, LAYER_UI);
+        pausedHeaderLabel = ResourceFactory.get().getLabel(400, 245);        
+		pausedHeaderLabel.setSize(30);
+		pausedHeaderLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+		pausedHeaderLabel.setColor(TEXT_COLOR);
+        pausedHeaderLabel.setText("Paused");
+        pausedHeaderLabel.setVisible(false);
+        layerMan.add(pausedHeaderLabel, LAYER_UI);
+        
+        pausedMovesLabel = ResourceFactory.get().getLabel(400, 310);        
+		pausedMovesLabel.setSize(18);
+		pausedMovesLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+		pausedMovesLabel.setColor(TEXT_COLOR);
+        pausedMovesLabel.setText(moveMan.getMoveCount() + " moves taken");
+        pausedMovesLabel.setVisible(false);
+        layerMan.add(pausedMovesLabel, LAYER_UI);
+        
+        pausedLinesLabel = ResourceFactory.get().getLabel(400, 340);        
+		pausedLinesLabel.setSize(18);
+		pausedLinesLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+		pausedLinesLabel.setColor(TEXT_COLOR);
+        pausedLinesLabel.setText(totalLineCount + " lines cleared");
+        pausedLinesLabel.setVisible(false);
+        layerMan.add(pausedLinesLabel, LAYER_UI);
+                        
+        pausedLinesPerMoveLabel = ResourceFactory.get().getLabel(400, 370);        
+		pausedLinesPerMoveLabel.setSize(18);
+		pausedLinesPerMoveLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+		pausedLinesPerMoveLabel.setColor(TEXT_COLOR);
+        pausedLinesPerMoveLabel.setText("0.0 lines per move");
+        pausedLinesPerMoveLabel.setVisible(false);
+        layerMan.add(pausedLinesPerMoveLabel, LAYER_UI);
               
         // Set up the version text.
 		versionLabel = ResourceFactory.get().getLabel(800 - 10, 600 - 10);        
@@ -600,10 +710,11 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(levelLabel, LAYER_UI);        
         
         // Set up the score header.
-        highScoreHeader = new GraphicEntity(HIGH_SCORE_HEADER_PATH, 127, 278);
-        highScoreHeader
-                .setAlignment(GraphicEntity.VCENTER | GraphicEntity.HCENTER);
-        layerMan.add(highScoreHeader, LAYER_UI);
+        highScoreHeaderLabel = 
+                new GraphicEntity(HIGH_SCORE_HEADER_PATH, 127, 278);        
+        highScoreHeaderLabel
+                .setAlignment(GraphicEntity.VCENTER | GraphicEntity.HCENTER);        
+        layerMan.add(highScoreHeaderLabel, LAYER_UI);
                         
         // Set up the high score text.
         highScoreLabel = ResourceFactory.get().getLabel(126, 337);        
@@ -613,9 +724,10 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(highScoreLabel, LAYER_UI);
         
         // Set up the score header.
-        scoreHeader = new GraphicEntity(SCORE_HEADER_PATH, 128, 403);
-        scoreHeader.setAlignment(GraphicEntity.VCENTER | GraphicEntity.HCENTER);
-        layerMan.add(scoreHeader, LAYER_UI);
+        scoreHeaderLabel = new GraphicEntity(SCORE_HEADER_PATH, 128, 403);
+        scoreHeaderLabel
+                .setAlignment(GraphicEntity.VCENTER | GraphicEntity.HCENTER);
+        layerMan.add(scoreHeaderLabel, LAYER_UI);
         
         // Set up the score text.
         scoreLabel = ResourceFactory.get().getLabel(126, 460);        
@@ -626,19 +738,66 @@ public class Game extends Canvas implements GameWindowCallback
                 worldMan.generateTargetLevelScore());
         layerMan.add(scoreLabel, LAYER_UI);
              
+        //----------------------------------------------------------------------
+        // Initialize progress bar.
+        //----------------------------------------------------------------------
+        
         // Create the progress bar.
         progressBar = new ProgressBar(393, 501, ProgressBar.WIDTH_200, true);
         progressBar.setAlignment(ProgressBar.VCENTER | ProgressBar.HCENTER);
         progressBar.setProgressMax(scoreMan.getTargetLevelScore());
         layerMan.add(progressBar, LAYER_UI);
         
-//        challenge = new XLinesYMovesChallenge(498, 19, 5, 10);
-//        layerMan.add(challenge, LAYER_UI);
+        //----------------------------------------------------------------------
+        // Initialize game over objects.
+        //----------------------------------------------------------------------
         
-		// Setup the initial game state.
+        // Create the game over header.
+        gameOverHeaderLabel = ResourceFactory.get().getLabel(400, 181);        
+        gameOverHeaderLabel.setSize(26);
+        gameOverHeaderLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        gameOverHeaderLabel.setColor(TEXT_COLOR);
+        gameOverHeaderLabel.setText("Game over :(");
+        gameOverHeaderLabel.setVisible(false);
+        layerMan.add(gameOverHeaderLabel, LAYER_UI);
         
-      
+        // Create the final score header.
+        gameOverFinalScoreHeaderLabel = ResourceFactory.get().getLabel(400, 234);        
+        gameOverFinalScoreHeaderLabel.setSize(14);
+        gameOverFinalScoreHeaderLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        gameOverFinalScoreHeaderLabel.setColor(TEXT_COLOR);
+        gameOverFinalScoreHeaderLabel.setText("Your final score was");
+        gameOverFinalScoreHeaderLabel.setVisible(false);
+        layerMan.add(gameOverFinalScoreHeaderLabel, LAYER_UI); 
         
+        // Create the final score label.
+        gameOverFinalScoreLabel = ResourceFactory.get().getLabel(400, 270);        
+        gameOverFinalScoreLabel.setSize(30);
+        gameOverFinalScoreLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        gameOverFinalScoreLabel.setColor(TEXT_COLOR);
+        gameOverFinalScoreLabel.setText("541231");
+        gameOverFinalScoreLabel.setVisible(false);
+        layerMan.add(gameOverFinalScoreLabel, LAYER_UI); 
+        
+        // Create restart button.
+        gameOverRestartButton = new RectangularBooleanButton(400, 345);        
+        gameOverRestartButton.setActiveOpacity(70);
+        gameOverRestartButton.setText("Restart");
+        gameOverRestartButton.getLabel().setSize(18);
+        gameOverRestartButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        gameOverRestartButton.setVisible(false);
+        layerMan.add(gameOverRestartButton, LAYER_UI);        ;
+        
+        // Create continue button.
+        gameOverContinueButton = new RectangularBooleanButton(400, 406);
+        gameOverContinueButton.setActiveOpacity(70);
+        gameOverContinueButton.setText("Continue");
+        gameOverContinueButton.getLabel().setSize(18);
+        gameOverContinueButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        gameOverContinueButton.setVisible(false);
+        layerMan.add(gameOverContinueButton, LAYER_UI);
+        
+        // Start the game.
 		startGame();
 	}
 
@@ -650,6 +809,47 @@ public class Game extends Canvas implements GameWindowCallback
 	{		
 		lastLoopTime = SystemTimer.getTime();
 	}
+    
+    private void showGameOverScreen()
+    {
+        gameOverHeaderLabel.setVisible(true);
+        gameOverFinalScoreHeaderLabel.setVisible(true);
+        gameOverFinalScoreLabel.setVisible(true);
+        gameOverFinalScoreLabel.setText(
+                String.valueOf(scoreMan.getTotalScore()));
+        gameOverRestartButton.setVisible(true);
+        window.addMouseListener(gameOverRestartButton);
+        window.addMouseMotionListener(gameOverRestartButton);
+        gameOverContinueButton.setVisible(true);
+        window.addMouseListener(gameOverContinueButton);
+        window.addMouseMotionListener(gameOverContinueButton);
+        
+        // Hide the pause and clear any calls to it.
+        pauseButton.clicked();
+        pauseButton.setActivated(false);
+        pauseButton.setVisible(false);
+        window.removeMouseListener(pauseButton);
+        window.removeMouseMotionListener(pauseButton);
+        
+    }
+    
+    private void hideGameOverScreen()
+    {
+        gameOverHeaderLabel.setVisible(false);
+        gameOverFinalScoreHeaderLabel.setVisible(false);
+        gameOverFinalScoreLabel.setVisible(false);
+        gameOverRestartButton.setVisible(false);
+        window.removeMouseListener(gameOverRestartButton);
+        window.removeMouseMotionListener(gameOverRestartButton);
+        gameOverContinueButton.setVisible(false);
+        window.removeMouseListener(gameOverContinueButton);
+        window.removeMouseMotionListener(gameOverContinueButton);
+        
+        // Show the pause button.
+        pauseButton.setVisible(true);
+        window.addMouseListener(pauseButton);
+        window.addMouseMotionListener(pauseButton);
+    }
     
     /**
      * A private helper method to handle music pausing.
@@ -690,7 +890,8 @@ public class Game extends Canvas implements GameWindowCallback
         soundMan.setPaused(true);
 
         // Set the property.
-        propertyMan.setProperty(PropertyManager.KEY_SOUND, PropertyManager.VALUE_OFF);
+        propertyMan.setProperty(PropertyManager.KEY_SOUND, 
+                PropertyManager.VALUE_OFF);
         
          // Activate the button.
         soundButton.setActivated(true);
@@ -707,7 +908,8 @@ public class Game extends Canvas implements GameWindowCallback
         soundMan.setPaused(false);
 
         // Set the property.
-        propertyMan.setProperty(PropertyManager.KEY_SOUND, PropertyManager.VALUE_ON);
+        propertyMan.setProperty(PropertyManager.KEY_SOUND, 
+                PropertyManager.VALUE_ON);
     }
     
      /**
@@ -719,7 +921,39 @@ public class Game extends Canvas implements GameWindowCallback
         pauseButton.getLabel().setSize(18);
         layerMan.hide(LAYER_TILE);
         layerMan.hide(LAYER_EFFECT);                
-        pausedLabel.setVisible(true);
+        pausedHeaderLabel.setVisible(true);
+        pausedMovesLabel.setVisible(true);
+        pausedLinesLabel.setVisible(true);
+        pausedLinesPerMoveLabel.setVisible(true);
+        
+        // Calculate lines per move.
+        double lpm;
+        if (moveMan.getMoveCount() == 0)
+            lpm = 0.0;
+        else
+        {
+            lpm = (double) totalLineCount 
+                / (double) moveMan.getMoveCount();
+            lpm = lpm * 100;
+            lpm = ((double) (int) lpm) / 100.0;
+        }
+        
+        // Set the moves label.
+        if (moveMan.getMoveCount() == 1)
+            pausedMovesLabel.setText("1 move taken");
+        else
+            pausedMovesLabel.setText(moveMan.getMoveCount() + " moves taken");
+        
+        // Set the lines label.
+        if (totalLineCount == 1)                    
+            pausedLinesLabel.setText("1 line cleared");
+        else
+            pausedLinesLabel.setText(totalLineCount + " lines cleared");
+        
+        // set the lines per move label.
+        pausedLinesPerMoveLabel.setText(lpm + " lines per move");
+            
+        // Set button as activated.
         pauseButton.setActivated(true);
     }
     
@@ -732,7 +966,10 @@ public class Game extends Canvas implements GameWindowCallback
         pauseButton.getLabel().setSize(18);
         layerMan.show(LAYER_TILE);
         layerMan.show(LAYER_EFFECT);
-        pausedLabel.setVisible(false);
+        pausedHeaderLabel.setVisible(false);
+        pausedMovesLabel.setVisible(false);
+        pausedLinesLabel.setVisible(false);
+        pausedLinesPerMoveLabel.setVisible(false);
 
         // Clear clicks.
         pieceMan.clearMouseButtons();
@@ -768,6 +1005,7 @@ public class Game extends Canvas implements GameWindowCallback
     {
        return (isRefactoring()               
                || isTileRemoving()
+               || this.gameOverInProgress == true
                || this.boardAnimation != null);
     }
     
@@ -831,9 +1069,14 @@ public class Game extends Canvas implements GameWindowCallback
         return cascadeCount;
     }
 
-    public int getLineCount()
+    public int getCycleLineCount()
     {
-        return lineCount;
+        return cycleLineCount;
+    }
+
+    public int getTotalLineCount()
+    {
+        return totalLineCount;
     }        
 
 	/**
@@ -892,7 +1135,7 @@ public class Game extends Canvas implements GameWindowCallback
         {
             if (soundButton.isActivated() == true)
             {
-               this.pauseSound();
+                this.pauseSound();
             }
             else
             {
@@ -963,18 +1206,7 @@ public class Game extends Canvas implements GameWindowCallback
             if (activateGameOver == true)
             {
                 // Clear flag.
-                clearGameOver();
-                
-                // Reset a bunch of stuff.
-                timerMan.resetTimer();
-                worldMan.setCurrentLevel(1);
-                scoreMan.setLevelScore(0);
-                scoreMan.setTargetLevelScore(
-                        worldMan.generateTargetLevelScore(1));                
-                progressBar.setProgressMax(
-                        scoreMan.getTargetLevelScore());
-                scoreMan.setTotalScore(0);                
-                moveMan.setMoveCount(0);
+                clearGameOver();                                
                 
                 // Set in progress flag.
                 gameOverInProgress = true;
@@ -1011,10 +1243,53 @@ public class Game extends Canvas implements GameWindowCallback
                 // If game over is in progress, make a new board and start.
                 if (gameOverInProgress == true)
                 {
-                    // Create board and make it invisible.
-                    boardMan.generateBoard(worldMan.getItemList());
-                    boardMan.setVisible(false);
+                    // Draw game over screen.
+                    showGameOverScreen();                    
+                }
+            }
+            else if (boardAnimation != null && boardAnimation.isDone() == false)
+            {
+                // Board is still dirty due to animation.
+                boardMan.setDirty(true);
+            }
+            
+            // If the game over is in progress, check to see if a button was 
+            // pressed.
+            if (gameOverInProgress == true)
+            {
+                if (gameOverRestartButton.isActivated() == true
+                        || gameOverContinueButton.clicked() == true)
+                {
+                    // Hide the screen.
+                    hideGameOverScreen();
                     
+                    // Clear the flag.
+                    gameOverInProgress = false;
+                    
+                    // Reset a bunch of stuff.
+                    if (gameOverRestartButton.isActivated() == true)
+                    {
+                        // Set the level to 1.
+                        worldMan.setLevel(1);
+                        
+                        // Reset the timer to the initial.
+                        timerMan.setInitialTime(worldMan.getInitialTimer());
+                    }
+
+                    scoreMan.setLevelScore(0);
+                    scoreMan.setTargetLevelScore(
+                            worldMan.generateTargetLevelScore(
+                            worldMan.getLevel()));                
+                    progressBar.setProgressMax(
+                            scoreMan.getTargetLevelScore());
+                    scoreMan.setTotalScore(0);                
+                    moveMan.setMoveCount(0);
+                    totalLineCount = 0;
+                    
+                    // Create board and make it invisible.
+                    boardMan.setVisible(false);
+                    boardMan.generateBoard(worldMan.getItemList());                    
+//                    
                     // Unpause the game.
                     // Don't worry! The game won't pass updates to the 
                     // timer unless the board is shown.  In hindsight, this
@@ -1022,23 +1297,18 @@ public class Game extends Canvas implements GameWindowCallback
                     // one day.
                     timerMan.setPaused(false);
                     
-                    // Reset the timer. And the score.
-                    timerMan.setInitialTime(worldMan.getInitialTimer());
+                    // Reset the timer.
                     timerMan.resetTimer();
-                    scoreMan.setLevelScore(0);
-                    
+                  
                     // Start the board show animation.  This will
                     // make the board visible when it's done.
                     startBoardShowAnimation();
+                
+                    // Reset the buttons.
+                    gameOverRestartButton.setActivated(false);
+                    gameOverContinueButton.setActivated(false);
                     
-                    // Clear the flag.
-                    gameOverInProgress = false;
-                }
-            }
-            else if (boardAnimation != null && boardAnimation.isDone() == false)
-            {
-                // Board is still dirty due to animation.
-                boardMan.setDirty(true);
+                }              
             }
             
             // Check to see if we should be showing the board.
@@ -1068,6 +1338,8 @@ public class Game extends Canvas implements GameWindowCallback
                 // Clear flag.
                 clearBoardHideAnimation();                                
             }                        
+            
+            
             
             // See if we need to activate the refactor.
             if (activateRefactor == true)
@@ -1114,8 +1386,8 @@ public class Game extends Canvas implements GameWindowCallback
                     // Look for matches.
                     tileRemovalSet.clear();
                     
-                    lineCount += boardMan.findXMatch(tileRemovalSet);
-                    lineCount += boardMan.findYMatch(tileRemovalSet);
+                    cycleLineCount += boardMan.findXMatch(tileRemovalSet);
+                    cycleLineCount += boardMan.findYMatch(tileRemovalSet);
 
                     // If there are matches, score them, remove 
                     // them and then refactor again.
@@ -1358,7 +1630,8 @@ public class Game extends Canvas implements GameWindowCallback
             progressBar.setProgress(scoreMan.getLevelScore());
             
             // Reset the line count.
-            lineCount = 0;
+            totalLineCount += cycleLineCount;
+            cycleLineCount = 0;
         }                
                 
         // Whether or not the frame was updated.

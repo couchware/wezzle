@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.java2d;
 
-import ca.couchware.wezzle2d.Game;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics2D;

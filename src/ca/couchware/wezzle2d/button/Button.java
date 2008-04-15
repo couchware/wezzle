@@ -331,6 +331,8 @@ public abstract class Button implements
     public void setVisible(final boolean visible)
     {
         this.visible = visible;
+        
+        setDirty(true);
     }    
 
     public String getText()

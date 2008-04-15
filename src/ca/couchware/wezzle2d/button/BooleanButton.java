@@ -33,6 +33,7 @@ public abstract class BooleanButton extends Button
         this.activated = false;
     }      
     
+    @Override
     public void handleReleased()
     {
         clicked = true;
@@ -47,6 +48,7 @@ public abstract class BooleanButton extends Button
         setDirty(true);
     }
     
+    @Override
     public void handlePressed()
     {        
         state = STATE_PRESSED;
@@ -54,6 +56,7 @@ public abstract class BooleanButton extends Button
         setDirty(true);
     }            
     
+    @Override
     public void handleMouseOn()
     {
         if (state != STATE_PRESSED 
@@ -64,6 +67,7 @@ public abstract class BooleanButton extends Button
         }                
     }        
     
+    @Override
     public void handleMouseOff()
     {     
         if (activated == true

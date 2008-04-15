@@ -3,7 +3,6 @@ package ca.couchware.wezzle2d.button;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Rectangle;
-import java.awt.geom.Ellipse2D;
 
 /**
  * A circular pause button.
@@ -30,6 +29,16 @@ public class RectangularBooleanButton extends BooleanButton
      * The button text.
      */
     final private Label buttonLabel;
+    
+    /**
+     * The normal opacity.
+     */
+    private int normalOpacity;
+    
+    /**
+     * The active opacity.
+     */
+    private int activeOpacity;
 
     /**
      * Creates a button at the coordinates provided.
@@ -49,13 +58,18 @@ public class RectangularBooleanButton extends BooleanButton
         buttonLabel = ResourceFactory.get().getLabel(0, 0);        
         buttonLabel.setSize(22);
         buttonLabel.setColor(Game.TEXT_COLOR);
-        buttonLabel.setAlignment(Label.HCENTER | Label.VCENTER);                     
+        buttonLabel.setAlignment(Label.HCENTER | Label.VCENTER);    
+        
+        // Set the normal and active opacities.
+        normalOpacity = 100;
+        activeOpacity = 100;
     }
     
     @Override
     public void drawNormal()
     {                
-        spriteNormal.draw(x + offsetX, y + offsetY, width, height, 0.0, 70);
+        spriteNormal.draw(x + offsetX, y + offsetY, 
+                width, height, 0.0, normalOpacity);
         
         buttonLabel.setX(x + offsetX + width / 2);
         buttonLabel.setY(y + offsetY + height / 2);
@@ -66,7 +80,8 @@ public class RectangularBooleanButton extends BooleanButton
 //    @Override
     public void drawActive()
     {
-        spriteNormal.draw(x + offsetX, y + offsetY, width, height, 0.0, 100);
+        spriteNormal.draw(x + offsetX, y + offsetY, 
+                width, height, 0.0, activeOpacity);
         
         buttonLabel.setX(x + offsetX + width / 2);
         buttonLabel.setY(y + offsetY + height / 2);
@@ -99,8 +114,29 @@ public class RectangularBooleanButton extends BooleanButton
     public Label getLabel()
     {
         return buttonLabel;
-    }   
+    }
+
+    public int getActiveOpacity()
+    {
+        return activeOpacity;
+    }
+
+    public void setActiveOpacity(int activeOpacity)
+    {
+        this.activeOpacity = activeOpacity;
+    }
+
+    public int getNormalOpacity()
+    {
+        return normalOpacity;
+    }
+
+    public void setNormalOpacity(int normalOpacity)
+    {
+        this.normalOpacity = normalOpacity;
+    }        
     
+    @Override
     public Rectangle getDrawRect()
     {
         Rectangle rect = new Rectangle(x_, y_, width + 2, height + 2);

@@ -64,11 +64,9 @@ public class WorldManager
     
     /**
      * The initial timer value.
-     */
-	
+     */	
     private int initialTimer = 15;
-    
-    
+        
     /**
      * The level at which the difficulty begins to increase.
      */
@@ -99,7 +97,7 @@ public class WorldManager
 			this.difficulty = 1;
 				
 		// Set the starting level.
-		setCurrentLevel(1);
+		setLevel(1);
         
         // Set the max items.
         this.maxItems = 5;
@@ -123,7 +121,7 @@ public class WorldManager
 	/**
 	 * @param currentLevel the currentLevel to set
 	 */
-	public void setCurrentLevel(int currentLevel)
+	public void setLevel(int currentLevel)
 	{
 		// Set the level.
 		this.currentLevel = currentLevel;								
@@ -163,7 +161,7 @@ public class WorldManager
 		getItem(0).incrementInitialAmount();
 		
 		// Increment the level.
-		this.setCurrentLevel(currentLevel + 1);
+		this.setLevel(currentLevel + 1);
 	}	
 	    
     public void levelUp(final Game game)
@@ -181,14 +179,12 @@ public class WorldManager
 		game.scoreMan.setTargetLevelScore(targetLevelScore);
         
         game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
-       
-//        game.boardMan.generateBoard(this.getItemList());
-        
+               
         // Change the timer.
         int time = game.timerMan.getInitialTime();
         
         if(time > this.timerMin)
-            time --;
+            time--;
         
         game.timerMan.setInitialTime(time);
     }

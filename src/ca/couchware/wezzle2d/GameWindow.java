@@ -73,4 +73,14 @@ public interface GameWindow
 	 * Registers a mouse motion listener.
 	 */
 	public void addMouseMotionListener(MouseMotionListener l);
+    
+    /**
+     * Unregisters a mouse listener.
+     */
+    public void removeMouseListener(MouseListener l);
+    
+    /**
+     * Unregisters a mouse motion listener.
+     */
+    public void removeMouseMotionListener(MouseMotionListener l); 
 }
