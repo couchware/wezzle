@@ -191,7 +191,9 @@ public class SoundManager
                     {
                         // Play the effect. MUST USED get soundeffect as
                         // it handles buffering.
-                         getSoundEffect(key).play();
+                        SoundEffect currentEffect = getSoundEffect(key);
+                        currentEffect.setVolume(volume);
+                        currentEffect.play();
                     }
                 }
                 catch (Exception e) 
@@ -233,7 +235,7 @@ public class SoundManager
             this.volume = -80.0f;
         
          // Adjust the property;
-        propMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, Float.toString(this.volume));
+        propMan.setProperty(PropertyManager.KEY_SOUND_VOLUME, Float.toString(this.volume));
         
     }
     

@@ -1667,6 +1667,17 @@ public class Game extends Canvas implements GameWindowCallback
 			musicMan.decreaseVolume();
 		}
         
+         // If right or left have been pressed
+        if (window.isKeyPressed(KeyEvent.VK_RIGHT))
+		{
+			soundMan.increaseVolume();
+		}
+        
+        if (window.isKeyPressed(KeyEvent.VK_LEFT))
+		{
+			soundMan.decreaseVolume();
+		}
+        
         return updated;
 	}
 
