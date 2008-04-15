@@ -2,8 +2,7 @@ package ca.couchware.wezzle2d.sound;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
-import java.applet.AudioClip;
-import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * A class for managing the playing of game sounds.
@@ -16,192 +15,239 @@ import java.net.URL;
  * @author Kevin
  */
 
-public class SoundManager
+
+public class SoundManager 
 {
-    public final static int BOMB = 1;
-    public final static int LINE = 2;
-    public final static int BLEEP = 3;
-    public final static int CLICK = 4;
-    public final static int LEVEL_UP = 5;
+    // The keys.
+    public final static String KEY_BOMB = "bomb";
+    public final static String KEY_LINE = "line";
+    public final static String KEY_BLEEP = "bleep";
+    public final static String KEY_CLICK = "click";
+    public final static String KEY_LEVEL_UP = "level up";
+    
+    /** The number of buffers for the effect. */
+    private static int numBuffers = 4;
+    
+  
+    /** A link to the property manager. */
+    private PropertyManager propMan;
+    
+    /** The list of effects */
+    private ArrayList<SoundEffect[]> effectList;
+    private ArrayList<Integer> bufferNumList;
+   
+    /** Determine if the sound is on or off */
+    private boolean paused;
+      
+    /**
+     * The volume level.
+     * range: -80.0 - 6.0206
+     */    
+    private float volume;
+    
+    /** How much to adjust the volume by */
+    private static final float volumeAdjustment = 0.5f;
     
     /**
-     * Are we paused?
+     * Creates the effect list.
      */
-    private boolean paused = false;
-    
-    /**
-     * Path to the line audio clip.
-     */
-    private final URL lineUrl = this.getClass().getClassLoader()
-            .getResource(Game.SOUNDS_PATH + "/SoundLine.wav");
-
-    /**
-     * Path to the bomb audio clip.
-     */
-    private final URL bombUrl = this.getClass().getClassLoader()
-            .getResource(Game.SOUNDS_PATH + "/SoundExplosion.wav");
-
-    /**
-     * Path to the bleep audio clip.
-     */
-    private final URL bleepUrl = this.getClass().getClassLoader()
-            .getResource(Game.SOUNDS_PATH + "/SoundBleep.wav");
-
-    /**
-     * Path to the click audio clip.
-     */
-    private final URL clickUrl = this.getClass().getClassLoader()
-            .getResource(Game.SOUNDS_PATH + "/SoundClick.wav");
-    
-    /**
-     * Path to the level-up audio clip.
-     */
-    private final URL levelUpUrl = this.getClass().getClassLoader()
-            .getResource(Game.SOUNDS_PATH + "/SoundLevelUp.wav");
-
-    /**
-     * The current line clip we are playing.
-     */
-    // @GuardBy("lineClip")
-    private int lineCounter;
-
-    /**
-     * The line clip array.
-     */
-    private final AudioClip[] lineClip = new AudioClip[4];	
-
-    /**
-     * The current bomb clip we are playing.
-     */
-    // @GuardBy("bombClip")
-    private int bombCounter;
-
-    /**
-     * The bomb clip array.
-     */	
-    private final AudioClip[] bombClip = new AudioClip[8];
-
-    /**
-     * The current bleep clip we are playing.
-     */
-    // @GuardBy("bleepClip")
-    private int bleepCounter;
-
-    /**
-     * The bleep clip array.
-     */
-    private final AudioClip[] bleepClip = new AudioClip[4];
-
-    /**
-     * The click counter.
-     */
-    private int clickCounter;
-    
-    /**
-     * The click clip.
-     */
-    private final AudioClip[] clickClip = new AudioClip[4];
-    
-    /**
-     * The level-up counter.
-     */
-    private int levelUpCounter;
-    
-    /**
-     * The level-up clip.
-     */
-    private final AudioClip[] levelUpClip = new AudioClip[4];
-
-    /**
-     * The constructor.
-     */
-    public SoundManager()
-    {
-        // Initialize line clip.
-        lineCounter = 0;
-        for (int i = 0; i < lineClip.length; i++)
-                lineClip[i] = java.applet.Applet.newAudioClip(lineUrl);	
-
-        // Initialize bomb clips.
-        bombCounter = 0;
-        for (int i = 0; i < bombClip.length; i++)
-                bombClip[i] = java.applet.Applet.newAudioClip(bombUrl);	
-
-        // Initialize bleep clips.
-        bleepCounter = 0;
-        for (int i = 0; i < bleepClip.length; i++)
-                bleepClip[i] = java.applet.Applet.newAudioClip(bleepUrl);
-
-        // Initialize the click.
-        clickCounter = 0;
-        for (int i = 0; i < clickClip.length; i++)
-                clickClip[i] = java.applet.Applet.newAudioClip(clickUrl);
+    public SoundManager(PropertyManager propMan) 
+    {        
+        // The property manager.
+        this.propMan= propMan;
         
-        // Initialize the level-up.
-        levelUpCounter = 0;
-        for (int i = 0; i < levelUpClip.length; i++)
-                levelUpClip[i] = java.applet.Applet.newAudioClip(levelUpUrl);
+        // Initiate the array list.
+        this.effectList = new ArrayList<SoundEffect[]>(); 
+        this.bufferNumList = new ArrayList<Integer>();
+        
+        // Add some Sound effects. MUST USE addsound effect as it 
+        // handles buffering.
+        this.addSoundEffect(new SoundEffect(SoundManager.KEY_LINE,
+               Game.SOUNDS_PATH + "/SoundLine.wav"));
+        
+        this.addSoundEffect(new SoundEffect(SoundManager.KEY_BOMB,
+                Game.SOUNDS_PATH + "/SoundExplosion.wav"));
+        
+        this.addSoundEffect(new SoundEffect(SoundManager.KEY_BLEEP,
+                Game.SOUNDS_PATH + "/SoundBleep.wav"));
+        
+        this.addSoundEffect(new SoundEffect(SoundManager.KEY_CLICK,
+                Game.SOUNDS_PATH + "/SoundClick.wav"));
+        
+        this.addSoundEffect(new SoundEffect(SoundManager.KEY_LEVEL_UP,
+                Game.SOUNDS_PATH + "/SoundLevelUp.wav"));
+     
+        
+        // Get the default volume.
+        this.volume = propMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME);
+        
+        // Paused or not.
+        String check = propMan.getStringProperty(PropertyManager.KEY_SOUND);
+        
+        if(check.equals(PropertyManager.VALUE_OFF))
+            this.paused = true;
+        else
+            this.paused = false;
     }
     
     /**
-     * A method to play a soundclip.
-     * @param soundClip The soundclip to play.
+     * A method to add a new effect to the player.
+     * 
+     * @param effect The new effect.
      */
-    public void play(int soundClip)
-    {     
-        // If we're paused, don't play the clip.
-        if (paused == true)
+    public void addSoundEffect(SoundEffect effect)
+    {
+        SoundEffect effects[] = new SoundEffect[numBuffers];
+        for(int i = 0; i < effects.length; i++)
+            effects[i] = effect;
+        
+        // Add the effect.
+        this.effectList.add(effects);
+        
+        // Add the corresponding buffer.
+        this.bufferNumList.add(new Integer(0));
+    }
+        
+    /**
+     * A method to remove an effect by it's key value.
+     * Note: this method does not set the effect to null.
+     * 
+     * @param key The key of the associated effect.
+     * @return true if the effect was removed, false otherwise.
+     */
+    public boolean removeEffect (final String key)
+    {
+        // Find and remove the effect.
+        for (int i = 0; i < effectList.size(); i++)
+        {
+            if (effectList.get(i)[0].getKey().equals(key) == true)
+            {
+                // Remove the effect and its buffer num list.
+                effectList.remove(i); 
+                bufferNumList.remove(i);
+                return true;
+            }           
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Return a reference to the effect with the associated key.
+     * Note: This method does not remove the effect from the list.
+     * Note: returns null if the key was not found.
+     * Note: returns the sound effect of the proper buffer.
+     * 
+     * @param key The associated key.
+     * @return The effect or null if the key was not found.
+     */
+    public SoundEffect getSoundEffect(final String key)
+    {
+        synchronized(this)
+        {
+             // find and return the effect.
+            for (int i = 0; i < effectList.size(); i++)
+            {
+                if (effectList.get(i)[0].getKey().equals(key) == true)
+                {
+                    // The current buffer.
+                    int bufferNum = bufferNumList.get(i);
+
+                    // The next buffer
+                    int nextBufNum = (bufferNum + 1) % numBuffers;
+
+                    // Set the next buffer to be used.
+                    bufferNumList.set(i, new Integer(nextBufNum));
+
+                    // Return the proper buffered effect.
+                    return effectList.get(i)[bufferNum]; 
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * A method to play a specific effect identified by it's key.
+     * 
+     * @param key The key of the associated effect.
+     */
+    public void playSoundEffect(final String key)
+    {
+        // If paused, dont play.
+        if(this.paused)
             return;
         
-        // Play the line sound. Blah.
-        if (soundClip == LINE)
+        // Play the effect in the background.
+        new Thread() 
         {
-            Util.handleMessage("It's a normal!", Thread.currentThread());
-            
-            lineClip[lineCounter].play();
-            lineCounter = (lineCounter + 1) % lineClip.length;
-        }
-        else if (soundClip == BOMB)
-        {
-            Util.handleMessage("It's a bomb!", Thread.currentThread());
-
-            bombClip[bombCounter].play();
-            bombCounter = (bombCounter + 1) % bombClip.length;       
-        }
-        else if(soundClip == BLEEP)
-        {
-           Util.handleMessage("It's a bleep!", Thread.currentThread());
-           
-            bleepClip[bleepCounter].play();
-            bleepCounter = (bleepCounter + 1) % bleepClip.length;
-        }
-        else if(soundClip == CLICK)
-        {
-            Util.handleMessage("It's a click!", Thread.currentThread());
-            
-            clickClip[clickCounter].play();
-            clickCounter = (clickCounter + 1) % clickClip.length;
-            
-        }
-        else if(soundClip == LEVEL_UP)
-        {
-            Util.handleMessage("It's a level-up!", Thread.currentThread());
-            
-            levelUpClip[levelUpCounter].play();
-            levelUpCounter = (levelUpCounter + 1) % levelUpClip.length;
-            
-        } // end if
+            @Override
+            public void run() 
+            {
+                try 
+                { 
+                    synchronized(this)
+                    {
+                        // Play the effect. MUST USED get soundeffect as
+                        // it handles buffering.
+                         getSoundEffect(key).play();
+                    }
+                }
+                catch (Exception e) 
+                { 
+                    Util.handleException(e); 
+                }
+            }
+        }.start();
     }
-
-    public boolean isPaused()
+   
+  
+    
+    /** 
+     * A method to increase the volume of the sound.
+     */
+    public void increaseVolume()
     {
-        return paused;
+        // Adjust the volume.
+        this.volume += volumeAdjustment;
+        
+        // Max volume.
+        if (this.volume > 6.0206f)
+            this.volume = 6.0206f;
+        
+        // Adjust the property;
+        propMan.setProperty(PropertyManager.KEY_SOUND_VOLUME, Float.toString(this.volume));        
     }
-
+    
+    /**
+     * A method to decrease the volume of the effect
+     */
+    public void decreaseVolume()
+    {
+         // Adjust the volume.
+        this.volume -= volumeAdjustment;
+        
+        // Min volume.
+        if (this.volume < -80.0f)
+            this.volume = -80.0f;
+        
+         // Adjust the property;
+        propMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, Float.toString(this.volume));
+        
+    }
+    
+    /**
+     * Toggle the paused variable
+     * @param paused whether or not to pause.
+     */
     public void setPaused(boolean paused)
     {
         this.paused = paused;
-    }        
+    }
+    
     
 }
+
+
 

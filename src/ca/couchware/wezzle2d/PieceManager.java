@@ -484,7 +484,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 if (tileDropInProgress == true)
                 {        
                     // Start the animation.
-                    game.soundMan.play(SoundManager.BLEEP);
+                    game.soundMan.playSoundEffect(SoundManager.KEY_BLEEP);
                     
                     for (int i = 0; i < tileDropped.length; i++)
                     {
@@ -639,7 +639,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         game.moveMan.incrementMoveCount();
 
         // Play the sound.
-        game.soundMan.play(SoundManager.CLICK);
+        game.soundMan.playSoundEffect(SoundManager.KEY_CLICK);
 
         // Start a tile drop.
         this.tileDropInProgress = true;

@@ -586,7 +586,7 @@ public class Game extends Canvas implements GameWindowCallback
         startBoardShowAnimation();
         
         // Create the sound manager.
-        soundMan = new SoundManager();
+        soundMan = new SoundManager(propertyMan);
         
         // Create the music manager.
         musicMan = new MusicManager(propertyMan);
@@ -1181,7 +1181,7 @@ public class Game extends Canvas implements GameWindowCallback
                                     new Integer(index));
                     }                                        
                     
-                    soundMan.play(SoundManager.LEVEL_UP);
+                    soundMan.playSoundEffect(SoundManager.KEY_LEVEL_UP);
                     
                     int x = pieceMan.getPieceGrid().getX() 
                             + boardMan.getCellWidth() / 2;
@@ -1449,7 +1449,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                 
                 // Play the sound.
-                soundMan.play(SoundManager.LINE);
+                soundMan.playSoundEffect(SoundManager.KEY_LINE);
 
                 // Make sure bombs aren't removed (they get removed
                 // in a different step).
@@ -1524,7 +1524,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.play(SoundManager.BOMB);
+                soundMan.playSoundEffect(SoundManager.KEY_BOMB);
 
                 // Extract all the new bombs.
                 Set newBombRemovalSet = new HashSet<Integer>();
