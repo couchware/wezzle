@@ -272,6 +272,16 @@ public class Game extends Canvas implements GameWindowCallback
     private boolean tileRemovalUseJumpAnimation = false;
     
     /**
+     * If true, award no points for this tile removal.
+     */
+    private boolean tileRemovalNoScore = false;
+    
+    /**
+     * If true, do not activate items on this removal.
+     */
+    private boolean tileRemovalNoItems = false;
+    
+    /**
      * If true, a bomb removal will be activated next loop.
      */
     private boolean activateBombRemoval = false;
@@ -1171,6 +1181,8 @@ public class Game extends Canvas implements GameWindowCallback
                     
                     this.activateLineRemoval = true;
                     this.tileRemovalUseJumpAnimation = true;
+                    this.tileRemovalNoScore = true;
+                    this.tileRemovalNoItems = true;
                     tileRemovalSet.clear();
 
                     int j = boardMan.getRows() - 1;
@@ -1428,34 +1440,51 @@ public class Game extends Canvas implements GameWindowCallback
                 // Increment cascade.
                 cascadeCount++;
                 
-                // Calculate score.
-                final int deltaScore = scoreMan.calculateLineScore(
-                        tileRemovalSet, 
-                        ScoreManager.TYPE_LINE,
-                        cascadeCount);                               
+                // Calculate score, unless no-score flag is set.
+                if (tileRemovalNoScore == false)
+                {
+                    final int deltaScore = scoreMan.calculateLineScore(
+                            tileRemovalSet, 
+                            ScoreManager.TYPE_LINE,
+                            cascadeCount);                               
                 
-                // Show the SCT.
-                XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
-                Label label = ResourceFactory.get().getLabel(p.x, p.y);                
-                label.setText(String.valueOf(deltaScore));
-                label.setAlignment( Label.HCENTER | Label.VCENTER);
-                label.setColor(SCORE_LINE_COLOR);
-                label.setSize(scoreMan.determineFontSize(deltaScore));
-                
-                animationMan.add(new FloatFadeOutAnimation(                                             
-                        0, -1, layerMan, label));
-                
-                // Release references.
-                p = null;
-                label = null;                
+                    // Show the SCT.
+                    XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                    Label label = ResourceFactory.get().getLabel(p.x, p.y);                
+                    label.setText(String.valueOf(deltaScore));
+                    label.setAlignment( Label.HCENTER | Label.VCENTER);
+                    label.setColor(SCORE_LINE_COLOR);
+                    label.setSize(scoreMan.determineFontSize(deltaScore));
+
+                    animationMan.add(new FloatFadeOutAnimation(                                             
+                            0, -1, layerMan, label));
+
+                    // Release references.
+                    p = null;
+                    label = null;                                         
+                }                  
+                else
+                {
+                    // Turn off the flag now that it has been used.
+                    tileRemovalNoScore = false;
+                }
                 
                 // Play the sound.
                 soundMan.playSoundEffect(SoundManager.KEY_LINE);
 
                 // Make sure bombs aren't removed (they get removed
-                // in a different step).
-                boardMan.scanBombs(tileRemovalSet, bombRemovalSet);
-                tileRemovalSet.removeAll(bombRemovalSet);                
+                // in a different step).  However, if the no-items
+                // flag is set, then ignore bombs.
+                if (tileRemovalNoItems == false)
+                {
+                    boardMan.scanBombs(tileRemovalSet, bombRemovalSet);
+                    tileRemovalSet.removeAll(bombRemovalSet);                
+                }
+                else
+                {
+                    // Turn off the flag now that it has been used.
+                    tileRemovalNoItems = false;
+                }
                 
                 // Start the line removal animations if there are any
                 // non-bomb tiles.
