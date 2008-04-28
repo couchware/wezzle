@@ -64,15 +64,16 @@ public class MusicManager
        
         // Add some music.  This is the order they will play in, but it will
         // not necessarily start on the first song.
-        this.songList.add(new Song("Turning The Page", Game.MUSIC_PATH 
-                + "/TurningThePage.ogg"));
-        this.songList.add(new Song("Taking a Stroll", Game.MUSIC_PATH 
-                + "/TakingAStroll.ogg"));
         this.songList.add(new Song("Intergalactic Tron", Game.MUSIC_PATH 
-                + "/IntergalacticTron.ogg")); 
+                + "/IntergalacticTron.ogg"));
+        this.songList.add(new Song("Intergalactic Tron 2", Game.MUSIC_PATH 
+                + "/IntergalacticTron2.ogg"));
+        this.songList.add(new Song("Intergalactic Tron 3", Game.MUSIC_PATH 
+                + "/IntergalacticTron3.ogg"));        
         
         // Randomly pick a starting song.
-        this.songNum = Util.random.nextInt(songList.size());
+        //this.songNum = Util.random.nextInt(songList.size());
+        this.songNum = -1;
         
         // Get the default volume.
         this.volume = propertyMan
@@ -96,7 +97,7 @@ public class MusicManager
      * @param key The key of the associated song.
      * @return true if the song was removed, false otherwise.
      */
-    public boolean removeSong (final String key)
+    public boolean removeSong(final String key)
     {
         // Find and remove the song.
         for (int i = 0; i < songList.size(); i++)

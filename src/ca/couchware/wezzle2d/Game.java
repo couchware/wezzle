@@ -322,12 +322,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * If true, the game will end next loop.
      */
-    private boolean activateGameOver = false;
-            
-    /**
-     * Is a game over routine in progress?
-     */
-    private boolean gameOverInProgress = false;
+    private boolean activateGameOver = false;                
     
     /**
      * The number of cascades thus far.
@@ -431,29 +426,9 @@ public class Game extends Canvas implements GameWindowCallback
     private Label versionLabel;     
         
     /**
-     * The game over header.
+     * The game over screen.
      */
-    private Label gameOverHeaderLabel;
-    
-    /**
-     * The game over final score header.
-     */
-    private Label gameOverFinalScoreHeaderLabel;
-    
-    /**
-     * The game over final score.
-     */
-    private Label gameOverFinalScoreLabel;
-    
-    /**
-     * The game over restart button.
-     */
-    private RectangularBooleanButton gameOverRestartButton;
-    
-    /**
-     * The game over continue button.
-     */
-    private RectangularBooleanButton gameOverContinueButton;
+    private GameOverGroup gameOverGroup;    
     
     //--------------------------------------------------------------------------
     // Constructor
@@ -759,53 +734,11 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(progressBar, LAYER_UI);
         
         //----------------------------------------------------------------------
-        // Initialize game over objects.
+        // Initialize game over screen.
         //----------------------------------------------------------------------
         
-        // Create the game over header.
-        gameOverHeaderLabel = ResourceFactory.get().getLabel(400, 181);        
-        gameOverHeaderLabel.setSize(26);
-        gameOverHeaderLabel.setAlignment(Label.VCENTER | Label.HCENTER);
-        gameOverHeaderLabel.setColor(TEXT_COLOR);
-        gameOverHeaderLabel.setText("Game over :(");
-        gameOverHeaderLabel.setVisible(false);
-        layerMan.add(gameOverHeaderLabel, LAYER_UI);
-        
-        // Create the final score header.
-        gameOverFinalScoreHeaderLabel = ResourceFactory.get().getLabel(400, 234);        
-        gameOverFinalScoreHeaderLabel.setSize(14);
-        gameOverFinalScoreHeaderLabel.setAlignment(Label.VCENTER | Label.HCENTER);
-        gameOverFinalScoreHeaderLabel.setColor(TEXT_COLOR);
-        gameOverFinalScoreHeaderLabel.setText("Your final score was");
-        gameOverFinalScoreHeaderLabel.setVisible(false);
-        layerMan.add(gameOverFinalScoreHeaderLabel, LAYER_UI); 
-        
-        // Create the final score label.
-        gameOverFinalScoreLabel = ResourceFactory.get().getLabel(400, 270);        
-        gameOverFinalScoreLabel.setSize(30);
-        gameOverFinalScoreLabel.setAlignment(Label.VCENTER | Label.HCENTER);
-        gameOverFinalScoreLabel.setColor(TEXT_COLOR);
-        gameOverFinalScoreLabel.setText("541231");
-        gameOverFinalScoreLabel.setVisible(false);
-        layerMan.add(gameOverFinalScoreLabel, LAYER_UI); 
-        
-        // Create restart button.
-        gameOverRestartButton = new RectangularBooleanButton(400, 345);        
-        gameOverRestartButton.setActiveOpacity(70);
-        gameOverRestartButton.setText("Restart");
-        gameOverRestartButton.getLabel().setSize(18);
-        gameOverRestartButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        gameOverRestartButton.setVisible(false);
-        layerMan.add(gameOverRestartButton, LAYER_UI);
-        
-        // Create continue button.
-        gameOverContinueButton = new RectangularBooleanButton(400, 406);
-        gameOverContinueButton.setActiveOpacity(70);
-        gameOverContinueButton.setText("Continue");
-        gameOverContinueButton.getLabel().setSize(18);
-        gameOverContinueButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        gameOverContinueButton.setVisible(false);
-        layerMan.add(gameOverContinueButton, LAYER_UI);
+        // Create the game over screen.
+        gameOverGroup = new GameOverGroup(window, layerMan);        
         
         // Start the game.
 		startGame();
@@ -822,17 +755,19 @@ public class Game extends Canvas implements GameWindowCallback
     
     private void showGameOverScreen()
     {
-        gameOverHeaderLabel.setVisible(true);
-        gameOverFinalScoreHeaderLabel.setVisible(true);
-        gameOverFinalScoreLabel.setVisible(true);
-        gameOverFinalScoreLabel.setText(
-                String.valueOf(scoreMan.getTotalScore()));
-        gameOverRestartButton.setVisible(true);
-        window.addMouseListener(gameOverRestartButton);
-        window.addMouseMotionListener(gameOverRestartButton);
-        gameOverContinueButton.setVisible(true);
-        window.addMouseListener(gameOverContinueButton);
-        window.addMouseMotionListener(gameOverContinueButton);
+        gameOverGroup.setScore(scoreMan.getTotalScore());
+        gameOverGroup.setVisible(true);
+//        gameOverHeaderLabel.setVisible(true);
+//        gameOverFinalScoreHeaderLabel.setVisible(true);
+//        gameOverFinalScoreLabel.setVisible(true);
+//        gameOverFinalScoreLabel.setText(
+//                String.valueOf(scoreMan.getTotalScore()));
+//        gameOverRestartButton.setVisible(true);
+//        window.addMouseListener(gameOverRestartButton);
+//        window.addMouseMotionListener(gameOverRestartButton);
+//        gameOverContinueButton.setVisible(true);
+//        window.addMouseListener(gameOverContinueButton);
+//        window.addMouseMotionListener(gameOverContinueButton);
         
         // Hide the pause and clear any calls to it.
         pauseButton.clicked();
@@ -845,15 +780,16 @@ public class Game extends Canvas implements GameWindowCallback
     
     private void hideGameOverScreen()
     {
-        gameOverHeaderLabel.setVisible(false);
-        gameOverFinalScoreHeaderLabel.setVisible(false);
-        gameOverFinalScoreLabel.setVisible(false);
-        gameOverRestartButton.setVisible(false);
-        window.removeMouseListener(gameOverRestartButton);
-        window.removeMouseMotionListener(gameOverRestartButton);
-        gameOverContinueButton.setVisible(false);
-        window.removeMouseListener(gameOverContinueButton);
-        window.removeMouseMotionListener(gameOverContinueButton);
+        gameOverGroup.setVisible(false);
+//        gameOverHeaderLabel.setVisible(false);
+//        gameOverFinalScoreHeaderLabel.setVisible(false);
+//        gameOverFinalScoreLabel.setVisible(false);
+//        gameOverRestartButton.setVisible(false);
+//        window.removeMouseListener(gameOverRestartButton);
+//        window.removeMouseMotionListener(gameOverRestartButton);
+//        gameOverContinueButton.setVisible(false);
+//        window.removeMouseListener(gameOverContinueButton);
+//        window.removeMouseMotionListener(gameOverContinueButton);
         
         // Show the pause button.
         pauseButton.setVisible(true);
@@ -1016,7 +952,7 @@ public class Game extends Canvas implements GameWindowCallback
     {
        return (isRefactoring()               
                || isTileRemoving()
-               || this.gameOverInProgress == true
+               || gameOverGroup.isActivated() == true
                || this.boardAnimation != null);
     }
     
@@ -1222,7 +1158,7 @@ public class Game extends Canvas implements GameWindowCallback
                 clearGameOver();                                
                 
                 // Set in progress flag.
-                gameOverInProgress = true;
+                gameOverGroup.setActivated(true);
                 
                 // Hide the board.
                 startBoardHideAnimation();                
@@ -1254,7 +1190,7 @@ public class Game extends Canvas implements GameWindowCallback
                 pieceMan.clearMouseButtons();
                 
                 // If game over is in progress, make a new board and start.
-                if (gameOverInProgress == true)
+                if (gameOverGroup.isActivated() == true)
                 {
                     // Draw game over screen.
                     showGameOverScreen();                    
@@ -1268,19 +1204,18 @@ public class Game extends Canvas implements GameWindowCallback
             
             // If the game over is in progress, check to see if a button was 
             // pressed.
-            if (gameOverInProgress == true)
+            if (gameOverGroup.isActivated() == true)
             {
-                if (gameOverRestartButton.isActivated() == true
-                        || gameOverContinueButton.clicked() == true)
+                if (gameOverGroup.buttonClicked() == true)                        
                 {
                     // Hide the screen.
                     hideGameOverScreen();
                     
                     // Clear the flag.
-                    gameOverInProgress = false;
+                    gameOverGroup.setActivated(false);
                     
                     // Reset a bunch of stuff.
-                    if (gameOverRestartButton.isActivated() == true)
+                    if (gameOverGroup.isRestartActivated() == true)
                     {
                         // Set the level to 1.
                         worldMan.setLevel(1);
@@ -1318,9 +1253,7 @@ public class Game extends Canvas implements GameWindowCallback
                     startBoardShowAnimation();
                 
                     // Reset the buttons.
-                    gameOverRestartButton.setActivated(false);
-                    gameOverContinueButton.setActivated(false);
-                    
+                    gameOverGroup.resetButtons();                    
                 }              
             }
             
@@ -1740,7 +1673,7 @@ public class Game extends Canvas implements GameWindowCallback
     public void windowDeactivated()
     {
         // Don't pause game if we're showing the game over screen.
-        if (gameOverInProgress == false)
+        if (gameOverGroup.isActivated() == false)
             this.pauseGame();
         
         this.background.setDirty(true);
