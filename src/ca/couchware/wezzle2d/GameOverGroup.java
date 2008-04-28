@@ -126,11 +126,6 @@ public class GameOverGroup extends Group
     {
         return Integer.valueOf(scoreLabel.getText());
     }
-
-    public boolean buttonClicked()
-    {
-        return restartButton.clicked() || continueButton.clicked();
-    }
     
     public boolean isRestartActivated()
     {

@@ -398,27 +398,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The level text.
      */
-    private Label levelLabel;        
-    
-//    /**
-//     * The "Paused" text.
-//     */
-//    private Label pausedHeaderLabel;
-//    
-//    /**
-//     * The amount of moves, shown on the paused screen.
-//     */
-//    private Label pausedMovesLabel;
-//    
-//    /**
-//     * The number of lines, shown on the paused screen.
-//     */
-//    private Label pausedLinesLabel;
-//    
-//    /**
-//     * The number of lines per move, shown on the paused screen.
-//     */
-//    private Label pausedLinesPerMoveLabel;
+    private Label levelLabel;            
     
     /**
      * The version text.
@@ -434,6 +414,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The game over group.
      */
     private GameOverGroup gameOverGroup;    
+    
+    /**
+     * The options group.
+     */
+    private OptionsGroup optionsGroup;
     
     //--------------------------------------------------------------------------
     // Constructor

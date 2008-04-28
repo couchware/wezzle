@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.button.Button;
 import java.util.LinkedList;
 
 /**
@@ -55,6 +56,7 @@ public class Group extends Entity
                 "This method is not supported for groups");
     }       
     
+    @Override
     public void setVisible(boolean visible)
     {
         // Set the variable.
@@ -73,6 +75,17 @@ public class Group extends Entity
     public void setActivated(boolean activated)
     {
         this.activated = activated;
-    }        
+    }   
+    
+    public boolean buttonClicked()
+    {
+        boolean clicked = false;
+        
+        for (Entity e : entityList)
+            if (e instanceof Button)
+                clicked = clicked || ((Button) e).clicked();
+        
+        return clicked;
+    }
    
 }

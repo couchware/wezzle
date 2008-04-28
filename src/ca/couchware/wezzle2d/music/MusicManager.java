@@ -153,9 +153,9 @@ public class MusicManager
                 try 
                 { 
                     // Play the song.
-                    for(int i = 0; i < songList.size(); i++)
+                    for (int i = 0; i < songList.size(); i++)
                     {
-                        if(songList.get(i).getKey().equals(key) == true)
+                        if (songList.get(i).getKey().equals(key) == true)
                         {
                             // Adjust the song number.
                             songNum = i;
@@ -244,8 +244,10 @@ public class MusicManager
      */
     public void setPaused(boolean paused)
     {
-        this.paused = paused;                    
-        this.songList.get(songNum).setPaused(paused);                 
+        this.paused = paused;         
+        
+        if (songNum != -1)
+            this.songList.get(songNum).setPaused(paused);                 
     }
         
     /**
@@ -286,7 +288,11 @@ public class MusicManager
         // Adjust the current playing song.
         if (isPlaying() == true)
         {
-            this.songList.get(this.songNum).setVolume(this.volume);
+            if (songNum != -1)
+                this.songList.get(this.songNum).setVolume(this.volume);
+            else
+                throw new IllegalStateException(
+                        "Song number is -1 (no song) yet playing flag is set");
         }            
     }
     
@@ -309,7 +315,11 @@ public class MusicManager
         // Adjust the current playing song.
         if (isPlaying() == true)
         {
-            this.songList.get(this.songNum).setVolume(volume);
+            if (songNum != -1)
+                this.songList.get(this.songNum).setVolume(volume);
+            else
+                throw new IllegalStateException(
+                        "Song number is -1 (no song) yet playing flag is set");
         }            
     }
 }
