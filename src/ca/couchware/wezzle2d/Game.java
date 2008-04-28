@@ -400,33 +400,38 @@ public class Game extends Canvas implements GameWindowCallback
      */
     private Label levelLabel;        
     
-    /**
-     * The "Paused" text.
-     */
-    private Label pausedHeaderLabel;
-    
-    /**
-     * The amount of moves, shown on the paused screen.
-     */
-    private Label pausedMovesLabel;
-    
-    /**
-     * The number of lines, shown on the paused screen.
-     */
-    private Label pausedLinesLabel;
-    
-    /**
-     * The number of lines per move, shown on the paused screen.
-     */
-    private Label pausedLinesPerMoveLabel;
+//    /**
+//     * The "Paused" text.
+//     */
+//    private Label pausedHeaderLabel;
+//    
+//    /**
+//     * The amount of moves, shown on the paused screen.
+//     */
+//    private Label pausedMovesLabel;
+//    
+//    /**
+//     * The number of lines, shown on the paused screen.
+//     */
+//    private Label pausedLinesLabel;
+//    
+//    /**
+//     * The number of lines per move, shown on the paused screen.
+//     */
+//    private Label pausedLinesPerMoveLabel;
     
     /**
      * The version text.
      */
     private Label versionLabel;     
-        
+    
     /**
-     * The game over screen.
+     * The pause group.
+     */
+    private PauseGroup pauseGroup;
+    
+    /**
+     * The game over group.
      */
     private GameOverGroup gameOverGroup;    
     
@@ -632,40 +637,7 @@ public class Game extends Canvas implements GameWindowCallback
         
         //----------------------------------------------------------------------
         // Initialize labels.
-        //----------------------------------------------------------------------
-        
-        // Create the "Paused" text.
-        pausedHeaderLabel = ResourceFactory.get().getLabel(400, 245);        
-		pausedHeaderLabel.setSize(30);
-		pausedHeaderLabel.setAlignment(Label.HCENTER | Label.VCENTER);
-		pausedHeaderLabel.setColor(TEXT_COLOR);
-        pausedHeaderLabel.setText("Paused");
-        pausedHeaderLabel.setVisible(false);
-        layerMan.add(pausedHeaderLabel, LAYER_UI);
-        
-        pausedMovesLabel = ResourceFactory.get().getLabel(400, 310);        
-		pausedMovesLabel.setSize(18);
-		pausedMovesLabel.setAlignment(Label.HCENTER | Label.VCENTER);
-		pausedMovesLabel.setColor(TEXT_COLOR);
-        pausedMovesLabel.setText(moveMan.getMoveCount() + " moves taken");
-        pausedMovesLabel.setVisible(false);
-        layerMan.add(pausedMovesLabel, LAYER_UI);
-        
-        pausedLinesLabel = ResourceFactory.get().getLabel(400, 340);        
-		pausedLinesLabel.setSize(18);
-		pausedLinesLabel.setAlignment(Label.HCENTER | Label.VCENTER);
-		pausedLinesLabel.setColor(TEXT_COLOR);
-        pausedLinesLabel.setText(totalLineCount + " lines cleared");
-        pausedLinesLabel.setVisible(false);
-        layerMan.add(pausedLinesLabel, LAYER_UI);
-                        
-        pausedLinesPerMoveLabel = ResourceFactory.get().getLabel(400, 370);        
-		pausedLinesPerMoveLabel.setSize(18);
-		pausedLinesPerMoveLabel.setAlignment(Label.HCENTER | Label.VCENTER);
-		pausedLinesPerMoveLabel.setColor(TEXT_COLOR);
-        pausedLinesPerMoveLabel.setText("0.0 lines per move");
-        pausedLinesPerMoveLabel.setVisible(false);
-        layerMan.add(pausedLinesPerMoveLabel, LAYER_UI);
+        //----------------------------------------------------------------------                
               
         // Set up the version text.
 		versionLabel = ResourceFactory.get().getLabel(800 - 10, 600 - 10);        
@@ -734,11 +706,21 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(progressBar, LAYER_UI);
         
         //----------------------------------------------------------------------
-        // Initialize game over screen.
+        // Initialize pause group.
         //----------------------------------------------------------------------
         
+        pauseGroup = new PauseGroup(window, layerMan);
+        
+        //----------------------------------------------------------------------
+        // Initialize game over group.
+        //----------------------------------------------------------------------
+                        
         // Create the game over screen.
         gameOverGroup = new GameOverGroup(window, layerMan);        
+        
+        //----------------------------------------------------------------------
+        // Start
+        //----------------------------------------------------------------------
         
         // Start the game.
 		startGame();
@@ -757,17 +739,6 @@ public class Game extends Canvas implements GameWindowCallback
     {
         gameOverGroup.setScore(scoreMan.getTotalScore());
         gameOverGroup.setVisible(true);
-//        gameOverHeaderLabel.setVisible(true);
-//        gameOverFinalScoreHeaderLabel.setVisible(true);
-//        gameOverFinalScoreLabel.setVisible(true);
-//        gameOverFinalScoreLabel.setText(
-//                String.valueOf(scoreMan.getTotalScore()));
-//        gameOverRestartButton.setVisible(true);
-//        window.addMouseListener(gameOverRestartButton);
-//        window.addMouseMotionListener(gameOverRestartButton);
-//        gameOverContinueButton.setVisible(true);
-//        window.addMouseListener(gameOverContinueButton);
-//        window.addMouseMotionListener(gameOverContinueButton);
         
         // Hide the pause and clear any calls to it.
         pauseButton.clicked();
@@ -781,15 +752,6 @@ public class Game extends Canvas implements GameWindowCallback
     private void hideGameOverScreen()
     {
         gameOverGroup.setVisible(false);
-//        gameOverHeaderLabel.setVisible(false);
-//        gameOverFinalScoreHeaderLabel.setVisible(false);
-//        gameOverFinalScoreLabel.setVisible(false);
-//        gameOverRestartButton.setVisible(false);
-//        window.removeMouseListener(gameOverRestartButton);
-//        window.removeMouseMotionListener(gameOverRestartButton);
-//        gameOverContinueButton.setVisible(false);
-//        window.removeMouseListener(gameOverContinueButton);
-//        window.removeMouseMotionListener(gameOverContinueButton);
         
         // Show the pause button.
         pauseButton.setVisible(true);
@@ -864,14 +826,10 @@ public class Game extends Canvas implements GameWindowCallback
      */
     private void pauseGame()
     {
-        pauseButton.setText("Resume");
-        pauseButton.getLabel().setSize(18);
+        pauseButton.setText("Resume");        
         layerMan.hide(LAYER_TILE);
-        layerMan.hide(LAYER_EFFECT);                
-        pausedHeaderLabel.setVisible(true);
-        pausedMovesLabel.setVisible(true);
-        pausedLinesLabel.setVisible(true);
-        pausedLinesPerMoveLabel.setVisible(true);
+        layerMan.hide(LAYER_EFFECT);               
+        pauseGroup.setVisible(true);
         
         // Calculate lines per move.
         double lpm;
@@ -885,20 +843,9 @@ public class Game extends Canvas implements GameWindowCallback
             lpm = ((double) (int) lpm) / 100.0;
         }
         
-        // Set the moves label.
-        if (moveMan.getMoveCount() == 1)
-            pausedMovesLabel.setText("1 move taken");
-        else
-            pausedMovesLabel.setText(moveMan.getMoveCount() + " moves taken");
-        
-        // Set the lines label.
-        if (totalLineCount == 1)                    
-            pausedLinesLabel.setText("1 line cleared");
-        else
-            pausedLinesLabel.setText(totalLineCount + " lines cleared");
-        
-        // set the lines per move label.
-        pausedLinesPerMoveLabel.setText(lpm + " lines per move");
+        pauseGroup.setMoves(moveMan.getMoveCount());
+        pauseGroup.setLines(totalLineCount);
+        pauseGroup.setLinesPerMove(lpm);       
             
         // Set button as activated.
         pauseButton.setActivated(true);
@@ -913,11 +860,8 @@ public class Game extends Canvas implements GameWindowCallback
         pauseButton.getLabel().setSize(18);
         layerMan.show(LAYER_TILE);
         layerMan.show(LAYER_EFFECT);
-        pausedHeaderLabel.setVisible(false);
-        pausedMovesLabel.setVisible(false);
-        pausedLinesLabel.setVisible(false);
-        pausedLinesPerMoveLabel.setVisible(false);
-
+        pauseGroup.setVisible(false);
+        
         // Clear clicks.
         pieceMan.clearMouseButtons();
     }
