@@ -45,7 +45,7 @@ public class OptionsGroup extends Group
         super(window, layerMan);
         
         // Create the options header.
-        headerLabel = ResourceFactory.get().getLabel(400, 181);        
+        headerLabel = ResourceFactory.get().getLabel(400, 171);        
         headerLabel.setSize(26);
         headerLabel.setAlignment(Label.VCENTER | Label.HCENTER);
         headerLabel.setColor(Game.TEXT_COLOR);

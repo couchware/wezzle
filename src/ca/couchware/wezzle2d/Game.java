@@ -215,7 +215,13 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The menu button.
      */
+    public RectangularBooleanButton optionsButton;
+    
+    /**
+     * The sound button
+     */
     public RectangularBooleanButton soundButton;
+    
     
     /**
      * The exit button.
@@ -586,15 +592,20 @@ public class Game extends Canvas implements GameWindowCallback
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);
         
+        
         // Create the sound on/off button.
-        soundButton = new RectangularBooleanButton(668, 299);
-        soundButton.setNormalOpacity(70);
-        soundButton.setText("Sound ON");
-        soundButton.getLabel().setSize(18);
-        soundButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(soundButton, LAYER_UI);
-        window.addMouseListener(soundButton);
-        window.addMouseMotionListener(soundButton);
+        soundButton = new RectangularBooleanButton(100,100);
+        soundButton.setVisible(false);
+        
+        // create the options button.
+        optionsButton = new RectangularBooleanButton(668, 299);
+        optionsButton.setNormalOpacity(70);
+        optionsButton.setText("Options");
+        optionsButton.getLabel().setSize(18);
+        optionsButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(optionsButton, LAYER_UI);
+        window.addMouseListener(optionsButton);
+        window.addMouseMotionListener(optionsButton);
         
         // Check the properties.
         if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
@@ -701,7 +712,10 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------
                         
         // Create the game over screen.
-        gameOverGroup = new GameOverGroup(window, layerMan);        
+        gameOverGroup = new GameOverGroup(window, layerMan);    
+        
+        // Create the options screen.
+        optionsGroup = new OptionsGroup(window, layerMan);
         
         //----------------------------------------------------------------------
         // Start
@@ -742,6 +756,47 @@ public class Game extends Canvas implements GameWindowCallback
         pauseButton.setVisible(true);
         window.addMouseListener(pauseButton);
         window.addMouseMotionListener(pauseButton);
+    }
+    
+    
+    /**
+     * Options screen
+     */
+    private void showOptionsScreen()
+    {
+        
+        // Hide the board.
+        layerMan.hide(LAYER_TILE);
+        layerMan.hide(LAYER_EFFECT); 
+        
+        // Show the options.
+        optionsGroup.setVisible(true);
+        
+        // Hide the pause and clear any calls to it.
+        pauseButton.clicked();
+        pauseButton.setActivated(true);
+        pauseButton.setVisible(false);
+        window.removeMouseListener(pauseButton);
+        window.removeMouseMotionListener(pauseButton);
+        optionsButton.setActivated(true);
+        
+    }
+    
+    private void hideOptionsScreen()
+    {
+        // show the board.
+        layerMan.show(LAYER_TILE);
+        layerMan.show(LAYER_EFFECT); 
+        
+        // hide the options
+        optionsGroup.setVisible(false);
+        
+        // Show the pause button.
+        pauseButton.setVisible(true);
+         pauseButton.setActivated(false);
+        window.addMouseListener(pauseButton);
+        window.addMouseMotionListener(pauseButton);
+        optionsButton.setActivated(false);
     }
     
     /**
@@ -1016,6 +1071,20 @@ public class Game extends Canvas implements GameWindowCallback
             else
             {
                 this.resumeSound();
+            }
+        }
+        
+        // OptionsButton.
+         // Sound button.
+        if (optionsButton.clicked() == true)
+        {
+            if (optionsButton.isActivated() == true)
+            {
+                this.showOptionsScreen();
+            }
+            else
+            {
+                this.hideOptionsScreen();
             }
         }
 		

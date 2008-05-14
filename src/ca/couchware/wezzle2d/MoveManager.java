@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d;
 
 /**
- * A class to handle the move counter.
+ * A class to handle the move counter and log the last 10 moves.
  * @author Kevin
  */
 
