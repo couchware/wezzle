@@ -9,6 +9,11 @@ import ca.couchware.wezzle2d.button.*;
 public class OptionsGroup extends Group
 {
     /**
+     * The options button.
+     */
+    private RectangularBooleanButton optionsButton;    
+    
+    /**
      * The header label.
      */
     private Label headerLabel;
@@ -44,6 +49,15 @@ public class OptionsGroup extends Group
         // Invoke super.
         super(window, layerMan);
         
+        // Create the options button.
+        optionsButton = new RectangularBooleanButton(window, 668, 299);
+        optionsButton.setNormalOpacity(70);
+        optionsButton.setText("Options");
+        optionsButton.getLabel().setSize(18);
+        optionsButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(optionsButton, Game.LAYER_UI);
+        entityList.add(optionsButton);
+        
         // Create the options header.
         headerLabel = ResourceFactory.get().getLabel(400, 171);        
         headerLabel.setSize(26);
@@ -55,7 +69,7 @@ public class OptionsGroup extends Group
         entityList.add(headerLabel);
         
         // Create help button.
-        helpButton = new RectangularBooleanButton(400, 214);
+        helpButton = new RectangularBooleanButton(window, 400, 246);
         helpButton.setNormalOpacity(70);
         helpButton.setText("Help");
         helpButton.getLabel().setSize(18);
@@ -65,7 +79,7 @@ public class OptionsGroup extends Group
         entityList.add(helpButton);
         
         // Create audio button.
-        audioButton = new RectangularBooleanButton(400, 278);
+        audioButton = new RectangularBooleanButton(window, 400, 300);
         audioButton.setNormalOpacity(70);
         audioButton.setText("Sound/Music");
         audioButton.getLabel().setSize(18);
@@ -75,7 +89,7 @@ public class OptionsGroup extends Group
         entityList.add(audioButton);
         
         // Create main menu button.
-        mainMenuButton = new RectangularBooleanButton(400, 342);        
+        mainMenuButton = new RectangularBooleanButton(window, 400, 354);        
         mainMenuButton.setNormalOpacity(70);
         mainMenuButton.setText("Main Menu");
         mainMenuButton.getLabel().setSize(18);
@@ -85,13 +99,69 @@ public class OptionsGroup extends Group
         entityList.add(mainMenuButton);
         
         // Create back button.
-        backButton = new RectangularBooleanButton(400, 406);
+        backButton = new RectangularBooleanButton(window, 400, 408);
         backButton.setNormalOpacity(70);
         backButton.setText("Back");
         backButton.getLabel().setSize(18);
         backButton.setAlignment(Button.VCENTER | Button.HCENTER);
         backButton.setVisible(false);
-        layerMan.add(backButton, Game.LAYER_UI);
+        layerMan.add(backButton, Game.LAYER_UI);     
         entityList.add(backButton);
     }
+    
+    public boolean isOptionsButtonClicked()
+    {
+        return optionsButton.clicked();
+    }
+    
+    public boolean isOptionButtonActivated()
+    {
+        return optionsButton.isActivated();
+    }
+    
+    public boolean isBackButtonClicked()
+    {
+        return backButton.clicked();
+    }  
+    
+     public boolean isBackButtonActivated()
+    {
+        return backButton.isActivated();
+    }
+    
+     @Override
+    public void setVisible(final boolean visible)
+    {
+        // This is more important than you think.  Basically, since we might
+        // be adding or removing listeners, we want to make sure we only add
+        // a listener once, and that we only remove it once.  This ensures that.
+        if (isVisible() == visible)
+            return;            
+        
+        // Invoke super.  This will remove the listener from pause which
+        // we will re-add below.
+        super.setVisible(visible);
+        
+        // Make it so pause button still shows when the rest of the group is
+        // not visible.
+        if (visible == true)
+        {
+            optionsButton.setVisible(true);            
+        }
+        else
+        {
+            optionsButton.setVisible(true);                                                
+        }
+    }
+    
+    @Override
+    public void setActivated(final boolean activated)
+    {
+        // Invoke super.
+        super.setActivated(activated);
+        
+        // Make sure the pause button is activated.
+        optionsButton.setActivated(activated);
+    } 
+     
 }

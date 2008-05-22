@@ -207,26 +207,31 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public TimerManager timerMan;
 	
-    /**
-     * The pause button.
-     */
-    public RectangularBooleanButton pauseButton;
+//    /**
+//     * The pause button.
+//     */
+//    public RectangularBooleanButton pauseButton;
+       
+//    /**
+//     * The options button.
+//     */
+//    public RectangularBooleanButton optionsButton;
     
     /**
-     * The menu button.
+     * The help button.
      */
-    public RectangularBooleanButton optionsButton;
+    public RectangularBooleanButton helpButton;
+
     
-    /**
-     * The sound button
-     */
-    public RectangularBooleanButton soundButton;
-    
-    
-    /**
-     * The exit button.
-     */
-    public RectangularBooleanButton musicButton;
+//    /**
+//     * The sound button.
+//     */
+//    public RectangularBooleanButton soundButton;
+//    
+//    /**
+//     * The music button.
+//     */
+//    public RectangularBooleanButton musicButton;
     
     /**
      * The progress bar.
@@ -580,56 +585,49 @@ public class Game extends Canvas implements GameWindowCallback
         
         //----------------------------------------------------------------------
         // Initialize buttons.
-        //----------------------------------------------------------------------
+        //----------------------------------------------------------------------                                      
         
-        // Create a new pause button.
-        pauseButton = new RectangularBooleanButton(668, 211);
-        pauseButton.setNormalOpacity(70);
-        pauseButton.setText("Pause");
-        pauseButton.getLabel().setSize(18);
-        pauseButton.setAlignment(Button.VCENTER | Button.HCENTER);        
-        layerMan.add(pauseButton, LAYER_UI);
-        window.addMouseListener(pauseButton);
-        window.addMouseMotionListener(pauseButton);
-        
-        
+        // Create the help buttton.
+        helpButton = new RectangularBooleanButton(window, 668, 387);
+        helpButton.setNormalOpacity(70);
+        helpButton.setText("Help");
+        helpButton.getLabel().setSize(18);
+        helpButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(helpButton, LAYER_UI);                
+                
         // Create the sound on/off button.
-        soundButton = new RectangularBooleanButton(100,100);
-        soundButton.setVisible(false);
-        
-        // create the options button.
-        optionsButton = new RectangularBooleanButton(668, 299);
-        optionsButton.setNormalOpacity(70);
-        optionsButton.setText("Options");
-        optionsButton.getLabel().setSize(18);
-        optionsButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(optionsButton, LAYER_UI);
-        window.addMouseListener(optionsButton);
-        window.addMouseMotionListener(optionsButton);
-        
-        // Check the properties.
-        if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
-                .equals(PropertyManager.VALUE_OFF))
-        {
-            this.pauseSound();
-        }
+//        soundButton = new RectangularBooleanButton(668, 299);
+//        soundButton.setNormalOpacity(70);
+//        soundButton.setText("Sound ON");
+//        soundButton.getLabel().setSize(18);
+//        soundButton.setAlignment(Button.VCENTER | Button.HCENTER);
+//        layerMan.add(soundButton, LAYER_UI);
+//        window.addMouseListener(soundButton);
+//        window.addMouseMotionListener(soundButton);
+//        
+//        // Check the properties.
+//        if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
+//                .equals(PropertyManager.VALUE_OFF))
+//        {
+//            this.pauseSound();
+//        }
         
         // Create music on/off button.
-        musicButton = new RectangularBooleanButton(668, 387);
-        musicButton.setNormalOpacity(70);
-        musicButton.setText("Music ON");
-        musicButton.getLabel().setSize(18);
-        musicButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(musicButton, LAYER_UI);
-        window.addMouseListener(musicButton);
-        window.addMouseMotionListener(musicButton);
-        
-        // Check the properties.
-        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
-                .equals(PropertyManager.VALUE_OFF))
-        {
-           this.pauseMusic();
-        }
+//        musicButton = new RectangularBooleanButton(668, 387);
+//        musicButton.setNormalOpacity(70);
+//        musicButton.setText("Music ON");
+//        musicButton.getLabel().setSize(18);
+//        musicButton.setAlignment(Button.VCENTER | Button.HCENTER);
+//        layerMan.add(musicButton, LAYER_UI);
+//        window.addMouseListener(musicButton);
+//        window.addMouseMotionListener(musicButton);
+//        
+//        // Check the properties.
+//        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
+//                .equals(PropertyManager.VALUE_OFF))
+//        {
+//           this.pauseMusic();
+//        }
         
         //----------------------------------------------------------------------
         // Initialize labels.
@@ -712,10 +710,14 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------
                         
         // Create the game over screen.
-        gameOverGroup = new GameOverGroup(window, layerMan);    
+        gameOverGroup = new GameOverGroup(window, layerMan);        
         
-        // Create the options screen.
-        optionsGroup = new OptionsGroup(window, layerMan);
+        //----------------------------------------------------------------------
+        // Initialize options group.
+        //----------------------------------------------------------------------
+        
+        // Create the game over screen.
+        optionsGroup = new OptionsGroup(window, layerMan);                
         
         //----------------------------------------------------------------------
         // Start
@@ -736,141 +738,60 @@ public class Game extends Canvas implements GameWindowCallback
     
     private void showGameOverScreen()
     {
+        layerMan.hide(LAYER_TILE);
+        layerMan.hide(LAYER_EFFECT); 
         gameOverGroup.setScore(scoreMan.getTotalScore());
-        gameOverGroup.setVisible(true);
-        
-        // Hide the pause and clear any calls to it.
-        pauseButton.clicked();
-        pauseButton.setActivated(false);
-        pauseButton.setVisible(false);
-        window.removeMouseListener(pauseButton);
-        window.removeMouseMotionListener(pauseButton);
-        
+        gameOverGroup.setVisible(true);                
     }
     
     private void hideGameOverScreen()
     {
+        layerMan.show(LAYER_TILE);
+        layerMan.show(LAYER_EFFECT);
         gameOverGroup.setVisible(false);
-        
-        // Show the pause button.
-        pauseButton.setVisible(true);
-        window.addMouseListener(pauseButton);
-        window.addMouseMotionListener(pauseButton);
     }
     
-    
-    /**
-     * Options screen
-     */
     private void showOptionsScreen()
-    {
+    {        
+        hidePauseScreen();
+        hideGameOverScreen();
         
-        // Hide the board.
         layerMan.hide(LAYER_TILE);
-        layerMan.hide(LAYER_EFFECT); 
-        
-        // Show the options.
-        optionsGroup.setVisible(true);
-        
-        // Hide the pause and clear any calls to it.
-        pauseButton.clicked();
-        pauseButton.setActivated(true);
-        pauseButton.setVisible(false);
-        window.removeMouseListener(pauseButton);
-        window.removeMouseMotionListener(pauseButton);
-        optionsButton.setActivated(true);
-        
+        layerMan.hide(LAYER_EFFECT);  
+        optionsGroup.setActivated(true);
+        optionsGroup.setVisible(true);          
     }
     
     private void hideOptionsScreen()
-    {
-        // show the board.
-        layerMan.show(LAYER_TILE);
-        layerMan.show(LAYER_EFFECT); 
+    {        
+        if (gameOverGroup.isActivated() == true)
+        {
+            gameOverGroup.setVisible(true);
+        } 
         
-        // hide the options
+        layerMan.show(LAYER_TILE);
+        layerMan.show(LAYER_EFFECT);
+        optionsGroup.resetButtons();
+        optionsGroup.setActivated(false);
         optionsGroup.setVisible(false);
         
-        // Show the pause button.
-        pauseButton.setVisible(true);
-         pauseButton.setActivated(false);
-        window.addMouseListener(pauseButton);
-        window.addMouseMotionListener(pauseButton);
-        optionsButton.setActivated(false);
+        // Clear clicks.
+        pieceMan.clearMouseButtons();
     }
     
     /**
-     * A private helper method to handle music pausing.
-     */
-    private void pauseMusic()
-    {
-         // Set the button.
-        musicButton.setText("Music OFF");                
-        musicMan.setPaused(true);
-
-        // Set the property.
-        propertyMan.setProperty(PropertyManager.KEY_MUSIC, 
-                PropertyManager.VALUE_OFF);
-        
-        // Activate the button.
-        musicButton.setActivated(true);
-    }
-    
-    /**
-     * A private helper method to handle music resuming.
-     */
-    private void resumeMusic()
-    {
-        // Set the button.
-        musicButton.setText("Music ON");                
-        musicMan.setPaused(false);
-
-        // Set the property.
-        propertyMan.setProperty(PropertyManager.KEY_MUSIC, PropertyManager.VALUE_ON);
-    }
-    
-     /**
-     * A private helper method to handle music pausing.
-     */
-    private void pauseSound()
-    {
-         // Set the button.
-        soundButton.setText("Sound OFF");                
-        soundMan.setPaused(true);
-
-        // Set the property.
-        propertyMan.setProperty(PropertyManager.KEY_SOUND, 
-                PropertyManager.VALUE_OFF);
-        
-         // Activate the button.
-        soundButton.setActivated(true);
-     
-    }
-    
-    /**
-     * A private helper method to handle sound resuming.
-     */
-    private void resumeSound()
-    {
-        // Set the button.
-        soundButton.setText("Sound ON");                
-        soundMan.setPaused(false);
-
-        // Set the property.
-        propertyMan.setProperty(PropertyManager.KEY_SOUND, 
-                PropertyManager.VALUE_ON);
-    }
-    
-     /**
      * A private helper method to handle game pausing.
      */
-    private void pauseGame()
-    {
-        pauseButton.setText("Resume");        
-        layerMan.hide(LAYER_TILE);
-        layerMan.hide(LAYER_EFFECT);               
-        pauseGroup.setVisible(true);
+    private void showPauseScreen()
+    {    
+        hideOptionsScreen();
+        hideGameOverScreen();
         
+        layerMan.hide(LAYER_TILE);
+        layerMan.hide(LAYER_EFFECT);  
+        pauseGroup.setActivated(true);
+        pauseGroup.setVisible(true);
+                   
         // Calculate lines per move.
         double lpm;
         if (moveMan.getMoveCount() == 0)
@@ -885,26 +806,90 @@ public class Game extends Canvas implements GameWindowCallback
         
         pauseGroup.setMoves(moveMan.getMoveCount());
         pauseGroup.setLines(totalLineCount);
-        pauseGroup.setLinesPerMove(lpm);       
-            
-        // Set button as activated.
-        pauseButton.setActivated(true);
+        pauseGroup.setLinesPerMove(lpm);               
     }
     
     /**
      * A private helper method to handle game resuming.
      */
-    private void resumeGame()
-    {
-        pauseButton.setText("Pause");
-        pauseButton.getLabel().setSize(18);
+    private void hidePauseScreen()
+    {   
+        if (gameOverGroup.isActivated() == true)
+        {
+            gameOverGroup.setVisible(true);
+        }        
+        
         layerMan.show(LAYER_TILE);
-        layerMan.show(LAYER_EFFECT);
+        layerMan.show(LAYER_EFFECT);                               
+
+        pauseGroup.setActivated(false);
         pauseGroup.setVisible(false);
         
         // Clear clicks.
         pieceMan.clearMouseButtons();
     }
+    
+//    /**
+//     * A private helper method to handle music pausing.
+//     */
+//    private void pauseMusic()
+//    {
+//         // Set the button.
+//        musicButton.setText("Music OFF");                
+//        musicMan.setPaused(true);
+//
+//        // Set the property.
+//        propertyMan.setProperty(PropertyManager.KEY_MUSIC, 
+//                PropertyManager.VALUE_OFF);
+//        
+//        // Activate the button.
+//        musicButton.setActivated(true);
+//    }
+//    
+//    /**
+//     * A private helper method to handle music resuming.
+//     */
+//    private void resumeMusic()
+//    {
+//        // Set the button.
+//        musicButton.setText("Music ON");                
+//        musicMan.setPaused(false);
+//
+//        // Set the property.
+//        propertyMan.setProperty(PropertyManager.KEY_MUSIC, PropertyManager.VALUE_ON);
+//    }
+//    
+//     /**
+//     * A private helper method to handle music pausing.
+//     */
+//    private void pauseSound()
+//    {
+//         // Set the button.
+//        soundButton.setText("Sound OFF");                
+//        soundMan.setPaused(true);
+//
+//        // Set the property.
+//        propertyMan.setProperty(PropertyManager.KEY_SOUND, 
+//                PropertyManager.VALUE_OFF);
+//        
+//         // Activate the button.
+//        soundButton.setActivated(true);
+//     
+//    }
+//    
+//    /**
+//     * A private helper method to handle sound resuming.
+//     */
+//    private void resumeSound()
+//    {
+//        // Set the button.
+//        soundButton.setText("Sound ON");                
+//        soundMan.setPaused(false);
+//
+//        // Set the property.
+//        propertyMan.setProperty(PropertyManager.KEY_SOUND, 
+//                PropertyManager.VALUE_ON);
+//    }         
     
     /**
      * Start a refactor with the given speed.
@@ -1035,68 +1020,81 @@ public class Game extends Canvas implements GameWindowCallback
 		}
         
         // If the pause button was just clicked.
-        if (pauseButton.clicked() == true)
+        if (pauseGroup.buttonClicked() == true)
         {
             // If it was clicked on, then hide the board and
             // show the paused text.
-            if (pauseButton.isActivated() == true)
+            if (pauseGroup.isPauseButtonActivated() == true)
             {
-                this.pauseGame();
+                this.showPauseScreen();
             }
             else
             {
-                this.resumeGame();
+                this.hidePauseScreen();
             }
-        }
-        // Music button.
-        if (musicButton.clicked() == true)
-        {
-            if (musicButton.isActivated() == true)
-            {
-                this.pauseMusic();
-            }
-            else
-            {
-                this.resumeMusic();
-            }
+            
+            // Clear all clicks.
+            pauseGroup.clearClicked();
         }
         
-        // Sound button.
-        if (soundButton.clicked() == true)
-        {
-            if (soundButton.isActivated() == true)
+        // If the options button was just clicked.
+        if (optionsGroup.buttonClicked() == true)
+        {          
+            // If it was clicked on, then hide the board and
+            // show the options screen.
+            if (optionsGroup.isOptionsButtonClicked() == true)
             {
-                this.pauseSound();
+                if (optionsGroup.isOptionButtonActivated() == true)
+                    this.showOptionsScreen();
+                else
+                    this.hideOptionsScreen();
             }
-            else
+            else if (optionsGroup.isBackButtonClicked() == true)
             {
-                this.resumeSound();
+                if (optionsGroup.isBackButtonActivated() == true)
+                    this.hideOptionsScreen();
             }
+            
+            // Clear all clicks.
+            optionsGroup.clearClicked();
         }
         
-        // OptionsButton.
-         // Sound button.
-        if (optionsButton.clicked() == true)
-        {
-            if (optionsButton.isActivated() == true)
-            {
-                this.showOptionsScreen();
-            }
-            else
-            {
-                this.hideOptionsScreen();
-            }
-        }
+//        // Music button.
+//        if (musicButton.clicked() == true)
+//        {
+//            if (musicButton.isActivated() == true)
+//            {
+//                this.pauseMusic();
+//            }
+//            else
+//            {
+//                this.resumeMusic();
+//            }
+//        }
+//        
+//        // Sound button.
+//        if (soundButton.clicked() == true)
+//        {
+//            if (soundButton.isActivated() == true)
+//            {
+//                this.pauseSound();
+//            }
+//            else
+//            {
+//                this.resumeSound();
+//            }
+//        }
 		
         // If the music stopped playing, play the next song.
-        if (musicMan.isPlaying() == false && musicMan.isPaused() == false)
-        {
-            musicMan.playNext();
-        }        
+//        if (musicMan.isPlaying() == false && musicMan.isPaused() == false)
+//        {
+//            musicMan.playNext();
+//        }        
         
         // If the pause button is not on, then we proceed with the
         // normal game loop.
-        if (pauseButton.isActivated() == false)
+        if (pauseGroup.isActivated() == false
+                && optionsGroup.isActivated() == false)
         {   
             // See if it's time to level-up.
             if (pieceMan.isTileDropInProgress() == false
@@ -1672,7 +1670,7 @@ public class Game extends Canvas implements GameWindowCallback
     {
         // Don't pause game if we're showing the game over screen.
         if (gameOverGroup.isActivated() == false)
-            this.pauseGame();
+            this.showPauseScreen();
         
         this.background.setDirty(true);
     }

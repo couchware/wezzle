@@ -45,6 +45,12 @@ public abstract class Button extends Entity implements
     // -------------------------------------------------------------------------               
     
     /**
+     * The window that button is in.  This is for adding and removing
+     * the mouse listeners.
+     */
+    protected final GameWindow window;
+    
+    /**
      * The shape of the button.
      */
     protected final RectangularShape shape;
@@ -78,12 +84,18 @@ public abstract class Button extends Entity implements
      * The constructor.
      * @param shape The shape of the button.
      */
-    public Button(final int x, final int y, 
+    public Button(final GameWindow window,
+            final int x, final int y, 
             final int width, final int height,
             final RectangularShape shape)
     {
         // Set to visible.
-        this.visible = true;
+        visible = true;
+        window.addMouseListener(this);
+        window.addMouseMotionListener(this);
+     
+        // Store the window reference.
+        this.window = window;
         
         // Set the position.
         this.x = x;
@@ -220,6 +232,21 @@ public abstract class Button extends Entity implements
         clicked = false;
         return value;
     }    
+    
+    /**
+     * A special version of clicked() that does not automatically reset the
+     * flag if <pre>preserve</pre> is true.
+     * 
+     * @param preserve
+     * @return
+     */
+    public boolean clicked(boolean preserve)
+    {
+        if (preserve == true)
+            return clicked;
+        else
+            return clicked();
+    }
         
     //--------------------------------------------------------------------------
     // Getters and Setters
@@ -320,7 +347,7 @@ public abstract class Button extends Entity implements
 	}
 
 	public void mouseReleased(MouseEvent e)
-	{       
+	{             
         // Retrieve the mouse position.
         final XYPosition p = getMousePosition();                
         
@@ -373,4 +400,29 @@ public abstract class Button extends Entity implements
         else
             handleMouseOn();        
     }
+    
+    @Override
+    public void setVisible(boolean visible)
+    {
+        // Ignore if visibility not changed.
+        if (isVisible() == visible)
+            return;
+        
+        // Invoke super.
+        super.setVisible(visible);
+        
+        // Add or remove listener based on visibility.
+        if (visible == true)
+        {
+            window.addMouseListener(this);
+            window.addMouseMotionListener(this);
+        }
+        else
+        {
+            window.removeMouseListener(this);
+            window.removeMouseMotionListener(this);
+        }
+        
+    }
+    
 }

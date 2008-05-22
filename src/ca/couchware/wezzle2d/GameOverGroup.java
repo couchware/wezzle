@@ -74,7 +74,7 @@ public class GameOverGroup extends Group
         entityList.add(scoreLabel);
         
         // Create restart button.
-        restartButton = new RectangularBooleanButton(400, 345);        
+        restartButton = new RectangularBooleanButton(window, 400, 345);        
         restartButton.setNormalOpacity(70);
         restartButton.setText("Restart");
         restartButton.getLabel().setSize(18);
@@ -84,7 +84,7 @@ public class GameOverGroup extends Group
         entityList.add(restartButton);
         
         // Create continue button.
-        continueButton = new RectangularBooleanButton(400, 406);
+        continueButton = new RectangularBooleanButton(window, 400, 406);
         continueButton.setNormalOpacity(70);
         continueButton.setText("Continue");
         continueButton.getLabel().setSize(18);
@@ -92,30 +92,7 @@ public class GameOverGroup extends Group
         continueButton.setVisible(false);
         layerMan.add(continueButton, Game.LAYER_UI);
         entityList.add(continueButton);
-    } 
-    
-    @Override
-    public void setVisible(boolean visible)
-    {
-        // Invoke super.
-        super.setVisible(visible);
-        
-        // Adjust listeners.
-        if (visible == true)
-        {            
-            window.addMouseListener(restartButton);
-            window.addMouseMotionListener(restartButton);
-            window.addMouseListener(continueButton);
-            window.addMouseMotionListener(continueButton);
-        }
-        else
-        {
-            window.removeMouseListener(restartButton);
-            window.removeMouseMotionListener(restartButton);
-            window.removeMouseListener(continueButton);
-            window.removeMouseMotionListener(continueButton);
-        }
-    }
+    }        
     
     public void setScore(final int score)
     {
@@ -135,12 +112,6 @@ public class GameOverGroup extends Group
     public boolean isContinueActiavted()
     {
         return continueButton.isActivated();
-    }
-    
-    public void resetButtons()
-    {
-        restartButton.setActivated(false);
-        continueButton.setActivated(false);
-    }
+    }       
             
 }

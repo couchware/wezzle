@@ -45,10 +45,11 @@ public class RectangularBooleanButton extends BooleanButton
      * @param x
      * @param y
      */
-    public RectangularBooleanButton(final int x, final int y)
+    public RectangularBooleanButton(final GameWindow window, 
+            final int x, final int y)
     {
         // Invoke super.
-        super(x, y, WIDTH, HEIGHT, new Rectangle(x, y, WIDTH, HEIGHT));
+        super(window, x, y, WIDTH, HEIGHT, new Rectangle(x, y, WIDTH, HEIGHT));
         
         // Load the normal sprite.
         spriteNormal = ResourceFactory.get()
