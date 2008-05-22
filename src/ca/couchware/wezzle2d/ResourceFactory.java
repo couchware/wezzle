@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d;
+        package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
 import ca.couchware.wezzle2d.java2d.Java2DSpriteStore;
@@ -30,6 +30,7 @@ public class ResourceFactory
 	
 	/** The window the game should use to render */
 	private GameWindow window;
+    
 
 	/**
 	 * The default contructor has been made private to prevent construction of
@@ -106,6 +107,8 @@ public class ResourceFactory
 
 		return window;
 	}
+    
+   
 
 	/**
 	 * Create or get a sprite which displays the image that is pointed to in the
@@ -162,5 +165,8 @@ public class ResourceFactory
 
 		throw new RuntimeException("Unknown rendering type: " + renderingType);
 	}
+    
+  
+    
 	
 }

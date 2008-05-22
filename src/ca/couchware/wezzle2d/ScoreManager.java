@@ -90,7 +90,8 @@ import java.util.Set;
      * The constructor.
      * @param properties A property manager to load properties from.
      */
-    public ScoreManager(BoardManager boardMan, PropertyManager propertyMan)
+    public ScoreManager(BoardManager boardMan, PropertyManager propertyMan,
+            HighScoreManager hsMan)
     {
         // Store reference to board manager.
         this.boardMan = boardMan;
@@ -99,7 +100,7 @@ import java.util.Set;
         // Initialize the scores.
         this.totalScore = 0;
         this.levelScore = 0;
-        this.highScore = propertyMan.getIntegerProperty(PropertyManager.KEY_HIGH_SCORE);
+        this.highScore = hsMan.getHighScore();
     }
 
     /**
@@ -248,23 +249,6 @@ import java.util.Set;
     public void setHighScore(int highScore) 
     {	
         this.highScore = highScore;
-        this.propertyMan.setProperty(PropertyManager.KEY_HIGH_SCORE, String.valueOf(highScore));
-    }
-
-    /**
-     * A method to reset the high score.
-     */
-    public void resetHighScore()
-    {
-        try
-        {
-            this.propertyMan.setProperty(PropertyManager.KEY_HIGH_SCORE, "0");
-            this.setHighScore(0);
-        }
-        catch(Exception e)
-        {
-                e.printStackTrace();
-        }
     }
 
     /**

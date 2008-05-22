@@ -13,6 +13,7 @@ import java.awt.event.MouseMotionListener;
  * 
  * @author Kevin Glass
  */
+
 public interface GameWindow
 {
 

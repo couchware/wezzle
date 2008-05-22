@@ -21,7 +21,7 @@ public class PropertyManager
 	/**
 	 * The high score key.
 	 */
-	public static final String KEY_HIGH_SCORE = "wezzle.highScore";
+	//public static final String KEY_HIGH_SCORE = "wezzle.highScore";
 	public static final String KEY_DIFFICULTY = "wezzle.difficulty";		
     public static final String KEY_MUSIC = "wezzle.music";
     public static final String KEY_MUSIC_VOLUME = "wezzle.musicVolume";
@@ -93,9 +93,7 @@ public class PropertyManager
 				try
 				{
 					// If the file doesn't exist, create one with highscore 0.
-					f.createNewFile();
-					this.setProperty(KEY_HIGH_SCORE, "0");
-					this.saveProperties();				
+					f.createNewFile();		
 				}
 				catch(Exception e)
 				{
