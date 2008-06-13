@@ -182,16 +182,16 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public PropertyManager propertyMan;
     
-     /** 
-      * The manager in charge of score.
-      */
+    /** 
+     * The manager in charge of score.
+     */
     public ScoreManager scoreMan;
-    
+
     /**
      * The high score manager.
-     */
+     */    
     public HighScoreManager highScoreMan;
-
+    
     /** 
      * The manager in charge of sound.
      */
@@ -434,6 +434,11 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The options group.
      */
+    private OptionsGroup optionsGroup;
+    
+     /**
+     * The high score group.
+     */
     private HighScoreGroup highScoreGroup;
     
     //--------------------------------------------------------------------------
@@ -567,6 +572,7 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Create the high score manager.
         highScoreMan = new HighScoreManager(propertyMan);
+        
         // Create the score manager.
         scoreMan = new ScoreManager(boardMan, propertyMan, highScoreMan);
 
@@ -724,7 +730,14 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------
         
         // Create the game over screen.
-        highScoreGroup = new HighScoreGroup(window, layerMan, highScoreMan);                
+        optionsGroup = new OptionsGroup(window, layerMan);                
+        
+        //----------------------------------------------------------------------
+        // Initialize hgih score group.
+        //----------------------------------------------------------------------
+        
+        // Create the game over screen.
+        highScoreGroup = new HighScoreGroup(window, layerMan, highScoreMan); 
         
         //----------------------------------------------------------------------
         // Start
@@ -756,6 +769,34 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.show(LAYER_TILE);
         layerMan.show(LAYER_EFFECT);
         gameOverGroup.setVisible(false);
+    }
+    
+    private void showOptionsScreen()
+    {        
+        hidePauseScreen();
+        hideGameOverScreen();
+        
+        layerMan.hide(LAYER_TILE);
+        layerMan.hide(LAYER_EFFECT);  
+        optionsGroup.setActivated(true);
+        optionsGroup.setVisible(true);          
+    }
+    
+    private void hideOptionsScreen()
+    {        
+        if (gameOverGroup.isActivated() == true)
+        {
+            gameOverGroup.setVisible(true);
+        } 
+        
+        layerMan.show(LAYER_TILE);
+        layerMan.show(LAYER_EFFECT);
+        optionsGroup.resetButtons();
+        optionsGroup.setActivated(false);
+        optionsGroup.setVisible(false);
+        
+        // Clear clicks.
+        pieceMan.clearMouseButtons();
     }
     
     private void showHighScoreScreen()
@@ -793,7 +834,7 @@ public class Game extends Canvas implements GameWindowCallback
      */
     private void showPauseScreen()
     {    
-        //hideOptionsScreen();
+        hideOptionsScreen();
         hideGameOverScreen();
         
         layerMan.hide(LAYER_TILE);
@@ -981,11 +1022,12 @@ public class Game extends Canvas implements GameWindowCallback
     public void startGameOver()
     {
         Util.handleMessage("Game over!", Thread.currentThread());
-        int score = scoreMan.getTotalScore();
-        if(score > highScoreMan.getLowestScore())
-            highScoreMan.addScore("Tester", score);
         
-        showHighScoreScreen();
+//        int score = scoreMan.getTotalScore();
+//        if (score > highScoreMan.getLowestScore())
+//            highScoreMan.addScore("Tester", score);
+//        
+//        showHighScoreScreen();
         
         activateGameOver = true;
     }
@@ -1053,17 +1095,38 @@ public class Game extends Canvas implements GameWindowCallback
         }
         
         // If the options button was just clicked.
-        if (highScoreGroup.buttonClicked() == true)
-        {       
-            if (highScoreGroup.isCloseButtonActivated() == true)
+        if (optionsGroup.buttonClicked() == true)
+        {          
+            // If it was clicked on, then hide the board and
+            // show the options screen.
+            if (optionsGroup.isOptionsButtonClicked() == true)
             {
-                System.out.println("here");
-                this.hideHighScoreScreen();
+                if (optionsGroup.isOptionButtonActivated() == true)
+                    this.showOptionsScreen();
+                else
+                    this.hideOptionsScreen();
+            }
+            else if (optionsGroup.isBackButtonClicked() == true)
+            {
+                if (optionsGroup.isBackButtonActivated() == true)
+                    this.hideOptionsScreen();
             }
             
             // Clear all clicks.
-            highScoreGroup.clearClicked();
+            optionsGroup.clearClicked();
         }
+        
+        // If the options button was just clicked.
+//        if (highScoreGroup.buttonClicked() == true)
+//        {       
+//            if (highScoreGroup.isCloseButtonActivated() == true)
+//            {               
+//                this.hideHighScoreScreen();
+//            }
+//            
+//            // Clear all clicks.
+//            highScoreGroup.clearClicked();
+//        }
         
 //        // Music button.
 //        if (musicButton.clicked() == true)
@@ -1100,7 +1163,7 @@ public class Game extends Canvas implements GameWindowCallback
         // If the pause button is not on, then we proceed with the
         // normal game loop.
         if (pauseGroup.isActivated() == false
-                && highScoreGroup.isActivated() == false)
+                && optionsGroup.isActivated() == false)
         {   
             // See if it's time to level-up.
             if (pieceMan.isTileDropInProgress() == false

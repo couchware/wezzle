@@ -13,7 +13,10 @@ public class HighScoreGroup extends Group
      */
     private Label headerLabel;
     
-   public HighScore[] scoreList;
+    /**
+     * The high score list.
+     */
+    public HighScore[] scoreList;
     
     /**
      * The header label.
@@ -32,12 +35,12 @@ public class HighScoreGroup extends Group
      * @param layerMan
      */    
     public HighScoreGroup(final GameWindow window, final LayerManager layerMan,
-            HighScoreManager hsMan)
+            HighScoreManager highScoreMan)
     {
         // Invoke super.
         super(window, layerMan);
         
-        scoreList = hsMan.getList();
+        scoreList = highScoreMan.getList();
         
         // Create the options header.
         headerLabel = ResourceFactory.get().getLabel(400, 161);        
@@ -51,14 +54,13 @@ public class HighScoreGroup extends Group
         
         labels = new Label[scoreList.length];
        
-        for(int i = 0; i < labels.length; i++)
-        {
-            
+        for (int i = 0; i < labels.length; i++)
+        {            
             labels[i] = ResourceFactory.get().getLabel(400, 191+(20*i));        
             labels[i].setSize(14);
             labels[i].setAlignment(Label.VCENTER | Label.HCENTER);
             labels[i].setColor(Game.TEXT_COLOR);
-            labels[i].setText((i+1)+". " + scoreList[i].getKey() + " " 
+            labels[i].setText((i + 1) + ". " + scoreList[i].getKey() + " " 
                     + scoreList[i].getScore());
             labels[i].setVisible(false);
             layerMan.add(labels[i], Game.LAYER_UI);
@@ -75,12 +77,9 @@ public class HighScoreGroup extends Group
         closeButton.setVisible(false);
         layerMan.add(closeButton, Game.LAYER_UI);
         entityList.add(closeButton);
-        
-        //this.setVisible(false);
-        
     }
     
-      @Override
+    @Override
     public void setVisible(boolean visible)
     {
         // Invoke super.
@@ -101,7 +100,7 @@ public class HighScoreGroup extends Group
     {
          for(int i = 0; i < labels.length; i++)
         {
-            labels[i].setText((i+1)+". " + scoreList[i].getKey() + " " 
+            labels[i].setText((i + 1) + ". " + scoreList[i].getKey() + " " 
                     + scoreList[i].getScore());   
         }
     }

@@ -91,7 +91,7 @@ import java.util.Set;
      * @param properties A property manager to load properties from.
      */
     public ScoreManager(BoardManager boardMan, PropertyManager propertyMan,
-            HighScoreManager hsMan)
+            HighScoreManager highScoreMan)
     {
         // Store reference to board manager.
         this.boardMan = boardMan;
@@ -100,7 +100,7 @@ import java.util.Set;
         // Initialize the scores.
         this.totalScore = 0;
         this.levelScore = 0;
-        this.highScore = hsMan.getHighScore();
+        this.highScore = highScoreMan.getHighScore();
     }
 
     /**
