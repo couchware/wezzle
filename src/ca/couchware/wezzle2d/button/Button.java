@@ -258,6 +258,10 @@ public abstract class Button extends Entity implements
 	 */
 	public synchronized XYPosition getMousePosition()
 	{
+        if (mousePosition == null)
+            Util.handleWarning("Mouse position is null!", 
+                    Thread.currentThread());
+        
 		return mousePosition;
 	}
 
@@ -349,8 +353,8 @@ public abstract class Button extends Entity implements
 	public void mouseReleased(MouseEvent e)
 	{             
         // Retrieve the mouse position.
-        final XYPosition p = getMousePosition();                
-        
+        final XYPosition p = getMousePosition();
+                    
         // Ignore click if we're outside the button.
         if (contains(p.x, p.y) == false)
             return;                    

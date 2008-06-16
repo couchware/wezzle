@@ -1318,7 +1318,7 @@ public class Game extends Canvas implements GameWindowCallback
                     startBoardShowAnimation();
                 
                     // Reset the buttons.
-                    gameOverGroup.resetButtons();                    
+                    gameOverGroup.resetButtons();                       
                 }              
             }
             
@@ -1348,9 +1348,7 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Clear flag.
                 clearBoardHideAnimation();                                
-            }                        
-            
-            
+            }                                                
             
             // See if we need to activate the refactor.
             if (activateRefactor == true)
