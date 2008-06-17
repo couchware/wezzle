@@ -650,6 +650,7 @@ public class Game extends Canvas implements GameWindowCallback
 //        }
         
         sliderBar = new SliderBar(window, 10, 10);
+        sliderBar.setSlideOffset(10000);
         layerMan.add(sliderBar, LAYER_UI);
         
         //----------------------------------------------------------------------

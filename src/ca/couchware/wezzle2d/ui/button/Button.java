@@ -331,6 +331,7 @@ public abstract class Button extends Entity implements
 	public void mousePressed(MouseEvent e)
 	{
 		// Retrieve the mouse position.
+        setMousePosition(e.getX(), e.getY());
         final XYPosition p = getMousePosition();                
         
         // Ignore click if we're outside the button.
@@ -353,6 +354,7 @@ public abstract class Button extends Entity implements
 	public void mouseReleased(MouseEvent e)
 	{             
         // Retrieve the mouse position.
+        setMousePosition(e.getX(), e.getY());
         final XYPosition p = getMousePosition();
                     
         // Ignore click if we're outside the button.
