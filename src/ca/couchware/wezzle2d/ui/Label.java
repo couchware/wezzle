@@ -5,7 +5,6 @@ import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-
 /**
  * The Text abstract class is used to draw text to the screen in a particular 
  * font.  The appropriate methods should be updated for each graphics module. 
@@ -118,6 +117,7 @@ public abstract class Label extends Entity
 	    
     public abstract int getLetterHeight();
     
+    @Override
     public Rectangle getDrawRect()
     {
         // If the draw rect is null, generate it.
@@ -139,6 +139,7 @@ public abstract class Label extends Entity
         return drawRect;
     }
     
+    @Override
     public void resetDrawRect()
     {
         x_ = x;

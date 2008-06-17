@@ -376,7 +376,7 @@ public abstract class Button extends Entity implements
 
 	public void mouseDragged(MouseEvent e)
 	{
-		// Set the mouse position.
+		// Set the mouse position.        
 		setMousePosition(e.getX(), e.getY());
         
         // Retrieve the mouse position.

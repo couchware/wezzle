@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
+import java.awt.FontMetrics;
 import java.awt.font.FontRenderContext;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -157,11 +158,13 @@ public class Java2DLabel extends Label
 		// The Y alignment.
 		if((alignment & BOTTOM) == BOTTOM)
 		{
-			this.offsetY = 0;
-		}
+            // TODO This may not work.  It has not been tested.
+			this.offsetY = (int) (bounds.getMaxY());
+		}        
 		else if((alignment & VCENTER) == VCENTER)
 		{
-			this.offsetY = (int) -bounds.getCenterY();
+			//this.offsetY = (int) -bounds.getCenterY();
+            this.offsetY = (int) (-bounds.getY() / 2f);                        
 		}
 		else if((alignment & TOP) == TOP)
 		{
