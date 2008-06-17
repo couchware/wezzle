@@ -1,17 +1,13 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.ui.ProgressBar;
-import ca.couchware.wezzle2d.ui.Label;
-import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
-import ca.couchware.wezzle2d.ui.group.PauseGroup;
-import ca.couchware.wezzle2d.ui.group.OptionsGroup;
-import ca.couchware.wezzle2d.ui.group.GameOverGroup;
+import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.music.MusicManager;
 import ca.couchware.wezzle2d.sound.SoundManager;
-import ca.couchware.wezzle2d.ui.button.*;
-import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
-import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.ui.*;
+import ca.couchware.wezzle2d.ui.button.*;
+import ca.couchware.wezzle2d.ui.group.*;
+import ca.couchware.wezzle2d.util.*;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -248,6 +244,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The progress bar.
      */
     public ProgressBar progressBar;
+    
+    /**
+     * The test slider bar.
+     */
+    public SliderBar sliderBar;
     
     //--------------------------------------------------------------------------
     // Private Attributes
@@ -647,6 +648,9 @@ public class Game extends Canvas implements GameWindowCallback
 //        {
 //           this.pauseMusic();
 //        }
+        
+        sliderBar = new SliderBar(window, 10, 10);
+        layerMan.add(sliderBar, LAYER_UI);
         
         //----------------------------------------------------------------------
         // Initialize labels.
