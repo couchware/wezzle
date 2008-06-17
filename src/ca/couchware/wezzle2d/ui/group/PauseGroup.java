@@ -3,9 +3,11 @@
  * and open the template in the editor.
  */
 
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.ui.group;
 
-import ca.couchware.wezzle2d.button.*;
+import ca.couchware.wezzle2d.ui.Label;
+import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ui.button.*;
 
 /**
  *

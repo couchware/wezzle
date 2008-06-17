@@ -9,7 +9,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.net.URL;
 
-import ca.couchware.wezzle2d.Label;
+import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Composite;

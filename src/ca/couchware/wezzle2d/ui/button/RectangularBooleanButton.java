@@ -1,5 +1,6 @@
-package ca.couchware.wezzle2d.button;
+package ca.couchware.wezzle2d.ui.button;
 
+import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Rectangle;

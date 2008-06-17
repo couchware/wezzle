@@ -1,6 +1,7 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.ui.group;
 
-import ca.couchware.wezzle2d.button.*;
+import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ui.button.*;
 
 /**
  *
