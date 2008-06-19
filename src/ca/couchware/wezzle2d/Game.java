@@ -37,7 +37,7 @@ import java.util.Set;
 public class Game extends Canvas implements GameWindowCallback
 {	  
     //--------------------------------------------------------------------------
-    // Static Attributes
+    // Static Members
     //--------------------------------------------------------------------------
     
     /**
@@ -145,7 +145,7 @@ public class Game extends Canvas implements GameWindowCallback
             RESOURCES_PATH + "/build.number";
     
     //--------------------------------------------------------------------------
-    // Public Attributes
+    // Public Members
     //--------------------------------------------------------------------------
     
     /**
@@ -234,16 +234,6 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public RectangularBooleanButton helpButton;
     
-//    /**
-//     * The sound button.
-//     */
-//    public RectangularBooleanButton soundButton;
-//    
-//    /**
-//     * The music button.
-//     */
-//    public RectangularBooleanButton musicButton;
-    
     /**
      * The progress bar.
      */
@@ -255,7 +245,7 @@ public class Game extends Canvas implements GameWindowCallback
     public SliderBar sliderBar;
     
     //--------------------------------------------------------------------------
-    // Private Attributes
+    // Private Members
     //--------------------------------------------------------------------------
     
     /**
@@ -541,13 +531,13 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------
         
         // Set the cycle line count to 0.
-        cycleLineCount = 0;
+        setCycleLineCount(0);
         
         // Set the total line count to 0.       
-        totalLineCount = 0;
+        setTotalLineCount(0);
         
         // Set cascade count to 0.
-        cascadeCount = 0;                
+        setCascadeCount(0);
         
         // Initialize line index set.
         tileRemovalSet = new HashSet<Integer>();
@@ -770,20 +760,23 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------
         
         pauseGroup = new PauseGroup(window, layerMan, groupMan);
+        Group.register(pauseGroup);
         
         //----------------------------------------------------------------------
         // Initialize game over group.
         //----------------------------------------------------------------------
                         
         // Create the game over screen.
-        gameOverGroup = new GameOverGroup(window, layerMan, groupMan);        
+        gameOverGroup = new GameOverGroup(window, layerMan, groupMan);    
+        Group.register(gameOverGroup);
         
         //----------------------------------------------------------------------
         // Initialize options group.
         //----------------------------------------------------------------------
         
         // Create the options group.
-        optionsGroup = new OptionsGroup(window, layerMan, groupMan);             
+        optionsGroup = new OptionsGroup(window, layerMan, groupMan);
+        Group.register(optionsGroup);
         
         //----------------------------------------------------------------------
         // Initialize hgih score group.
@@ -792,6 +785,7 @@ public class Game extends Canvas implements GameWindowCallback
         // Create the game over screen.
         highScoreGroup = new HighScoreGroup(window, layerMan, groupMan,
                 highScoreMan); 
+        Group.register(highScoreGroup);
         
         //----------------------------------------------------------------------
         // Start
@@ -1019,22 +1013,7 @@ public class Game extends Canvas implements GameWindowCallback
     public void clearGameOver()
     {
         activateGameOver = false;
-    }
-
-    public int getCascadeCount()
-    {
-        return cascadeCount;
-    }
-
-    public int getCycleLineCount()
-    {
-        return cycleLineCount;
-    }
-
-    public int getTotalLineCount()
-    {
-        return totalLineCount;
-    }        
+    }  
 
 	/**
 	 * Notification that a frame is being rendered. Responsible for running game
@@ -1122,53 +1101,9 @@ public class Game extends Canvas implements GameWindowCallback
             // Board is still dirty due to animation.
             boardMan.setDirty(true);
         }
-
-        // If the game over is in progress, check to see if a button was 
-        // pressed.
-        if (gameOverGroup.isActivated() == true)
-        {
-            if (gameOverGroup.buttonClicked() == true)                        
-            {
-                // Hide the screen.
-                groupMan.hideGroup(GroupManager.GAME_OVER);
-
-                // Reset a bunch of stuff.
-                if (gameOverGroup.isRestartActivated() == true)
-                {
-                    // Set the level to 1.
-                    worldMan.setLevel(1);
-
-                    // Reset the timer to the initial.
-                    timerMan.setInitialTime(worldMan.getInitialTimer());
-                }
-
-                scoreMan.setLevelScore(0);
-                scoreMan.setTargetLevelScore(
-                        worldMan.generateTargetLevelScore(worldMan.getLevel()));                
-                progressBar.setProgressMax(scoreMan.getTargetLevelScore());
-                scoreMan.setTotalScore(0);                
-                moveMan.setMoveCount(0);
-                totalLineCount = 0;
-
-                // Create board and make it invisible.
-                boardMan.setVisible(false);
-                boardMan.generateBoard(worldMan.getItemList());                    
-                    
-                // Unpause the game.
-                // Don't worry! The game won't pass updates to the 
-                // timer unless the board is shown.  In hindsight, this
-                // is kind of crappy, but whatever, we'll make it prettier
-                // one day.
-                timerMan.setPaused(false);
-
-                // Reset the timer.
-                timerMan.resetTimer();
-
-                // Start the board show animation.  This will
-                // make the board visible when it's done.
-                startBoardShowAnimation();                                                            
-            }              
-        }
+        
+        // Update all the group logic.
+        Group.updateLogicAll(this);
 
         // Check to see if we should be showing the board.
         if (activateBoardShowAnimation == true)
@@ -1622,7 +1557,45 @@ public class Game extends Canvas implements GameWindowCallback
         
         return updated;
 	}
+    
+    //--------------------------------------------------------------------------
+    // Getters and Setters
+    //--------------------------------------------------------------------------
+    
+    public int getCascadeCount()
+    {
+        return cascadeCount;
+    }
 
+    public void setCascadeCount(int cascadeCount)
+    {
+        this.cascadeCount = cascadeCount;
+    }
+            
+    public int getCycleLineCount()
+    {
+        return cycleLineCount;
+    }
+
+    public void setCycleLineCount(int cycleLineCount)
+    {
+        this.cycleLineCount = cycleLineCount;
+    }
+    
+    public int getTotalLineCount()
+    {
+        return totalLineCount;
+    }        
+    
+    public void setTotalLineCount(int totalLineCount)
+    {
+        this.totalLineCount = totalLineCount;
+    }
+
+    //--------------------------------------------------------------------------
+    // Window Methods
+    //--------------------------------------------------------------------------
+    
 	/**
 	 * Notification that the game window has been closed
 	 */
@@ -1644,7 +1617,7 @@ public class Game extends Canvas implements GameWindowCallback
             // Do nothin. The property man is not yet initialized.
         }
 		System.exit(0);
-	}
+	}        
     
     /**
      * Notification that the game window has been deactivated in some way.
@@ -1670,7 +1643,11 @@ public class Game extends Canvas implements GameWindowCallback
         //Force a background redraw.
         if (this.background != null)
             this.background.setDirty(true);        
-    }
+    }        
+    
+    //--------------------------------------------------------------------------
+    // Main method
+    //--------------------------------------------------------------------------
     
 	/**
 	 * The entry point into the game. We'll simply create an instance of class
@@ -1693,7 +1670,6 @@ public class Game extends Canvas implements GameWindowCallback
         {
             Util.handleException(e);
         }
-	}
-    
+	}    
   
 }

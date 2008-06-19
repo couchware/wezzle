@@ -70,7 +70,8 @@ public class GroupManager
         showGroup.setActivated(true);
         
         // Make the button activated.
-        button.setActivated(true);
+        if (button != null)
+            button.setActivated(true);
         
         layerMan.hide(Game.LAYER_TILE);
         layerMan.hide(Game.LAYER_EFFECT);

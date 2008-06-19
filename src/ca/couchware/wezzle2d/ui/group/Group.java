@@ -13,6 +13,22 @@ import java.util.LinkedList;
 public class Group extends Entity
 {
     /**
+     * This static linked list holds all groups that have called the register()
+     * method.  This list is useful for performing commands on all the groups,
+     * such as running updateLogic().
+     */
+    protected static LinkedList<Group> groupList;
+    
+    /**
+     * The static constructor.
+     */    
+    static
+    {
+        // Instantiate the group list.
+        groupList = new LinkedList<Group>();
+    }
+    
+    /**
      * Is the screen activated?
      */
     protected boolean activated = false;
@@ -150,6 +166,48 @@ public class Group extends Entity
                 ((BooleanButton) e).setActivated(false);
                 ((BooleanButton) e).clicked();
             }
+    }
+    
+    /**
+     * This method is called when the group is activated and detects a click.
+     * 
+     * @param game The game state.
+     */
+    public void updateLogic(Game game)
+    {
+        // Overridden.
+    }
+    
+    //--------------------------------------------------------------------------
+    // Static methods
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Registers this group with the Group static linked list.
+     * 
+     * @param group The group to register.
+     */
+    public static void register(Group group)
+    {
+        // Add the group to the static linked list.
+        groupList.add(group);
+    }
+    
+    /**
+     * Update the logic of all groups if they have detected clicks.
+     * 
+     * @param game The game state.
+     */
+    public static void updateLogicAll(Game game)
+    {
+        for (Group group : groupList)
+        {
+            if (group.isActivated() == true
+                    && group.buttonClicked() == true)
+            {
+                group.updateLogic(game);
+            }
+        }
     }
 
 }

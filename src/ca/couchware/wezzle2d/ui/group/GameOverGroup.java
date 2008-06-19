@@ -116,5 +116,55 @@ public class GameOverGroup extends Group
     {
         return continueButton.isActivated();
     }       
+    
+    /**
+     * Override the update logic method.
+     * 
+     * @param game The game state.
+     */
+    public void updateLogic(Game game)
+    {
+        // Hide the screen.
+        game.groupMan.hideGroup(GroupManager.GAME_OVER);
+
+        // Reset a bunch of stuff.
+        if (isRestartActivated() == true)
+        {
+            // Set the level to 1.
+            game.worldMan.setLevel(1);
+
+            // Reset the timer to the initial.
+            game.timerMan.setInitialTime(game.worldMan.getInitialTimer());
+        }
+
+        game.scoreMan.setLevelScore(0);
+        game.scoreMan.setTotalScore(0); 
+        game.scoreMan.setTargetLevelScore(
+                game.worldMan.generateTargetLevelScore(
+                game.worldMan.getLevel()));    
+        
+        game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
+                       
+        game.moveMan.setMoveCount(0);
+        game.setTotalLineCount(0);
+
+        // Create board and make it invisible.
+        game.boardMan.setVisible(false);
+        game.boardMan.generateBoard(game.worldMan.getItemList());                    
+
+        // Unpause the game.
+        // Don't worry! The game won't pass updates to the 
+        // timer unless the board is shown.  In hindsight, this
+        // is kind of crappy, but whatever, we'll make it prettier
+        // one day.
+        game.timerMan.setPaused(false);
+
+        // Reset the timer.
+        game.timerMan.resetTimer();
+
+        // Start the board show animation.  This will
+        // make the board visible when it's done.
+        game.startBoardShowAnimation();
+    }
             
 }
