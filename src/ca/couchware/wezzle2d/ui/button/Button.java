@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A class representing a clickable button.
@@ -58,7 +59,7 @@ public abstract class Button extends Entity implements
     /**
      * The button text.
      */
-    protected String text;       
+    protected AtomicReference<String> textReference;
     
     /**
      * The current state of the button.
@@ -115,7 +116,7 @@ public abstract class Button extends Entity implements
         this.shape = shape;               
         
         // Set text to an empty string.
-        this.text = "";
+        this.textReference = new AtomicReference<String>("");        
         
         // Set the initial state.
         this.state = STATE_NORMAL;        
@@ -273,15 +274,15 @@ public abstract class Button extends Entity implements
 	{
 		this.mousePosition = new XYPosition(x, y);
 	}       
-
+    
     public String getText()
     {
-        return text;
+        return textReference.get();
     }
 
     public void setText(String text)
     {
-        this.text = text;
+        this.textReference.set(text);
         
         setDirty(true);
     }
@@ -305,6 +306,29 @@ public abstract class Button extends Entity implements
         shape.setFrame(x + offsetX, y + offsetY,
                 shape.getWidth(), shape.getHeight());
 	}             
+    
+    @Override
+    public void setVisible(boolean visible)
+    {
+        // Ignore if visibility not changed.
+        if (isVisible() == visible)
+            return;
+        
+        // Invoke super.
+        super.setVisible(visible);
+        
+        // Add or remove listener based on visibility.
+        if (visible == true)
+        {
+            window.addMouseListener(this);
+            window.addMouseMotionListener(this);
+        }
+        else
+        {
+            window.removeMouseListener(this);
+            window.removeMouseMotionListener(this);
+        }        
+    }
     
     //--------------------------------------------------------------------------
     // Events
@@ -405,30 +429,5 @@ public abstract class Button extends Entity implements
             handleMouseOff();
         else
             handleMouseOn();        
-    }
-    
-    @Override
-    public void setVisible(boolean visible)
-    {
-        // Ignore if visibility not changed.
-        if (isVisible() == visible)
-            return;
-        
-        // Invoke super.
-        super.setVisible(visible);
-        
-        // Add or remove listener based on visibility.
-        if (visible == true)
-        {
-            window.addMouseListener(this);
-            window.addMouseMotionListener(this);
-        }
-        else
-        {
-            window.removeMouseListener(this);
-            window.removeMouseMotionListener(this);
-        }
-        
-    }
-    
+    }            
 }

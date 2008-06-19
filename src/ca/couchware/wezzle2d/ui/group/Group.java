@@ -23,9 +23,16 @@ public class Group extends Entity
     final protected GameWindow window;
 
     /**
-     * A reference to the layer manager.
+     * A reference to the layer manager.  This is used by groups to add
+     * and remove things like buttons and sliders.
      */
     final protected LayerManager layerMan;
+    
+    /**
+     * A reference to the group manager.  This is used to give the buttons
+     * the capability to open other groups in a convenient way.
+     */
+    final protected GroupManager groupMan;
 
     /**
      * An linked list of all the entities in this screen.
@@ -38,7 +45,8 @@ public class Group extends Entity
      * @param window
      * @param layerMan
      */
-    public Group(final GameWindow window, final LayerManager layerMan)
+    public Group(final GameWindow window, 
+            final LayerManager layerMan, final GroupManager groupMan)
     {
         // Invoke super.
         super();
@@ -49,6 +57,7 @@ public class Group extends Entity
         // Store the reference.
         this.window = window;
         this.layerMan = layerMan;
+        this.groupMan = groupMan;
 
         // Create the entity list.
         this.entityList = new LinkedList<Entity>();

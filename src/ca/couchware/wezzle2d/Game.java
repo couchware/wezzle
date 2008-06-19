@@ -154,6 +154,11 @@ public class Game extends Canvas implements GameWindowCallback
     public String buildNumber;
     
     /**
+     * The menu manager.
+     */
+    public GroupManager groupMan;
+    
+    /**
      * The animation manager in charge of animations.
      */
     public AnimationManager animationMan;
@@ -214,21 +219,20 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public TimerManager timerMan;
 	
-//    /**
-//     * The pause button.
-//     */
-//    public RectangularBooleanButton pauseButton;
+    /**
+     * The pause button.
+     */
+    public RectangularBooleanButton pauseButton;
        
-//    /**
-//     * The options button.
-//     */
-//    public RectangularBooleanButton optionsButton;
+    /**
+     * The options button.
+     */
+    public RectangularBooleanButton optionsButton;
     
     /**
      * The help button.
      */
     public RectangularBooleanButton helpButton;
-
     
 //    /**
 //     * The sound button.
@@ -560,7 +564,7 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Draw the current background.
 		background = new GraphicEntity(SPRITES_PATH + "/Background2.png", 0, 0);
-        layerMan.add(background, LAYER_BACKGROUND);
+        layerMan.add(background, LAYER_BACKGROUND);                
         
         // Create the animation manager.
         animationMan = new AnimationManager();
@@ -573,6 +577,9 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
+        
+        // Create group manager.
+        groupMan = new GroupManager(layerMan, pieceMan);
 	
         // Create the property manager. Must be done before Score manager.
         propertyMan = new PropertyManager();
@@ -613,7 +620,42 @@ public class Game extends Canvas implements GameWindowCallback
         helpButton.setText("Help");
         helpButton.getLabel().setSize(18);
         helpButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(helpButton, LAYER_UI);                
+        layerMan.add(helpButton, LAYER_UI);   
+        
+        // Create the options button.
+        optionsButton = new RectangularBooleanButton(window, 668, 299);
+        optionsButton.setNormalOpacity(70);
+        optionsButton.setText("Options");
+        optionsButton.getLabel().setSize(18);
+        optionsButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(optionsButton, Game.LAYER_UI);
+        
+        // Create pause button.        
+        pauseButton = new RectangularBooleanButton(window, 668, 211)
+        {
+            // Make it so the button text changes to resume when
+            // the button is activated.
+            // Kevin: Be sure to read the comment in BooleanButton before
+            // using this.
+            @Override
+            public void onActivation()
+            {
+                this.setText("Resume");
+            }
+            
+            // Make it so the button text changes to pause when
+            // the button is deactivated.
+            @Override
+            public void onDeactivation()
+            {
+                this.setText("Pause");
+            }
+        };
+        pauseButton.setNormalOpacity(70);
+        pauseButton.setText("Pause");
+        pauseButton.getLabel().setSize(18);
+        pauseButton.setAlignment(Button.VCENTER | Button.HCENTER);        
+        layerMan.add(pauseButton, Game.LAYER_UI); 
                 
         // Create the sound on/off button.
 //        soundButton = new RectangularBooleanButton(668, 299);
@@ -727,28 +769,29 @@ public class Game extends Canvas implements GameWindowCallback
         // Initialize pause group.
         //----------------------------------------------------------------------
         
-        pauseGroup = new PauseGroup(window, layerMan);
+        pauseGroup = new PauseGroup(window, layerMan, groupMan);
         
         //----------------------------------------------------------------------
         // Initialize game over group.
         //----------------------------------------------------------------------
                         
         // Create the game over screen.
-        gameOverGroup = new GameOverGroup(window, layerMan);        
+        gameOverGroup = new GameOverGroup(window, layerMan, groupMan);        
         
         //----------------------------------------------------------------------
         // Initialize options group.
         //----------------------------------------------------------------------
         
-        // Create the game over screen.
-        optionsGroup = new OptionsGroup(window, layerMan);                
+        // Create the options group.
+        optionsGroup = new OptionsGroup(window, layerMan, groupMan);             
         
         //----------------------------------------------------------------------
         // Initialize hgih score group.
         //----------------------------------------------------------------------
         
         // Create the game over screen.
-        highScoreGroup = new HighScoreGroup(window, layerMan, highScoreMan); 
+        highScoreGroup = new HighScoreGroup(window, layerMan, groupMan,
+                highScoreMan); 
         
         //----------------------------------------------------------------------
         // Start
@@ -766,56 +809,36 @@ public class Game extends Canvas implements GameWindowCallback
 	{		
 		lastLoopTime = SystemTimer.getTime();
 	}
-    
-    private void showGameOverScreen()
-    {
-        layerMan.hide(LAYER_TILE);
-        layerMan.hide(LAYER_EFFECT); 
-        gameOverGroup.setScore(scoreMan.getTotalScore());
-        gameOverGroup.setVisible(true);                
-    }
-    
-    private void hideGameOverScreen()
-    {
-        layerMan.show(LAYER_TILE);
-        layerMan.show(LAYER_EFFECT);
-        gameOverGroup.setVisible(false);
-    }
-    
-    private void showOptionsScreen()
-    {        
-        hidePauseScreen();
-        hideGameOverScreen();
         
-        layerMan.hide(LAYER_TILE);
-        layerMan.hide(LAYER_EFFECT);  
-        optionsGroup.setActivated(true);
-        optionsGroup.setVisible(true);          
-    }
-    
-    private void hideOptionsScreen()
-    {        
-        if (gameOverGroup.isActivated() == true)
+    /**
+     * This method is used to update the values shown on the pause screen.
+     */
+    private void updatePauseGroup()
+    {
+        // Calculate lines per move.
+        double lpm;
+        if (moveMan.getMoveCount() == 0)
+            lpm = 0.0;
+        else
         {
-            gameOverGroup.setVisible(true);
-        } 
+            lpm = (double) totalLineCount 
+                / (double) moveMan.getMoveCount();
+            lpm = lpm * 100;
+            lpm = ((double) (int) lpm) / 100.0;
+        }
         
-        layerMan.show(LAYER_TILE);
-        layerMan.show(LAYER_EFFECT);
-        optionsGroup.resetButtons();
-        optionsGroup.setActivated(false);
-        optionsGroup.setVisible(false);
-        
-        // Clear clicks.
-        pieceMan.clearMouseButtons();
+        // Update the pause screen date.
+        pauseGroup.setMoves(moveMan.getMoveCount());
+        pauseGroup.setLines(totalLineCount);
+        pauseGroup.setLinesPerMove(lpm);         
     }
     
     private void showHighScoreScreen()
     {        
         this.pauseGroup.setActivated(true);
         this.pauseGroup.setVisible(false);
-        hidePauseScreen();
-        hideGameOverScreen();
+//        hidePauseScreen();
+//        hideGameOverScreen();
         
         layerMan.hide(LAYER_TILE);
         layerMan.hide(LAYER_EFFECT);  
@@ -835,56 +858,6 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreGroup.resetButtons();
         highScoreGroup.setActivated(false);
         highScoreGroup.setVisible(false);
-        
-        // Clear clicks.
-        pieceMan.clearMouseButtons();
-    }
-    
-    /**
-     * A private helper method to handle game pausing.
-     */
-    private void showPauseScreen()
-    {    
-        hideOptionsScreen();
-        hideGameOverScreen();
-        
-        layerMan.hide(LAYER_TILE);
-        layerMan.hide(LAYER_EFFECT);  
-        pauseGroup.setActivated(true);
-        pauseGroup.setVisible(true);
-                   
-        // Calculate lines per move.
-        double lpm;
-        if (moveMan.getMoveCount() == 0)
-            lpm = 0.0;
-        else
-        {
-            lpm = (double) totalLineCount 
-                / (double) moveMan.getMoveCount();
-            lpm = lpm * 100;
-            lpm = ((double) (int) lpm) / 100.0;
-        }
-        
-        pauseGroup.setMoves(moveMan.getMoveCount());
-        pauseGroup.setLines(totalLineCount);
-        pauseGroup.setLinesPerMove(lpm);               
-    }
-    
-    /**
-     * A private helper method to handle game resuming.
-     */
-    private void hidePauseScreen()
-    {   
-        if (gameOverGroup.isActivated() == true)
-        {
-            gameOverGroup.setVisible(true);
-        }        
-        
-        layerMan.show(LAYER_TILE);
-        layerMan.show(LAYER_EFFECT);                               
-
-        pauseGroup.setActivated(false);
-        pauseGroup.setVisible(false);
         
         // Clear clicks.
         pieceMan.clearMouseButtons();
@@ -1088,93 +1061,146 @@ public class Game extends Canvas implements GameWindowCallback
 		}
         
         // If the pause button was just clicked.
-        if (pauseGroup.buttonClicked() == true)
-        {
-            // If it was clicked on, then hide the board and
-            // show the paused text.
-            if (pauseGroup.isPauseButtonActivated() == true)
+        if (pauseButton.clicked() == true)
+        {            
+            if (pauseButton.isActivated() == true)            
             {
-                this.showPauseScreen();
+                updatePauseGroup();
+                groupMan.showGroup(pauseButton, pauseGroup, 
+                        GroupManager.SIDE);            
             }
             else
-            {
-                this.hidePauseScreen();
-            }
-            
-            // Clear all clicks.
-            pauseGroup.clearClicked();
+                groupMan.hideGroup(GroupManager.SIDE);            
         }
         
         // If the options button was just clicked.
-        if (optionsGroup.buttonClicked() == true)
-        {          
-            // If it was clicked on, then hide the board and
-            // show the options screen.
-            if (optionsGroup.isOptionsButtonClicked() == true)
+        if (optionsButton.clicked() == true)
+        {                           
+            if (optionsButton.isActivated() == true)                            
+                groupMan.showGroup(optionsButton, optionsGroup,
+                        GroupManager.SIDE);            
+            else            
+                groupMan.hideGroup(GroupManager.SIDE);
+        }    
+        
+        // Check on board animation.
+        if (boardAnimation != null && boardAnimation.isDone() == true)
+        {
+            // Set animation visible depending on what animation
+            // was just performed.
+            if (boardAnimation instanceof FadeInAnimation)   
             {
-                if (optionsGroup.isOptionButtonActivated() == true)
-                    this.showOptionsScreen();
-                else
-                    this.hideOptionsScreen();
+                boardMan.setVisible(true);
+                pieceMan.getPieceGrid().setVisible(true);
             }
-            else if (optionsGroup.isBackButtonClicked() == true)
+            else if (boardAnimation instanceof FadeOutAnimation)
             {
-                if (optionsGroup.isBackButtonActivated() == true)
-                    this.hideOptionsScreen();
+                boardMan.setVisible(false);
+                pieceMan.getPieceGrid().setVisible(false);
             }
-            
-            // Clear all clicks.
-            optionsGroup.clearClicked();
+            else
+                throw new RuntimeException(
+                        "Unrecognized board animation class.");
+
+            // Clear the board animation.
+            boardAnimation = null;
+
+            // Claer mouse button presses.
+            pieceMan.clearMouseButtons();
+
+            // If game over is in progress, make a new board and start.
+            if (gameOverGroup.isActivated() == true)
+            {
+                // Draw game over screen.
+                gameOverGroup.setScore(scoreMan.getTotalScore());
+                groupMan.showGroup(null, gameOverGroup, 
+                        GroupManager.GAME_OVER);                  
+            }
         }
-        
-        // If the options button was just clicked.
-//        if (highScoreGroup.buttonClicked() == true)
-//        {       
-//            if (highScoreGroup.isCloseButtonActivated() == true)
-//            {               
-//                this.hideHighScoreScreen();
-//            }
-//            
-//            // Clear all clicks.
-//            highScoreGroup.clearClicked();
-//        }
-        
-//        // Music button.
-//        if (musicButton.clicked() == true)
-//        {
-//            if (musicButton.isActivated() == true)
-//            {
-//                this.pauseMusic();
-//            }
-//            else
-//            {
-//                this.resumeMusic();
-//            }
-//        }
-//        
-//        // Sound button.
-//        if (soundButton.clicked() == true)
-//        {
-//            if (soundButton.isActivated() == true)
-//            {
-//                this.pauseSound();
-//            }
-//            else
-//            {
-//                this.resumeSound();
-//            }
-//        }
-		
-        // If the music stopped playing, play the next song.
-//        if (musicMan.isPlaying() == false && musicMan.isPaused() == false)
-//        {
-//            musicMan.playNext();
-//        }        
+        else if (boardAnimation != null && boardAnimation.isDone() == false)
+        {
+            // Board is still dirty due to animation.
+            boardMan.setDirty(true);
+        }
+
+        // If the game over is in progress, check to see if a button was 
+        // pressed.
+        if (gameOverGroup.isActivated() == true)
+        {
+            if (gameOverGroup.buttonClicked() == true)                        
+            {
+                // Hide the screen.
+                groupMan.hideGroup(GroupManager.GAME_OVER);
+
+                // Reset a bunch of stuff.
+                if (gameOverGroup.isRestartActivated() == true)
+                {
+                    // Set the level to 1.
+                    worldMan.setLevel(1);
+
+                    // Reset the timer to the initial.
+                    timerMan.setInitialTime(worldMan.getInitialTimer());
+                }
+
+                scoreMan.setLevelScore(0);
+                scoreMan.setTargetLevelScore(
+                        worldMan.generateTargetLevelScore(worldMan.getLevel()));                
+                progressBar.setProgressMax(scoreMan.getTargetLevelScore());
+                scoreMan.setTotalScore(0);                
+                moveMan.setMoveCount(0);
+                totalLineCount = 0;
+
+                // Create board and make it invisible.
+                boardMan.setVisible(false);
+                boardMan.generateBoard(worldMan.getItemList());                    
+                    
+                // Unpause the game.
+                // Don't worry! The game won't pass updates to the 
+                // timer unless the board is shown.  In hindsight, this
+                // is kind of crappy, but whatever, we'll make it prettier
+                // one day.
+                timerMan.setPaused(false);
+
+                // Reset the timer.
+                timerMan.resetTimer();
+
+                // Start the board show animation.  This will
+                // make the board visible when it's done.
+                startBoardShowAnimation();                                                            
+            }              
+        }
+
+        // Check to see if we should be showing the board.
+        if (activateBoardShowAnimation == true)
+        {
+            // Start board show animation.
+            boardAnimation = boardMan.animateShow(animationMan);     
+            boardMan.setDirty(true);
+
+            // Hide the piece.
+            pieceMan.getPieceGrid().setVisible(false);                               
+
+            // Clear flag.
+            clearBoardShowAnimation();                                
+        }
+
+        // Check to see if we should be hiding the board.
+        if (activateBoardHideAnimation == true)
+        {
+            // Start board hide animation.
+            boardAnimation = boardMan.animateHide(animationMan); 
+            boardMan.setDirty(true);
+
+            // Hide the piece.
+            pieceMan.getPieceGrid().setVisible(false);                               
+
+            // Clear flag.
+            clearBoardHideAnimation();                                
+        }      
         
         // If the pause button is not on, then we proceed with the
         // normal game loop.
-        if (pauseGroup.isActivated() == false
-                && optionsGroup.isActivated() == false)
+        if (groupMan.isActivated() == false)
         {   
             // See if it's time to level-up.
             if (pieceMan.isTileDropInProgress() == false
@@ -1238,128 +1264,7 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Hide the board.
                 startBoardHideAnimation();                
-            }
-            
-            // Check on board animation.
-            if (boardAnimation != null && boardAnimation.isDone() == true)
-            {
-                // Set animation visible depending on what animation
-                // was just performed.
-                if (boardAnimation instanceof FadeInAnimation)   
-                {
-                    boardMan.setVisible(true);
-                    pieceMan.getPieceGrid().setVisible(true);
-                }
-                else if (boardAnimation instanceof FadeOutAnimation)
-                {
-                    boardMan.setVisible(false);
-                    pieceMan.getPieceGrid().setVisible(false);
-                }
-                else
-                    throw new RuntimeException(
-                            "Unrecognized board animation class.");
-                
-                // Clear the board animation.
-                boardAnimation = null;
-                
-                // Claer mouse button presses.
-                pieceMan.clearMouseButtons();
-                
-                // If game over is in progress, make a new board and start.
-                if (gameOverGroup.isActivated() == true)
-                {
-                    // Draw game over screen.
-                    showGameOverScreen();                    
-                }
-            }
-            else if (boardAnimation != null && boardAnimation.isDone() == false)
-            {
-                // Board is still dirty due to animation.
-                boardMan.setDirty(true);
-            }
-            
-            // If the game over is in progress, check to see if a button was 
-            // pressed.
-            if (gameOverGroup.isActivated() == true)
-            {
-                if (gameOverGroup.buttonClicked() == true)                        
-                {
-                    // Hide the screen.
-                    hideGameOverScreen();
-                    
-                    // Clear the flag.
-                    gameOverGroup.setActivated(false);
-                    
-                    // Reset a bunch of stuff.
-                    if (gameOverGroup.isRestartActivated() == true)
-                    {
-                        // Set the level to 1.
-                        worldMan.setLevel(1);
-                        
-                        // Reset the timer to the initial.
-                        timerMan.setInitialTime(worldMan.getInitialTimer());
-                    }
-
-                    scoreMan.setLevelScore(0);
-                    scoreMan.setTargetLevelScore(
-                            worldMan.generateTargetLevelScore(
-                            worldMan.getLevel()));                
-                    progressBar.setProgressMax(
-                            scoreMan.getTargetLevelScore());
-                    scoreMan.setTotalScore(0);                
-                    moveMan.setMoveCount(0);
-                    totalLineCount = 0;
-                    
-                    // Create board and make it invisible.
-                    boardMan.setVisible(false);
-                    boardMan.generateBoard(worldMan.getItemList());                    
-//                    
-                    // Unpause the game.
-                    // Don't worry! The game won't pass updates to the 
-                    // timer unless the board is shown.  In hindsight, this
-                    // is kind of crappy, but whatever, we'll make it prettier
-                    // one day.
-                    timerMan.setPaused(false);
-                    
-                    // Reset the timer.
-                    timerMan.resetTimer();
-                  
-                    // Start the board show animation.  This will
-                    // make the board visible when it's done.
-                    startBoardShowAnimation();
-                
-                    // Reset the buttons.
-                    gameOverGroup.resetButtons();                       
-                }              
-            }
-            
-            // Check to see if we should be showing the board.
-            if (activateBoardShowAnimation == true)
-            {
-                // Start board show animation.
-                boardAnimation = boardMan.animateShow(animationMan);     
-                boardMan.setDirty(true);
-                
-                // Hide the piece.
-                pieceMan.getPieceGrid().setVisible(false);                               
-                
-                // Clear flag.
-                clearBoardShowAnimation();                                
-            }
-            
-            // Check to see if we should be hiding the board.
-            if (activateBoardHideAnimation == true)
-            {
-                // Start board hide animation.
-                boardAnimation = boardMan.animateHide(animationMan); 
-                boardMan.setDirty(true);
-                
-                // Hide the piece.
-                pieceMan.getPieceGrid().setVisible(false);                               
-                
-                // Clear flag.
-                clearBoardHideAnimation();                                
-            }                                                
+            }                                                                  
             
             // See if we need to activate the refactor.
             if (activateRefactor == true)
@@ -1647,7 +1552,7 @@ public class Game extends Canvas implements GameWindowCallback
                 timerMan.setTime(0);
                 pieceMan.initiateCommit(this);            
             }
-
+          
             // Update piece manager logic and then draw it.
             pieceMan.updateLogic(this);
                        
@@ -1748,7 +1653,11 @@ public class Game extends Canvas implements GameWindowCallback
     {
         // Don't pause game if we're showing the game over screen.
         if (gameOverGroup.isActivated() == false)
-            this.showPauseScreen();
+        {
+            updatePauseGroup();
+            groupMan.showGroup(pauseButton, pauseGroup, 
+                    GroupManager.SIDE);
+        }
         
         this.background.setDirty(true);
     }

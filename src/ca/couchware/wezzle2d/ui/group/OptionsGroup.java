@@ -46,19 +46,11 @@ public class OptionsGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public OptionsGroup(final GameWindow window, final LayerManager layerMan)
+    public OptionsGroup(final GameWindow window, 
+            final LayerManager layerMan, final GroupManager groupMan)
     {
         // Invoke super.
-        super(window, layerMan);
-        
-        // Create the options button.
-        optionsButton = new RectangularBooleanButton(window, 668, 299);
-        optionsButton.setNormalOpacity(70);
-        optionsButton.setText("Options");
-        optionsButton.getLabel().setSize(18);
-        optionsButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(optionsButton, Game.LAYER_UI);
-        entityList.add(optionsButton);
+        super(window, layerMan, groupMan);                
         
         // Create the options header.
         headerLabel = ResourceFactory.get().getLabel(400, 171);        
@@ -109,17 +101,7 @@ public class OptionsGroup extends Group
         backButton.setVisible(false);
         layerMan.add(backButton, Game.LAYER_UI);     
         entityList.add(backButton);
-    }
-    
-    public boolean isOptionsButtonClicked()
-    {
-        return optionsButton.clicked();
-    }
-    
-    public boolean isOptionButtonActivated()
-    {
-        return optionsButton.isActivated();
-    }
+    }      
     
     public boolean isBackButtonClicked()
     {
@@ -142,28 +124,14 @@ public class OptionsGroup extends Group
         
         // Invoke super.  This will remove the listener from pause which
         // we will re-add below.
-        super.setVisible(visible);
-        
-        // Make it so pause button still shows when the rest of the group is
-        // not visible.
-        if (visible == true)
-        {
-            optionsButton.setVisible(true);            
-        }
-        else
-        {
-            optionsButton.setVisible(true);                                                
-        }
+        super.setVisible(visible);               
     }
     
     @Override
     public void setActivated(final boolean activated)
     {
         // Invoke super.
-        super.setActivated(activated);
-        
-        // Make sure the pause button is activated.
-        optionsButton.setActivated(activated);
+        super.setActivated(activated);                
     } 
      
 }

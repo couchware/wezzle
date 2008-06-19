@@ -36,11 +36,12 @@ public class HighScoreGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public HighScoreGroup(final GameWindow window, final LayerManager layerMan,
-            HighScoreManager highScoreMan)
+    public HighScoreGroup(final GameWindow window,             
+            final LayerManager layerMan, final GroupManager groupMan,
+            final HighScoreManager highScoreMan)
     {
         // Invoke super.
-        super(window, layerMan);
+        super(window, layerMan, groupMan);
         
         scoreList = highScoreMan.getList();
         

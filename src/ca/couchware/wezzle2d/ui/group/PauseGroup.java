@@ -14,12 +14,7 @@ import ca.couchware.wezzle2d.ui.button.*;
  * @author cdmckay
  */
 public class PauseGroup extends Group
-{
-    /**
-     * The pause button shown in the main game window.
-     */
-    private RectangularBooleanButton pauseButton;
-    
+{       
     /**
      * The main label showing the paused text.
      */
@@ -46,20 +41,12 @@ public class PauseGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public PauseGroup(final GameWindow window, final LayerManager layerMan)
+    public PauseGroup(final GameWindow window, 
+            final LayerManager layerMan, final GroupManager groupMan)
     {
         // Invoke super.
-        super(window, layerMan);
-        
-        // Create pause button.        
-        pauseButton = new RectangularBooleanButton(window, 668, 211);
-        pauseButton.setNormalOpacity(70);
-        pauseButton.setText("Pause");
-        pauseButton.getLabel().setSize(18);
-        pauseButton.setAlignment(Button.VCENTER | Button.HCENTER);        
-        layerMan.add(pauseButton, Game.LAYER_UI);        
-        entityList.add(pauseButton);
-        
+        super(window, layerMan, groupMan);
+               
         // Create the "Paused" text.
         mainLabel = ResourceFactory.get().getLabel(400, 245);        
         mainLabel.setSize(30);
@@ -120,12 +107,7 @@ public class PauseGroup extends Group
     {
         // Set the lines per move label.
         linesPerMoveLabel.setText(lpm + " lines per move");
-    }
-    
-    public boolean isPauseButtonActivated()
-    {
-        return pauseButton.isActivated();
-    }
+    }      
     
     @Override
     public void setVisible(final boolean visible)
@@ -142,26 +124,23 @@ public class PauseGroup extends Group
         
         // Make it so pause button still shows when the rest of the group is
         // not visible.
-        if (visible == true)
-        {
-            pauseButton.setVisible(true);
-            pauseButton.setText("Resume");
-        }
-        else
-        {
-            pauseButton.setVisible(true);            
-            pauseButton.setText("Pause");
-        }
+//        if (visible == true)
+//        {
+//            pauseButton.setVisible(true);
+//            pauseButton.setText("Resume");
+//        }
+//        else
+//        {
+//            pauseButton.setVisible(true);            
+//            pauseButton.setText("Pause");
+//        }
     }
     
     @Override
     public void setActivated(final boolean activated)
     {
         // Invoke super.
-        super.setActivated(activated);
-        
-        // Make sure the pause button is activated.
-        pauseButton.setActivated(activated);
+        super.setActivated(activated);               
     }        
             
 }

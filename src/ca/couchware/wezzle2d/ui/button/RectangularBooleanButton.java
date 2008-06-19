@@ -75,11 +75,11 @@ public class RectangularBooleanButton extends BooleanButton
         
         buttonLabel.setX(x + offsetX + width / 2);
         buttonLabel.setY(y + offsetY + height / 2);
-        buttonLabel.setText(text);
+        buttonLabel.setText(getText());
         buttonLabel.draw();
     }
 
-//    @Override
+    @Override
     public void drawActive()
     {        
         spriteNormal.draw(x + offsetX, y + offsetY, 
@@ -87,24 +87,24 @@ public class RectangularBooleanButton extends BooleanButton
         
         buttonLabel.setX(x + offsetX + width / 2);
         buttonLabel.setY(y + offsetY + height / 2);
-        buttonLabel.setText(text);
+        buttonLabel.setText(getText());
         buttonLabel.draw();
     }
 
-//    @Override
+    @Override
     public void drawHover()
     {
         drawActive();
     }
 
-//    @Override
+    @Override
     public void drawPressed()
     {
         spriteNormal.draw(x + offsetX, y + offsetY, width, height, 0.0, 70);
         
         buttonLabel.setX(x + offsetX + width / 2);
         buttonLabel.setY(y + offsetY + height / 2 + 1);
-        buttonLabel.setText(text);
+        buttonLabel.setText(getText());
         buttonLabel.draw();
     }
    

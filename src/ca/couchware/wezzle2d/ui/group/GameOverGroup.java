@@ -40,10 +40,11 @@ public class GameOverGroup extends Group
      * 
      * @param layerMan
      */    
-    public GameOverGroup(final GameWindow window, final LayerManager layerMan)
+    public GameOverGroup(final GameWindow window, 
+            final LayerManager layerMan, final GroupManager groupMan)
     {        
         // Invoke super.
-        super(window, layerMan);
+        super(window, layerMan, groupMan);
         
         // Create the game over header.
         headerLabel = ResourceFactory.get().getLabel(400, 181);        

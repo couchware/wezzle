@@ -116,6 +116,9 @@ public class LayerManager
         if (layerExists(layer) == false)
             return;
         
+        if (hiddenLayers[layer] == true)
+            return;
+        
         hiddenLayers[layer] = true;
         
         // Grab the layer.
@@ -128,6 +131,9 @@ public class LayerManager
     public void show(final int layer)
     {
         if (layerExists(layer) == false)
+            return;
+        
+        if (hiddenLayers[layer] == false)
             return;
         
         hiddenLayers[layer] = false;

@@ -40,10 +40,16 @@ public abstract class BooleanButton extends Button
     {
         clicked = true;
         
-        if (activated == true)        
+        if (activated == true)    
+        {
             activated = false;                    
+            onDeactivation();
+        }
         else        
+        {
             activated = true;                    
+            onActivation();
+        }
         
         state = STATE_HOVER;
         
@@ -96,11 +102,39 @@ public abstract class BooleanButton extends Button
         this.activated = activated;
         
         if (activated == true)
+        {
             state = STATE_ACTIVE;
+            onActivation();
+        }
         else
+        {            
             state = STATE_NORMAL;
+            onDeactivation();
+        }
         
         setDirty(true);
+    }
+    
+    /**
+     * This method may be called from either the event thread (if activated
+     * by a mouse-click) or from the main thread if it's actiavted 
+     * programmatically.  Make sure you only use thread-safe methods (in this
+     * case, the only thread-safe method is setText) to modify the button.
+     */
+    public void onActivation()
+    {
+        // Optionally overridden.
+    }
+    
+     /**
+     * This method may be called from either the event thread (if activated
+     * by a mouse-click) or from the main thread if it's actiavted 
+     * programmatically.  Make sure you only use thread-safe methods (in this
+     * case, the only thread-safe method is setText) to modify the button.
+     */
+    public void onDeactivation()
+    {
+        // Optionally overridden.
     }
     
 }
