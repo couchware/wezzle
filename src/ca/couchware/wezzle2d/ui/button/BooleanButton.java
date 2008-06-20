@@ -38,7 +38,7 @@ public abstract class BooleanButton extends Button
     @Override
     public void handleReleased()
     {
-        clicked = true;
+        clicked.set(true);
         
         if (activated == true)    
         {

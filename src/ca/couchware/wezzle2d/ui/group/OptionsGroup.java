@@ -3,6 +3,8 @@ package ca.couchware.wezzle2d.ui.group;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
+import ca.couchware.wezzle2d.ui.group.options.*;
+import ca.couchware.wezzle2d.util.Util;
 
 /**
  *
@@ -29,6 +31,11 @@ public class OptionsGroup extends Group
      * The audio button.
      */
     private RectangularBooleanButton audioButton;
+    
+    /**
+     * The audio group.
+     */
+    private SoundMusicGroup audioGroup;
 
     /**
      * The main menu button.
@@ -47,7 +54,8 @@ public class OptionsGroup extends Group
      * @param layerMan
      */    
     public OptionsGroup(final GameWindow window, 
-            final LayerManager layerMan, final GroupManager groupMan)
+            final LayerManager layerMan, final GroupManager groupMan,
+            final PropertyManager propertyMan)
     {
         // Invoke super.
         super(window, layerMan, groupMan);                
@@ -81,6 +89,11 @@ public class OptionsGroup extends Group
         audioButton.setVisible(false);
         layerMan.add(audioButton, Game.LAYER_UI);
         entityList.add(audioButton);
+        
+        // Create the audio group.
+        audioGroup = new SoundMusicGroup(window, layerMan, groupMan, 
+                propertyMan);        
+        Group.register(audioGroup);
         
         // Create main menu button.
         mainMenuButton = new RectangularBooleanButton(window, 400, 354);        
@@ -134,4 +147,29 @@ public class OptionsGroup extends Group
         super.setActivated(activated);                
     } 
      
+    /**
+     * Override the update logic method.
+     * 
+     * @param game The game state.
+     */
+    @Override
+    public void updateLogic(Game game)
+    {
+        // Check if the back button was pressed.
+        if (backButton.isActivated() == true)
+        {            
+            // Hide all side triggered menues.
+            backButton.setActivated(false);
+            game.groupMan.hideGroup(this);
+        }
+        // Check if the sound/music button was pressed.
+        else if (audioButton.isActivated() == true)
+        {                        
+            // Show the sound/music group.            
+            game.groupMan.showGroup(audioButton, audioGroup, 
+                    GroupManager.CLASS_OPTIONS,
+                    GroupManager.LAYER_MIDDLE);
+        }       
+    }
+    
 }

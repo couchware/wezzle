@@ -1,6 +1,12 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
+
 package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.LinkedList;
@@ -12,12 +18,20 @@ import java.util.LinkedList;
  */
 public class Group extends Entity
 {
+    //--------------------------------------------------------------------------
+    // Static Members
+    //--------------------------------------------------------------------------
+    
     /**
      * This static linked list holds all groups that have called the register()
      * method.  This list is useful for performing commands on all the groups,
      * such as running updateLogic().
      */
     protected static LinkedList<Group> groupList;
+    
+    //--------------------------------------------------------------------------
+    // Static Constructor
+    //--------------------------------------------------------------------------
     
     /**
      * The static constructor.
@@ -27,6 +41,15 @@ public class Group extends Entity
         // Instantiate the group list.
         groupList = new LinkedList<Group>();
     }
+    
+    //--------------------------------------------------------------------------
+    // Protected Members
+    //--------------------------------------------------------------------------
+    
+    /**
+     * The parent of the group.  Set to null if there is no parent.
+     */
+    protected Group parent = null;
     
     /**
      * Is the screen activated?
@@ -55,6 +78,10 @@ public class Group extends Entity
      */
     final protected LinkedList<Entity> entityList;
 
+    //--------------------------------------------------------------------------
+    // Constructor
+    //--------------------------------------------------------------------------
+    
     /**
      * The constructa'.
      *
@@ -78,14 +105,66 @@ public class Group extends Entity
         // Create the entity list.
         this.entityList = new LinkedList<Entity>();
     }
+    
+    //--------------------------------------------------------------------------
+    // Instance Members
+    //--------------------------------------------------------------------------
 
-     @Override
+    /**
+     * A convenience method for determining if any of the controls in the
+     * group have been changed.
+     *
+     * @return True if a button has been pressed, false otherwise.
+     */
+    public boolean controlChanged()
+    {
+        boolean changed = false;
+
+        for (Entity e : entityList)
+            if (e instanceof Button)
+                changed = changed || ((Button) e).clicked(true);
+            else if (e instanceof SliderBar)
+                changed = changed || ((SliderBar) e).changed(true);
+
+        return changed;
+    }
+
+    /**
+     * A convenience method to clear all change notifications on all controls
+     * in the group.
+     */
+    public void clearChanged()
+    {
+        Util.handleMessage("Cleared by a group.", Thread.currentThread());
+
+        for (Entity e : entityList)
+            if (e instanceof Button)
+                ((Button) e).clicked();
+            else if (e instanceof SliderBar)
+                ((SliderBar) e).changed();
+    }    
+    
+    /**
+     * This method is called when the group is activated and detects a click.
+     * 
+     * @param game The game state.
+     */
+    public void updateLogic(Game game)
+    {
+        // Overridden.
+    }
+
+    @Override
     public void draw()
     {
         throw new UnsupportedOperationException(
                 "This method is not supported for groups");
     }
 
+    //--------------------------------------------------------------------------
+    // Getters and Setters
+    //--------------------------------------------------------------------------
+    
     @Override
     public void setVisible(final boolean visible)
     {
@@ -123,63 +202,9 @@ public class Group extends Entity
     {
         this.activated = activated;
     }
-
-    /**
-     * A convenience method for determining if any of the buttons in the
-     * group have been pressed.
-     *
-     * @return True if a button has been pressed, false otherwise.
-     */
-    public boolean buttonClicked()
-    {
-        boolean clicked = false;
-
-        for (Entity e : entityList)
-            if (e instanceof Button)
-                clicked = clicked || ((Button) e).clicked(true);
-
-        return clicked;
-    }
-
-    /**
-     * A convenience method to clear all click notifications on all buttons
-     * in the group.
-     */
-    public void clearClicked()
-    {
-        Util.handleMessage("Cleared by a group.", Thread.currentThread());
-
-        for (Entity e : entityList)
-            if (e instanceof Button)
-                ((Button) e).clicked();
-    }
-
-    /**
-     * A convenience method for deactivating all boolean buttons in the
-     * group.
-     */
-    public void resetButtons()
-    {
-       for (Entity e : entityList)
-            if (e instanceof BooleanButton)
-            {
-                ((BooleanButton) e).setActivated(false);
-                ((BooleanButton) e).clicked();
-            }
-    }
-    
-    /**
-     * This method is called when the group is activated and detects a click.
-     * 
-     * @param game The game state.
-     */
-    public void updateLogic(Game game)
-    {
-        // Overridden.
-    }
-    
+            
     //--------------------------------------------------------------------------
-    // Static methods
+    // Static Methods
     //--------------------------------------------------------------------------
     
     /**
@@ -203,9 +228,10 @@ public class Group extends Entity
         for (Group group : groupList)
         {
             if (group.isActivated() == true
-                    && group.buttonClicked() == true)
+                    && group.controlChanged() == true)
             {
                 group.updateLogic(game);
+                group.clearChanged();
             }
         }
     }

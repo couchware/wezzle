@@ -18,6 +18,21 @@ import java.util.ArrayList;
 
 public class SoundManager 
 {
+    /**
+     * The minimum volume setting.
+     */
+    private final float SOUND_MIN;
+    
+    /**
+     * The maximum volume setting.
+     */
+    private final float SOUND_MAX;
+    
+    /** 
+     * How much to adjust the volume by.
+     */
+    private final float VOLUME_STEP = 0.5f;
+    
     // The keys.
     public final static String KEY_BOMB = "bomb";
     public final static String KEY_LINE = "line";
@@ -54,12 +69,7 @@ public class SoundManager
      * The volume level.
      * range: -80.0 - 6.0206
      */    
-    private float volume;
-    
-    /** 
-     * How much to adjust the volume by.
-     */
-    private static final float VOLUME_STEP = 0.5f;
+    private float volume;       
     
     /**
      * Creates the effect list.
@@ -68,6 +78,13 @@ public class SoundManager
     {        
         // The property manager.
         this.propertyMan = propertyMan;
+        
+        // Grab the minimum and maximum sound value from the property manager.
+        SOUND_MIN = propertyMan.getFloatProperty(
+                PropertyManager.KEY_SOUND_MIN);
+        
+        SOUND_MAX = propertyMan.getFloatProperty(
+                PropertyManager.KEY_SOUND_MAX);
         
         // Initiate the array list.
         this.effectsList = new ArrayList<SoundEffect[]>(); 
@@ -95,13 +112,13 @@ public class SoundManager
         
         // Check if paused or not.
         if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
-                .equals(PropertyManager.VALUE_OFF))
+                .equals(PropertyManager.VALUE_ON))
         {
-            this.paused = true;
+            setPaused(false);
         }
         else
         {
-            this.paused = false;
+            setPaused(true);
         }
     }
     
@@ -214,6 +231,20 @@ public class SoundManager
             }
         }.start();
     }     
+        
+    public float getVolume()
+    {
+        return volume;
+    }
+
+    public void setVolume(float volume)
+    {
+        // Adjust the property;
+        propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
+                Float.toString(volume));
+        
+        this.volume = volume;
+    }        
     
     /** 
      * A method to increase the volume of the sound.
@@ -221,14 +252,14 @@ public class SoundManager
     public void increaseVolume()
     {
         // Adjust the volume.
-        this.volume += VOLUME_STEP;
+        float vol = this.volume + VOLUME_STEP;
         
         // Max volume.
-        if (this.volume > 6.0206f)
-            this.volume = 6.0206f;
+        if (vol > SOUND_MAX)
+            vol = SOUND_MAX;
         
-        // Adjust the property;
-        propertyMan.setProperty(PropertyManager.KEY_SOUND_VOLUME, Float.toString(this.volume));        
+        // Set it.     
+        setVolume(vol);
     }
     
     /**
@@ -237,15 +268,14 @@ public class SoundManager
     public void decreaseVolume()
     {
         // Adjust the volume.
-        this.volume -= VOLUME_STEP;
+        float vol = this.volume - VOLUME_STEP;
         
         // Min volume.
-        if (this.volume < -80.0f)
-            this.volume = -80.0f;
+        if (vol < SOUND_MIN)
+            vol = SOUND_MIN;
         
-        // Adjust the property;
-        propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
-                Float.toString(this.volume));
+        // Set it.
+        setVolume(vol);                
     }
     
     /**

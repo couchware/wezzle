@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is a class for creating a slider bar.  A slider bar is a common
@@ -96,6 +97,26 @@ public class SliderBar extends Entity implements
      * The maximum value for the slide offset.
      */
     final protected int maxOffset;
+            
+    /**
+     * The lower part of the virtual range.
+     */
+    protected double virtualLower;
+    
+    /**
+     * The upper part of the virutal range.
+     */
+    protected double virtualUpper;
+    
+    /**
+     * The current virtual value.
+     */
+    protected double virtualValue;
+    
+    /**
+     * Whether or not the slider value has changed.
+     */
+    protected AtomicBoolean changed;
     
     // -------------------------------------------------------------------------
     // Constructors
@@ -148,6 +169,9 @@ public class SliderBar extends Entity implements
         // Determine the maximum slider offset.
         maxOffset = width - spriteHandle.getWidth();
         
+        // Initially it is not changed.
+        changed = new AtomicBoolean(false);
+        
         // Set dirty so it will be drawn.        
         setDirty(true);
     }
@@ -168,10 +192,10 @@ public class SliderBar extends Entity implements
             return;
         
         // Draw the rail.
-        spriteRail.draw(x, y + 7);
+        spriteRail.draw(x + offsetX, y + offsetY + 7);
         
         // Draw the handle.
-        spriteHandle.draw(x + slideOffset, y);
+        spriteHandle.draw(x + offsetX + slideOffset, y + offsetY);
     }
 
     public void mouseClicked(MouseEvent e)
@@ -188,7 +212,7 @@ public class SliderBar extends Entity implements
         // Ignore click if we're outside the button.
         if (shape.contains(p.x, p.y) == false)
             return;                    
-            
+                            
         //Util.handleMessage("Pressed.", Thread.currentThread());
         
 		// Check which button.
@@ -197,7 +221,7 @@ public class SliderBar extends Entity implements
             // Left mouse clicked.
             case MouseEvent.BUTTON1:
                 state = STATE_PRESSED; 
-                setSlideOffset(p.x - x - spriteHandle.getWidth() / 2);
+                setSlideOffset(p.x - x - offsetX - spriteHandle.getWidth() / 2);
                 
             default:                
                 break;   
@@ -231,18 +255,58 @@ public class SliderBar extends Entity implements
             final XYPosition p = getMousePosition();
 
             // If the state is pressed, then move the slider around.        
-            setSlideOffset(p.x - x - spriteHandle.getWidth() / 2);
+            setSlideOffset(p.x - x - offsetX - spriteHandle.getWidth() / 2);
         }       
     }
 
     public void mouseMoved(MouseEvent e)
     {
         // Intentionally blank.
-    }   
+    } 
+    
+    public boolean changed()
+    {
+        return changed.getAndSet(false);                
+    }    
+    
+    /**
+     * A special version of changed() that does not automatically reset the
+     * flag if <pre>preserve</pre> is true.
+     * 
+     * @param preserve
+     * @return
+     */
+    public boolean changed(boolean preserve)
+    {
+        if (preserve == true)
+            return changed.get();
+        else
+            return changed();
+    }
     
     //--------------------------------------------------------------------------
     // Getters and Setters
     //--------------------------------------------------------------------------
+    
+    /**
+	 * Set the alignment of the button. 
+     * The alignment is initially set to the top left. 
+	 * 
+	 * @param x The x alignment coordinate with respect 
+     * to the top left corner of the button.
+	 * @param y The y alignment coordinate with respect 
+     * to the top left corner of the button.
+	 */
+    @Override
+	public void setAlignment(final int alignment)
+	{
+        // Invoke super.
+        super.setAlignment(alignment);	                
+        
+        // Move the shape.        
+        shape.setFrame(x + offsetX, y + offsetY,
+                shape.getWidth(), shape.getHeight());                
+	}    
     
     /**
 	 * Gets the mousePosition.
@@ -267,6 +331,20 @@ public class SliderBar extends Entity implements
 	}       
     
     /**
+     * Sets the virtual range for the slider.
+     * 
+     * @param lower
+     * @param upper
+     */
+    public void setVirtualRange(double lower, double upper)
+    {
+        assert(upper > lower);
+        
+        this.virtualLower = lower;
+        this.virtualUpper = upper;
+    }
+    
+    /**
      * Get the slider offset.
      * @return
      */
@@ -289,7 +367,7 @@ public class SliderBar extends Entity implements
      * the correct range.
      * @param slideOffset
      */
-    public void setSlideOffset(final int slideOffset)
+    protected void setSlideOffset(final int slideOffset)
     {
         // Make sure the slider stays on the rail.
         if (slideOffset < 0)
@@ -301,6 +379,9 @@ public class SliderBar extends Entity implements
         
         // Make it dirty so we get a redraw.
         setDirty(true);
+        
+        // Set changed.
+        changed.set(true);
     }
     
     /**
@@ -308,9 +389,42 @@ public class SliderBar extends Entity implements
      * ensures that the passed value is within the range.
      * @param slideOffsetPercent
      */
-    public void setSlideOffset(final double slideOffsetPercent)
+    public void setSlideOffsetPercent(final double slideOffsetPercent)
     {
-        this.slideOffset = (int) ((double) maxOffset * slideOffsetPercent);
+        setSlideOffset((int) ((double) maxOffset * slideOffsetPercent));
+    }      
+    
+    public double getVirtualValue()
+    {
+        return virtualValue;
     }
     
+    /**
+     * Set the slider offset as a value between a range of two numbers.
+     *
+     * @param value
+     */
+    public void setVirtualValue(double value)
+    {
+        assert(value >= virtualLower);
+        assert(value <= virtualUpper);
+        
+        double percent = (value - virtualLower) / (virtualUpper - virtualLower);        
+        setSlideOffsetPercent(percent);
+    }   
+
+    public double getVirtualLower()
+    {
+        // Determine the virtual value.                
+        virtualValue = (virtualUpper - virtualLower) * getSlideOffsetPercent();
+        
+        // Return the value.
+        return virtualLower;
+    }  
+
+    public double getVirtualUpper()
+    {
+        return virtualUpper;
+    }   
+            
 }

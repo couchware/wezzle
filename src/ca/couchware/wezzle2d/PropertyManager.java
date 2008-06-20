@@ -18,15 +18,16 @@ import javax.jnlp.UnavailableServiceException;
  */
 public class PropertyManager
 {
-	/**
-	 * The high score key.
-	 */
-	//public static final String KEY_HIGH_SCORE = "wezzle.highScore";
-	public static final String KEY_DIFFICULTY = "wezzle.difficulty";		
+	public static final String KEY_DIFFICULTY = "wezzle.difficulty";
     public static final String KEY_MUSIC = "wezzle.music";
+    public static final String KEY_MUSIC_MIN = "wezzle.musicMinimum";
+    public static final String KEY_MUSIC_MAX = "wezzle.musicMaximum";    
     public static final String KEY_MUSIC_VOLUME = "wezzle.musicVolume";
     public static final String KEY_SOUND = "wezzle.sound";
+    public static final String KEY_SOUND_MIN = "wezzle.soundMinimum";
+    public static final String KEY_SOUND_MAX = "wezzle.soundMaximum";    
     public static final String KEY_SOUND_VOLUME = "wezzle.soundVolume";
+    
     public static final String VALUE_ON = "on";
     public static final String VALUE_OFF = "off";
 	
@@ -41,10 +42,10 @@ public class PropertyManager
 	private boolean webStart;
 		
 	/**
-	 * The default Constructor.
+	 * The default constructor.
 	 */
 	public PropertyManager()
-	{
+	{        
 		this("/settings.txt");		
 	}
 	
@@ -56,70 +57,87 @@ public class PropertyManager
 		// Create new properties.
 		this.properties = new Properties();
 
+        // Load defaults.
+        setDefaults();
+        
 		// WebStart.
 		this.webStart = true;
 		
 		//Check WebStart.
-		try
-		{
-			// Only create a property manager if this isn't the WebStart version.
-			this.checkWebStart();
-		}
-		catch(UnavailableServiceException e)
-		{
-			// Do nothing.
-			this.setWebStart();
-		}
+//		try
+//		{
+//			// Only create a property manager if this isn't the WebStart version.
+//			this.checkWebStart();
+//		}
+//		catch(UnavailableServiceException e)
+//		{
+//			// Web start is not running.
+//			this.setWebStart();
+//            //Util.handleException(e);
+//		}		        
 		
-		if (this.webStart == false)
-		{
-			// Check if the directory exists.
-			File dir = new File(DIR_PATH);
-			
-			// If the directory doesn't exist. Create it.
-			if(dir.isDirectory() == false)
-			{
-				dir.mkdir();
-			}
-			
-			// Store the file name.
-			this.filePath = DIR_PATH + fileName;
-			
-			// Check if the file exists.
-			File f = new File(this.filePath);	
-			
-			if (f.exists() == false)
-			{
-				try
-				{
-					// If the file doesn't exist, create one with highscore 0.
-					f.createNewFile();		
-				}
-				catch(Exception e)
-				{
-					Util.handleWarning("Url is " + f.getAbsolutePath(), 
-                            Thread.currentThread());
-					Util.handleException(e);
-				}
-			}
-			else
-			{
-				// Get the url.
-				try
-				{
-                    FileInputStream in = new FileInputStream(filePath);
-					this.properties.load(in);
-                    in.close();
-				}
-				catch(Exception e)
-				{
-					Util.handleWarning("Url is " + f.getAbsolutePath(), Thread.currentThread());
-					Util.handleException(e);
-				}
-			} // end if
-		} // end if
+        // Check if the directory exists.
+        File dir = new File(DIR_PATH);
+
+        // If the directory doesn't exist. Create it.
+        if(dir.isDirectory() == false)
+        {
+            dir.mkdir();
+        }
+
+        // Store the file name.
+        this.filePath = DIR_PATH + fileName;
+
+        // Check if the file exists.
+        File f = new File(this.filePath);	
+
+        if (f.exists() == false)
+        {
+            try
+            {
+                // If the file doesn't exist, create one with highscore 0.
+                f.createNewFile();		
+            }
+            catch(Exception e)
+            {
+                Util.handleWarning("Url is " + f.getAbsolutePath(), 
+                        Thread.currentThread());
+                Util.handleException(e);
+            }
+        }
+        else
+        {
+            // Get the url.
+            try
+            {
+                FileInputStream in = new FileInputStream(filePath);
+                this.properties.load(in);
+                in.close();
+            }
+            catch(Exception e)
+            {
+                Util.handleWarning("Url is " + f.getAbsolutePath(), Thread.currentThread());
+                Util.handleException(e);
+            }
+        } // end if
+		
 	}	
 		
+    /**
+     * Loads default values for all keys that need defaults.
+     */
+    public void setDefaults()
+    {   
+        properties.put(KEY_SOUND, VALUE_ON);
+        properties.put(KEY_SOUND_MIN, "-80.0f");
+        properties.put(KEY_SOUND_MAX, "6.0206f");
+        properties.put(KEY_SOUND_VOLUME, "-1.5f");
+        properties.put(KEY_MUSIC, VALUE_ON);
+        properties.put(KEY_MUSIC_MIN, "-80.0f");
+        properties.put(KEY_MUSIC_MAX, "6.0206f");
+        properties.put(KEY_MUSIC_VOLUME, "-1.5f");
+    }
+    
 	/**
 	 * Checks if webstart is running.
 	 */
@@ -141,8 +159,7 @@ public class PropertyManager
 	{
         FileOutputStream out = new FileOutputStream(this.filePath);
 		this.properties.store(out, "Wezzle Settings File");
-        out.close();
-		
+        out.close();		
 	}
 	
 	/**
@@ -202,11 +219,8 @@ public class PropertyManager
 		// If the property doesnt exist, set it to 0.
       
         if (this.properties.get(key) == null)
-		{
-            if (key.equals(PropertyManager.KEY_MUSIC_VOLUME))
-                this.setProperty(key, "-1.5f");
-            else
-                this.setProperty(key, "0.0f");
+		{           
+            this.setProperty(key, "0.0f");
 		}
 		
 		return Float.parseFloat(this.properties.get(key).toString());

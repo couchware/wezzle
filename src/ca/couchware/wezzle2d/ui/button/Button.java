@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -75,7 +76,7 @@ public abstract class Button extends Entity implements
      * Was the button just pushed?  This flag is cleared once it
      * is read.
      */
-    protected boolean clicked;
+    protected AtomicBoolean clicked;
     
     // -------------------------------------------------------------------------
     // Constructors
@@ -120,6 +121,9 @@ public abstract class Button extends Entity implements
         
         // Set the initial state.
         this.state = STATE_NORMAL;        
+        
+        // Initially it is not clicked.
+        clicked = new AtomicBoolean(false);
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -229,9 +233,7 @@ public abstract class Button extends Entity implements
     
     public boolean clicked()
     {
-        boolean value = clicked;
-        clicked = false;
-        return value;
+        return clicked.getAndSet(false);                
     }    
     
     /**
@@ -244,7 +246,7 @@ public abstract class Button extends Entity implements
     public boolean clicked(boolean preserve)
     {
         if (preserve == true)
-            return clicked;
+            return clicked.get();
         else
             return clicked();
     }

@@ -11,7 +11,21 @@ import java.util.ArrayList;
 
 public class MusicManager 
 {
-  
+    /**
+     * The minimum volume setting.
+     */
+    private final float MUSIC_MIN;
+    
+    /**
+     * The maximum volume setting.
+     */
+    private final float MUSIC_MAX;
+    
+    /** 
+     * How much to adjust the volume by.
+     */
+    private static final float VOLUME_STEP = 0.5f;
+    
     /** 
      * A link to the property manager. 
      */
@@ -38,15 +52,9 @@ public class MusicManager
     private volatile boolean playing;
       
     /**
-     * The volume level.
-     * range: -80.0 - 6.0206
+     * The volume level.     
      */    
-    private float volume;
-    
-    /** 
-     * How much to adjust the volume by.
-     */
-    private static final float VOLUME_STEP = 0.5f;
+    private float volume;        
     
     /**
      * Creates the song list.
@@ -56,6 +64,13 @@ public class MusicManager
         // The property manager.
         this.propertyMan = propertyMan;
         
+        // Grab the minimum and maximum sound value from the property manager.
+        MUSIC_MIN = propertyMan.getFloatProperty(
+                PropertyManager.KEY_MUSIC_MIN);
+        
+        MUSIC_MAX = propertyMan.getFloatProperty(
+                PropertyManager.KEY_MUSIC_MAX);
+                        
         // Initiate the array list and song number.
         this.songList = new ArrayList<Song>();      
         
@@ -76,8 +91,16 @@ public class MusicManager
         this.songNum = -1;
         
         // Get the default volume.
-        this.volume = propertyMan
-                .getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME);
+        this.volume = propertyMan.getFloatProperty(
+                PropertyManager.KEY_MUSIC_VOLUME);
+        
+        // Now see whether or not the music is enabled.
+         // Run the music if it's enabled.
+        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
+                .equals(PropertyManager.VALUE_ON))
+        {            
+            playNext();
+        }
     }
     
     /**
@@ -220,7 +243,7 @@ public class MusicManager
     }
 
     /**
-     * Is the music playing?
+     * Is the music playing? That is, is a track loaded? It may be paused.
      * 
      * @return True if it is, false otherwise.
      */
@@ -257,16 +280,6 @@ public class MusicManager
     public boolean isPaused()
     {
         return this.paused;
-    }
-
-    /**
-     * Gets the current volume.
-     * 
-     * @return
-     */
-    public synchronized float getVolume()
-    {
-        return volume;
     }  
     
     /** 
@@ -275,25 +288,14 @@ public class MusicManager
     public synchronized void increaseVolume()
     {
         // Adjust the volume.
-        this.volume += VOLUME_STEP;
+        float vol = volume + VOLUME_STEP;
         
         // Max volume.
-        if (this.volume > 6.0206f)
-            this.volume = 6.0206f;
+        if (vol > MUSIC_MAX)
+            vol = MUSIC_MIN;                   
         
-        // Adjust the property;
-        propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
-                Float.toString(this.volume));
-        
-        // Adjust the current playing song.
-        if (isPlaying() == true)
-        {
-            if (songNum != -1)
-                this.songList.get(this.songNum).setVolume(this.volume);
-            else
-                throw new IllegalStateException(
-                        "Song number is -1 (no song) yet playing flag is set");
-        }            
+        // Set it.
+        setVolume(vol);
     }
     
     /**
@@ -301,16 +303,27 @@ public class MusicManager
      */
     public synchronized void decreaseVolume()
     {
-         // Adjust the volume.
-        this.volume -= VOLUME_STEP;
+        // Adjust the volume.
+        float vol = volume - VOLUME_STEP;
         
         // Min volume.
-        if (this.volume < -80.0f)
-            this.volume = -80.0f;
-        
-         // Adjust the property;
+        if (vol < MUSIC_MIN)
+            vol = MUSIC_MIN;
+                
+        // Set it.
+        setVolume(vol);          
+    }
+    
+    public float getVolume()
+    {
+        return volume;
+    }
+
+    public void setVolume(float volume)
+    {
+        // Adjust the property;
         propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
-                Float.toString(this.volume));
+                Float.toString(volume));
         
         // Adjust the current playing song.
         if (isPlaying() == true)
@@ -320,6 +333,8 @@ public class MusicManager
             else
                 throw new IllegalStateException(
                         "Song number is -1 (no song) yet playing flag is set");
-        }            
-    }
+        }   
+        
+        this.volume = volume;
+    }  
 }

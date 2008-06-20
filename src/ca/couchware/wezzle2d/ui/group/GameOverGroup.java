@@ -122,10 +122,12 @@ public class GameOverGroup extends Group
      * 
      * @param game The game state.
      */
+    @Override
     public void updateLogic(Game game)
     {
         // Hide the screen.
-        game.groupMan.hideGroup(GroupManager.GAME_OVER);
+        game.groupMan.hideGroup(GroupManager.CLASS_GAME_OVER,
+                GroupManager.LAYER_BOTTOM);
 
         // Reset a bunch of stuff.
         if (isRestartActivated() == true)

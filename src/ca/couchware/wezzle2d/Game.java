@@ -239,11 +239,6 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public ProgressBar progressBar;
     
-    /**
-     * The test slider bar.
-     */
-    public SliderBar sliderBar;
-    
     //--------------------------------------------------------------------------
     // Private Members
     //--------------------------------------------------------------------------
@@ -573,6 +568,9 @@ public class Game extends Canvas implements GameWindowCallback
 	
         // Create the property manager. Must be done before Score manager.
         propertyMan = new PropertyManager();
+        Util.handleMessage(
+                propertyMan.getStringProperty(PropertyManager.KEY_MUSIC_MIN),
+                Thread.currentThread());
         
         // Create the high score manager.
         highScoreMan = new HighScoreManager(propertyMan);
@@ -592,7 +590,7 @@ public class Game extends Canvas implements GameWindowCallback
         soundMan = new SoundManager(propertyMan);
         
         // Create the music manager.
-        musicMan = new MusicManager(propertyMan);
+        musicMan = new MusicManager(propertyMan);                  
         
         // Create the move manager.
         moveMan = new MoveManager();
@@ -645,45 +643,7 @@ public class Game extends Canvas implements GameWindowCallback
         pauseButton.setText("Pause");
         pauseButton.getLabel().setSize(18);
         pauseButton.setAlignment(Button.VCENTER | Button.HCENTER);        
-        layerMan.add(pauseButton, Game.LAYER_UI); 
-                
-        // Create the sound on/off button.
-//        soundButton = new RectangularBooleanButton(668, 299);
-//        soundButton.setNormalOpacity(70);
-//        soundButton.setText("Sound ON");
-//        soundButton.getLabel().setSize(18);
-//        soundButton.setAlignment(Button.VCENTER | Button.HCENTER);
-//        layerMan.add(soundButton, LAYER_UI);
-//        window.addMouseListener(soundButton);
-//        window.addMouseMotionListener(soundButton);
-//        
-//        // Check the properties.
-//        if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
-//                .equals(PropertyManager.VALUE_OFF))
-//        {
-//            this.pauseSound();
-//        }
-        
-        // Create music on/off button.
-//        musicButton = new RectangularBooleanButton(668, 387);
-//        musicButton.setNormalOpacity(70);
-//        musicButton.setText("Music ON");
-//        musicButton.getLabel().setSize(18);
-//        musicButton.setAlignment(Button.VCENTER | Button.HCENTER);
-//        layerMan.add(musicButton, LAYER_UI);
-//        window.addMouseListener(musicButton);
-//        window.addMouseMotionListener(musicButton);
-//        
-//        // Check the properties.
-//        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
-//                .equals(PropertyManager.VALUE_OFF))
-//        {
-//           this.pauseMusic();
-//        }
-        
-        sliderBar = new SliderBar(window, 10, 10);
-        sliderBar.setSlideOffset(10000);
-        layerMan.add(sliderBar, LAYER_UI);
+        layerMan.add(pauseButton, Game.LAYER_UI);               
         
         //----------------------------------------------------------------------
         // Initialize labels.
@@ -775,7 +735,8 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------
         
         // Create the options group.
-        optionsGroup = new OptionsGroup(window, layerMan, groupMan);
+        optionsGroup = new OptionsGroup(window, layerMan, groupMan, 
+                propertyMan);
         Group.register(optionsGroup);
         
         //----------------------------------------------------------------------
@@ -849,75 +810,13 @@ public class Game extends Canvas implements GameWindowCallback
         
         layerMan.show(LAYER_TILE);
         layerMan.show(LAYER_EFFECT);
-        highScoreGroup.resetButtons();
+        highScoreGroup.clearChanged();
         highScoreGroup.setActivated(false);
         highScoreGroup.setVisible(false);
         
         // Clear clicks.
         pieceMan.clearMouseButtons();
-    }
-    
-//    /**
-//     * A private helper method to handle music pausing.
-//     */
-//    private void pauseMusic()
-//    {
-//         // Set the button.
-//        musicButton.setText("Music OFF");                
-//        musicMan.setPaused(true);
-//
-//        // Set the property.
-//        propertyMan.setProperty(PropertyManager.KEY_MUSIC, 
-//                PropertyManager.VALUE_OFF);
-//        
-//        // Activate the button.
-//        musicButton.setActivated(true);
-//    }
-//    
-//    /**
-//     * A private helper method to handle music resuming.
-//     */
-//    private void resumeMusic()
-//    {
-//        // Set the button.
-//        musicButton.setText("Music ON");                
-//        musicMan.setPaused(false);
-//
-//        // Set the property.
-//        propertyMan.setProperty(PropertyManager.KEY_MUSIC, PropertyManager.VALUE_ON);
-//    }
-//    
-//     /**
-//     * A private helper method to handle music pausing.
-//     */
-//    private void pauseSound()
-//    {
-//         // Set the button.
-//        soundButton.setText("Sound OFF");                
-//        soundMan.setPaused(true);
-//
-//        // Set the property.
-//        propertyMan.setProperty(PropertyManager.KEY_SOUND, 
-//                PropertyManager.VALUE_OFF);
-//        
-//         // Activate the button.
-//        soundButton.setActivated(true);
-//     
-//    }
-//    
-//    /**
-//     * A private helper method to handle sound resuming.
-//     */
-//    private void resumeSound()
-//    {
-//        // Set the button.
-//        soundButton.setText("Sound ON");                
-//        soundMan.setPaused(false);
-//
-//        // Set the property.
-//        propertyMan.setProperty(PropertyManager.KEY_SOUND, 
-//                PropertyManager.VALUE_ON);
-//    }         
+    }      
     
     /**
      * Start a refactor with the given speed.
@@ -1044,22 +943,28 @@ public class Game extends Canvas implements GameWindowCallback
         {            
             if (pauseButton.isActivated() == true)            
             {
-                updatePauseGroup();
+                updatePauseGroup();                
                 groupMan.showGroup(pauseButton, pauseGroup, 
-                        GroupManager.SIDE);            
+                        GroupManager.CLASS_PAUSE,
+                        GroupManager.LAYER_MIDDLE);            
             }
             else
-                groupMan.hideGroup(GroupManager.SIDE);            
+                groupMan.hideGroup(GroupManager.CLASS_PAUSE,
+                        GroupManager.LAYER_MIDDLE);            
         }
         
         // If the options button was just clicked.
         if (optionsButton.clicked() == true)
         {                           
-            if (optionsButton.isActivated() == true)                            
+            if (optionsButton.isActivated() == true)  
+            {                
                 groupMan.showGroup(optionsButton, optionsGroup,
-                        GroupManager.SIDE);            
+                        GroupManager.CLASS_OPTIONS,
+                        GroupManager.LAYER_MIDDLE);            
+            }
             else            
-                groupMan.hideGroup(GroupManager.SIDE);
+                groupMan.hideGroup(GroupManager.CLASS_OPTIONS,
+                        GroupManager.LAYER_MIDDLE);
         }    
         
         // Check on board animation.
@@ -1093,7 +998,8 @@ public class Game extends Canvas implements GameWindowCallback
                 // Draw game over screen.
                 gameOverGroup.setScore(scoreMan.getTotalScore());
                 groupMan.showGroup(null, gameOverGroup, 
-                        GroupManager.GAME_OVER);                  
+                        GroupManager.CLASS_GAME_OVER,
+                        GroupManager.LAYER_BOTTOM);                  
             }
         }
         else if (boardAnimation != null && boardAnimation.isDone() == false)
@@ -1625,11 +1531,12 @@ public class Game extends Canvas implements GameWindowCallback
     public void windowDeactivated()
     {
         // Don't pause game if we're showing the game over screen.
-        if (gameOverGroup.isActivated() == false)
+        if (groupMan.isActivated() == false)
         {
             updatePauseGroup();
             groupMan.showGroup(pauseButton, pauseGroup, 
-                    GroupManager.SIDE);
+                    GroupManager.CLASS_PAUSE,
+                    GroupManager.LAYER_BOTTOM);
         }
         
         this.background.setDirty(true);
