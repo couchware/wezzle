@@ -336,5 +336,12 @@ public class MusicManager
         }   
         
         this.volume = volume;
-    }  
+    } 
+    
+    public void updateLogic(Game game)
+    {
+        if (isPlaying() == false && isPaused() == false)
+            playNext();
+    }
+    
 }

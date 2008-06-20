@@ -1010,6 +1010,9 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Update all the group logic.
         Group.updateLogicAll(this);
+        
+        // Update the music manager logic.
+        musicMan.updateLogic(this);
 
         // Check to see if we should be showing the board.
         if (activateBoardShowAnimation == true)
