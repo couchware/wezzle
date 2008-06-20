@@ -18,11 +18,13 @@ public class TileEntity extends GraphicEntity implements Movable
 	final public static int COLOR_PURPLE = 2;
 	final public static int COLOR_RED = 3;		
 	final public static int COLOR_YELLOW = 4;
+    final public static int COLOR_BLACK = 5;
+    final public static int COLOR_WHITE = 6;
 	
     /**
      * The number of possible tile colours.
      */
-	final public static int NUMBER_OF_COLORS = 5;               
+	final public static int NUMBER_OF_COLORS = 7;               
 	
 	/**
 	 * The associated board manager.
@@ -260,6 +262,12 @@ public class TileEntity extends GraphicEntity implements Movable
 				
 			case COLOR_YELLOW:
 				return "Yellow";
+                
+            case COLOR_BLACK:
+                return "Black";
+                
+            case COLOR_WHITE:
+                return "White";
 				
 			default:
 				Util.handleWarning("Unknown color number. Defaulting to 'Red'.", 
