@@ -95,6 +95,10 @@ public class GroupManager
                     it.remove();
                 }
             }
+            else
+            {
+                e.getGroup().setVisible(false);
+            }
                 
         }
        
