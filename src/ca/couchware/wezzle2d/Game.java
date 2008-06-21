@@ -1539,7 +1539,7 @@ public class Game extends Canvas implements GameWindowCallback
             updatePauseGroup();
             groupMan.showGroup(pauseButton, pauseGroup, 
                     GroupManager.CLASS_PAUSE,
-                    GroupManager.LAYER_BOTTOM);
+                    GroupManager.LAYER_MIDDLE);
         }
         
         this.background.setDirty(true);
