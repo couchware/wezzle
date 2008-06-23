@@ -34,11 +34,12 @@ public class SoundManager
     private final float VOLUME_STEP = 0.5f;
     
     // The keys.
-    public final static String KEY_BOMB = "bomb";
-    public final static String KEY_LINE = "line";
-    public final static String KEY_BLEEP = "bleep";
-    public final static String KEY_CLICK = "click";
-    public final static String KEY_LEVEL_UP = "levelUp";
+    public final static int KEY_BOMB = 0;
+    public final static int KEY_LINE = 1;
+    public final static int KEY_BLEEP = 2;
+    public final static int KEY_CLICK = 3;
+    public final static int KEY_LEVEL_UP = 4;
+    public final static int KEY_STAR = 5;
     
     /** 
      * The number of buffers for the effect. 
@@ -106,6 +107,9 @@ public class SoundManager
         
         this.addSoundEffect(SoundManager.KEY_LEVEL_UP,
                 Game.SOUNDS_PATH + "/SoundLevelUp.wav");
+        
+        this.addSoundEffect(SoundManager.KEY_STAR,
+                Game.SOUNDS_PATH + "/SoundDing.wav");
              
         // Get the default volume.
         this.volume = propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME);
@@ -127,7 +131,7 @@ public class SoundManager
      * 
      * @param effect The new effect.
      */
-    public void addSoundEffect(String key, String path)
+    public void addSoundEffect(int key, String path)
     {
         SoundEffect effects[] = new SoundEffect[NUM_BUFFERS];
         for (int i = 0; i < effects.length; i++)
@@ -147,12 +151,12 @@ public class SoundManager
      * @param key The key of the effect to remove.
      * @return True if the effect was removed, false otherwise.
      */
-    public boolean removeSoundEffect (final String key)
+    public boolean removeSoundEffect (final int key)
     {
         // Find and remove the effect.        
         for (int i = 0; i < effectsList.size(); i++)
         {
-            if (effectsList.get(i)[0].getKey().equals(key) == true)
+            if (effectsList.get(i)[0].getKey() == key)
             {
                 // Remove the effect and its buffer num list.
                 effectsList.remove(i); 
@@ -173,12 +177,12 @@ public class SoundManager
      * @param key The associated key.
      * @return The effect or null if the key was not found.
      */
-    public SoundEffect getSoundEffect(final String key)
+    public SoundEffect getSoundEffect(final int key)
     {        
         // Find and return the effect.
         for (int i = 0; i < effectsList.size(); i++)
         {
-            if (effectsList.get(i)[0].getKey().equals(key) == true)
+            if (effectsList.get(i)[0].getKey() == key)
             {
                 // The current buffer.
                 int bufferNum = bufferPointerList.get(i);
@@ -202,7 +206,7 @@ public class SoundManager
      * 
      * @param key The key of the associated effect.
      */
-    public void playSoundEffect(final String key)
+    public void playSoundEffect(final int key)
     {
         // If paused, don't play.
         if (this.paused == true)

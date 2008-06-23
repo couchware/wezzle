@@ -266,7 +266,14 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * If true, a line removal will be activated next loop.
      */
-    private boolean activateLineRemoval = false;        
+    private boolean activateLineRemoval = false;       
+    
+    /**
+     * The last line that was matched.  This is used by the "star" item
+     * to determine whether a bomb is "in the wild" (i.e. should be removed)
+     * or part of the line (i.e. should be left to explode).
+     */
+    private Set<Integer> lastMatchSet;
     
     /**
      * If true, a line removal is in progress.
@@ -543,6 +550,9 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Set cascade count to 0.
         setCascadeCount(0);
+        
+        // Initialize the last line match.
+        lastMatchSet = new HashSet<Integer>();
         
         // Initialize line index set.
         tileRemovalSet = new HashSet<Integer>();
@@ -1168,6 +1178,10 @@ public class Game extends Canvas implements GameWindowCallback
                     
                     cycleLineCount += boardMan.findXMatch(tileRemovalSet);
                     cycleLineCount += boardMan.findYMatch(tileRemovalSet);
+                    
+                    // Copy the match into the last line match holder.
+                    lastMatchSet.clear();
+                    lastMatchSet.addAll(tileRemovalSet);
 
                     // If there are matches, score them, remove 
                     // them and then refactor again.
@@ -1308,9 +1322,22 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Get the tiles the bombs would affect.
                 boardMan.processStars(starRemovalSet, tileRemovalSet);
+                
+                for (Integer index : lastMatchSet)
+                {
+                    if (boardMan.getTile(index) == null)
+                        continue;
+                    
+                    if (boardMan.getTile(index).getClass() 
+                        != StarTileEntity.class)
+                    {
+                        tileRemovalSet.remove(index);
+                    }
+                }       
+                
                 deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
-                        ScoreManager.TYPE_BOMB, 
+                        ScoreManager.TYPE_STAR, 
                         cascadeCount);
                 
                 // Show the SCT.
@@ -1329,7 +1356,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.playSoundEffect(SoundManager.KEY_LINE);
+                soundMan.playSoundEffect(SoundManager.KEY_STAR);
                 
                 // Start the line removal animations.
                 int i = 0;

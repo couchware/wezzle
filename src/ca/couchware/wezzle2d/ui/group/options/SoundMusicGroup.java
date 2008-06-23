@@ -224,9 +224,9 @@ public class SoundMusicGroup extends Group
             // Unpause or start the music.
             if (musicButton.isActivated() == true)
             {
-                if (game.musicMan.isPlaying() == true)
-                    game.musicMan.setPaused(false);
-                else
+                game.musicMan.setPaused(false);
+                
+                if (game.musicMan.isPlaying() == false)                    
                     game.musicMan.playNext();                
             }
             // Pause music.

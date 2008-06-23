@@ -20,6 +20,11 @@ import java.util.Set;
      * A bomb.
      */
     final public static int TYPE_BOMB = 1;
+    
+    /**
+     * A star.
+     */
+    final public static int TYPE_STAR = 2;
      
     /**
      * The amount of point per tile in a line.
@@ -183,7 +188,7 @@ import java.util.Set;
     private int calculateLineTilePoints(int numTotal, int lineType)
     {
         // If we have a minimal line, it's just 4 times the points/tile.
-        if (numTotal <= 4  || lineType == TYPE_BOMB)
+        if (numTotal <= 4  || lineType == TYPE_BOMB || lineType == TYPE_STAR)
             return numTotal * POINTS_PER_LINE_TILE;
 
         // If we have more, 4 times the points/tile + 100 + 150 + 200 + ...

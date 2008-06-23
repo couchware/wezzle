@@ -19,7 +19,7 @@ public class SoundEffect
     /** 
      * The key identifer.
      */
-    private String key;
+    private int key;
      
     /** 
      * A line of sound.
@@ -62,7 +62,7 @@ public class SoundEffect
      * @param key
      * @param path
      */
-    public SoundEffect(String key, String path)
+    public SoundEffect(int key, String path)
     {
         // The associated key.
         this.key = key;
@@ -207,7 +207,7 @@ public class SoundEffect
      * 
      * @return
      */
-    public String getKey()
+    public int getKey()
     {
         return this.key;
     }
