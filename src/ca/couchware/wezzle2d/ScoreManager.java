@@ -188,8 +188,10 @@ import java.util.Set;
     private int calculateLineTilePoints(int numTotal, int lineType)
     {
         // If we have a minimal line, it's just 4 times the points/tile.
-        if (numTotal <= 4  || lineType == TYPE_BOMB || lineType == TYPE_STAR)
+        if (numTotal <= 4  || lineType == TYPE_BOMB)
             return numTotal * POINTS_PER_LINE_TILE;
+        else if (lineType == TYPE_STAR)
+            return (numTotal * POINTS_PER_LINE_TILE) / 2;
 
         // If we have more, 4 times the points/tile + 100 + 150 + 200 + ...
         int score = 4 * POINTS_PER_LINE_TILE;
