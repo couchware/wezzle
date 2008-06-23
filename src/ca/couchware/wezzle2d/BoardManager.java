@@ -194,7 +194,7 @@ public class BoardManager
 		shuffleBoard();
 		refactorBoard();
 		
-		HashSet set = new HashSet();		
+		HashSet<Integer> set = new HashSet<Integer>();		
 
 		while (true)
 		{
@@ -268,7 +268,7 @@ public class BoardManager
 	 * @param set The linked list that will be filled with indices.
      * @return The number of matches found.
 	 */
-	public int findXMatch(Set set)
+	public int findXMatch(Set<Integer> set)
 	{
         // The line count.
         int lineCount = 0;
@@ -322,7 +322,7 @@ public class BoardManager
 	 * @param set The linked list that will be filled with indices.
      * @return The number of matches found.
 	 */
-	public int findYMatch(Set set)
+	public int findYMatch(Set<Integer> set)
 	{
         // The number of matches found.
         int lineCount = 0;
@@ -745,7 +745,7 @@ public class BoardManager
 	 * @param bombTileSet
      * @param affectedSet
 	 */
-	public void processBombs(Set bombSet, Set affectedSet)
+	public void processBombs(Set<Integer> bombSet, Set<Integer> affectedSet)
 	{				
 		// A list of tiles affected by the blast.
 		affectedSet.clear();
@@ -762,7 +762,7 @@ public class BoardManager
      * @param tileSet
      * @param bombRemovalSet
      */
-    public void scanBombs(Set tileSet, Set bombSet)
+    public void scanBombs(Set<Integer> tileSet, Set<Integer> bombSet)
     {
         // Clear the set.
         bombSet.clear();
@@ -774,6 +774,53 @@ public class BoardManager
                 bombSet.add(index);                            
         } // end for                
     }
+    
+    /**
+     * Scans the tile set for stars and places them in a star set,
+     * clearing it first.
+     * 
+     * @param tileSet
+     * @param starRemovalSet
+     */
+    public void scanStars(Set<Integer> tileSet, Set<Integer> starSet)
+    {
+        // Clear the set.
+        starSet.clear();
+        
+        for (Integer index : tileSet)
+        {            
+            if (getTile(index).getClass() == StarTileEntity.class)            
+                starSet.add(index);                            
+        } // end for
+    }
+    
+    /**
+     * Finds all the tiles that are the same color as the star tile.
+     * 
+     * @param starSet
+     * @param affectedSet
+     */
+    public void processStars(Set<Integer> starSet, Set<Integer> affectedSet)
+    {        
+        // Clear the set.
+        affectedSet.clear();
+        
+        for (Integer starIndex : starSet)
+        {
+            // Determine the colour of the star.
+            int color = getTile(starIndex).getColor();
+            
+            // Look for that colour and add it to the affected set.
+            for (int i = 0; i < cells; i++)
+            {
+                if (getTile(i) == null)
+                    continue;
+                
+                if (getTile(i).getColor() == color)
+                    affectedSet.add(i);
+            }
+        }               
+    }    
     
     /**
      * Animates the showing of the board.
@@ -994,7 +1041,7 @@ public class BoardManager
      * @param indexSet
      * @return
      */
-    public XYPosition determineCenterPoint(final Set indexSet)
+    public XYPosition determineCenterPoint(final Set<Integer> indexSet)
     {
         // The furthest left, right, up and down locations.
         int l = Integer.MAX_VALUE;
@@ -1006,9 +1053,12 @@ public class BoardManager
         int cx, cy;
 
         // Determine centre of tiles.
-        for (Iterator it = indexSet.iterator(); it.hasNext(); )            
+        for (Integer index : indexSet)            
         {     
-            TileEntity t = getTile(((Integer) it.next()).intValue());         
+            TileEntity t = getTile(index); 
+            
+            if (t == null)
+                Util.handleWarning("It was null:" + index , Thread.currentThread());
 
             if (t.getX() < l) 
                 l = t.getX();

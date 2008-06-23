@@ -50,6 +50,11 @@ public class MusicManager
      * Is the music playing?
      */
     private volatile boolean playing;
+    
+    /**
+     * Is the music turned on?
+     */
+    private boolean enabled;
       
     /**
      * The volume level.     
@@ -72,10 +77,7 @@ public class MusicManager
                 PropertyManager.KEY_MUSIC_MAX);
                         
         // Initiate the array list and song number.
-        this.songList = new ArrayList<Song>();      
-        
-        // The music is not playing.
-        setPlaying(false);
+        this.songList = new ArrayList<Song>();                     
        
         // Add some music.  This is the order they will play in, but it will
         // not necessarily start on the first song.
@@ -88,7 +90,13 @@ public class MusicManager
         
         // Randomly pick a starting song.
         //this.songNum = Util.random.nextInt(songList.size());
-        this.songNum = -1;
+        this.songNum = -1;        
+        
+         // The music is not currently playing.
+        setPlaying(false);
+        
+        // The music starts out paused.
+        setPaused(true);
         
         // Get the default volume.
         this.volume = propertyMan.getFloatProperty(
@@ -98,9 +106,10 @@ public class MusicManager
          // Run the music if it's enabled.
         if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
                 .equals(PropertyManager.VALUE_ON))
-        {            
+        {     
+            setPaused(false);
             playNext();
-        }
+        }        
     }
     
     /**
@@ -336,7 +345,7 @@ public class MusicManager
         }   
         
         this.volume = volume;
-    } 
+    }
     
     public void updateLogic(Game game)
     {

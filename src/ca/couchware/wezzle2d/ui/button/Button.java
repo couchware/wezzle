@@ -2,6 +2,9 @@ package ca.couchware.wezzle2d.ui.button;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
+import java.awt.Cursor;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -40,7 +43,7 @@ public abstract class Button extends Entity implements
     /**
      * The pressed state.
      */
-    final protected static int STATE_PRESSED = 3;
+    final protected static int STATE_PRESSED = 3;        
     
     // -------------------------------------------------------------------------
     // Instance Attributes
@@ -212,7 +215,37 @@ public abstract class Button extends Entity implements
         
         // Set dirty so it will be drawn.        
         setDirty(true);
-    }            
+    }    
+    
+    /**
+     * Handles the updating the button when the mouse has been moved.  This 
+     * method should rarely have to be overridden.
+     * 
+     * @param pos
+     */
+    public void handleMoved(XYPosition pos)
+    {
+        // Get the last position.
+        XYPosition lastPos = getMousePosition(); 
+        
+		// Set the new mouse position.
+		setMousePosition(pos.x, pos.y);          
+        
+        // Handle case where there is no last position.
+        if (lastPos == null) lastPos = pos;
+        
+        // Ignore click if we're outside the button.
+        if (contains(lastPos.x, lastPos.y) == false 
+                && contains(pos.x, pos.y) == true)
+        {
+            handleMouseOn();                
+        }
+        else if (contains(lastPos.x, lastPos.y) == true
+                && contains(pos.x, pos.y) == false)
+        {
+            handleMouseOff();
+        }
+    }
     
     public void handleMouseOn()
     {
@@ -261,9 +294,9 @@ public abstract class Button extends Entity implements
 	 */
 	public synchronized XYPosition getMousePosition()
 	{
-        if (mousePosition == null)
-            Util.handleWarning("Mouse position is null!", 
-                    Thread.currentThread());
+//        if (mousePosition == null)
+//            Util.handleWarning("Mouse position is null!", 
+//                    Thread.currentThread());
         
 		return mousePosition;
 	}
@@ -322,11 +355,15 @@ public abstract class Button extends Entity implements
         // Add or remove listener based on visibility.
         if (visible == true)
         {
+            // Make it so the info it gets fr            
+            
             window.addMouseListener(this);
             window.addMouseMotionListener(this);
         }
         else
-        {
+        {            
+            window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            
             window.removeMouseListener(this);
             window.removeMouseMotionListener(this);
         }        
@@ -378,58 +415,32 @@ public abstract class Button extends Entity implements
 	}
 
 	public void mouseReleased(MouseEvent e)
-	{             
-        // Retrieve the mouse position.
+	{      
         setMousePosition(e.getX(), e.getY());
-        final XYPosition p = getMousePosition();
-                    
-        // Ignore click if we're outside the button.
-        if (contains(p.x, p.y) == false)
-            return;                    
-            
-		// Check which button.
+        
+        // Check which button.
         switch (e.getButton())
         {
             // Left mouse clicked.
             case MouseEvent.BUTTON1:
                 handleReleased();
                 break;                        
-                
+
             default:
                 // Intentionally left blank.
-        }
+        }                
 	}
 
 	public void mouseDragged(MouseEvent e)
 	{
-		// Set the mouse position.        
-		setMousePosition(e.getX(), e.getY());
-        
-        // Retrieve the mouse position.
-        final XYPosition p = getMousePosition();                
-        
-        // Ignore click if we're outside the button.
-        if (contains(p.x, p.y) == false)
-            handleMouseOff();
-        else
-            handleMouseOn();  
+        // Intentionally left blank.		  
 	}
 
 	/**
 	 * Called automatically when the mouse is moved.
 	 */
 	public void mouseMoved(MouseEvent e)
-	{	    
-		// Set the mouse position.
-		setMousePosition(e.getX(), e.getY());
-        
-        // Retrieve the mouse position.
-        final XYPosition p = getMousePosition();                
-        
-        // Ignore click if we're outside the button.
-        if (contains(p.x, p.y) == false)
-            handleMouseOff();
-        else
-            handleMouseOn();        
-    }            
+	{	
+        handleMoved(new XYPosition(e.getX(), e.getY()));
+    }             
 }

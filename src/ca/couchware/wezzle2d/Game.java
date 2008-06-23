@@ -304,6 +304,16 @@ public class Game extends Canvas implements GameWindowCallback
     private Set<Integer> bombRemovalSet;       
     
     /**
+     * If true, a star removal will be activated next loop.
+     */
+    private boolean activateStarRemoval = false;
+    
+    /**
+     * The set of star tile indices that will be removed.
+     */
+    private Set<Integer> starRemovalSet;       
+    
+    /**
      * The number of lines cleared this cycle, where a cycle is defined as the
      * period from the moment the piece is clicked, to when the board finally
      * stops finding lines.
@@ -540,6 +550,9 @@ public class Game extends Canvas implements GameWindowCallback
         // Initialize bomb index set.
         bombRemovalSet = new HashSet<Integer>();
         
+        // Initialize star index set.
+        starRemovalSet = new HashSet<Integer>();
+        
         //----------------------------------------------------------------------
         // Initialize managers.
         //----------------------------------------------------------------------
@@ -552,7 +565,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(background, LAYER_BACKGROUND);                
         
         // Create the animation manager.
-        animationMan = new AnimationManager();
+        animationMan = new AnimationManager();                
         
 		// Create the board manager.
 		boardMan = new BoardManager(layerMan, 272, 139, 8, 10);        
@@ -567,10 +580,7 @@ public class Game extends Canvas implements GameWindowCallback
         groupMan = new GroupManager(layerMan, pieceMan);
 	
         // Create the property manager. Must be done before Score manager.
-        propertyMan = new PropertyManager();
-        Util.handleMessage(
-                propertyMan.getStringProperty(PropertyManager.KEY_MUSIC_MIN),
-                Thread.currentThread());
+        propertyMan = new PropertyManager();        
         
         // Create the high score manager.
         highScoreMan = new HighScoreManager(propertyMan);
@@ -868,7 +878,8 @@ public class Game extends Canvas implements GameWindowCallback
     public boolean isTileRemoving()
     {
         return this.activateLineRemoval               
-               || this.activateBombRemoval 
+               || this.activateBombRemoval
+               || this.activateStarRemoval
                || this.tileRemovalInProgress;
     }
     
@@ -1233,8 +1244,15 @@ public class Game extends Canvas implements GameWindowCallback
                 // flag is set, then ignore bombs.
                 if (tileRemovalNoItems == false)
                 {
+                    Set<Integer> allSet = new HashSet<Integer>();
+                    
                     boardMan.scanBombs(tileRemovalSet, bombRemovalSet);
-                    tileRemovalSet.removeAll(bombRemovalSet);                
+                    boardMan.scanStars(tileRemovalSet, starRemovalSet);
+                    
+                    allSet.addAll(bombRemovalSet);
+                    allSet.addAll(starRemovalSet);
+                    
+                    tileRemovalSet.removeAll(allSet);                      
                 }
                 else
                 {
@@ -1271,8 +1289,65 @@ public class Game extends Canvas implements GameWindowCallback
                 // Otherwise, start the bomb processing.
                 else
                 {
-                    activateBombRemoval = true;
+                    //activateBombRemoval = true;
+                    activateStarRemoval = true;
                 }
+            }
+            
+            // If the star removal is in progress.
+            if (activateStarRemoval == true)
+            {
+                // Clear the flag.
+                activateStarRemoval = false;
+                
+                // Increment cascade.
+                cascadeCount++;
+                
+                // Used below.
+                int deltaScore = 0;
+                
+                // Get the tiles the bombs would affect.
+                boardMan.processStars(starRemovalSet, tileRemovalSet);
+                deltaScore = scoreMan.calculateLineScore(
+                        tileRemovalSet, 
+                        ScoreManager.TYPE_BOMB, 
+                        cascadeCount);
+                
+                // Show the SCT.
+                XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                Label label = ResourceFactory.get().getLabel(p.x, p.y);
+                label.setText(String.valueOf(deltaScore));
+                label.setAlignment(Label.HCENTER | Label.VCENTER);
+                label.setColor(SCORE_BOMB_COLOR);
+                label.setSize(scoreMan.determineFontSize(deltaScore));
+                
+                animationMan.add(new FloatFadeOutAnimation(                         
+                        0, -1, layerMan, label));
+                
+                // Release references.
+                p = null;
+                label = null;                
+                                
+                // Play the sound.
+                soundMan.playSoundEffect(SoundManager.KEY_LINE);
+                
+                // Start the line removal animations.
+                int i = 0;
+                for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
+                {
+                    TileEntity t = boardMan.getTile((Integer) it.next());
+
+                    i++;
+                    int angle = i % 2 == 0 ? 70 : 180 - 70;                        
+                    t.setAnimation(new JumpFadeOutAnimation(
+                        0.3, angle, 0.001, 800, layerMan, t));
+                }
+                
+                // Clear the star removal set.
+                starRemovalSet.clear();
+                
+                // Set the flag.
+                tileRemovalInProgress = true;
             }
 
             // If a bomb removal is in progress.
@@ -1365,7 +1440,9 @@ public class Game extends Canvas implements GameWindowCallback
 
                     // See if there are any bombs in the bomb set.
                     // If there are, activate the bomb removal.
-                    if (bombRemovalSet.size() > 0)
+                    if (starRemovalSet.size() > 0)
+                        activateStarRemoval = true;
+                    else if (bombRemovalSet.size() > 0)
                         activateBombRemoval = true;
                     // Otherwise, start a new refactor.
                     else                

@@ -155,7 +155,7 @@ public class SoundMusicGroup extends Group
         // Check the properties.
         if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
                 .equals(PropertyManager.VALUE_ON))
-        {
+        {           
             musicButton.setActivated(true);
         }
         

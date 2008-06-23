@@ -1,6 +1,9 @@
 package ca.couchware.wezzle2d.ui.button;
 
 import ca.couchware.wezzle2d.GameWindow;
+import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.XYPosition;
+import java.awt.Cursor;
 import java.awt.geom.RectangularShape;
 
 /**
@@ -38,21 +41,42 @@ public abstract class BooleanButton extends Button
     @Override
     public void handleReleased()
     {
-        clicked.set(true);
-        
-        if (activated == true)    
+        // Retrieve the mouse position.        
+        final XYPosition p = getMousePosition(); 
+                
+        if (contains(p.x, p.y) == true)
         {
-            activated = false;                    
-            onDeactivation();
-        }
-        else        
+            // If the mouse is released over a button that is depressed, then
+            // that's a click.
+            if (state == STATE_PRESSED)
+            {
+                clicked.set(true);
+        
+                if (activated == true)    
+                {
+                    activated = false;                    
+                    onDeactivation();
+                }
+                else        
+                {
+                    activated = true;                    
+                    onActivation();
+                }
+
+                
+            }
+            
+            state = STATE_HOVER;                        
+        }        
+        else
         {
-            activated = true;                    
-            onActivation();
+            if (isActivated() == true)
+                state = STATE_ACTIVE;
+            else
+                state = STATE_NORMAL;
         }
-        
-        state = STATE_HOVER;
-        
+            
+                
         setDirty(true);
     }
     
@@ -67,6 +91,9 @@ public abstract class BooleanButton extends Button
     @Override
     public void handleMouseOn()
     {
+        //Util.handleWarning("Hand", Thread.currentThread());
+        window.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
         if (state != STATE_PRESSED 
                 && state != STATE_HOVER)
         {
@@ -77,7 +104,10 @@ public abstract class BooleanButton extends Button
     
     @Override
     public void handleMouseOff()
-    {     
+    {   
+        //Util.handleWarning("Default", Thread.currentThread());
+        window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        
         if (activated == true
                 && state != STATE_ACTIVE)
         {

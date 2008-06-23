@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
+import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -261,7 +262,30 @@ public class SliderBar extends Entity implements
 
     public void mouseMoved(MouseEvent e)
     {
-        // Intentionally blank.
+        // Get the last position.
+        XYPosition lp = getMousePosition(); 
+        
+		// Set the mouse position.
+		setMousePosition(e.getX(), e.getY());
+        
+        // Retrieve the mouse position.
+        final XYPosition p = getMousePosition();  
+        
+        // Handle case where there is no last position.
+        if (lp == null) lp = p;
+        
+        // Mouse over.
+        if (shape.contains(lp.x, lp.y) == false 
+                && shape.contains(p.x, p.y) == true)
+        {
+            window.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));            
+        }
+        // Mouse out.
+        else if (shape.contains(lp.x, lp.y) == true
+                && shape.contains(p.x, p.y) == false)
+        {
+            window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
     } 
     
     public boolean changed()
@@ -328,7 +352,31 @@ public class SliderBar extends Entity implements
 	public synchronized void setMousePosition(final int x, final int y)
 	{
 		this.mousePosition = new XYPosition(x, y);
-	}       
+	}    
+    
+    @Override
+    public void setVisible(boolean visible)
+    {
+        // Ignore if visibility not changed.
+        if (isVisible() == visible)
+            return;
+        
+        // Invoke super.
+        super.setVisible(visible);
+        
+        // Add or remove listener based on visibility.
+        if (visible == true)
+        {
+            window.addMouseListener(this);
+            window.addMouseMotionListener(this);
+        }
+        else
+        {
+            window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            window.removeMouseListener(this);
+            window.removeMouseMotionListener(this);
+        }        
+    }
     
     /**
      * Sets the virtual range for the slider.
