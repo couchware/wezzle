@@ -138,14 +138,7 @@ public class OptionsGroup extends Group
         // Invoke super.  This will remove the listener from pause which
         // we will re-add below.
         super.setVisible(visible);               
-    }
-    
-    @Override
-    public void setActivated(final boolean activated)
-    {
-        // Invoke super.
-        super.setActivated(activated);                
-    } 
+    }        
      
     /**
      * Override the update logic method.

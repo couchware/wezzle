@@ -105,7 +105,7 @@ import java.util.Set;
         // Initialize the scores.
         this.totalScore = 0;
         this.levelScore = 0;
-        this.highScore = highScoreMan.getHighScore();
+        this.highScore = highScoreMan.getHighestScore();
     }
 
     /**

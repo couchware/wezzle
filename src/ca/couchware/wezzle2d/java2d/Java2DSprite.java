@@ -135,6 +135,10 @@ public class Java2DSprite implements Sprite
     public void draw(final int x, final int y, int width, int height, 
             double theta, int opacity)
     {
+        // Don't draw if opacity is 0.
+        if (opacity == 0)
+            return;
+        
         Graphics2D g = window.getDrawGraphics();
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -201,6 +205,10 @@ public class Java2DSprite implements Sprite
             int rwidth, int rheight, 
             double theta, int opacity)
     {
+        // Don't draw if opacity is 0.
+        if (opacity == 0)
+            return;
+        
         Graphics2D g = window.getDrawGraphics();
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

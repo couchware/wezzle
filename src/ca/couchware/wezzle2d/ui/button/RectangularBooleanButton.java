@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.ui.button;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 
 /**
@@ -10,36 +11,50 @@ import java.awt.Rectangle;
  * @author cdmckay
  */
 public class RectangularBooleanButton extends BooleanButton
-{
+{          
     /**
-     * The width of the clickable button area.
+     * The normal button, used in most menues.
      */
-    final private static int WIDTH = 153;
+    final public static int TYPE_NORMAL = 0;
     
     /**
-     * The height of the click button area.
+     * The large button.
      */
-    final private static int HEIGHT = 49;           
+    final public static int TYPE_LARGE = 1;    
+    
+    /**
+     * The button dimensions.
+     */
+    final protected static Dimension[] DIMENSIONS = new Dimension[]
+    {
+        new Dimension(153, 49), // TYPE_NORMAL
+        new Dimension(210, 130) // TYPE_LARGE
+    };
     
     /**
      * The normal sprite.
      */
-    final private Sprite spriteNormal;       
+    final protected Sprite spriteNormal;       
     
     /**
      * The button text.
      */
-    final private Label buttonLabel;
+    final protected Label buttonLabel;
     
     /**
      * The normal opacity.
      */
-    private int normalOpacity;
+    protected int normalOpacity;
+    
+    /**
+     * The hover opacity.
+     */
+    protected int hoverOpacity;
     
     /**
      * The active opacity.
      */
-    private int activeOpacity;
+    protected int activeOpacity;
 
     /**
      * Creates a button at the coordinates provided.
@@ -47,14 +62,23 @@ public class RectangularBooleanButton extends BooleanButton
      * @param y
      */
     public RectangularBooleanButton(final GameWindow window, 
-            final int x, final int y)
+            final int x, final int y, int type)
     {
         // Invoke super.
-        super(window, x, y, WIDTH, HEIGHT, new Rectangle(x, y, WIDTH, HEIGHT));
+        super(window, x, y, 
+                DIMENSIONS[type].width,
+                DIMENSIONS[type].height, 
+                new Rectangle(x, y, 
+                    DIMENSIONS[type].width,
+                    DIMENSIONS[type].height));
+        
+        // Construct the sprite name.
+        String spriteNormalName = "RectangularButton_" 
+                + width + "x" + height + ".png";
         
         // Load the normal sprite.
         spriteNormal = ResourceFactory.get()
-                .getSprite(Game.SPRITES_PATH + "/RectangularButton_Normal.png");             
+                .getSprite(Game.SPRITES_PATH + "/" + spriteNormalName);             
         
         // Create the button text.
         buttonLabel = ResourceFactory.get().getLabel(0, 0);        
@@ -64,7 +88,14 @@ public class RectangularBooleanButton extends BooleanButton
         
         // Set the normal and active opacities.
         normalOpacity = 100;
+        hoverOpacity = 100;
         activeOpacity = 100;
+    }
+    
+    public RectangularBooleanButton(final GameWindow window, 
+            final int x, final int y)
+    {
+        this(window, x, y, TYPE_NORMAL);
     }
     
     @Override
@@ -94,7 +125,13 @@ public class RectangularBooleanButton extends BooleanButton
     @Override
     public void drawHover()
     {
-        drawActive();
+        spriteNormal.draw(x + offsetX, y + offsetY, 
+                width, height, 0.0, hoverOpacity);
+        
+        buttonLabel.setX(x + offsetX + width / 2);
+        buttonLabel.setY(y + offsetY + height / 2);
+        buttonLabel.setText(getText());
+        buttonLabel.draw();
     }
 
     @Override
@@ -128,6 +165,17 @@ public class RectangularBooleanButton extends BooleanButton
         this.activeOpacity = activeOpacity;
         setDirty(true);
     }
+
+    public int getHoverOpacity()
+    {
+        return hoverOpacity;
+    }
+
+    public void setHoverOpacity(int hoverOpacity)
+    {
+        this.hoverOpacity = hoverOpacity;
+        setDirty(true);
+    }        
 
     public int getNormalOpacity()
     {

@@ -403,7 +403,7 @@ public class Game extends Canvas implements GameWindowCallback
      * The score header graphic.
      */
     private GraphicEntity scoreHeaderLabel;
-    
+        
     /** 
      * The score text.
      */
@@ -413,11 +413,17 @@ public class Game extends Canvas implements GameWindowCallback
      * The high score header graphic.
      */
     private GraphicEntity highScoreHeaderLabel;
-    
+            
     /** 
      * The high score text. 
      */
     private Label highScoreLabel;
+    
+    /**
+     * The high score header button.
+     */
+    private RectangularBooleanButton highScoreButton;
+
     
     /**
      * The level header graphic.
@@ -620,24 +626,18 @@ public class Game extends Canvas implements GameWindowCallback
         
         //----------------------------------------------------------------------
         // Initialize buttons.
-        //----------------------------------------------------------------------                                      
+        //----------------------------------------------------------------------                                                      
         
-        // Create the help buttton.
-        helpButton = new RectangularBooleanButton(window, 668, 387);
-        helpButton.setNormalOpacity(70);
-        helpButton.setText("Help");
-        helpButton.getLabel().setSize(18);
-        helpButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(helpButton, LAYER_UI);   
-        
-        // Create the options button.
-        optionsButton = new RectangularBooleanButton(window, 668, 299);
-        optionsButton.setNormalOpacity(70);
-        optionsButton.setText("Options");
-        optionsButton.getLabel().setSize(18);
-        optionsButton.setAlignment(Button.VCENTER | Button.HCENTER);
-        layerMan.add(optionsButton, Game.LAYER_UI);
-        
+        // The high score button.
+        highScoreButton = new RectangularBooleanButton(window, 128, 299,
+                RectangularBooleanButton.TYPE_LARGE);
+        highScoreButton.setText(" ");
+        highScoreButton.setNormalOpacity(0);
+        highScoreButton.setHoverOpacity(70);
+        highScoreButton.setActiveOpacity(90);
+        highScoreButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(highScoreButton, Game.LAYER_UI);
+                
         // Create pause button.        
         pauseButton = new RectangularBooleanButton(window, 668, 211)
         {
@@ -663,7 +663,23 @@ public class Game extends Canvas implements GameWindowCallback
         pauseButton.setText("Pause");
         pauseButton.getLabel().setSize(18);
         pauseButton.setAlignment(Button.VCENTER | Button.HCENTER);        
-        layerMan.add(pauseButton, Game.LAYER_UI);               
+        layerMan.add(pauseButton, Game.LAYER_UI);    
+        
+        // Create the options button.
+        optionsButton = new RectangularBooleanButton(window, 668, 299);
+        optionsButton.setNormalOpacity(70);
+        optionsButton.setText("Options");
+        optionsButton.getLabel().setSize(18);
+        optionsButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(optionsButton, Game.LAYER_UI);                
+        
+        // Create the help buttton.
+        helpButton = new RectangularBooleanButton(window, 668, 387);
+        helpButton.setNormalOpacity(70);
+        helpButton.setText("Help");
+        helpButton.getLabel().setSize(18);
+        helpButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        layerMan.add(helpButton, LAYER_UI);                              
         
         //----------------------------------------------------------------------
         // Initialize labels.
@@ -808,36 +824,6 @@ public class Game extends Canvas implements GameWindowCallback
         pauseGroup.setLinesPerMove(lpm);         
     }
     
-    private void showHighScoreScreen()
-    {        
-        this.pauseGroup.setActivated(true);
-        this.pauseGroup.setVisible(false);
-//        hidePauseScreen();
-//        hideGameOverScreen();
-        
-        layerMan.hide(LAYER_TILE);
-        layerMan.hide(LAYER_EFFECT);  
-        highScoreGroup.setActivated(true);
-        highScoreGroup.setVisible(true);          
-    }
-    
-    private void hideHighScoreScreen()
-    {        
-        if (gameOverGroup.isActivated() == true)
-        {
-            gameOverGroup.setVisible(true);
-        } 
-        
-        layerMan.show(LAYER_TILE);
-        layerMan.show(LAYER_EFFECT);
-        highScoreGroup.clearChanged();
-        highScoreGroup.setActivated(false);
-        highScoreGroup.setVisible(false);
-        
-        // Clear clicks.
-        pieceMan.clearMouseButtons();
-    }      
-    
     /**
      * Start a refactor with the given speed.
      * 
@@ -920,13 +906,12 @@ public class Game extends Canvas implements GameWindowCallback
     public void startGameOver()
     {
         Util.handleMessage("Game over!", Thread.currentThread());
+
+        // Add the new score.
+        highScoreMan.addScore("Tester", scoreMan.getTotalScore());
+        highScoreGroup.updateScoreLabels();
         
-//        int score = scoreMan.getTotalScore();
-//        if (score > highScoreMan.getLowestScore())
-//            highScoreMan.addScore("Tester", score);
-//        
-//        showHighScoreScreen();
-        
+        // Activate the game over process.
         activateGameOver = true;
     }
     
@@ -958,6 +943,20 @@ public class Game extends Canvas implements GameWindowCallback
 			lastFramesPerSecondTime = 0;
 			framesPerSecond = 0;
 		}
+        
+        // If the high score button was just clicked.
+        if (highScoreButton.clicked() == true)
+        {
+            if (highScoreButton.isActivated() == true)            
+            {                           
+                groupMan.showGroup(highScoreButton, highScoreGroup, 
+                        GroupManager.CLASS_HIGH_SCORE,
+                        GroupManager.LAYER_MIDDLE);            
+            }
+            else
+                groupMan.hideGroup(GroupManager.CLASS_HIGH_SCORE,
+                        GroupManager.LAYER_MIDDLE);
+        }
         
         // If the pause button was just clicked.
         if (pauseButton.clicked() == true)

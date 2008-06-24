@@ -19,6 +19,8 @@ import ca.couchware.wezzle2d.util.Keyboard;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 
 /**
@@ -125,9 +127,21 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 
 				// Finally make the window visible.				
 				frame.setResizable(false);
+                
 				frame.pack();				
-				frame.setLocation(100, 100);
-				frame.setVisible(true);
+				frame.setLocation(100, 100);				   
+                
+                // This is code for enabling full screen.  Unfortunately,
+                // all the graphics have been made 800x600, so we'd need to
+                // change the resolution too.
+                // To enable, uncomment these lines and comment the two lines
+                // above.
+//                frame.setUndecorated(true);
+//                GraphicsDevice gd = GraphicsEnvironment
+//                        .getLocalGraphicsEnvironment().getDefaultScreenDevice();
+//                gd.setFullScreenWindow(frame);                
+                
+                frame.setVisible(true);
 
 				// Add a listener to respond to the user closing the window. If they
 				// do we'd like to exit the game.

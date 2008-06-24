@@ -140,6 +140,8 @@ public abstract class BooleanButton extends Button
         {            
             state = STATE_NORMAL;
             onDeactivation();
+            setMousePosition(0, 0);
+            handleMoved(new XYPosition(window.getMousePosition()));
         }
         
         setDirty(true);

@@ -128,6 +128,7 @@ public class PropertyManager
      */
     public void setDefaults()
     {   
+        properties.put(KEY_DIFFICULTY, "0");
         properties.put(KEY_SOUND, VALUE_ON);
         properties.put(KEY_SOUND_MIN, "-80.0f");
         properties.put(KEY_SOUND_MAX, "6.0206f");
@@ -175,55 +176,45 @@ public class PropertyManager
 	/**
 	 * Get a property. It is the programmers responsibility to cast the
 	 * returned property to whatever it should be. 
-     * This function returns an object.
+     * 
+     * Returns null if the property is not set.     
 	 * 
 	 * @param key The properties key.
 	 * @return The property
 	 */
 	public Object getProperty(String key)
-	{
-		// If the property doesn't exist, set it to 0.
-		if (this.properties.get(key) == null)
-		{
-			this.setProperty(key, "0");
-		}
-		
+	{		
 		return this.properties.get(key);
 	}
 	
 	/**
 	 * Get an integer property. 
+     * 
+     * Returns null if the property is not set. 
 	 * 
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public int getIntegerProperty(String key)
-	{
-		// If the property doesnt exist, set it to 0.
-		if (this.properties.get(key) == null)
-		{
-			this.setProperty(key, "0");
-		}
-		
-		return Integer.parseInt(this.properties.get(key).toString());
+	public Integer getIntegerProperty(String key)
+	{		
+		return this.properties.get(key) == null 
+            ? null 
+            : Integer.parseInt(this.properties.get(key).toString());
 	}
     
     /**
 	 * Get a float property. 
+     * 
+     * Returns null if the property is not set.
 	 * 
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public float getFloatProperty(String key)
-	{
-		// If the property doesnt exist, set it to 0.
-      
-        if (this.properties.get(key) == null)
-		{           
-            this.setProperty(key, "0.0f");
-		}
-		
-		return Float.parseFloat(this.properties.get(key).toString());
+	public Float getFloatProperty(String key)
+	{		        
+		return this.properties.get(key) == null 
+            ? null 
+            : Float.parseFloat(this.properties.get(key).toString());
 	}
 	
 	/**
@@ -233,14 +224,10 @@ public class PropertyManager
 	 * @return The property
 	 */
 	public String getStringProperty(String key)
-	{
-		// If the property doesn't exist, set it to on.
-		if (this.properties.get(key) == null)
-		{
-			this.setProperty(key, "on");
-		}
-		
-		return this.properties.get(key).toString();
+	{		
+		return this.properties.get(key) == null 
+            ? null 
+            : this.properties.get(key).toString();
 	}
 	
 	/**
@@ -249,15 +236,11 @@ public class PropertyManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public boolean getBooleanProperty(String key)
-	{
-		// If the property doesn't exist, set it to 0.
-		if (this.properties.get(key) == null)
-		{
-			this.setProperty(key, "0");
-		}
-		
-		return Boolean.getBoolean(this.properties.get(key).toString());
+	public Boolean getBooleanProperty(String key)
+	{		
+		return this.properties.get(key) == null 
+            ? null 
+            : Boolean.getBoolean(this.properties.get(key).toString());
 	}
 	
 	public void setWebStart()

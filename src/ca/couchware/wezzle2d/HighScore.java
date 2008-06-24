@@ -1,19 +1,15 @@
 package ca.couchware.wezzle2d;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- *
+ * TODO Describe the class.
+ * 
  * @author Kevin
  */
 public class HighScore 
 {
-
-    private int score;
-    private String key;
+    
+    private final String key;
+    private final int score;    
     
     public HighScore(String key, int score)
     {

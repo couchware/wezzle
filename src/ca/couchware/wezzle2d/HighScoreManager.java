@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d;
@@ -9,54 +9,64 @@ import ca.couchware.wezzle2d.util.Util;
 import java.util.StringTokenizer;
 
 /**
- *
- * @author Kevin
+ * TODO Describe how class works.
+ * 
+ * @author Kevin, Cameron
  */
 public class HighScoreManager 
 {
-    private final static int NUM_SCORES = 10;
+    
+    /**
+     * The symbol indicating an empty name.
+     */
+    public final static String EMPTY_NAME = "-";        
+    
+    /**
+     * The prefix to use in the properties file.
+     */
+    private final static String PREFIX = "wezzle.HighScore";
+    
+    /**
+     * The number of high scores to keep track of.
+     */
+    private final static int NUMBER_OF_SCORES = 5;
 
     /**
      * The property manager.
      */
-    private PropertyManager propMan;
+    private PropertyManager propertyMan;
     
     /**
      * The list of high scores.
      */
-    private HighScore[] scoreList;
-
+    private HighScore[] highScoreList;
     
     /**
      * Create a high score manager and fill it with 0's.
+     * 
+     * @param properytMan
      */
-    public HighScoreManager(PropertyManager properties)
+    public HighScoreManager(PropertyManager propertyMan)
     {
-        this.scoreList = new HighScore[NUM_SCORES];
+        // Initialize 
+        this.highScoreList = new HighScore[NUMBER_OF_SCORES];
         
-        this.propMan = properties;
+        // Set the property manager reference.
+        this.propertyMan = propertyMan;
         
         // If this is the first time running the game, we have no built list.
         // Every other time it will load the list from file.
-        if(readFromProperties() == false)
-        {
-            HighScore dummyScore = new HighScore("Player", 0);
-        
-            // Load with dummy scores.
-            for(int i = 0; i < scoreList.length; i++)
-            {
-                scoreList[i] = dummyScore;
-            }
-        }
+        if (readProperties() == false)
+            resetScoreList();
     }
     
     /**
      * Get the highest score. Return position 0 in the list.
      * @return the high score.
      */
-    public int getHighScore()
+    public int getHighestScore()
     {
-        return this.scoreList[0].getScore();
+        return this.highScoreList[0].getScore();
     }
     
     /**
@@ -68,21 +78,21 @@ public class HighScoreManager
      */
     public int getLowestScore()
     {
-        return this.scoreList[this.scoreList.length-1].getScore();
+        return this.highScoreList[this.highScoreList.length -1 ].getScore();
     }
     
     /**
      * Get the score list.
      * @return the score list.
      */
-    public HighScore[] getList()
+    public HighScore[] getHighScoreList()
     {
-        return this.scoreList;
+        return this.highScoreList;
     }
     
     /**
-     * Add a score to the list. This assumes that the score should be in the
-     * list. If the list has 10 values, the bottom value will be removed to
+     * Add a score to the list. If the list has 10 values, 
+     * the bottom value will be removed to
      * accommodate this value. This is because if it belongs in the list, and
      * the list is sorted, the bottom value will be the lowest value.
      * 
@@ -93,41 +103,45 @@ public class HighScoreManager
      */
     public void addScore(String key, int score)
     {
+        // See if the score belongs on the list.
+        if (score < getLowestScore())
+            return;
+        
         HighScore newScore = new HighScore(key, score);
         
         // Check the lowest value, just incase.
-        if(newScore.getScore() < this.getLowestScore())
+        if (newScore.getScore() < this.getLowestScore())
         {
-            Util.handleMessage("Error, adding high score lower than the lowest"
-                   , Thread.currentThread());
-            
-            System.exit(0);
+            throw new IllegalStateException(
+                    "Error, adding high score lower than the lowest");                   
         }
         
         // Add the score.
-        this.scoreList[this.scoreList.length-1] = newScore;
+        this.highScoreList[this.highScoreList.length - 1] = newScore;
         
         // Sort.
         this.bubbleUp();
         
         // Write to properties.
-        writeToProperties();
+        writeProperties();
     }
     
     /**
      * A method to bubble the bottom value in the array to the proper spot.
      * Will only move the bottom value up to the correct spot.
+     * 
+     * Kevin is very proud of this method.
      */
     private void bubbleUp()
     {
-        for(int i = this.scoreList.length-1; i > 0; i--)
+        for (int i = this.highScoreList.length - 1; i > 0; i--)
         {
             // Swap.
-            if(scoreList[i].getScore() > scoreList[i-1].getScore())
+            if (highScoreList[i].getScore() > highScoreList[i - 1].getScore())
             {
-                HighScore temp = scoreList[i-1];
-                scoreList [i-1] = scoreList[i];
-                scoreList[i] = temp;
+                HighScore temp = highScoreList[i - 1];
+                highScoreList [i - 1] = highScoreList[i];
+                highScoreList[i] = temp;
             }
             else
             {
@@ -136,42 +150,41 @@ public class HighScoreManager
             }
         }
     }
-    
-    
+        
     /**
      * Write the list to properties.
      */
-    private void writeToProperties()
+    private void writeProperties()
     {
-        for (int i = 0; i < scoreList.length; i++)
+        for (int i = 0; i < highScoreList.length; i++)
         {
-            this.propMan.setProperty("HIGHSCORE" + i, 
-                    scoreList[i].getKey() + " " + scoreList[i].getScore());
+            this.propertyMan.setProperty(PREFIX + i, 
+                    highScoreList[i].getKey() + " " + highScoreList[i].getScore());
         }
     }
     
     
     /**
      * Read the list from properties.
+     * 
      * @return Whether the list was read or not.
      */
-    private boolean readFromProperties()
+    private boolean readProperties()
     {
-        for (int i = 0; i < scoreList.length; i++)
+        for (int i = 0; i < highScoreList.length; i++)
         {
-            String temp = this.propMan.getStringProperty("HIGHSCORE" + i);
+            String property = this.propertyMan.getStringProperty(PREFIX + i);
             
-            // If the properties arent set, return false;
-            if (temp.equals("on"))
+            // If the properties aren't set, return false.
+            if (property == null)
                 return false;
             
-            //otherwise.
-            StringTokenizer tokenizer = new StringTokenizer(temp); 
+            // Otherwise, add to the high score list.
+            StringTokenizer tokenizer = new StringTokenizer(property); 
             String key = tokenizer.nextToken();
             int score = Integer.parseInt(tokenizer.nextToken());
             
-            scoreList[i] = new HighScore(key, score);
-           
+            highScoreList[i] = new HighScore(key, score);           
         }
         
         return true;
@@ -180,18 +193,16 @@ public class HighScoreManager
     /**
      * reset the list.
      */
-    public void resetList()
+    public void resetScoreList()
     {
-        HighScore dummyScore = new HighScore("Player", 0);
+        HighScore dummyScore = new HighScore("-", 0);
         
         // Load with dummy scores.
-        for(int i = 0; i < scoreList.length; i++)
-        {
-            scoreList[i] = dummyScore;
-        }
+        for (int i = 0; i < highScoreList.length; i++)        
+            highScoreList[i] = dummyScore;        
         
         // Save the properties.
-        writeToProperties();
+        writeProperties();
     }
     
     /**
@@ -199,10 +210,11 @@ public class HighScoreManager
      */
     public void printToConsole()
     {
-        for(int i = 0; i < scoreList.length; i++)
+        for (int i = 0; i < highScoreList.length; i++)
         {
-            System.out.println((i+1) +". " + scoreList[i].getKey() + " " + 
-                    scoreList[i].getScore());
+            System.out.println((i+1) +". " + highScoreList[i].getKey() + " " + 
+                    highScoreList[i].getScore());
         }
     }
+    
 }

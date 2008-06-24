@@ -23,6 +23,11 @@ public class GroupManager
      * The game over class.
      */
     final public static int CLASS_GAME_OVER = 1;   
+    
+    /**
+     * The high score class.
+     */
+    final public static int CLASS_HIGH_SCORE = 4;
         
     /**
      * The pause class.
