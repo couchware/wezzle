@@ -355,14 +355,18 @@ public abstract class Button extends Entity implements
         // Add or remove listener based on visibility.
         if (visible == true)
         {
-            // Make it so the info it gets fr            
+            // Pretend like we just moved the mouse.
+            handleMoved(new XYPosition(window.getMousePosition()));
             
             window.addMouseListener(this);
             window.addMouseMotionListener(this);
         }
         else
-        {            
-            window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        {          
+            // Clear the last mouse position.
+            handleMoved(new XYPosition(0, 0));
+            
+            window.setCursor(Cursor.DEFAULT_CURSOR);
             
             window.removeMouseListener(this);
             window.removeMouseMotionListener(this);

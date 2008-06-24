@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d;
 
-import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseListener;
@@ -68,26 +68,43 @@ public interface GameWindow
 	
 	/**
 	 * Registers a mouse listener.
+     * 
+     * @param l
 	 */
 	public void addMouseListener(MouseListener l);
 	
 	/**
 	 * Registers a mouse motion listener.
+     * 
+     * @param l
 	 */
 	public void addMouseMotionListener(MouseMotionListener l);
     
     /**
      * Unregisters a mouse listener.
+     * 
+     * @param l
      */
     public void removeMouseListener(MouseListener l);
     
     /**
      * Unregisters a mouse motion listener.
+     * 
+     * @param l
      */
     public void removeMouseMotionListener(MouseMotionListener l); 
     
     /**
      * Changes the cursor.
+     * 
+     * @param type
      */
-    public void setCursor(Cursor cursor);
+    public void setCursor(int type);
+    
+    /**
+     * Get the current mouse position.
+     * 
+     * @return The current mouse position.
+     */
+    public Point getMousePosition();    
 }

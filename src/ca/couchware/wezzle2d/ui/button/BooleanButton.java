@@ -92,7 +92,7 @@ public abstract class BooleanButton extends Button
     public void handleMouseOn()
     {
         //Util.handleWarning("Hand", Thread.currentThread());
-        window.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        window.setCursor(Cursor.HAND_CURSOR);
         
         if (state != STATE_PRESSED 
                 && state != STATE_HOVER)
@@ -106,7 +106,7 @@ public abstract class BooleanButton extends Button
     public void handleMouseOff()
     {   
         //Util.handleWarning("Default", Thread.currentThread());
-        window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        window.setCursor(Cursor.DEFAULT_CURSOR);
         
         if (activated == true
                 && state != STATE_ACTIVE)

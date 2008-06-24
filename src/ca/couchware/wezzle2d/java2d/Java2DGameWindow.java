@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.java2d;
 
+import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -17,6 +18,7 @@ import ca.couchware.wezzle2d.GameWindowCallback;
 import ca.couchware.wezzle2d.util.Keyboard;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Rectangle;
 
 /**
@@ -27,6 +29,7 @@ import java.awt.Rectangle;
  */
 public class Java2DGameWindow extends Canvas implements GameWindow
 {
+    
 	/** The strategy that allows us to use accelerate page flipping. */
 	private BufferStrategy strategy;
 	
@@ -328,4 +331,10 @@ public class Java2DGameWindow extends Canvas implements GameWindow
         
         g.setClip(null);
     }
+
+    public void setCursor(int type)
+    {
+        setCursor(Cursor.getPredefinedCursor(type));
+    }
+             
 }

@@ -278,13 +278,13 @@ public class SliderBar extends Entity implements
         if (shape.contains(lp.x, lp.y) == false 
                 && shape.contains(p.x, p.y) == true)
         {
-            window.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));            
+            window.setCursor(Cursor.HAND_CURSOR);            
         }
         // Mouse out.
         else if (shape.contains(lp.x, lp.y) == true
                 && shape.contains(p.x, p.y) == false)
         {
-            window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            window.setCursor(Cursor.DEFAULT_CURSOR);
         }
     } 
     
@@ -372,7 +372,7 @@ public class SliderBar extends Entity implements
         }
         else
         {
-            window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            window.setCursor(Cursor.DEFAULT_CURSOR);
             window.removeMouseListener(this);
             window.removeMouseMotionListener(this);
         }        
