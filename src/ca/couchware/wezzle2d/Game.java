@@ -218,6 +218,11 @@ public class Game extends Canvas implements GameWindowCallback
 	 * The manager in charge of keeping track of the time. 
 	 */
 	public TimerManager timerMan;
+    
+    /**
+     * The manager in charge of achievements
+     */
+    public AchievementManager achievementMan;
 	
     /**
      * The pause button.
@@ -622,7 +627,29 @@ public class Game extends Canvas implements GameWindowCallback
         moveMan = new MoveManager();
         
         // Create the time manager.
-		timerMan = new TimerManager(worldMan.getInitialTimer());                            
+		timerMan = new TimerManager(worldMan.getInitialTimer()); 
+        
+        // Create the achievement manager.
+        achievementMan = new AchievementManager();
+        
+        // Load an achievements.
+        
+        achievementMan.addAchievement(new Achievement(
+                null, new AchievementRule(3, AchievementRule.GREATER_THAN),
+                null, null, Achievement.BRONZE, "Level greater than 3"));
+        
+        achievementMan.addAchievement(new Achievement(
+                new AchievementRule(5000, AchievementRule.GREATER_THAN), null, 
+                null, null, Achievement.BRONZE, "Score greater than 5000"));
+        
+        achievementMan.addAchievement(new Achievement(
+                new AchievementRule(2000, AchievementRule.GREATER_THAN), null, 
+                null, null, Achievement.BRONZE, "Score greater than 2000"));
+        
+         achievementMan.addAchievement(new Achievement(
+                new AchievementRule(1000, AchievementRule.GREATER_THAN), null, 
+                new AchievementRule(4, AchievementRule.LESS_THAN), null, 
+                Achievement.BRONZE, "Score greater than 1000, Moves less than 4"));
         
         //----------------------------------------------------------------------
         // Initialize buttons.
@@ -1566,6 +1593,10 @@ public class Game extends Canvas implements GameWindowCallback
 		{
 			soundMan.decreaseVolume();
 		}
+        
+        // Check the achievements.
+        if (achievementMan.evaluate(this) == true)
+            achievementMan.reportCompleted();
         
         return updated;
 	}
