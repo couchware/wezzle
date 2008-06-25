@@ -28,16 +28,20 @@ public class AchievementRule
     /** An achievement tuple contains a value and an associated test */
     private int test;
     private int value;
+    private int type;
     
     /**
      * The constructor constructs a tuple with a given value and test
-     * @param value The value of the achievement data
+     * 
+     * @param type The type of rule this refers to.
+     * @param value The value of the achievement data.
      * @param test The test to be performed on the data.
      */
-    public AchievementRule(int value, int test)
+    public AchievementRule(int type, int test, int value)
     {
         this.value = value;
         this.test = test;
+        this.type = type;
     }
 
     /** Getters and Setters */
@@ -56,6 +60,14 @@ public class AchievementRule
 
     public void setValue(int value) {
         this.value = value;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
     
     

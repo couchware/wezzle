@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -634,22 +635,36 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Load an achievements.
         
-        achievementMan.addAchievement(new Achievement(
-                null, new AchievementRule(3, AchievementRule.GREATER_THAN),
-                null, null, Achievement.BRONZE, "Level greater than 3"));
+        ArrayList<AchievementRule> rules1 = new ArrayList();
+        rules1.add(new AchievementRule(Achievement.TYPE_SCORE, 
+                AchievementRule.GREATER_THAN, 2000));
         
-        achievementMan.addAchievement(new Achievement(
-                new AchievementRule(5000, AchievementRule.GREATER_THAN), null, 
-                null, null, Achievement.BRONZE, "Score greater than 5000"));
+        achievementMan.addAchievement(new Achievement(rules1, 
+                 "Score greater than 2000", Achievement.DIFFICULTY_BRONZE));
         
-        achievementMan.addAchievement(new Achievement(
-                new AchievementRule(2000, AchievementRule.GREATER_THAN), null, 
-                null, null, Achievement.BRONZE, "Score greater than 2000"));
         
-         achievementMan.addAchievement(new Achievement(
-                new AchievementRule(1000, AchievementRule.GREATER_THAN), null, 
-                new AchievementRule(4, AchievementRule.LESS_THAN), null, 
-                Achievement.BRONZE, "Score greater than 1000, Moves less than 4"));
+        ArrayList<AchievementRule> rules2 = new ArrayList();
+        rules2.add(new AchievementRule(Achievement.TYPE_SCORE, 
+                AchievementRule.GREATER_THAN, 5000));
+        achievementMan.addAchievement(new Achievement(rules2, 
+                 "Score greater than 5000", Achievement.DIFFICULTY_BRONZE));
+        
+        ArrayList<AchievementRule> rules3 = new ArrayList();
+        rules3.add(new AchievementRule(Achievement.TYPE_SCORE,
+                AchievementRule.GREATER_THAN, 1000));
+        rules3.add(new AchievementRule(Achievement.TYPE_MOVES,
+                AchievementRule.LESS_THAN_OR_EQUAL_TO, 3));
+        achievementMan.addAchievement(new Achievement(rules3, 
+                 "Score greater than 1000, Moves less than or equal to 3"
+                 , Achievement.DIFFICULTY_BRONZE));
+        
+        ArrayList<AchievementRule> rules4 = new ArrayList();
+        rules4.add(new AchievementRule(Achievement.TYPE_LEVEL,
+                AchievementRule.GREATER_THAN, 2));
+        achievementMan.addAchievement(new Achievement(rules4, 
+                 "Level greater than 2", Achievement.DIFFICULTY_BRONZE));
+        
+       
         
         //----------------------------------------------------------------------
         // Initialize buttons.

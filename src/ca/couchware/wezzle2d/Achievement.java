@@ -2,6 +2,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
+import java.util.ArrayList;
 
 /**
  * An achievement will hold all the state information required for that 
@@ -28,30 +29,37 @@ import ca.couchware.wezzle2d.util.Util;
  */
 public class Achievement
 {
-    public static final int BRONZE = 0;
-    public static final int SILVER = 1;
-    public static final int GOLD = 2;
-    public static final int PLATINUM = 3;
+    public static final int DIFFICULTY_BRONZE = 0;
+    public static final int DIFFICULTY_SILVER = 1;
+    public static final int DIFFICULTY_GOLD = 2;
+    public static final int DIFFICULTY_PLATINUM = 3;
     
-    private AchievementRule score;
-    private AchievementRule level;
-    private AchievementRule moves;
-    private AchievementRule lines;
+    public static final int TYPE_SCORE = 0;
+    public static final int TYPE_LEVEL = 1;
+    public static final int TYPE_MOVES = 2;
+    public static final int TYPE_LINES = 3;
+    
+    
+    private ArrayList<AchievementRule> rules;
     private String description;
-    private int type;
+    private int difficulty;
     
 
-    
-    public Achievement(AchievementRule score, AchievementRule level,  
-           AchievementRule moves, AchievementRule lines, int type, 
-           String description)
+    /**
+     * The achievement is a list of rules which all have to be true for an
+     * achievement to be achieved. As well as an associated text description 
+     * and a difficulty type.
+     * 
+     * @param rules
+     * @param description
+     * @param difficulty
+     */
+    public Achievement(ArrayList<AchievementRule> rules, String description, 
+            int difficulty)
     {
-        this.score = score;
-        this.level = level;
-        this.moves = moves;
-        this.lines = lines;
-        this.type = type;
+        this.rules = rules;
         this.description = description;
+        this.difficulty = difficulty;
     }
     
     /**
@@ -67,18 +75,14 @@ public class Achievement
          * meet the requirements. any null values are automatically
          * accepted.
          */
-        if (evaluateField(gameState.scoreMan.getTotalScore(), score)
-                && evaluateField(gameState.worldMan.getLevel(), level)
-                && evaluateField(gameState.moveMan.getMoveCount(), moves)
-                && evaluateField(gameState.getTotalLineCount(), lines)
-                )
+        
+        for (int i = 0; i < rules.size(); i++)
         {
-            return true;
+           if (this.evaluateField(rules.get(i), gameState) == false)
+               return false;
         }
-        else
-        {
-            return false;
-        }
+       
+        return true;
        
     }
     
@@ -88,10 +92,43 @@ public class Achievement
      * @param fieldVal The value of the field
      * @param comparator The achievement tuple comparator
      */
-    private boolean evaluateField(int fieldVal, AchievementRule comparator)
+    private boolean evaluateField(AchievementRule comparator, Game gameState)
     {
-        if(comparator == null)
-            return true;
+        
+        // Find the appropriate field value from the type.
+        int fieldVal = -1;
+  
+        switch(comparator.getType())
+        {
+            case TYPE_SCORE :
+                fieldVal = gameState.scoreMan.getTotalScore();
+                break;
+                
+            case TYPE_LEVEL:
+                fieldVal = gameState.worldMan.getLevel();
+                break;
+            case TYPE_MOVES:
+                fieldVal = gameState.moveMan.getMoveCount();
+                break;
+            case TYPE_LINES:
+                fieldVal = gameState.getTotalLineCount();
+                break;
+                
+            default:
+                Util.handleWarning("Error:Invalid Type", Thread.currentThread());
+                System.exit(0);
+                break;
+        }
+      
+        
+        // sanity check.
+        
+        if (fieldVal == -1)
+        {
+             Util.handleMessage("Error: fieldVal -1", Thread.currentThread());
+                System.exit(0);
+        }
+            
         /**
          * If the test is successful, return true, otherwise, return false
          */
@@ -101,14 +138,27 @@ public class Achievement
                 if (fieldVal > comparator.getValue())
                     return true;
                 break;
+                
             case AchievementRule.LESS_THAN:
                  if (fieldVal < comparator.getValue())
                     return true;
                 break;
+                
             case AchievementRule.EQUAL_TO:
                  if (fieldVal == comparator.getValue())
                     return true;
                 break;
+                
+            case AchievementRule.GREATER_THAN_OR_EQUAL_TO:
+                if (fieldVal >= comparator.getValue())
+                    return true;
+                break;
+                
+            case AchievementRule.LESS_THAN_OR_EQUAL_TO:
+                 if (fieldVal <= comparator.getValue())
+                    return true;
+                break;
+                
             default:
                 Util.handleMessage("Error: Deafault reached", Thread.currentThread());
                 System.exit(0);
