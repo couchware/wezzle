@@ -248,7 +248,7 @@ public class SoundManager
     public void setVolume(float volume)
     {
         // Adjust the property;
-        propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
+        propertyMan.setProperty(PropertyManager.KEY_SOUND_VOLUME, 
                 Float.toString(volume));
         
         this.volume = volume;

@@ -130,11 +130,11 @@ public class PropertyManager
     {   
         properties.put(KEY_DIFFICULTY, "0");
         properties.put(KEY_SOUND, VALUE_ON);
-        properties.put(KEY_SOUND_MIN, "-80.0f");
+        properties.put(KEY_SOUND_MIN, "-40.0f");
         properties.put(KEY_SOUND_MAX, "6.0206f");
         properties.put(KEY_SOUND_VOLUME, "-1.5f");
         properties.put(KEY_MUSIC, VALUE_ON);
-        properties.put(KEY_MUSIC_MIN, "-80.0f");
+        properties.put(KEY_MUSIC_MIN, "-40.0f");
         properties.put(KEY_MUSIC_MAX, "6.0206f");
         properties.put(KEY_MUSIC_VOLUME, "-1.5f");
     }
