@@ -1428,12 +1428,12 @@ public class Game extends Canvas implements GameWindowCallback
                 newRocketRemovalSet.removeAll(rocketRemovalSet);
                 
                 // Extract all bombs.
-                boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
-                        bombRemovalSet);
+                //boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
+                //        bombRemovalSet);
 
                 // Remove all tiles that aren't new bombs.
                 tileRemovalSet.removeAll(newRocketRemovalSet);
-                tileRemovalSet.removeAll(bombRemovalSet);
+                //tileRemovalSet.removeAll(bombRemovalSet);
                 
                 // Start the line removal animations.
                 int i = 0;

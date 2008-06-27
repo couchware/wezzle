@@ -106,7 +106,7 @@ public class WorldManager
 		itemList.add(new ItemDescriptor(TileEntity.class, 28, 20));
 		itemList.add(new ItemDescriptor(BombTileEntity.class, 2, 50));
         itemList.add(new ItemDescriptor(StarTileEntity.class, 0, 10));
-        itemList.add(new ItemDescriptor(RocketTileEntity.class, 15, 50));
+        itemList.add(new ItemDescriptor(RocketTileEntity.class, 1, 50));
 		itemList.add(new ItemDescriptor(Multiply2xTileEntity.class, 2, 50));
         itemList.add(new ItemDescriptor(Multiply3xTileEntity.class, 0, 20));
         itemList.add(new ItemDescriptor(Multiply4xTileEntity.class, 0, 10));
