@@ -14,52 +14,22 @@ public class JumpFadeOutAnimation extends Animation
     /**
      * The period of each frame.
      */
-    final private static int FRAME_PERIOD = 60;      
-    
-    /**
-     * The number of frames to stay opaque.
-     */
-    final private static int OPAQUE_FRAME_MAX = 8;
-    
-    /**
-     * The amount of opacity to reduce each step.
-     */
-    final private static int OPACITY_STEP = 8;
-    
-    /**
-     * The minimum opacity before the animation ends.
-     */
-    final private static int OPACITY_MIN = 0;
+    final private static int FRAME_PERIOD = 60;              
     
     /**
      * The state where the text is still opaque.
      */
     final private static int STATE_OPAQUE = 0;
-    
-    /**
-     * The state where the text fades out.
-     */
-    final private static int STATE_FADE = 1;
        
     /**
      * Reference to the layer manager.
      */
-    final private LayerManager layerMan;
-    
-    /**
-     * The current pulse state.
-     */
-    private int state;
+    final private LayerManager layerMan;       
     
     /**
      * The entity being float faded.
      */
     final Entity entity;
-    
-    /**
-     * The number of opaque frames that have passed.
-     */
-    private int opaqueFrameCount;
     
     /**
      * The initial position.
@@ -122,13 +92,7 @@ public class JumpFadeOutAnimation extends Animation
         this.layerMan = layerMan;
         
         // Set a reference to the entity.
-        this.entity = entity;                    
-                        
-        // Set the initial pulse state.
-        state = STATE_OPAQUE;
-        
-        // Initialize opaque frame count.
-        opaqueFrameCount = 0;
+        this.entity = entity;                                           
         
         // Add the floating text to the layer manager.
         layerMan.add(entity, Game.LAYER_EFFECT);
@@ -145,7 +109,7 @@ public class JumpFadeOutAnimation extends Animation
             
         // Determine the current x and y.
         double t = (double) counter;
-        double x = vX * t;
+        double x = -vX * t;
         double y = vY * t - 0.5 * g * t * t;
         
         // Move the entity.

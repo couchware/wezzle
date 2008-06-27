@@ -701,6 +701,139 @@ public class BoardManager
 			board[index2].setX(x + (index2 % columns) * cellWidth);
 			board[index2].setY(y + (index2 / columns) * cellHeight);
 		}
+	}        
+
+    /**
+     * Finds all the tiles between the rocket and the wall that is in the
+     * direction the rocket is pointing.
+     * 
+     * @param rocketSet
+     * @param affectedSet
+     */
+    public void processRockets(Set<Integer> rocketSet, Set<Integer> affectedSet)
+    {        
+        // Clear the set.
+        affectedSet.clear();
+                
+        int column;
+        int row;        
+        
+        for (Integer rocketIndex : rocketSet)
+        {
+            // Extract column and row.
+            column = rocketIndex % columns;
+            row = rocketIndex / columns;
+            
+            // Depending on the direction, collect the appropriate tiles.                                           
+            int dir = ((RocketTileEntity) getTile(rocketIndex.intValue()))
+                    .getDirection();
+            
+            int index;
+
+            switch (dir)
+            {
+                case RocketTileEntity.ANGLE_UP:
+                        
+                    //Util.handleWarning("Dir is up!", Thread.currentThread());
+                    
+                    for (int j = 0; j <= row; j++)
+                    {
+                        index = column + j * columns;
+                        
+                        if (getTile(index) != null)
+                            affectedSet.add(index);
+                    }
+
+                    break;
+
+                case RocketTileEntity.ANGLE_DOWN:
+                    
+                    //Util.handleWarning("Dir is down!", Thread.currentThread());
+
+                    for (int j = row; j < rows; j++)
+                    {
+                        index = column + j * columns;
+                        
+                        if (getTile(index) != null)
+                            affectedSet.add(index);
+                    }
+
+                    break;
+
+                case RocketTileEntity.ANGLE_LEFT:
+                    
+                    //Util.handleWarning("Dir is left!", Thread.currentThread());
+
+                    for (int j = 0; j <= column; j++)
+                    {
+                        index = j + row * columns;
+                        
+                        if (getTile(index) != null)
+                            affectedSet.add(index);
+                    }   
+
+                    break;
+
+                case RocketTileEntity.ANGLE_RIGHT:
+                    
+                    //Util.handleWarning("Dir is right!", Thread.currentThread());
+                    
+                    for (int j = column; j < columns; j++)
+                    {
+                        index = j + row * columns;
+                        
+                        if (getTile(index) != null)
+                            affectedSet.add(index);
+                    }  
+
+                    break;
+            }                  
+        }               
+    } 
+    
+    /**
+     * Finds all the tiles that are the same color as the star tile.
+     * 
+     * @param starSet
+     * @param affectedSet
+     */
+    public void processStars(Set<Integer> starSet, Set<Integer> affectedSet)
+    {        
+        // Clear the set.
+        affectedSet.clear();
+        
+        for (Integer starIndex : starSet)
+        {
+            // Determine the colour of the star.
+            int color = getTile(starIndex).getColor();
+            
+            // Look for that colour and add it to the affected set.
+            for (int i = 0; i < cells; i++)
+            {
+                if (getTile(i) == null)
+                    continue;
+                
+                if (getTile(i).getColor() == color)
+                    affectedSet.add(i);
+            }
+        }               
+    } 
+    
+	/**
+	 * Feeds all the bombs in the bomb processor and then returns those results
+     * in the cleared out affected set parameter.
+     * 
+	 * @param bombTileSet
+     * @param affectedSet
+	 */
+	public void processBombs(Set<Integer> bombSet, Set<Integer> affectedSet)
+	{				
+		// A list of tiles affected by the blast.
+		affectedSet.clear();
+		
+		// Gather affected tiles.
+		for (Iterator<Integer> it = bombSet.iterator(); it.hasNext(); )		
+			affectedSet.addAll(this.processBomb(it.next()));			
 	}
     
     /**
@@ -737,90 +870,27 @@ public class BoardManager
 		// Pass back affected tiles.
 		return affectedSet;
 	}
-
-	/**
-	 * Feeds all the bombs in the bomb processor and then returns those results
-     * in the cleared out affected set parameter.
-     * 
-	 * @param bombTileSet
-     * @param affectedSet
-	 */
-	public void processBombs(Set<Integer> bombSet, Set<Integer> affectedSet)
-	{				
-		// A list of tiles affected by the blast.
-		affectedSet.clear();
-		
-		// Gather affected tiles.
-		for (Iterator<Integer> it = bombSet.iterator(); it.hasNext(); )		
-			affectedSet.addAll(this.processBomb(it.next()));			
-	}
-    
+                    
     /**
-     * Scans the tile set for bombs and places them in the bomb set,
-     * clearing it first.
+     * Scans the tile set for specified item and places them in a passed item 
+     * set, clearing it first.
      * 
+     * @param itemClass
      * @param tileSet
-     * @param bombRemovalSet
+     * @param itemSet
      */
-    public void scanBombs(Set<Integer> tileSet, Set<Integer> bombSet)
+    public void scanFor(Class itemClass, 
+            Set<Integer> tileSet, Set<Integer> itemSet)
     {
         // Clear the set.
-        bombSet.clear();
-        
-        for (Iterator it = tileSet.iterator(); it.hasNext(); )
-        {
-            Integer index = (Integer) it.next();
-            if (getTile(index).getClass() == BombTileEntity.class)            
-                bombSet.add(index);                            
-        } // end for                
-    }
-    
-    /**
-     * Scans the tile set for stars and places them in a star set,
-     * clearing it first.
-     * 
-     * @param tileSet
-     * @param starRemovalSet
-     */
-    public void scanStars(Set<Integer> tileSet, Set<Integer> starSet)
-    {
-        // Clear the set.
-        starSet.clear();
+        itemSet.clear();
         
         for (Integer index : tileSet)
         {            
-            if (getTile(index).getClass() == StarTileEntity.class)            
-                starSet.add(index);                            
+            if (getTile(index).getClass() == itemClass)            
+                itemSet.add(index);                            
         } // end for
-    }
-    
-    /**
-     * Finds all the tiles that are the same color as the star tile.
-     * 
-     * @param starSet
-     * @param affectedSet
-     */
-    public void processStars(Set<Integer> starSet, Set<Integer> affectedSet)
-    {        
-        // Clear the set.
-        affectedSet.clear();
-        
-        for (Integer starIndex : starSet)
-        {
-            // Determine the colour of the star.
-            int color = getTile(starIndex).getColor();
-            
-            // Look for that colour and add it to the affected set.
-            for (int i = 0; i < cells; i++)
-            {
-                if (getTile(i) == null)
-                    continue;
-                
-                if (getTile(i).getColor() == color)
-                    affectedSet.add(i);
-            }
-        }               
-    }    
+    }           
     
     /**
      * Animates the showing of the board.

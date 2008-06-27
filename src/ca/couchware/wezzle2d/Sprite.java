@@ -44,6 +44,8 @@ public interface Sprite
 	 *            The y location at which to draw the sprite.
      * @param width The width.
      * @param height The height.
+     * @param theta The amount of rotation, in radians.
+     * @param opacity The integer opacity, from 0 to 100.
 	 */
     public void draw(int x, int y, 
             int width, int height, 

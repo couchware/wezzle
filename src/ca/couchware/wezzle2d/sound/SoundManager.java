@@ -40,6 +40,7 @@ public class SoundManager
     public final static int KEY_CLICK = 3;
     public final static int KEY_LEVEL_UP = 4;
     public final static int KEY_STAR = 5;
+    public final static int KEY_ROCKET = 6;
     
     /** 
      * The number of buffers for the effect. 
@@ -110,6 +111,9 @@ public class SoundManager
         
         this.addSoundEffect(SoundManager.KEY_STAR,
                 Game.SOUNDS_PATH + "/SoundDing.wav");
+        
+        this.addSoundEffect(SoundManager.KEY_ROCKET,
+                Game.SOUNDS_PATH + "/SoundRocket.wav");
              
         // Get the default volume.
         this.volume = propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME);

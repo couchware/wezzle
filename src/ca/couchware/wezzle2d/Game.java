@@ -324,7 +324,17 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The set of star tile indices that will be removed.
      */
-    private Set<Integer> starRemovalSet;       
+    private Set<Integer> starRemovalSet;     
+    
+    /**
+     * If true, a rocket removal will be activated next loop.
+     */
+    private boolean activateRocketRemoval = false;
+    
+    /**
+     * The set of star tile indices that will be removed.
+     */
+    private Set<Integer> rocketRemovalSet;  
     
     /**
      * The number of lines cleared this cycle, where a cycle is defined as the
@@ -574,6 +584,9 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Initialize star index set.
         starRemovalSet = new HashSet<Integer>();
+        
+        // Initialize rocket index set.
+        rocketRemovalSet = new HashSet<Integer>();
         
         //----------------------------------------------------------------------
         // Initialize managers.
@@ -918,6 +931,7 @@ public class Game extends Canvas implements GameWindowCallback
         return this.activateLineRemoval               
                || this.activateBombRemoval
                || this.activateStarRemoval
+               || this.activateRocketRemoval
                || this.tileRemovalInProgress;
     }
     
@@ -1301,13 +1315,21 @@ public class Game extends Canvas implements GameWindowCallback
                 {
                     Set<Integer> allSet = new HashSet<Integer>();
                     
-                    boardMan.scanBombs(tileRemovalSet, bombRemovalSet);
-                    boardMan.scanStars(tileRemovalSet, starRemovalSet);
+                    boardMan.scanFor(BombTileEntity.class, tileRemovalSet, 
+                            bombRemovalSet);
+                    boardMan.scanFor(StarTileEntity.class, tileRemovalSet, 
+                            starRemovalSet);
+                    boardMan.scanFor(RocketTileEntity.class, tileRemovalSet, 
+                            rocketRemovalSet);
                     
                     allSet.addAll(bombRemovalSet);
                     allSet.addAll(starRemovalSet);
+                    allSet.addAll(rocketRemovalSet);                    
                     
                     tileRemovalSet.removeAll(allSet);                      
+                    
+                    // De-reference.
+                    allSet = null;
                 }
                 else
                 {
@@ -1347,6 +1369,100 @@ public class Game extends Canvas implements GameWindowCallback
                     //activateBombRemoval = true;
                     activateStarRemoval = true;
                 }
+            }
+            
+            // If the star removal is in progress.
+            if (activateRocketRemoval == true)
+            {
+                // Clear the flag.
+                activateRocketRemoval = false;
+                
+                // Increment cascade.
+                cascadeCount++;
+                
+                // Used below.
+                int deltaScore = 0;
+                
+                // Get the tiles the bombs would affect.
+                boardMan.processRockets(rocketRemovalSet, tileRemovalSet);
+                
+                for (Integer index : lastMatchSet)
+                {
+                    if (boardMan.getTile(index) == null)
+                        continue;
+                    
+                    if (boardMan.getTile(index).getClass() 
+                        != RocketTileEntity.class)
+                    {
+                        tileRemovalSet.remove(index);
+                    }
+                }       
+                
+                deltaScore = scoreMan.calculateLineScore(
+                        tileRemovalSet, 
+                        ScoreManager.TYPE_STAR, 
+                        cascadeCount);
+                
+                // Show the SCT.
+                XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                Label label = ResourceFactory.get().getLabel(p.x, p.y);
+                label.setText(String.valueOf(deltaScore));
+                label.setAlignment(Label.HCENTER | Label.VCENTER);
+                label.setColor(SCORE_BOMB_COLOR);
+                label.setSize(scoreMan.determineFontSize(deltaScore));
+                
+                animationMan.add(new FloatFadeOutAnimation(                         
+                        0, -1, layerMan, label));
+                
+                // Release references.
+                p = null;
+                label = null;                
+                                
+                // Play the sound.
+                soundMan.playSoundEffect(SoundManager.KEY_ROCKET);
+                
+                // Extract all the new rockets.
+                Set newRocketRemovalSet = new HashSet<Integer>();
+                boardMan.scanFor(RocketTileEntity.class, tileRemovalSet,
+                        newRocketRemovalSet);                                                
+                newRocketRemovalSet.removeAll(rocketRemovalSet);
+                
+                // Extract all bombs.
+                boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
+                        bombRemovalSet);
+
+                // Remove all tiles that aren't new bombs.
+                tileRemovalSet.removeAll(newRocketRemovalSet);
+                tileRemovalSet.removeAll(bombRemovalSet);
+                
+                // Start the line removal animations.
+                int i = 0;
+                for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
+                {
+                    TileEntity t = boardMan.getTile((Integer) it.next());
+
+                    if (t.getClass() == RocketTileEntity.class)
+                    {
+                        // Cast it.
+                        RocketTileEntity r = (RocketTileEntity) t;
+                        t.setAnimation(new JumpFadeOutAnimation(
+                                0.3, r.getDirection() + 90, 0, 800, layerMan, r));
+                    }
+                    else
+                    {
+                        i++;
+                        int angle = i % 2 == 0 ? 70 : 180 - 70;                        
+                        t.setAnimation(new JumpFadeOutAnimation(
+                            0.3, angle, 0.001, 800, layerMan, t));
+                    }                    
+                }
+                                                
+                // If other bombs were hit, they will be dealt with in another
+                // bomb removal cycle.
+                rocketRemovalSet = newRocketRemovalSet;
+                
+                // Set the flag.
+                tileRemovalInProgress = true;
             }
             
             // If the star removal is in progress.
@@ -1457,7 +1573,8 @@ public class Game extends Canvas implements GameWindowCallback
 
                 // Extract all the new bombs.
                 Set newBombRemovalSet = new HashSet<Integer>();
-                boardMan.scanBombs(tileRemovalSet, newBombRemovalSet);                                                
+                boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
+                        newBombRemovalSet);                                                
                 newBombRemovalSet.removeAll(bombRemovalSet);
 
                 // Remove all tiles that aren't new bombs.
@@ -1508,7 +1625,9 @@ public class Game extends Canvas implements GameWindowCallback
 
                     // See if there are any bombs in the bomb set.
                     // If there are, activate the bomb removal.
-                    if (starRemovalSet.size() > 0)
+                    if (rocketRemovalSet.size() > 0)
+                        activateRocketRemoval = true;
+                    else if (starRemovalSet.size() > 0)
                         activateStarRemoval = true;
                     else if (bombRemovalSet.size() > 0)
                         activateBombRemoval = true;
