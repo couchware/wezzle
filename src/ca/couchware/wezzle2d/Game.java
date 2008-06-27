@@ -1315,10 +1315,15 @@ public class Game extends Canvas implements GameWindowCallback
                 {
                     Set<Integer> allSet = new HashSet<Integer>();
                     
+                    bombRemovalSet.clear();
                     boardMan.scanFor(BombTileEntity.class, tileRemovalSet, 
                             bombRemovalSet);
+                    
+                    starRemovalSet.clear();
                     boardMan.scanFor(StarTileEntity.class, tileRemovalSet, 
                             starRemovalSet);
+                    
+                    rocketRemovalSet.clear();
                     boardMan.scanFor(RocketTileEntity.class, tileRemovalSet, 
                             rocketRemovalSet);
                     
@@ -1421,19 +1426,23 @@ public class Game extends Canvas implements GameWindowCallback
                 // Play the sound.
                 soundMan.playSoundEffect(SoundManager.KEY_ROCKET);
                 
-                // Extract all the new rockets.
+                // Find all the new rockets.
                 Set newRocketRemovalSet = new HashSet<Integer>();
                 boardMan.scanFor(RocketTileEntity.class, tileRemovalSet,
                         newRocketRemovalSet);                                                
                 newRocketRemovalSet.removeAll(rocketRemovalSet);
-                
-                // Extract all bombs.
-                //boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
-                //        bombRemovalSet);
 
-                // Remove all tiles that aren't new bombs.
+                // Remove all new rockets from the tile removal set.
+                // They will be processed separately.
                 tileRemovalSet.removeAll(newRocketRemovalSet);
-                //tileRemovalSet.removeAll(bombRemovalSet);
+                
+                // Find all the bombs.
+                boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
+                        bombRemovalSet);
+                
+                // Remove all bombs from the tile removal set.
+                // They will be processed separately.
+                tileRemovalSet.removeAll(bombRemovalSet);
                 
                 // Start the line removal animations.
                 int i = 0;
@@ -1571,14 +1580,23 @@ public class Game extends Canvas implements GameWindowCallback
                 // Play the sound.
                 soundMan.playSoundEffect(SoundManager.KEY_BOMB);
 
-                // Extract all the new bombs.
+                // Find all the new bombs.
                 Set newBombRemovalSet = new HashSet<Integer>();
                 boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
                         newBombRemovalSet);                                                
                 newBombRemovalSet.removeAll(bombRemovalSet);
-
-                // Remove all tiles that aren't new bombs.
+                
+                // Remove all new bombs from the tile removal set.
+                // They will be processed separately.
                 tileRemovalSet.removeAll(newBombRemovalSet);
+                
+                // Find all rockets.                
+                boardMan.scanFor(RocketTileEntity.class, tileRemovalSet,
+                        rocketRemovalSet);                
+
+                // Remove all rockets from the tile removal set.
+                // They will be processed separately.
+                tileRemovalSet.removeAll(rocketRemovalSet);
 
                 // Start the line removal animations.
                 for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )

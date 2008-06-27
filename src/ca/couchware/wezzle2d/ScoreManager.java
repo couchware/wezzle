@@ -25,6 +25,11 @@ import java.util.Set;
      * A star.
      */
     final public static int TYPE_STAR = 2;
+    
+    /**
+     * A rocket.
+     */
+    final public static int TYPE_ROCKET = 3;
      
     /**
      * The amount of point per tile in a line.
@@ -121,6 +126,8 @@ import java.util.Set;
         // Initialize tile counts.
         int numNormal = 0;
         int numBomb = 0;
+        int numStar = 0;
+        int numRocket = 0;
         int numMultiply4x = 0;
         int numMultiply3x = 0;
         int numMultiply2x = 0;		
@@ -154,6 +161,19 @@ import java.util.Set;
                 {
                     numBomb++;
                 }
+                else if (t.getClass() == StarTileEntity.class)                    
+                {
+                    numStar++;
+                }
+                else if (t.getClass() == RocketTileEntity.class)
+                {
+                    numRocket++;
+                }
+                else
+                {
+                    throw new RuntimeException(
+                            "Tile type is not accounted for.");
+                }
             } // end if
         } // end for
 
@@ -161,6 +181,8 @@ import java.util.Set;
         int deltaScore = (int) (calculateLineTilePoints(
                 numNormal 
                 + numBomb 
+                + numStar
+                + numRocket
                 + numMultiply2x 
                 + numMultiply3x 
                 + numMultiply4x, 
@@ -188,10 +210,16 @@ import java.util.Set;
     private int calculateLineTilePoints(int numTotal, int lineType)
     {
         // If we have a minimal line, it's just 4 times the points/tile.
-        if (numTotal <= 4  || lineType == TYPE_BOMB)
+        if (numTotal <= 4  
+                || lineType == TYPE_BOMB 
+                || lineType == TYPE_ROCKET)
+        {
             return numTotal * POINTS_PER_LINE_TILE;
+        }
         else if (lineType == TYPE_STAR)
+        {
             return (numTotal * POINTS_PER_LINE_TILE) / 2;
+        }
 
         // If we have more, 4 times the points/tile + 100 + 150 + 200 + ...
         int score = 4 * POINTS_PER_LINE_TILE;

@@ -18,6 +18,16 @@ import javax.jnlp.UnavailableServiceException;
  */
 public class PropertyManager
 {
+    /**
+     * The key for the version of the configuration file.  If the config
+     * file versions do not match, then the config file will be overwritten
+     * with the defaults for the current version.
+     * 
+     * Note: This is not yet implemented.
+     */
+    public static final String KEY_VERSION = "wezzle.confVersion";
+    public static final String VALUE_VERSION = "2";
+    
 	public static final String KEY_DIFFICULTY = "wezzle.difficulty";
     public static final String KEY_MUSIC = "wezzle.music";
     public static final String KEY_MUSIC_MIN = "wezzle.musicMinimum";
@@ -30,6 +40,7 @@ public class PropertyManager
     
     public static final String VALUE_ON = "on";
     public static final String VALUE_OFF = "off";
+    
 	
     public static final String DIR_PATH = 
             System.getProperty("user.home") + "/Wezzle";
@@ -128,6 +139,7 @@ public class PropertyManager
      */
     public void setDefaults()
     {   
+        properties.put(KEY_VERSION, VALUE_VERSION);
         properties.put(KEY_DIFFICULTY, "0");
         properties.put(KEY_SOUND, VALUE_ON);
         properties.put(KEY_SOUND_MIN, "-40.0f");

@@ -1,6 +1,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 
 /**
@@ -19,13 +20,12 @@ import java.util.ArrayList;
 public class AchievementManager 
 {
 
-    /** the unachieved achievements */
+    /** The unachieved achievements. */
     private ArrayList<Achievement> incomplete;
     
-    /** the achieved achievements */
+    /** The achieved achievements. */
     private ArrayList<Achievement> completed;
-    
-    
+        
     public AchievementManager()
     {
         this.incomplete = new ArrayList();
@@ -73,8 +73,7 @@ public class AchievementManager
     public void reportCompleted()
     {
         for (int i = 0; i < completed.size(); i++)
-            System.out.println(completed.get(i).getDescription());
-    }
-    
-    
+            Util.handleMessage(completed.get(i).getDescription(),
+                    Thread.currentThread());
+    }        
 }

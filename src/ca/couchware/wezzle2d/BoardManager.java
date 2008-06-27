@@ -873,7 +873,7 @@ public class BoardManager
                     
     /**
      * Scans the tile set for specified item and places them in a passed item 
-     * set, clearing it first.
+     * set.
      * 
      * @param itemClass
      * @param tileSet
@@ -881,10 +881,7 @@ public class BoardManager
      */
     public void scanFor(Class itemClass, 
             Set<Integer> tileSet, Set<Integer> itemSet)
-    {
-        // Clear the set.
-        itemSet.clear();
-        
+    {        
         for (Integer index : tileSet)
         {            
             if (getTile(index).getClass() == itemClass)            
