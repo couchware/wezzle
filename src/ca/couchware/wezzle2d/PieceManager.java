@@ -435,8 +435,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 {
                     // The tile is an item.
                     tileDropped[0] = boardMan.createTile(index[0], 
-                            game.worldMan.pickRandomItem(), 
-                            TileEntity.randomColor()); 
+                            game.worldMan.pickRandomItem()); 
                     
                     // Null out the rest.
                     for (int i = 1; i < tileDropped.length; i++)                    
@@ -451,16 +450,14 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     {
                         tileDropped[i] =
                                 boardMan.createTile(index[i],
-                                TileEntity.class,
-                                TileEntity.randomColor()); 
+                                TileEntity.class); 
 
                     }
                     
                     // Drop in the item tile.
                     tileDropped[tileDropped.length - 1] =
                             boardMan.createTile(index[tileDropped.length - 1],
-                            game.worldMan.pickRandomItem(),
-                            TileEntity.randomColor()); 
+                            game.worldMan.pickRandomItem()); 
                     
                     // Any unused slots should be nulled.
                     for(int i = tileDropCount+1; i < tileDropped.length; i++)
@@ -474,8 +471,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     for (int i = 0; i < tileDropped.length; i++)
                     {
                         tileDropped[i] = boardMan.createTile(index[i],
-                                TileEntity.class,
-                                TileEntity.randomColor()); 
+                                TileEntity.class); 
                     }                 
                 }                
                           

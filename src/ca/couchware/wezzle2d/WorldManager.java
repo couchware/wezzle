@@ -30,7 +30,7 @@ public class WorldManager
 	/**
 	 * The item list
 	 */
-	private LinkedList itemList;
+	private LinkedList<ItemDescriptor> itemList;
 		
 	/**
 	 * The difficulty level
@@ -102,9 +102,9 @@ public class WorldManager
         // Set the max items.
         this.maxItems = 5;
         
-		itemList = new LinkedList();
+		itemList = new LinkedList<ItemDescriptor>();
 		itemList.add(new ItemDescriptor(TileEntity.class, 28, 20));
-		itemList.add(new ItemDescriptor(BombTileEntity.class, 2, 50));
+		itemList.add(new ItemDescriptor(BombTileEntity.class, 1, 20));
         itemList.add(new ItemDescriptor(StarTileEntity.class, 0, 5));
         itemList.add(new ItemDescriptor(RocketTileEntity.class, 1, 50));
 		itemList.add(new ItemDescriptor(Multiply2xTileEntity.class, 2, 50));

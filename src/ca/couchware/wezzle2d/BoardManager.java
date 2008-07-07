@@ -81,6 +81,11 @@ public class BoardManager
 	final private int height;
     
     /**
+     * The number of colours.
+     */
+    private int numberOfColors;
+    
+    /**
      * The number of tiles.
      */
     private int numberOfTiles;
@@ -147,6 +152,9 @@ public class BoardManager
 		this.width = columns * cellWidth;
 		this.height = rows * cellHeight;
         
+        // Set the number of colours.
+        this.numberOfColors = 5;
+                
         // Set the number of tiles.
         this.numberOfTiles = 0;
         
@@ -185,8 +193,7 @@ public class BoardManager
                 j < ((ItemDescriptor) itemList.get(i)).getInitialAmount(); j++)
             {
                 this.createTile(count, 
-                        ((ItemDescriptor) itemList.get(i)).getItemClass(), 
-                        TileEntity.randomColor());
+                        ((ItemDescriptor) itemList.get(i)).getItemClass());
                 count++;
             }
         }      
@@ -207,8 +214,7 @@ public class BoardManager
 				{
 					Integer n = (Integer) it.next();
 					this.createTile(n.intValue(), 
-                            getTile(n.intValue()).getClass(),
-                            TileEntity.randomColor());
+                            getTile(n.intValue()).getClass());
 				}
 				
 				set.clear();
@@ -553,13 +559,13 @@ public class BoardManager
 		// Return the count.
 		return count;
 	}
-	
+	        
 	public TileEntity createTile(final int index, final Class c, final int color)
 	{
          // Sanity check.
         assert (index >= 0 && index < cells);
         assert (c != null);
-        assert (color >= 0 && color < TileEntity.NUMBER_OF_COLORS);
+        assert (color >= 0 && color < numberOfColors);
         
         // If this is an item, increment the count.
         if (c != TileEntity.class)
@@ -604,6 +610,12 @@ public class BoardManager
         // Return the tile.
         return t;
 	}
+    
+    public TileEntity createTile(final int index, final Class c)
+    {
+        return createTile(index, c, 
+                TileEntity.randomColor(getNumberOfColors()));
+    }
     
     public void removeTile(final int index)
     {
@@ -990,6 +1002,72 @@ public class BoardManager
         else
             return null;
     }
+    
+    /**
+     * Determines the centrepoint of a group of tiles.  Used for determine
+     * position of SCT.
+     * 
+     * @param indexSet
+     * @return
+     */
+    public XYPosition determineCenterPoint(final Set<Integer> indexSet)
+    {
+        // The furthest left, right, up and down locations.
+        int l = Integer.MAX_VALUE;
+        int r = 0;
+        int u = Integer.MAX_VALUE;
+        int d = 0;
+
+        // The x and y coordinate of the centre of the tiles.
+        int cx, cy;
+
+        // Determine centre of tiles.
+        for (Integer index : indexSet)            
+        {     
+            TileEntity t = getTile(index); 
+            
+            if (t == null)
+                Util.handleWarning("It was null:" + index , Thread.currentThread());
+
+            if (t.getX() < l) 
+                l = t.getX();
+
+            if (t.getX() + t.getWidth() > r) 
+                r = t.getX() + t.getWidth();
+
+            if (t.getY() < u)
+                u = t.getY();
+
+            if (t.getY() + t.getHeight() > d)
+                d = t.getY() + t.getHeight();
+        }
+
+        // Assigned centre.
+        cx = l + (r - l) / 2;
+        cy = u + (d - u) / 2;
+        
+        // Return centerpoint.
+        return new XYPosition(cx, cy);
+    }
+    
+	/**
+	 * Prints board to console (for debugging purposes).
+	 */
+	public void print()
+	{
+		for (int i = 0; i < board.length; i++)
+		{
+			if (board[i] == null)
+				System.out.print(".");
+			else
+				System.out.print("X");
+			
+			if (i % columns == columns - 1)
+				System.out.println();
+		}
+		
+		System.out.println();
+	}
 
     //--------------------------------------------------------------------------
     // Getters and Setters
@@ -1077,7 +1155,7 @@ public class BoardManager
         this.numberOfItems++;
     }    
 
-     public int getNumberOfTiles()
+    public int getNumberOfTiles()
     {
         int counter = 0;
         for(int i = 0; i < this.rows * this.columns; i++)
@@ -1088,6 +1166,16 @@ public class BoardManager
         
         return counter;
     }
+
+    public int getNumberOfColors()
+    {
+        return numberOfColors;
+    }
+
+    public void setNumberOfColors(int numberOfColors)
+    {
+        this.numberOfColors = numberOfColors;
+    }        
         
     public boolean isVisible()
     {
@@ -1101,71 +1189,7 @@ public class BoardManager
         this.visible = visible;        
     }
 
-    /**
-     * Determines the centrepoint of a group of tiles.  Used for determine
-     * position of SCT.
-     * 
-     * @param indexSet
-     * @return
-     */
-    public XYPosition determineCenterPoint(final Set<Integer> indexSet)
-    {
-        // The furthest left, right, up and down locations.
-        int l = Integer.MAX_VALUE;
-        int r = 0;
-        int u = Integer.MAX_VALUE;
-        int d = 0;
-
-        // The x and y coordinate of the centre of the tiles.
-        int cx, cy;
-
-        // Determine centre of tiles.
-        for (Integer index : indexSet)            
-        {     
-            TileEntity t = getTile(index); 
-            
-            if (t == null)
-                Util.handleWarning("It was null:" + index , Thread.currentThread());
-
-            if (t.getX() < l) 
-                l = t.getX();
-
-            if (t.getX() + t.getWidth() > r) 
-                r = t.getX() + t.getWidth();
-
-            if (t.getY() < u)
-                u = t.getY();
-
-            if (t.getY() + t.getHeight() > d)
-                d = t.getY() + t.getHeight();
-        }
-
-        // Assigned centre.
-        cx = l + (r - l) / 2;
-        cy = u + (d - u) / 2;
-        
-        // Return centerpoint.
-        return new XYPosition(cx, cy);
-    }
     
-	/**
-	 * Prints board to console (for debugging purposes).
-	 */
-	public void print()
-	{
-		for (int i = 0; i < board.length; i++)
-		{
-			if (board[i] == null)
-				System.out.print(".");
-			else
-				System.out.print("X");
-			
-			if (i % columns == columns - 1)
-				System.out.println();
-		}
-		
-		System.out.println();
-	}
     
     public void setDirty(boolean dirty)
     {

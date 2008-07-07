@@ -20,12 +20,9 @@ public class TileEntity extends GraphicEntity implements Movable
 	final public static int COLOR_YELLOW = 4;
     final public static int COLOR_BLACK = 5;
     final public static int COLOR_BROWN = 6;    
-    final public static int COLOR_WHITE = 7;
-    	
-    /**
-     * The number of possible tile colours.
-     */
-	final public static int NUMBER_OF_COLORS = 5;               
+    final public static int COLOR_WHITE = 7;    	
+    
+    final public static int MAX_COLORS = 8;
 	
 	/**
 	 * The associated board manager.
@@ -240,9 +237,12 @@ public class TileEntity extends GraphicEntity implements Movable
 		this.leftBound = boardMan.getX() + (tilesInRow * boardMan.getCellWidth());
 	}
 	
-	public static int randomColor()
+	public static int randomColor(int max)
 	{
-		return Util.random.nextInt(NUMBER_OF_COLORS);
+        assert(max > 0);
+        assert(max <= MAX_COLORS);
+        
+		return Util.random.nextInt(max);
 	}
 	
 	private static String toColorString(int color)
