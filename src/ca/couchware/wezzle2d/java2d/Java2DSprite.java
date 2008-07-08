@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 
-import ca.couchware.wezzle2d.Sprite;
+import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Color;

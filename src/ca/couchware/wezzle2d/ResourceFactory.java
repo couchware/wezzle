@@ -1,5 +1,6 @@
         package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
 import ca.couchware.wezzle2d.java2d.Java2DSpriteStore;

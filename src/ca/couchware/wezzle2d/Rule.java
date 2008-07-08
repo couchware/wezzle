@@ -46,9 +46,9 @@ public class Rule
     public static final int GREATER_THAN = 2;        
     
     /** An achievement tuple contains a value and an associated test */
-    protected int test;
-    protected int value;
-    protected int type;
+    protected final int operation;
+    protected final int value;
+    protected final int type;
     
     //--------------------------------------------------------------------------
     // Constructor
@@ -57,14 +57,15 @@ public class Rule
     /**
      * The constructor constructs a tuple with a given value and test
      * 
-     * @param type The type of rule this refers to.
-     * @param test The test to be performed on the data.
-     * @param value The value of the achievement data.     
+     * @param type The type of rule, i.e. a rule that triggers based on score,
+     *             level, etc.
+     * @param op The operation to perform, i.e. less than, equal to, etc.
+     * @param value The value we are testing against, i.e. less than 2.
      */
-    public Rule(int type, int test, int value)
+    public Rule(int type, int op, int value)
     {        
         this.type = type;
-        this.test = test;
+        this.operation = op;
         this.value = value;
     }
 
@@ -72,34 +73,19 @@ public class Rule
     // Getters and Setters
     //--------------------------------------------------------------------------
             
-    public int getTest() 
+    public int getOperation() 
     {
-        return test;
-    }
-
-    public void setTest(int test)
-    {
-        this.test = test;
-    }
+        return operation;
+    }   
 
     public int getValue() 
     {
         return value;
-    }
-
-    public void setValue(int value) 
-    {
-        this.value = value;
-    }
+    }  
 
     public int getType() 
     {
         return type;
-    }
-
-    public void setType(int type) 
-    {
-        this.type = type;
-    }
+    }   
     
 }

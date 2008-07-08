@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.tile;
 
+import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.*;
 
 /**

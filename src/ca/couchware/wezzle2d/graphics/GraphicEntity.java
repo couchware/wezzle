@@ -1,5 +1,8 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.graphics;
 
+import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.animation.Animation;
 
 /**

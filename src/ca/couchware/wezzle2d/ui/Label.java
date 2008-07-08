@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;

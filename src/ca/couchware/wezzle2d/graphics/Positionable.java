@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.util.XYPosition;
 

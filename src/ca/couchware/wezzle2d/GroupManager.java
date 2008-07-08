@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.ui.group.Group;
 import ca.couchware.wezzle2d.util.*;

@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;

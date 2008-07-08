@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.graphics;
 
 import java.awt.Rectangle;
 

@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import ca.couchware.wezzle2d.Sprite;
+import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.image.VolatileImage;
 

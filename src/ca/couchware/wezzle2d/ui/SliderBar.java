@@ -5,6 +5,8 @@
 
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Cursor;

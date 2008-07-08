@@ -1,5 +1,8 @@
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.Positionable;
+import ca.couchware.wezzle2d.graphics.Drawable;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;

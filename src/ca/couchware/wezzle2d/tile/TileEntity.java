@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d.tile;
 
+import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.graphics.Movable;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
 import java.awt.Rectangle;

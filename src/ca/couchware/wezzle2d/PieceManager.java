@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.sound.SoundManager;
 import ca.couchware.wezzle2d.util.*;

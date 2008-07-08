@@ -13,7 +13,15 @@ import java.util.LinkedList;
 
 public class WorldManager
 {
-	/**
+    //--------------------------------------------------------------------------
+	// Static Members
+	//--------------------------------------------------------------------------    	
+		
+	//--------------------------------------------------------------------------
+	// Instance Members
+	//--------------------------------------------------------------------------
+	
+    /**
 	 * The property manager.
 	 */
 	private final PropertyManager propertyMan;
@@ -22,11 +30,7 @@ public class WorldManager
 	 * The current level
 	 */
 	private int currentLevel;
-		
-	// ---------------------------------------------------------------------------
-	// XML Instance Attributes
-	// ---------------------------------------------------------------------------
-	
+    
 	/**
 	 * The item list.
 	 */
@@ -35,7 +39,7 @@ public class WorldManager
     /**
      * The rule list.
      */
-    private LinkedList<Rule> ruleList;
+    //private LinkedList<RuleManager> ruleList;
 		
 	/**
 	 * The difficulty level.
@@ -107,6 +111,7 @@ public class WorldManager
         // Set the max items.
         this.maxItems = 5;
         
+        // Set the items.
 		itemList = new LinkedList<Item>();
 		itemList.add(new Item(TileEntity.class, 28, 20));
 		itemList.add(new Item(BombTileEntity.class, 1, 20));
@@ -115,6 +120,9 @@ public class WorldManager
 		itemList.add(new Item(Multiply2xTileEntity.class, 2, 50));
         itemList.add(new Item(Multiply3xTileEntity.class, 0, 20));
         itemList.add(new Item(Multiply4xTileEntity.class, 0, 10));
+        
+        // Set the rules.
+       
 	}
 		
 	/**

@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.graphics;
 
 /**
  * A sprite to be displayed on the screen. Note that a sprite contains no state

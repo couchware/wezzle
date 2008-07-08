@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.animation;
 
+import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.*;
 
 /**

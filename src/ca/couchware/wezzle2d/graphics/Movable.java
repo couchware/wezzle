@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.graphics;
 
 /**
  * An interface for things in Wezzle which need to move related to frame-rate.

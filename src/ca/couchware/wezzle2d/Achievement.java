@@ -78,7 +78,7 @@ public class Achievement
         
         for (Rule rule : ruleList)
         {
-           if (this.evaluateField(rule, game) == false)
+           if (this.evaluate(rule, game) == false)
                return false;
         }
        
@@ -92,7 +92,7 @@ public class Achievement
      * @param val The value of the field.
      * @param rule The achievement rule.
      */
-    private boolean evaluateField(Rule rule, Game gameState)
+    private boolean evaluate(Rule rule, Game game)
     {        
         // Find the appropriate field value from the type.
         int val = -1;
@@ -100,19 +100,19 @@ public class Achievement
         switch (rule.getType())
         {
             case TYPE_SCORE:
-                val = gameState.scoreMan.getTotalScore();
+                val = game.scoreMan.getTotalScore();
                 break;
                 
             case TYPE_LEVEL:
-                val = gameState.worldMan.getLevel();
+                val = game.worldMan.getLevel();
                 break;
                 
             case TYPE_MOVES:
-                val = gameState.moveMan.getMoveCount();
+                val = game.moveMan.getMoveCount();
                 break;
                 
             case TYPE_LINES:
-                val = gameState.getTotalLineCount();
+                val = game.getTotalLineCount();
                 break;
                 
             default:
@@ -120,7 +120,7 @@ public class Achievement
         }
                                   
         // If the test is successful, return true, otherwise, return false         
-        switch (rule.getTest())
+        switch (rule.getOperation())
         {
             case Rule.GREATER_THAN:
                 if (val > rule.getValue())
