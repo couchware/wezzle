@@ -36,12 +36,7 @@ public class Achievement
     public static final int DIFFICULTY_BRONZE = 0;
     public static final int DIFFICULTY_SILVER = 1;
     public static final int DIFFICULTY_GOLD = 2;
-    public static final int DIFFICULTY_PLATINUM = 3;
-    
-    public static final int TYPE_SCORE = 0;
-    public static final int TYPE_LEVEL = 1;
-    public static final int TYPE_MOVES = 2;
-    public static final int TYPE_LINES = 3;    
+    public static final int DIFFICULTY_PLATINUM = 3;         
     
     private LinkedList<Rule> ruleList;
     private String description;
@@ -78,81 +73,12 @@ public class Achievement
         
         for (Rule rule : ruleList)
         {
-           if (this.evaluate(rule, game) == false)
+           if (Rule.evaluate(rule, game) == false)
                return false;
         }
        
         return true;       
-    }
-    
-    /**
-     * A private method that compares the achievement tuple with the actual 
-     * value.
-     * 
-     * @param val The value of the field.
-     * @param rule The achievement rule.
-     */
-    private boolean evaluate(Rule rule, Game game)
-    {        
-        // Find the appropriate field value from the type.
-        int val = -1;
-  
-        switch (rule.getType())
-        {
-            case TYPE_SCORE:
-                val = game.scoreMan.getTotalScore();
-                break;
-                
-            case TYPE_LEVEL:
-                val = game.worldMan.getLevel();
-                break;
-                
-            case TYPE_MOVES:
-                val = game.moveMan.getMoveCount();
-                break;
-                
-            case TYPE_LINES:
-                val = game.getTotalLineCount();
-                break;
-                
-            default:
-                throw new IllegalArgumentException("Unknown type.");                
-        }
-                                  
-        // If the test is successful, return true, otherwise, return false         
-        switch (rule.getOperation())
-        {
-            case Rule.GREATER_THAN:
-                if (val > rule.getValue())
-                    return true;
-                break;
-                
-            case Rule.LESS_THAN:
-                 if (val < rule.getValue())
-                    return true;
-                break;
-                
-            case Rule.EQUAL_TO:
-                 if (val == rule.getValue())
-                    return true;
-                break;
-                
-            case Rule.GREATER_THAN_OR_EQUAL_TO:
-                if (val >= rule.getValue())
-                    return true;
-                break;
-                
-            case Rule.LESS_THAN_OR_EQUAL_TO:
-                 if (val <= rule.getValue())
-                    return true;
-                break;
-                
-            default:
-                throw new IllegalArgumentException("Unknown test.");
-        }
-        
-        return false;
-    }
+    }        
     
     /**
      * Get the description of the achievement.

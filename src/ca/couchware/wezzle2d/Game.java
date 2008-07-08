@@ -656,31 +656,31 @@ public class Game extends Canvas implements GameWindowCallback
         LinkedList<Rule> rules3 = new LinkedList<Rule>();
         LinkedList<Rule> rules4 = new LinkedList<Rule>();
         
-        rules1.add(new Rule(Achievement.TYPE_SCORE, 
+        rules1.add(new Rule(Rule.TYPE_SCORE, 
                 Rule.GREATER_THAN, 2000));
         
-        achievementMan.addAchievement(new Achievement(rules1, 
+        achievementMan.add(new Achievement(rules1, 
                  "Score greater than 2000", Achievement.DIFFICULTY_BRONZE));        
                 
-        rules2.add(new Rule(Achievement.TYPE_SCORE, 
+        rules2.add(new Rule(Rule.TYPE_SCORE, 
                 Rule.GREATER_THAN, 5000));
         
-        achievementMan.addAchievement(new Achievement(rules2, 
+        achievementMan.add(new Achievement(rules2, 
                  "Score greater than 5000", Achievement.DIFFICULTY_BRONZE));
                 
-        rules3.add(new Rule(Achievement.TYPE_SCORE,
+        rules3.add(new Rule(Rule.TYPE_SCORE,
                 Rule.GREATER_THAN, 1000));        
-        rules3.add(new Rule(Achievement.TYPE_MOVES,
+        rules3.add(new Rule(Rule.TYPE_MOVES,
                 Rule.LESS_THAN_OR_EQUAL_TO, 3));
         
-        achievementMan.addAchievement(new Achievement(rules3, 
+        achievementMan.add(new Achievement(rules3, 
                  "Score greater than 1000, Moves less than or equal to 3", 
                  Achievement.DIFFICULTY_BRONZE));
                 
-        rules4.add(new Rule(Achievement.TYPE_LEVEL,
+        rules4.add(new Rule(Rule.TYPE_LEVEL,
                 Rule.GREATER_THAN, 2));
         
-        achievementMan.addAchievement(new Achievement(rules4, 
+        achievementMan.add(new Achievement(rules4, 
                  "Level greater than 2", Achievement.DIFFICULTY_BRONZE));
                        
         //----------------------------------------------------------------------
@@ -1685,6 +1685,9 @@ public class Game extends Canvas implements GameWindowCallback
           
             // Update piece manager logic and then draw it.
             pieceMan.updateLogic(this);
+            
+            // Update the world manager logic.
+            worldMan.updateLogic(this);
                        
             // Draw the timer text.
             timerLabel.setText(String.valueOf(timerMan.getTime()));		

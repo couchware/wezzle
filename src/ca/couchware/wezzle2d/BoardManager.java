@@ -22,21 +22,20 @@ import java.util.Set;
 
 public class BoardManager
 {	
+    //--------------------------------------------------------------------------
+    // Static Members
+    //--------------------------------------------------------------------------
+    
     /**
      * The path to the board background graphic.
      */
-    final private String PATH = Game.SPRITES_PATH + "/Board.png";
-    
-    /**
-     * Whether or not this is visible.
-     */
-    private boolean visible;
-    
-    /**
-     * Whether or not the board needs to be drawn.
-     */
-    private boolean dirty;
+    final private String PATH = Game.SPRITES_PATH + "/Board.png";        
         
+    /**
+     * The default number of colours.
+     */
+    final private int DEFAULT_NUMBER_OF_COLORS = 5;
+    
     /**
      * The layer manager.
      */
@@ -83,6 +82,30 @@ public class BoardManager
 	final private int height;
     
     /**
+	 * The width of a grid cell.
+	 */
+	final private int cellWidth;
+	
+	/**
+	 * The height of a grid cell.
+	 */
+	final private int cellHeight;
+    
+    //--------------------------------------------------------------------------
+    // Instance Members
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Whether or not this is visible.
+     */
+    private boolean visible;
+    
+    /**
+     * Whether or not the board needs to be drawn.
+     */
+    private boolean dirty;
+    
+    /**
      * The number of colours.
      */
     private int numberOfColors;
@@ -95,17 +118,7 @@ public class BoardManager
     /**
      * The number of items.
      */
-    private int numberOfItems;
-	
-	/**
-	 * The width of a grid cell.
-	 */
-	final private int cellWidth;
-	
-	/**
-	 * The height of a grid cell.
-	 */
-	final private int cellHeight;
+    private int numberOfItems;		
 	
 	/**
 	 * The array representing the game board.
@@ -182,7 +195,7 @@ public class BoardManager
      * 
 	 * @param items A linked list of Item Descriptors.
 	 */
-	public void generateBoard(LinkedList itemList)
+	public void generateBoard(LinkedList<Item> itemList)
 	{
         // Make sure the board is clean.
         this.clearBoard();
@@ -192,10 +205,9 @@ public class BoardManager
         for (int i = 0; i < itemList.size(); i++)
         {
             for (int j = 0; 
-                j < ((Item) itemList.get(i)).getInitialAmount(); j++)
+                j < itemList.get(i).getInitialAmount(); j++)
             {
-                this.createTile(count, 
-                        ((Item) itemList.get(i)).getItemClass());
+                this.createTile(count, itemList.get(i).getItemClass());
                 count++;
             }
         }      
@@ -1070,6 +1082,15 @@ public class BoardManager
 		
 		System.out.println();
 	}
+    
+    /**
+     * Restarts the board manager to appropriate settings for the first level.
+     */
+    public void restart()
+    {
+        // Reset the number of colours.
+        setNumberOfColors(DEFAULT_NUMBER_OF_COLORS);
+    }    
 
     //--------------------------------------------------------------------------
     // Getters and Setters

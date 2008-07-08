@@ -133,8 +133,11 @@ public class GameOverGroup extends Group
         // Reset a bunch of stuff.
         if (isRestartActivated() == true)
         {
-            // Set the level to 1.
-            game.worldMan.setLevel(1);
+            // Reset the board manager.
+            game.boardMan.restart();
+            
+            // Reset the world manager.
+            game.worldMan.restart();                        
 
             // Reset the timer to the initial.
             game.timerMan.setInitialTime(game.worldMan.getInitialTimer());

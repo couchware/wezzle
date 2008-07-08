@@ -12,11 +12,7 @@ import java.util.LinkedList;
  */
 
 public class WorldManager
-{
-    //--------------------------------------------------------------------------
-	// Static Members
-	//--------------------------------------------------------------------------    	
-		
+{       
 	//--------------------------------------------------------------------------
 	// Instance Members
 	//--------------------------------------------------------------------------
@@ -37,9 +33,16 @@ public class WorldManager
 	private LinkedList<Item> itemList;
     
     /**
-     * The rule list.
+     * The master rule list.  Contains all the rules that should exist
+     * at the start of a new game.
      */
-    //private LinkedList<RuleManager> ruleList;
+    private LinkedList<Rule> masterRuleList;
+    
+    /**
+     * The current rule list.  Contains all the rules that have not yet 
+     * been realized for the current game.
+     */
+    private LinkedList<Rule> currentRuleList;
 		
 	/**
 	 * The difficulty level.
@@ -86,6 +89,10 @@ public class WorldManager
      */
     private int levelDifficultySpeed = 3;
     
+    //--------------------------------------------------------------------------
+	// Constructor
+	//--------------------------------------------------------------------------
+    
 	/**
 	 * The constructor.
 	 * @param fragment
@@ -122,63 +129,41 @@ public class WorldManager
         itemList.add(new Item(Multiply4xTileEntity.class, 0, 10));
         
         // Set the rules.
-       
+        masterRuleList = new LinkedList<Rule>();
+        masterRuleList.add(new Rule(Rule.TYPE_LEVEL, Rule.EQUAL_TO, 5)
+        {            
+            @Override
+            public void performAction(Game game)
+            {
+                // Increase the number of colours.
+                game.boardMan.setNumberOfColors(6);
+            }            
+        });
+        
+        currentRuleList = new LinkedList<Rule>();
+        currentRuleList.addAll(masterRuleList);
 	}
-		
-	/**
-	 * @return the currentLevel
-	 */
-	public int getLevel()
-	{
-		return currentLevel;
-	}	
 	
-	/**
-	 * @param currentLevel the currentLevel to set
-	 */
-	public void setLevel(int currentLevel)
-	{
-		// Set the level.
-		this.currentLevel = currentLevel;								
-	}	
-	
-    /**
-     * @return the maximum number of items.
-     */
-    public int getNumMaxItems()
-    {
-        return this.maxItems;
-    }
+    //--------------------------------------------------------------------------
+	// Instance Methods
+	//--------------------------------------------------------------------------
     
     /**
-     * Get the initial timer value.
-     * @return The initial timer.
-     */
-    public int getInitialTimer()
-    {
-        return this.initialTimer;
-    }
-    
-     /**
-     * set the maximum number of items.
-     */
-    public void setNumMaxItems(int max)
-    {
-        this.maxItems = max;
-    }
-    
-	/**
-	 * Increment the level.
+	 * A method to generate a target score given the level. 
+	 * 
+	 * @param currentLevel The level to generate the score for.
+	 * @return The score.
 	 */
-	public void incrementCurrentLevel()
+	public int generateTargetLevelScore(int currentLevel)
 	{
-		// Increment initial amount of normal tiles.		
-		getItem(0).incrementInitialAmount();
-		
-		// Increment the level.
-		this.setLevel(currentLevel + 1);
-	}	
-	    
+		return currentLevel * 1200;
+	}
+        
+    public int generateTargetLevelScore()
+    {
+        return generateTargetLevelScore(currentLevel);
+    }     
+    
     public void levelUp(final Game game)
     {        
         this.incrementCurrentLevel();
@@ -204,6 +189,147 @@ public class WorldManager
         game.timerMan.setInitialTime(time);
     }
     
+    /**
+     * 
+     * @param game The game.
+     * @param pieceSize The size of the piece consumed.
+     * @return The number of tiles do drop.
+     */
+    public int calculateDropNumber(final Game game, int pieceSize)
+    {
+        float tiles = game.boardMan.getNumberOfTiles();
+        float totalSpots = game.boardMan.getColumns() * game.boardMan.getRows();
+        
+        // The number of tiles for the current level.
+        int levelDrop = (this.currentLevel / this.levelDifficultySpeed);
+        
+        // Check for difficulty ramp up.
+        if (this.currentLevel > this.difficultyIncreaseLevel)
+            levelDrop = (this.difficultyIncreaseLevel / this.levelDifficultySpeed);
+        
+        // The percent of the board to readd.
+        int  boardPercentage = (int)((totalSpots - tiles) * 0.1f); 
+        
+        // We are low. drop in a percentage of the tiles, increasing if there 
+        // are fewer tiles.
+        if ((tiles / totalSpots) * 100 < this.tileRatio)
+        {
+            // If we are past the level ramp up point, drop in more.
+            if (this.currentLevel > this.difficultyIncreaseLevel)
+            {
+                  return pieceSize +  levelDrop 
+                    + (this.currentLevel - this.difficultyIncreaseLevel) 
+                    + boardPercentage + this.minimumDrop;
+            }
+            else
+            {
+                return pieceSize + levelDrop + boardPercentage 
+                        + this.minimumDrop;
+            }
+        }
+        else
+        {
+            // If we are past the level ramp up point, drop in more.
+            if (this.currentLevel > this.difficultyIncreaseLevel)
+            {
+                return pieceSize + levelDrop
+                    + (this.currentLevel - this.difficultyIncreaseLevel) 
+                    + this.minimumDrop;
+            }
+            else
+                return pieceSize + levelDrop + this.minimumDrop;
+        }
+    }  
+    
+    /**
+     * Restarts the board manager to appropriate settings for the first level.
+     */
+    public void restart()
+    {
+        // Reset to level 1.
+        this.setLevel(1);
+        
+        // Reset the rules.
+        currentRuleList.clear();
+        currentRuleList.addAll(masterRuleList);
+    }
+    
+    //--------------------------------------------------------------------------
+    // Logic
+    //--------------------------------------------------------------------------
+    
+    public void updateLogic(final Game game)
+    {                     
+        for (Iterator<Rule> it = currentRuleList.iterator(); it.hasNext(); )
+        {
+            Rule rule = it.next();
+            
+            if (Rule.evaluate(rule, game) == true)
+            {
+                rule.performAction(game);
+                it.remove();
+            }
+        }            
+    }
+    
+    //--------------------------------------------------------------------------
+	// Getters and Setters
+	//--------------------------------------------------------------------------
+    
+	/**
+	 * @return the currentLevel
+	 */
+	public int getLevel()
+	{
+		return currentLevel;
+	}	
+	
+	/**
+	 * @param currentLevel the currentLevel to set
+	 */
+	public void setLevel(int currentLevel)
+	{
+		// Set the level.
+		this.currentLevel = currentLevel;								
+	}	
+	
+    /**
+     * @return the maximum number of items.
+     */
+    public int getMaxItems()
+    {
+        return this.maxItems;
+    }
+    
+    /**
+     * set the maximum number of items.
+     */
+    public void setMaxItems(int max)
+    {
+        this.maxItems = max;
+    }    
+    
+    /**
+     * Get the initial timer value.
+     * @return The initial timer.
+     */
+    public int getInitialTimer()
+    {
+        return this.initialTimer;
+    }        
+    
+	/**
+	 * Increment the level.
+	 */
+	public void incrementCurrentLevel()
+	{
+		// Increment initial amount of normal tiles.		
+		getItem(0).incrementInitialAmount();
+		
+		// Increment the level.
+		this.setLevel(currentLevel + 1);
+	}	
+	            
     /**
      * Get the parallel drop in amount.
      * @return The amount.
@@ -243,58 +369,11 @@ public class WorldManager
 	}
        
     /**
+     * Gets a random item.
      * 
-     * @param game The game.
-     * @param pieceSize The size of the piece consumed.
-     * @return The number of tiles do drop.
+     * @return 
      */
-    public int calculateDropNumber(final Game game, int pieceSize)
-    {
-        float tiles = game.boardMan.getNumberOfTiles();
-        float totalSpots = game.boardMan.getColumns() * game.boardMan.getRows();
-        
-        // The number of tiles for the current level.
-        int levelDrop = (this.currentLevel / this.levelDifficultySpeed);
-        
-        // Check for difficulty ramp up.
-        if(this.currentLevel > this.difficultyIncreaseLevel)
-            levelDrop = (this.difficultyIncreaseLevel / this.levelDifficultySpeed);
-        
-        // The percent of the board to readd.
-        int  boardPercentage = (int)((totalSpots - tiles) * 0.1f); 
-        
-        // We are low. drop in a percentage of the tiles, increasing if there 
-        // are fewer tiles.
-        if( (tiles / totalSpots) * 100 < this.tileRatio)
-        {
-            // If we are past the level ramp up point, drop in more.
-            if(this.currentLevel > this.difficultyIncreaseLevel)
-            {
-                  return pieceSize +  levelDrop 
-                    + (this.currentLevel - this.difficultyIncreaseLevel) 
-                    + boardPercentage + this.minimumDrop;
-            }
-            else
-            {
-                return pieceSize + levelDrop + boardPercentage 
-                        + this.minimumDrop;
-            }
-        }
-        else
-        {
-            // If we are past the level ramp up point, drop in more.
-            if(this.currentLevel > this.difficultyIncreaseLevel)
-            {
-                return pieceSize + levelDrop
-                    + (this.currentLevel - this.difficultyIncreaseLevel) 
-                    + this.minimumDrop;
-            }
-            else
-                return pieceSize + levelDrop + this.minimumDrop;
-        }
-    }
-     
-    public Class pickRandomItem()
+    public Item getItem()
 	{	
 		// Create an array representing the item distribution.
 		int dist[] = new int[itemList.size() + 1];
@@ -318,7 +397,7 @@ public class WorldManager
 		for (int j = 1; j < dist.length; j++)
 		{
 			if (randomNumber < dist[j])
-				return ((Item) itemList.get(j - 1)).getItemClass();
+				return itemList.get(j - 1);
 		}
 		
 		// We should never get here.
@@ -326,31 +405,15 @@ public class WorldManager
                 "Random number out of range! (" + randomNumber + ").", 
                 Thread.currentThread());
         
-		return ((Item) itemList.get(0)).getItemClass();
+		return itemList.get(0);
 	}
-			
-	/**
+    
+    /**
 	 * @return The items.
 	 */
 	public LinkedList getItemList()
 	{
 		return itemList;
-	}
-		
-	/**
-	 * A method to generate a target score given the level. 
-	 * 
-	 * @param currentLevel The level to generate the score for.
-	 * @return The score.
-	 */
-	public int generateTargetLevelScore(int currentLevel)
-	{
-		return currentLevel * 1200;
-	}
-        
-    public int generateTargetLevelScore()
-    {
-        return generateTargetLevelScore(currentLevel);
-    }        
+	}               	
 	
 }

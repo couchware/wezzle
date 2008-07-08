@@ -432,11 +432,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     game.startGameOver();
                 }
                 else if (tileDropCount == 1 && game.boardMan.getNumberOfItems() 
-                        < game.worldMan.getNumMaxItems())
+                        < game.worldMan.getMaxItems())
                 {
                     // The tile is an item.
                     tileDropped[0] = boardMan.createTile(index[0], 
-                            game.worldMan.pickRandomItem()); 
+                            game.worldMan.getItem().getItemClass()); 
                     
                     // Null out the rest.
                     for (int i = 1; i < tileDropped.length; i++)                    
@@ -444,7 +444,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 }
                 else if (tileDropCount <= tileDropped.length 
                        && game.boardMan.getNumberOfItems() 
-                       < game.worldMan.getNumMaxItems())
+                       < game.worldMan.getMaxItems())
                 {
                     // Drop in the first x amount.
                     for (int i = 0; i < tileDropCount-1; i++)
@@ -458,7 +458,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     // Drop in the item tile.
                     tileDropped[tileDropped.length - 1] =
                             boardMan.createTile(index[tileDropped.length - 1],
-                            game.worldMan.pickRandomItem()); 
+                            game.worldMan.getItem().getItemClass()); 
                     
                     // Any unused slots should be nulled.
                     for(int i = tileDropCount+1; i < tileDropped.length; i++)

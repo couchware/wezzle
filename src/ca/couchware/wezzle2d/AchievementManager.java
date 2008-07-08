@@ -44,9 +44,9 @@ public class AchievementManager
      * Add an achievement to the manager.
      * @param achieve The achievement.
      */
-    public void addAchievement(Achievement achieve)
+    public void add(Achievement achievement)
     {
-        this.incompleteList.add(achieve);
+        this.incompleteList.add(achievement);
     }
     
     /**

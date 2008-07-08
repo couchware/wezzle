@@ -43,7 +43,27 @@ public class Rule
     /**
      * Is greater than.
      */
-    public static final int GREATER_THAN = 2;        
+    public static final int GREATER_THAN = 2;   
+    
+    /**
+     * Is this a score rule?
+     */
+    public static final int TYPE_SCORE = 0;
+    
+    /**
+     * Is this a level rule?
+     */
+    public static final int TYPE_LEVEL = 1;
+    
+    /**
+     * Is this a moves rule?
+     */
+    public static final int TYPE_MOVES = 2;
+    
+    /**
+     * Is this a lines rule?
+     */
+    public static final int TYPE_LINES = 3;   
     
     /** An achievement tuple contains a value and an associated test */
     protected final int operation;
@@ -62,11 +82,90 @@ public class Rule
      * @param op The operation to perform, i.e. less than, equal to, etc.
      * @param value The value we are testing against, i.e. less than 2.
      */
-    public Rule(int type, int op, int value)
+    public Rule(int type, int operation, int value)
     {        
         this.type = type;
-        this.operation = op;
+        this.operation = operation;
         this.value = value;
+    }
+    
+    public void performAction(Game game)
+    {
+        // Optionally overridden.
+    }
+    
+    //--------------------------------------------------------------------------
+    // Static Methods
+    //--------------------------------------------------------------------------
+    
+    /**
+     * A private method that compares the achievement tuple with the actual 
+     * value.
+     * 
+     * @param val The value of the field.
+     * @param rule The achievement rule.
+     */
+    public static boolean evaluate(Rule rule, Game game)
+    {        
+        // Find the appropriate field value from the type.
+        int value = -1;
+  
+        // Check the type.
+        switch (rule.getType())
+        {
+            case Rule.TYPE_SCORE:
+                value = game.scoreMan.getTotalScore();
+                break;
+                
+            case Rule.TYPE_LEVEL:
+                value = game.worldMan.getLevel();
+                break;
+                
+            case Rule.TYPE_MOVES:
+                value = game.moveMan.getMoveCount();
+                break;
+                
+            case Rule.TYPE_LINES:
+                value = game.getTotalLineCount();
+                break;
+                
+            default:
+                throw new IllegalArgumentException("Unknown type.");                
+        }
+                                  
+        // If the test is successful, return true, otherwise, return false         
+        switch (rule.getOperation())
+        {
+            case Rule.GREATER_THAN:
+                if (value > rule.getValue())
+                    return true;
+                break;
+                
+            case Rule.LESS_THAN:
+                 if (value < rule.getValue())
+                    return true;
+                break;
+                
+            case Rule.EQUAL_TO:
+                 if (value == rule.getValue())
+                    return true;
+                break;
+                
+            case Rule.GREATER_THAN_OR_EQUAL_TO:
+                if (value >= rule.getValue())
+                    return true;
+                break;
+                
+            case Rule.LESS_THAN_OR_EQUAL_TO:
+                 if (value <= rule.getValue())
+                    return true;
+                break;
+                
+            default:
+                throw new IllegalArgumentException("Unknown test.");
+        }
+        
+        return false;
     }
 
     //--------------------------------------------------------------------------
