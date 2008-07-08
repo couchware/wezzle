@@ -184,16 +184,16 @@ public class BoardManager
 	{
         // Make sure the board is clean.
         this.clearBoard();
-        assert(itemList.get(0) instanceof ItemDescriptor);
+        assert(itemList.get(0) instanceof Item);
         
         int count = 0;
         for (int i = 0; i < itemList.size(); i++)
         {
             for (int j = 0; 
-                j < ((ItemDescriptor) itemList.get(i)).getInitialAmount(); j++)
+                j < ((Item) itemList.get(i)).getInitialAmount(); j++)
             {
                 this.createTile(count, 
-                        ((ItemDescriptor) itemList.get(i)).getItemClass());
+                        ((Item) itemList.get(i)).getItemClass());
                 count++;
             }
         }      

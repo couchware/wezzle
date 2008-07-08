@@ -28,12 +28,17 @@ public class WorldManager
 	// ---------------------------------------------------------------------------
 	
 	/**
-	 * The item list
+	 * The item list.
 	 */
-	private LinkedList<ItemDescriptor> itemList;
+	private LinkedList<Item> itemList;
+    
+    /**
+     * The rule list.
+     */
+    private LinkedList<Rule> ruleList;
 		
 	/**
-	 * The difficulty level
+	 * The difficulty level.
 	 */
 	private int difficulty;	
     
@@ -102,14 +107,14 @@ public class WorldManager
         // Set the max items.
         this.maxItems = 5;
         
-		itemList = new LinkedList<ItemDescriptor>();
-		itemList.add(new ItemDescriptor(TileEntity.class, 28, 20));
-		itemList.add(new ItemDescriptor(BombTileEntity.class, 1, 20));
-        itemList.add(new ItemDescriptor(StarTileEntity.class, 0, 5));
-        itemList.add(new ItemDescriptor(RocketTileEntity.class, 1, 50));
-		itemList.add(new ItemDescriptor(Multiply2xTileEntity.class, 2, 50));
-        itemList.add(new ItemDescriptor(Multiply3xTileEntity.class, 0, 20));
-        itemList.add(new ItemDescriptor(Multiply4xTileEntity.class, 0, 10));
+		itemList = new LinkedList<Item>();
+		itemList.add(new Item(TileEntity.class, 28, 20));
+		itemList.add(new Item(BombTileEntity.class, 1, 20));
+        itemList.add(new Item(StarTileEntity.class, 0, 5));
+        itemList.add(new Item(RocketTileEntity.class, 1, 50));
+		itemList.add(new Item(Multiply2xTileEntity.class, 2, 50));
+        itemList.add(new Item(Multiply3xTileEntity.class, 0, 20));
+        itemList.add(new Item(Multiply4xTileEntity.class, 0, 10));
 	}
 		
 	/**
@@ -206,9 +211,9 @@ public class WorldManager
 	 * @param index The index.
 	 * @return The ItemDescriptor.
 	 */
-	public ItemDescriptor getItem(int index)
+	public Item getItem(int index)
 	{
-		return (ItemDescriptor) this.itemList.get(index);
+		return (Item) this.itemList.get(index);
 	}
 	
 	/**
@@ -218,12 +223,12 @@ public class WorldManager
 	 * @param c The item class.
 	 * @return The ItemDescriptor.
 	 */
-	public ItemDescriptor getItem(Class c)
+	public Item getItem(Class c)
 	{
 		for (Iterator it = itemList.iterator(); it.hasNext(); )
         {
-			if (((ItemDescriptor) it).getItemClass().equals(c))
-				return (ItemDescriptor) it;
+			if (((Item) it).getItemClass().equals(c))
+				return (Item) it;
         }
 		
 		return null;
@@ -289,10 +294,8 @@ public class WorldManager
 		
 		// Determine the distribution.
 		int i = 1;
-		for (Iterator it = itemList.iterator(); it.hasNext();)
-		{
-            ItemDescriptor item = (ItemDescriptor) it.next();
-            
+		for (Item item : itemList)
+		{            
 			if (item.getProbability() == -1)
 				dist[i] = dist[i - 1];
 			else			
@@ -307,7 +310,7 @@ public class WorldManager
 		for (int j = 1; j < dist.length; j++)
 		{
 			if (randomNumber < dist[j])
-				return ((ItemDescriptor) itemList.get(j - 1)).getItemClass();
+				return ((Item) itemList.get(j - 1)).getItemClass();
 		}
 		
 		// We should never get here.
@@ -315,7 +318,7 @@ public class WorldManager
                 "Random number out of range! (" + randomNumber + ").", 
                 Thread.currentThread());
         
-		return ((ItemDescriptor) itemList.get(0)).getItemClass();
+		return ((Item) itemList.get(0)).getItemClass();
 	}
 			
 	/**
@@ -340,6 +343,6 @@ public class WorldManager
     public int generateTargetLevelScore()
     {
         return generateTargetLevelScore(currentLevel);
-    }
+    }        
 	
 }

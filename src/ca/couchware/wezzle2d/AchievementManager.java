@@ -1,8 +1,13 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
 
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * A class to manage achievements.
@@ -21,15 +26,18 @@ public class AchievementManager
 {
 
     /** The unachieved achievements. */
-    private ArrayList<Achievement> incomplete;
+    private LinkedList<Achievement> incompleteList;
     
     /** The achieved achievements. */
-    private ArrayList<Achievement> completed;
+    private LinkedList<Achievement> completeList;
         
+    /**
+     * The constructor.
+     */
     public AchievementManager()
     {
-        this.incomplete = new ArrayList();
-        this.completed = new ArrayList();
+        this.incompleteList = new LinkedList<Achievement>();
+        this.completeList = new LinkedList<Achievement>();
     }
     
     /**
@@ -38,28 +46,30 @@ public class AchievementManager
      */
     public void addAchievement(Achievement achieve)
     {
-        this.incomplete.add(achieve);
+        this.incompleteList.add(achieve);
     }
     
     /**
-     * Evaluate each achievement. If the achievement is completed
-     * transfer from the incomplete to the completed lists.
+     * Evaluate each achievement. 
+     * If the achievement is completed transfer from the incomplete to 
+     * the completed lists.
      * 
-     * @param gameState The state of the game.
+     * @param game The state of the game.
      * @return True if an achievement was completed, false otherwise.
      */
-    public boolean evaluate(Game gameState)
+    public boolean evaluate(Game game)
     {
         boolean achieved = false;
         
-        for (int i = 0; i < incomplete.size(); i++)
+        for (Iterator<Achievement> it = incompleteList.iterator(); 
+                it.hasNext(); )
         {
-            Achievement temp = this.incomplete.get(i);
+            Achievement a = it.next();
             
-            if (temp.evaluate(gameState) == true)
+            if (a.evaluate(game) == true)
             {
-                this.completed.add(temp);
-                this.incomplete.remove(i);
+                this.completeList.add(a);
+                it.remove();
                 achieved = true;
             }
         }
@@ -72,8 +82,8 @@ public class AchievementManager
      */
     public void reportCompleted()
     {
-        for (int i = 0; i < completed.size(); i++)
-            Util.handleMessage(completed.get(i).getDescription(),
+        for (int i = 0; i < completeList.size(); i++)
+            Util.handleMessage(completeList.get(i).getDescription(),
                     Thread.currentThread());
     }        
 }

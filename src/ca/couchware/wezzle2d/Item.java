@@ -5,7 +5,7 @@ package ca.couchware.wezzle2d;
  * @author Kevin
  *
  */
-public class ItemDescriptor 
+public class Item 
 {
 	// ---------------------------------------------------------------------------
 	// Instance Attributes
@@ -39,7 +39,7 @@ public class ItemDescriptor
 	 * A constructor to construct an item descriptor for the passed in class.
 	 * @param itemClass The class we are describing.
 	 */
-	public ItemDescriptor(Class itemClass, int initialAmount, int probability)
+	public Item(Class itemClass, int initialAmount, int probability)
 	{
 		this.itemClass = itemClass;
 		this.initialAmount = initialAmount;
@@ -51,7 +51,7 @@ public class ItemDescriptor
 	 * The overloaded constructor. Parses the data from an XML file.
 	 * @param file The file to parse
 	 */
-	public ItemDescriptor(String file)
+	public Item(String file)
 	{
 		
 	}
