@@ -20,8 +20,8 @@ public class TileEntity extends GraphicEntity implements Movable
 	final public static int COLOR_PURPLE = 2;
 	final public static int COLOR_RED = 3;		
 	final public static int COLOR_YELLOW = 4;
-    final public static int COLOR_BLACK = 5;
-    final public static int COLOR_BROWN = 6;    
+    final public static int COLOR_BLACK = 6;
+    final public static int COLOR_BROWN = 5;    
     final public static int COLOR_WHITE = 7;    	
     
     final public static int MAX_COLORS = 8;

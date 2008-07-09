@@ -543,6 +543,36 @@ public class BoardManager
 		// Return the count.
 		return count;
 	}
+    
+    /**
+	 * See <pre>countTilesBelowCell</pre>.
+	 * @param index
+	 * @return
+	 */
+    public int countTilesAboveCell(int index)
+	{
+		// Sanity check.
+		assert(index >= 0 && index < cells);
+		
+		// The current column and row.
+		int column = index % columns;
+		int row = index / columns;
+		
+		// If we're at the bottom row, return 0.
+		if (row == 0)
+			return 0;
+		
+		// The tile count.
+		int count = 0;
+		
+		// Cycle through the column rows, counting tiles.
+		for (int j = row - 1; j >= 0; j--)
+			if (getTile(column, j) != null)
+				count++;
+		
+		// Return the count.
+		return count;
+	}
 	
 	/**
 	 * See <pre>countTilesBelowCell</pre>.
@@ -567,6 +597,36 @@ public class BoardManager
 		
 		// Cycle through the column rows, counting tiles.
 		for (int i = column - 1; i >= 0; i--)
+			if (getTile(i, row) != null)
+				count++;
+		
+		// Return the count.
+		return count;
+	}
+    
+    /**
+	 * See <pre>countTilesBelowCell</pre>.
+	 * @param index
+	 * @return
+	 */
+	public int countTilesRightOfCell(int index)
+	{
+		// Sanity check.
+		assert(index >= 0 && index < cells);
+		
+		// The current column and row.
+		int column = index % columns;
+		int row = index / columns;
+		
+		// If we're at the bottom row, return 0.
+		if (column == columns - 1)
+			return 0;
+		
+		// The tile count.
+		int count = 0;
+		
+		// Cycle through the column rows, counting tiles.
+		for (int i = column + 1; i < columns; i++)
 			if (getTile(i, row) != null)
 				count++;
 		
