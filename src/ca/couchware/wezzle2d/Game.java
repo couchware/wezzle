@@ -1,8 +1,11 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
+
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.graphics.GraphicEntity;
-import ca.couchware.wezzle2d.LayerManager;
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.music.MusicManager;
 import ca.couchware.wezzle2d.sound.SoundManager;
@@ -37,7 +40,7 @@ import java.util.Set;
  * As a mediator it will be informed when entities within our game detect events
  * (e.g. alien killed, played died) and will take appropriate game actions.
  * 
- * @author Kevin Glass
+ * @author Cameron, Kevin Grad (based on code by Kevin Glass)
  */
 public class Game extends Canvas implements GameWindowCallback
 {	  
@@ -753,9 +756,9 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(versionLabel, LAYER_UI);
         
 		// Set up the timer text.
-		timerLabel = ResourceFactory.get().getLabel(404, 100);        
+		timerLabel = ResourceFactory.get().getLabel(400, 70);        
 		timerLabel.setSize(50);
-		timerLabel.setAlignment(Label.BOTTOM | Label.HCENTER);
+		timerLabel.setAlignment(Label.VCENTER | Label.HCENTER);
 		timerLabel.setColor(TEXT_COLOR);
         layerMan.add(timerLabel, LAYER_UI);
              
@@ -844,8 +847,8 @@ public class Game extends Canvas implements GameWindowCallback
         Group.register(highScoreGroup);
         
         //----------------------------------------------------------------------
-        // Start
-        //----------------------------------------------------------------------
+        // Start        
+        //----------------------------------------------------------------------                      
         
         // Start the game.
 		startGame();

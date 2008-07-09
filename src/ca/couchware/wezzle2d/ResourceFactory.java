@@ -30,9 +30,10 @@ public class ResourceFactory
 	 */
 	private int renderingType = JAVA2D;
 	
-	/** The window the game should use to render */
-	private GameWindow window;
-    
+	/** 
+     * The window the game should use to render.
+     */
+	private GameWindow window;    
 
 	/**
 	 * The default contructor has been made private to prevent construction of
@@ -125,7 +126,7 @@ public class ResourceFactory
 		if (window == null)
 		{
 			throw new RuntimeException(
-					"Attempt to retrieve sprite before game window was created");
+					"Attempt to retrieve sprite before game window was created.");
 		}
 
 		switch (renderingType)

@@ -1,3 +1,8 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
+
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.graphics.Entity;
@@ -19,7 +24,7 @@ public abstract class Label extends Entity
     /** 
      * The size of the font.
      */
-	protected float size;
+	protected float size;     
 	
 	/** 
      * The color of the text.
@@ -29,8 +34,8 @@ public abstract class Label extends Entity
     /** 
      * The text.
      */
-	protected String text;        
-	
+	protected String text;     
+       	
     /**
      * The constructor.
      */
@@ -43,7 +48,16 @@ public abstract class Label extends Entity
         this.y_ = y;
         
         this.width_ = 0;
-        this.height_ = 0;                
+        this.height_ = 0;    
+        
+        setVisible(true);
+        
+        this.color = Color.BLACK;		        
+        this.opacity = 100;
+        this.size = 24f;
+		
+		// Set the default anchor.
+		this.alignment = TOP | LEFT;
     }        
     
     /**
@@ -123,16 +137,35 @@ public abstract class Label extends Entity
     {
         // If the draw rect is null, generate it.
         if (drawRect == null)
-        {
-            Rectangle rect = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);                       
-            rect.translate(offsetX, offsetY);  
-
+        {            
+            // Draw a rectangle that can fully cover the text.
+            Rectangle rect = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);      
+            
+            // Move it so it covers the text.
+            rect.translate(offsetX, offsetY);
+            
+            // Add the old rectangle.
             rect.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));                             
+                                     
+            // Move the point up to the top left corner.
             rect.translate(0, -(getLetterHeight() + 1));
 
             if (rect.getMinX() < 0 || rect.getMinY() < 0)
+            {
+                Util.handleWarning("Label drawn outside of screen.", 
+                        Thread.currentThread());
+                
+                Rectangle r = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);
+                Util.handleWarning("r1 = " + r, Thread.currentThread());
+                r.translate(offsetX, offsetY);
+                Util.handleWarning("r2 = " + r, Thread.currentThread());
+                r.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));
+                Util.handleWarning("r3 = " + r, Thread.currentThread());                
+                r.translate(0, -(getLetterHeight() + 1));
+                Util.handleWarning("r4 = " + r, Thread.currentThread());
                 Util.handleWarning("Offending text is " + text,
                         Thread.currentThread());
+            }
         
             drawRect = rect;
         }
@@ -148,6 +181,6 @@ public abstract class Label extends Entity
         
         width_ = getWidth();
         height_ = getHeight();
-    }
+    }       
 		
 }

@@ -92,6 +92,14 @@ public interface Positionable
     public void setXYPosition(final XYPosition p);
     
     /**
+     * Translate the positionable by the given (x,y) amount.
+     * 
+     * @param x
+     * @param y
+     */
+    public void translate(final int dx, final int dy);
+    
+    /**
      * Get the width.
      * 
      * @return The width.

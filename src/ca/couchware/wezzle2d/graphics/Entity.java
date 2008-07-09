@@ -179,7 +179,13 @@ public abstract class Entity implements Drawable, Positionable
         setX(p.x);
         setY(p.y);
     }
-
+    
+    public void translate(final int dx, final int dy)
+    {
+        setX(this.x + dx);
+        setY(this.y + dy);
+    }
+    
     public int getHeight()
     {
         return height;

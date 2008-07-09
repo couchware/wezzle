@@ -230,7 +230,16 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 		// it that initialization is taking place.
 		if (callback != null)
 		{
+            // Get hold of a graphics context for the accelerated
+			// surface and black it out.
+			g = (Graphics2D) strategy.getDrawGraphics();  
+            
 			callback.initialize();
+            
+            // Finally, we've completed drawing so clear up the graphics
+			// and flip the buffer over.
+            g.dispose();
+            g = null;
 		}
 
 		// Start the game loop.
@@ -278,6 +287,8 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	 */
 	private void gameLoop()
 	{
+        Util.handleMessage("Game loop started.", Thread.currentThread());
+        
         // Did the screen get updated?
         boolean updated = false;
         

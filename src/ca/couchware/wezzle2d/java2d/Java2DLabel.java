@@ -1,27 +1,25 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
+
 package ca.couchware.wezzle2d.java2d;
 
-import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ui.Label;
+import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
-import java.net.URL;
-
-import ca.couchware.wezzle2d.ui.Label;
-import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
-import java.awt.FontMetrics;
 import java.awt.font.FontRenderContext;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.HashSet;
 
 /**
- * The Java2DText class provides a java2D implementation of the text interface.
- * The font is hard coded as bubbleboy2 but maybe be changed in the future.
+ * This class provides a Java2D implementation of the Label interface.
+ * The font is hard coded as BubbleBoy2 but maybe be changed in the future.
  * 
  * @author Kevin, Cameron
  *
@@ -29,11 +27,7 @@ import java.util.HashSet;
 
 public class Java2DLabel extends Label
 {    
-	/** 
-     * The URL. 
-     */
-	private URL url;
-	
+    
 	/** 
      * The font. 
      */
@@ -71,14 +65,7 @@ public class Java2DLabel extends Label
         		
         // Setup some values.       
 		this.window = window;
-        setText(text);
-        setVisible(true);
-        setOpacity(100);
-        setSize(24.0f);
-		setColor(Color.BLACK);		        
-		
-		// Set the default anchor.
-		this.alignment = TOP | LEFT;
+        setText(text);        
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -90,6 +77,7 @@ public class Java2DLabel extends Label
 	 * 
 	 * @param t The text.
 	 */
+    @Override
 	public void setText(final String text)
 	{
         // Return if the text is the same.
@@ -115,10 +103,10 @@ public class Java2DLabel extends Label
 	
 	/**
 	 * Set the color of the text.
-	 * The initial size is set to 14.
 	 * 
 	 * @param s The size.
 	 */
+    @Override
 	public void setSize(float size)
 	{
         // Update size.
@@ -141,6 +129,7 @@ public class Java2DLabel extends Label
 	 * @param x The x anchor coordinate with respect to the top left corner of the text box.
 	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
 	 */
+    @Override
 	public void setAlignment(int alignment)
 	{
         // Remember the anchor.
@@ -156,41 +145,40 @@ public class Java2DLabel extends Label
 		Rectangle2D bounds = textLayout.getBounds();
         
 		// The Y alignment.
-		if((alignment & BOTTOM) == BOTTOM)
+		if ((alignment & BOTTOM) == BOTTOM)
 		{
             // TODO This may not work.  It has not been tested.
-			this.offsetY = (int) (bounds.getMaxY());
+			this.offsetY = 0;
 		}        
-		else if((alignment & VCENTER) == VCENTER)
-		{
-			//this.offsetY = (int) -bounds.getCenterY();
-            this.offsetY = (int) (-bounds.getY() / 2f);                        
+		else if ((alignment & VCENTER) == VCENTER)
+		{			
+            this.offsetY = (int) (-bounds.getY() / 2f + 0.5);                        
 		}
-		else if((alignment & TOP) == TOP)
+		else if ((alignment & TOP) == TOP)
 		{
-			this.offsetY = (int) -bounds.getMinY();
+			this.offsetY = (int) (-bounds.getY() + 0.5);                                              
 		}
 		else
 		{
-			Util.handleWarning("No Y alignment set!", Thread.currentThread());
+			throw new IllegalStateException("No Y alignment set!");
 		}
 		
 		// The X alignment. 
-		if((alignment & LEFT) == LEFT)
+		if ((alignment & LEFT) == LEFT)
 		{
 			this.offsetX = (int) -bounds.getMinX();
 		}
-		else if((alignment & HCENTER) == HCENTER)
+		else if ((alignment & HCENTER) == HCENTER)
 		{
 			this.offsetX = (int) -(bounds.getMinX() + bounds.getWidth() / 2);			
 		}
-		else if((alignment & RIGHT) == RIGHT)
+		else if ((alignment & RIGHT) == RIGHT)
 		{
 			this.offsetX = (int) -bounds.getMaxX();
 		}
 		else
 		{
-			Util.handleWarning("No X alignment set!", Thread.currentThread());
+			throw new IllegalStateException("No X alignment set!");
 		}		
         
         // Set dirty so it will be drawn.        
@@ -346,6 +334,7 @@ public class Java2DLabel extends Label
      * This method will only work when the Graphics2D instance is available.
      * @return The width of the text.
      */
+    @Override
     public int getWidth()
     {
         // See if the graphics are available.
@@ -383,6 +372,7 @@ public class Java2DLabel extends Label
      * 
      * @param width
      */
+    @Override
     public void setWidth(int width)
     {
         // This is not supported.        
@@ -394,6 +384,7 @@ public class Java2DLabel extends Label
      * This method will only work when the Graphics2D instance is available.
      * @return The height of the text.
      */
+    @Override
     public int getHeight()
     {
         // See if the graphics are available.
@@ -416,11 +407,14 @@ public class Java2DLabel extends Label
                 updateTextLayout(g);
             }
             
-            // Null reference.
+            // Null the reference.
             g = null;
             
             if (textLayout != null)
-                return (int) textLayout.getBounds().getHeight();
+            {                
+                int h = (int) textLayout.getBounds().getHeight();
+                return h;
+            }
             else
                 return 0;
         } // end if 
@@ -431,6 +425,7 @@ public class Java2DLabel extends Label
      * 
      * @param height
      */
+    @Override
     public void setHeight(int height)
     {
         // This is not supported.        
@@ -461,10 +456,11 @@ public class Java2DLabel extends Label
             }
                         
             // Null reference.
-            g = null;
+            g = null;                       
             
-            return (int) -textLayout.getBounds().getMinY();
-        } // end if 
+            // Return the height.
+            return (int) -textLayout.getBounds().getY();            
+        }
     }
     
 }

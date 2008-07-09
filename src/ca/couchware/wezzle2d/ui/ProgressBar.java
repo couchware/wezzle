@@ -1,11 +1,9 @@
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.graphics.Sprite;
-import ca.couchware.wezzle2d.graphics.Positionable;
-import ca.couchware.wezzle2d.graphics.Drawable;
+import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Rectangle;
 
 /**
@@ -14,7 +12,7 @@ import java.awt.Rectangle;
  * 
  * @author cdmckay
  */
-public class ProgressBar implements Drawable, Positionable
+public class ProgressBar extends Entity
 {
 
     /**
@@ -49,21 +47,6 @@ public class ProgressBar implements Drawable, Positionable
             Game.SPRITES_PATH + "/ProgressBar_Middle.png";
     
     /**
-     * Is the progress bar visible?
-     */
-    private boolean visible;
-    
-    /**
-     * Is it dirty (i.e. does it need to be redrawn)?
-     */
-    private boolean dirty;
-    
-    /**
-     * The cached draw rectangle.
-     */
-    private Rectangle drawRect;
-    
-    /**
      * Does the progress bar have text?
      */
     private boolean withText;
@@ -72,19 +55,6 @@ public class ProgressBar implements Drawable, Positionable
      * The progress text.
      */
     private Label progressText;
-    
-    /**
-     * The x-coordinate.
-     */
-    private int x;
-    
-    /**
-     * The y-coordinate.
-     */
-    private int y;
-    
-    private int x_;
-    private int y_;
     
     /**
      * The container sprite.
@@ -124,22 +94,7 @@ public class ProgressBar implements Drawable, Positionable
     /**
 	 * The width at which the element is at maximum progress.
 	 */
-	private int progressMaxWidth;
-    
-    /**
-     * The alignment bitmask.
-     */
-    private int alignment;
-    
-    /**
-     * The x offset.
-     */
-    private int offsetX;
-    
-    /**
-     * The y offset.
-     */
-    private int offsetY;
+	private int progressMaxWidth;   
     
     /**
      * The inner x padding of the progress bar container.
@@ -272,63 +227,7 @@ public class ProgressBar implements Drawable, Positionable
                 middleSprite.draw(alignedX + i, alignedY);
             rightSprite.draw(alignedX + progressWidth - 4, alignedY);
         }
-    }
-
-    public void setVisible(boolean visible)
-    {
-        this.visible = visible;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    public boolean isVisible()
-    {
-        return visible;
-    }
-
-    public int getX()
-    {
-        return x;
-    }
-
-    public void setX(int x)
-    {        
-        this.x = x;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    public int getY()
-    {
-        return y;
-    }
-
-    public void setY(int y)
-    {       
-        this.y = y;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    public XYPosition getXYPosition()
-    {
-        return new XYPosition(x, y);
-    }
-
-    public void setXYPosition(int x, int y)
-    {
-        setX(x);
-        setY(y);
-    }
-
-    public void setXYPosition(XYPosition p)
-    {
-        setX(p.x);
-        setY(p.y);
-    }
+    }    
 
     /**
 	 * @return The progressMax.
@@ -417,11 +316,13 @@ public class ProgressBar implements Drawable, Positionable
         setDirty(true);
     }    
 
+    @Override
     public int getHeight()
     {
         return containerSprite.getHeight();
     }
 
+    @Override
     public void setHeight(int height)
     {
         // Wig out.
@@ -429,11 +330,7 @@ public class ProgressBar implements Drawable, Positionable
                 "Height cannot be set on progress bar.");
     }
 
-    public int getAlignment()
-    {
-        return alignment;
-    }
-
+    @Override
     public void setAlignment(int alignment)
     {
         // Remember the alignment.
@@ -484,21 +381,9 @@ public class ProgressBar implements Drawable, Positionable
                 
         // Set dirty so it will be drawn.        
         setDirty(true);
-    }
+    }       
     
-    public void setDirty(boolean dirty)
-    {
-        this.dirty = dirty;
-        
-        // Null the draw rect, so it'll be re-generated.
-        this.drawRect = null;
-    }
-
-    public boolean isDirty()
-    {
-        return dirty;
-    }
-    
+    @Override
     public Rectangle getDrawRect()
     {
         // If the draw rect is null, generate it.
@@ -522,6 +407,7 @@ public class ProgressBar implements Drawable, Positionable
         return drawRect;
     }
     
+    @Override
     public void resetDrawRect()
     {
         x_ = x;

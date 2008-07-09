@@ -257,6 +257,9 @@ public class LayerManager
             window.setClip(clip);
             draw();            
             window.clearClip();
+            
+            // Uncomment the next line if you want boxes to be drawn around
+            // each region being drawn.
             //window.drawClip(clip);
                
             // Reset the remove clip.

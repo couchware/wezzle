@@ -1,3 +1,8 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
+
 package ca.couchware.wezzle2d.util;
 
 import ca.couchware.wezzle2d.*;
@@ -169,5 +174,26 @@ public class Util
         double toRange = toUpper - toLower;
         
         return toLower + (((double) toRange) * fromFraction);
+    }
+    
+    /**
+     * Counts the number of line breaks (i.e. '\n' characters) in the passed
+     * string.  Throws exception on null strings.
+     * 
+     * @return The number of line breaks.
+     */
+    public static int countNewLines(String text)
+    {
+        if (text == null)
+            throw new IllegalStateException(
+                    "Attempted to count newlines on a null string.");                
+        
+        int n = 0;
+        
+        for (int i = 0; i < text.length(); i++)
+            if (text.charAt(i) == '\n')
+                n++;
+        
+        return n;
     }
 }
