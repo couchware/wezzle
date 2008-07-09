@@ -27,6 +27,26 @@ public class BoardManager
     //--------------------------------------------------------------------------
     
     /**
+     * Gravity at top.
+     */
+    final public static int UP = 0;
+    
+    /**
+     * Gravity at bottom.
+     */
+    final public static int DOWN = 1;
+    
+    /**
+     * Gravity at left.
+     */
+    final public static int LEFT = 2;
+    
+    /**
+     * Gravity at right.
+     */
+    final public static int RIGHT = 3;
+    
+    /**
      * The path to the board background graphic.
      */
     final private String PATH = Game.SPRITES_PATH + "/Board.png";        
@@ -89,7 +109,7 @@ public class BoardManager
 	/**
 	 * The height of a grid cell.
 	 */
-	final private int cellHeight;
+	final private int cellHeight;        
     
     //--------------------------------------------------------------------------
     // Instance Members
@@ -119,6 +139,11 @@ public class BoardManager
      * The number of items.
      */
     private int numberOfItems;		
+    
+    /**
+     * The gravity corner.
+     */
+    private int gravity;
 	
 	/**
 	 * The array representing the game board.
@@ -175,6 +200,9 @@ public class BoardManager
         
         // Set the number of items.
         this.numberOfItems = 0;
+        
+        // Set the gravity to be to the bottom left by default.
+        this.gravity = DOWN | LEFT;
 		
 		// Initialize board.
 		board = new TileEntity[cells];
@@ -263,7 +291,7 @@ public class BoardManager
 	 * An instant refactor used for generating boards.
 	 */
 	private void refactorBoard()
-	{
+	{        
 		startShiftDown(200);
 		for (int i = 0; i < cells; i++)
 			if (board[i] != null)
@@ -449,7 +477,7 @@ public class BoardManager
 			if (board[i] != null)
 			{
 				board[i].setYMovement(speed);
-				board[i].calculateBottomBound(countTilesBelowCell(i));
+				board[i].calculateBottomBound(countTilesInDirection(i, DOWN));
 			}
 		}
 	}
@@ -462,7 +490,7 @@ public class BoardManager
 			if (board[i] != null)
 			{
 				board[i].setXMovement(-speed);
-				board[i].calculateLeftBound(countTilesLeftOfCell(i));
+				board[i].calculateLeftBound(countTilesInDirection(i, LEFT));
 			}
 		}
 	}
@@ -519,120 +547,79 @@ public class BoardManager
 	 * @param index
 	 * @return
 	 */
-	public int countTilesBelowCell(int index)
-	{
-		// Sanity check.
+    public int countTilesInDirection(int index, int direction)
+    {
+        // Sanity check.
 		assert(index >= 0 && index < cells);
 		
 		// The current column and row.
 		int column = index % columns;
 		int row = index / columns;
-		
-		// If we're at the bottom row, return 0.
-		if (row == rows - 1)
-			return 0;
-		
-		// The tile count.
-		int count = 0;
-		
-		// Cycle through the column rows, counting tiles.
-		for (int j = row + 1; j < rows; j++)
-			if (getTile(column, j) != null)
-				count++;
-		
-		// Return the count.
-		return count;
-	}
-    
-    /**
-	 * See <pre>countTilesBelowCell</pre>.
-	 * @param index
-	 * @return
-	 */
-    public int countTilesAboveCell(int index)
-	{
-		// Sanity check.
-		assert(index >= 0 && index < cells);
-		
-		// The current column and row.
-		int column = index % columns;
-		int row = index / columns;
-		
-		// If we're at the bottom row, return 0.
-		if (row == 0)
-			return 0;
-		
-		// The tile count.
-		int count = 0;
-		
-		// Cycle through the column rows, counting tiles.
-		for (int j = row - 1; j >= 0; j--)
-			if (getTile(column, j) != null)
-				count++;
-		
-		// Return the count.
-		return count;
-	}
-	
-	/**
-	 * See <pre>countTilesBelowCell</pre>.
-	 * @param index
-	 * @return
-	 */
-	public int countTilesLeftOfCell(int index)
-	{
-		// Sanity check.
-		assert(index >= 0 && index < cells);
-		
-		// The current column and row.
-		int column = index % columns;
-		int row = index / columns;
-		
-		// If we're at the bottom row, return 0.
-		if (column == 0)
-			return 0;
-		
-		// The tile count.
-		int count = 0;
-		
-		// Cycle through the column rows, counting tiles.
-		for (int i = column - 1; i >= 0; i--)
-			if (getTile(i, row) != null)
-				count++;
-		
-		// Return the count.
-		return count;
-	}
-    
-    /**
-	 * See <pre>countTilesBelowCell</pre>.
-	 * @param index
-	 * @return
-	 */
-	public int countTilesRightOfCell(int index)
-	{
-		// Sanity check.
-		assert(index >= 0 && index < cells);
-		
-		// The current column and row.
-		int column = index % columns;
-		int row = index / columns;
-		
-		// If we're at the bottom row, return 0.
-		if (column == columns - 1)
-			return 0;
-		
-		// The tile count.
-		int count = 0;
-		
-		// Cycle through the column rows, counting tiles.
-		for (int i = column + 1; i < columns; i++)
-			if (getTile(i, row) != null)
-				count++;
-		
-		// Return the count.
-		return count;
-	}
+        
+        // The tile count.
+        int count = 0;
+        
+        switch (direction)
+        {
+            case UP:
+                
+                // If we're at the top row, return 0.
+                if (row == 0)
+                    return 0;
+                
+                // Cycle through the column rows, counting tiles.
+                for (int j = row - 1; j >= 0; j--)
+                    if (getTile(column, j) != null)
+                        count++;
+                
+                break;
+           
+            case DOWN:
+                
+                // If we're at the bottom row, return 0.
+                if (row == rows - 1)
+                    return 0;
+              
+                // Cycle through the column rows, counting tiles.
+                for (int j = row + 1; j < rows; j++)
+                    if (getTile(column, j) != null)
+                        count++;
+                
+                break;
+                
+            case LEFT:
+                
+                // If we're at the bottom row, return 0.
+                if (column == 0)
+                    return 0;
+                
+                // Cycle through the column rows, counting tiles.
+                for (int i = column - 1; i >= 0; i--)
+                    if (getTile(i, row) != null)
+                        count++;
+                
+                break;
+                
+            case RIGHT:
+                
+                // If we're at the bottom row, return 0.
+                if (column == columns - 1)
+                    return 0;
+
+                // Cycle through the column rows, counting tiles.
+                for (int i = column + 1; i < columns; i++)
+                    if (getTile(i, row) != null)
+                        count++;
+                
+                break;
+                
+            default:
+                throw new IllegalStateException("Unknown direction.");
+        }
+        
+        // Return the count.
+        return count;
+    }    		        
 	        
 	public TileEntity createTile(final int index, final Class c, final int color)
 	{

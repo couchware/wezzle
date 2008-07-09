@@ -1257,7 +1257,7 @@ public class Game extends Canvas implements GameWindowCallback
                        // Make sure the tiles are not still dropping.
                         if (pieceMan.isTileDropInProgress() == false)
                         {                            
-                            pieceMan.loadRandomPiece();   
+                            pieceMan.loadPiece();   
                             pieceMan.getPieceGrid().setVisible(true);
 
                             // Unpause the timer.

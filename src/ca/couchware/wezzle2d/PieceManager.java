@@ -72,7 +72,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
     /**
      * Was the right mouse button clicked?
      */
-    private volatile boolean mouseRightReleased;
+    private volatile boolean mouseRightReleased;        
     
     /**
      * The current piece.
@@ -113,7 +113,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 boardMan.getY() + boardMan.getCellHeight());
         
         // Load a random piece.
-        loadRandomPiece();
+        loadPiece();
 		
 		// Create initial mouse position.
 		mousePosition = new XYPosition(boardMan.getX(), boardMan.getY());
@@ -135,6 +135,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
   
     /**
      * Load a piece into the piece grid.
+     * 
 	 * @param piece The piece to set.
 	 */
 	public void loadPiece(final Piece piece)
@@ -149,7 +150,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
     /**
      * Loads a random piece into the piece grid.
      */
-    public void loadRandomPiece()
+    public void loadPiece()
     {
 		switch(Util.random.nextInt(5))		
 		{
