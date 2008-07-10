@@ -29,22 +29,22 @@ public class BoardManager
     /**
      * Gravity at top.
      */
-    final public static int UP = 0;
+    final public static int DIR_UP = 1;
     
     /**
      * Gravity at bottom.
      */
-    final public static int DOWN = 1;
+    final public static int DIR_DOWN = 2;
     
     /**
      * Gravity at left.
      */
-    final public static int LEFT = 2;
+    final public static int DIR_LEFT = 4;
     
     /**
      * Gravity at right.
      */
-    final public static int RIGHT = 3;
+    final public static int DIR_RIGHT = 8;
     
     /**
      * The path to the board background graphic.
@@ -202,7 +202,7 @@ public class BoardManager
         this.numberOfItems = 0;
         
         // Set the gravity to be to the bottom left by default.
-        this.gravity = DOWN | LEFT;
+        this.gravity = DIR_UP | DIR_RIGHT;
 		
 		// Initialize board.
 		board = new TileEntity[cells];
@@ -291,21 +291,44 @@ public class BoardManager
 	 * An instant refactor used for generating boards.
 	 */
 	private void refactorBoard()
-	{        
-		startShiftDown(200);
-		for (int i = 0; i < cells; i++)
-			if (board[i] != null)
-				board[i].setYMovement(rows * cellHeight);
-		moveAll(1000);
-		
+	{      
+        // Check the gravity vertical direction.  It is in if-else format
+        // because having a gravity of both up and down would not make sense.
+        if ((gravity & DIR_DOWN) == DIR_DOWN)
+        {
+            startShift(DIR_DOWN, 200);
+            for (int i = 0; i < cells; i++)
+                if (board[i] != null)
+                    board[i].setYMovement(rows * cellHeight);
+        }
+        else
+        {
+            startShift(DIR_UP, 200);
+            for (int i = 0; i < cells; i++)
+                if (board[i] != null)
+                    board[i].setYMovement(-rows * cellHeight);
+        }		
+        
+		moveAll(1000);		
 		synchronize();
 		
-		startShiftLeft(200);
-		for (int i = 0; i < cells; i++)
-			if (board[i] != null)
-				board[i].setXMovement(-columns * cellWidth);
-		moveAll(1000);
-		
+        // Check the gravity horizontal direction.
+        if ((gravity & DIR_LEFT) == DIR_LEFT)
+        {
+            startShift(DIR_LEFT, 200);
+            for (int i = 0; i < cells; i++)
+                if (board[i] != null)
+                    board[i].setXMovement(-columns * cellWidth);
+        }
+        else
+        {
+            startShift(DIR_RIGHT, 200);
+            for (int i = 0; i < cells; i++)
+                if (board[i] != null)
+                    board[i].setXMovement(columns * cellWidth);
+        }
+		        
+		moveAll(1000);		
 		synchronize();
 	}
 	
@@ -469,32 +492,107 @@ public class BoardManager
         scratchBoard = swapBoard;
 	}
 	
-	public void startShiftDown(final int speed)
-	{
-		// Start them moving down.
-		for (int i = 0; i < cells; i++)
-		{
-			if (board[i] != null)
-			{
-				board[i].setYMovement(speed);
-				board[i].calculateBottomBound(countTilesInDirection(i, DOWN));
-			}
-		}
-	}
-	
-	public void startShiftLeft(final int speed)
-	{
-		// Start them moving left.
-		for (int i = 0; i < cells; i++)
-		{
-			if (board[i] != null)
-			{
-				board[i].setXMovement(-speed);
-				board[i].calculateLeftBound(countTilesInDirection(i, LEFT));
-			}
-		}
-	}
-	
+    /**
+     * TODO Documentation.
+     * 
+     * @param direction
+     * @param speed
+     */
+    public void startShift(final int direction, final int speed)
+    {
+        switch (direction)
+        {
+            case DIR_UP:
+                
+                for (int i = 0; i < cells; i++)
+                {
+                    if (board[i] != null)
+                    {
+                        board[i].setYMovement(-speed);
+                        board[i].calculateBound(direction,
+                                countTilesInDirection(direction, i));
+                    }
+                }  
+                
+                break;
+                
+            case DIR_DOWN:
+                
+                for (int i = 0; i < cells; i++)
+                {
+                    if (board[i] != null)
+                    {
+                        board[i].setYMovement(+speed);
+                        board[i].calculateBound(direction,
+                                countTilesInDirection(direction, i));
+                    }
+                }  
+                
+                break;
+                
+            case DIR_LEFT:
+                
+                // Start them moving left.
+                for (int i = 0; i < cells; i++)
+                {
+                    if (board[i] != null)
+                    {
+                        board[i].setXMovement(-speed);
+                        board[i].calculateBound(direction,
+                                countTilesInDirection(direction, i));
+                    }
+                }
+                
+                break;
+                
+            case DIR_RIGHT:
+                
+                // Start them moving left.
+                for (int i = 0; i < cells; i++)
+                {
+                    if (board[i] != null)
+                    {
+                        board[i].setXMovement(+speed);
+                        board[i].calculateBound(direction,
+                                countTilesInDirection(direction, i));
+                    }
+                }
+                
+                break;
+                
+            default:
+                throw new IllegalStateException("Unknown direction.");
+        }              
+    }    	
+    
+    /**
+     * A convience method for starting a shift in the vertical direction of the
+     * currently set gravity.
+     * 
+     * @param speed
+     */
+    public void startVerticalShift(final int speed)
+    {
+        if ((gravity & DIR_DOWN) == DIR_DOWN)
+            startShift(DIR_DOWN, speed);
+        else
+            startShift(DIR_UP, speed);
+    }
+    
+    /**
+     * A convience method for starting a horizontal shift in the direction of 
+     * the currently set gravity.
+     * 
+     * @param speed
+     */
+    public void startHorizontalShift(final int speed)
+    {
+        if ((gravity & DIR_LEFT) == DIR_LEFT)
+            startShift(DIR_LEFT, speed);
+        else
+            startShift(DIR_RIGHT, speed);
+    }
+    
 	/**
 	 * Moves all currently moving tiles.
 	 * @returns True if there is still more moving to happen.
@@ -547,7 +645,7 @@ public class BoardManager
 	 * @param index
 	 * @return
 	 */
-    public int countTilesInDirection(int index, int direction)
+    public int countTilesInDirection(int direction, int index)
     {
         // Sanity check.
 		assert(index >= 0 && index < cells);
@@ -561,7 +659,7 @@ public class BoardManager
         
         switch (direction)
         {
-            case UP:
+            case DIR_UP:
                 
                 // If we're at the top row, return 0.
                 if (row == 0)
@@ -574,7 +672,7 @@ public class BoardManager
                 
                 break;
            
-            case DOWN:
+            case DIR_DOWN:
                 
                 // If we're at the bottom row, return 0.
                 if (row == rows - 1)
@@ -587,7 +685,7 @@ public class BoardManager
                 
                 break;
                 
-            case LEFT:
+            case DIR_LEFT:
                 
                 // If we're at the bottom row, return 0.
                 if (column == 0)
@@ -600,7 +698,7 @@ public class BoardManager
                 
                 break;
                 
-            case RIGHT:
+            case DIR_RIGHT:
                 
                 // If we're at the bottom row, return 0.
                 if (column == columns - 1)
@@ -672,10 +770,21 @@ public class BoardManager
         return t;
 	}
     
+    public TileEntity createTile(final int column, final int row, final Class c,
+            final int color)
+    {
+        return createTile(row * columns + column, c, color);
+    }
+    
     public TileEntity createTile(final int index, final Class c)
     {
         return createTile(index, c, 
                 TileEntity.randomColor(getNumberOfColors()));
+    }
+    
+    public TileEntity createTile(final int column, final int row, final Class c)
+    {
+        return createTile(row * columns + column, c);
     }
     
     public void removeTile(final int index)
@@ -1007,8 +1116,15 @@ public class BoardManager
         
         // If there are any tiles, there at least must be a tile in the bottom
         // left corner.
+        
+        
         if (tileCount > 0)
-            return getTile(0, rows - 1).getAnimation();
+        {
+            for (int i = cells - 1; i >= 0; i--)
+                if (getTile(i) != null)
+                    return getTile(i).getAnimation();
+            throw new IllegalStateException("There are no tiles on the board.");
+        }
         else
             return null;
     }
@@ -1059,7 +1175,12 @@ public class BoardManager
         // If there are any tiles, there at least must be a tile in the bottom
         // left corner.
         if (tileCount > 0)
-            return getTile(0, rows - 1).getAnimation();
+        {
+            for (int i = cells - 1; i >= 0; i--)
+                if (getTile(i) != null)
+                    return getTile(i).getAnimation();            
+            throw new IllegalStateException("There are no tiles on the board.");
+        }
         else
             return null;
     }
@@ -1228,9 +1349,9 @@ public class BoardManager
     public int getNumberOfTiles()
     {
         int counter = 0;
-        for(int i = 0; i < this.rows * this.columns; i++)
+        for(int i = 0; i < this.cells; i++)
         {
-            if(this.getTile(i) != null)
+            if (this.getTile(i) != null)
                 counter++;
         }
         
@@ -1245,8 +1366,38 @@ public class BoardManager
     public void setNumberOfColors(int numberOfColors)
     {
         this.numberOfColors = numberOfColors;
-    }        
-        
+    }
+
+    public int getGravity()
+    {
+        return gravity;
+    }
+    
+    public boolean isGravityUp()
+    {
+        return ((gravity & DIR_UP) == DIR_UP);                
+    }
+    
+    public boolean isGravityDown()
+    {
+        return ((gravity & DIR_DOWN) == DIR_DOWN);
+    }
+    
+    public boolean isGravityLeft()
+    {
+        return ((gravity & DIR_LEFT) == DIR_LEFT);
+    }
+    
+    public boolean isGravityRight()
+    {
+        return ((gravity & DIR_RIGHT) == DIR_RIGHT);
+    }
+
+    public void setGravity(int gravity)
+    {
+        this.gravity = gravity;
+    }            
+    
     public boolean isVisible()
     {
         return visible;
@@ -1257,9 +1408,7 @@ public class BoardManager
         Util.handleMessage("Board Manager is visible: " + visible + ".",
                 Thread.currentThread());
         this.visible = visible;        
-    }
-
-    
+    }   
     
     public void setDirty(boolean dirty)
     {

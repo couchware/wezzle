@@ -14,6 +14,25 @@ import java.awt.Rectangle;
 
 public class TileEntity extends GraphicEntity implements Movable
 {
+     /**
+     * Gravity at top.
+     */
+    final public static int DIR_UP = 1;
+    
+    /**
+     * Gravity at bottom.
+     */
+    final public static int DIR_DOWN = 2;
+    
+    /**
+     * Gravity at left.
+     */
+    final public static int DIR_LEFT = 4;
+    
+    /**
+     * Gravity at right.
+     */
+    final public static int DIR_RIGHT = 8;
     
     final public static int COLOR_BLUE = 0;
 	final public static int COLOR_GREEN = 1;
@@ -31,20 +50,15 @@ public class TileEntity extends GraphicEntity implements Movable
 	 */
 	protected final BoardManager boardMan;
 	
+    /**
+     * The bounds.
+     */
+    protected final int[] bounds;
+    
 	/**
 	 * The colour of the tile.
 	 */
-	protected final int color;
-	
-	/**
-	 * The current bottom bound.
-	 */
-	protected int bottomBound;
-	
-	/**
-	 * The current left bound.
-	 */
-	protected int leftBound;
+	protected final int color;		
     
     /**
      * Make x a double.
@@ -90,6 +104,14 @@ public class TileEntity extends GraphicEntity implements Movable
 		// Set board manager and color reference.
 		this.boardMan = boardMan;	
 		this.color = color;
+        
+        // Create the bounds array.  1 entry for each possible direction.
+        // You'll notice there are 9 entries.
+        bounds = new int[9];
+        bounds[DIR_UP] = Integer.MIN_VALUE;
+        bounds[DIR_DOWN] = Integer.MAX_VALUE;
+        bounds[DIR_LEFT] = Integer.MIN_VALUE;
+        bounds[DIR_RIGHT] = Integer.MAX_VALUE;
 	}
 	
 	/**
@@ -104,11 +126,16 @@ public class TileEntity extends GraphicEntity implements Movable
 			
 			// Make sure we haven't exceeded our bound.
 			// If we have, stop moving.
-			if (y2 > bottomBound)
+			if (y2 > bounds[DIR_DOWN])
 			{
-				y2 = bottomBound;
+				y2 = bounds[DIR_DOWN];
 				dy = 0;
 			}
+            else if (y2 < bounds[DIR_UP])
+            {
+                y2 = bounds[DIR_UP];
+                dy = 0;
+            }
 		}	
 		
 		if (dx != 0)
@@ -118,9 +145,14 @@ public class TileEntity extends GraphicEntity implements Movable
 			
 			// Make sure we haven't exceeded our bound.
 			// If we have, stop moving.
-			if (x2 < leftBound)
+            if (x2 > bounds[DIR_RIGHT])
+            {
+                x2 = bounds[DIR_RIGHT];
+                dx = 0;
+            }
+            else if (x2 < bounds[DIR_LEFT])
 			{
-				x2 = leftBound;
+				x2 = bounds[DIR_LEFT];
 				dx = 0;
 			}
 		}	                   
@@ -133,6 +165,7 @@ public class TileEntity extends GraphicEntity implements Movable
 	 * 
 	 * @return The x location of this entity.
 	 */
+    @Override
 	public int getX()
 	{
 		return (int) x2;
@@ -141,6 +174,7 @@ public class TileEntity extends GraphicEntity implements Movable
 	/**
 	 * @param x The x to set.
 	 */
+    @Override
 	public void setX(final int x)
 	{                            		
         this.x2 = x;
@@ -154,6 +188,7 @@ public class TileEntity extends GraphicEntity implements Movable
 	 * 
 	 * @return The y location of this entity.
 	 */
+    @Override
 	public int getY()
 	{               
 		return (int) y2;
@@ -162,6 +197,7 @@ public class TileEntity extends GraphicEntity implements Movable
     /**
 	 * @param y The y to set.
 	 */
+    @Override
 	public void setY(final int y)
 	{		
         this.y2 = y;
@@ -221,23 +257,58 @@ public class TileEntity extends GraphicEntity implements Movable
 		return color;
 	}
 
-	/**
-	 * Sets the bottomBound.
-	 */
-	public void calculateBottomBound(int tilesInColumn)
-	{
-		this.bottomBound = boardMan.getY() + boardMan.getHeight() 
-                - (tilesInColumn * boardMan.getCellHeight());
-		this.bottomBound -= boardMan.getCellHeight();
-	}
-	
-	/**
-	 * Sets the leftBound.
-	 */
-	public void calculateLeftBound(int tilesInRow)
-	{
-		this.leftBound = boardMan.getX() + (tilesInRow * boardMan.getCellWidth());
-	}
+    public void calculateBound(int direction, int tileCount)
+    {
+        switch (direction)
+        {
+            case DIR_UP:
+                
+                bounds[direction] = boardMan.getY()                         
+                        + (tileCount * boardMan.getCellHeight());
+                break;
+                
+            case DIR_DOWN:
+                
+                bounds[direction] = boardMan.getY() 
+                        + boardMan.getHeight() 
+                        - ((tileCount + 1) * boardMan.getCellHeight());
+                
+                break;
+                
+            case DIR_LEFT:
+                
+                bounds[direction] = boardMan.getX() 
+                        + (tileCount * boardMan.getCellWidth());
+                
+                break;
+                
+            case DIR_RIGHT:
+                
+                bounds[direction] = boardMan.getX() 
+                        + boardMan.getWidth() 
+                        - ((tileCount + 1) * boardMan.getCellWidth());
+                                
+                break;
+        }
+    }
+    
+//	/**
+//	 * Sets the bottomBound.
+//	 */
+//	public void calculateBottomBound(int tilesInColumn)
+//	{
+//		this.bottomBound = boardMan.getY() + boardMan.getHeight() 
+//                - ((tilesInColumn + 1) * boardMan.getCellHeight());
+//	}
+//	
+//	/**
+//	 * Sets the leftBound.
+//	 */
+//	public void calculateLeftBound(int tilesInRow)
+//	{
+//		this.leftBound = boardMan.getX() 
+//                + (tilesInRow * boardMan.getCellWidth());
+//	}
 	
 	public static int randomColor(int max)
 	{

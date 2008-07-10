@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 /**
  * A class for making labels that can span multiple lines of text.  It is a 
- * very lightweight implementation that merely creates many labels and
+ * very simple implementation that merely creates many labels and
  * separates their positions by the passed separation.
  * 
  * 280, 166, 16 (please leave)

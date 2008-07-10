@@ -366,7 +366,14 @@ public class PieceManager implements MouseListener, MouseMotionListener
         // If the board is refactoring, do not logicify.
         if (game.isBusy() == true)
              return;                 
-                    
+                 
+        // Which row should we be dropping tiles into?
+        int dropRow = 0;
+        if (boardMan.isGravityUp() == true)
+            dropRow = boardMan.getRows() - 1;
+        else
+            dropRow = 0;
+        
         // Drop in any tiles that need to be dropped, one at a time. 
         //
         // The if statement encompasses the entire function in order to ensure
@@ -382,14 +389,14 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 
                 // Adjust for the pieces left to drop in.
                 if (numberToDropIn > tileDropCount)
-                    numberToDropIn = tileDropCount;
-              
+                    numberToDropIn = tileDropCount;                              
+                
                 // Count the openColumns and build a list of all open indeces.
                 indexList.clear();
-                int openColumns = 0;
+                int openColumns = 0;                                                
                 for (int i = 0; i < boardMan.getColumns(); i++)
                 {
-                    if (boardMan.getTile(i) == null)
+                    if (boardMan.getTile(i, dropRow) == null)
                     {
                         openColumns++;
                         indexList.add(new Integer(i));
@@ -436,7 +443,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                         < game.worldMan.getMaxItems())
                 {
                     // The tile is an item.
-                    tileDropped[0] = boardMan.createTile(index[0], 
+                    tileDropped[0] = boardMan.createTile(index[0], dropRow,
                             game.worldMan.getItem().getItemClass()); 
                     
                     // Null out the rest.
@@ -451,7 +458,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     for (int i = 0; i < tileDropCount-1; i++)
                     {
                         tileDropped[i] =
-                                boardMan.createTile(index[i],
+                                boardMan.createTile(index[i], dropRow,
                                 TileEntity.class); 
 
                     }
@@ -459,6 +466,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     // Drop in the item tile.
                     tileDropped[tileDropped.length - 1] =
                             boardMan.createTile(index[tileDropped.length - 1],
+                            dropRow,
                             game.worldMan.getItem().getItemClass()); 
                     
                     // Any unused slots should be nulled.
@@ -472,7 +480,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     // They are all normals.
                     for (int i = 0; i < tileDropped.length; i++)
                     {
-                        tileDropped[i] = boardMan.createTile(index[i],
+                        tileDropped[i] = boardMan.createTile(index[i], dropRow,
                                 TileEntity.class); 
                     }                 
                 }                

@@ -264,12 +264,12 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * If true, the board is currently being refactored downwards.
      */
-	private boolean refactorDownInProgress = false;
+	private boolean refactorVerticalInProgress = false;
     
     /**
      * If true, the board is currently being refactored leftward.
      */
-	private boolean refactorLeftInProgress = false;
+	private boolean refactorHorizontalInProgress = false;
     
     /**
      * The speed of the upcoming refactor.
@@ -926,8 +926,8 @@ public class Game extends Canvas implements GameWindowCallback
     public boolean isRefactoring()
     {
         return this.activateRefactor 
-                || this.refactorDownInProgress 
-                || this.refactorLeftInProgress;
+                || this.refactorVerticalInProgress 
+                || this.refactorHorizontalInProgress;
     }
     
     /**
@@ -1150,13 +1150,17 @@ public class Game extends Canvas implements GameWindowCallback
                     this.tileRemovalNoItems = true;
                     tileRemovalSet.clear();
 
-                    int j = boardMan.getRows() - 1;
+                    int j;
+                    if (boardMan.isGravityUp() == true)                        
+                        j = 0;
+                    else
+                        j = boardMan.getRows() - 1;
+                    
                     for (int i = 0; i < boardMan.getColumns(); i++)
                     {                         
                         int index = i + (j * boardMan.getColumns());
                         if (boardMan.getTile(index) != null)
-                            tileRemovalSet.add(
-                                    new Integer(index));
+                            tileRemovalSet.add(new Integer(index));
                     }                                        
                     
                     soundMan.playSoundEffect(SoundManager.KEY_LEVEL_UP);
@@ -1199,38 +1203,38 @@ public class Game extends Canvas implements GameWindowCallback
                 // Hide piece.
                 pieceMan.getPieceGrid().setVisible(false);
 
-                // Start down refactor.
-                boardMan.startShiftDown(refactorSpeed);
-                refactorDownInProgress = true;
+                // Start down refactor.                
+                boardMan.startVerticalShift(refactorSpeed);
+                refactorVerticalInProgress = true;
 
                 // Clear flag.
                 clearRefactor();
             }
 
             // See if we're down refactoring.
-            if (refactorDownInProgress == true)
+            if (refactorVerticalInProgress == true)
             {
                 if (boardMan.moveAll(delta) == false)
                 {			
                     // Clear down flag.
-                    refactorDownInProgress = false;
+                    refactorVerticalInProgress = false;
 
                     // Synchronize board.
                     boardMan.synchronize();							
 
                     // Start left refactor.
-                    boardMan.startShiftLeft(refactorSpeed);
-                    refactorLeftInProgress = true;								
+                    boardMan.startHorizontalShift(refactorSpeed);
+                    refactorHorizontalInProgress = true;								
                 }
             } // end if
 
             // See if we're left refactoring.
-            if (refactorLeftInProgress == true)
+            if (refactorHorizontalInProgress == true)
             {
                 if (boardMan.moveAll(delta) == false)
                 {
                     // Clear left flag.
-                    refactorLeftInProgress = false;
+                    refactorHorizontalInProgress = false;
 
                     // Synchronize board.
                     boardMan.synchronize();		
