@@ -1,8 +1,6 @@
 package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.graphics.Sprite;
-import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.animation.Animation;
 
 /**
@@ -33,7 +31,7 @@ public class GraphicEntity extends Entity
 	 * @param y
 	 *            The initial y location of this entity
 	 */
-	public GraphicEntity(final String path, final int x, final int y)           
+	public GraphicEntity(final int x, final int y, final String path)           
 	{        
         // Load the sprite.
 		this.sprite = ResourceFactory.get().getSprite(path);        		

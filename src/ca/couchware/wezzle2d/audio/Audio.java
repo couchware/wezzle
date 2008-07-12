@@ -1,5 +1,10 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
 
-package ca.couchware.wezzle2d.music;
+package ca.couchware.wezzle2d.audio;
+
 import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.io.*;
@@ -7,44 +12,64 @@ import javax.sound.sampled.*;
 
 
 /**
- * A class to hold a song that will be payed by the music manager.
- * a song consists of a key and a path to the associated mp3.
+ * A class to hold an audio file.  This is used by both the sound and music
+ * managers.
  * 
  * Based on code from http://www.javalobby.org/java/forums/t18465.html
  * 
- * @author Kevin
+ * @author Kevin, Cameron
  */
 
-public class Song 
-{
-    /** The song's key */
-    private String key;
+public class Audio 
+{        
+    /** 
+     * The numeric identifier for the audio file.
+     */
+    private int key;
     
-    /** A line of media */
-    SourceDataLine line;
+    /**
+     * The audio file extension.
+     */
+    private String ext;
     
-    /** The decoded audio format */
+    /** 
+     * A line of music data.
+     */
+    SourceDataLine line;        
+    
+    /** 
+     * The decoded audio format.
+     */
     AudioFormat decodedFormat;
     
-    /** The input stream from the file */
+    /** 
+     * The input stream from the file.
+     */
     AudioInputStream in;
     
-    /** The decoded input stream */
+    /** 
+     * The decoded input stream.
+     */
     AudioInputStream decodedIn;
     
-    /** The url for the file */
-    URL url;
-             
-    /** The lock */
-    Object lock = new Object();
+    /** 
+     * The url for the file.
+     */
+    URL url;   
     
-    /** some paused variable */
+    /** 
+     * Is the music paused?
+     */
     volatile boolean paused = false;
     
-    /** the volume control */
+    /** 
+     * The volume control.
+     */
     FloatControl volume = null;
     
-    /** The current volume */
+    /** 
+     * The current volume.
+     */
     private float currentVolume;
 
     /**
@@ -53,7 +78,7 @@ public class Song
      * @param key
      * @param path
      */
-    public Song(String key, String path)
+    public Audio(int key, String path)
     {
         // The associated key.
         this.key = key;
@@ -67,7 +92,11 @@ public class Song
             throw new RuntimeException("Url Error: " + path 
                     + " does not exist.");
         
-        loadSong();
+        // Determine the extension.
+        ext = Util.getFileExtension(path);
+        
+        // Load the audio.
+        load();
          
         // Set the current volumne.
         this.currentVolume = 0.0f;                    
@@ -86,7 +115,7 @@ public class Song
     {
         try
         {
-            if(line != null) 
+            if (line != null) 
             {
 				line.open(decodedFormat);
 				byte[] data = new byte[4096];
@@ -96,7 +125,7 @@ public class Song
                 
 				int nBytesRead;
                 
-                synchronized (lock)
+                synchronized (this)
                 {
                     while ((nBytesRead = decodedIn.read(data, 0, data.length)) != -1) 
                     {	
@@ -112,7 +141,7 @@ public class Song
                             }
                             try 
                             {
-                                lock.wait();
+                                this.wait();
                             }
                             catch(InterruptedException e) 
                             {
@@ -136,7 +165,7 @@ public class Song
 				decodedIn.close();
                 
                 // The song is done, have to reload it so we can play again.
-                loadSong();
+                load();
 			}
         }
         catch(Exception e)
@@ -146,15 +175,15 @@ public class Song
     }        
 
     /**
-     * A method to reset the song.
+     * A method to load/rest an audio file.      
      */
-    public void loadSong()
+    public void load()
     {
         // Make sure everything is null.
         line = null;
         decodedFormat = null;
         in = null;
-        decodedIn = null;
+        decodedIn = null;                
         
         // Load the song.
         try
@@ -163,27 +192,35 @@ public class Song
             in = AudioSystem.getAudioInputStream(url.openStream());
 
             // The base audio format.
-            AudioFormat baseFormat = in.getFormat();
+            AudioFormat baseFormat = in.getFormat();                             
             
-            // decode the format so we can play it.
-            decodedFormat = new AudioFormat(
-                AudioFormat.Encoding.PCM_SIGNED, // Encoding to use
-                baseFormat.getSampleRate(),	  // sample rate (same as base format)
-                16,				  // sample size in bits (thx to Javazoom)
-                baseFormat.getChannels(),	  // # of Channels
-                baseFormat.getChannels()*2,	  // Frame Size
-                baseFormat.getSampleRate(),	  // Frame Rate
-                false				  // Big Endian
-            );
-
+            // If it's an .ogg file, treat it differently.
+            if (ext.equals("ogg") == true)
+            {
+                // decode the format so we can play it.
+                decodedFormat = new AudioFormat(
+                    AudioFormat.Encoding.PCM_SIGNED, // Encoding to use               
+                    baseFormat.getSampleRate(),      // sample rate (same as base format)
+                    16,                              // sample size in bits (thanks to Javazoom)
+                    baseFormat.getChannels(),        // # of Channels
+                    baseFormat.getChannels() * 2,	 // Frame Size
+                    baseFormat.getSampleRate(),      // Frame Rate
+                    false                            // Big Endian
+                );                
+            }
+            // Otherwise, do this.
+            else
+            {
+                // The format is already decoded.
+                decodedFormat = baseFormat;                                
+            }
+            
             // The decoded input stream.
             decodedIn = AudioSystem.getAudioInputStream(decodedFormat, in);
 
             //Set up a line of audio data from our decoded stream.
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, decodedFormat);
-            line = (SourceDataLine) AudioSystem.getLine(info);
-            
-            
+            line = (SourceDataLine) AudioSystem.getLine(info);                           
         }
         catch(Exception e)
         {
@@ -216,16 +253,17 @@ public class Song
             this.paused = true;
         else
         {
-            synchronized (lock) 
+            synchronized (this) 
             {
                 this.paused = false;
-                lock.notifyAll();
+                this.notifyAll();
             }
         } // end if                   
     }
     
     /**
      * A method to increase the volume.
+     * 
      * @param volume The new volume value.
      */
     public void setVolume(float volume)
@@ -235,6 +273,7 @@ public class Song
     
     /**
      * A method to get the volume of the song.
+     * 
      * @return the volume.
      */
     public float getVolume()
@@ -242,7 +281,7 @@ public class Song
         return this.currentVolume;
     }
    
-    public String getKey()
+    public int getKey()
     {
         return this.key;
     }

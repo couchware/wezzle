@@ -91,8 +91,8 @@ public class TileEntity extends GraphicEntity implements Movable
 	public TileEntity(BoardManager boardMan, int color, int x, int y) 
 	{
 		// Invoke super.		
-		super(Game.SPRITES_PATH + "/Tile" + toColorString(color) + ".png", 
-                x, y);                
+		super(x, y, 
+                Game.SPRITES_PATH + "/Tile" + toColorString(color) + ".png");                
 						
         // Set the position.
         this.x2 = x;

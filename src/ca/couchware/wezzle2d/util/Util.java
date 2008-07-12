@@ -196,4 +196,17 @@ public class Util
         
         return n;
     }
+    
+    public static String getFileExtension(final String path)
+    {
+        String fileName = new java.io.File(path).getName();
+        
+        String ext = "";
+        
+        if (fileName.lastIndexOf(".") != -1)        
+            ext = fileName.substring(fileName.lastIndexOf(".") + 1);        
+        
+        return ext;
+    }
+    
 }

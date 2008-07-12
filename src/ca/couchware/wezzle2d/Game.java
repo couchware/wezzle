@@ -7,8 +7,9 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.music.MusicManager;
-import ca.couchware.wezzle2d.sound.SoundManager;
+import ca.couchware.wezzle2d.audio.MusicManager;
+import ca.couchware.wezzle2d.piece.PieceDot;
+import ca.couchware.wezzle2d.audio.SoundManager;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
@@ -255,6 +256,16 @@ public class Game extends Canvas implements GameWindowCallback
     //--------------------------------------------------------------------------
     // Private Members
     //--------------------------------------------------------------------------
+    
+    /**
+     * If true, the tutorial will be activated next loop.
+     */
+    private boolean activateTutorial = false;
+    
+    /**
+     * If true, the tutorial is in progress.
+     */
+    private boolean tutorialInProgress = false;
     
     /**
      * If true, refactor will be activated next loop.
@@ -603,7 +614,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan = new LayerManager(window, 4);        
         
         // Draw the current background.
-		background = new GraphicEntity(SPRITES_PATH + "/Background2.png", 0, 0);
+		background = new GraphicEntity(0, 0, SPRITES_PATH + "/Background2.png");
         layerMan.add(background, LAYER_BACKGROUND);                
         
         // Create the animation manager.
@@ -635,6 +646,48 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Generate the game board.
         boardMan.generateBoard(worldMan.getItemList());
+        
+        //----------------------------------------------------------------------
+        // Tutorial-related
+        //----------------------------------------------------------------------
+        
+//        SpeechBubble sb = new SpeechBubble(272 + 16, 139 - 16 + boardMan.getHeight(), SpeechBubble.TYPE_NORMAL, "Click here");
+//        sb.setOpacity(85);
+//        sb.setAlignment(SpeechBubble.TOP | SpeechBubble.HCENTER);
+//        layerMan.add(sb, LAYER_UI);
+//        
+//        // Create bottom row.
+//        boardMan.createTile(0, boardMan.getRows() - 1, 
+//                TileEntity.class, TileEntity.COLOR_GREEN);
+//        
+//        boardMan.createTile(1, boardMan.getRows() - 1, 
+//                TileEntity.class, TileEntity.COLOR_BLUE);
+//        
+//        boardMan.createTile(2, boardMan.getRows() - 1, 
+//                TileEntity.class, TileEntity.COLOR_BLUE);
+//        
+//        boardMan.createTile(3, boardMan.getRows() - 1, 
+//                TileEntity.class, TileEntity.COLOR_YELLOW);
+//        
+//        // Create second-from-bottom row.
+//        boardMan.createTile(0, boardMan.getRows() - 2, 
+//                TileEntity.class, TileEntity.COLOR_BLUE);
+//        
+//        boardMan.createTile(1, boardMan.getRows() - 2, 
+//                TileEntity.class, TileEntity.COLOR_BLUE);
+//        
+//        boardMan.createTile(2, boardMan.getRows() - 2, 
+//                TileEntity.class, TileEntity.COLOR_PURPLE);
+//        
+//        boardMan.createTile(3, boardMan.getRows() - 2, 
+//                TileEntity.class, TileEntity.COLOR_YELLOW);
+//        
+//        // Change the piece to the dot.
+//        pieceMan.loadPiece(new PieceDot());
+        
+        //----------------------------------------------------------------------        
+        //----------------------------------------------------------------------
+        
         boardMan.setVisible(false);
         startBoardShowAnimation();
         
@@ -763,7 +816,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(timerLabel, LAYER_UI);
              
         // Set up the level header.
-        levelHeader = new GraphicEntity(LEVEL_HEADER_PATH, 126, 153);
+        levelHeader = new GraphicEntity(126, 153, LEVEL_HEADER_PATH);
         levelHeader.setAlignment(GraphicEntity.VCENTER | GraphicEntity.HCENTER);
         layerMan.add(levelHeader, LAYER_UI);
         
@@ -776,7 +829,7 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Set up the score header.
         highScoreHeaderLabel = 
-                new GraphicEntity(HIGH_SCORE_HEADER_PATH, 127, 278);        
+                new GraphicEntity(127, 278, HIGH_SCORE_HEADER_PATH);        
         highScoreHeaderLabel
                 .setAlignment(GraphicEntity.VCENTER | GraphicEntity.HCENTER);        
         layerMan.add(highScoreHeaderLabel, LAYER_UI);
@@ -789,7 +842,7 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(highScoreLabel, LAYER_UI);
         
         // Set up the score header.
-        scoreHeaderLabel = new GraphicEntity(SCORE_HEADER_PATH, 128, 403);
+        scoreHeaderLabel = new GraphicEntity(128, 403, SCORE_HEADER_PATH);
         scoreHeaderLabel
                 .setAlignment(GraphicEntity.VCENTER | GraphicEntity.HCENTER);
         layerMan.add(scoreHeaderLabel, LAYER_UI);
@@ -1163,7 +1216,7 @@ public class Game extends Canvas implements GameWindowCallback
                             tileRemovalSet.add(new Integer(index));
                     }                                        
                     
-                    soundMan.playSoundEffect(SoundManager.KEY_LEVEL_UP);
+                    soundMan.play(SoundManager.KEY_LEVEL_UP);
                     
                     int x = pieceMan.getPieceGrid().getX() 
                             + boardMan.getCellWidth() / 2;
@@ -1317,7 +1370,7 @@ public class Game extends Canvas implements GameWindowCallback
                 }
                 
                 // Play the sound.
-                soundMan.playSoundEffect(SoundManager.KEY_LINE);
+                soundMan.play(SoundManager.KEY_LINE);
 
                 // Make sure bombs aren't removed (they get removed
                 // in a different step).  However, if the no-items
@@ -1435,7 +1488,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.playSoundEffect(SoundManager.KEY_ROCKET);
+                soundMan.play(SoundManager.KEY_ROCKET);
                 
                 // Find all the new rockets.
                 Set newRocketRemovalSet = new HashSet<Integer>();
@@ -1533,7 +1586,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.playSoundEffect(SoundManager.KEY_STAR);
+                soundMan.play(SoundManager.KEY_STAR);
                 
                 // Start the line removal animations.
                 int i = 0;
@@ -1589,7 +1642,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.playSoundEffect(SoundManager.KEY_BOMB);
+                soundMan.play(SoundManager.KEY_BOMB);
 
                 // Find all the new bombs.
                 Set newBombRemovalSet = new HashSet<Integer>();

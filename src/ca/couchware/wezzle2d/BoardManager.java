@@ -202,14 +202,14 @@ public class BoardManager
         this.numberOfItems = 0;
         
         // Set the gravity to be to the bottom left by default.
-        this.gravity = DIR_UP | DIR_RIGHT;
+        this.gravity = DIR_DOWN | DIR_LEFT;
 		
 		// Initialize board.
 		board = new TileEntity[cells];
         scratchBoard = new TileEntity[cells];
         
         // Create the board background graphic.
-        GraphicEntity entity = new GraphicEntity(PATH, x - 12, y - 12);
+        GraphicEntity entity = new GraphicEntity(x - 12, y - 12, PATH);
         entity.setOpacity(90);
         layerMan.add(entity, Game.LAYER_BACKGROUND);
 	}
@@ -218,6 +218,20 @@ public class BoardManager
     // Instance Methods
     //--------------------------------------------------------------------------
 	
+    /**
+     * Set the board to the passed in array of tile entities.
+     * 
+     * @param newBoard
+     */
+    public void loadBoard(TileEntity[] newBoard)
+    {
+        // Make sure the array is the right size.        
+        assert newBoard.length == cells;
+        
+        // Set the current board to the passed board.
+        board = newBoard;
+    }
+    
 	/**
 	 * Generates a random game board with a linked list of item descriptors.
      * 
@@ -1324,7 +1338,14 @@ public class BoardManager
     public int getRows()
     {
         return rows;
-    }    
+    }
+
+    public int getCells()
+    {
+        return cells;
+    }
+    
+    
     
     public int getNumberOfItems()
     {

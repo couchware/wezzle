@@ -1,4 +1,9 @@
-package ca.couchware.wezzle2d.sound;
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
+
+package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
@@ -55,7 +60,7 @@ public class SoundManager
     /** 
      * The list of effects.
      */   
-    private ArrayList<SoundEffect[]> effectsList;
+    private ArrayList<Audio[]> soundList;
     
     /**
      * The current buffer.
@@ -89,30 +94,30 @@ public class SoundManager
                 PropertyManager.KEY_SOUND_MAX);
         
         // Initiate the array list.
-        this.effectsList = new ArrayList<SoundEffect[]>(); 
+        this.soundList = new ArrayList<Audio[]>(); 
         this.bufferPointerList = new ArrayList<Integer>();
         
         // Add some Sound effects. MUST USE addsound effect as it 
         // handles buffering.
-        this.addSoundEffect(SoundManager.KEY_LINE,
+        this.addSound(SoundManager.KEY_LINE,
                Game.SOUNDS_PATH + "/SoundLine.wav");
         
-        this.addSoundEffect(SoundManager.KEY_BOMB,
+        this.addSound(SoundManager.KEY_BOMB,
                 Game.SOUNDS_PATH + "/SoundExplosion.wav");
         
-        this.addSoundEffect(SoundManager.KEY_BLEEP,
+        this.addSound(SoundManager.KEY_BLEEP,
                 Game.SOUNDS_PATH + "/SoundBleep.wav");
         
-        this.addSoundEffect(SoundManager.KEY_CLICK,
+        this.addSound(SoundManager.KEY_CLICK,
                 Game.SOUNDS_PATH + "/SoundClick.wav");
         
-        this.addSoundEffect(SoundManager.KEY_LEVEL_UP,
+        this.addSound(SoundManager.KEY_LEVEL_UP,
                 Game.SOUNDS_PATH + "/SoundLevelUp.wav");
         
-        this.addSoundEffect(SoundManager.KEY_STAR,
+        this.addSound(SoundManager.KEY_STAR,
                 Game.SOUNDS_PATH + "/SoundDing.wav");
         
-        this.addSoundEffect(SoundManager.KEY_ROCKET,
+        this.addSound(SoundManager.KEY_ROCKET,
                 Game.SOUNDS_PATH + "/SoundRocket.wav");
              
         // Get the default volume.
@@ -135,14 +140,14 @@ public class SoundManager
      * 
      * @param effect The new effect.
      */
-    public void addSoundEffect(int key, String path)
+    public void addSound(int key, String path)
     {
-        SoundEffect effects[] = new SoundEffect[NUM_BUFFERS];
-        for (int i = 0; i < effects.length; i++)
-            effects[i] = new SoundEffect(key, path);
+        Audio sounds[] = new Audio[NUM_BUFFERS];
+        for (int i = 0; i < sounds.length; i++)
+            sounds[i] = new Audio(key, path);
         
         // Add the effect.
-        this.effectsList.add(effects);
+        this.soundList.add(sounds);
         
         // Add the corresponding buffer pointer.
         this.bufferPointerList.add(new Integer(0));
@@ -155,15 +160,15 @@ public class SoundManager
      * @param key The key of the effect to remove.
      * @return True if the effect was removed, false otherwise.
      */
-    public boolean removeSoundEffect (final int key)
+    public boolean removeSound (final int key)
     {
         // Find and remove the effect.        
-        for (int i = 0; i < effectsList.size(); i++)
+        for (int i = 0; i < soundList.size(); i++)
         {
-            if (effectsList.get(i)[0].getKey() == key)
+            if (soundList.get(i)[0].getKey() == key)
             {
                 // Remove the effect and its buffer num list.
-                effectsList.remove(i); 
+                soundList.remove(i); 
                 bufferPointerList.remove(i);
                 return true;
             }           
@@ -181,12 +186,12 @@ public class SoundManager
      * @param key The associated key.
      * @return The effect or null if the key was not found.
      */
-    public SoundEffect getSoundEffect(final int key)
+    public Audio get(final int key)
     {        
         // Find and return the effect.
-        for (int i = 0; i < effectsList.size(); i++)
+        for (int i = 0; i < soundList.size(); i++)
         {
-            if (effectsList.get(i)[0].getKey() == key)
+            if (soundList.get(i)[0].getKey() == key)
             {
                 // The current buffer.
                 int bufferNum = bufferPointerList.get(i);
@@ -198,7 +203,7 @@ public class SoundManager
                 bufferPointerList.set(i, new Integer(nextBufferNum));
 
                 // Return the proper buffered effect.
-                return effectsList.get(i)[bufferNum]; 
+                return soundList.get(i)[bufferNum]; 
             }
         }
                 
@@ -210,14 +215,14 @@ public class SoundManager
      * 
      * @param key The key of the associated effect.
      */
-    public void playSoundEffect(final int key)
+    public void play(final int key)
     {
         // If paused, don't play.
         if (this.paused == true)
             return;
         
         // Get the sound effect to play.
-        final SoundEffect effect = getSoundEffect(key);
+        final Audio effect = get(key);
         
         // Play the effect in the background.
         new Thread() 

@@ -85,7 +85,7 @@ public class ExplosionAnimation extends Animation
         this.layerMan = layerMan;
         
         // Load the explosion and centre it over the entity.
-        explosion = new GraphicEntity(PATH, 0, 0);    
+        explosion = new GraphicEntity(0, 0, PATH);    
         explosion.setOpacity(50);
         
         // Set the initial pulse state.
