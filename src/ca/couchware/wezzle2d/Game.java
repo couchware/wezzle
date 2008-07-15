@@ -10,7 +10,9 @@ import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.MusicManager;
 import ca.couchware.wezzle2d.piece.PieceDot;
 import ca.couchware.wezzle2d.audio.SoundManager;
+import ca.couchware.wezzle2d.enums.AudioTrack;
 import ca.couchware.wezzle2d.enums.Direction;
+import ca.couchware.wezzle2d.enums.ScoreType;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
@@ -1214,7 +1216,7 @@ public class Game extends Canvas implements GameWindowCallback
                             tileRemovalSet.add(new Integer(index));
                     }                                        
                     
-                    soundMan.play(SoundManager.KEY_LEVEL_UP);
+                    soundMan.play(AudioTrack.EFFECT_LEVEL_UP);
                     
                     int x = pieceMan.getPieceGrid().getX() 
                             + boardMan.getCellWidth() / 2;
@@ -1343,7 +1345,7 @@ public class Game extends Canvas implements GameWindowCallback
                 {
                     final int deltaScore = scoreMan.calculateLineScore(
                             tileRemovalSet, 
-                            ScoreManager.TYPE_LINE,
+                            ScoreType.LINE,
                             cascadeCount);                               
                 
                     // Show the SCT.
@@ -1368,7 +1370,7 @@ public class Game extends Canvas implements GameWindowCallback
                 }
                 
                 // Play the sound.
-                soundMan.play(SoundManager.KEY_LINE);
+                soundMan.play(AudioTrack.EFFECT_LINE);
 
                 // Make sure bombs aren't removed (they get removed
                 // in a different step).  However, if the no-items
@@ -1467,7 +1469,7 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
-                        ScoreManager.TYPE_STAR, 
+                        ScoreType.STAR, 
                         cascadeCount);
                 
                 // Show the SCT.
@@ -1486,7 +1488,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.play(SoundManager.KEY_ROCKET);
+                soundMan.play(AudioTrack.EFFECT_ROCKET);
                 
                 // Find all the new rockets.
                 Set<Integer> newRocketRemovalSet = new HashSet<Integer>();
@@ -1565,7 +1567,7 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
-                        ScoreManager.TYPE_STAR, 
+                        ScoreType.STAR, 
                         cascadeCount);
                 
                 // Show the SCT.
@@ -1584,7 +1586,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.play(SoundManager.KEY_STAR);
+                soundMan.play(AudioTrack.EFFECT_STAR);
                 
                 // Start the line removal animations.
                 int i = 0;
@@ -1621,7 +1623,7 @@ public class Game extends Canvas implements GameWindowCallback
                 boardMan.processBombs(bombRemovalSet, tileRemovalSet);
                 deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
-                        ScoreManager.TYPE_BOMB, 
+                        ScoreType.BOMB, 
                         cascadeCount);
                 
                 // Show the SCT.
@@ -1640,7 +1642,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.play(SoundManager.KEY_BOMB);
+                soundMan.play(AudioTrack.EFFECT_BOMB);
 
                 // Find all the new bombs.
                 Set<Integer> newBombRemovalSet = new HashSet<Integer>();

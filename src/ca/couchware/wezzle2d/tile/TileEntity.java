@@ -267,71 +267,7 @@ public class TileEntity extends GraphicEntity implements Movable
         }
     }
     
-//	/**
-//	 * Sets the bottomBound.
-//	 */
-//	public void calculateBottomBound(int tilesInColumn)
-//	{
-//		this.bottomBound = boardMan.getY() + boardMan.getHeight() 
-//                - ((tilesInColumn + 1) * boardMan.getCellHeight());
-//	}
-//	
-//	/**
-//	 * Sets the leftBound.
-//	 */
-//	public void calculateLeftBound(int tilesInRow)
-//	{
-//		this.leftBound = boardMan.getX() 
-//                + (tilesInRow * boardMan.getCellWidth());
-//	}
-	
-	public static TileColor randomColor(int max)
-	{
-        TileColor[] colors = TileColor.values();
-        
-        assert(max > 0);
-        assert(max <= colors.length);
-        
-		return colors[Util.random.nextInt(max)];
-	}
-	
-	private static String toColorString(TileColor color)
-	{
-		switch (color)
-		{
-			case BLUE:
-				return "Blue";
-				
-			case GREEN:
-				return "Green";
-				
-			case PURPLE:
-				return "Purple";
-				
-			case RED:
-				return "Red";
-				
-			case YELLOW:
-				return "Yellow";
-                
-            case BLACK:
-                return "Black";
-                
-            case BROWN:
-                return "Brown";
-                
-            case WHITE:
-                return "White";
-                            
-			default:
-				Util.handleWarning("Unknown color number: " + color + ". "
-                        + "Defaulting to 'Red'.",                                                
-                        Thread.currentThread());
-				return "Red";
-		}
-    }
-    
-    @Override
+//	@Override
     public void draw()
 	{
         this.x2_ = x2 + offsetX;
@@ -385,5 +321,51 @@ public class TileEntity extends GraphicEntity implements Movable
         width_ = width;
         height_ = height;
     }
+	
+	public static TileColor randomColor(int max)
+	{
+        TileColor[] colors = TileColor.values();
+        
+        assert(max > 0);
+        assert(max <= colors.length);
+        
+		return colors[Util.random.nextInt(max)];
+	}
+	
+	private static String toColorString(TileColor color)
+	{
+		switch (color)
+		{
+			case BLUE:
+				return "Blue";
+				
+			case GREEN:
+				return "Green";
+				
+			case PURPLE:
+				return "Purple";
+				
+			case RED:
+				return "Red";
+				
+			case YELLOW:
+				return "Yellow";
+                
+            case BLACK:
+                return "Black";
+                
+            case BROWN:
+                return "Brown";
+                
+            case WHITE:
+                return "White";
+                            
+			default:
+				Util.handleWarning("Unknown color number: " + color + ". "
+                        + "Defaulting to 'Red'.",                                                
+                        Thread.currentThread());
+				return "Red";
+		}
+    }       
     
 }

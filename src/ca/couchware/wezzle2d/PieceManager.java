@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.audio.SoundManager;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.enums.AudioTrack;
 import ca.couchware.wezzle2d.enums.Direction;
 import ca.couchware.wezzle2d.piece.*;
 import java.awt.event.MouseEvent;
@@ -498,7 +499,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 if (tileDropInProgress == true)
                 {        
                     // Start the animation.
-                    game.soundMan.play(SoundManager.KEY_BLEEP);
+                    game.soundMan.play(AudioTrack.EFFECT_BLEEP);
                     
                     for (int i = 0; i < tileDropped.length; i++)
                     {
@@ -653,7 +654,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         game.moveMan.incrementMoveCount();
 
         // Play the sound.
-        game.soundMan.play(SoundManager.KEY_CLICK);
+        game.soundMan.play(AudioTrack.EFFECT_CLICK);
 
         // Start a tile drop.
         if (tileDropOnCommit == true)

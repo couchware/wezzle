@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.enums.ScoreType;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.*;
 import java.util.Iterator;
@@ -10,26 +11,7 @@ import java.util.Set;
  * @author Kevin
  */
  public class ScoreManager
- {
-    /**
-     * A line.
-     */
-    final public static int TYPE_LINE = 0;
-    
-    /**
-     * A bomb.
-     */
-    final public static int TYPE_BOMB = 1;
-    
-    /**
-     * A star.
-     */
-    final public static int TYPE_STAR = 2;
-    
-    /**
-     * A rocket.
-     */
-    final public static int TYPE_ROCKET = 3;
+ {    
      
     /**
      * The amount of point per tile in a line.
@@ -121,7 +103,7 @@ import java.util.Set;
      * @param cascadeCount
      * @return The change in score.
      */
-    public int calculateLineScore(Set set, int lineType, int cascadeCount)
+    public int calculateLineScore(Set set, ScoreType type, int cascadeCount)
     {
         // Initialize tile counts.
         int numNormal = 0;
@@ -186,7 +168,7 @@ import java.util.Set;
                 + numMultiply2x 
                 + numMultiply3x 
                 + numMultiply4x, 
-                lineType)              
+                type)              
                 * Math.pow(2, numMultiply2x)
                 * Math.pow(3, numMultiply3x)
                 * Math.pow(4, numMultiply4x)
@@ -207,16 +189,16 @@ import java.util.Set;
      * @param lineType
      * @return
      */
-    private int calculateLineTilePoints(int numTotal, int lineType)
+    private int calculateLineTilePoints(int numTotal, ScoreType type)
     {
         // If we have a minimal line, it's just 4 times the points/tile.
         if (numTotal <= 4  
-                || lineType == TYPE_BOMB 
-                || lineType == TYPE_ROCKET)
+                || type == ScoreType.BOMB
+                || type == ScoreType.ROCKET)
         {
             return numTotal * POINTS_PER_LINE_TILE;
         }
-        else if (lineType == TYPE_STAR)
+        else if (type == ScoreType.STAR)
         {
             return (numTotal * POINTS_PER_LINE_TILE) / 2;
         }

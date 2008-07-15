@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.enums.AudioTrack;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 
@@ -39,7 +40,7 @@ public class MusicManager
     /** 
      * The list of songs.
      */
-    private ArrayList<Audio> musicList;
+    private ArrayList<AudioPlayer> musicList;
     
     /** 
      * The song number we are one 
@@ -82,15 +83,15 @@ public class MusicManager
                 PropertyManager.KEY_MUSIC_MAX);
                         
         // Initiate the array list and song number.
-        this.musicList = new ArrayList<Audio>();                     
+        this.musicList = new ArrayList<AudioPlayer>();                     
        
         // Add some music.  This is the order they will play in, but it will
         // not necessarily start on the first song.
-        this.musicList.add(new Audio(0, Game.MUSIC_PATH 
+        this.musicList.add(new AudioPlayer(AudioTrack.SONG_TRON1, Game.MUSIC_PATH 
                 + "/IntergalacticTron.ogg"));
-        this.musicList.add(new Audio(1, Game.MUSIC_PATH 
+        this.musicList.add(new AudioPlayer(AudioTrack.SONG_TRON2, Game.MUSIC_PATH 
                 + "/IntergalacticTron2.ogg"));
-        this.musicList.add(new Audio(2, Game.MUSIC_PATH 
+        this.musicList.add(new AudioPlayer(AudioTrack.SONG_TRON3, Game.MUSIC_PATH 
                 + "/IntergalacticTron3.ogg"));        
         
         // Randomly pick a starting song.
@@ -122,7 +123,7 @@ public class MusicManager
      * 
      * @param newSong The new song.
      */
-    public void add(Audio song)
+    public void add(AudioPlayer song)
     {
         this.musicList.add(song);
     }
@@ -134,12 +135,12 @@ public class MusicManager
      * @param key The key of the associated song.
      * @return true if the song was removed, false otherwise.
      */
-    public boolean remove(final int key)
+    public boolean remove(final AudioTrack type)
     {
         // Find and remove the song.
         for (int i = 0; i < musicList.size(); i++)
         {
-            if (musicList.get(i).getKey() == key)
+            if (musicList.get(i).getTrack() == type)
             {
                 musicList.remove(i); 
                 return true;
@@ -157,12 +158,12 @@ public class MusicManager
      * @param key The associated key.
      * @return The song or null if the key was not found.
      */
-    public Audio get(final int key)
+    public AudioPlayer get(final AudioTrack type)
     {
          // find and return the song.
         for (int i = 0; i < musicList.size(); i++)
         {
-            if (musicList.get(i).getKey() == key)
+            if (musicList.get(i).getTrack() == type)
             {
                 return musicList.get(i); 
             }
@@ -176,7 +177,7 @@ public class MusicManager
      * 
      * @param key The key of the associated song.
      */
-    public void playSong(final int key)
+    public void playSong(final AudioTrack type)
     {
         // Flag music playing.        
         setPlaying(true);
@@ -192,7 +193,7 @@ public class MusicManager
                     // Play the song.
                     for (int i = 0; i < musicList.size(); i++)
                     {
-                        if (musicList.get(i).getKey() == key)
+                        if (musicList.get(i).getTrack() == type)
                         {
                             // Adjust the song number.
                             songNum = i;
@@ -229,7 +230,7 @@ public class MusicManager
         this.songNum = (this.songNum + 1) % this.musicList.size();
         
         // Grab that song.
-        final Audio song = musicList.get(songNum);
+        final AudioPlayer song = musicList.get(songNum);
         
         // Run in new thread to play in background.
         new Thread() 

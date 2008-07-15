@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.audio;
 
+import ca.couchware.wezzle2d.enums.AudioTrack;
 import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.io.*;
@@ -20,12 +21,12 @@ import javax.sound.sampled.*;
  * @author Kevin, Cameron
  */
 
-public class Audio 
+public class AudioPlayer 
 {        
     /** 
      * The numeric identifier for the audio file.
      */
-    private int key;
+    private AudioTrack track;
     
     /**
      * The audio file extension.
@@ -78,10 +79,10 @@ public class Audio
      * @param key
      * @param path
      */
-    public Audio(int key, String path)
+    public AudioPlayer(AudioTrack track, String path)
     {
         // The associated key.
-        this.key = key;
+        this.track = track;
         
         // Load the reserouce.
         url = this.getClass().getClassLoader()
@@ -278,12 +279,17 @@ public class Audio
      */
     public float getVolume()
     {
-        return this.currentVolume;
+        return currentVolume;
     }
    
-    public int getKey()
+    /**
+     * Get the track enum.
+     *  
+     * @return
+     */
+    public AudioTrack getTrack()
     {
-        return this.key;
+        return track;
     }
     
 }
