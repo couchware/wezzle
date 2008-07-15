@@ -1,12 +1,15 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.enums.Direction;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.enums.TileColor;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -24,27 +27,7 @@ public class BoardManager
 {	
     //--------------------------------------------------------------------------
     // Static Members
-    //--------------------------------------------------------------------------
-    
-    /**
-     * Gravity at top.
-     */
-    final public static int DIR_UP = 1;
-    
-    /**
-     * Gravity at bottom.
-     */
-    final public static int DIR_DOWN = 2;
-    
-    /**
-     * Gravity at left.
-     */
-    final public static int DIR_LEFT = 4;
-    
-    /**
-     * Gravity at right.
-     */
-    final public static int DIR_RIGHT = 8;
+    //--------------------------------------------------------------------------      
     
     /**
      * The path to the board background graphic.
@@ -143,7 +126,7 @@ public class BoardManager
     /**
      * The gravity corner.
      */
-    private int gravity;
+    private EnumSet<Direction> gravity;
 	
 	/**
 	 * The array representing the game board.
@@ -202,7 +185,7 @@ public class BoardManager
         this.numberOfItems = 0;
         
         // Set the gravity to be to the bottom left by default.
-        this.gravity = DIR_DOWN | DIR_LEFT;
+        this.gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
 		
 		// Initialize board.
 		board = new TileEntity[cells];
@@ -307,17 +290,17 @@ public class BoardManager
 	private void refactorBoard()
 	{      
         // Check the gravity vertical direction.  It is in if-else format
-        // because having a gravity of both up and down would not make sense.
-        if ((gravity & DIR_DOWN) == DIR_DOWN)
+        // because having a gravity of both up and down would not make sense.                        
+        if (gravity.contains(Direction.DOWN))
         {
-            startShift(DIR_DOWN, 200);
+            startShift(Direction.DOWN, 200);
             for (int i = 0; i < cells; i++)
                 if (board[i] != null)
                     board[i].setYMovement(rows * cellHeight);
         }
         else
         {
-            startShift(DIR_UP, 200);
+            startShift(Direction.UP, 200);
             for (int i = 0; i < cells; i++)
                 if (board[i] != null)
                     board[i].setYMovement(-rows * cellHeight);
@@ -327,16 +310,16 @@ public class BoardManager
 		synchronize();
 		
         // Check the gravity horizontal direction.
-        if ((gravity & DIR_LEFT) == DIR_LEFT)
+        if (gravity.contains(Direction.LEFT))
         {
-            startShift(DIR_LEFT, 200);
+            startShift(Direction.LEFT, 200);
             for (int i = 0; i < cells; i++)
                 if (board[i] != null)
                     board[i].setXMovement(-columns * cellWidth);
         }
         else
         {
-            startShift(DIR_RIGHT, 200);
+            startShift(Direction.RIGHT, 200);
             for (int i = 0; i < cells; i++)
                 if (board[i] != null)
                     board[i].setXMovement(columns * cellWidth);
@@ -370,7 +353,7 @@ public class BoardManager
 				continue;
 			
 			// Get the color of this tile.
-			int color = board[i].getColor();
+			TileColor color = board[i].getColor();
 			
 			// See how long we have a match for.
 			int j;
@@ -427,7 +410,7 @@ public class BoardManager
 				continue;
 			
 			// Get the color of this tile.
-			int color = board[ti].getColor();
+			TileColor color = board[ti].getColor();
 			
 			// See how long we have a match for.
 			int j;
@@ -512,11 +495,11 @@ public class BoardManager
      * @param direction
      * @param speed
      */
-    public void startShift(final int direction, final int speed)
+    public void startShift(final Direction direction, final int speed)
     {
         switch (direction)
         {
-            case DIR_UP:
+            case UP:
                 
                 for (int i = 0; i < cells; i++)
                 {
@@ -530,7 +513,7 @@ public class BoardManager
                 
                 break;
                 
-            case DIR_DOWN:
+            case DOWN:
                 
                 for (int i = 0; i < cells; i++)
                 {
@@ -544,7 +527,7 @@ public class BoardManager
                 
                 break;
                 
-            case DIR_LEFT:
+            case LEFT:
                 
                 // Start them moving left.
                 for (int i = 0; i < cells; i++)
@@ -559,7 +542,7 @@ public class BoardManager
                 
                 break;
                 
-            case DIR_RIGHT:
+            case RIGHT:
                 
                 // Start them moving left.
                 for (int i = 0; i < cells; i++)
@@ -587,10 +570,10 @@ public class BoardManager
      */
     public void startVerticalShift(final int speed)
     {
-        if ((gravity & DIR_DOWN) == DIR_DOWN)
-            startShift(DIR_DOWN, speed);
+        if (gravity.contains(Direction.DOWN))
+            startShift(Direction.DOWN, speed);
         else
-            startShift(DIR_UP, speed);
+            startShift(Direction.UP, speed);
     }
     
     /**
@@ -601,10 +584,10 @@ public class BoardManager
      */
     public void startHorizontalShift(final int speed)
     {
-        if ((gravity & DIR_LEFT) == DIR_LEFT)
-            startShift(DIR_LEFT, speed);
+        if (gravity.contains(Direction.LEFT))
+            startShift(Direction.LEFT, speed);
         else
-            startShift(DIR_RIGHT, speed);
+            startShift(Direction.RIGHT, speed);
     }
     
 	/**
@@ -659,7 +642,7 @@ public class BoardManager
 	 * @param index
 	 * @return
 	 */
-    public int countTilesInDirection(int direction, int index)
+    public int countTilesInDirection(Direction direction, int index)
     {
         // Sanity check.
 		assert(index >= 0 && index < cells);
@@ -673,7 +656,7 @@ public class BoardManager
         
         switch (direction)
         {
-            case DIR_UP:
+            case UP:
                 
                 // If we're at the top row, return 0.
                 if (row == 0)
@@ -686,7 +669,7 @@ public class BoardManager
                 
                 break;
            
-            case DIR_DOWN:
+            case DOWN:
                 
                 // If we're at the bottom row, return 0.
                 if (row == rows - 1)
@@ -699,7 +682,7 @@ public class BoardManager
                 
                 break;
                 
-            case DIR_LEFT:
+            case LEFT:
                 
                 // If we're at the bottom row, return 0.
                 if (column == 0)
@@ -712,7 +695,7 @@ public class BoardManager
                 
                 break;
                 
-            case DIR_RIGHT:
+            case RIGHT:
                 
                 // If we're at the bottom row, return 0.
                 if (column == columns - 1)
@@ -733,12 +716,12 @@ public class BoardManager
         return count;
     }    		        
 	        
-	public TileEntity createTile(final int index, final Class c, final int color)
+	public TileEntity createTile(final int index, final Class c, 
+            final TileColor color)
 	{
          // Sanity check.
         assert (index >= 0 && index < cells);
-        assert (c != null);
-        assert (color >= 0 && color < numberOfColors);
+        assert (c != null);      
         
         // If this is an item, increment the count.
         if (c != TileEntity.class)
@@ -751,7 +734,7 @@ public class BoardManager
         {           
             // Get the constructor.  All tiles must have the same constructor.
             Constructor con = c.getConstructor(new Class[] { BoardManager.class, 
-                Integer.TYPE, Integer.TYPE, Integer.TYPE });
+                TileColor.class, Integer.TYPE, Integer.TYPE });
 
             t = (TileEntity) con.newInstance(this, color, 
 				x + (index % columns) * cellWidth,
@@ -785,7 +768,7 @@ public class BoardManager
 	}
     
     public TileEntity createTile(final int column, final int row, final Class c,
-            final int color)
+            final TileColor color)
     {
         return createTile(row * columns + column, c, color);
     }
@@ -1001,7 +984,7 @@ public class BoardManager
         for (Integer starIndex : starSet)
         {
             // Determine the colour of the star.
-            int color = getTile(starIndex).getColor();
+            TileColor color = getTile(starIndex).getColor();
             
             // Look for that colour and add it to the affected set.
             for (int i = 0; i < cells; i++)
@@ -1038,10 +1021,10 @@ public class BoardManager
 	 * @param bombIndex     
      * @return The set of indices (including the bomb) affected by the bomb.
 	 */
-	private Set processBomb(final int bombIndex)
+	private Set<Integer> processBomb(final int bombIndex)
 	{	                
 		// List of additional bomb tiles.
-		Set affectedSet = new HashSet();		
+		Set<Integer> affectedSet = new HashSet<Integer>();		
 		
 		// Return if bomb is null.
 		if (getTile(bombIndex) == null)
@@ -1389,32 +1372,12 @@ public class BoardManager
         this.numberOfColors = numberOfColors;
     }
 
-    public int getGravity()
+    public EnumSet<Direction> getGravity()
     {
         return gravity;
-    }
-    
-    public boolean isGravityUp()
-    {
-        return ((gravity & DIR_UP) == DIR_UP);                
-    }
-    
-    public boolean isGravityDown()
-    {
-        return ((gravity & DIR_DOWN) == DIR_DOWN);
-    }
-    
-    public boolean isGravityLeft()
-    {
-        return ((gravity & DIR_LEFT) == DIR_LEFT);
-    }
-    
-    public boolean isGravityRight()
-    {
-        return ((gravity & DIR_RIGHT) == DIR_RIGHT);
-    }
+    }      
 
-    public void setGravity(int gravity)
+    public void setGravity(EnumSet<Direction> gravity)
     {
         this.gravity = gravity;
     }            

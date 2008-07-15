@@ -37,14 +37,15 @@ public class Java2DFontStore
     /**
      * The font map.
      */
-    private static final HashMap fonts = new HashMap();
+    private static final HashMap<Integer, Font> fontMap = 
+            new HashMap<Integer, Font>();
     
     public Font getFont(Integer size)
     {       
         // If we already have the font cached, return it.
-		if (fonts.containsKey(size) == true)
+		if (fontMap.containsKey(size) == true)
 		{
-			return (Font) fonts.get(size);
+			return (Font) fontMap.get(size);
 		}
         // If the size is one, load it from the ttf file.
         // Note for retarded persons: The font size 1 is only created once.
@@ -57,7 +58,7 @@ public class Java2DFontStore
                 
                 InputStream in = url.openStream();
                 Font font = Font.createFont(Font.TRUETYPE_FONT, in);
-                fonts.put(size, font);
+                fontMap.put(size, font);
                 in.close();         
                 
                 return font;
@@ -74,7 +75,7 @@ public class Java2DFontStore
                     Thread.currentThread());
             Font base = (Font) getFont(new Integer(1));
             Font font = base.deriveFont((float) size);
-            fonts.put(size, font);
+            fontMap.put(size, font);
             
             return font;
         }  

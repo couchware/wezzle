@@ -16,12 +16,12 @@ public class AnimationManager
     /**
      * The animation linked list.
      */
-    private ArrayList animationList;
+    private ArrayList<Animation> animationList;
     
     public AnimationManager()
     {
         // Initialize animation list.
-        animationList = new ArrayList();
+        animationList = new ArrayList<Animation>();
     }
     
     public void add(Animation a)

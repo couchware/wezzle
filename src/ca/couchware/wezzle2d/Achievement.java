@@ -33,14 +33,17 @@ import java.util.LinkedList;
  */
 public class Achievement
 {
-    public static final int DIFFICULTY_BRONZE = 0;
-    public static final int DIFFICULTY_SILVER = 1;
-    public static final int DIFFICULTY_GOLD = 2;
-    public static final int DIFFICULTY_PLATINUM = 3;         
-    
+    /**
+     * The levels of achievement difficulty.
+     */
+    public static enum Difficulty
+    {
+        BRONZE, SILVER, GOLD, PLATINUM
+    }
+       
     private LinkedList<Rule> ruleList;
     private String description;
-    private int difficulty;    
+    private Difficulty difficulty;    
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -52,7 +55,7 @@ public class Achievement
      * @param difficulty
      */
     public Achievement(LinkedList<Rule> ruleList, String description, 
-            int difficulty)
+            Difficulty difficulty)
     {
         this.ruleList = ruleList;
         this.description = description;

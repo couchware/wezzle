@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.tile;
 
 import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.enums.TileColor;
 
 /**
  * A bomb tile.
@@ -28,7 +29,7 @@ public class StarTileEntity extends TileEntity
      * @param x
      * @param y
      */    
-    public StarTileEntity(final BoardManager boardMan, final int color, 
+    public StarTileEntity(final BoardManager boardMan, final TileColor color, 
             final int x, final int y)
     {
         // Invoke super.

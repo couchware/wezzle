@@ -19,56 +19,29 @@ package ca.couchware.wezzle2d;
  */
 public class Rule 
 {
+           
+    /**
+     * The type of rule.
+     */
+    public static enum Type
+    {
+        SCORE, LEVEL, MOVES, LINES
+    };       
     
     /**
-     * Is less than.
+     * The operation being performed on the value.
      */
-    public static final int LESS_THAN = -2;
+    public static enum Operation
+    {
+        LT, LTEQ, EQ, GTEQ, GT
+    }
     
-    /**
-     * Is less than or equal to.
+    /** 
+     * An achievement tuple contains a value and an associated test. 
      */
-    public static final int LESS_THAN_OR_EQUAL_TO = -1;
-    
-    /**
-     * Is equal to.
-     */
-    public static final int EQUAL_TO = 0;
-    
-    /**
-     * Is greater than or equal to.
-     */
-    public static final int GREATER_THAN_OR_EQUAL_TO = 1;
-    
-    /**
-     * Is greater than.
-     */
-    public static final int GREATER_THAN = 2;   
-    
-    /**
-     * Is this a score rule?
-     */
-    public static final int TYPE_SCORE = 0;
-    
-    /**
-     * Is this a level rule?
-     */
-    public static final int TYPE_LEVEL = 1;
-    
-    /**
-     * Is this a moves rule?
-     */
-    public static final int TYPE_MOVES = 2;
-    
-    /**
-     * Is this a lines rule?
-     */
-    public static final int TYPE_LINES = 3;   
-    
-    /** An achievement tuple contains a value and an associated test */
-    protected final int operation;
-    protected final int value;
-    protected final int type;
+    protected final Type type;
+    protected final Operation operation;
+    protected final int value;    
     
     //--------------------------------------------------------------------------
     // Constructor
@@ -79,10 +52,10 @@ public class Rule
      * 
      * @param type The type of rule, i.e. a rule that triggers based on score,
      *             level, etc.
-     * @param op The operation to perform, i.e. less than, equal to, etc.
+     * @param operation The operation to perform, i.e. less than, equal to, etc.
      * @param value The value we are testing against, i.e. less than 2.
      */
-    public Rule(int type, int operation, int value)
+    public Rule(Type type, Operation operation, int value)
     {        
         this.type = type;
         this.operation = operation;
@@ -108,24 +81,24 @@ public class Rule
     public static boolean evaluate(Rule rule, Game game)
     {        
         // Find the appropriate field value from the type.
-        int value = -1;
-  
+        int value = -1;          
+        
         // Check the type.
         switch (rule.getType())
         {
-            case Rule.TYPE_SCORE:
+            case SCORE:
                 value = game.scoreMan.getTotalScore();
                 break;
                 
-            case Rule.TYPE_LEVEL:
+            case LEVEL:
                 value = game.worldMan.getLevel();
                 break;
                 
-            case Rule.TYPE_MOVES:
+            case MOVES:
                 value = game.moveMan.getMoveCount();
                 break;
                 
-            case Rule.TYPE_LINES:
+            case LINES:
                 value = game.getTotalLineCount();
                 break;
                 
@@ -136,27 +109,27 @@ public class Rule
         // If the test is successful, return true, otherwise, return false         
         switch (rule.getOperation())
         {
-            case Rule.GREATER_THAN:
+            case GT:
                 if (value > rule.getValue())
                     return true;
                 break;
                 
-            case Rule.LESS_THAN:
+            case LT:
                  if (value < rule.getValue())
                     return true;
                 break;
                 
-            case Rule.EQUAL_TO:
+            case EQ:
                  if (value == rule.getValue())
                     return true;
                 break;
                 
-            case Rule.GREATER_THAN_OR_EQUAL_TO:
+            case GTEQ:
                 if (value >= rule.getValue())
                     return true;
                 break;
                 
-            case Rule.LESS_THAN_OR_EQUAL_TO:
+            case LTEQ:
                  if (value <= rule.getValue())
                     return true;
                 break;
@@ -172,7 +145,7 @@ public class Rule
     // Getters and Setters
     //--------------------------------------------------------------------------
             
-    public int getOperation() 
+    public Operation getOperation() 
     {
         return operation;
     }   
@@ -182,7 +155,7 @@ public class Rule
         return value;
     }  
 
-    public int getType() 
+    public Type getType() 
     {
         return type;
     }   

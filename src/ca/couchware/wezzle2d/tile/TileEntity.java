@@ -1,10 +1,14 @@
 package ca.couchware.wezzle2d.tile;
 
+import ca.couchware.wezzle2d.enums.Direction;
+import ca.couchware.wezzle2d.enums.TileColor;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.Movable;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.EnumMap;
 
 /**
  * A class representing a game tile.
@@ -13,37 +17,7 @@ import java.awt.Rectangle;
  */
 
 public class TileEntity extends GraphicEntity implements Movable
-{
-     /**
-     * Gravity at top.
-     */
-    final public static int DIR_UP = 1;
-    
-    /**
-     * Gravity at bottom.
-     */
-    final public static int DIR_DOWN = 2;
-    
-    /**
-     * Gravity at left.
-     */
-    final public static int DIR_LEFT = 4;
-    
-    /**
-     * Gravity at right.
-     */
-    final public static int DIR_RIGHT = 8;
-    
-    final public static int COLOR_BLUE = 0;
-	final public static int COLOR_GREEN = 1;
-	final public static int COLOR_PURPLE = 2;
-	final public static int COLOR_RED = 3;		
-	final public static int COLOR_YELLOW = 4;
-    final public static int COLOR_BLACK = 6;
-    final public static int COLOR_BROWN = 5;    
-    final public static int COLOR_WHITE = 7;    	
-    
-    final public static int MAX_COLORS = 8;
+{                                 
 	
 	/**
 	 * The associated board manager.
@@ -53,12 +27,12 @@ public class TileEntity extends GraphicEntity implements Movable
     /**
      * The bounds.
      */
-    protected final int[] bounds;
+    protected final EnumMap<Direction, Integer> bounds;
     
 	/**
 	 * The colour of the tile.
 	 */
-	protected final int color;		
+	protected final TileColor color;		
     
     /**
      * Make x a double.
@@ -88,7 +62,7 @@ public class TileEntity extends GraphicEntity implements Movable
 	 * @param x
 	 * @param y
 	 */
-	public TileEntity(BoardManager boardMan, int color, int x, int y) 
+	public TileEntity(BoardManager boardMan, TileColor color, int x, int y) 
 	{
 		// Invoke super.		
 		super(x, y, 
@@ -104,14 +78,15 @@ public class TileEntity extends GraphicEntity implements Movable
 		// Set board manager and color reference.
 		this.boardMan = boardMan;	
 		this.color = color;
+                        
+        // Create the bounds array.  1 entry for each possible direction.       
+        bounds = new EnumMap<Direction, Integer>
+                (Direction.class);
         
-        // Create the bounds array.  1 entry for each possible direction.
-        // You'll notice there are 9 entries.
-        bounds = new int[9];
-        bounds[DIR_UP] = Integer.MIN_VALUE;
-        bounds[DIR_DOWN] = Integer.MAX_VALUE;
-        bounds[DIR_LEFT] = Integer.MIN_VALUE;
-        bounds[DIR_RIGHT] = Integer.MAX_VALUE;
+        bounds.put(Direction.UP, Integer.MIN_VALUE);
+        bounds.put(Direction.DOWN, Integer.MAX_VALUE);
+        bounds.put(Direction.LEFT, Integer.MIN_VALUE);
+        bounds.put(Direction.RIGHT, Integer.MAX_VALUE);
 	}
 	
 	/**
@@ -126,14 +101,14 @@ public class TileEntity extends GraphicEntity implements Movable
 			
 			// Make sure we haven't exceeded our bound.
 			// If we have, stop moving.
-			if (y2 > bounds[DIR_DOWN])
+			if (y2 > bounds.get(Direction.DOWN))
 			{
-				y2 = bounds[DIR_DOWN];
+				y2 = bounds.get(Direction.DOWN);
 				dy = 0;
 			}
-            else if (y2 < bounds[DIR_UP])
+            else if (y2 < bounds.get(Direction.UP))
             {
-                y2 = bounds[DIR_UP];
+                y2 = bounds.get(Direction.UP);
                 dy = 0;
             }
 		}	
@@ -145,14 +120,14 @@ public class TileEntity extends GraphicEntity implements Movable
 			
 			// Make sure we haven't exceeded our bound.
 			// If we have, stop moving.
-            if (x2 > bounds[DIR_RIGHT])
+            if (x2 > bounds.get(Direction.RIGHT))
             {
-                x2 = bounds[DIR_RIGHT];
+                x2 = bounds.get(Direction.RIGHT);
                 dx = 0;
             }
-            else if (x2 < bounds[DIR_LEFT])
+            else if (x2 < bounds.get(Direction.LEFT))
 			{
-				x2 = bounds[DIR_LEFT];
+				x2 = bounds.get(Direction.LEFT);
 				dx = 0;
 			}
 		}	                   
@@ -252,41 +227,41 @@ public class TileEntity extends GraphicEntity implements Movable
 	 * Gets the color.
 	 * @return The color.
 	 */
-	public int getColor()
+	public TileColor getColor()
 	{
 		return color;
 	}
 
-    public void calculateBound(int direction, int tileCount)
+    public void calculateBound(Direction direction, int tileCount)
     {
         switch (direction)
         {
-            case DIR_UP:
+            case UP:
                 
-                bounds[direction] = boardMan.getY()                         
-                        + (tileCount * boardMan.getCellHeight());
+                bounds.put(direction, boardMan.getY()
+                        + (tileCount * boardMan.getCellHeight()));
                 break;
                 
-            case DIR_DOWN:
+            case DOWN:
                 
-                bounds[direction] = boardMan.getY() 
+                bounds.put(direction, boardMan.getY() 
                         + boardMan.getHeight() 
-                        - ((tileCount + 1) * boardMan.getCellHeight());
+                        - ((tileCount + 1) * boardMan.getCellHeight()));
                 
                 break;
                 
-            case DIR_LEFT:
+            case LEFT:
                 
-                bounds[direction] = boardMan.getX() 
-                        + (tileCount * boardMan.getCellWidth());
+                bounds.put(direction, boardMan.getX() 
+                        + (tileCount * boardMan.getCellWidth()));
                 
                 break;
                 
-            case DIR_RIGHT:
+            case RIGHT:
                 
-                bounds[direction] = boardMan.getX() 
+                bounds.put(direction, boardMan.getX() 
                         + boardMan.getWidth() 
-                        - ((tileCount + 1) * boardMan.getCellWidth());
+                        - ((tileCount + 1) * boardMan.getCellWidth()));
                                 
                 break;
         }
@@ -310,40 +285,42 @@ public class TileEntity extends GraphicEntity implements Movable
 //                + (tilesInRow * boardMan.getCellWidth());
 //	}
 	
-	public static int randomColor(int max)
+	public static TileColor randomColor(int max)
 	{
-        assert(max > 0);
-        assert(max <= MAX_COLORS);
+        TileColor[] colors = TileColor.values();
         
-		return Util.random.nextInt(max);
+        assert(max > 0);
+        assert(max <= colors.length);
+        
+		return colors[Util.random.nextInt(max)];
 	}
 	
-	private static String toColorString(int color)
+	private static String toColorString(TileColor color)
 	{
 		switch (color)
 		{
-			case COLOR_BLUE:
+			case BLUE:
 				return "Blue";
 				
-			case COLOR_GREEN:
+			case GREEN:
 				return "Green";
 				
-			case COLOR_PURPLE:
+			case PURPLE:
 				return "Purple";
 				
-			case COLOR_RED:
+			case RED:
 				return "Red";
 				
-			case COLOR_YELLOW:
+			case YELLOW:
 				return "Yellow";
                 
-            case COLOR_BLACK:
+            case BLACK:
                 return "Black";
                 
-            case COLOR_BROWN:
+            case BROWN:
                 return "Brown";
                 
-            case COLOR_WHITE:
+            case WHITE:
                 return "White";
                             
 			default:

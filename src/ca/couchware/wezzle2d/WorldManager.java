@@ -130,7 +130,7 @@ public class WorldManager
         
         // Set the rules.
         masterRuleList = new LinkedList<Rule>();
-        masterRuleList.add(new Rule(Rule.TYPE_LEVEL, Rule.EQUAL_TO, 5)
+        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 5)
         {            
             @Override
             public void performAction(Game game)
@@ -411,7 +411,7 @@ public class WorldManager
     /**
 	 * @return The items.
 	 */
-	public LinkedList getItemList()
+	public LinkedList<Item> getItemList()
 	{
 		return itemList;
 	}               	

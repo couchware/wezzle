@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.MusicManager;
 import ca.couchware.wezzle2d.piece.PieceDot;
 import ca.couchware.wezzle2d.audio.SoundManager;
+import ca.couchware.wezzle2d.enums.Direction;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
@@ -625,6 +626,7 @@ public class Game extends Canvas implements GameWindowCallback
         
 		// Create the piece manager.
 		pieceMan = new PieceManager(boardMan);
+        pieceMan.setTileDropOnCommit(true);
         layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	
@@ -712,32 +714,28 @@ public class Game extends Canvas implements GameWindowCallback
         LinkedList<Rule> rules3 = new LinkedList<Rule>();
         LinkedList<Rule> rules4 = new LinkedList<Rule>();
         
-        rules1.add(new Rule(Rule.TYPE_SCORE, 
-                Rule.GREATER_THAN, 2000));
+        rules1.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 2000));
         
         achievementMan.add(new Achievement(rules1, 
-                 "Score greater than 2000", Achievement.DIFFICULTY_BRONZE));        
+                 "Score greater than 2000", Achievement.Difficulty.BRONZE));        
                 
-        rules2.add(new Rule(Rule.TYPE_SCORE, 
-                Rule.GREATER_THAN, 5000));
+        rules2.add(new Rule(Rule.Type.SCORE, 
+                Rule.Operation.GT, 5000));
         
         achievementMan.add(new Achievement(rules2, 
-                 "Score greater than 5000", Achievement.DIFFICULTY_BRONZE));
+                 "Score greater than 5000", Achievement.Difficulty.BRONZE));
                 
-        rules3.add(new Rule(Rule.TYPE_SCORE,
-                Rule.GREATER_THAN, 1000));        
-        rules3.add(new Rule(Rule.TYPE_MOVES,
-                Rule.LESS_THAN_OR_EQUAL_TO, 3));
+        rules3.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 1000));        
+        rules3.add(new Rule(Rule.Type.MOVES, Rule.Operation.LTEQ, 3));
         
         achievementMan.add(new Achievement(rules3, 
                  "Score greater than 1000, Moves less than or equal to 3", 
-                 Achievement.DIFFICULTY_BRONZE));
+                 Achievement.Difficulty.BRONZE));
                 
-        rules4.add(new Rule(Rule.TYPE_LEVEL,
-                Rule.GREATER_THAN, 2));
+        rules4.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GT, 2));
         
         achievementMan.add(new Achievement(rules4, 
-                 "Level greater than 2", Achievement.DIFFICULTY_BRONZE));
+                 "Level greater than 2", Achievement.Difficulty.BRONZE));
                        
         //----------------------------------------------------------------------
         // Initialize buttons.
@@ -1204,7 +1202,7 @@ public class Game extends Canvas implements GameWindowCallback
                     tileRemovalSet.clear();
 
                     int j;
-                    if (boardMan.isGravityUp() == true)                        
+                    if (boardMan.getGravity().contains(Direction.UP))                        
                         j = 0;
                     else
                         j = boardMan.getRows() - 1;
@@ -1491,7 +1489,7 @@ public class Game extends Canvas implements GameWindowCallback
                 soundMan.play(SoundManager.KEY_ROCKET);
                 
                 // Find all the new rockets.
-                Set newRocketRemovalSet = new HashSet<Integer>();
+                Set<Integer> newRocketRemovalSet = new HashSet<Integer>();
                 boardMan.scanFor(RocketTileEntity.class, tileRemovalSet,
                         newRocketRemovalSet);                                                
                 newRocketRemovalSet.removeAll(rocketRemovalSet);
@@ -1645,7 +1643,7 @@ public class Game extends Canvas implements GameWindowCallback
                 soundMan.play(SoundManager.KEY_BOMB);
 
                 // Find all the new bombs.
-                Set newBombRemovalSet = new HashSet<Integer>();
+                Set<Integer> newBombRemovalSet = new HashSet<Integer>();
                 boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
                         newBombRemovalSet);                                                
                 newBombRemovalSet.removeAll(bombRemovalSet);

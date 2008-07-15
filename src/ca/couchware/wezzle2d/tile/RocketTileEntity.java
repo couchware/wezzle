@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.tile;
 
 import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.enums.TileColor;
 import ca.couchware.wezzle2d.util.Util;
 
 /**
@@ -60,7 +61,7 @@ public class RocketTileEntity extends TileEntity
      * @param x
      * @param y
      */    
-    public RocketTileEntity(final BoardManager boardMan, final int color, 
+    public RocketTileEntity(final BoardManager boardMan, final TileColor color, 
             final int x, final int y)
     {
         // Invoke super.

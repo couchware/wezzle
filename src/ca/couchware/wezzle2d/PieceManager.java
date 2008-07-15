@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.audio.SoundManager;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.enums.Direction;
 import ca.couchware.wezzle2d.piece.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -26,8 +27,14 @@ import java.util.Set;
 public class PieceManager implements MouseListener, MouseMotionListener
 {	
     // -------------------------------------------------------------------------
-    // Constants
+    // Private Members
     // -------------------------------------------------------------------------       
+    
+    /**
+     * Should the piece manager drop automatically drop tiles after a 
+     * commit?
+     */
+    private boolean tileDropOnCommit = true;
     
     /**
      * Is the board dropping in a tile?
@@ -37,7 +44,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
     /**
      * Is the board animating the tile dropped?
      */
-    private boolean tileDropAnimationInProgress = false;
+    private boolean tileDropAnimationInProgress = false;        
     
     /**
      * The tile drop count.
@@ -47,7 +54,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
     /**
      * The index list.
      */
-    private ArrayList indexList;
+    private ArrayList<Integer> indexList;
     
     /**
      * The tile currently being dropped.
@@ -126,7 +133,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         pieceGrid.setY(ap.getY());
         
         // Create the index list.
-        this.indexList = new ArrayList();        
+        this.indexList = new ArrayList<Integer>();        
 	}	
     
     //--------------------------------------------------------------------------
@@ -237,10 +244,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 boardMan.getY() + (row * boardMan.getCellHeight()));
 	}
     
-    public Set getSelectedIndexSet(XYPosition p)
+    public Set<Integer> getSelectedIndexSet(XYPosition p)
     {
          // Create a set.
-        HashSet indexSet = new HashSet();
+        HashSet<Integer> indexSet = new HashSet<Integer>();
         
         // Convert to rows and columns.
         XYPosition ap = adjustPosition(p);
@@ -369,7 +376,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                  
         // Which row should we be dropping tiles into?
         int dropRow = 0;
-        if (boardMan.isGravityUp() == true)
+        if (boardMan.getGravity().contains(Direction.UP))
             dropRow = boardMan.getRows() - 1;
         else
             dropRow = 0;
@@ -614,7 +621,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             return;
         
         // Get the indices of the committed pieces.
-        final Set indexSet = 
+        final Set<Integer> indexSet = 
                 getSelectedIndexSet(this.pieceGrid.getXYPosition());
         
         // Remove and score the piece.
@@ -649,7 +656,8 @@ public class PieceManager implements MouseListener, MouseMotionListener
         game.soundMan.play(SoundManager.KEY_CLICK);
 
         // Start a tile drop.
-        this.tileDropInProgress = true;
+        if (tileDropOnCommit == true)
+            tileDropInProgress = true;
 
         // Make visible.
         pieceGrid.setVisible(false);
@@ -743,6 +751,16 @@ public class PieceManager implements MouseListener, MouseMotionListener
     public PieceGrid getPieceGrid()
     {
         return pieceGrid;
+    }
+
+    public boolean isTileDropOnCommit()
+    {
+        return tileDropOnCommit;
+    }
+
+    public void setTileDropOnCommit(boolean tileDropOnCommit)
+    {
+        this.tileDropOnCommit = tileDropOnCommit;
     }        
     
     //--------------------------------------------------------------------------
