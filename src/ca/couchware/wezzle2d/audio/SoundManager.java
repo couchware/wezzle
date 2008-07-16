@@ -132,11 +132,11 @@ public class SoundManager
      * 
      * @param effect The new effect.
      */
-    public void add(AudioTrack type, String path)
+    public void add(AudioTrack track, String path)
     {
         AudioPlayer sounds[] = new AudioPlayer[NUM_BUFFERS];
         for (int i = 0; i < sounds.length; i++)
-            sounds[i] = new AudioPlayer(type, path);
+            sounds[i] = new AudioPlayer(track, path);
         
         // Add the effect.
         this.soundList.add(sounds);
@@ -152,12 +152,12 @@ public class SoundManager
      * @param key The key of the effect to remove.
      * @return True if the effect was removed, false otherwise.
      */
-    public boolean remove(final int key)
+    public boolean remove(final AudioTrack track)
     {
         // Find and remove the effect.        
         for (int i = 0; i < soundList.size(); i++)
         {
-            if (soundList.get(i)[0].getTrack().equals(key))
+            if (soundList.get(i)[0].getTrack() == track)
             {
                 // Remove the effect and its buffer num list.
                 soundList.remove(i); 
@@ -178,12 +178,12 @@ public class SoundManager
      * @param key The associated key.
      * @return The effect or null if the key was not found.
      */
-    public AudioPlayer get(final AudioTrack type)
+    public AudioPlayer get(final AudioTrack track)
     {        
         // Find and return the effect.
         for (int i = 0; i < soundList.size(); i++)
         {
-            if (soundList.get(i)[0].getTrack().equals(type.toString()))
+            if (soundList.get(i)[0].getTrack() == track)
             {
                 // The current buffer.
                 int bufferNum = bufferPointerList.get(i);
@@ -207,14 +207,14 @@ public class SoundManager
      * 
      * @param key The key of the associated effect.
      */
-    public void play(final AudioTrack type)
+    public void play(final AudioTrack track)
     {
         // If paused, don't play.
         if (this.paused == true)
             return;
         
         // Get the sound effect to play.
-        final AudioPlayer effect = get(type);
+        final AudioPlayer player = get(track);
         
         // Play the effect in the background.
         new Thread() 
@@ -226,8 +226,8 @@ public class SoundManager
                 { 
                     // Play the effect. MUST USE get soundeffect as
                     // it handles buffering.
-                    effect.setVolume(volume);
-                    effect.play();
+                    player.setVolume(volume);
+                    player.play();
                 }
                 catch (Exception e) 
                 { 

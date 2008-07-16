@@ -38,8 +38,8 @@ public class Util
 	{
 		String method;
 		
-		if (USE_STACK_TRACE == true)
-			method = e.getStackTrace()[3].getMethodName();
+		if (USE_STACK_TRACE == true && e.getStackTrace().length >= 4)
+            method = e.getStackTrace()[3].getMethodName();        
 		else
 			method = "Unknown";
 		

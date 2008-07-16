@@ -103,12 +103,13 @@ public class AudioPlayer
     }
     
     /**
-     * Play the song
+     * Play the audio.
      * 
      * The method creates an audio stream and plays through it a line of
      * data at a time.
      * 
-     * Note: The first line is already initialized when we get to this function.
+     * Note: The first line is already initialized when we get to 
+     * this method.
      * 
      */
     public void play()
