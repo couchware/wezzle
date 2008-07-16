@@ -5,6 +5,7 @@ import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Dimension;
 
 /**
@@ -35,40 +36,39 @@ public class ExplosionAnimation extends Animation
     final private static int CONTRACT_STEP = 4;
     
     /**
-     * The explode down state.
-     */
-    final private static int EXPLODE_DOWN = 0;
-    
-    /**
-     * The explode up state.
-     */
-    final private static int EXPLODE_UP = 1;
-    
-    /**
      * The entity being animated.
      */
-    protected Entity entity;
+    final protected Entity entity;
     
     /**
      * Reference to the layer manager.
      */
-    final private LayerManager layerMan;
-    
-    /**
-     * The maximum width the entity may become before switching 
-     * explode states.
-     */
-    final private int maxWidth;
-    
-    /**
-     * The current pulse state.
-     */
-    private int state;
+    final protected LayerManager layerMan;        
     
     /**
      * The explosion entity.
      */
-    final Entity explosion;   
+    final protected Entity explosion;   
+    
+    /**
+     * The initial position.
+     */
+    final protected XYPosition initialPosition;
+    
+    /**
+     * The initial dimensions.
+     */
+    final protected Dimension initialDimensions;
+    
+    /**
+     * Explode out/in duration, in ms.
+     */
+    final protected int duration;
+    
+    /**
+     * The speed of the explosion.
+     */
+    final protected double v;
     
     /**
      * The constructor.
@@ -76,31 +76,37 @@ public class ExplosionAnimation extends Animation
     public ExplosionAnimation(final Entity entity, final LayerManager layerMan)
     {                
         // Invoke super constructor.
-        super(FRAME_PERIOD);    
+        super(0);    
         
         // Save a reference to the entity.
         this.entity = entity;
-        
+
         // Set reference to layer manager.
-        this.layerMan = layerMan;
+        this.layerMan = layerMan;                
+        
+        // Set the speed.
+        this.v = 0.18;
         
         // Load the explosion and centre it over the entity.
         explosion = new GraphicEntity(0, 0, PATH);    
         explosion.setOpacity(50);
         
-        // Set the initial pulse state.
-        state = EXPLODE_UP;
-         
-        // Set the maximum width.
-        maxWidth = explosion.getWidth();
-        
-        // Resize the explosion to be 2x2.
+        // Set the initial dimensions to 2x2.
         explosion.setWidth(2);
         explosion.setHeight(2);
+        this.initialDimensions = new Dimension(2, 2);
         
         // Move it to the centre of the entity.
         explosion.setX(entity.getX() + (entity.getWidth() / 2) - 1);
-        explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);
+        explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);                                      
+        this.initialPosition = explosion.getXYPosition();                
+                        
+        // Set the explosion durations.
+        duration = 270;           
+        
+        // Resize the explosion to be 2x2.
+        explosion.setWidth(2);
+        explosion.setHeight(2);                
         
         // Reset the draw rectangle.
         explosion.resetDrawRect();
@@ -135,73 +141,37 @@ public class ExplosionAnimation extends Animation
         }
         
         // Add to counter.
-        counter += delta;
-               
-        // See how many frames have passed.
-        frames = (int) counter / period;
-        counter = counter % period;
+        counter += delta;                    
         
-        if (frames > 1)
-                Util.handleMessage(
-                        "Explosion skipped " + (frames - 1) + " frames.", 
-                        Thread.currentThread());
-        
-        // Advance the number of frames.
-        animation:
-        for (int i = 0; i < frames; i++)
-        {                 
-            // If we're pulsing down, reducing the size and translate slightly.
-            switch (state)
-            {
-                case EXPLODE_UP:
-                    
-                    explosion.setWidth(explosion.getWidth() + EXPAND_STEP);
-                    explosion.setX(explosion.getX() - EXPAND_STEP / 2);
-                    
-                    explosion.setHeight(explosion.getHeight() + EXPAND_STEP);
-                    explosion.setY(explosion.getY() - EXPAND_STEP /2);
-                    
-                    // If the width is equal to the maximum, then
-                    // change states.
-                    if (explosion.getWidth() == maxWidth)
-                        state = EXPLODE_DOWN;
-                    
-                    break;
-                
-                case EXPLODE_DOWN:
-                    
-                    explosion.setWidth(explosion.getWidth() - CONTRACT_STEP);
-                    explosion.setX(explosion.getX() + CONTRACT_STEP / 2);
-                    
-                    explosion.setHeight(explosion.getHeight() - CONTRACT_STEP);
-                    explosion.setY(explosion.getY() + CONTRACT_STEP / 2);  
-                    
-                    // If the width is equal to 2, then we stop.
-                    if (explosion.getWidth() <= 2)
-                    {
-                        // Remove explosion from layer manager.
-                        if (layerMan.remove(explosion, Game.LAYER_EFFECT)
-                                == false)
-                        {
-                            throw new IllegalStateException(
-                                    "Could not removed explosion from layer manager!");
-                        }
-                        
-                        // Set done flag.
-                        done = true;
-                        
-                        // Break.
-                        break animation;
-                    }
-                    
-                    break;
-                    
-                default:
-                    throw new IllegalStateException("Unrecognized state.");
-            }
-        } // end if          
+        // See if we're exploding out.
+        if (counter < duration)
+        {                        
+            double t = (double) counter;
+            int d = (int) (v * t);
+            explosion.setWidth(initialDimensions.width + d * 2);
+            explosion.setHeight(initialDimensions.height + d * 2);
+            explosion.setX(initialPosition.x - d);
+            explosion.setY(initialPosition.y - d);
+        }
+        // See if we're exploding in.
+        else if (counter >= duration && counter < duration * 2)
+        {
+            double t = (double) (duration * 2 - counter);
+            int d = (int) (v * t);
+            explosion.setWidth(initialDimensions.width + d * 2);
+            explosion.setHeight(initialDimensions.height + d * 2);
+            explosion.setX(initialPosition.x - d);
+            explosion.setY(initialPosition.y - d);
+        }
+        // See if we're done.
+        else if (counter >= duration * 2)
+        {
+            done = true;
+            layerMan.remove(explosion, Game.LAYER_EFFECT);
+        }                        
     }
     
+    @Override
     public void setVisible(final boolean visible)
     {
         this.visible = visible;
