@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
+import java.util.EnumSet;
 
 /**
  *
@@ -50,7 +51,7 @@ public class GameOverGroup extends Group
         // Create the game over header.
         headerLabel = ResourceFactory.get().getLabel(400, 181);        
         headerLabel.setSize(26);
-        headerLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         headerLabel.setColor(Game.TEXT_COLOR);
         headerLabel.setText("Game over :(");
         headerLabel.setVisible(false);
@@ -60,7 +61,7 @@ public class GameOverGroup extends Group
         // Create the final score header.
         scoreHeaderLabel = ResourceFactory.get().getLabel(400, 234);        
         scoreHeaderLabel.setSize(14);
-        scoreHeaderLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        scoreHeaderLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         scoreHeaderLabel.setColor(Game.TEXT_COLOR);
         scoreHeaderLabel.setText("Your final score was");
         scoreHeaderLabel.setVisible(false);
@@ -70,7 +71,7 @@ public class GameOverGroup extends Group
         // Create the final score label.
         scoreLabel = ResourceFactory.get().getLabel(400, 270);        
         scoreLabel.setSize(30);
-        scoreLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        scoreLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         scoreLabel.setColor(Game.TEXT_COLOR);
         scoreLabel.setText("0");
         scoreLabel.setVisible(false);
@@ -82,7 +83,7 @@ public class GameOverGroup extends Group
         restartButton.setNormalOpacity(70);
         restartButton.setText("Restart");
         restartButton.getLabel().setSize(18);
-        restartButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        restartButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         restartButton.setVisible(false);
         layerMan.add(restartButton, Game.LAYER_UI);
         entityList.add(restartButton);
@@ -92,7 +93,7 @@ public class GameOverGroup extends Group
         continueButton.setNormalOpacity(70);
         continueButton.setText("Continue");
         continueButton.getLabel().setSize(18);
-        continueButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        continueButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         continueButton.setVisible(false);
         layerMan.add(continueButton, Game.LAYER_UI);
         entityList.add(continueButton);

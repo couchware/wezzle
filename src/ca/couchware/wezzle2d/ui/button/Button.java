@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -115,7 +116,7 @@ public abstract class Button extends Entity implements
         this.height = height;
         
         // Set default anchor.
-        this.alignment = TOP | LEFT;
+        this.alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
         
         // Save shape reference.
         this.shape = shape;               
@@ -333,7 +334,7 @@ public abstract class Button extends Entity implements
      * to the top left corner of the button.
 	 */
     @Override
-	public void setAlignment(final int alignment)
+	public void setAlignment(final EnumSet<Alignment> alignment)
 	{
         // Invoke super.
         super.setAlignment(alignment);	                

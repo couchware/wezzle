@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ui.button.*;
+import java.util.EnumSet;
 
 /**
  *
@@ -51,7 +52,7 @@ public class PauseGroup extends Group
         // Create the "Paused" text.
         mainLabel = ResourceFactory.get().getLabel(400, 245);        
         mainLabel.setSize(30);
-        mainLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+        mainLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         mainLabel.setColor(Game.TEXT_COLOR);
         mainLabel.setText("Paused");
         mainLabel.setVisible(false);
@@ -60,7 +61,7 @@ public class PauseGroup extends Group
 
         movesLabel = ResourceFactory.get().getLabel(400, 310);        
         movesLabel.setSize(18);
-        movesLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+        movesLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         movesLabel.setColor(Game.TEXT_COLOR);
         movesLabel.setText("0 moves taken");        
         movesLabel.setVisible(false);
@@ -69,7 +70,7 @@ public class PauseGroup extends Group
 
         linesLabel = ResourceFactory.get().getLabel(400, 340);        
         linesLabel.setSize(18);
-        linesLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+        linesLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         linesLabel.setColor(Game.TEXT_COLOR);
         linesLabel.setText("0 lines cleared");
         linesLabel.setVisible(false);
@@ -78,7 +79,7 @@ public class PauseGroup extends Group
 
         linesPerMoveLabel = ResourceFactory.get().getLabel(400, 370);        
         linesPerMoveLabel.setSize(18);
-        linesPerMoveLabel.setAlignment(Label.HCENTER | Label.VCENTER);
+        linesPerMoveLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         linesPerMoveLabel.setColor(Game.TEXT_COLOR);
         linesPerMoveLabel.setText("0.0 lines per move");
         linesPerMoveLabel.setVisible(false);

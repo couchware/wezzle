@@ -16,6 +16,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.font.FontRenderContext;
+import java.util.EnumSet;
 
 /**
  * This class provides a Java2D implementation of the Label interface.
@@ -130,7 +131,7 @@ public class Java2DLabel extends Label
 	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
 	 */
     @Override
-	public void setAlignment(int alignment)
+	public void setAlignment(EnumSet<Alignment> alignment)
 	{
         // Remember the anchor.
 		this.alignment = alignment;                
@@ -145,16 +146,16 @@ public class Java2DLabel extends Label
 		Rectangle2D bounds = textLayout.getBounds();
         
 		// The Y alignment.
-		if ((alignment & BOTTOM) == BOTTOM)
+		if (alignment.contains(Alignment.BOTTOM))
 		{
             // TODO This may not work.  It has not been tested.
 			this.offsetY = 0;
 		}        
-		else if ((alignment & VCENTER) == VCENTER)
+		else if (alignment.contains(Alignment.MIDDLE))
 		{			
             this.offsetY = (int) (-bounds.getY() / 2f + 0.5);                        
 		}
-		else if ((alignment & TOP) == TOP)
+		else if (alignment.contains(Alignment.TOP))
 		{
 			this.offsetY = (int) (-bounds.getY() + 0.5);                                              
 		}
@@ -164,15 +165,15 @@ public class Java2DLabel extends Label
 		}
 		
 		// The X alignment. 
-		if ((alignment & LEFT) == LEFT)
+		if (alignment.contains(Alignment.LEFT))
 		{
 			this.offsetX = (int) -bounds.getMinX();
 		}
-		else if ((alignment & HCENTER) == HCENTER)
+		else if (alignment.contains(Alignment.CENTER))
 		{
 			this.offsetX = (int) -(bounds.getMinX() + bounds.getWidth() / 2);			
 		}
-		else if ((alignment & RIGHT) == RIGHT)
+		else if (alignment.contains(Alignment.RIGHT))
 		{
 			this.offsetX = (int) -bounds.getMaxX();
 		}

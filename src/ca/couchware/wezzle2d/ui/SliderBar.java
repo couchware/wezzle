@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -151,7 +152,7 @@ public class SliderBar extends Entity implements
         this.height = HEIGHT;
         
         // Set default anchor.
-        this.alignment = TOP | LEFT;
+        this.alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
         
         // Save shape reference.
         this.shape = new Rectangle(x, y, WIDTH, HEIGHT);                      
@@ -324,7 +325,7 @@ public class SliderBar extends Entity implements
      * to the top left corner of the button.
 	 */
     @Override
-	public void setAlignment(final int alignment)
+	public void setAlignment(final EnumSet<Alignment> alignment)
 	{
         // Invoke super.
         super.setAlignment(alignment);	                

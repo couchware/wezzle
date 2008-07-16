@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
+import java.util.EnumSet;
 
 /**
  *
@@ -61,7 +62,7 @@ public class HighScoreGroup extends Group
         // Create the high score header.
         headerLabel = ResourceFactory.get().getLabel(400, 171);        
         headerLabel.setSize(26);
-        headerLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         headerLabel.setColor(Game.TEXT_COLOR);
         headerLabel.setText("High Scores");
         headerLabel.setVisible(false);
@@ -71,7 +72,7 @@ public class HighScoreGroup extends Group
         // Create the no high score label.
         noHighScoreLabel1 = ResourceFactory.get().getLabel(400, 270);
         noHighScoreLabel1.setSize(20);
-        noHighScoreLabel1.setAlignment(Label.VCENTER | Label.HCENTER);
+        noHighScoreLabel1.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         noHighScoreLabel1.setColor(Game.TEXT_COLOR);
         noHighScoreLabel1.setText("There are no");
         noHighScoreLabel1.setVisible(false);
@@ -80,7 +81,7 @@ public class HighScoreGroup extends Group
         
         noHighScoreLabel2 = ResourceFactory.get().getLabel(400, 300);
         noHighScoreLabel2.setSize(20);
-        noHighScoreLabel2.setAlignment(Label.VCENTER | Label.HCENTER);
+        noHighScoreLabel2.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         noHighScoreLabel2.setColor(Game.TEXT_COLOR);
         noHighScoreLabel2.setText("high scores yet.");
         noHighScoreLabel2.setVisible(false);
@@ -96,7 +97,7 @@ public class HighScoreGroup extends Group
             scoreLabels[i] = ResourceFactory.get()
                     .getLabel(400, 225 + (30 * i));        
             scoreLabels[i].setSize(16);
-            scoreLabels[i].setAlignment(Label.VCENTER | Label.HCENTER);
+            scoreLabels[i].setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
             scoreLabels[i].setColor(Game.TEXT_COLOR);
             scoreLabels[i].setText(" "); // hack
             scoreLabels[i].setVisible(false);
@@ -113,7 +114,7 @@ public class HighScoreGroup extends Group
         closeButton.setNormalOpacity(70);
         closeButton.setText("Close");
         closeButton.getLabel().setSize(18);
-        closeButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        closeButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         closeButton.setVisible(false);
         layerMan.add(closeButton, Game.LAYER_UI);
         entityList.add(closeButton);

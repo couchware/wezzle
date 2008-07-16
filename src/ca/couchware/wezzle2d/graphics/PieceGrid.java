@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.graphics;
 import ca.couchware.wezzle2d.*;
 import java.awt.Rectangle;
 import java.util.Arrays;
+import java.util.EnumSet;
 
 import ca.couchware.wezzle2d.piece.Piece;
 
@@ -96,9 +97,10 @@ public class PieceGrid extends Entity
     /**
      * Draw the piece grid at the predefined location x,y.
      */
+    @Override
 	public void draw()
 	{
-        // Make current (x,y) the old onee.
+        // Make current (x,y) the old one.
         x_ = x;
         y_ = y;
         
@@ -120,6 +122,7 @@ public class PieceGrid extends Entity
         } // end for			
 	}   
 
+    @Override
     public Rectangle getDrawRect()
     {
         // If the draw rect is null, generate it.
@@ -138,22 +141,26 @@ public class PieceGrid extends Entity
         return drawRect;
     }    
 
+    @Override
     public void setWidth(int width)
     {
         throw new UnsupportedOperationException("You may not adjust this property.");
     }
 
+    @Override
     public void setHeight(int height)
     {
         throw new UnsupportedOperationException("You may not adjust this property.");
     }
 
-    public int getAlignment()
+    @Override
+    public EnumSet<Alignment> getAlignment()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setAlignment(int alignment)
+    @Override
+    public void setAlignment(EnumSet<Alignment> alignment)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

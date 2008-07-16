@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.graphics;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Rectangle;
+import java.util.EnumSet;
 
 /**
  * An entity represents any element that appears in the game. The entity is
@@ -86,7 +87,8 @@ public abstract class Entity implements Drawable, Positionable
     /**
      * The alignment of the entity.
      */
-    protected int alignment = TOP | LEFT;
+    protected EnumSet<Alignment> alignment = 
+            EnumSet.of(Alignment.TOP, Alignment.LEFT);
     
     /**
      * The x-offset.
@@ -265,26 +267,26 @@ public abstract class Entity implements Drawable, Positionable
 	 */
     public abstract void draw();    	
 
-    public int getAlignment()
+    public EnumSet<Alignment> getAlignment()
     {
         return alignment;
     }
 
-    public void setAlignment(final int alignment)
+    public void setAlignment(final EnumSet<Alignment> alignment)
     {
         // Remember the anchor.
 		this.alignment = alignment;               
 				
 		// The Y anchors.
-		if((alignment & BOTTOM) == BOTTOM)
+		if (alignment.contains(Alignment.BOTTOM))
 		{
 			this.offsetY = -height;
 		}
-		else if((alignment & VCENTER) == VCENTER)
+		else if (alignment.contains(Alignment.MIDDLE))
 		{
 			this.offsetY = -height / 2;
 		}
-		else if((alignment & TOP) == TOP)
+		else if (alignment.contains(Alignment.TOP))
 		{
 			this.offsetY = 0;
 		}
@@ -294,15 +296,15 @@ public abstract class Entity implements Drawable, Positionable
 		}
 		
 		// The X anchors. 
-		if((alignment & LEFT) == LEFT)
+		if (alignment.contains(Alignment.LEFT))
 		{
 			this.offsetX = 0;
 		}
-		else if((alignment & HCENTER) == HCENTER)
+		else if (alignment.contains(Alignment.CENTER))
 		{
 			this.offsetX = -width / 2;			
 		}
-		else if((alignment & RIGHT) == RIGHT)
+		else if (alignment.contains(Alignment.RIGHT))
 		{
 			this.offsetX = -width;
 		}

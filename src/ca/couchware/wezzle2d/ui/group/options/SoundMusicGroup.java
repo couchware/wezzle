@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.util.Util;
+import java.util.EnumSet;
 
 /**
  * The sound and music menu for Wezzle.  This menu consists of two buttons 
@@ -69,7 +70,7 @@ public class SoundMusicGroup extends Group
         // Create the options header.
         headerLabel = ResourceFactory.get().getLabel(400, 171);        
         headerLabel.setSize(26);
-        headerLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         headerLabel.setColor(Game.TEXT_COLOR);
         headerLabel.setText("Sound/Music");
         headerLabel.setVisible(false);
@@ -100,7 +101,7 @@ public class SoundMusicGroup extends Group
         soundButton.setNormalOpacity(70);
         soundButton.setText("Sound: Off");
         soundButton.getLabel().setSize(18);
-        soundButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        soundButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         soundButton.setVisible(false);
         layerMan.add(soundButton, Game.LAYER_UI);
         entityList.add(soundButton);
@@ -114,7 +115,7 @@ public class SoundMusicGroup extends Group
         
         // Create the sound slider bar.
         soundSlider = new SliderBar(window, 400, 272);
-        soundSlider.setAlignment(Button.VCENTER | Button.HCENTER);
+        soundSlider.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         soundSlider.setVisible(false);
         soundSlider.setVirtualRange(
                 propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_MIN),
@@ -148,7 +149,7 @@ public class SoundMusicGroup extends Group
         musicButton.setNormalOpacity(70);
         musicButton.setText("Music: Off");
         musicButton.getLabel().setSize(18);
-        musicButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        musicButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         musicButton.setVisible(false);
         layerMan.add(musicButton, Game.LAYER_UI);
         entityList.add(musicButton);
@@ -162,7 +163,7 @@ public class SoundMusicGroup extends Group
         
         // Create the music slider bar.
         musicSlider = new SliderBar(window, 400, 359);
-        musicSlider.setAlignment(Button.VCENTER | Button.HCENTER);
+        musicSlider.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         musicSlider.setVisible(false);
         musicSlider.setVirtualRange(
                 propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_MIN),
@@ -177,7 +178,7 @@ public class SoundMusicGroup extends Group
         backButton.setNormalOpacity(70);
         backButton.setText("Back");
         backButton.getLabel().setSize(18);
-        backButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        backButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         backButton.setVisible(false);
         layerMan.add(backButton, Game.LAYER_UI);     
         entityList.add(backButton);

@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.ui.group.options.*;
 import ca.couchware.wezzle2d.util.Util;
+import java.util.EnumSet;
 
 /**
  *
@@ -64,7 +65,7 @@ public class OptionsGroup extends Group
         // Create the options header.
         headerLabel = ResourceFactory.get().getLabel(400, 171);        
         headerLabel.setSize(26);
-        headerLabel.setAlignment(Label.VCENTER | Label.HCENTER);
+        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         headerLabel.setColor(Game.TEXT_COLOR);
         headerLabel.setText("Options");
         headerLabel.setVisible(false);
@@ -76,7 +77,7 @@ public class OptionsGroup extends Group
         helpButton.setNormalOpacity(70);
         helpButton.setText("Help");
         helpButton.getLabel().setSize(18);
-        helpButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        helpButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         helpButton.setVisible(false);
         layerMan.add(helpButton, Game.LAYER_UI);
         entityList.add(helpButton);
@@ -86,7 +87,7 @@ public class OptionsGroup extends Group
         audioButton.setNormalOpacity(70);
         audioButton.setText("Sound/Music");
         audioButton.getLabel().setSize(18);
-        audioButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        audioButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         audioButton.setVisible(false);
         layerMan.add(audioButton, Game.LAYER_UI);
         entityList.add(audioButton);
@@ -101,7 +102,7 @@ public class OptionsGroup extends Group
         mainMenuButton.setNormalOpacity(70);
         mainMenuButton.setText("Main Menu");
         mainMenuButton.getLabel().setSize(18);
-        mainMenuButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        mainMenuButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         mainMenuButton.setVisible(false);
         layerMan.add(mainMenuButton, Game.LAYER_UI);
         entityList.add(mainMenuButton);
@@ -111,7 +112,7 @@ public class OptionsGroup extends Group
         backButton.setNormalOpacity(70);
         backButton.setText("Back");
         backButton.getLabel().setSize(18);
-        backButton.setAlignment(Button.VCENTER | Button.HCENTER);
+        backButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         backButton.setVisible(false);
         layerMan.add(backButton, Game.LAYER_UI);     
         entityList.add(backButton);

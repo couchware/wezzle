@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.util.EnumSet;
 
 /**
  * A circular pause button.
@@ -85,7 +86,7 @@ public class RectangularBooleanButton extends BooleanButton
         buttonLabel = ResourceFactory.get().getLabel(0, 0);        
         buttonLabel.setSize(22);
         buttonLabel.setColor(Game.TEXT_COLOR);
-        buttonLabel.setAlignment(Label.HCENTER | Label.VCENTER);    
+        buttonLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));    
         
         // Set the normal and active opacities.
         normalOpacity = 100;

@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Dimension;
+import java.util.EnumSet;
 
 /**
  * A class for creating speech bubbles.  This is usually used for popping up
@@ -71,13 +72,13 @@ public class SpeechBubble extends GraphicEntity
         this.type = type;
         
         // Set alignment.
-        super.setAlignment(BOTTOM | HCENTER);
+        super.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER));
         
         // Create the speech label.
         label = ResourceFactory.get().getLabel(                
                 x, y - CENTER[type].y);
         label.setSize(16);
-        label.setAlignment(Label.VCENTER | Label.HCENTER);
+        label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         label.setColor(Game.TEXT_COLOR);
         label.setText(text);
         
@@ -85,21 +86,18 @@ public class SpeechBubble extends GraphicEntity
     }
     
     @Override
-    public void setAlignment(int alignment)
+    public void setAlignment(EnumSet<Alignment> alignment)
     {
         if (this.alignment == alignment)
-            return;
+            return;                
         
-        int TOP_HCENTER = (TOP | HCENTER);
-        int BOTTOM_HCENTER = (BOTTOM | HCENTER);
-        
-        if ((alignment & TOP_HCENTER) == TOP_HCENTER)
+        if (alignment.containsAll(EnumSet.of(Alignment.TOP, Alignment.CENTER)))
         {
             label.translate(0, +CENTER[type].y * 2 - 2);
             setRotation(Math.toRadians(180));
             super.setAlignment(alignment);
         }
-        else if ((alignment & BOTTOM_HCENTER) == BOTTOM_HCENTER)
+        else if (alignment.containsAll(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER)))
         {
             label.translate(0, -CENTER[type].y * 2 + 2);
             setRotation(Math.toRadians(-180));
@@ -108,7 +106,7 @@ public class SpeechBubble extends GraphicEntity
         else
         {
             throw new UnsupportedOperationException(
-                "Only TOP | HCENTER and BOTTOM | HCENTER are supported.");
+                "Only TOP | CENTER and BOTTOM | CENTER are supported.");
         }        
     }        
     

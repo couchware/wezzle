@@ -5,6 +5,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
+import java.util.EnumSet;
 
 /**
  * A class for representing progress bars of any length 
@@ -153,7 +154,7 @@ public class ProgressBar extends Entity
         this.y_ = y;
         
         // Set initial alignment.
-        this.alignment = TOP | LEFT;
+        this.alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
         
         // Add text if specified.
 		if (withText == true)
@@ -167,7 +168,8 @@ public class ProgressBar extends Entity
 			
 			// Set text attributes.			
             progressText.setSize(14);
-            progressText.setAlignment(Label.VCENTER | Label.HCENTER);
+            progressText.setAlignment(
+                    EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
             progressText.setColor(Game.TEXT_COLOR);
             progressText.setText(progress + "/" + progressMax);
 		}	                
@@ -331,21 +333,21 @@ public class ProgressBar extends Entity
     }
 
     @Override
-    public void setAlignment(int alignment)
+    public void setAlignment(EnumSet<Alignment> alignment)
     {
         // Remember the alignment.
 		this.alignment = alignment;
         
 		// The Y alignment.
-		if((alignment & BOTTOM) == BOTTOM)
+		if (alignment.contains(Alignment.BOTTOM))
 		{
 			this.offsetY = 0;
 		}
-		else if((alignment & VCENTER) == VCENTER)
+		else if (alignment.contains(Alignment.MIDDLE))
 		{
 			this.offsetY = -getHeight() / 2;
 		}
-		else if((alignment & TOP) == TOP)
+		else if (alignment.contains(Alignment.TOP))
 		{
 			this.offsetY = -getHeight();
 		}
@@ -355,15 +357,15 @@ public class ProgressBar extends Entity
 		}
 		
 		// The X alignment. 
-		if((alignment & LEFT) == LEFT)
+		if (alignment.contains(Alignment.LEFT))
 		{
 			this.offsetX = 0;
 		}
-		else if((alignment & HCENTER) == HCENTER)
+		else if (alignment.contains(Alignment.CENTER))
 		{
 			this.offsetX = -progressMaxWidth / 2;			
 		}
-		else if((alignment & RIGHT) == RIGHT)
+		else if (alignment.contains(Alignment.RIGHT))
 		{
 			this.offsetX = -progressMaxWidth;
 		}

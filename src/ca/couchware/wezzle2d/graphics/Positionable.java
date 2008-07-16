@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.util.XYPosition;
+import java.util.EnumSet;
 
 /**
  * An interface inplemented by classes that are positionable.  A positionable
@@ -12,34 +13,17 @@ import ca.couchware.wezzle2d.util.XYPosition;
 public interface Positionable 
 {
     /**
-     * Align at the vertical top.
+     * Possible alignments.
      */
-    final public static int TOP = 1;
-    
-    /**
-     * Align at the vertical center.
-     */
-	final public static int VCENTER = 2;
-    
-    /**
-     * Align at the vertical bottom.
-     */
-	final public static int BOTTOM = 4;
-    
-    /**
-     * Align at the horizontal left.
-     */
-	final public static int LEFT = 8;
-    
-    /**
-     * Align at the horizontal centre.
-     */
-	final public static int HCENTER = 16;
-    
-    /**
-     * Align at the horizontal right.
-     */
-	final public static int RIGHT = 32;
+    public static enum Alignment
+    {
+        TOP,
+        MIDDLE,
+        BOTTOM,
+        LEFT,
+        CENTER,
+        RIGHT
+    }
     
     /**
      * Get the x-coordinate.
@@ -132,12 +116,12 @@ public interface Positionable
      * 
      * @return An integer bitmask representing the alignment.
      */
-    public int getAlignment();
+    public EnumSet<Alignment> getAlignment();
     
     /**
      * Sets the alignment.
      * 
      * @param bitmask An integer bitmask representing the alignment.
      */
-    public void setAlignment(final int alignment);
+    public void setAlignment(final EnumSet<Alignment> alignment);
 }

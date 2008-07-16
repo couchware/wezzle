@@ -1,18 +1,21 @@
 package ca.couchware.wezzle2d;
 
 import static ca.couchware.wezzle2d.BoardManager.Direction;
+import static ca.couchware.wezzle2d.graphics.Positionable.Alignment;
 import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.AudioTrack;
+
 import ca.couchware.wezzle2d.piece.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -681,7 +684,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         XYPosition p = boardMan.determineCenterPoint(indexSet);
         Label label = ResourceFactory.get().getLabel(p.x, p.y);        
         label.setText(String.valueOf(deltaScore));
-        label.setAlignment(Label.HCENTER | Label.VCENTER);
+        label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         label.setColor(Game.SCORE_PIECE_COLOR);
         label.setSize(game.scoreMan.determineFontSize(deltaScore));
         

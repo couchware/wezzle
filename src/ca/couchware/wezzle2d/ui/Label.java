@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.util.EnumSet;
 
 /**
  * The Text abstract class is used to draw text to the screen in a particular 
@@ -57,7 +58,7 @@ public abstract class Label extends Entity
         this.size = 24f;
 		
 		// Set the default anchor.
-		this.alignment = TOP | LEFT;
+		this.alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
     }        
     
     /**

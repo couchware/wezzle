@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * A class for making labels that can span multiple lines of text.  It is a 
@@ -132,7 +133,7 @@ public class MultilineLabel extends Label
 	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
 	 */
     @Override
-	public void setAlignment(int alignment)
+	public void setAlignment(EnumSet<Alignment> alignment)
 	{
         super.setAlignment(alignment);
         
