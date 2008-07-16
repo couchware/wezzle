@@ -785,7 +785,7 @@ public class BoardManager
     public TileEntity createTile(final int index, final Class c)
     {
         return createTile(index, c, 
-                TileEntity.randomColor(getNumberOfColors()));
+                TileColor.getRandomColor(getNumberOfColors()));
     }
     
     public TileEntity createTile(final int column, final int row, final Class c)

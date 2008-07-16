@@ -66,8 +66,8 @@ public class TileEntity extends GraphicEntity implements Movable
 	{
 		// Invoke super.		
 		super(x, y, 
-                Game.SPRITES_PATH + "/Tile" + toColorString(color) + ".png");                
-						
+                Game.SPRITES_PATH + "/Tile" + color + ".png");
+                				
         // Set the position.
         this.x2 = x;
         this.y2 = y;
@@ -267,7 +267,7 @@ public class TileEntity extends GraphicEntity implements Movable
         }
     }
     
-//	@Override
+	@Override
     public void draw()
 	{
         this.x2_ = x2 + offsetX;
@@ -320,52 +320,6 @@ public class TileEntity extends GraphicEntity implements Movable
         
         width_ = width;
         height_ = height;
-    }
-	
-	public static TileColor randomColor(int max)
-	{
-        TileColor[] colors = TileColor.values();
-        
-        assert(max > 0);
-        assert(max <= colors.length);
-        
-		return colors[Util.random.nextInt(max)];
-	}
-	
-	private static String toColorString(TileColor color)
-	{
-		switch (color)
-		{
-			case BLUE:
-				return "Blue";
-				
-			case GREEN:
-				return "Green";
-				
-			case PURPLE:
-				return "Purple";
-				
-			case RED:
-				return "Red";
-				
-			case YELLOW:
-				return "Yellow";
-                
-            case BLACK:
-                return "Black";
-                
-            case BROWN:
-                return "Brown";
-                
-            case WHITE:
-                return "White";
-                            
-			default:
-				Util.handleWarning("Unknown color number: " + color + ". "
-                        + "Defaulting to 'Red'.",                                                
-                        Thread.currentThread());
-				return "Red";
-		}
-    }       
+    }			     
     
 }

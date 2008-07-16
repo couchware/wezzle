@@ -36,6 +36,12 @@ public class BasicTutorial extends Tutorial
     @Override
     protected void initializeTutorial(Game game)
     {
+        // Set restriction board so that only the bottom left corner is
+        // clickable.
+        game.pieceMan.clearRestrictionBoard();
+        game.pieceMan.reverseRestrictionBoard();
+        game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
+        
         // Create the speech bubble and add it to the layer manaager.
         // The speech bubble will be positioned over the button right
         // corner of the board.
@@ -87,7 +93,7 @@ public class BasicTutorial extends Tutorial
 
     @Override
     protected void finishTutorial(Game game)
-    {
+    {                
         // Remove the bubble.
         game.layerMan.remove(bubble, Game.LAYER_UI);
         bubble = null;
