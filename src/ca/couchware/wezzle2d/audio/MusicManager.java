@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.audio.AudioTrack;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 /**
  * A class to handle background music.
@@ -32,6 +33,11 @@ public class MusicManager
      */
     private static final float VOLUME_STEP = 0.5f;
     
+    /**
+     * A link to the executor that the manager uses to play sounds.
+     */
+    private Executor executor;
+    
     /** 
      * A link to the property manager. 
      */
@@ -45,7 +51,7 @@ public class MusicManager
     /** 
      * The song number we are one 
      */
-    private int songNum;
+    private int trackNum;
     
     /** 
      * A variable to check if the song is paused.
@@ -70,8 +76,11 @@ public class MusicManager
     /**
      * Creates the song list.
      */
-    public MusicManager(PropertyManager propertyMan) 
+    public MusicManager(Executor executor, PropertyManager propertyMan) 
     {        
+        // The executor.
+        this.executor = executor;
+        
         // The property manager.
         this.propertyMan = propertyMan;
         
@@ -96,7 +105,7 @@ public class MusicManager
         
         // Randomly pick a starting song.
         //this.songNum = Util.random.nextInt(songList.size());
-        this.songNum = -1;        
+        this.trackNum = -1;        
         
          // The music is not currently playing.
         setPlaying(false);
@@ -183,9 +192,8 @@ public class MusicManager
         setPlaying(true);
         
         // Play the song in the background.
-        new Thread() 
-        {
-            @Override
+        executor.execute(new Runnable()
+        {            
             public void run() 
             {
                 try 
@@ -195,14 +203,14 @@ public class MusicManager
                     {
                         if (musicList.get(i).getTrack() == type)
                         {
-                            // Adjust the song number.
-                            songNum = i;
+                            // Adjust the track number.
+                            trackNum = i;
                             
                             // Set the volume.
-                            musicList.get(songNum).setVolume(volume);
+                            musicList.get(trackNum).setVolume(volume);
                             
                             // Play the song.
-                            musicList.get(songNum).play(); 
+                            musicList.get(trackNum).play(); 
                             break;
                         }
                         
@@ -215,7 +223,7 @@ public class MusicManager
                     Util.handleException(e); 
                 }
             }
-        }.start();
+        });
     }
    
     /**
@@ -227,10 +235,10 @@ public class MusicManager
         setPlaying(true);
         
         // Determine the next song to play.
-        this.songNum = (this.songNum + 1) % this.musicList.size();
+        this.trackNum = (this.trackNum + 1) % this.musicList.size();
         
         // Grab that song.
-        final AudioPlayer song = musicList.get(songNum);
+        final AudioPlayer song = musicList.get(trackNum);
         
         // Run in new thread to play in background.
         new Thread() 
@@ -284,8 +292,8 @@ public class MusicManager
     {
         this.paused = paused;         
         
-        if (songNum != -1)
-            this.musicList.get(songNum).setPaused(paused);                 
+        if (trackNum != -1)
+            this.musicList.get(trackNum).setPaused(paused);                 
     }
         
     /**
@@ -343,11 +351,11 @@ public class MusicManager
         // Adjust the current playing song.
         if (isPlaying() == true)
         {
-            if (songNum != -1)
-                this.musicList.get(this.songNum).setVolume(volume);
+            if (trackNum != -1)
+                this.musicList.get(this.trackNum).setVolume(volume);
             else
                 throw new IllegalStateException(
-                        "Song number is -1 (no song) yet playing flag is set");
+                        "Track number is -1 (no track) yet playing flag is set");
         }   
         
         this.volume = volume;

@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -255,6 +257,11 @@ public class Game extends Canvas implements GameWindowCallback
     //--------------------------------------------------------------------------
     // Private Members
     //--------------------------------------------------------------------------
+    
+    /**
+     * The executor used by certain managers.
+     */
+    private Executor executor;
     
     /**
      * If true, the tutorial will be activated next loop.
@@ -578,6 +585,12 @@ public class Game extends Canvas implements GameWindowCallback
 	public void initialize()
 	{
         //----------------------------------------------------------------------
+        // Initialize executor.
+        //----------------------------------------------------------------------
+        
+        executor = Executors.newCachedThreadPool();
+        
+        //----------------------------------------------------------------------
         // Initialize attributes.
         //----------------------------------------------------------------------
         
@@ -649,10 +662,10 @@ public class Game extends Canvas implements GameWindowCallback
         startBoardShowAnimation();
         
         // Create the sound manager.
-        soundMan = new SoundManager(propertyMan);
+        soundMan = new SoundManager(executor, propertyMan);
         
         // Create the music manager.
-        musicMan = new MusicManager(propertyMan);                  
+        musicMan = new MusicManager(executor, propertyMan);                  
         
         // Create the move manager.
         moveMan = new MoveManager();

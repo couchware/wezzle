@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.audio;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 /**
  * A class for managing the playing of game sounds.
@@ -19,7 +20,6 @@ import java.util.ArrayList;
  * 
  * @author Kevin, Cameron
  */
-
 
 public class SoundManager 
 {
@@ -43,6 +43,11 @@ public class SoundManager
      */
     private static int NUM_BUFFERS = 4;
       
+    /**
+     * A link to the executor that the manager uses to play sounds.
+     */
+    private Executor executor;
+    
     /** 
      * A link to the property manager. 
      */
@@ -72,8 +77,11 @@ public class SoundManager
     /**
      * Creates the effect list.
      */
-    public SoundManager(PropertyManager propertyMan) 
+    public SoundManager(Executor executor, PropertyManager propertyMan) 
     {        
+        // The executor.
+        this.executor = executor;
+        
         // The property manager.
         this.propertyMan = propertyMan;
         
@@ -217,15 +225,13 @@ public class SoundManager
         final AudioPlayer player = get(track);
         
         // Play the effect in the background.
-        new Thread() 
-        {
-            @Override
+        executor.execute(new Runnable()
+        {            
             public void run() 
             {
                 try 
                 { 
-                    // Play the effect. MUST USE get soundeffect as
-                    // it handles buffering.
+                    // Play the sound.
                     player.setVolume(volume);
                     player.play();
                 }
@@ -234,7 +240,7 @@ public class SoundManager
                     Util.handleException(e); 
                 }
             }
-        }.start();
+        });
     }     
         
     public float getVolume()
