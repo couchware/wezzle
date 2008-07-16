@@ -6,7 +6,6 @@
 package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.audio.AudioTrack;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 
@@ -92,7 +91,7 @@ public class SoundManager
         // Add some Sound effects. MUST USE addsound effect as it 
         // handles buffering.
         this.add(AudioTrack.SOUND_LINE,
-               Game.SOUNDS_PATH + "/SoundLine.wav");
+                Game.SOUNDS_PATH + "/SoundLine.wav");
         
         this.add(AudioTrack.SOUND_BOMB,
                 Game.SOUNDS_PATH + "/SoundExplosion.wav");
@@ -113,7 +112,8 @@ public class SoundManager
                 Game.SOUNDS_PATH + "/SoundRocket.wav");
              
         // Get the default volume.
-        this.volume = propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME);
+        setVolume(propertyMan.getFloatProperty(
+                PropertyManager.KEY_SOUND_VOLUME));
         
         // Check if paused or not.
         if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
@@ -210,7 +210,7 @@ public class SoundManager
     public void play(final AudioTrack track)
     {
         // If paused, don't play.
-        if (this.paused == true)
+        if (isPaused() == true)
             return;
         
         // Get the sound effect to play.
@@ -282,6 +282,11 @@ public class SoundManager
         // Set it.
         setVolume(vol);                
     }
+
+    public boolean isPaused()
+    {
+        return paused;
+    }        
     
     /**
      * Toggle the paused variable

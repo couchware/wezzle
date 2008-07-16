@@ -623,8 +623,7 @@ public class Game extends Canvas implements GameWindowCallback
 		boardMan = new BoardManager(layerMan, 272, 139, 8, 10);        
         
 		// Create the piece manager.
-		pieceMan = new PieceManager(boardMan);
-        pieceMan.setTileDropOnCommit(true);
+		pieceMan = new PieceManager(boardMan);        
         layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);
 		window.addMouseListener(pieceMan);
 		window.addMouseMotionListener(pieceMan);	

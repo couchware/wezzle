@@ -12,8 +12,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -95,6 +97,12 @@ public class PieceManager implements MouseListener, MouseMotionListener
 	 * The board manager the piece manager to attached to.
 	 */
 	private BoardManager boardMan;
+    
+    /**
+     * The restriction board.  All the entries that are true are clickable,
+     * all the ones that are false are not.
+     */
+    private boolean[] restrictionBoard;
 
     //--------------------------------------------------------------------------
     // Constructor
@@ -133,7 +141,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
         pieceGrid.setY(ap.getY());
         
         // Create the index list.
-        this.indexList = new ArrayList<Integer>();        
+        this.indexList = new ArrayList<Integer>();    
+        
+        // Create the restriction board and fill it with trues.
+        restrictionBoard = new boolean[boardMan.getCells()];
+        clearRestrictionBoard();
 	}	
     
     //--------------------------------------------------------------------------
@@ -244,11 +256,19 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 boardMan.getY() + (row * boardMan.getCellHeight()));
 	}
     
-    public Set<Integer> getSelectedIndexSet(XYPosition p)
-    {
-         // Create a set.
-        HashSet<Integer> indexSet = new HashSet<Integer>();
-        
+    /**
+     * Gets the set of indices covered by the current piece.  All of the
+     * indices that are over tiles are stored in the tileSet, while all
+     * remaining indices are stored in the blankSet.
+     * 
+     * @param p
+     * @param tileSet
+     * @param emptySet
+     */
+    public void getSelectedIndexSet(XYPosition p, 
+            Set<Integer> tileSet, 
+            Set<Integer> blankSet)
+    {                
         // Convert to rows and columns.
         XYPosition ap = adjustPosition(p);
         int column = convertXToColumn(ap.getX());
@@ -261,18 +281,22 @@ public class PieceManager implements MouseListener, MouseMotionListener
         {
             for (int i = 0; i < structure.length; i++)
             {	
-                if (structure[i][j] == true 
-                        && boardMan.getTile(column - 1 + i, row - 1 + j) != null)
-                {
-                    // Remove the tile.
-                   indexSet.add(new Integer((column - 1 + i) 
-                           + (row - 1 + j) * boardMan.getColumns()));                   
-                }		
+                if (structure[i][j] == true)
+                {      
+                    int t = (column - 1 + i) 
+                           + (row - 1 + j) * boardMan.getColumns();
+
+                    if (boardMan.getTile(column - 1 + i, row - 1 + j) != null)                   
+                    {
+                       tileSet.add(t);                                      
+                    }
+                    else if (blankSet != null)
+                    {
+                       blankSet.add(t);
+                    }
+                } // end if	                
             } // end for				
-        } // end for
-        
-        // Return the set.
-        return indexSet;
+        } // end for               
     }
     
     public void notifyRefactored()
@@ -304,7 +328,9 @@ public class PieceManager implements MouseListener, MouseMotionListener
     private void startAnimationAt(final XYPosition p, int period)
     {
         // Add new animations.
-        Set indexSet = getSelectedIndexSet(p);
+        Set<Integer> indexSet = new HashSet<Integer>();
+        getSelectedIndexSet(p, indexSet, null);
+        
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {
             final TileEntity t = boardMan.getTile((Integer) it.next());
@@ -320,7 +346,9 @@ public class PieceManager implements MouseListener, MouseMotionListener
     
     private void adjustAnimationAt(final XYPosition p, int period)
     {
-        Set indexSet = getSelectedIndexSet(p);
+        Set<Integer> indexSet = new HashSet<Integer>();
+        getSelectedIndexSet(p, indexSet, null);
+        
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {                    
             final TileEntity t = boardMan.getTile((Integer) it.next());
@@ -346,7 +374,9 @@ public class PieceManager implements MouseListener, MouseMotionListener
     private void stopAnimationAt(final XYPosition p)
     {
         // Remove old animations.
-        Set indexSet = getSelectedIndexSet(p);
+        Set<Integer> indexSet = new HashSet<Integer>();
+        getSelectedIndexSet(p, indexSet, null);
+        
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {                    
             final TileEntity t = boardMan.getTile((Integer) it.next());
@@ -559,7 +589,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             final XYPosition p = getMousePosition();             
             
             if (isMouseLeftReleased() == true)
-            {            
+            {                          
                initiateCommit(game);
             }
             else if (isMouseRightReleased() == true)
@@ -621,8 +651,28 @@ public class PieceManager implements MouseListener, MouseMotionListener
             return;
         
         // Get the indices of the committed pieces.
-        final Set<Integer> indexSet = 
-                getSelectedIndexSet(this.pieceGrid.getXYPosition());
+        Set<Integer> indexSet = new LinkedHashSet<Integer>();
+        Set<Integer> blankSet = new LinkedHashSet<Integer>();
+        getSelectedIndexSet(this.pieceGrid.getXYPosition(), indexSet, blankSet);                                
+        
+        // See if any of the indices are restricted.
+        for (Integer index : indexSet)
+        {
+            if (restrictionBoard[index] == false)
+            {
+                clearMouseButtons();
+                return;
+            }
+        } // end for
+        
+        for (Integer index : blankSet)
+        {
+            if (restrictionBoard[index] == false)
+            {
+                clearMouseButtons();
+                return;
+            }
+        } // end for
         
         // Remove and score the piece.
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
@@ -689,7 +739,66 @@ public class PieceManager implements MouseListener, MouseMotionListener
         
         return true;
     }
-        
+
+    /**
+     * Gets the current restriction board.
+     * 
+     * @return
+     */
+    public boolean[] getRestrictionBoard()
+    {
+        return restrictionBoard;
+    }
+
+    /**
+     * Sets the restriction board to the passed board.
+     * 
+     * @param restrictionBoard
+     */
+    public void setRestrictionBoard(boolean[] restrictionBoard)
+    {
+        this.restrictionBoard = restrictionBoard;
+    }        
+    
+    /**
+     * Resets the restriction board to only have true values.
+     */
+    public void clearRestrictionBoard()
+    {
+        // Fill restriction board with true values.
+        Arrays.fill(restrictionBoard, true);
+    }
+    
+    /**
+     * Reverses the restriction board, turning all true values into false
+     * values and vice versa.
+     */
+    public void reverseRestrictionBoard()
+    {
+        for (int i = 0; i < restrictionBoard.length; i++)
+            restrictionBoard[i] = !restrictionBoard[i];
+    }
+           
+    public boolean getRestrictionCell(int index)
+    {
+        return restrictionBoard[index];
+    }
+    
+    public boolean getRestrictionCell(int column, int row)
+    {
+        return getRestrictionCell(row * boardMan.getColumns() + column);
+    }
+    
+    public void setRestrictionCell(int index, boolean value)
+    {
+        restrictionBoard[index] = value;
+    }
+    
+    public void setRestrictionCell(int column, int row, boolean value)
+    {
+        setRestrictionCell(row * boardMan.getColumns() + column, value);
+    }
+            
     //--------------------------------------------------------------------------
     // Getters and Setters
     //--------------------------------------------------------------------------
@@ -800,8 +909,8 @@ public class PieceManager implements MouseListener, MouseMotionListener
         final XYPosition p = getMousePosition();
         
         // Ignore click if we're outside the board.
-        if (isOnBoard(p) == false)
-            return;            
+        if (isOnBoard(p) == false)                
+            return;                    
             
 		// Check which button.
         switch (e.getButton())
