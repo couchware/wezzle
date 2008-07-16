@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.enums.Direction;
-import ca.couchware.wezzle2d.enums.TileColor;
+import static ca.couchware.wezzle2d.BoardManager.Direction;
+import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.Movable;
 import ca.couchware.wezzle2d.util.Util;

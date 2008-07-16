@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.audio;
 
-import ca.couchware.wezzle2d.enums.AudioTrack;
 import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.io.*;

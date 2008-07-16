@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.enums.AudioTrack;
+import ca.couchware.wezzle2d.audio.AudioTrack;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 
@@ -87,11 +87,11 @@ public class MusicManager
        
         // Add some music.  This is the order they will play in, but it will
         // not necessarily start on the first song.
-        this.musicList.add(new AudioPlayer(AudioTrack.SONG_TRON1, Game.MUSIC_PATH 
+        this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON1, Game.MUSIC_PATH 
                 + "/IntergalacticTron.ogg"));
-        this.musicList.add(new AudioPlayer(AudioTrack.SONG_TRON2, Game.MUSIC_PATH 
+        this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON2, Game.MUSIC_PATH 
                 + "/IntergalacticTron2.ogg"));
-        this.musicList.add(new AudioPlayer(AudioTrack.SONG_TRON3, Game.MUSIC_PATH 
+        this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON3, Game.MUSIC_PATH 
                 + "/IntergalacticTron3.ogg"));        
         
         // Randomly pick a starting song.

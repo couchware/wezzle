@@ -3,7 +3,7 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d.enums;
+package ca.couchware.wezzle2d.tile;
 
 /**
  * The list of possible tile colours.

@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.enums.AudioTrack;
+import ca.couchware.wezzle2d.audio.AudioTrack;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 
@@ -91,25 +91,25 @@ public class SoundManager
         
         // Add some Sound effects. MUST USE addsound effect as it 
         // handles buffering.
-        this.add(AudioTrack.EFFECT_LINE,
+        this.add(AudioTrack.SOUND_LINE,
                Game.SOUNDS_PATH + "/SoundLine.wav");
         
-        this.add(AudioTrack.EFFECT_BOMB,
+        this.add(AudioTrack.SOUND_BOMB,
                 Game.SOUNDS_PATH + "/SoundExplosion.wav");
         
-        this.add(AudioTrack.EFFECT_BLEEP,
+        this.add(AudioTrack.SOUND_BLEEP,
                 Game.SOUNDS_PATH + "/SoundBleep.wav");
         
-        this.add(AudioTrack.EFFECT_CLICK,
+        this.add(AudioTrack.SOUND_CLICK,
                 Game.SOUNDS_PATH + "/SoundClick.wav");
         
-        this.add(AudioTrack.EFFECT_LEVEL_UP,
+        this.add(AudioTrack.SOUND_LEVEL_UP,
                 Game.SOUNDS_PATH + "/SoundLevelUp.wav");
         
-        this.add(AudioTrack.EFFECT_STAR,
+        this.add(AudioTrack.SOUND_STAR,
                 Game.SOUNDS_PATH + "/SoundDing.wav");
         
-        this.add(AudioTrack.EFFECT_ROCKET,
+        this.add(AudioTrack.SOUND_ROCKET,
                 Game.SOUNDS_PATH + "/SoundRocket.wav");
              
         // Get the default volume.

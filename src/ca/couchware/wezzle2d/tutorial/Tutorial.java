@@ -6,7 +6,6 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.*;
-import java.util.ArrayList;
 
 /**
  *
@@ -19,13 +18,13 @@ public abstract class Tutorial
      * The list of rules that must be true in order for this tutorial to 
      * activated.
      */
-    protected Rule[] rules;
+    private Rule[] rules;
     
     /**
      * Is this tutorial activated?
      * Initially false.
      */
-    protected boolean activated = false;
+    private boolean activated = false;
     
     /**
      * Create a new tutorial that is activated when the associated rule is
@@ -67,20 +66,44 @@ public abstract class Tutorial
             if (evaluateRules(game) == false)
                 return;
             else
+            {                            
                 setActivated(true);
+                initializeTutorial(game);
+            }
         }
         
         // If we're activated, run the tutorial logic.
-        tutorialLogic(game);
+        if (updateTutorial(game) == false)
+        {
+            setActivated(false);
+            finishTutorial(game);
+        }
     }
+    
+    /**
+     * Deals with the initialization of the tutorial.  Typically includes
+     * logic that adjusts the managers to work with the tutorial.
+     * 
+     * @param game
+     */
+    protected abstract void initializeTutorial(Game game);    
     
     /**
      * The tutorial logic goes here.
      * 
      * @param game
+     * @return True if the tutorial is still running, false otherwise.
      */
-    protected abstract void tutorialLogic(Game game);
+    protected abstract boolean updateTutorial(Game game);
 
+    /**
+     * Is run when the tutorial is completed.  Typically deals with resetting 
+     * the managers to their previous states before the tutorial started.
+     * 
+     * @param game
+     */
+    protected abstract void finishTutorial(Game game);
+    
     public Rule[] getRules()
     {
         return rules;

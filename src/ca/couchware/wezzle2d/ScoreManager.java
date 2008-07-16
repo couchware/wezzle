@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.enums.ScoreType;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.*;
 import java.util.Iterator;
@@ -12,6 +11,16 @@ import java.util.Set;
  */
  public class ScoreManager
  {    
+     
+    /**
+     * The different types of scores.
+     * 
+     * @author cdmckay
+     */
+    public enum ScoreType
+    {
+        LINE, BOMB, STAR, ROCKET
+    }    
      
     /**
      * The amount of point per tile in a line.

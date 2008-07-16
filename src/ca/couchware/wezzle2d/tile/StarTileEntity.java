@@ -2,7 +2,7 @@ package ca.couchware.wezzle2d.tile;
 
 import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.enums.TileColor;
+import ca.couchware.wezzle2d.tile.TileColor;
 
 /**
  * A bomb tile.

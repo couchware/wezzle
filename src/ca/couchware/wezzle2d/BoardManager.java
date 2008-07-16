@@ -1,10 +1,8 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.enums.Direction;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
-import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.enums.TileColor;
+import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
 import java.lang.reflect.Constructor;
@@ -28,6 +26,16 @@ public class BoardManager
     //--------------------------------------------------------------------------
     // Static Members
     //--------------------------------------------------------------------------      
+    
+    /**
+     * An enumeration representing the four directions.
+     * 
+     * @author cdmckay
+     */
+    public static enum Direction 
+    {
+        UP, DOWN, LEFT, RIGHT
+    }
     
     /**
      * The path to the board background graphic.

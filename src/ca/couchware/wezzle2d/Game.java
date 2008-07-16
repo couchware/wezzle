@@ -5,14 +5,11 @@
 
 package ca.couchware.wezzle2d;
 
+import static ca.couchware.wezzle2d.BoardManager.Direction;
+import static ca.couchware.wezzle2d.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.audio.MusicManager;
-import ca.couchware.wezzle2d.piece.PieceDot;
-import ca.couchware.wezzle2d.audio.SoundManager;
-import ca.couchware.wezzle2d.enums.AudioTrack;
-import ca.couchware.wezzle2d.enums.Direction;
-import ca.couchware.wezzle2d.enums.ScoreType;
+import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
@@ -24,7 +21,6 @@ import java.awt.event.KeyEvent;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -649,49 +645,7 @@ public class Game extends Canvas implements GameWindowCallback
         worldMan = new WorldManager(propertyMan);
         
         // Generate the game board.
-        boardMan.generateBoard(worldMan.getItemList());
-        
-        //----------------------------------------------------------------------
-        // Tutorial-related
-        //----------------------------------------------------------------------
-        
-//        SpeechBubble sb = new SpeechBubble(272 + 16, 139 - 16 + boardMan.getHeight(), SpeechBubble.TYPE_NORMAL, "Click here");
-//        sb.setOpacity(85);
-//        sb.setAlignment(SpeechBubble.TOP | SpeechBubble.HCENTER);
-//        layerMan.add(sb, LAYER_UI);
-//        
-//        // Create bottom row.
-//        boardMan.createTile(0, boardMan.getRows() - 1, 
-//                TileEntity.class, TileEntity.COLOR_GREEN);
-//        
-//        boardMan.createTile(1, boardMan.getRows() - 1, 
-//                TileEntity.class, TileEntity.COLOR_BLUE);
-//        
-//        boardMan.createTile(2, boardMan.getRows() - 1, 
-//                TileEntity.class, TileEntity.COLOR_BLUE);
-//        
-//        boardMan.createTile(3, boardMan.getRows() - 1, 
-//                TileEntity.class, TileEntity.COLOR_YELLOW);
-//        
-//        // Create second-from-bottom row.
-//        boardMan.createTile(0, boardMan.getRows() - 2, 
-//                TileEntity.class, TileEntity.COLOR_BLUE);
-//        
-//        boardMan.createTile(1, boardMan.getRows() - 2, 
-//                TileEntity.class, TileEntity.COLOR_BLUE);
-//        
-//        boardMan.createTile(2, boardMan.getRows() - 2, 
-//                TileEntity.class, TileEntity.COLOR_PURPLE);
-//        
-//        boardMan.createTile(3, boardMan.getRows() - 2, 
-//                TileEntity.class, TileEntity.COLOR_YELLOW);
-//        
-//        // Change the piece to the dot.
-//        pieceMan.loadPiece(new PieceDot());
-        
-        //----------------------------------------------------------------------        
-        //----------------------------------------------------------------------
-        
+        boardMan.generateBoard(worldMan.getItemList());               
         boardMan.setVisible(false);
         startBoardShowAnimation();
         
@@ -1216,7 +1170,7 @@ public class Game extends Canvas implements GameWindowCallback
                             tileRemovalSet.add(new Integer(index));
                     }                                        
                     
-                    soundMan.play(AudioTrack.EFFECT_LEVEL_UP);
+                    soundMan.play(AudioTrack.SOUND_LEVEL_UP);
                     
                     int x = pieceMan.getPieceGrid().getX() 
                             + boardMan.getCellWidth() / 2;
@@ -1370,7 +1324,7 @@ public class Game extends Canvas implements GameWindowCallback
                 }
                 
                 // Play the sound.
-                soundMan.play(AudioTrack.EFFECT_LINE);
+                soundMan.play(AudioTrack.SOUND_LINE);
 
                 // Make sure bombs aren't removed (they get removed
                 // in a different step).  However, if the no-items
@@ -1488,7 +1442,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.play(AudioTrack.EFFECT_ROCKET);
+                soundMan.play(AudioTrack.SOUND_ROCKET);
                 
                 // Find all the new rockets.
                 Set<Integer> newRocketRemovalSet = new HashSet<Integer>();
@@ -1586,7 +1540,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.play(AudioTrack.EFFECT_STAR);
+                soundMan.play(AudioTrack.SOUND_STAR);
                 
                 // Start the line removal animations.
                 int i = 0;
@@ -1642,7 +1596,7 @@ public class Game extends Canvas implements GameWindowCallback
                 label = null;                
                                 
                 // Play the sound.
-                soundMan.play(AudioTrack.EFFECT_BOMB);
+                soundMan.play(AudioTrack.SOUND_BOMB);
 
                 // Find all the new bombs.
                 Set<Integer> newBombRemovalSet = new HashSet<Integer>();
