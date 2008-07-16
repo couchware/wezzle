@@ -9,6 +9,7 @@ import static ca.couchware.wezzle2d.BoardManager.Direction;
 import static ca.couchware.wezzle2d.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.ui.*;
@@ -1074,19 +1075,36 @@ public class Game extends Canvas implements GameWindowCallback
         {
             // Set animation visible depending on what animation
             // was just performed.
-            if (boardAnimation instanceof FadeInAnimation)   
+            if (boardAnimation instanceof FadeAnimation)   
             {
-                boardMan.setVisible(true);
-                pieceMan.getPieceGrid().setVisible(true);
-            }
-            else if (boardAnimation instanceof FadeOutAnimation)
-            {
-                boardMan.setVisible(false);
-                pieceMan.getPieceGrid().setVisible(false);
-            }
+                // Cast it to a fade animation.
+                FadeAnimation f = (FadeAnimation) boardAnimation;
+                
+                switch (f.getType())
+                {
+                    case IN:
+                        
+                        boardMan.setVisible(true);
+                        pieceMan.getPieceGrid().setVisible(true);
+                        break;
+                        
+                    case OUT:
+                        
+                        boardMan.setVisible(false);
+                        pieceMan.getPieceGrid().setVisible(false);
+                        break;
+                        
+                    default:
+                        
+                        throw new IllegalStateException(
+                                "Unrecogonized fade animation type.");
+                }                                               
+            }            
             else
+            {
                 throw new RuntimeException(
                         "Unrecognized board animation class.");
+            }
 
             // Clear the board animation.
             boardAnimation = null;

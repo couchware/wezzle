@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.tile.TileColor;
@@ -1104,7 +1105,7 @@ public class BoardManager
 			
 			if (t != null)		
 			{	
-                Animation a = new FadeInAnimation(t);
+                Animation a = new FadeAnimation(FadeType.IN, 700, t);
                 a.setDelay(delay);
                 t.setAnimation(a);
                 
@@ -1162,7 +1163,7 @@ public class BoardManager
 			
 			if (t != null)		
 			{	
-                Animation a = new FadeOutAnimation(t);
+                Animation a = new FadeAnimation(FadeType.OUT, 700, t);
                 a.setDelay(delay);
                 t.setAnimation(a);
                 

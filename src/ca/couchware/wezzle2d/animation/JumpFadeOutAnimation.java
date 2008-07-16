@@ -12,17 +12,7 @@ import ca.couchware.wezzle2d.util.XYPosition;
  * @author cdmckay
  */
 public class JumpFadeOutAnimation extends Animation
-{            
-    /**
-     * The period of each frame.
-     */
-    final private static int FRAME_PERIOD = 60;              
-    
-    /**
-     * The state where the text is still opaque.
-     */
-    final private static int STATE_OPAQUE = 0;
-       
+{                                    
     /**
      * Reference to the layer manager.
      */
@@ -76,7 +66,7 @@ public class JumpFadeOutAnimation extends Animation
             final Entity entity)
     {                
         // Invoke super constructor.
-        super(FRAME_PERIOD);    
+        super(0);    
         
         // Record the initial position.
         initialPosition = entity.getXYPosition();
