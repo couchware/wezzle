@@ -1214,8 +1214,8 @@ public class Game extends Canvas implements GameWindowCallback
                     label.setColor(Game.TEXT_COLOR);
                     label.setSize(26);
                     
-                    animationMan.add(new FloatFadeOutAnimation(                            
-                            1, 0, layerMan, label));      
+                    animationMan.add(new FloatFadeOutAnimation(1, 0,
+                            layerMan, label));      
                     
                     label = null;
                 }
@@ -1340,8 +1340,8 @@ public class Game extends Canvas implements GameWindowCallback
                     label.setColor(SCORE_LINE_COLOR);
                     label.setSize(scoreMan.determineFontSize(deltaScore));
 
-                    animationMan.add(new FloatFadeOutAnimation(                                             
-                            0, -1, layerMan, label));
+                    animationMan.add(new FloatFadeOutAnimation(0, -1,
+                            layerMan, label));
 
                     // Release references.
                     p = null;
@@ -1464,9 +1464,9 @@ public class Game extends Canvas implements GameWindowCallback
                 label.setColor(SCORE_BOMB_COLOR);
                 label.setSize(scoreMan.determineFontSize(deltaScore));
                 
-                animationMan.add(new FloatFadeOutAnimation(                         
-                        0, -1, layerMan, label));
-                
+                animationMan.add(new FloatFadeOutAnimation(0, -1,
+                            layerMan, label));
+                                        
                 // Release references.
                 p = null;
                 label = null;                
@@ -1562,8 +1562,8 @@ public class Game extends Canvas implements GameWindowCallback
                 label.setColor(SCORE_BOMB_COLOR);
                 label.setSize(scoreMan.determineFontSize(deltaScore));
                 
-                animationMan.add(new FloatFadeOutAnimation(                         
-                        0, -1, layerMan, label));
+                animationMan.add(new FloatFadeOutAnimation(0, -1,
+                            layerMan, label));
                 
                 // Release references.
                 p = null;
@@ -1618,8 +1618,8 @@ public class Game extends Canvas implements GameWindowCallback
                 label.setColor(SCORE_BOMB_COLOR);
                 label.setSize(scoreMan.determineFontSize(deltaScore));
                 
-                animationMan.add(new FloatFadeOutAnimation(                         
-                        0, -1, layerMan, label));
+                animationMan.add(new FloatFadeOutAnimation(0, -1,
+                            layerMan, label));
                 
                 // Release references.
                 p = null;

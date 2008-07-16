@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.XYPosition;
 
 /**
  * An animation that starts an explosion in the middle of the entity.
@@ -11,66 +12,56 @@ import ca.couchware.wezzle2d.util.Util;
  * @author cdmckay
  */
 public class FloatFadeOutAnimation extends Animation
-{            
+{  
     /**
-     * The period of each frame.
+     * The speed of the float.
      */
-    final private static int FRAME_PERIOD = 60;      
+    final static protected double SPEED = 0.03;
     
     /**
-     * The number of frames to stay opaque.
+     * The default wait.
      */
-    final private static int OPAQUE_FRAME_MAX = 8;
+    final static protected int DEFAULT_WAIT = 400;
     
     /**
-     * The amount of opacity to reduce each step.
+     * The default duration.
      */
-    final private static int OPACITY_STEP = 8;
+    final static protected int DEFAULT_DURATION = 750;
     
-    /**
-     * The minimum opacity before the animation ends.
-     */
-    final private static int OPACITY_MIN = 0;
-    
-    /**
-     * The state where the text is still opaque.
-     */
-    final private static int STATE_OPAQUE = 0;
-    
-    /**
-     * The state where the text fades out.
-     */
-    final private static int STATE_FADE = 1;
-       
     /**
      * Reference to the layer manager.
      */
-    final private LayerManager layerMan;
-    
-    /**
-     * The current pulse state.
-     */
-    private int state;
+    final protected LayerManager layerMan;
     
     /**
      * The entity being float faded.
      */
-    final Entity entity;
+    final protected Entity entity;       
+    
+     /**
+     * The initial position.
+     */
+    private XYPosition initialPosition;
     
     /**
-     * The number of opaque frames that have passed.
+     * The speed of the float in the x direction.
      */
-    private int opaqueFrameCount;
+    final protected double vX;
     
     /**
-     * The x step.
+     * The speed of the float in the y direction.
      */
-    final int stepX;
+    final protected double vY;
     
     /**
-     * The y step.
+     * The amount of time, in ms, to wait before fading out.
      */
-    final int stepY;
+    protected int wait;
+    
+    /**
+     * The amount of time the entity should spend fading out.
+     */
+    protected int duration;
 
     /**
      * Creates a floating text animation centered at (x,y) with the specified
@@ -83,43 +74,43 @@ public class FloatFadeOutAnimation extends Animation
      * @param size
      */
     public FloatFadeOutAnimation(
-            final int stepX, final int stepY,            
+            final int wait,
+            final int duration,
+            final double dirX, final double dirY,                    
             final LayerManager layerMan,
             final Entity entity)
     {                
         // Invoke super constructor.
-        super(FRAME_PERIOD);    
+        super(0);    
         
-        // Set the steps.
-        this.stepX = stepX;
-        this.stepY = stepY;
+        // Set the wait and duration.
+        this.wait = wait;
+        this.duration = duration;
+        
+        // Set the speed.
+        this.vX = SPEED * dirX;
+        this.vY = SPEED * dirY;               
         
         // Set reference to layer manager.
         this.layerMan = layerMan;
         
         // Set a reference to the entity.
-        this.entity = entity;
-              
-        // Load the explosion and centre it over the entity.
-//        floatLabel = ResourceFactory.get().getText();
-//        floatLabel.setXYPosition(x, y);
-//        floatLabel.setAlignment(alignment);
-//        floatLabel.setColor(color);
-//        floatLabel.setSize(size);
-//        floatLabel.setText(text);   
+        this.entity = entity;                                                     
         
-        // Reset the draw rectangle.
-//        floatLabel.resetDrawRect();               
-                        
-        // Set the initial pulse state.
-        state = STATE_OPAQUE;
-        
-        // Initialize opaque frame count.
-        opaqueFrameCount = 0;
+        // Record the initial position.
+        initialPosition = entity.getXYPosition();
         
         // Add the floating text to the layer manager.
         layerMan.add(entity, Game.LAYER_EFFECT);
-    }       
+    }   
+    
+    public FloatFadeOutAnimation(
+            final double dirX, final double dirY,                    
+            final LayerManager layerMan,
+            final Entity entity)            
+    {
+        this(DEFAULT_WAIT, DEFAULT_DURATION, dirX, dirY, layerMan, entity);
+    }
 
     public void nextFrame(long delta)
     {
@@ -129,59 +120,28 @@ public class FloatFadeOutAnimation extends Animation
         
         // Add to counter.
         counter += delta;
+                                                  
+        // Move text.
+        double t = (double) counter;
+        double dX = vX * t;
+        double dY = vY * t;
         
-        // See how many frames have passed.
-        frames = (int) counter / period;
-        counter = counter % period;
+        entity.setX(initialPosition.x + (int) dX);
+        entity.setY(initialPosition.y + (int) dY);
         
-        // See if enough time has elapsed to advance the frame.
-        animation:
-        for (int i = 0; i < frames; i++)
-        {                                   
-            // Move text.
-            entity.setX(entity.getX() + stepX);
-            entity.setY(entity.getY() + stepY);
-            
-            // If we're pulsing down, reducing the size and translate slightly.
-            switch (state)
-            {
-                case STATE_OPAQUE:
-                    
-                    // Since we're staying opaque, do nothing to the text.
-                    opaqueFrameCount++;
-                    
-                    // See if we're reached the max number of frames.
-                    if (opaqueFrameCount == OPAQUE_FRAME_MAX)
-                        state = STATE_FADE;
-                    
-                    break;
-                
-                case STATE_FADE:
-                                                    
-                    // Reduce the opacity.
-                    entity.setOpacity(entity.getOpacity() - OPACITY_STEP);
-                    
-                    // If the opacity reaches the minimum, stop the animation.
-                    if (entity.getOpacity() == OPACITY_MIN)
-                    {
-                        // Remove explosion from layer manager.
-                        if (layerMan.remove(entity, Game.LAYER_EFFECT) 
-                                == false)
-                            throw new IllegalStateException(
-                                    "Could not remove entity from layer.");
-                        
-                        // Set done flag.
-                        done = true;
-                        break animation;                       
-                    }
-                    
-                    break;
-                    
-                default:
-                    Util.handleMessage("Unrecognized state.", 
-                            Thread.currentThread());
-            }
-        } // end if          
+        // Adjust opacity.
+        if (counter > wait)
+        {
+            entity.setOpacity(
+                    100 - Util.scaleInt(0, duration, 0, 100, (int) counter - wait));
+        }    
+        
+        // See if we're done.
+        if (counter > wait + duration)   
+        {
+            done = true;   
+            layerMan.remove(entity, Game.LAYER_EFFECT);
+        }
     }
     
     @Override

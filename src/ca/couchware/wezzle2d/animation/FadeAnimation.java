@@ -29,10 +29,10 @@ public class FadeAnimation extends Animation
      */
     protected FadeType type;
     
-     /**
+    /**
      * The max time for the animation to run for, in ms.
      */
-    private int duration;
+    protected int duration;
     
     /**
      * The constructor.
