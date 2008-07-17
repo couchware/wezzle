@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.ui.group.Group;
 import ca.couchware.wezzle2d.util.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -56,6 +57,13 @@ public class GroupManager
     final public static int LAYER_TOP = 3;
     
     /**
+     * This  linked list holds all groups that have called the register()
+     * method.  This list is useful for performing commands on all the groups,
+     * such as running updateLogic().
+     */
+    protected ArrayList<Group> groupList;       
+    
+    /*
      * The list of groups currently being shown.
      */
     protected LinkedList<Entry> entryList;
@@ -75,10 +83,12 @@ public class GroupManager
      */
     public GroupManager(LayerManager layerMan, PieceManager pieceMan)
     {
+        groupList = new ArrayList<Group>();
         entryList = new LinkedList<Entry>();        
         
         this.layerMan = layerMan;
         this.pieceMan = pieceMan;
+                
     }     
     
     public void showGroup(BooleanButton button, Group showGroup, 
@@ -104,8 +114,7 @@ public class GroupManager
             else
             {
                 e.getGroup().setVisible(false);
-            }
-                
+            }                
         }
        
         // Add the group on top.
@@ -203,6 +212,35 @@ public class GroupManager
         
         Util.handleMessage("Groups open: " + entryList.size(), 
                 Thread.currentThread());
+    }
+    
+    /**
+     * Registers this group with the Group linked list.
+     * 
+     * @param group The group to register.
+     */
+    public void register(Group group)
+    {
+        // Add the group to the static linked list.
+        groupList.add(group);
+    }
+    
+    /**
+     * Update the logic of all groups if they have detected clicks.
+     * 
+     * @param game The game state.
+     */
+    public void updateLogic(Game game)
+    {
+        for (Group group : groupList)
+        {
+            if (group.isActivated() == true
+                    && group.controlChanged() == true)
+            {
+                group.updateLogic(game);
+                group.clearChanged();
+            }
+        } // end for
     }
     
     public boolean isActivated()

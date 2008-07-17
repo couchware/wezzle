@@ -19,31 +19,7 @@ import java.util.LinkedList;
  * @author cdmckay
  */
 public class Group extends Entity
-{
-    //--------------------------------------------------------------------------
-    // Static Members
-    //--------------------------------------------------------------------------
-    
-    /**
-     * This static linked list holds all groups that have called the register()
-     * method.  This list is useful for performing commands on all the groups,
-     * such as running updateLogic().
-     */
-    protected static LinkedList<Group> groupList;
-    
-    //--------------------------------------------------------------------------
-    // Static Constructor
-    //--------------------------------------------------------------------------
-    
-    /**
-     * The static constructor.
-     */    
-    static
-    {
-        // Instantiate the group list.
-        groupList = new LinkedList<Group>();
-    }
-    
+{        
     //--------------------------------------------------------------------------
     // Protected Members
     //--------------------------------------------------------------------------
@@ -203,39 +179,6 @@ public class Group extends Entity
     public void setActivated(boolean activated)
     {
         this.activated = activated;
-    }
-            
-    //--------------------------------------------------------------------------
-    // Static Methods
-    //--------------------------------------------------------------------------
-    
-    /**
-     * Registers this group with the Group static linked list.
-     * 
-     * @param group The group to register.
-     */
-    public static void register(Group group)
-    {
-        // Add the group to the static linked list.
-        groupList.add(group);
-    }
-    
-    /**
-     * Update the logic of all groups if they have detected clicks.
-     * 
-     * @param game The game state.
-     */
-    public static void updateLogicAll(Game game)
-    {
-        for (Group group : groupList)
-        {
-            if (group.isActivated() == true
-                    && group.controlChanged() == true)
-            {
-                group.updateLogic(game);
-                group.clearChanged();
-            }
-        }
-    }
+    }               
 
 }

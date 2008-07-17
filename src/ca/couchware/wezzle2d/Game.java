@@ -839,7 +839,7 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------
         
         pauseGroup = new PauseGroup(window, layerMan, groupMan);
-        Group.register(pauseGroup);
+        groupMan.register(pauseGroup);
         
         //----------------------------------------------------------------------
         // Initialize game over group.
@@ -847,7 +847,7 @@ public class Game extends Canvas implements GameWindowCallback
                         
         // Create the game over screen.
         gameOverGroup = new GameOverGroup(window, layerMan, groupMan);    
-        Group.register(gameOverGroup);
+        groupMan.register(gameOverGroup);
         
         //----------------------------------------------------------------------
         // Initialize options group.
@@ -856,7 +856,7 @@ public class Game extends Canvas implements GameWindowCallback
         // Create the options group.
         optionsGroup = new OptionsGroup(window, layerMan, groupMan, 
                 propertyMan);
-        Group.register(optionsGroup);
+        groupMan.register(optionsGroup);
         
         //----------------------------------------------------------------------
         // Initialize hgih score group.
@@ -865,7 +865,7 @@ public class Game extends Canvas implements GameWindowCallback
         // Create the game over screen.
         highScoreGroup = new HighScoreGroup(window, layerMan, groupMan,
                 highScoreMan); 
-        Group.register(highScoreGroup);
+        groupMan.register(highScoreGroup);
         
         //----------------------------------------------------------------------
         // Start        
@@ -1130,7 +1130,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
         
         // Update all the group logic.
-        Group.updateLogicAll(this);
+        groupMan.updateLogic(this);
         
         // Update the music manager logic.
         musicMan.updateLogic(this);

@@ -95,7 +95,7 @@ public class OptionsGroup extends Group
         // Create the audio group.
         audioGroup = new SoundMusicGroup(window, layerMan, groupMan, 
                 propertyMan);        
-        Group.register(audioGroup);
+        groupMan.register(audioGroup);
         
         // Create main menu button.
         mainMenuButton = new RectangularBooleanButton(window, 400, 354);        
