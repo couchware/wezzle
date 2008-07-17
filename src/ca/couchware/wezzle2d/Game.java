@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.tile.*;
+import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.ui.group.*;
@@ -872,6 +873,9 @@ public class Game extends Canvas implements GameWindowCallback
         // Start        
         //----------------------------------------------------------------------                      
         
+        Tutorial t = new BasicTutorial(); 
+        t.updateLogic(this);
+                
         // Start the game.
 		startGame();
 	}

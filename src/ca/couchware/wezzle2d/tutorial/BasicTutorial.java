@@ -5,12 +5,15 @@
 
 package ca.couchware.wezzle2d.tutorial;
 
+import static ca.couchware.wezzle2d.graphics.Positionable.Alignment;
+import static ca.couchware.wezzle2d.ui.SpeechBubble.BubbleType;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.piece.PieceDot;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
+import java.util.EnumSet;
 
 /**
  * This is the basic tutorial.  It teaches the elementary rules of Wezzle.
@@ -46,14 +49,24 @@ public class BasicTutorial extends Tutorial
         // The speech bubble will be positioned over the button right
         // corner of the board.
         bubble = new SpeechBubble(
-                    game.boardMan.getX() + game.boardMan.getCellWidth() / 2,
-                    game.boardMan.getY() + game.boardMan.getHeight(),
-                    SpeechBubble.TYPE_NORMAL,
+                    game.boardMan.getX(),
+                    game.boardMan.getY() + game.boardMan.getHeight()
+                    - game.boardMan.getCellHeight() / 2,
+                    BubbleType.HORIZONTAL,
                     "Click here"                    
-                );
+                );        
         game.layerMan.add(bubble, Game.LAYER_UI);
         
+        // Stop the piece manager from dropping.
+        game.pieceMan.setTileDropOnCommit(false);
+        
+        // Pause the timer.
+        game.timerMan.setPaused(true);        
+        
         // Now draw the fake board.
+        // Clear it first.
+        game.boardMan.clearBoard();
+        
         // Create bottom row.
         game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
                 TileEntity.class, TileColor.GREEN);

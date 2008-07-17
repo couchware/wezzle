@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.util.Util;
 import java.util.Arrays;
 
 /**
@@ -73,7 +74,9 @@ public abstract class Tutorial
             if (evaluateRules(game) == false)
                 return;
             else
-            {                            
+            {      
+                Util.handleMessage("Activating tutorial.", 
+                        Thread.currentThread());
                 setActivated(true);
                 initializeTutorial(game);
             }

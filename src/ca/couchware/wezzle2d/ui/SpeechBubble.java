@@ -9,6 +9,8 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
 
 /**
@@ -21,35 +23,44 @@ public class SpeechBubble extends GraphicEntity
 {
     
     /**
-     * The normal speech bubble.
+     * The two speech bubble types, vertical or horizontal.
      */
-    final public static int TYPE_NORMAL = 0;
+    public static enum BubbleType
+    {
+        VERTICAL, HORIZONTAL;
+        
+        @Override
+        public String toString()
+        {
+            String s = super.toString();
+            return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+        } 
+    }
     
     /**
-     * The speech bubble dimensions.
+     * The offset array.
      */
-    final protected static Dimension[] DIMENSIONS = new Dimension[]
-    {
-        new Dimension(147, 61) // TYPE_NORMAL        
-    };
-    
-    /**
-     * The center of the bubble part of the speech bubble.
-     */
-    final protected static XYPosition[] CENTER = new XYPosition[]
-    {
-        new XYPosition(74, 40) // TYPE_NORMAL
-    };
+    protected static EnumMap<BubbleType, Integer> offsetList;        
     
     /**
      * The label type.
      */
-    protected int type;
+    protected BubbleType type;
     
     /**
      * The label representing the text in the speech bubble.
      */
     protected Label label;
+    
+    /**
+     * Static constructor.
+     */
+    static
+    {
+        offsetList = new EnumMap<BubbleType, Integer>(BubbleType.class);    
+        offsetList.put(BubbleType.VERTICAL, 40);
+        offsetList.put(BubbleType.HORIZONTAL, 88);
+    }
     
     /**
      * Creates a new speech bubble of the given type with the given text
@@ -60,25 +71,44 @@ public class SpeechBubble extends GraphicEntity
      * @param type
      * @param text
      */    
-    public SpeechBubble(int x, int y, int type, String text)
+    public SpeechBubble(int x, int y, BubbleType type, String text)
     { 
         // Invoke super.
         super(x, y,
                 Game.SPRITES_PATH + "/"
-                + "SpeechBubble_" + DIMENSIONS[type].width
-                + "x" + DIMENSIONS[type].height + ".png");
+                + "SpeechBubble" + type + ".png");
         
         // Set the type.
         this.type = type;
         
         // Set alignment.
-        super.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER));
-        
-        // Create the speech label.
-        label = ResourceFactory.get().getLabel(                
-                x, y - CENTER[type].y);
-        label.setSize(16);
-        label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+        switch (type)
+        {
+            case VERTICAL:
+                
+                super.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER));
+                
+                label = ResourceFactory.get()
+                        .getLabel(x, y - offsetList.get(type));
+                label.setAlignment(
+                        EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+                
+                break;
+                
+            case HORIZONTAL:
+                
+                super.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT));
+                
+                label = ResourceFactory.get()
+                        .getLabel(x - offsetList.get(type), y);
+                label.setAlignment(
+                        EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+                
+                break;
+        }
+      
+        // Create the speech label.        
+        label.setSize(16);        
         label.setColor(Game.TEXT_COLOR);
         label.setText(text);
         
@@ -93,20 +123,20 @@ public class SpeechBubble extends GraphicEntity
         
         if (alignment.containsAll(EnumSet.of(Alignment.TOP, Alignment.CENTER)))
         {
-            label.translate(0, +CENTER[type].y * 2 - 2);
-            setRotation(Math.toRadians(180));
-            super.setAlignment(alignment);
+            // Do nothing.
         }
-        else if (alignment.containsAll(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER)))
+        else if (alignment.containsAll(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT)))
         {
-            label.translate(0, -CENTER[type].y * 2 + 2);
-            setRotation(Math.toRadians(-180));
-            super.setAlignment(alignment);
+            
+        }
+        else if (alignment.containsAll(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT)))
+        {
+            
         }
         else
         {
             throw new UnsupportedOperationException(
-                "Only TOP | CENTER and BOTTOM | CENTER are supported.");
+                "That alignment is not supported.");
         }        
     }        
     
@@ -115,5 +145,5 @@ public class SpeechBubble extends GraphicEntity
     {
         super.draw();
         label.draw();
-    }          
+    }              
 }
