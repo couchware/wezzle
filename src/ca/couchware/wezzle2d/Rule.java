@@ -78,28 +78,28 @@ public class Rule
      * @param val The value of the field.
      * @param rule The achievement rule.
      */
-    public static boolean evaluate(Rule rule, Game game)
+    public boolean evaluate(Game game)
     {        
         // Find the appropriate field value from the type.
-        int value = -1;          
+        int x = -1;          
         
         // Check the type.
-        switch (rule.getType())
+        switch (getType())
         {
             case SCORE:
-                value = game.scoreMan.getTotalScore();
+                x = game.scoreMan.getTotalScore();
                 break;
                 
             case LEVEL:
-                value = game.worldMan.getLevel();
+                x = game.worldMan.getLevel();
                 break;
                 
             case MOVES:
-                value = game.moveMan.getMoveCount();
+                x = game.moveMan.getMoveCount();
                 break;
                 
             case LINES:
-                value = game.getTotalLineCount();
+                x = game.getTotalLineCount();
                 break;
                 
             default:
@@ -107,35 +107,35 @@ public class Rule
         }
                                   
         // If the test is successful, return true, otherwise, return false         
-        switch (rule.getOperation())
+        switch (getOperation())
         {
             case GT:
-                if (value > rule.getValue())
+                if (x > getValue())
                     return true;
                 break;
                 
             case LT:
-                 if (value < rule.getValue())
+                 if (x < getValue())
                     return true;
                 break;
                 
             case EQ:
-                 if (value == rule.getValue())
+                 if (x == getValue())
                     return true;
                 break;
                 
             case GTEQ:
-                if (value >= rule.getValue())
+                if (x >= getValue())
                     return true;
                 break;
                 
             case LTEQ:
-                 if (value <= rule.getValue())
+                 if (x <= getValue())
                     return true;
                 break;
                 
             default:
-                throw new IllegalArgumentException("Unknown test.");
+                throw new IllegalArgumentException("Unknown operation.");
         }
         
         return false;

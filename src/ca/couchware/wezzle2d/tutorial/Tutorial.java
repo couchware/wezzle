@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.*;
+import java.util.Arrays;
 
 /**
  *
@@ -27,6 +28,12 @@ public abstract class Tutorial
     private boolean activated = false;
     
     /**
+     * Has the tutorial been completed?
+     * Initially false.
+     */
+    private boolean completed = false;
+    
+    /**
      * Create a new tutorial that is activated when the associated rule is
      * true.
      * 
@@ -44,10 +51,10 @@ public abstract class Tutorial
     {
         // Check all the rules.  If any of them are false, return false.
         for (Rule rule : rules)
-            if (Rule.evaluate(rule, game) == false)
+            if (rule.evaluate(game) == false)
                 return false;
         
-        // If all the rules are true, then return true.
+        // If all the rules are true, then return true.        
         return true;
     }
     
@@ -122,6 +129,11 @@ public abstract class Tutorial
     public void setActivated(boolean activated)
     {
         this.activated = activated;
+    }
+
+    public boolean isCompleted()
+    {
+        return completed;
     }        
     
 }

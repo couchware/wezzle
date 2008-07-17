@@ -47,8 +47,7 @@ public class BasicTutorial extends Tutorial
         // corner of the board.
         bubble = new SpeechBubble(
                     game.boardMan.getX() + game.boardMan.getCellWidth() / 2,
-                    game.boardMan.getY() + game.boardMan.getHeight()
-                        - game.boardMan.getCellHeight() / 2,
+                    game.boardMan.getY() + game.boardMan.getHeight(),
                     SpeechBubble.TYPE_NORMAL,
                     "Click here"                    
                 );
@@ -88,7 +87,7 @@ public class BasicTutorial extends Tutorial
     @Override
     protected boolean updateTutorial(Game game)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return true;
     }
 
     @Override

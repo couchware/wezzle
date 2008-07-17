@@ -264,7 +264,7 @@ public class WorldManager
         {
             Rule rule = it.next();
             
-            if (Rule.evaluate(rule, game) == true)
+            if (rule.evaluate(game) == true)
             {
                 rule.performAction(game);
                 it.remove();

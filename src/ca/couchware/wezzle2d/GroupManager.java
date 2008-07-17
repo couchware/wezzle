@@ -23,12 +23,7 @@ public class GroupManager
     /**
      * The game over class.
      */
-    final public static int CLASS_GAME_OVER = 1;   
-    
-    /**
-     * The high score class.
-     */
-    final public static int CLASS_HIGH_SCORE = 4;
+    final public static int CLASS_GAME_OVER = 1;          
         
     /**
      * The pause class.
@@ -40,6 +35,11 @@ public class GroupManager
      */
     final public static int CLASS_OPTIONS = 3;        
         
+    /**
+     * The high score class.
+     */
+    final public static int CLASS_HIGH_SCORE = 4;
+    
     /**
      * The bottom layer.
      */

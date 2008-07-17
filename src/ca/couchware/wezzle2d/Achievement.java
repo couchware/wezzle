@@ -76,7 +76,7 @@ public class Achievement
         
         for (Rule rule : ruleList)
         {
-           if (Rule.evaluate(rule, game) == false)
+           if (rule.evaluate(game) == false)
                return false;
         }
        
