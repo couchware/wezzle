@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d;
 
 import static ca.couchware.wezzle2d.BoardManager.Direction;
 import static ca.couchware.wezzle2d.ScoreManager.ScoreType;
+import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import static ca.couchware.wezzle2d.graphics.Positionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
@@ -1215,8 +1216,14 @@ public class Game extends Canvas implements GameWindowCallback
                     label.setColor(Game.TEXT_COLOR);
                     label.setSize(26);
                     
-                    animationMan.add(new FloatFadeOutAnimation(1, 0,
-                            layerMan, label));      
+                    XAnimation a = new XAnimation(2);
+                    a.set(0, new FadeAnimation(FadeType.OUT, label));
+                    a.set(1, new FloatAnimation(1, 0, layerMan, label));
+                    
+                    animationMan.add(a);
+                    
+//                    animationMan.add(new FloatFadeOutAnimation(1, 0,
+//                            layerMan, label));      
                     
                     label = null;
                 }
@@ -1341,8 +1348,10 @@ public class Game extends Canvas implements GameWindowCallback
                     label.setColor(SCORE_LINE_COLOR);
                     label.setSize(scoreMan.determineFontSize(deltaScore));
 
-                    animationMan.add(new FloatFadeOutAnimation(0, -1,
-                            layerMan, label));
+                    XAnimation a = new XAnimation(2);
+                    a.set(0, new FadeAnimation(FadeType.OUT, label));
+                    a.set(1, new FloatAnimation(0, -1, layerMan, label));                    
+                    animationMan.add(a);
 
                     // Release references.
                     p = null;
@@ -1362,7 +1371,7 @@ public class Game extends Canvas implements GameWindowCallback
                 // flag is set, then ignore bombs.
                 if (tileRemovalNoItems == false)
                 {
-                    Set<Integer> allSet = new HashSet<Integer>();
+                    //Set<Integer> allSet = new HashSet<Integer>();
                     
                     bombRemovalSet.clear();
                     boardMan.scanFor(BombTileEntity.class, tileRemovalSet, 
@@ -1376,14 +1385,18 @@ public class Game extends Canvas implements GameWindowCallback
                     boardMan.scanFor(RocketTileEntity.class, tileRemovalSet, 
                             rocketRemovalSet);
                     
-                    allSet.addAll(bombRemovalSet);
-                    allSet.addAll(starRemovalSet);
-                    allSet.addAll(rocketRemovalSet);                    
+//                    allSet.addAll(bombRemovalSet);
+//                    allSet.addAll(starRemovalSet);
+//                    allSet.addAll(rocketRemovalSet);                    
                     
-                    tileRemovalSet.removeAll(allSet);                      
+                    tileRemovalSet.removeAll(bombRemovalSet);
+                    tileRemovalSet.removeAll(starRemovalSet);
+                    tileRemovalSet.removeAll(rocketRemovalSet);      
+                    
+//                    tileRemovalSet.removeAll(allSet);                      
                     
                     // De-reference.
-                    allSet = null;
+                    //allSet = null;
                 }
                 else
                 {
@@ -1403,9 +1416,13 @@ public class Game extends Canvas implements GameWindowCallback
                         if (tileRemovalUseJumpAnimation == true)
                         {
                             i++;
-                            int angle = i % 2 == 0 ? 70 : 180 - 70;                        
-                            t.setAnimation(new JumpFadeOutAnimation(
-                                0.3, angle, 0.001, 800, layerMan, t));
+                            int angle = i % 2 == 0 ? 70 : 180 - 70; 
+                            
+                            XAnimation xa = new XAnimation(2);
+                            xa.set(0, new FadeAnimation(FadeType.OUT, 0, 750, t));
+                            xa.set(1, new JumpAnimation(
+                                    0.3, angle, 0.001, 750, layerMan, t));                            
+                            t.setAnimation(xa);
                         }
                         else                        
                             t.setAnimation(new ZoomOutAnimation(t));                        
@@ -1465,8 +1482,10 @@ public class Game extends Canvas implements GameWindowCallback
                 label.setColor(SCORE_BOMB_COLOR);
                 label.setSize(scoreMan.determineFontSize(deltaScore));
                 
-                animationMan.add(new FloatFadeOutAnimation(0, -1,
-                            layerMan, label));
+                XAnimation a = new XAnimation(2);
+                a.set(0, new FadeAnimation(FadeType.OUT, label));
+                a.set(1, new FloatAnimation(0, -1, layerMan, label));                    
+                animationMan.add(a);               
                                         
                 // Release references.
                 p = null;
@@ -1503,15 +1522,22 @@ public class Game extends Canvas implements GameWindowCallback
                     {
                         // Cast it.
                         RocketTileEntity r = (RocketTileEntity) t;
-                        t.setAnimation(new JumpFadeOutAnimation(
-                                0.3, r.getDirection() + 90, 0, 800, layerMan, r));
+                        
+                        XAnimation xa = new XAnimation(2);
+                        xa.set(0, new FadeAnimation(FadeType.OUT, 0, 750, t));
+                        xa.set(1, new JumpAnimation(0.3, r.getDirection() + 90, 
+                                0, 750, layerMan, r));                            
+                        t.setAnimation(xa);                                                
                     }
                     else
                     {
                         i++;
                         int angle = i % 2 == 0 ? 70 : 180 - 70;                        
-                        t.setAnimation(new JumpFadeOutAnimation(
-                            0.3, angle, 0.001, 800, layerMan, t));
+                        XAnimation xa = new XAnimation(2);
+                        xa.set(0, new FadeAnimation(FadeType.OUT, 0, 750, t));
+                        xa.set(1, new JumpAnimation(
+                                0.3, angle, 0.001, 750, layerMan, t));                            
+                        t.setAnimation(xa);
                     }                    
                 }
                                                 
@@ -1563,8 +1589,10 @@ public class Game extends Canvas implements GameWindowCallback
                 label.setColor(SCORE_BOMB_COLOR);
                 label.setSize(scoreMan.determineFontSize(deltaScore));
                 
-                animationMan.add(new FloatFadeOutAnimation(0, -1,
-                            layerMan, label));
+                XAnimation a = new XAnimation(2);
+                a.set(0, new FadeAnimation(FadeType.OUT, 0, 750, label));
+                a.set(1, new FloatAnimation(0, -1, layerMan, label));                    
+                animationMan.add(a);
                 
                 // Release references.
                 p = null;
@@ -1581,8 +1609,11 @@ public class Game extends Canvas implements GameWindowCallback
 
                     i++;
                     int angle = i % 2 == 0 ? 70 : 180 - 70;                        
-                    t.setAnimation(new JumpFadeOutAnimation(
-                        0.3, angle, 0.001, 800, layerMan, t));
+                    XAnimation xa = new XAnimation(2);
+                    xa.set(0, new FadeAnimation(FadeType.OUT, 0, 750, t));
+                    xa.set(1, new JumpAnimation(
+                        0.3, angle, 0.001, 750, layerMan, t));                            
+                    t.setAnimation(xa);
                 }
                 
                 // Clear the star removal set.
@@ -1619,8 +1650,10 @@ public class Game extends Canvas implements GameWindowCallback
                 label.setColor(SCORE_BOMB_COLOR);
                 label.setSize(scoreMan.determineFontSize(deltaScore));
                 
-                animationMan.add(new FloatFadeOutAnimation(0, -1,
-                            layerMan, label));
+                XAnimation a = new XAnimation(2);
+                a.set(0, new FadeAnimation(FadeType.OUT, label));
+                a.set(1, new FloatAnimation(0, -1, layerMan, label));                    
+                animationMan.add(a);
                 
                 // Release references.
                 p = null;

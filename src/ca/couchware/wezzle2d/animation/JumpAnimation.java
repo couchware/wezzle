@@ -11,7 +11,7 @@ import ca.couchware.wezzle2d.util.XYPosition;
  * 
  * @author cdmckay
  */
-public class JumpFadeOutAnimation extends Animation
+public class JumpAnimation extends Animation
 {                                    
     /**
      * Reference to the layer manager.
@@ -57,7 +57,7 @@ public class JumpFadeOutAnimation extends Animation
     * Fire an entity with the given launch speed, angle and gravity and 
     * rotation speed.        
     */
-    public JumpFadeOutAnimation(
+    public JumpAnimation(
             final double v,
             final int theta,
             final double g,     
@@ -66,7 +66,7 @@ public class JumpFadeOutAnimation extends Animation
             final Entity entity)
     {                
         // Invoke super constructor.
-        super(0);    
+        super();    
         
         // Record the initial position.
         initialPosition = entity.getXYPosition();
@@ -106,9 +106,7 @@ public class JumpFadeOutAnimation extends Animation
         
         // Move the entity.
         entity.setX(initialPosition.x + (int) x);
-        entity.setY(initialPosition.y - (int) y);
-        entity.setOpacity(
-                100 - Util.scaleInt(0, duration, 0, 100, (int) counter));
+        entity.setY(initialPosition.y - (int) y);        
         
         if (counter > duration)   
         {

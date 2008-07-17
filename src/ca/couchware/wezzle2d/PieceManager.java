@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d;
 
 import static ca.couchware.wezzle2d.BoardManager.Direction;
+import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import static ca.couchware.wezzle2d.graphics.Positionable.Alignment;
 import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.ui.Label;
@@ -688,8 +689,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
         label.setColor(Game.SCORE_PIECE_COLOR);
         label.setSize(game.scoreMan.determineFontSize(deltaScore));
         
-        game.animationMan.add(new FloatFadeOutAnimation(0, -1, 
-                game.layerMan, label));
+        XAnimation a = new XAnimation(2);
+        a.set(0, new FadeAnimation(FadeType.OUT, label));
+        a.set(1, new FloatAnimation(0, -1, game.layerMan, label));                    
+        game.animationMan.add(a);
         
         // Release references.
         p = null;

@@ -12,7 +12,8 @@ import java.awt.Dimension;
  * @author cdmckay
  */
 public class PulseAnimation extends Animation
-{    
+{  
+    
     /**
      * The pulse down state.
      */
@@ -22,6 +23,16 @@ public class PulseAnimation extends Animation
      * The pulse up state.
      */
     final private static int PULSE_UP = 1;
+    
+    /**
+     * The amount of time per frame.
+     */
+    protected int period;
+    
+    /**
+     * The current frame.
+     */
+    protected int frames;
     
     /**
      * The entity being animated.
@@ -55,7 +66,7 @@ public class PulseAnimation extends Animation
     public PulseAnimation(final Entity entity, final int period)
     {                
         // Invoke super constructor.
-        super(period);       
+        this.period = period;       
         
         // Save a reference to the entity.
         this.entity = entity;
@@ -147,6 +158,7 @@ public class PulseAnimation extends Animation
         } // end if          
     }
 
+    @Override
     public void cleanUp()
     {
         // Resize entity to original dimensions.

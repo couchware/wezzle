@@ -1105,7 +1105,7 @@ public class BoardManager
 			
 			if (t != null)		
 			{	
-                Animation a = new FadeAnimation(FadeType.IN, 700, t);
+                Animation a = new FadeAnimation(FadeType.IN, 0, 700, t);
                 a.setDelay(delay);
                 t.setAnimation(a);
                 
@@ -1163,7 +1163,7 @@ public class BoardManager
 			
 			if (t != null)		
 			{	
-                Animation a = new FadeAnimation(FadeType.OUT, 700, t);
+                Animation a = new FadeAnimation(FadeType.OUT, 0, 700, t);
                 a.setDelay(delay);
                 t.setAnimation(a);
                 

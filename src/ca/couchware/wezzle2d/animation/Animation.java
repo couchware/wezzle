@@ -17,17 +17,7 @@ public abstract class Animation
     /**
      * The amount of delay before starting.
      */
-    protected int delay;
-    
-    /**
-     * The amount of time per frame.
-     */
-    protected int period;
-    
-    /**
-     * The current frame.
-     */
-    protected int frames;
+    protected int delay;        
     
     /**
      * The internal time counter (in ms).
@@ -42,14 +32,12 @@ public abstract class Animation
     /**
      * The default constructor.
      */
-    public Animation(final int period)
+    public Animation()
     {        
         // Animation is initially visible.
         this.visible = true;
         
-        // Set some defaults.
-        this.period = period;
-        this.frames = 0;
+        // Set some defaults.       
         this.counter = 0;
         this.done = false;
     }

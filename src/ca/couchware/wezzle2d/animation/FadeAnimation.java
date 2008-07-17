@@ -10,7 +10,17 @@ import ca.couchware.wezzle2d.util.Util;
  * @author cdmckay
  */
 public class FadeAnimation extends Animation
-{      
+{   
+    /**
+     * The default wait.
+     */
+    final static protected int DEFAULT_WAIT = 400;
+    
+    /**
+     * The default duration.
+     */
+    final static protected int DEFAULT_DURATION = 750;
+    
     /**
      * The fade possibilities.
      */
@@ -30,6 +40,11 @@ public class FadeAnimation extends Animation
     protected FadeType type;
     
     /**
+     * The amount of time, in ms, to wait before fading out.
+     */
+    protected int wait;
+    
+    /**
      * The max time for the animation to run for, in ms.
      */
     protected int duration;
@@ -37,13 +52,17 @@ public class FadeAnimation extends Animation
     /**
      * The constructor.
      */
-    public FadeAnimation(FadeType type, int duration, final Entity entity)
+    public FadeAnimation(FadeType type, int wait, int duration, 
+            final Entity entity)
     {                
         // Invoke super constructor.
-        super(0);
+        super();
         
         // Is it fade in?
         this.type = type;
+        
+        // Save the wait.
+        this.wait = wait;
         
         // Save the duration.
         this.duration = duration;
@@ -56,6 +75,11 @@ public class FadeAnimation extends Animation
             this.entity.setOpacity(0);
         else
             this.entity.setOpacity(100);
+    }
+    
+    public FadeAnimation(FadeType type, final Entity entity)
+    {
+        this(type, DEFAULT_WAIT, DEFAULT_DURATION, entity);
     }
 
     public void nextFrame(long delta)
@@ -86,19 +110,24 @@ public class FadeAnimation extends Animation
         counter += delta;
         
         // Adjust opacity.
-        if (type == FadeType.IN)
+        if (counter > wait)
         {
-            entity.setOpacity(
-                    Util.scaleInt(0, duration, 0, 100, (int) counter));
+            if (type == FadeType.IN)
+            {
+                entity.setOpacity(
+                        Util.scaleInt(
+                        0, duration, 0, 100, (int) counter - wait));
+            }
+            else
+            {
+                entity.setOpacity(
+                        100 - Util.scaleInt(
+                        0, duration, 0, 100, (int) counter - wait));
+            }
         }
-        else
-        {
-            entity.setOpacity(
-                    100 - Util.scaleInt(0, duration, 0, 100, (int) counter));
-        }
-        
+                
         // See if we're done.
-        if (counter > duration)   
+        if (counter > wait + duration)   
         {
             done = true;                                
         }

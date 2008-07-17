@@ -30,6 +30,16 @@ public class ZoomInAnimation extends Animation
     final private static int ZOOM_STEP = 2;
     
     /**
+     * The amount of time per frame.
+     */
+    protected int period;
+    
+    /**
+     * The current frame.
+     */
+    protected int frames;
+    
+    /**
      * The entity being animated.
      */
     protected Entity entity;
@@ -46,7 +56,7 @@ public class ZoomInAnimation extends Animation
     public ZoomInAnimation(final Entity entity)
     {                
         // Invoke super constructor.
-        super(FRAME_PERIOD);
+        this.period = FRAME_PERIOD;
         
         // Save a reference to the entity.
         this.entity = entity;

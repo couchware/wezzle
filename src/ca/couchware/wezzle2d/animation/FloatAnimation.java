@@ -11,22 +11,19 @@ import ca.couchware.wezzle2d.util.XYPosition;
  * 
  * @author cdmckay
  */
-public class FloatFadeOutAnimation extends Animation
+public class FloatAnimation extends Animation
 {  
+    /**
+     * The default duration.
+     * Timed to match the default fade wait/duration so they can be
+     * combined easily.
+     */
+    final static protected int DEFAULT_DURATION = 1150;
+    
     /**
      * The speed of the float.
      */
-    final static protected double SPEED = 0.03;
-    
-    /**
-     * The default wait.
-     */
-    final static protected int DEFAULT_WAIT = 400;
-    
-    /**
-     * The default duration.
-     */
-    final static protected int DEFAULT_DURATION = 750;
+    final static protected double SPEED = 0.03;       
     
     /**
      * Reference to the layer manager.
@@ -51,12 +48,7 @@ public class FloatFadeOutAnimation extends Animation
     /**
      * The speed of the float in the y direction.
      */
-    final protected double vY;
-    
-    /**
-     * The amount of time, in ms, to wait before fading out.
-     */
-    protected int wait;
+    final protected double vY;      
     
     /**
      * The amount of time the entity should spend fading out.
@@ -73,18 +65,16 @@ public class FloatFadeOutAnimation extends Animation
      * @param text
      * @param size
      */
-    public FloatFadeOutAnimation(
-            final int wait,
+    public FloatAnimation(            
             final int duration,
             final double dirX, final double dirY,                    
             final LayerManager layerMan,
             final Entity entity)
     {                
         // Invoke super constructor.
-        super(0);    
+        super();    
         
         // Set the wait and duration.
-        this.wait = wait;
         this.duration = duration;
         
         // Set the speed.
@@ -104,12 +94,12 @@ public class FloatFadeOutAnimation extends Animation
         layerMan.add(entity, Game.LAYER_EFFECT);
     }   
     
-    public FloatFadeOutAnimation(
+    public FloatAnimation(
             final double dirX, final double dirY,                    
             final LayerManager layerMan,
             final Entity entity)            
     {
-        this(DEFAULT_WAIT, DEFAULT_DURATION, dirX, dirY, layerMan, entity);
+        this(DEFAULT_DURATION, dirX, dirY, layerMan, entity);
     }
 
     public void nextFrame(long delta)
@@ -127,17 +117,10 @@ public class FloatFadeOutAnimation extends Animation
         double dY = vY * t;
         
         entity.setX(initialPosition.x + (int) dX);
-        entity.setY(initialPosition.y + (int) dY);
-        
-        // Adjust opacity.
-        if (counter > wait)
-        {
-            entity.setOpacity(
-                    100 - Util.scaleInt(0, duration, 0, 100, (int) counter - wait));
-        }    
+        entity.setY(initialPosition.y + (int) dY);                            
         
         // See if we're done.
-        if (counter > wait + duration)   
+        if (counter > duration)   
         {
             done = true;   
             layerMan.remove(entity, Game.LAYER_EFFECT);

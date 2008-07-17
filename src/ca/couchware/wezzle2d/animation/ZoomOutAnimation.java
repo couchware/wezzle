@@ -11,6 +11,16 @@ import ca.couchware.wezzle2d.*;
 public class ZoomOutAnimation extends Animation
 {     
     /**
+     * The amount of time per frame.
+     */
+    protected int period;
+    
+    /**
+     * The current frame.
+     */
+    protected int frames;
+    
+    /**
      * The period of each frame.
      */
     final private static int FRAME_PERIOD = 18;
@@ -37,7 +47,7 @@ public class ZoomOutAnimation extends Animation
     public ZoomOutAnimation(final Entity entity)
     {                
         // Invoke super constructor.
-        super(FRAME_PERIOD);
+        this.period = FRAME_PERIOD;
         
         // Save a reference to the entity.
         this.entity = entity;

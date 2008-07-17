@@ -76,7 +76,7 @@ public class ExplosionAnimation extends Animation
     public ExplosionAnimation(final Entity entity, final LayerManager layerMan)
     {                
         // Invoke super constructor.
-        super(0);    
+        super();    
         
         // Save a reference to the entity.
         this.entity = entity;
