@@ -314,6 +314,51 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	}
     
     /**
+     * Set the drawing color.
+     * 
+     * @param c
+     */
+    public void setColor(Color c)
+    {
+        if (g == null)
+            throw new IllegalStateException("Graphics not yet initialized.");
+        
+        g.setColor(c);
+    }
+    
+    /**
+     * Draws the outline of the specified rectangle.
+     * 
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    public void drawRect(int x, int y, int width, int height)
+    {
+        if (g == null)
+            throw new IllegalStateException("Graphics not yet initialized.");
+        
+        g.drawRect(x, y, width, height);
+    }
+    
+    /**
+     * Fills the specified rectangle.
+     * 
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    public void fillRect(int x, int y, int width, int height)
+    {
+        if (g == null)
+            throw new IllegalStateException("Graphics not yet initialized.");
+        
+        g.fillRect(x, y, width, height);
+    }            
+    
+    /**
      * Outlines the passed shape with the color white.  Principally used
      * for debugging the clip algorithm.
      * 

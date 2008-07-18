@@ -874,7 +874,7 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------                      
         
 //        Tutorial t = new BasicTutorial(); 
-//        t.updateLogic(this);
+//        t.updateLogic(this);        
                 
         // Start the game.
 		startGame();
@@ -1805,7 +1805,7 @@ public class Game extends Canvas implements GameWindowCallback
         else
         {                       
             updated = layerMan.drawRegion(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);         
-        }
+        }        
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))

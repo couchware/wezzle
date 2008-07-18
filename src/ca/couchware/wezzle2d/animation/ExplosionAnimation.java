@@ -18,22 +18,7 @@ public class ExplosionAnimation extends Animation
     /**
      * Path to the explosion sprite.
      */
-    final private static String PATH = Game.SPRITES_PATH + "/Explosion.png";       
-    
-    /**
-     * The period of each frame.
-     */
-    final private static int FRAME_PERIOD = 15;
-    
-    /**
-     * The amount the explosion should expand per step.
-     */
-    final private static int EXPAND_STEP = 4;
-    
-    /**
-     * The amount the explosion should contract per step.
-     */
-    final private static int CONTRACT_STEP = 4;
+    final private static String PATH = Game.SPRITES_PATH + "/Explosion.png";             
     
     /**
      * The entity being animated.
@@ -85,11 +70,14 @@ public class ExplosionAnimation extends Animation
         this.layerMan = layerMan;                
         
         // Set the speed.
-        this.v = 0.18;
+        this.v = 0.15;
         
         // Load the explosion and centre it over the entity.
         explosion = new GraphicEntity(0, 0, PATH);    
         explosion.setOpacity(50);
+        
+        // Set the explosion durations.
+        duration = (int) ((double) (explosion.getHeight() / 2) / v);        
         
         // Set the initial dimensions to 2x2.
         explosion.setWidth(2);
@@ -99,14 +87,7 @@ public class ExplosionAnimation extends Animation
         // Move it to the centre of the entity.
         explosion.setX(entity.getX() + (entity.getWidth() / 2) - 1);
         explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);                                      
-        this.initialPosition = explosion.getXYPosition();                
-                        
-        // Set the explosion durations.
-        duration = 270;           
-        
-        // Resize the explosion to be 2x2.
-        explosion.setWidth(2);
-        explosion.setHeight(2);                
+        this.initialPosition = explosion.getXYPosition();                                                            
         
         // Reset the draw rectangle.
         explosion.resetDrawRect();

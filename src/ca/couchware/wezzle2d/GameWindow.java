@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -34,9 +35,66 @@ public interface GameWindow
 	 * @param y
 	 *            The new y resolution of the display
 	 */
-	public void setResolution(int x, int y);
+	public void setResolution(int x, int y);   
+    
+	/**
+	 * Start the game window rendering the display
+	 */
+	public void startRendering();
 
-     /**
+	/**
+	 * Set the callback that should be notified of the window events.
+	 * 
+	 * @param callback
+	 *            The callback that should be notified of game window events.
+	 */
+	public void setGameWindowCallback(GameWindowCallback callback);
+
+	/**
+	 * Check if a particular key is pressed
+	 * 
+	 * @param keyCode
+	 *            The code associate with the key to check
+	 * @return True if the particular key is pressed
+	 */
+	public boolean isKeyPressed(int keyCode);
+    
+    //--------------------------------------------------------------------------
+    // Draw
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Set the drawing color.
+     * 
+     * @param c
+     */
+    public void setColor(Color c);
+    
+    /**
+     * Draws the outline of the specified rectangle.
+     * 
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    public void drawRect(int x, int y, int width, int height);            
+    
+    /**
+     * Fills the specified rectangle.
+     * 
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    public void fillRect(int x, int y, int width, int height);
+    
+    //--------------------------------------------------------------------------
+    // Clip
+    //--------------------------------------------------------------------------
+	
+    /**
      * Outlines the passed shape with the color white.  Principally used
      * for debugging the clip algorithm.
      * 
@@ -64,28 +122,10 @@ public interface GameWindow
      */        
     public void clearClip();
     
-	/**
-	 * Start the game window rendering the display
-	 */
-	public void startRendering();
-
-	/**
-	 * Set the callback that should be notified of the window events.
-	 * 
-	 * @param callback
-	 *            The callback that should be notified of game window events.
-	 */
-	public void setGameWindowCallback(GameWindowCallback callback);
-
-	/**
-	 * Check if a particular key is pressed
-	 * 
-	 * @param keyCode
-	 *            The code associate with the key to check
-	 * @return True if the particular key is pressed
-	 */
-	public boolean isKeyPressed(int keyCode);
-	
+    //--------------------------------------------------------------------------
+    // Mouse
+    //--------------------------------------------------------------------------
+    
 	/**
 	 * Registers a mouse listener.
      * 
