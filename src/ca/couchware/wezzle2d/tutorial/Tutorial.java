@@ -76,7 +76,7 @@ public abstract class Tutorial
             else
             {      
                 Util.handleMessage("Activating tutorial.", 
-                        Thread.currentThread());
+                        "Tutorial#updateLogic");
                 setActivated(true);
                 initializeTutorial(game);
             }

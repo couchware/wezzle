@@ -337,19 +337,17 @@ public class SliderBar extends Entity implements
     
     /**
 	 * Gets the mousePosition.
+     * 
 	 * @return The mousePosition.
 	 */
 	public synchronized XYPosition getMousePosition()
-	{
-        if (mousePosition == null)
-            Util.handleWarning("Mouse position is null!", 
-                    Thread.currentThread());
-        
+	{        
 		return mousePosition;
 	}
 
 	/**
 	 * Sets the mousePosition.
+     * 
 	 * @param mousePosition The mousePosition to set.
 	 */
 	public synchronized void setMousePosition(final int x, final int y)

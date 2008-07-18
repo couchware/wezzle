@@ -287,7 +287,7 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	 */
 	private void gameLoop()
 	{
-        Util.handleMessage("Game loop started.", Thread.currentThread());
+        Util.handleMessage("Game loop started.", "Java2DGameWindow#gameLoop");
         
         // Did the screen get updated?
         boolean updated = false;

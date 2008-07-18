@@ -109,8 +109,12 @@ public class LayerManager
             layer.remove(index);
             return true;
         }
-        else
+        else        
+        {
+            Util.handleWarning("Tried to remove an element that did not exist.", 
+                    "LayerManager#remove");
             return false;
+        }
     }    
     
     public void hide(final int layerNum)
@@ -213,9 +217,9 @@ public class LayerManager
                 {
                     Util.handleWarning("Offending class is " 
                             + d.getClass().getSimpleName(), 
-                            Thread.currentThread());
+                            "LayerManager#drawRegion");
                     Util.handleWarning("Rectangle is " + r,
-                            Thread.currentThread());
+                            "LayerManager#drawRegion");
                 }
                 
                 if (region.intersects(r) == true)

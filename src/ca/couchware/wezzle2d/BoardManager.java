@@ -376,7 +376,7 @@ public class BoardManager
 			if (j >= minimumMatch)
 			{
 				Util.handleMessage("XMatch of length " + j + " found.",
-                        Thread.currentThread());
+                        "BoardManager#findXMatch");
                 
                 lineCount++;
 				
@@ -436,7 +436,8 @@ public class BoardManager
 			// Check if we have a match.
 			if (j >= minimumMatch)
 			{
-				Util.handleMessage("YMatch of length " + j + " found.", Thread.currentThread());
+				Util.handleMessage("YMatch of length " + j + " found.", 
+                        "BoardManager#findYMatch");
 				
                 lineCount++;
                 
@@ -1215,7 +1216,8 @@ public class BoardManager
             TileEntity t = getTile(index); 
             
             if (t == null)
-                Util.handleWarning("It was null:" + index , Thread.currentThread());
+                Util.handleWarning("Tile was null: " + index , 
+                        "BoardManager#determineCenterPoint");
 
             if (t.getX() < l) 
                 l = t.getX();
@@ -1397,9 +1399,7 @@ public class BoardManager
     }
     
     public void setVisible(boolean visible)
-    {
-        Util.handleMessage("Board Manager is visible: " + visible + ".",
-                Thread.currentThread());
+    {        
         this.visible = visible;        
     }   
     

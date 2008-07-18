@@ -82,7 +82,7 @@ public class Java2DSpriteStore
 			if (url == null)
 			{
 				Util.handleMessage("Can't find path: " + path, 
-                        Thread.currentThread());
+                        "Java2DSpriteStore#getSprite");
 			}
 
 			// use ImageIO to read the image in
@@ -91,7 +91,7 @@ public class Java2DSpriteStore
 		catch (IOException e)
 		{
 			Util.handleMessage("Failed to load: " + path,
-                    Thread.currentThread());
+                    "Java2DSpriteStore#getSprite");
 		}
 
 		// Create an accelerated image of the right size to store our sprite in.

@@ -84,6 +84,6 @@ public class AchievementManager
     {
         for (int i = 0; i < completeList.size(); i++)
             Util.handleMessage(completeList.get(i).getDescription(),
-                    Thread.currentThread());
+                    "AcheivementManager#reportCompleted");
     }        
 }

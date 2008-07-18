@@ -132,7 +132,7 @@ public class GroupManager
         layerMan.hide(Game.LAYER_EFFECT);
         
         Util.handleMessage("Groups open: " + entryList.size(), 
-                Thread.currentThread());
+                "GroupManager#showGroup");
     }    
     
     /**
@@ -181,7 +181,7 @@ public class GroupManager
             entryList.getFirst().getGroup().setVisible(true);
         
         Util.handleMessage("Groups open: " + entryList.size(), 
-                Thread.currentThread());
+                "GroupManager#hideGroup");
     }   
     
     public void hideGroup(Group group)
@@ -211,7 +211,7 @@ public class GroupManager
             entryList.getFirst().getGroup().setVisible(true);
         
         Util.handleMessage("Groups open: " + entryList.size(), 
-                Thread.currentThread());
+                "GroupManager#hideGroup");
     }
     
     /**

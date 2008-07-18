@@ -26,7 +26,10 @@ public class FadeAnimation extends Animation
      */
     public static enum FadeType
     {
-        IN, OUT
+        IN, 
+        OUT, 
+        LOOP_IN, 
+        LOOP_OUT
     }
     
     /**
@@ -112,25 +115,56 @@ public class FadeAnimation extends Animation
         // Adjust opacity.
         if (counter > wait)
         {
-            if (type == FadeType.IN)
+            switch (type)
             {
-                entity.setOpacity(
-                        Util.scaleInt(
-                        0, duration, 0, 100, (int) counter - wait));
-            }
-            else
-            {
-                entity.setOpacity(
-                        100 - Util.scaleInt(
-                        0, duration, 0, 100, (int) counter - wait));
-            }
+                case IN:      
+                case LOOP_IN:
+                    entity.setOpacity(
+                            Util.scaleInt(
+                            0, duration, 0, 100, (int) counter - wait));
+                    
+                    break;
+                
+                case OUT:
+                case LOOP_OUT:
+                    entity.setOpacity(
+                            100 - Util.scaleInt(
+                            0, duration, 0, 100, (int) counter - wait));                
+                    
+                    break;
+                   
+                default:
+                    throw new IllegalStateException("Unknown fade type.");
+            }            
         }
                 
         // See if we're done.
         if (counter > wait + duration)   
         {
-            done = true;                                
-        }
+            switch (type)
+            {
+                case IN:
+                case OUT:
+                    
+                    done = true;   
+                    break;
+                    
+                case LOOP_IN:
+                    
+                    counter -= duration;
+                    type = FadeType.LOOP_OUT;
+                    break;
+                    
+                case LOOP_OUT:
+                    
+                    counter -= duration;
+                    type = FadeType.LOOP_IN;
+                    break;
+                
+                default:
+                    throw new IllegalStateException("Unknown fade type.");
+            }
+        } // end if
     }
 
     /**

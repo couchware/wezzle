@@ -60,45 +60,48 @@ public class Util
 	 * @param message The error message.
 	 * @param t The current thread, usually Thread.currentThread().
 	 */
-	public static void handleWarning(String message, Thread t)
+	public static void handleWarning(String message, String method)
 	{
-		String method;
-		
-		if (USE_STACK_TRACE == true)
-			method = t.getStackTrace()[3].getMethodName();
-		else
-			method = "Unknown";
+		if (method == null)
+			method = "...";
 		
 		String output = "[Warning] (" + System.currentTimeMillis() + ") " 
-                + method + "() - \"" + message + "\"";        
+                + method + " - \"" + message + "\"";        
 		
 		System.err.println(output);
 		
 		if (USE_LOG == true)
 			LogManager.appendToLog(output);
 	}
+    
+    public static void handleWarning(String message)
+    {
+        handleWarning(message, null);
+    }
 	
 	/**
 	 * Prints a message to standard out.  Does not dump the stack.
 	 * @param message The error message.
 	 * @param t The current thread, usually Thread.currentThread().
 	 */
-	public static void handleMessage(String message, Thread t)
-	{
-		String method;
+	public static void handleMessage(String message, String method)
+	{				
+		if (method == null)
+			method = "...";
 		
-		if (USE_STACK_TRACE == true)
-			method = t.getStackTrace()[3].getMethodName();
-		else
-			method = "Unknown";
-		
-		String output = "[Message] (" + System.currentTimeMillis() + ") " + method + "() - \"" + message + "\"";
+		String output = "[Message] (" + System.currentTimeMillis() + ") " 
+                + method + " - \"" + message + "\"";
 		
 		System.out.println(output);	
 		
 		if (USE_LOG == true)
 			LogManager.appendToLog(output);
 	}
+    
+    public static void handleMessage(String message)
+    {
+        handleMessage(message, null);
+    }
 	
 	/**
 	 * A method for transposing square 2D arrays in-place.

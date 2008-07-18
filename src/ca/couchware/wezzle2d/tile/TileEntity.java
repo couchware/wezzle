@@ -306,6 +306,10 @@ public class TileEntity extends GraphicEntity implements Movable
             rect2.translate(offsetX, offsetY);            
             rect1.add(rect2);
             
+            // Release reference.
+            rect2 = null;
+            
+            // Set the draw rect.
             drawRect = rect1;
         }
         

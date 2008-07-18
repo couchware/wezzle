@@ -183,7 +183,8 @@ import java.util.Set;
                 * Math.pow(4, numMultiply4x)
                 * cascadeCount);
 
-        Util.handleMessage("cascadeCount == " + cascadeCount, Thread.currentThread());
+        Util.handleMessage("cascadeCount == " + cascadeCount, 
+                "ScoreManager#calculateLineScore");
         
         // Update progress and text.
         updateScore(deltaScore);

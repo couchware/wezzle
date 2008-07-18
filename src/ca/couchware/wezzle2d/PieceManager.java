@@ -838,9 +838,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
         this.mouseLeftReleased = mouseLeftReleased;
         
         if (mouseLeftReleased == true)
-            Util.handleMessage("Left mouse set.", Thread.currentThread());
+            Util.handleMessage("Left mouse set.", 
+                    "PieceManager#setMouseLeftReleased");
         else
-            Util.handleMessage("Left mouse cleared.", Thread.currentThread());
+            Util.handleMessage("Left mouse cleared.", 
+                    "PieceManager#setMouseLeftReleased");
     }
 
     public boolean isMouseRightReleased()
@@ -934,7 +936,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 
             default:
                 Util.handleMessage("No recognized button pressed.", 
-                        Thread.currentThread());
+                        "PieceManager#mouseReleased");
         }
 	}
 

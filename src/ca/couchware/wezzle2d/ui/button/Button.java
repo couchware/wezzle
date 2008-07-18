@@ -188,7 +188,7 @@ public abstract class Button extends Entity implements
                 
             default:
                 Util.handleWarning("Unrecognized or unhandled state.", 
-                        Thread.currentThread());
+                        "Button#draw");
         } // end switch
     }
     

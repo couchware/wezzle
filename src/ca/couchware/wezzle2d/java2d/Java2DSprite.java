@@ -256,8 +256,11 @@ public class Java2DSprite implements Sprite
             g.rotate(-theta, x + width / 2, y + height / 2);
         
         // Opacity.
-        if (opacity != 100)        
+        if (opacity != 100)            
             g.setComposite(c); 
+        
+        // Release reference.
+        c = null;
         
         // Clear the clip.
         g.setClip(r);
@@ -295,6 +298,7 @@ public class Java2DSprite implements Sprite
         // If it's not, try again until we get an image.
         if (valid == VolatileImage.IMAGE_INCOMPATIBLE)
         {
+            Util.handleWarning("Image was incompatible.", "Java2DSprite#createVolatileImage");
             newImage = this.createVolatileImage(width, height, transparency);
             return newImage;
         }
@@ -322,6 +326,7 @@ public class Java2DSprite implements Sprite
 
             if (valid == VolatileImage.IMAGE_INCOMPATIBLE)
             {
+                Util.handleWarning("Image was incompatible.", "Java2DSprite#render");
                 vimage = createVolatileImage(
                         image.getWidth(), 
                         image.getHeight(), 

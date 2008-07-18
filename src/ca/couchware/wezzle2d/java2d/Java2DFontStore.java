@@ -72,7 +72,7 @@ public class Java2DFontStore
         else
         {
             Util.handleMessage("Font size " + size + " created.", 
-                    Thread.currentThread());
+                    "Java2DFontStore#getFont");
             Font base = (Font) getFont(new Integer(1));
             Font font = base.deriveFont((float) size);
             fontMap.put(size, font);

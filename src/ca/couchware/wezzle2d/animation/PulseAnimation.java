@@ -153,7 +153,7 @@ public class PulseAnimation extends Animation
                     
                 default:
                     Util.handleMessage("Unrecognized state.", 
-                            Thread.currentThread());
+                            "PulseAnimation#nextFrame");
             }
         } // end if          
     }

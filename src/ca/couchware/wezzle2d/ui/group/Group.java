@@ -113,7 +113,7 @@ public class Group extends Entity
      */
     public void clearChanged()
     {
-        Util.handleMessage("Cleared by a group.", Thread.currentThread());
+        Util.handleMessage("Cleared by a group.", "Group#clearChanged");
 
         for (Entity e : entityList)
             if (e instanceof Button)

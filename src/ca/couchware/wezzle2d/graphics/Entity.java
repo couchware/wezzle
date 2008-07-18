@@ -292,7 +292,7 @@ public abstract class Entity implements Drawable, Positionable
 		}
 		else
 		{
-			Util.handleWarning("No Y alignment set!", Thread.currentThread());
+			Util.handleWarning("No Y alignment set!", "Entity#setAlignment");
 		}
 		
 		// The X anchors. 
@@ -310,7 +310,7 @@ public abstract class Entity implements Drawable, Positionable
 		}
 		else
 		{
-			Util.handleWarning("No X alignment set!", Thread.currentThread());
+			Util.handleWarning("No X alignment set!", "Entity#setAlignment");
 		}	
         
         // Set dirty so it will be drawn.        
@@ -340,6 +340,7 @@ public abstract class Entity implements Drawable, Positionable
 
             rect2.translate(offsetX, offsetY);            
             rect1.add(rect2);
+            rect2 = null;
             
             drawRect = rect1;
         }

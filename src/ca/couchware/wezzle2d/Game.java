@@ -537,7 +537,7 @@ public class Game extends Canvas implements GameWindowCallback
             Util.handleException(e);
             Util.handleWarning("Could not find build number at: "
                     + BUILD_NUMBER_PATH + "!",
-                    Thread.currentThread());
+                    "Game#this");
             buildNumber = "???";
         }
         finally
@@ -547,8 +547,11 @@ public class Game extends Canvas implements GameWindowCallback
         }
         
         // Print the build number.
-        Util.handleMessage("Wezzle Build " + buildNumber + " @ " + (new Date()),
-                Thread.currentThread());
+        Util.handleMessage("Wezzle Build " + buildNumber + " @ " + (new Date()));   
+        Util.handleMessage("Java Version: " + System.getProperty("java.version"));
+        Util.handleMessage("OS Name: " + System.getProperty("os.name"));
+        Util.handleMessage("OS Architecture: " + System.getProperty("os.arch"));
+        Util.handleMessage("OS Version: " + System.getProperty("os.version"));
         
 		// Create a window based on a chosen rendering method.
 		ResourceFactory.get().setRenderingType(renderType);		        
@@ -994,7 +997,7 @@ public class Game extends Canvas implements GameWindowCallback
     
     public void startGameOver()
     {
-        Util.handleMessage("Game over!", Thread.currentThread());
+        Util.handleMessage("Game over!", "Game#frameRendering");
 
         // Add the new score.
         highScoreMan.addScore("Tester", scoreMan.getTotalScore());
@@ -1184,7 +1187,7 @@ public class Game extends Canvas implements GameWindowCallback
                     pieceMan.getPieceGrid().setVisible(false);
                     pieceMan.stopAnimation();
                     
-                    Util.handleMessage("Level up!!!", Thread.currentThread());
+                    Util.handleMessage("Level up!!!", "Game#frameRendering");
                     worldMan.levelUp(this);
                     
                     this.activateLineRemoval = true;
@@ -1963,8 +1966,15 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public static void main(String argv[])
 	{		        
-//        System.setProperty("sun.java2d.translaccel", "true");
-//        System.setProperty("sun.java2d.ddforcevram", "true");   
+        if (System.getProperty("os.name").toLowerCase().contains("windows"))
+        {
+            Util.handleMessage("Windows detected, enabling translaccel.");
+            System.setProperty("sun.java2d.translaccel", "true");
+        }
+        
+        // Enable OpenGL.
+        // Can cause the JVM to crash.
+        //System.setProperty("sun.java2d.opengl", "True");
         
         try
         {

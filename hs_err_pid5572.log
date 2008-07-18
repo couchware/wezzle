@@ -1,0 +1,194 @@
+#
+# An unexpected error has been detected by HotSpot Virtual Machine:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x6d13b644, pid=5572, tid=4912
+#
+# Java VM: Java HotSpot(TM) Client VM (1.5.0_14-b03 mixed mode)
+# Problematic frame:
+# C  [awt.dll+0xcb644]
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x008d7e10):  JavaThread "main" [_thread_in_native, id=4912]
+
+siginfo: ExceptionCode=0xc0000005, reading address 0x00000040
+
+Registers:
+EAX=0x00000000, EBX=0x07b4fbf8, ECX=0x00d2eba0, EDX=0x07b53ba0
+ESP=0x0006f8e4, EBP=0x0006f92c, ESI=0x07b4fbf8, EDI=0x008d7e10
+EIP=0x6d13b644, EFLAGS=0x00210283
+
+Top of Stack: (sp=0x0006f8e4)
+0x0006f8e4:   6d11ec8f 008d7ed0 00000000 00000000
+0x0006f8f4:   008d7e10 07b4fbf8 018d82ff 008d7ed0
+0x0006f904:   0006f944 00000000 00000000 0006f910
+0x0006f914:   00000000 0006f944 07b53ba0 00000000
+0x0006f924:   07b4fbf8 0006f93c 0006f96c 018d29e3
+0x0006f934:   00000000 018d6509 00000000 00000000
+0x0006f944:   03dfd440 00000001 07b48c28 0006f948
+0x0006f954:   07b4fe64 0006f99c 07b53ba0 00000000 
+
+Instructions: (pc=0x6d13b644)
+0x6d13b634:   00 00 51 ff 15 cc 4d 1a 6d c3 90 90 8b 44 24 08
+0x6d13b644:   8b 40 40 c3 90 90 90 90 90 90 90 90 55 8b ec 6a 
+
+
+Stack: [0x00030000,0x00070000),  sp=0x0006f8e4,  free space=254k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [awt.dll+0xcb644]
+j  sun.java2d.opengl.WGLGraphicsConfig.flip(Lsun/awt/windows/WComponentPeer;Ljava/awt/Component;Ljava/awt/image/VolatileImage;Ljava/awt/BufferCapabilities$FlipContents;)V+68
+j  sun.awt.windows.WComponentPeer.flip(Ljava/awt/BufferCapabilities$FlipContents;)V+39
+j  java.awt.Component$FlipBufferStrategy.flip(Ljava/awt/BufferCapabilities$FlipContents;)V+18
+j  java.awt.Component$FlipBufferStrategy.show()V+8
+j  ca.couchware.wezzle2d.java2d.Java2DGameWindow.gameLoop()V+69
+j  ca.couchware.wezzle2d.java2d.Java2DGameWindow.startRendering()V+72
+j  ca.couchware.wezzle2d.Game.startRendering()V+4
+j  ca.couchware.wezzle2d.Game.main([Ljava/lang/String;)V+22
+v  ~StubRoutines::call_stub
+V  [jvm.dll+0x875dd]
+V  [jvm.dll+0xdfd96]
+V  [jvm.dll+0x874ae]
+V  [jvm.dll+0x8e6f1]
+C  [java.exe+0x14c5]
+C  [java.exe+0x69cd]
+C  [kernel32.dll+0x43833]
+C  [ntdll.dll+0x3a9bd]
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  sun.java2d.opengl.WGLGraphicsConfig.swapBuffers(J)V+0
+j  sun.java2d.opengl.WGLGraphicsConfig.flip(Lsun/awt/windows/WComponentPeer;Ljava/awt/Component;Ljava/awt/image/VolatileImage;Ljava/awt/BufferCapabilities$FlipContents;)V+68
+j  sun.awt.windows.WComponentPeer.flip(Ljava/awt/BufferCapabilities$FlipContents;)V+39
+j  java.awt.Component$FlipBufferStrategy.flip(Ljava/awt/BufferCapabilities$FlipContents;)V+18
+j  java.awt.Component$FlipBufferStrategy.show()V+8
+j  ca.couchware.wezzle2d.java2d.Java2DGameWindow.gameLoop()V+69
+j  ca.couchware.wezzle2d.java2d.Java2DGameWindow.startRendering()V+72
+j  ca.couchware.wezzle2d.Game.startRendering()V+4
+j  ca.couchware.wezzle2d.Game.main([Ljava/lang/String;)V+22
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x0b8f5558 JavaThread "Thread-1" daemon [_thread_in_native, id=604]
+  0x0ba65678 JavaThread "Java Sound Event Dispatcher" daemon [_thread_blocked, id=940]
+  0x0b9516d8 JavaThread "Java2D Disposer" daemon [_thread_blocked, id=5072]
+  0x0b992458 JavaThread "AWT-EventQueue-0" [_thread_blocked, id=740]
+  0x0b94dc50 JavaThread "AWT-Shutdown" [_thread_blocked, id=2688]
+  0x00d3c348 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=1376]
+  0x00d3c788 JavaThread "CompilerThread0" daemon [_thread_blocked, id=980]
+  0x00d3b9c0 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=1504]
+  0x00d31498 JavaThread "Finalizer" daemon [_thread_blocked, id=5436]
+  0x00d2eec0 JavaThread "Reference Handler" daemon [_thread_blocked, id=4300]
+=>0x008d7e10 JavaThread "main" [_thread_in_native, id=4912]
+
+Other Threads:
+  0x00d2cf40 VMThread [id=4192]
+  0x00cdac08 WatcherThread [id=2884]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ def new generation   total 960K, used 821K [0x038d0000, 0x039d0000, 0x03db0000)
+  eden space 896K,  88% used [0x038d0000, 0x03997510, 0x039b0000)
+  from space 64K,  38% used [0x039b0000, 0x039b61f0, 0x039c0000)
+  to   space 64K,   0% used [0x039c0000, 0x039c0000, 0x039d0000)
+ tenured generation   total 11776K, used 7077K [0x03db0000, 0x04930000, 0x078d0000)
+   the space 11776K,  60% used [0x03db0000, 0x044997b0, 0x04499800, 0x04930000)
+ compacting perm gen  total 8192K, used 7198K [0x078d0000, 0x080d0000, 0x0b8d0000)
+   the space 8192K,  87% used [0x078d0000, 0x07fd7a78, 0x07fd7c00, 0x080d0000)
+No shared spaces configured.
+
+Dynamic libraries:
+0x00400000 - 0x0040d000 	C:\Progra~1\Java\jdk1.5.0_14\jre\bin\java.exe
+0x778a0000 - 0x779be000 	C:\Windows\system32\ntdll.dll
+0x76c30000 - 0x76d08000 	C:\Windows\system32\kernel32.dll
+0x76d10000 - 0x76dcf000 	C:\Windows\system32\ADVAPI32.dll
+0x762e0000 - 0x763a3000 	C:\Windows\system32\RPCRT4.dll
+0x76b80000 - 0x76c2a000 	C:\Windows\system32\MSVCRT.dll
+0x6d740000 - 0x6d8de000 	C:\Progra~1\Java\jdk1.5.0_14\jre\bin\client\jvm.dll
+0x763b0000 - 0x7644e000 	C:\Windows\system32\USER32.dll
+0x76a70000 - 0x76abb000 	C:\Windows\system32\GDI32.dll
+0x74380000 - 0x743b3000 	C:\Windows\system32\WINMM.dll
+0x76550000 - 0x76694000 	C:\Windows\system32\ole32.dll
+0x76af0000 - 0x76b7c000 	C:\Windows\system32\OLEAUT32.dll
+0x74340000 - 0x74378000 	C:\Windows\system32\OLEACC.dll
+0x779d0000 - 0x779ee000 	C:\Windows\system32\IMM32.DLL
+0x76450000 - 0x76517000 	C:\Windows\system32\MSCTF.dll
+0x75f90000 - 0x75fbc000 	C:\Windows\system32\apphelp.dll
+0x77ac0000 - 0x77ac9000 	C:\Windows\system32\LPK.DLL
+0x779f0000 - 0x77a6d000 	C:\Windows\system32\USP10.dll
+0x6d300000 - 0x6d308000 	C:\Progra~1\Java\jdk1.5.0_14\jre\bin\hpi.dll
+0x76150000 - 0x76157000 	C:\Windows\system32\PSAPI.DLL
+0x6d710000 - 0x6d71c000 	C:\Progra~1\Java\jdk1.5.0_14\jre\bin\verify.dll
+0x6d380000 - 0x6d39d000 	C:\Progra~1\Java\jdk1.5.0_14\jre\bin\java.dll
+0x6d730000 - 0x6d73f000 	C:\Progra~1\Java\jdk1.5.0_14\jre\bin\zip.dll
+0x6d070000 - 0x6d1dd000 	C:\Program Files\Java\jdk1.5.0_14\jre\bin\awt.dll
+0x733d0000 - 0x73411000 	C:\Windows\system32\WINSPOOL.DRV
+0x0bad0000 - 0x0bb9b000 	C:\Windows\system32\opengl32.dll
+0x740d0000 - 0x740f3000 	C:\Windows\system32\GLU32.dll
+0x6de00000 - 0x6dee6000 	C:\Windows\system32\DDRAW.dll
+0x74bc0000 - 0x74bc6000 	C:\Windows\system32\DCIMAN32.dll
+0x766a0000 - 0x76829000 	C:\Windows\system32\SETUPAPI.dll
+0x73f40000 - 0x73f4c000 	C:\Windows\system32\dwmapi.dll
+0x75160000 - 0x7519f000 	C:\Windows\system32\uxtheme.dll
+0x6d2b0000 - 0x6d300000 	C:\Program Files\Java\jdk1.5.0_14\jre\bin\fontmanager.dll
+0x69500000 - 0x69bd7000 	C:\Windows\system32\nvoglv32.dll
+0x76dd0000 - 0x7789e000 	C:\Windows\system32\shell32.dll
+0x76230000 - 0x76285000 	C:\Windows\system32\SHLWAPI.dll
+0x74f30000 - 0x750c4000 	C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.6000.16386_none_5d07289e07e1d100\comctl32.dll
+0x6d200000 - 0x6d22f000 	C:\Program Files\Java\jdk1.5.0_14\jre\bin\cmm.dll
+0x6d440000 - 0x6d45f000 	C:\Program Files\Java\jdk1.5.0_14\jre\bin\jpeg.dll
+0x6d4f0000 - 0x6d515000 	C:\Program Files\Java\jdk1.5.0_14\jre\bin\jsound.dll
+0x6d520000 - 0x6d528000 	C:\Program Files\Java\jdk1.5.0_14\jre\bin\jsoundds.dll
+0x71b40000 - 0x71bb1000 	C:\Windows\system32\DSOUND.dll
+0x754e0000 - 0x754fa000 	C:\Windows\system32\POWRPROF.dll
+0x74160000 - 0x74190000 	C:\Windows\system32\wdmaud.drv
+0x74330000 - 0x74334000 	C:\Windows\system32\ksuser.dll
+0x754d0000 - 0x754d7000 	C:\Windows\system32\AVRT.dll
+0x75210000 - 0x75237000 	C:\Windows\system32\MMDevAPI.DLL
+0x769e0000 - 0x76a64000 	C:\Windows\system32\CLBCatQ.DLL
+0x75330000 - 0x7535d000 	C:\Windows\system32\WINTRUST.dll
+0x75ae0000 - 0x75bd1000 	C:\Windows\system32\CRYPT32.dll
+0x75c20000 - 0x75c32000 	C:\Windows\system32\MSASN1.dll
+0x76010000 - 0x7602e000 	C:\Windows\system32\USERENV.dll
+0x75ff0000 - 0x76004000 	C:\Windows\system32\Secur32.dll
+0x76520000 - 0x76549000 	C:\Windows\system32\imagehlp.dll
+0x74880000 - 0x748a1000 	C:\Windows\System32\audioses.dll
+0x74810000 - 0x74876000 	C:\Windows\System32\audioeng.dll
+0x753f0000 - 0x753f9000 	C:\Windows\system32\msacm32.drv
+0x74650000 - 0x74665000 	C:\Windows\system32\MSACM32.dll
+0x74de0000 - 0x74de7000 	C:\Windows\system32\midimap.dll
+0x6d540000 - 0x6d553000 	C:\Program Files\Java\jdk1.5.0_14\jre\bin\net.dll
+0x76ac0000 - 0x76aed000 	C:\Windows\system32\WS2_32.dll
+0x779c0000 - 0x779c6000 	C:\Windows\system32\NSI.dll
+0x757f0000 - 0x7582b000 	C:\Windows\system32\mswsock.dll
+0x75850000 - 0x75856000 	C:\Windows\System32\wship6.dll
+0x6d560000 - 0x6d569000 	C:\Program Files\Java\jdk1.5.0_14\jre\bin\nio.dll
+
+VM Arguments:
+java_command: ca.couchware.wezzle2d.Game
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=C:\Progra~1\Java\jdk1.5.0_14
+CLASSPATH=.;C:\Program Files\Java\jre1.6.0_03\lib\ext\QTJava.zip
+PATH=C:\Program Files\Microsoft DirectX SDK (February 2007)\Utilities\Bin\x86;C:\Program Files\Microsoft DirectX SDK (November 2007)\Utilities\Bin\x86;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Program Files\Common Files\Adobe\AGL;C:\Program Files\QuickTime\QTSystem;C:\Program Files\Subversion\bin;C:\Progra~1\Ant\apache-ant-1.7.0\bin;C:\Progra~1\Java\jdk1.5.0_14\bin
+USERNAME=cdmckay
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 6, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows Vista Build 6000 
+
+CPU:total 2 (cores per cpu 2, threads per core 1) family 6 model 15 stepping 6, cmov, cx8, fxsr, mmx, sse, sse2
+
+Memory: 4k page, physical 2095744k(693788k free), swap 4194303k(1734400k free)
+
+vm_info: Java HotSpot(TM) Client VM (1.5.0_14-b03) for windows-x86, built on Oct  5 2007 01:21:52 by "java_re" with MS VC++ 6.0
+

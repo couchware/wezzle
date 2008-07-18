@@ -403,7 +403,7 @@ public class WorldManager
 		// We should never get here.
 		Util.handleWarning(
                 "Random number out of range! (" + randomNumber + ").", 
-                Thread.currentThread());
+                "WorldManager#getItem");
         
 		return itemList.get(0);
 	}

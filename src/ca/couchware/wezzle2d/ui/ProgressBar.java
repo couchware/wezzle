@@ -353,7 +353,7 @@ public class ProgressBar extends Entity
 		}
 		else
 		{
-			Util.handleWarning("No Y alignment set!", Thread.currentThread());
+			Util.handleWarning("No Y alignment set!", "ProgressBar#setAlignment");
 		}
 		
 		// The X alignment. 
@@ -371,7 +371,7 @@ public class ProgressBar extends Entity
 		}
 		else
 		{
-			Util.handleWarning("No X alignment set!", Thread.currentThread());
+			Util.handleWarning("No X alignment set!", "ProgressBar#setAlignment");
 		}	
         
         // Update the text if necessary.
