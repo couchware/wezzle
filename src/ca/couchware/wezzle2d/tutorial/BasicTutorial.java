@@ -21,8 +21,8 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class BasicTutorial extends Tutorial
-{
-
+{   
+    
     /**
      * The speech bubble that instructs the player where to click.
      */
@@ -95,12 +95,22 @@ public class BasicTutorial extends Tutorial
         
         // Change the piece to the dot.
         game.pieceMan.loadPiece(new PieceDot());
+        
+        // Reset move counter.
+        game.moveMan.resetMoveCount();
     }
 
     @Override
     protected boolean updateTutorial(Game game)
     {
-        return true;
+        // If the move count is not 0, then the tutorial is over.
+        if (game.moveMan.getMoveCount() != 0)
+        {
+            finishTutorial(game);
+            return false;
+        }
+        else
+            return true;
     }
 
     @Override

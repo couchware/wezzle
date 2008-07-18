@@ -21,14 +21,17 @@ public class ResourceFactory
 	private static final ResourceFactory single = new ResourceFactory();
 
 	/** 
-	 * A value to indicate that we should use Java 2D to render our game. 
+	 * The choice of rendering engines. 
 	 */
-	public static final int JAVA2D = 1;
+    public static enum RenderType
+    {
+        JAVA2D, LWJGL
+    }    	
 
 	/** 
 	 * The type of rendering that we are currently using. 
 	 */
-	private int renderingType = JAVA2D;
+	private RenderType renderType = RenderType.JAVA2D;
 	
 	/** 
      * The window the game should use to render.
@@ -62,17 +65,17 @@ public class ResourceFactory
 	 * @param renderingType
 	 *            The type of rendering to use
 	 */
-	public void setRenderingType(int renderingType)
+	public void setRenderingType(RenderType renderType)
 	{
 		// If the rendering type is unrecognized tell the caller.
-		if (renderingType != JAVA2D)
+		if (renderType != RenderType.JAVA2D)
 		{
 			// Note, we could create our own exception to be thrown here but it
 			// seems a little bit over the top for a simple message. In general
 			// RuntimeException should be sub-classed and thrown, not thrown
 			// directly.
 			throw new RuntimeException("Unknown rendering type specified: "
-					+ renderingType);
+					+ renderType);
 		}
 
 		// If the window has already been created then we have already created
@@ -84,7 +87,7 @@ public class ResourceFactory
 			throw new RuntimeException("Attempt to change rendering method at game runtime");
 		}
 
-		this.renderingType = renderingType;
+		this.renderType = renderType;
 	}
 
 	/**
@@ -98,7 +101,7 @@ public class ResourceFactory
 		// now
 		if (window == null)
 		{
-			switch (renderingType)
+			switch (renderType)
 			{
 				case JAVA2D:
 				{
@@ -129,17 +132,16 @@ public class ResourceFactory
 					"Attempt to retrieve sprite before game window was created.");
 		}
 
-		switch (renderingType)
+		switch (renderType)
 		{
 			case JAVA2D:
 			{
 				return Java2DSpriteStore.get().getSprite(
-                        (Java2DGameWindow) window,
-						path);
+                        (Java2DGameWindow) window, path);
 			}		
 		}
 
-		throw new RuntimeException("Unknown rendering type: " + renderingType);
+		throw new RuntimeException("Unknown rendering type: " + renderType);
 	}
 	
 	
@@ -157,7 +159,7 @@ public class ResourceFactory
 					"Attempted to retrieve text before game window was created");
 		}
 
-		switch (renderingType)
+		switch (renderType)
 		{
 			case JAVA2D:
 			{
@@ -166,7 +168,7 @@ public class ResourceFactory
 			}		
 		}
 
-		throw new RuntimeException("Unknown rendering type: " + renderingType);
+		throw new RuntimeException("Unknown rendering type: " + renderType);
 	}
     
   

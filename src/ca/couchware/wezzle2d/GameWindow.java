@@ -36,12 +36,32 @@ public interface GameWindow
 	 */
 	public void setResolution(int x, int y);
 
+     /**
+     * Outlines the passed shape with the color white.  Principally used
+     * for debugging the clip algorithm.
+     * 
+     * @param s
+     */
     public void drawClip(Shape s);
     
+    /**
+     * Sets the current clip rectangle.  Only drawables within the clip area are
+     * drawn to the screen.
+     * 
+     * @param r
+     */
     public void setClip(Rectangle r);
     
+    /**
+     * Gets the current clip rectangle.
+     * 
+     * @return
+     */
     public Shape getClip();
     
+    /**
+     * Clears the clip rectangle, meaning the whole screen will be drawn.
+     */        
     public void clearClip();
     
 	/**
@@ -106,5 +126,6 @@ public interface GameWindow
      * 
      * @return The current mouse position.
      */
-    public Point getMousePosition();    
+    public Point getMousePosition();        
+    
 }

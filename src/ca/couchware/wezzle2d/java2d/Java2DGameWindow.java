@@ -313,6 +313,12 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 		}
 	}
     
+    /**
+     * Outlines the passed shape with the color white.  Principally used
+     * for debugging the clip algorithm.
+     * 
+     * @param s
+     */
     public void drawClip(Shape s)
     {
         // Make sure setClip was called corectly.
@@ -327,6 +333,12 @@ public class Java2DGameWindow extends Canvas implements GameWindow
         }
     }    
     
+    /**
+     * Sets the current clip rectangle.  Only drawables within the clip area are
+     * drawn to the screen.
+     * 
+     * @param r
+     */
     public void setClip(Rectangle r)
     {
         // Make sure setClip was called corectly.
@@ -337,6 +349,11 @@ public class Java2DGameWindow extends Canvas implements GameWindow
         g.setClip(r);        
     }
     
+    /**
+     * Gets the current clip rectangle.
+     * 
+     * @return
+     */
     public Shape getClip()
     {
         // Make sure getClip was called corectly.
@@ -347,6 +364,9 @@ public class Java2DGameWindow extends Canvas implements GameWindow
         return g.getClip();
     }
     
+    /**
+     * Clears the clip rectangle, meaning the whole screen will be drawn.
+     */
     public void clearClip()
     {
          // Make sure getClip was called corectly.
@@ -357,6 +377,11 @@ public class Java2DGameWindow extends Canvas implements GameWindow
         g.setClip(null);
     }
 
+    /**
+     * Sets the cursor.
+     * 
+     * @param type
+     */
     public void setCursor(int type)
     {
         setCursor(Cursor.getPredefinedCursor(type));

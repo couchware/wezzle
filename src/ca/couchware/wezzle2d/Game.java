@@ -515,7 +515,7 @@ public class Game extends Canvas implements GameWindowCallback
 	 *            The type of rendering to use (should be one of the contansts
 	 *            from ResourceFactory)
 	 */
-	public Game(int renderingType) 
+	public Game(ResourceFactory.RenderType renderType) 
 	{
         // Get the build number.
         Properties buildProperties = new Properties();            
@@ -551,7 +551,7 @@ public class Game extends Canvas implements GameWindowCallback
                 Thread.currentThread());
         
 		// Create a window based on a chosen rendering method.
-		ResourceFactory.get().setRenderingType(renderingType);		        
+		ResourceFactory.get().setRenderingType(renderType);		        
         
 		final Runnable r = new Runnable()
 		{
@@ -861,7 +861,7 @@ public class Game extends Canvas implements GameWindowCallback
         groupMan.register(optionsGroup);
         
         //----------------------------------------------------------------------
-        // Initialize hgih score group.
+        // Initialize high score group.
         //----------------------------------------------------------------------
         
         // Create the game over screen.
@@ -873,8 +873,8 @@ public class Game extends Canvas implements GameWindowCallback
         // Start        
         //----------------------------------------------------------------------                      
         
-        Tutorial t = new BasicTutorial(); 
-        t.updateLogic(this);
+//        Tutorial t = new BasicTutorial(); 
+//        t.updateLogic(this);
                 
         // Start the game.
 		startGame();
@@ -1948,7 +1948,7 @@ public class Game extends Canvas implements GameWindowCallback
         
         try
         {
-            Game g = new Game(ResourceFactory.JAVA2D);
+            Game g = new Game(ResourceFactory.RenderType.JAVA2D);
             g.startRendering();		
         }
         catch (Exception e)

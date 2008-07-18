@@ -28,6 +28,10 @@ public class PropertyManager
     public static final String KEY_VERSION = "wezzle.confVersion";
     public static final String VALUE_VERSION = "2";
     
+    public static final String KEY_RENDER_TYPE = "wezzle.renderType";
+    public static final String VALUE_JAVA2D = "java2d";
+    public static final String VALUE_LWJGL = "lwjgl";
+    
 	public static final String KEY_DIFFICULTY = "wezzle.difficulty";
     public static final String KEY_MUSIC = "wezzle.music";
     public static final String KEY_MUSIC_MIN = "wezzle.musicMinimum";
@@ -140,6 +144,7 @@ public class PropertyManager
     public void setDefaults()
     {   
         properties.put(KEY_VERSION, VALUE_VERSION);
+        properties.put(KEY_RENDER_TYPE, VALUE_JAVA2D);
         properties.put(KEY_DIFFICULTY, "0");
         properties.put(KEY_SOUND, VALUE_ON);
         properties.put(KEY_SOUND_MIN, "-40.0f");
