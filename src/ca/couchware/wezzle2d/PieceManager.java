@@ -689,10 +689,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
         label.setColor(Game.SCORE_PIECE_COLOR);
         label.setSize(game.scoreMan.determineFontSize(deltaScore));
         
-        XAnimation a = new XAnimation(2);
-        a.set(0, new FadeAnimation(FadeType.OUT, label));
-        a.set(1, new FloatAnimation(0, -1, game.layerMan, label));                    
-        game.animationMan.add(a);
+        XAnimation xa = new XAnimation(2);
+        xa.set(0, new FadeAnimation(FadeType.OUT, label));
+        xa.set(1, new FloatAnimation(0, -1, game.layerMan, label));                    
+        game.animationMan.add(xa);
+        xa = null;
         
         // Release references.
         p = null;

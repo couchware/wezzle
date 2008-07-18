@@ -121,7 +121,7 @@ public class WorldManager
         // Set the items.
 		itemList = new LinkedList<Item>();
 		itemList.add(new Item(TileEntity.class, 28, 20));
-		itemList.add(new Item(BombTileEntity.class, 1, 20));
+		itemList.add(new Item(BombTileEntity.class, 15, 20));
         itemList.add(new Item(StarTileEntity.class, 0, 5));
         itemList.add(new Item(RocketTileEntity.class, 1, 50));
 		itemList.add(new Item(Multiply2xTileEntity.class, 2, 50));
