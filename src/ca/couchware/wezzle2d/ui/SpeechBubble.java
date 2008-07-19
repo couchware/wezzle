@@ -138,7 +138,15 @@ public class SpeechBubble extends GraphicEntity
             throw new UnsupportedOperationException(
                 "That alignment is not supported.");
         }        
-    }        
+    }   
+    
+    @Override
+    public void setVisible(boolean visible)
+    {
+        super.setVisible(visible);
+        if (label != null)
+            label.setVisible(visible);               
+    }
     
     @Override
     public void draw()

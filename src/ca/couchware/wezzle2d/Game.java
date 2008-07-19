@@ -1788,10 +1788,7 @@ public class Game extends Canvas implements GameWindowCallback
             if (isRefactoring() == false 
                     && isTileRemoving() == false
                     && pieceMan.isTileDropInProgress() == false)
-                cascadeCount = 0;
-
-            // Animate all the pieces.
-//            boardMan.animate(delta);    
+                cascadeCount = 0; 
             
             // Animation all animations.
             animationMan.animate(delta);
