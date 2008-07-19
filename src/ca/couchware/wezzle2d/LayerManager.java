@@ -117,6 +117,23 @@ public class LayerManager
         }
     }    
     
+    public void show(final int layerNum)
+    {
+        if (layerExists(layerNum) == false)
+            return;
+        
+        if (hiddenLayers[layerNum] == false)
+            return;
+        
+        hiddenLayers[layerNum] = false;
+        
+        // Grab the layer.
+        final ArrayList<Drawable> layer = layerList.get(layerNum);
+        
+        for (Drawable d : layer)
+            d.setDirty(true);
+    }
+    
     public void hide(final int layerNum)
     {             
         if (layerExists(layerNum) == false)
@@ -134,21 +151,13 @@ public class LayerManager
             d.setDirty(true);
     }
     
-    public void show(final int layerNum)
+    public void toFront(final Drawable d, int layerNum)
     {
-        if (layerExists(layerNum) == false)
-            return;
-        
-        if (hiddenLayers[layerNum] == false)
-            return;
-        
-        hiddenLayers[layerNum] = false;
-        
-        // Grab the layer.
-        final ArrayList<Drawable> layer = layerList.get(layerNum);
-        
-        for (Drawable d : layer)
-            d.setDirty(true);
+        if (layerExists(layerNum) == false)     
+            return;        
+                
+        remove(d, layerNum);
+        add(d, layerNum);
     }
     
     /**
@@ -291,7 +300,9 @@ public class LayerManager
         
         // Check if layer exists then error out.
         if (layerNum >= layerList.size())
-        {                                   
+        {      
+            Util.handleWarning("Layer does not exist!", 
+                    "LayerManager#layerExists");
             return false;                    
         }
         else

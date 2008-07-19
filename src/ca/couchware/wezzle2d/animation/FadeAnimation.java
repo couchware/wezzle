@@ -22,6 +22,16 @@ public class FadeAnimation extends Animation
     final static protected int DEFAULT_DURATION = 750;
     
     /**
+     * The minimum opacity the fade should go to.
+     */
+    protected int minOpacity = 0;
+    
+    /**
+     * The maximum opacity the fade should go to.
+     */
+    protected int maxOpacity = 100;
+    
+    /**
      * The fade possibilities.
      */
     public static enum FadeType
@@ -119,17 +129,19 @@ public class FadeAnimation extends Animation
             {
                 case IN:      
                 case LOOP_IN:
-                    entity.setOpacity(
-                            Util.scaleInt(
-                            0, duration, 0, 100, (int) counter - wait));
-                    
+                   
+                    int i = Util.scaleInt(0, duration, 
+                            minOpacity, maxOpacity, (int) counter - wait);
+                    entity.setOpacity(i);
+                            
                     break;
                 
                 case OUT:
                 case LOOP_OUT:
-                    entity.setOpacity(
-                            100 - Util.scaleInt(
-                            0, duration, 0, 100, (int) counter - wait));                
+                    
+                    int o = Util.scaleInt(0, duration, 
+                            minOpacity, maxOpacity, (int) counter - wait);
+                    entity.setOpacity(maxOpacity - o + minOpacity);                         
                     
                     break;
                    
@@ -175,5 +187,26 @@ public class FadeAnimation extends Animation
     public FadeType getType()
     {
         return type;
-    }        
+    }
+
+    public int getMaxOpacity()
+    {
+        return maxOpacity;
+    }
+
+    public void setMaxOpacity(int maxOpacity)
+    {
+        this.maxOpacity = maxOpacity;
+    }
+
+    public int getMinOpacity()
+    {
+        return minOpacity;
+    }
+
+    public void setMinOpacity(int minOpacity)
+    {
+        this.minOpacity = minOpacity;
+    }
+        
 }

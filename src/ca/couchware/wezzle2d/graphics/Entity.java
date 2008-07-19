@@ -362,4 +362,17 @@ public abstract class Entity implements Drawable, Positionable
         height_ = height;
     }
     
+    /**
+     * This method should be run whenever you are done with an entity to
+     * clean up things like animations and resources.
+     */
+    public void dispose()
+    {
+        // Release the draw rectangle.
+        drawRect = null;
+        
+        // Release the alignment.
+        alignment = null;        
+    }
+    
 }

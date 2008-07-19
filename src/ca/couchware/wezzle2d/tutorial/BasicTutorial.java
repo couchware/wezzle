@@ -5,14 +5,17 @@
 
 package ca.couchware.wezzle2d.tutorial;
 
+import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import static ca.couchware.wezzle2d.graphics.Positionable.Alignment;
 import static ca.couchware.wezzle2d.ui.SpeechBubble.BubbleType;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
+import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.piece.PieceDot;
 import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.ui.SpeechBubble;
+import ca.couchware.wezzle2d.ui.Label;
+import ca.couchware.wezzle2d.ui.MultiLabel;
 import java.util.EnumSet;
 
 /**
@@ -24,10 +27,13 @@ public class BasicTutorial extends Tutorial
 {   
     
     /**
-     * The speech bubble that instructs the player where to click.
+     * The text that directs the user.
      */
-    private SpeechBubble bubble;
+    Label label;
     
+    /**
+     * The constructor.
+     */
     public BasicTutorial()
     {
         // This tutorial has a single rule.  It activates on level one.
@@ -45,17 +51,35 @@ public class BasicTutorial extends Tutorial
         game.pieceMan.reverseRestrictionBoard();
         game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
         
+        // Create the text that instructs the user to click the block.
+        label = new MultiLabel(280, 166, 22);
+        label.setColor(Game.TEXT_COLOR);
+        label.setSize(16);
+        label.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT));
+        label.setText(
+                "Lines are made by lining\n" +
+                "up 3 tiles of the same\n" +
+                "colour.\n" +
+                " \n" +
+                "To make a line, click the\n" +
+                "red tile to remove it."
+                );
+        game.layerMan.add(label, Game.LAYER_TILE);
+        
         // Create the speech bubble and add it to the layer manaager.
         // The speech bubble will be positioned over the button right
         // corner of the board.
-        bubble = new SpeechBubble(
-                    game.boardMan.getX(),
-                    game.boardMan.getY() + game.boardMan.getHeight()
-                    - game.boardMan.getCellHeight() / 2,
-                    BubbleType.HORIZONTAL,
-                    "Click here"                    
-                );        
-        game.layerMan.add(bubble, Game.LAYER_UI);
+//        bubble = new SpeechBubble(
+//                    game.boardMan.getX(),
+//                    game.boardMan.getY() + game.boardMan.getHeight()
+//                    - game.boardMan.getCellHeight() / 2,
+//                    BubbleType.HORIZONTAL,
+//                    "Click here"                    
+//                );        
+//        game.layerMan.add(bubble, Game.LAYER_UI);
+        
+        // Create text.
+        
         
         // Stop the piece manager from dropping.
         game.pieceMan.setTileDropOnCommit(false);
@@ -67,10 +91,13 @@ public class BasicTutorial extends Tutorial
         // Clear it first.
         game.boardMan.clearBoard();
         
-        // Create bottom row.
-        game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.GREEN);
-        
+        // Create bottom row.        
+        TileEntity t = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
+                TileEntity.class, TileColor.RED);        
+        FadeAnimation a = new FadeAnimation(FadeType.LOOP_OUT, 0, 1200, t);
+        a.setMinOpacity(30);       
+        game.animationMan.add(a);
+                
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
                 TileEntity.class, TileColor.BLUE);
         
@@ -116,9 +143,7 @@ public class BasicTutorial extends Tutorial
     @Override
     protected void finishTutorial(Game game)
     {                
-        // Remove the bubble.
-        game.layerMan.remove(bubble, Game.LAYER_UI);
-        bubble = null;
+                
     }
 
 }

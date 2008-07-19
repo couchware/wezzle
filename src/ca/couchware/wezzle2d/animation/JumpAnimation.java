@@ -12,12 +12,7 @@ import ca.couchware.wezzle2d.util.XYPosition;
  * @author cdmckay
  */
 public class JumpAnimation extends Animation
-{                                    
-    /**
-     * Reference to the layer manager.
-     */
-    final private LayerManager layerMan;       
-    
+{                                       
     /**
      * The entity being float faded.
      */
@@ -61,8 +56,7 @@ public class JumpAnimation extends Animation
             final double v,
             final int theta,
             final double g,     
-            final int duration,
-            final LayerManager layerMan,
+            final int duration,            
             final Entity entity)
     {                
         // Invoke super constructor.
@@ -78,16 +72,10 @@ public class JumpAnimation extends Animation
         // Record other values.
         this.theta = theta;
         this.g = g;        
-        this.duration = duration;
-        
-        // Set reference to layer manager.
-        this.layerMan = layerMan;
+        this.duration = duration;              
         
         // Set a reference to the entity.
-        this.entity = entity;                                           
-        
-        // Add the floating text to the layer manager.
-        layerMan.add(entity, Game.LAYER_EFFECT);
+        this.entity = entity;            
     }       
 
     public void nextFrame(long delta)
@@ -110,8 +98,7 @@ public class JumpAnimation extends Animation
         
         if (counter > duration)   
         {
-            done = true;                    
-            layerMan.remove(entity, Game.LAYER_EFFECT);
+            done = true;                                            
         }
     }
     

@@ -106,5 +106,22 @@ public abstract class Animation
     {
         this.delay = delay;
     }
+    
+    /**
+     * This method is run when the animation is first loaded by the
+     * animation manager.
+     */
+    public void onStart()
+    {
+        // To be overridden.
+    }
+    
+    /**
+     * This method is run when the animation is finished running.
+     */
+    public void onFinish()
+    {
+        
+    }
         
 }

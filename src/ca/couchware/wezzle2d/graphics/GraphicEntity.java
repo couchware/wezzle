@@ -85,22 +85,15 @@ public class GraphicEntity extends Entity
         setDirty(true);
     }        
     
-    /**
-     * Advances the animation depending on the amount of time that has passed.
-     * 
-     * @param delta The amount of time that has passed.
-     */
-    public void animate(long delta)
+    @Override
+    public void dispose()
     {
-        // Ignore if we have no animation.
-        if (animation == null || animation.isDone() == true)
-            return;
+        // Invoke super.
+        super.dispose();
         
-        // Pass through to the animation.
-        animation.nextFrame(delta);  
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }   
+        // Release variable objects.
+        sprite = null;
+        animation = null;
+    }
     
 }

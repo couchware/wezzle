@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.animation.Animation;
 import ca.couchware.wezzle2d.util.Util;
@@ -27,11 +27,13 @@ public class AnimationManager
     public void add(Animation a)
     {
         animationList.add(a);
+        a.onStart();
     }
     
     public void remove(Animation a)
     {
-        animationList.remove(a);
+        if (contains(a) == true)
+            animationList.remove(a);
     }
     
     public boolean contains(Animation a)
@@ -50,11 +52,14 @@ public class AnimationManager
         {
             Animation a = (Animation) it.next();
             if (a.isDone() == true)
+            {
+                a.onFinish();
                 it.remove();
+            }
             else            
                 a.nextFrame(delta);            
         }
         
-        //Util.handleMessage(animationList.size() + "", Thread.currentThread());
+        //Util.handleMessage(animationList.size() + "", "AnimationManager#animate");
     }
 }

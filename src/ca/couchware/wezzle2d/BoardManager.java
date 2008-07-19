@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.animation.AnimationManager;
 import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
@@ -47,6 +48,11 @@ public class BoardManager
      * The default number of colours.
      */
     final private int DEFAULT_NUMBER_OF_COLORS = 5;
+    
+    /**
+     * The animation manager.
+     */
+    final private AnimationManager animationMan;
     
     /**
      * The layer manager.
@@ -154,14 +160,17 @@ public class BoardManager
 	/**
 	 * The constructor.
 	 */
-	public BoardManager(final LayerManager layerMan,
+	public BoardManager(
+            final AnimationManager animationMan,
+            final LayerManager layerMan,
             final int x, final int y, 
             final int columns, final int rows)
 	{
         // Board is initially visible.
         this.visible = true;
         
-        // Keep reference to layer manager.
+        // Keep reference to managers.
+        this.animationMan = animationMan;
         this.layerMan = layerMan;
         
 		// Set the cell width and height. Hard-coded to 32x32 for now.
@@ -622,19 +631,7 @@ public class BoardManager
         setDirty(true);
         
 		return moreMovement;
-	}
-    
-    /**
-     * Animates all tiles with an animation.
-     */
-    public void animate(long delta)
-    {
-        for (int i = 0; i < cells; i++)
-            if (board[i] != null)
-            {
-                board[i].animate(delta);                
-            }
-    }
+	}    
 	
 	/**
 	 * Counts all the tiles that are under the tile at the specified
@@ -799,17 +796,23 @@ public class BoardManager
         // Sanity check.
 		assert(index >= 0 && index < cells);
 
+        // Get the tile.
+        TileEntity t = getTile(index);
+        
         // If this is an item, decrement the item count.
-        if(getTile(index).getClass() != TileEntity.class)
+        if (t.getClass() != TileEntity.class)
             this.decrementNumberOfItems();
         
         // Remove from layer manager.
-        if (layerMan.remove(getTile(index), Game.LAYER_TILE) == false)
+        if (layerMan.remove(t, Game.LAYER_TILE) == false)
             throw new IllegalStateException(
                     "Tile could not be removed from the layer manager.");
         
         // Remove the tile.
         setTile(index, null);  
+        
+        // Remove the animation.
+        animationMan.remove(t.getAnimation());
         
         // Decrement tile counter.
         numberOfTiles--;
@@ -1080,11 +1083,10 @@ public class BoardManager
     
     /**
      * Animates the showing of the board.
-     * 
-     * @param animationMan The animation manager to add the animations to.
+     *      
      * @return An animation that can be checked for doneness.
      */
-    public Animation animateShow(final AnimationManager animationMan)
+    public Animation animateShow()
     {
         // Sanity check.
         assert(animationMan != null);
@@ -1109,6 +1111,7 @@ public class BoardManager
                 Animation a = new FadeAnimation(FadeType.IN, 0, 700, t);
                 a.setDelay(delay);
                 t.setAnimation(a);
+                animationMan.add(a);
                 
                 tileFound = true;
                 tileCount++;
@@ -1138,11 +1141,10 @@ public class BoardManager
     
     /**
      * Animates the hiding of the board.
-     * 
-     * @param animationMan The animation manager to add the animations to.
+     *      
      * @return An animation that can be checked for doneness.
      */
-    public Animation animateHide(final AnimationManager animationMan)
+    public Animation animateHide()
     {
         // Sanity check.
         assert(animationMan != null);
@@ -1167,6 +1169,7 @@ public class BoardManager
                 Animation a = new FadeAnimation(FadeType.OUT, 0, 700, t);
                 a.setDelay(delay);
                 t.setAnimation(a);
+                animationMan.add(a);
                 
                 tileFound = true;
                 tileCount++;

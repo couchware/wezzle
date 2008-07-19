@@ -97,6 +97,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
 	 */
 	private PieceGrid pieceGrid;       
 	
+    /**
+	 * The animation manager that animations are run with.
+	 */
+	private AnimationManager animationMan;
+    
 	/**
 	 * The board manager the piece manager to attached to.
 	 */
@@ -117,9 +122,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
 	 * 
 	 * @param boardMan The board manager.
 	 */
-	public PieceManager(BoardManager boardMan)
+	public PieceManager(AnimationManager animationMan, BoardManager boardMan)
 	{       
 		// Set the reference.
+        this.animationMan = animationMan;
 		this.boardMan = boardMan;
         
         // Default the mouse buttons to not clicked.
@@ -344,7 +350,8 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 continue;
 
             // Make sure they have a pulse animation.                   
-            t.setAnimation(new PulseAnimation(t, period));           
+            t.setAnimation(new PulseAnimation(t, period));    
+            animationMan.add(t.getAnimation());
         }
     }
     
@@ -389,11 +396,12 @@ public class PieceManager implements MouseListener, MouseMotionListener
             if (t == null)
                 continue;
 
-            Animation a = t.getAnimation();
+            Animation a = t.getAnimation();            
 
             if (a != null)
                 a.cleanUp();
 
+            animationMan.remove(a);
             t.setAnimation(null);
         }
     }
@@ -537,9 +545,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     for (int i = 0; i < tileDropped.length; i++)
                     {
                         if (tileDropped[i] != null)
-                        {                            
-                            tileDropped[i].setAnimation(
-                                    new ZoomInAnimation(tileDropped[i]));
+                        {           
+                            Animation a = new ZoomInAnimation(tileDropped[i]);
+                            tileDropped[i].setAnimation(a);
+                            animationMan.add(a);
                         }
                     }
                  
@@ -689,11 +698,12 @@ public class PieceManager implements MouseListener, MouseMotionListener
         label.setColor(Game.SCORE_PIECE_COLOR);
         label.setSize(game.scoreMan.determineFontSize(deltaScore));
         
-        XAnimation xa = new XAnimation(2);
-        xa.set(0, new FadeAnimation(FadeType.OUT, label));
-        xa.set(1, new FloatAnimation(0, -1, game.layerMan, label));                    
-        game.animationMan.add(xa);
-        xa = null;
+        Animation a1 = new FadeAnimation(FadeType.OUT, label);
+        Animation a2 = new FloatAnimation(0, -1, game.layerMan, label);                    
+        game.animationMan.add(a1);
+        game.animationMan.add(a2);
+        a1 = null;
+        a2 = null;
         
         // Release references.
         p = null;

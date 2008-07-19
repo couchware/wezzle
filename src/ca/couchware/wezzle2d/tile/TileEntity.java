@@ -324,6 +324,6 @@ public class TileEntity extends GraphicEntity implements Movable
         
         width_ = width;
         height_ = height;
-    }			     
+    }			             
     
 }

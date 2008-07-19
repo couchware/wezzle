@@ -21,7 +21,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class MultilineLabel extends Label
+public class MultiLabel extends Label
 {
     
     /**
@@ -43,7 +43,7 @@ public class MultilineLabel extends Label
      * @param separation The amount of space, in pixels, between each labels
      *                   anchor point.
      */
-    public MultilineLabel(final int x, final int y, final int separation)
+    public MultiLabel(final int x, final int y, final int separation)
     {
         // Invoke super.
         super(x, y);
