@@ -87,7 +87,8 @@ public class BasicTutorial extends Tutorial
         game.layerMan.add(bubble, Game.LAYER_UI);    
         
         BlinkAnimation a = new BlinkAnimation(DurationType.CONTINUOUS, 
-                2000, 300, bubble);        
+                4000, 300, bubble);        
+//        FadeAnimation a = new FadeAnimation(FadeType.LOOP_OUT, bubble);
         game.animationMan.add(a);
         
         // Stop the piece manager from dropping.

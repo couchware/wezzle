@@ -141,6 +141,14 @@ public class SpeechBubble extends GraphicEntity
     }   
     
     @Override
+    public void setOpacity(int opacity)
+    {
+        super.setOpacity(opacity);
+        if (label != null)
+            label.setOpacity(opacity);
+    }
+    
+    @Override
     public void setVisible(boolean visible)
     {
         super.setVisible(visible);
