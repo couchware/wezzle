@@ -18,7 +18,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class UIWindow extends Entity
+public class Window extends Entity
 {
 
     /**
@@ -73,7 +73,7 @@ public class UIWindow extends Entity
      * @param width
      * @param height
      */
-    public UIWindow(GameWindow window, int x, int y, int width, int height)
+    public Window(GameWindow window, int x, int y, int width, int height)
     {
         // Set window reference.
         this.window = window;

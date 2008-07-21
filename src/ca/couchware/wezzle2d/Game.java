@@ -880,7 +880,7 @@ public class Game extends Canvas implements GameWindowCallback
         Tutorial t = new BasicTutorial(); 
         t.updateLogic(this);        
         
-//        UIWindow w = new UIWindow(window, 400, 300, 200, 200);
+//        Window w = new Window(window, 400, 300, 200, 200);
 //        w.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
 //        w.setOpacity(95);
 //        layerMan.add(w, Game.LAYER_UI);
