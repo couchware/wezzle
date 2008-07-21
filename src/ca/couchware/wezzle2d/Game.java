@@ -196,7 +196,7 @@ public class Game extends Canvas implements GameWindowCallback
     /** 
      * The manager in charge of the moves. 
      */
-    public MoveManager moveMan;	
+    public StatManager statMan;	
     
     /**
      * The manager in charge of music.
@@ -358,19 +358,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The set of star tile indices that will be removed.
      */
-    private Set<Integer> rocketRemovalSet;  
-    
-    /**
-     * The number of lines cleared this cycle, where a cycle is defined as the
-     * period from the moment the piece is clicked, to when the board finally
-     * stops finding lines.
-     */
-    private int cycleLineCount;
-    
-    /**
-     * The total number of lines cleared.
-     */
-    private int totalLineCount;
+    private Set<Integer> rocketRemovalSet;           
     
     /**
      * If true, the board show animation will be activated next loop.
@@ -391,12 +379,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * If true, the game will end next loop.
      */
-    private boolean activateGameOver = false;                
-    
-    /**
-     * The number of cascades thus far.
-     */
-    private int cascadeCount;         
+    private boolean activateGameOver = false;                        
         
 	/**
 	 * The time at which the last rendering looped started from the point of
@@ -595,16 +578,7 @@ public class Game extends Canvas implements GameWindowCallback
         
         //----------------------------------------------------------------------
         // Initialize attributes.
-        //----------------------------------------------------------------------
-        
-        // Set the cycle line count to 0.
-        setCycleLineCount(0);
-        
-        // Set the total line count to 0.       
-        setTotalLineCount(0);
-        
-        // Set cascade count to 0.
-        setCascadeCount(0);
+        //----------------------------------------------------------------------             
         
         // Initialize the last line match.
         lastMatchSet = new HashSet<Integer>();
@@ -672,7 +646,7 @@ public class Game extends Canvas implements GameWindowCallback
         musicMan = new MusicManager(executor, propertyMan);                  
         
         // Create the move manager.
-        moveMan = new MoveManager();
+        statMan = new StatManager();
         
         // Create the time manager.
 		timerMan = new TimerManager(worldMan.getInitialTimer()); 
@@ -873,14 +847,6 @@ public class Game extends Canvas implements GameWindowCallback
         // Start        
         //----------------------------------------------------------------------                      
         
-//        Tutorial t = new BasicTutorial(); 
-//        t.updateLogic(this);        
-        
-//        Window w = new Window(window, 400, 300, 200, 200);
-//        w.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        w.setOpacity(95);
-//        layerMan.add(w, Game.LAYER_UI);
-                
         // Start the game.
 		startGame();
 	}
@@ -898,23 +864,11 @@ public class Game extends Canvas implements GameWindowCallback
      * This method is used to update the values shown on the pause screen.
      */
     private void updatePauseGroup()
-    {
-        // Calculate lines per move.
-        double lpm;
-        if (moveMan.getMoveCount() == 0)
-            lpm = 0.0;
-        else
-        {
-            lpm = (double) totalLineCount 
-                / (double) moveMan.getMoveCount();
-            lpm = lpm * 100;
-            lpm = ((double) (int) lpm) / 100.0;
-        }
-        
+    {               
         // Update the pause screen date.
-        pauseGroup.setMoves(moveMan.getMoveCount());
-        pauseGroup.setLines(totalLineCount);
-        pauseGroup.setLinesPerMove(lpm);         
+        pauseGroup.setMoves(statMan.getMoveCount());
+        pauseGroup.setLines(statMan.getLineCount());
+        pauseGroup.setLinesPerMove(statMan.getLinesPerMove());         
     }
     
     /**
@@ -1296,8 +1250,11 @@ public class Game extends Canvas implements GameWindowCallback
                     // Look for matches.
                     tileRemovalSet.clear();
                     
-                    cycleLineCount += boardMan.findXMatch(tileRemovalSet);
-                    cycleLineCount += boardMan.findYMatch(tileRemovalSet);
+                    statMan.incrementCycleLineCount(
+                            boardMan.findXMatch(tileRemovalSet));
+                    
+                    statMan.incrementCycleLineCount(
+                            boardMan.findYMatch(tileRemovalSet));
                     
                     // Copy the match into the last line match holder.
                     lastMatchSet.clear();
@@ -1339,7 +1296,7 @@ public class Game extends Canvas implements GameWindowCallback
                 activateLineRemoval = false;
 
                 // Increment cascade.
-                cascadeCount++;
+                statMan.incrementChainCount();
                 
                 // Calculate score, unless no-score flag is set.
                 if (tileRemovalNoScore == false)
@@ -1347,7 +1304,7 @@ public class Game extends Canvas implements GameWindowCallback
                     final int deltaScore = scoreMan.calculateLineScore(
                             tileRemovalSet, 
                             ScoreType.LINE,
-                            cascadeCount);                               
+                            statMan.getChainCount());                               
                 
                     // Show the SCT.
                     XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
@@ -1459,7 +1416,7 @@ public class Game extends Canvas implements GameWindowCallback
                 activateRocketRemoval = false;
                 
                 // Increment cascade.
-                cascadeCount++;
+                statMan.incrementChainCount();
                 
                 // Used below.
                 int deltaScore = 0;
@@ -1485,7 +1442,7 @@ public class Game extends Canvas implements GameWindowCallback
                 deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
                         ScoreType.STAR, 
-                        cascadeCount);
+                        statMan.getChainCount());
                 
                 // Show the SCT.
                 XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
@@ -1578,7 +1535,7 @@ public class Game extends Canvas implements GameWindowCallback
                 activateStarRemoval = false;
                 
                 // Increment cascade.
-                cascadeCount++;
+                statMan.incrementChainCount();
                 
                 // Used below.
                 int deltaScore = 0;
@@ -1604,7 +1561,7 @@ public class Game extends Canvas implements GameWindowCallback
                 deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
                         ScoreType.STAR, 
-                        cascadeCount);
+                        statMan.getChainCount());
                 
                 // Show the SCT.
                 XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
@@ -1664,7 +1621,7 @@ public class Game extends Canvas implements GameWindowCallback
                 activateBombRemoval = false;
                 
                 // Increment cascade.
-                cascadeCount++;
+                statMan.incrementChainCount();
 
                 // Used below.
                 int deltaScore = 0;
@@ -1677,7 +1634,7 @@ public class Game extends Canvas implements GameWindowCallback
                 deltaScore = scoreMan.calculateLineScore(
                         tileRemovalSet, 
                         ScoreType.BOMB, 
-                        cascadeCount);
+                        statMan.getChainCount());
                 
                 // Show the SCT.
                 XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
@@ -1791,7 +1748,7 @@ public class Game extends Canvas implements GameWindowCallback
             if (isRefactoring() == false 
                     && isTileRemoving() == false
                     && pieceMan.isTileDropInProgress() == false)
-                cascadeCount = 0; 
+                statMan.resetChainCount(); 
             
             // Animation all animations.
             animationMan.animate(delta);
@@ -1846,8 +1803,8 @@ public class Game extends Canvas implements GameWindowCallback
             progressBar.setProgress(scoreMan.getLevelScore());
             
             // Reset the line count.
-            totalLineCount += cycleLineCount;
-            cycleLineCount = 0;
+            statMan.incrementLineCount(statMan.getCycleLineCount());
+            statMan.resetCycleLineCount();
         }                
                 
         // Whether or not the frame was updated.
@@ -1903,37 +1860,7 @@ public class Game extends Canvas implements GameWindowCallback
     
     //--------------------------------------------------------------------------
     // Getters and Setters
-    //--------------------------------------------------------------------------
-    
-    public int getCascadeCount()
-    {
-        return cascadeCount;
-    }
-
-    public void setCascadeCount(int cascadeCount)
-    {
-        this.cascadeCount = cascadeCount;
-    }
-            
-    public int getCycleLineCount()
-    {
-        return cycleLineCount;
-    }
-
-    public void setCycleLineCount(int cycleLineCount)
-    {
-        this.cycleLineCount = cycleLineCount;
-    }
-    
-    public int getTotalLineCount()
-    {
-        return totalLineCount;
-    }        
-    
-    public void setTotalLineCount(int totalLineCount)
-    {
-        this.totalLineCount = totalLineCount;
-    }
+    //--------------------------------------------------------------------------       
 
     //--------------------------------------------------------------------------
     // Window Methods

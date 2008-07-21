@@ -61,6 +61,10 @@ public class BasicTutorial extends Tutorial
     @Override
     protected void initializeTutorial(Game game)
     {
+        // Save the manager states.
+        game.statMan.saveState();
+        game.scoreMan.saveState();
+        
         // Turn off the game in progress variable in the world manager.
         game.worldMan.setGameInProgress(false);
         
@@ -142,14 +146,14 @@ public class BasicTutorial extends Tutorial
         game.animationMan.add(bubbleAnimation);               
         
         // Reset move counter.
-        game.moveMan.resetMoveCount();
+        game.statMan.resetMoveCount();
     }
 
     @Override
     protected boolean updateTutorial(Game game)
     {
         // If the move count is not 0, then the tutorial is over.
-        if (game.moveMan.getMoveCount() != 0)
+        if (game.statMan.getMoveCount() != 0)
         {            
             return false;
         }
@@ -159,12 +163,23 @@ public class BasicTutorial extends Tutorial
 
     @Override
     protected void finishTutorial(final Game game)
-    {                
+    {   
+        // Load the score managers state.
+        game.statMan.loadState();
+        game.scoreMan.loadState();
+        
+        // Fade the board out.
+        game.startBoardHideAnimation();
+        game.pieceMan.stopAnimation();
+        
+        // Stop the piece animation.
+        game.pieceMan.getPieceGrid().setVisible(false);
+        
         // Remove the bubble animation.
         game.animationMan.remove(bubbleAnimation);
                
         // Fade out the bubble.
-        game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 200, bubble)
+        game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 500, bubble)
         {
            // Remove the speech bubble.
            @Override
@@ -176,7 +191,7 @@ public class BasicTutorial extends Tutorial
         });        
         
         // Fade out the label.
-        game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 200, label)
+        game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 500, label)
         {
            // Remove the label.
            @Override
@@ -191,10 +206,7 @@ public class BasicTutorial extends Tutorial
         game.pieceMan.clearRestrictionBoard();
         
         // Turn on tile drops.
-        game.pieceMan.setTileDropOnCommit(true);
-        
-        // Fade the board out.
-        game.startBoardHideAnimation();
+        game.pieceMan.setTileDropOnCommit(true);                
     }
 
 }

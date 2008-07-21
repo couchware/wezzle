@@ -152,8 +152,8 @@ public class GameOverGroup extends Group
         
         game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
                        
-        game.moveMan.setMoveCount(0);
-        game.setTotalLineCount(0);
+        game.statMan.resetMoveCount();
+        game.statMan.resetLineCount();
 
         // Create board and make it invisible.
         game.boardMan.setVisible(false);

@@ -127,8 +127,15 @@ public class RectangularBooleanButton extends BooleanButton
     @Override
     public void drawHover()
     {
-        spriteNormal.draw(x + offsetX, y + offsetY, 
-                width, height, 0.0, hoverOpacity);
+//        if (opacity == hoverOpacity)
+//        {
+            spriteNormal.draw(x + offsetX, y + offsetY, 
+                    width, height, 0.0, hoverOpacity);
+//        }
+//        else
+//        {
+//            
+//        }
         
         buttonLabel.setX(x + offsetX + width / 2);
         buttonLabel.setY(y + offsetY + height / 2);

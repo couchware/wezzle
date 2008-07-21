@@ -95,11 +95,11 @@ public class Rule
                 break;
                 
             case MOVES:
-                x = game.moveMan.getMoveCount();
+                x = game.statMan.getMoveCount();
                 break;
                 
             case LINES:
-                x = game.getTotalLineCount();
+                x = game.statMan.getLineCount();
                 break;
                 
             default:

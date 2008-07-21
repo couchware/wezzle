@@ -724,7 +724,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 game.worldMan.calculateDropNumber(game, this.piece.getSize());
 
         // Increment the moves.
-        game.moveMan.incrementMoveCount();
+        game.statMan.incrementMoveCount();
 
         // Play the sound.
         game.soundMan.play(AudioTrack.SOUND_CLICK);

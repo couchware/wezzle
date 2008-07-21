@@ -68,7 +68,7 @@ import java.util.Set;
     /**
      * The hash map used to save the score manager's state.
      */
-    private EnumMap<Keys, Object> saveState;
+    private EnumMap<Keys, Object> managerState;
     
     /**
      * The board manager.
@@ -113,7 +113,7 @@ import java.util.Set;
             HighScoreManager highScoreMan)
     {
         // Create the save state.
-        saveState = new EnumMap<Keys, Object>(Keys.class);
+        managerState = new EnumMap<Keys, Object>(Keys.class);
         
         // Store reference to board manager.
         this.boardMan = boardMan;
@@ -405,28 +405,35 @@ import java.util.Set;
         return fontSize;
     }
 
-    public void save()
+    /**
+     * Save the state.
+     */
+    public void saveState()
     {
-        saveState.put(Keys.LEVEL_SCORE, levelScore);
-        saveState.put(Keys.TOTAL_SCORE, totalScore);
-        saveState.put(Keys.LEVEL_TARGET, targetLevelScore);
-        saveState.put(Keys.TOTAL_TARGET, targetTotalScore);
-        saveState.put(Keys.HIGH_SCORE, highScore);       
+        managerState.put(Keys.LEVEL_SCORE, levelScore);
+        managerState.put(Keys.TOTAL_SCORE, totalScore);
+        managerState.put(Keys.LEVEL_TARGET, targetLevelScore);
+        managerState.put(Keys.TOTAL_TARGET, targetTotalScore);
+        managerState.put(Keys.HIGH_SCORE, highScore);       
     }
 
-    public void load()
+    /**
+     * Load the state.
+     */
+    public void loadState()
     {                
         // See if there is a save state.
-        if (saveState.isEmpty() == true)
+        if (managerState.isEmpty() == true)
         {
             Util.handleWarning("No save state exists.", "ScoreManager#load");
             return;
         }
         
-        levelScore = (Integer) saveState.get(Keys.LEVEL_SCORE);
-        totalScore = (Integer) saveState.get(Keys.TOTAL_SCORE);;
-        targetLevelScore = (Integer) saveState.get(Keys.LEVEL_TARGET);;
-        targetTotalScore = (Integer) saveState.get(Keys.TOTAL_TARGET);;
-        highScore = (Integer) saveState.get(Keys.HIGH_SCORE);;
+        levelScore = (Integer) managerState.get(Keys.LEVEL_SCORE);
+        totalScore = (Integer) managerState.get(Keys.TOTAL_SCORE);
+        targetLevelScore = (Integer) managerState.get(Keys.LEVEL_TARGET);
+        targetTotalScore = (Integer) managerState.get(Keys.TOTAL_TARGET);
+        highScore = (Integer) managerState.get(Keys.HIGH_SCORE);
     }
+    
 }
