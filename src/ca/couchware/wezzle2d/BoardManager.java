@@ -764,8 +764,11 @@ public class BoardManager
         // Increment tile count.
         numberOfTiles++;
 
-        // Add the tile to the bottom layer too.
-        layerMan.add(t, Game.LAYER_TILE);        
+        // Set the tile visibility to that of the board.
+        t.setVisible(this.isVisible());
+        
+        // Add the tile to the bottom layer too.        
+        layerMan.add(t, Game.LAYER_TILE);               
         
         // Dirty board.
         setDirty(true);
@@ -1403,6 +1406,8 @@ public class BoardManager
     
     public void setVisible(boolean visible)
     {        
+        Util.handleMessage("Board visible: " + visible + ".", 
+                "BoardManager#setVisible");
         this.visible = visible;        
     }   
     

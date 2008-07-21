@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.animation.Animation;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,12 +38,7 @@ public class AnimationManager
     public boolean contains(Animation a)
     {
         return animationList.contains(a);
-    }
-    
-    public Iterator iterator()
-    {
-        return animationList.iterator();
-    }
+    }      
     
     public void animate(final long delta)
     {

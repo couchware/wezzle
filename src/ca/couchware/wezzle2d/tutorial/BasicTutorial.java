@@ -35,6 +35,11 @@ public class BasicTutorial extends Tutorial
     SpeechBubble bubble;
     
     /**
+     * The animation that makes the bubble blink.
+     */
+    BlinkAnimation bubbleAnimation;
+    
+    /**
      * The text that directs the user.
      */
     Label label;
@@ -44,6 +49,9 @@ public class BasicTutorial extends Tutorial
      */
     public BasicTutorial()
     {
+        // Set the name.
+        super("Basic Tutorial");
+        
         // This tutorial has a single rule.  It activates on level one.
         Rule[] rules = new Rule[1];
         rules[0] = new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1);     
@@ -53,6 +61,9 @@ public class BasicTutorial extends Tutorial
     @Override
     protected void initializeTutorial(Game game)
     {
+        // Turn off the game in progress variable in the world manager.
+        game.worldMan.setGameInProgress(false);
+        
         // Set restriction board so that only the bottom left corner is
         // clickable.
         game.pieceMan.clearRestrictionBoard();
@@ -72,25 +83,9 @@ public class BasicTutorial extends Tutorial
                 "To make a line, click the\n" +
                 "red tile to remove it."
                 );
-        game.layerMan.add(label, Game.LAYER_TILE);
-        
-        // Create the speech bubble and add it to the layer manaager.
-        // The speech bubble will be positioned over the button right
-        // corner of the board.
-        bubble = new SpeechBubble(
-                    game.boardMan.getX() + game.boardMan.getCellWidth() / 2,
-                    game.boardMan.getY() + game.boardMan.getHeight() 
-                        - game.boardMan.getCellHeight(),
-                    BubbleType.VERTICAL,
-                    "Click here"                    
-                );        
-        game.layerMan.add(bubble, Game.LAYER_UI);    
-        
-        BlinkAnimation a = new BlinkAnimation(DurationType.CONTINUOUS, 
-                4000, 300, bubble);        
-//        FadeAnimation a = new FadeAnimation(FadeType.LOOP_OUT, bubble);
-        game.animationMan.add(a);
-        
+        game.layerMan.add(label, Game.LAYER_EFFECT);                 
+        game.layerMan.toFront(label, Game.LAYER_EFFECT);
+                
         // Stop the piece manager from dropping.
         game.pieceMan.setTileDropOnCommit(false);
         
@@ -102,10 +97,8 @@ public class BasicTutorial extends Tutorial
         game.boardMan.clearBoard();
         
         // Create bottom row.        
-        TileEntity t = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.RED);        
-        //FadeAnimation a = new FadeAnimation(FadeType.LOOP_OUT, 0, 1200, t);
-        //a.setMinOpacity(30);               
+        game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
+                TileEntity.class, TileColor.RED);                        
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
                 TileEntity.class, TileColor.BLUE);
@@ -128,9 +121,25 @@ public class BasicTutorial extends Tutorial
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
                 TileEntity.class, TileColor.YELLOW);
-        
+
         // Change the piece to the dot.
         game.pieceMan.loadPiece(new PieceDot());
+        
+        // Create the speech bubble and add it to the layer manaager.
+        // The speech bubble will be positioned over the button right
+        // corner of the board.
+        bubble = new SpeechBubble(
+                    game.boardMan.getX() + game.boardMan.getCellWidth() / 2,
+                    game.boardMan.getY() + game.boardMan.getHeight() 
+                        - game.boardMan.getCellHeight(),
+                    BubbleType.VERTICAL,
+                    "Click here"                    
+                );        
+        game.layerMan.add(bubble, Game.LAYER_EFFECT);   
+        game.layerMan.toFront(bubble, Game.LAYER_EFFECT);
+        bubbleAnimation = new BlinkAnimation(DurationType.CONTINUOUS, 
+                4000, 300, bubble);        
+        game.animationMan.add(bubbleAnimation);               
         
         // Reset move counter.
         game.moveMan.resetMoveCount();
@@ -141,8 +150,7 @@ public class BasicTutorial extends Tutorial
     {
         // If the move count is not 0, then the tutorial is over.
         if (game.moveMan.getMoveCount() != 0)
-        {
-            finishTutorial(game);
+        {            
             return false;
         }
         else
@@ -150,9 +158,43 @@ public class BasicTutorial extends Tutorial
     }
 
     @Override
-    protected void finishTutorial(Game game)
+    protected void finishTutorial(final Game game)
     {                
-                
+        // Remove the bubble animation.
+        game.animationMan.remove(bubbleAnimation);
+               
+        // Fade out the bubble.
+        game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 200, bubble)
+        {
+           // Remove the speech bubble.
+           @Override
+           public void onFinish()
+           {
+               // Remove the speech bubble.
+               game.layerMan.remove(bubble, Game.LAYER_EFFECT);                              
+           }
+        });        
+        
+        // Fade out the label.
+        game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 200, label)
+        {
+           // Remove the label.
+           @Override
+           public void onFinish()
+           {
+               // Remove the speech bubble.
+               game.layerMan.remove(label, Game.LAYER_EFFECT);                              
+           }
+        });  
+        
+        // Remove the restriction board.
+        game.pieceMan.clearRestrictionBoard();
+        
+        // Turn on tile drops.
+        game.pieceMan.setTileDropOnCommit(true);
+        
+        // Fade the board out.
+        game.startBoardHideAnimation();
     }
 
 }

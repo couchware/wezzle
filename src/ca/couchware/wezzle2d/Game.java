@@ -166,12 +166,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The current build number.
      */
-    public String buildNumber;
-    
-    /**
-     * The menu manager.
-     */
-    public GroupManager groupMan;
+    public String buildNumber;        
     
     /**
      * The animation manager in charge of animations.
@@ -182,7 +177,17 @@ public class Game extends Canvas implements GameWindowCallback
 	 * The manager in charge of maintaining the board.
 	 */
 	public BoardManager boardMan;
-	
+    
+    /**
+     * The menu manager.
+     */
+    public GroupManager groupMan;
+       
+    /**
+     * The high score manager.
+     */    
+    public HighScoreManager highScoreMan;
+    	
     /**
      * The layer manager.
      */
@@ -192,6 +197,11 @@ public class Game extends Canvas implements GameWindowCallback
      * The manager in charge of the moves. 
      */
     public MoveManager moveMan;	
+    
+    /**
+     * The manager in charge of music.
+     */
+    public MusicManager musicMan;  
     
 	/**
 	 * The manager in charge of moving the piece around with the
@@ -207,32 +217,27 @@ public class Game extends Canvas implements GameWindowCallback
     /** 
      * The manager in charge of score.
      */
-    public ScoreManager scoreMan;
-
-    /**
-     * The high score manager.
-     */    
-    public HighScoreManager highScoreMan;
+    public ScoreManager scoreMan;        
     
     /** 
      * The manager in charge of sound.
      */
-    public SoundManager soundMan;
+    public SoundManager soundMan;             
+    
+    /** 
+	 * The manager in charge of keeping track of the time. 
+	 */
+	public TimerManager timerMan;
     
     /**
-     * The manager in charge of music.
+     * The manager in charge of running tutorials.
      */
-    public MusicManager musicMan;       
+    public TutorialManager tutorialMan;   
     
     /**
      * The Manager in charge of the world.
      */
-    public WorldManager worldMan;
-    
-	/** 
-	 * The manager in charge of keeping track of the time. 
-	 */
-	public TimerManager timerMan;
+    public WorldManager worldMan;    	
     
     /**
      * The manager in charge of achievements
@@ -266,17 +271,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The executor used by certain managers.
      */
-    private Executor executor;
-    
-    /**
-     * If true, the tutorial will be activated next loop.
-     */
-    private boolean activateTutorial = false;
-    
-    /**
-     * If true, the tutorial is in progress.
-     */
-    private boolean tutorialInProgress = false;
+    private Executor executor;       
     
     /**
      * If true, refactor will be activated next loop.
@@ -640,6 +635,12 @@ public class Game extends Canvas implements GameWindowCallback
         // Create the animation manager.
         animationMan = new AnimationManager();                
         
+        // Create the tutorial manager.
+        tutorialMan = new TutorialManager();
+        
+        // Add the tutorials to it.
+        tutorialMan.add(new BasicTutorial());
+        
 		// Create the board manager.
 		boardMan = new BoardManager(animationMan, layerMan, 272, 139, 8, 10);        
         
@@ -662,12 +663,7 @@ public class Game extends Canvas implements GameWindowCallback
         scoreMan = new ScoreManager(boardMan, propertyMan, highScoreMan);
 
         // Create the world manager.
-        worldMan = new WorldManager(propertyMan);
-        
-        // Generate the game board.
-        boardMan.generateBoard(worldMan.getItemList());               
-        boardMan.setVisible(false);
-        startBoardShowAnimation();
+        worldMan = new WorldManager(propertyMan);                
         
         // Create the sound manager.
         soundMan = new SoundManager(executor, propertyMan);
@@ -877,8 +873,8 @@ public class Game extends Canvas implements GameWindowCallback
         // Start        
         //----------------------------------------------------------------------                      
         
-        Tutorial t = new BasicTutorial(); 
-        t.updateLogic(this);        
+//        Tutorial t = new BasicTutorial(); 
+//        t.updateLogic(this);        
         
 //        Window w = new Window(window, 400, 300, 200, 200);
 //        w.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
@@ -952,6 +948,8 @@ public class Game extends Canvas implements GameWindowCallback
        return (isRefactoring()               
                || isTileRemoving()
                || gameOverGroup.isActivated() == true
+               || activateBoardShowAnimation == true
+               || activateBoardHideAnimation == true
                || this.boardAnimation != null);
     }
     
@@ -1146,14 +1144,14 @@ public class Game extends Canvas implements GameWindowCallback
         // Update all the group logic.
         groupMan.updateLogic(this);
         
-        // Update the music manager logic.
+        // Uphdate the music manager logic.
         musicMan.updateLogic(this);
 
         // Check to see if we should be showing the board.
         if (activateBoardShowAnimation == true)
         {
-            // Start board show animation.
-            boardAnimation = boardMan.animateShow();     
+            // Start board show animation.            
+            boardAnimation = boardMan.animateShow();                 
             boardMan.setDirty(true);
 
             // Hide the piece.
@@ -1166,7 +1164,7 @@ public class Game extends Canvas implements GameWindowCallback
         // Check to see if we should be hiding the board.
         if (activateBoardHideAnimation == true)
         {
-            // Start board hide animation.
+            // Start board hide animation.            
             boardAnimation = boardMan.animateHide(); 
             boardMan.setDirty(true);
 
@@ -1813,20 +1811,36 @@ public class Game extends Canvas implements GameWindowCallback
             // Update piece manager logic and then draw it.
             pieceMan.updateLogic(this);
             
+             // Update the tutorial manager logic.
+            tutorialMan.updateLogic(this);
+            
             // Update the world manager logic.
-            worldMan.updateLogic(this);
+            worldMan.updateLogic(this);                       
                        
             // Draw the timer text.
             timerLabel.setText(String.valueOf(timerMan.getTime()));		
-
-            // Draw the score text.
-            scoreLabel.setText(String.valueOf(scoreMan.getTotalScore()));
-
+           
             // Draw the high score text.
             highScoreLabel.setText(String.valueOf(scoreMan.getHighScore()));
 
-            // Set the level text.
-            levelLabel.setText(String.valueOf(worldMan.getLevel()));
+            
+            if (tutorialMan.isTutorialInProgress() == false)
+            {
+                // Set the level text.
+                levelLabel.setText(String.valueOf(worldMan.getLevel()));
+                
+                // Set the score text.
+                scoreLabel.setText(String.valueOf(scoreMan.getTotalScore()));
+            }
+            else
+            {
+                // Set the level text.
+                levelLabel.setText(
+                        tutorialMan.getTutorialInProgress().getName());
+                
+                // Set the score text.
+                scoreLabel.setText("--");
+            }
             
             // Update the progress bar.
             progressBar.setProgress(scoreMan.getLevelScore());

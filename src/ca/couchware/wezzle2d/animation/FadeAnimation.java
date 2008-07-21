@@ -88,6 +88,9 @@ public class FadeAnimation extends Animation
             this.entity.setOpacity(0);
         else
             this.entity.setOpacity(100);
+        
+        // Make sure the entities are visible.
+        this.entity.setVisible(true);
     }
     
     public FadeAnimation(FadeType type, final Entity entity)

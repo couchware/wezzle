@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.*;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -9,7 +10,7 @@ import java.util.Set;
  *
  * @author Kevin
  */
- public class ScoreManager
+ public class ScoreManager implements Manager
  {    
      
     /**
@@ -20,7 +21,7 @@ import java.util.Set;
     public enum ScoreType
     {
         LINE, BOMB, STAR, ROCKET
-    }    
+    }           
      
     /**
      * The amount of point per tile in a line.
@@ -51,6 +52,23 @@ import java.util.Set;
 	 * The maximum font size for a score pop-up.
 	 */
 	private static float FLOAT_TEXT_FONT_SIZE_MAX = 50.0f;
+    
+    /**
+     * The hash map keys for storing the score manager state.
+     */
+    private static enum Keys
+    {
+        LEVEL_SCORE,
+        TOTAL_SCORE,
+        LEVEL_TARGET,
+        TOTAL_TARGET,
+        HIGH_SCORE
+    }
+    
+    /**
+     * The hash map used to save the score manager's state.
+     */
+    private EnumMap<Keys, Object> saveState;
     
     /**
      * The board manager.
@@ -94,6 +112,9 @@ import java.util.Set;
     public ScoreManager(BoardManager boardMan, PropertyManager propertyMan,
             HighScoreManager highScoreMan)
     {
+        // Create the save state.
+        saveState = new EnumMap<Keys, Object>(Keys.class);
+        
         // Store reference to board manager.
         this.boardMan = boardMan;
         this.propertyMan = propertyMan;
@@ -382,5 +403,30 @@ import java.util.Set;
         }
         
         return fontSize;
+    }
+
+    public void save()
+    {
+        saveState.put(Keys.LEVEL_SCORE, levelScore);
+        saveState.put(Keys.TOTAL_SCORE, totalScore);
+        saveState.put(Keys.LEVEL_TARGET, targetLevelScore);
+        saveState.put(Keys.TOTAL_TARGET, targetTotalScore);
+        saveState.put(Keys.HIGH_SCORE, highScore);       
+    }
+
+    public void load()
+    {                
+        // See if there is a save state.
+        if (saveState.isEmpty() == true)
+        {
+            Util.handleWarning("No save state exists.", "ScoreManager#load");
+            return;
+        }
+        
+        levelScore = (Integer) saveState.get(Keys.LEVEL_SCORE);
+        totalScore = (Integer) saveState.get(Keys.TOTAL_SCORE);;
+        targetLevelScore = (Integer) saveState.get(Keys.LEVEL_TARGET);;
+        targetTotalScore = (Integer) saveState.get(Keys.TOTAL_TARGET);;
+        highScore = (Integer) saveState.get(Keys.HIGH_SCORE);;
     }
 }

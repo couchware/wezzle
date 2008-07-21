@@ -25,7 +25,7 @@ public class WorldManager
 	/**
 	 * The current level
 	 */
-	private int currentLevel;
+	private int level;
     
 	/**
 	 * The item list.
@@ -44,6 +44,11 @@ public class WorldManager
      */
     private LinkedList<Rule> currentRuleList;
 		
+    /**
+     * Is a game in progress?
+     */
+    private boolean gameInProgress = false;
+    
 	/**
 	 * The difficulty level.
 	 */
@@ -161,7 +166,7 @@ public class WorldManager
         
     public int generateTargetLevelScore()
     {
-        return generateTargetLevelScore(currentLevel);
+        return generateTargetLevelScore(level);
     }     
     
     public void levelUp(final Game game)
@@ -170,7 +175,7 @@ public class WorldManager
         
         int currentLevelScore = game.scoreMan.getLevelScore() - 
                 game.scoreMan.getTargetLevelScore();
-        int targetLevelScore = generateTargetLevelScore(currentLevel);
+        int targetLevelScore = generateTargetLevelScore(level);
         
         if(currentLevelScore > targetLevelScore / 2)
             currentLevelScore = targetLevelScore / 2;
@@ -190,6 +195,7 @@ public class WorldManager
     }
     
     /**
+     * Calculates the number of tiles to drop.
      * 
      * @param game The game.
      * @param pieceSize The size of the piece consumed.
@@ -201,10 +207,10 @@ public class WorldManager
         float totalSpots = game.boardMan.getColumns() * game.boardMan.getRows();
         
         // The number of tiles for the current level.
-        int levelDrop = (this.currentLevel / this.levelDifficultySpeed);
+        int levelDrop = (this.level / this.levelDifficultySpeed);
         
         // Check for difficulty ramp up.
-        if (this.currentLevel > this.difficultyIncreaseLevel)
+        if (this.level > this.difficultyIncreaseLevel)
             levelDrop = (this.difficultyIncreaseLevel / this.levelDifficultySpeed);
         
         // The percent of the board to readd.
@@ -215,10 +221,10 @@ public class WorldManager
         if ((tiles / totalSpots) * 100 < this.tileRatio)
         {
             // If we are past the level ramp up point, drop in more.
-            if (this.currentLevel > this.difficultyIncreaseLevel)
+            if (this.level > this.difficultyIncreaseLevel)
             {
                   return pieceSize +  levelDrop 
-                    + (this.currentLevel - this.difficultyIncreaseLevel) 
+                    + (this.level - this.difficultyIncreaseLevel) 
                     + boardPercentage + this.minimumDrop;
             }
             else
@@ -230,10 +236,10 @@ public class WorldManager
         else
         {
             // If we are past the level ramp up point, drop in more.
-            if (this.currentLevel > this.difficultyIncreaseLevel)
+            if (this.level > this.difficultyIncreaseLevel)
             {
                 return pieceSize + levelDrop
-                    + (this.currentLevel - this.difficultyIncreaseLevel) 
+                    + (this.level - this.difficultyIncreaseLevel) 
                     + this.minimumDrop;
             }
             else
@@ -259,7 +265,25 @@ public class WorldManager
     //--------------------------------------------------------------------------
     
     public void updateLogic(final Game game)
-    {                     
+    {       
+        // If the board is refactoring, do not logicify.
+        if (game.isBusy() == true)
+             return;
+        
+        // See if we need to create a new board.
+        if (isGameInProgress() == false 
+                && game.tutorialMan.isTutorialInProgress() == false)
+        {
+            // Game is now in progress.
+            setGameInProgress(true);
+            
+            // Generate the game board.            
+            game.boardMan.clearBoard();
+            game.boardMan.setVisible(false);
+            game.boardMan.generateBoard(getItemList());                           
+            game.startBoardShowAnimation();
+        }                
+        
         for (Iterator<Rule> it = currentRuleList.iterator(); it.hasNext(); )
         {
             Rule rule = it.next();
@@ -271,17 +295,34 @@ public class WorldManager
             }
         }            
     }
-    
+   
     //--------------------------------------------------------------------------
 	// Getters and Setters
 	//--------------------------------------------------------------------------
     
+    /**
+     * Is a game currently in progress?
+     * 
+     * @return True if a game is in progress, false otherwise.
+     */
+    public boolean isGameInProgress()
+    {
+        return gameInProgress;
+    }
+
+    public void setGameInProgress(boolean gameInProgress)
+    {
+        this.gameInProgress = gameInProgress;
+    }        
+    
 	/**
+     * Get the current level.
+     * 
 	 * @return the currentLevel
 	 */
 	public int getLevel()
 	{
-		return currentLevel;
+		return level;
 	}	
 	
 	/**
@@ -290,7 +331,7 @@ public class WorldManager
 	public void setLevel(int currentLevel)
 	{
 		// Set the level.
-		this.currentLevel = currentLevel;								
+		this.level = currentLevel;								
 	}	
 	
     /**
@@ -327,7 +368,7 @@ public class WorldManager
 		getItem(0).incrementInitialAmount();
 		
 		// Increment the level.
-		this.setLevel(currentLevel + 1);
+		this.setLevel(level + 1);
 	}	
 	            
     /**

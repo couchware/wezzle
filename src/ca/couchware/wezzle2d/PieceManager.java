@@ -112,6 +112,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
      * all the ones that are false are not.
      */
     private boolean[] restrictionBoard;
+    
+    /**
+     * This is set to true everytime the restriction board is clicked.
+     */
+    private volatile boolean restrictionBoardClicked = false;
 
     //--------------------------------------------------------------------------
     // Constructor
@@ -673,6 +678,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         {
             if (restrictionBoard[index] == false)
             {
+                setRestrictionBoardClicked(true);
                 clearMouseButtons();
                 return;
             }
@@ -682,6 +688,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         {
             if (restrictionBoard[index] == false)
             {
+                setRestrictionBoardClicked(true);
                 clearMouseButtons();
                 return;
             }
@@ -889,6 +896,27 @@ public class PieceManager implements MouseListener, MouseMotionListener
     public void setTileDropOnCommit(boolean tileDropOnCommit)
     {
         this.tileDropOnCommit = tileDropOnCommit;
+    }
+
+    /**
+     * Has the restriction board been clicked?
+     * 
+     * @return True if it has been clicked, false otherwise.
+     */
+    public boolean isRestrictionBoardClicked()
+    {
+        return restrictionBoardClicked;
+    }
+
+    /**
+     * Set the click status of the restriction board.  This is mainly used
+     * to set it to false.
+     * 
+     * @param restrictionBoardClicked
+     */
+    public void setRestrictionBoardClicked(boolean clicked)
+    {
+        this.restrictionBoardClicked = clicked;
     }        
     
     //--------------------------------------------------------------------------

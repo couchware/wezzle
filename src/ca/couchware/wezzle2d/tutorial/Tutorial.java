@@ -7,7 +7,6 @@ package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
-import java.util.Arrays;
 
 /**
  *
@@ -16,6 +15,11 @@ import java.util.Arrays;
 public abstract class Tutorial 
 {
 
+    /**
+     * The name of the tutorial.
+     */
+    private String name;
+    
     /**
      * The list of rules that must be true in order for this tutorial to 
      * activated.
@@ -32,7 +36,7 @@ public abstract class Tutorial
      * Has the tutorial been completed?
      * Initially false.
      */
-    private boolean completed = false;
+    private boolean done = false;
     
     /**
      * Create a new tutorial that is activated when the associated rule is
@@ -40,7 +44,11 @@ public abstract class Tutorial
      * 
      * @param rule
      */    
-    public Tutorial() { }
+    public Tutorial(String name) 
+    { 
+        // Set the tutorial name.
+        this.name = name;
+    }
     
     /**
      * Evaluates the tutorial activation rules.
@@ -75,7 +83,7 @@ public abstract class Tutorial
                 return;
             else
             {      
-                Util.handleMessage("Activating tutorial.", 
+                Util.handleMessage("Activating tutorial: " + name + ".", 
                         "Tutorial#updateLogic");
                 setActivated(true);
                 initializeTutorial(game);
@@ -87,6 +95,7 @@ public abstract class Tutorial
         {
             setActivated(false);
             finishTutorial(game);
+            done = true;
         }
     }
     
@@ -134,9 +143,14 @@ public abstract class Tutorial
         this.activated = activated;
     }
 
-    public boolean isCompleted()
+    public boolean isDone()
     {
-        return completed;
+        return done;
+    }
+
+    public String getName()
+    {
+        return name;
     }        
     
 }
