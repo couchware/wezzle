@@ -126,24 +126,61 @@ public class WorldManager
         // Set the items.
 		itemList = new LinkedList<Item>();
 		itemList.add(new Item(TileEntity.class, 28, 20));
-		itemList.add(new Item(BombTileEntity.class, 1, 20));
-        itemList.add(new Item(StarTileEntity.class, 0, 5));
-        itemList.add(new Item(RocketTileEntity.class, 1, 50));
+//		itemList.add(new Item(BombTileEntity.class, 1, 20));
+//      itemList.add(new Item(StarTileEntity.class, 0, 5));
+//      itemList.add(new Item(RocketTileEntity.class, 1, 50));
 		itemList.add(new Item(Multiply2xTileEntity.class, 2, 50));
         itemList.add(new Item(Multiply3xTileEntity.class, 0, 20));
         itemList.add(new Item(Multiply4xTileEntity.class, 0, 10));
         
         // Set the rules.
         masterRuleList = new LinkedList<Rule>();
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 5)
-        {            
+        
+        // Make it so the rocket block is added on level 4.
+        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 4)
+        {
             @Override
             public void performAction(Game game)
             {
                 // Increase the number of colours.
-                game.boardMan.setNumberOfColors(6);
+                itemList.add(new Item(RocketTileEntity.class, 1, 50));
             }            
-        });
+        });  
+        
+        // Make it so the bomb block is added on level 8.
+        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 8)
+        {
+            @Override
+            public void performAction(Game game)
+            {
+                // Increase the number of colours.
+                itemList.add(new Item(BombTileEntity.class, 1, 20));
+            }            
+        });   
+        
+        // Make it so the star block is added on level 12.
+        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 12)
+        {
+            @Override
+            public void performAction(Game game)
+            {
+                // Increase the number of colours.
+                itemList.add(new Item(StarTileEntity.class, 0, 5));
+            }            
+        });   
+        
+        // Make it so a new block color is added on level 5.
+//        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 5)
+//        {            
+//            @Override
+//            public void performAction(Game game)
+//            {
+//                // Increase the number of colours.
+//                game.boardMan.setNumberOfColors(6);
+//            }            
+//        });
+        
+        
         
         currentRuleList = new LinkedList<Rule>();
         currentRuleList.addAll(masterRuleList);
