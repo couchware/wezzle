@@ -80,8 +80,7 @@ public class TileEntity extends GraphicEntity implements Movable
 		this.color = color;
                         
         // Create the bounds array.  1 entry for each possible direction.       
-        bounds = new EnumMap<Direction, Integer>
-                (Direction.class);
+        bounds = new EnumMap<Direction, Integer>(Direction.class);
         
         bounds.put(Direction.UP, Integer.MIN_VALUE);
         bounds.put(Direction.DOWN, Integer.MAX_VALUE);
@@ -324,6 +323,13 @@ public class TileEntity extends GraphicEntity implements Movable
         
         width_ = width;
         height_ = height;
-    }			             
+    }		
     
+    /**
+     * This method is called when the tile is clicked.
+     */
+    public void onClick()
+    {
+        // To be overridden.
+    }
 }

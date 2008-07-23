@@ -87,7 +87,7 @@ public class Window extends Entity
         
         // Set the dimensions.
         this.width = width;
-        this.height = width;
+        this.height = height;
         
         this.width_ = width;
         this.height_ = height;

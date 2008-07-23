@@ -59,7 +59,25 @@ public class Game extends Canvas implements GameWindowCallback
      * The platform specific newline character.
      */
     public static String NL = System.getProperty("line.separator");
-               
+                
+    /**
+     * The refator types.
+     */
+    public static enum RefactorType
+    {
+        NORMAL, DROP
+    }
+    
+    /**
+     * The default refactor speed.
+     */
+    final public static int DEFAULT_REFACTOR_SPEED = 180;
+    
+    /**
+     * The default drop speed.
+     */
+    final public static int DEFAULT_DROP_SPEED = 250;
+    
     /**
      * The width of the screen.
      */
@@ -271,7 +289,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The executor used by certain managers.
      */
-    private Executor executor;       
+    private Executor executor;            
     
     /**
      * If true, refactor will be activated next loop.
@@ -289,9 +307,19 @@ public class Game extends Canvas implements GameWindowCallback
 	private boolean refactorHorizontalInProgress = false;
     
     /**
+     * The refactor type.
+     */
+    private RefactorType refactorType;
+    
+    /**
      * The speed of the upcoming refactor.
      */
-    private int refactorSpeed = 0;
+    private int refactorSpeed;
+    
+    /**
+     * The speed of the upcoming drop.
+     */
+    private int dropSpeed;
     
     /**
      * If true, a line removal will be activated next loop.
@@ -595,6 +623,10 @@ public class Game extends Canvas implements GameWindowCallback
         // Initialize rocket index set.
         rocketRemovalSet = new HashSet<Integer>();
         
+        // Set the refactor speed.
+        resetRefactorSpeed();
+        resetDropSpeed();
+        
         //----------------------------------------------------------------------
         // Initialize managers.
         //----------------------------------------------------------------------
@@ -876,11 +908,15 @@ public class Game extends Canvas implements GameWindowCallback
      * 
      * @param speed
      */
-    public void startRefactor(int speed)
+    public void startRefactor(RefactorType type)
     {
         // Set the refactor flag.
-        this.activateRefactor = true;
-        this.refactorSpeed = speed;
+        this.activateRefactor = true;   
+        
+        // Set the type.
+        this.refactorType = type;
+        
+        //Util.handleWarning("Refactor speed is " + refactorSpeed + ".");
     }
     
     /**
@@ -890,7 +926,50 @@ public class Game extends Canvas implements GameWindowCallback
     {
        // Set the refactor flag.
        this.activateRefactor = false;
-    }      
+    }
+
+    /**
+     * Get the refactor speed, in pixels per second.
+     * 
+     * @return
+     */
+    public int getRefactorSpeed()
+    {
+        return refactorSpeed;
+    }
+
+    /**
+     * Set the refactor speed, in pixels per second.
+     * 
+     * @param refactorSpeed
+     */
+    public void setRefactorSpeed(int refactorSpeed)
+    {
+        this.refactorSpeed = refactorSpeed;
+    }        
+    
+    /**
+     * Resets the refactor speed to it's default value.
+     */
+    public void resetRefactorSpeed()
+    {
+        this.refactorSpeed = DEFAULT_REFACTOR_SPEED;
+    }
+
+    public int getDropSpeed()
+    {
+        return dropSpeed;
+    }
+
+    public void setDropSpeed(int dropSpeed)
+    {
+        this.dropSpeed = dropSpeed;
+    }
+    
+    public void resetDropSpeed()
+    {
+        this.dropSpeed = DEFAULT_DROP_SPEED;
+    }
    
     /**
      * A method to check whether the board is busy.
@@ -1212,7 +1291,17 @@ public class Game extends Canvas implements GameWindowCallback
                 pieceMan.getPieceGrid().setVisible(false);
 
                 // Start down refactor.                
-                boardMan.startVerticalShift(refactorSpeed);
+                switch (refactorType)
+                {
+                    case NORMAL:
+                        boardMan.startVerticalShift(refactorSpeed);
+                        break;
+                        
+                    case DROP:
+                        boardMan.startVerticalShift(dropSpeed);
+                        break;                    
+                }
+                
                 refactorVerticalInProgress = true;
 
                 // Clear flag.
@@ -1231,7 +1320,18 @@ public class Game extends Canvas implements GameWindowCallback
                     boardMan.synchronize();							
 
                     // Start left refactor.
-                    boardMan.startHorizontalShift(refactorSpeed);
+                    
+                    switch (refactorType)
+                    {
+                        case NORMAL:
+                             boardMan.startHorizontalShift(refactorSpeed);
+                            break;
+
+                        case DROP:
+                             boardMan.startHorizontalShift(dropSpeed);
+                            break;                    
+                    }
+                                       
                     refactorHorizontalInProgress = true;								
                 }
             } // end if
@@ -1740,7 +1840,7 @@ public class Game extends Canvas implements GameWindowCallback
                         activateBombRemoval = true;
                     // Otherwise, start a new refactor.
                     else                
-                        startRefactor(200);
+                        startRefactor(RefactorType.NORMAL);
                 }  
             }
             
@@ -1856,12 +1956,22 @@ public class Game extends Canvas implements GameWindowCallback
             achievementMan.reportCompleted();
         
         return updated;
-	}
+	}  
     
     //--------------------------------------------------------------------------
     // Getters and Setters
     //--------------------------------------------------------------------------       
 
+    /**
+     * Get a reference to the game window.
+     * 
+     * @return A reference to the current game window.
+     */
+    public GameWindow getGameWindow()
+    {
+        return window;
+    }
+    
     //--------------------------------------------------------------------------
     // Window Methods
     //--------------------------------------------------------------------------
@@ -1929,11 +2039,11 @@ public class Game extends Canvas implements GameWindowCallback
 	 */
 	public static void main(String argv[])
 	{		        
-        if (System.getProperty("os.name").toLowerCase().contains("windows"))
-        {
-            Util.handleMessage("Windows detected, enabling translaccel.");
-            System.setProperty("sun.java2d.translaccel", "true");
-        }
+//        if (System.getProperty("os.name").toLowerCase().contains("windows"))
+//        {
+//            Util.handleMessage("Windows detected, enabling translaccel.");
+//            System.setProperty("sun.java2d.translaccel", "true");
+//        }
         
         // Enable OpenGL.
         // Can cause the JVM to crash.

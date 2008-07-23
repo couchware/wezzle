@@ -4,6 +4,8 @@ import ca.couchware.wezzle2d.animation.AnimationManager;
 import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
@@ -721,18 +723,61 @@ public class BoardManager
         
         // Return the count.
         return count;
-    }    		        
+    }    
+    
+    public void addTile(final int index, final TileEntity t)
+    {
+        // Sanity check.
+        assert (index >= 0 && index < cells);   
+        
+        // Make sure the tile is located properly.
+        t.setXYPosition(x + (index % columns) * cellWidth, 
+                y + (index / columns) * cellHeight);
+        t.resetDrawRect();
+        
+        // If this is an item, increment the count.
+        if (t.getClass() != TileEntity.class)
+            this.incrementNumberOfItems();                
+        
+        // If we're overwriting a tile, remove it first.
+        if (getTile(index) != null)
+            removeTile(index);
+
+        setTile(index, t);
+        
+        // Increment tile count.
+        numberOfTiles++;
+
+        // Set the tile visibility to that of the board.
+        t.setVisible(this.isVisible());
+        
+        // Add the tile to the bottom layer too.        
+        layerMan.add(t, Game.LAYER_TILE);               
+        
+        // Dirty board.
+        setDirty(true);                
+    }
+    
+    public void addTile(final int column, final int row, final TileEntity t)
+    {
+         addTile(row * columns + column, t);
+    }
 	        
+    /**
+     * Create a new a tile at the specified index using the given class and
+     * color.  The new tile is also returned.
+     * 
+     * @param index
+     * @param c
+     * @param color
+     * @return
+     */
 	public TileEntity createTile(final int index, final Class c, 
             final TileColor color)
 	{
-         // Sanity check.
+        // Sanity check.
         assert (index >= 0 && index < cells);
         assert (c != null);      
-        
-        // If this is an item, increment the count.
-        if (c != TileEntity.class)
-            this.incrementNumberOfItems();
         
         // The new tile.
         TileEntity t = null;
@@ -753,25 +798,10 @@ public class BoardManager
         {
             Util.handleException(ex);
             return null;
-        }
+        }        
         
-        // If we're overwriting a tile, remove it first.
-        if (getTile(index) != null)
-            removeTile(index);
-
-        setTile(index, t);
-        
-        // Increment tile count.
-        numberOfTiles++;
-
-        // Set the tile visibility to that of the board.
-        t.setVisible(this.isVisible());
-        
-        // Add the tile to the bottom layer too.        
-        layerMan.add(t, Game.LAYER_TILE);               
-        
-        // Dirty board.
-        setDirty(true);
+        // Add the tile.
+        addTile(index, t);
         
         // Return the tile.
         return t;
@@ -852,10 +882,42 @@ public class BoardManager
 	public TileEntity getTile(int column, int row)
 	{
 		// Make sure we're within parameters.
-		assert(column >= 0 && row >= 0 && column < columns && row < rows);
+		assert column >= 0 && column < columns;
+        assert row >= 0 && row < rows;
 		
 		return getTile(column + (row * columns));
 	}
+    
+    public EntityGroup getTiles(int index1, int index2)
+    {
+        assert index1 >= 0 && index1 < cells;
+        assert index2 >= index1 && index2 < cells;               
+        
+        // Calculate the number of possible tiles in the range.
+        int length = index2 - index1 + 1;
+        
+        // Count the number of tiles in that range.
+        int count = 0;
+        
+        for (int i = 0; i < length; i++)
+            if (getTile(index1 + i) != null)
+                count++;
+        
+        Entity[] entities = new Entity[count];
+        
+        // The array index.
+        int index = 0;
+        
+        for (int i = 0; i < length; i++)
+        {
+            Entity e = getTile(index1 + i);
+            
+            if (e != null)
+                entities[index++] = e;
+        }
+        
+        return new EntityGroup(entities);
+    }
 	
 	public void setTile(int index, TileEntity tile)
 	{

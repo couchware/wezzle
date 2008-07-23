@@ -4,8 +4,6 @@ import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Cursor;
-import java.awt.MouseInfo;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;

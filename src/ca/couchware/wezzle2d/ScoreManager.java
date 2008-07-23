@@ -324,6 +324,13 @@ import java.util.Set;
     {
         this.totalScore = totalScore;
     }
+    
+    // Resets all the scores to 0.
+    public void resetScore()
+    {
+        setLevelScore(0);
+        setTotalScore(0);
+    }
 
     /**
      * @return The targetLevelScore.

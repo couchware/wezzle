@@ -123,6 +123,18 @@ public abstract class Tutorial
      */
     protected abstract void finishTutorial(Game game);
     
+    /**
+     * Restarts the tutorial at the beginning.  This method can be overwritten
+     * to optimize it.
+     * 
+     * @return
+     */
+    protected void repeatTutorial(Game game)
+    {
+        finishTutorial(game);
+        initializeTutorial(game);
+    }
+    
     public Rule[] getRules()
     {
         return rules;

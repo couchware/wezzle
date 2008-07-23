@@ -41,12 +41,7 @@ public class RectangularBooleanButton extends BooleanButton
     /**
      * The button text.
      */
-    final protected Label buttonLabel;
-    
-    /**
-     * The normal opacity.
-     */
-    protected int normalOpacity;
+    final protected Label buttonLabel;   
     
     /**
      * The hover opacity.
@@ -88,8 +83,7 @@ public class RectangularBooleanButton extends BooleanButton
         buttonLabel.setColor(Game.TEXT_COLOR);
         buttonLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));    
         
-        // Set the normal and active opacities.
-        normalOpacity = 100;
+        // Set the normal and active opacities.        
         hoverOpacity = 100;
         activeOpacity = 100;
     }
@@ -104,7 +98,7 @@ public class RectangularBooleanButton extends BooleanButton
     public void drawNormal()
     {                
         spriteNormal.draw(x + offsetX, y + offsetY, 
-                width, height, 0.0, normalOpacity);
+                width, height, 0.0, opacity);
         
         buttonLabel.setX(x + offsetX + width / 2);
         buttonLabel.setY(y + offsetY + height / 2);
@@ -188,12 +182,12 @@ public class RectangularBooleanButton extends BooleanButton
 
     public int getNormalOpacity()
     {
-        return normalOpacity;
+        return opacity;
     }
 
     public void setNormalOpacity(int normalOpacity)
     {
-        this.normalOpacity = normalOpacity;
+        this.opacity = normalOpacity;
         setDirty(true);
     }               
 

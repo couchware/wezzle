@@ -14,17 +14,37 @@ import ca.couchware.wezzle2d.util.Util;
 public class TimerManager 
 {
 
-	/** The current time on the timer. */
+	/** 
+     * The current time on the timer. 
+     */
 	private int currentTime;
 	
-	/** The initial time for this timer. */
+	/** 
+     * The initial time for this timer. 
+     */
 	private int initialTime;
 	
-	/** Holds the internal time for comparison to time increments. */
+	/** 
+     * Holds the internal time for comparison to time increments.
+     */
 	private long internalTime;
     
-    /** is the game paused? */
+    /** 
+     * Is the timer paused? 
+     */
     private boolean paused;
+    
+    /**
+     * Is the timer stopped?
+     * It may seem like there's no point in having a pause and a stop, and to
+     * an extent, you are right.  However, there is a distinction.  A pause
+     * is fleeting, while a stop is more permanent.
+     * 
+     * For example, the timer is paused between each turn (fleeting).  However,
+     * if a tutorial is running, sometime we want the timer off regardless
+     * of how many turns have taken place (more permanent).
+     */
+    private boolean stopped;
 	
 	/**
 	 * The overloaded constructor created a timer manager with a passed in 
@@ -32,7 +52,7 @@ public class TimerManager
 	 * 
 	 * @param initialTime The initial time on the timer.
 	 */
-	public TimerManager( int initialTime )
+	public TimerManager(int initialTime)
 	{
 		assert(initialTime > 0);
 		
@@ -40,6 +60,7 @@ public class TimerManager
 		this.initialTime = initialTime;
 		this.internalTime = 0;
         this.paused = false;
+        this.stopped = false;
 	}
 
 	/**
@@ -89,24 +110,7 @@ public class TimerManager
 	{
 		this.currentTime = this.initialTime;
         this.resetInternalTimer();
-	}
-    
-    /**
-     * Pause the timer.
-     */
-    public void setPaused(final boolean paused)
-    {
-        this.paused = paused;
-    }
-    
-    /**
-     * Check if the timer is paused.
-     * @return Whether or not the timer is paused.
-     */
-    public boolean isPaused()
-    {
-        return this.paused;
-    }
+	}        
     
 	/**
 	 * Get the initial time.
@@ -135,7 +139,7 @@ public class TimerManager
 	public void incrementInternalTime(long offset)
 	{                
         // If the timer is paused, don't do anything.
-        if (paused == true)
+        if (paused == true || stopped == true)
             return;                
         
 		assert (offset >= 0);
@@ -156,6 +160,35 @@ public class TimerManager
             // In this scenario nothing should be done.
 		}
 	}
-	
-	
+    
+    /**
+     * Pause the timer.
+     * 
+     * @param paused True to pause the timer, false to unpause it.
+     */
+    public void setPaused(final boolean paused)
+    {
+        this.paused = paused;
+    }
+    
+    /**
+     * Check if the timer is paused.
+     * 
+     * @return Whether or not the timer is paused.
+     */
+    public boolean isPaused()
+    {
+        return this.paused;
+    }
+
+    public boolean isStopped()
+    {
+        return stopped;
+    }
+
+    public void setStopped(boolean stopped)
+    {
+        this.stopped = stopped;
+    }        
+		
 }

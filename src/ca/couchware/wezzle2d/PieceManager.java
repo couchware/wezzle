@@ -569,7 +569,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 tileDropAnimationInProgress = false;
                                
                 // Run refactor.
-                game.startRefactor(300);                
+                game.startRefactor(Game.RefactorType.DROP);                
                 
                 // Decrement the number of tiles by the number of tiles that are
                 // not null in the array.                
@@ -620,7 +620,8 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     pieceGrid.getXYPosition()));
                 pieceGrid.setDirty(true);                                
                 
-                startAnimationAt(pieceGrid.getXYPosition(), 120);
+                if (pieceGrid.isVisible() == true)
+                    startAnimationAt(pieceGrid.getXYPosition(), 120);
 
                 // Reset flag.
                 clearMouseButtons();
@@ -651,8 +652,9 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     pieceGrid.setX(ap.getX());
                     pieceGrid.setY(ap.getY());                    
                                         
-                    // Start new animation.                    
-                    startAnimationAt(ap, period);
+                    // Start new animation.   
+                    if (pieceGrid.isVisible() == true)
+                        startAnimationAt(ap, period);
                 } 
                 else
                 {                                        
@@ -681,7 +683,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 setRestrictionBoardClicked(true);
                 clearMouseButtons();
                 return;
-            }
+            }          
         } // end for
         
         for (Integer index : blankSet)
@@ -693,6 +695,9 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 return;
             }
         } // end for
+        
+        for (Integer index : indexSet)
+            boardMan.getTile(index).onClick();
         
         // Remove and score the piece.
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
@@ -734,10 +739,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
             tileDropInProgress = true;
 
         // Make visible.
-        pieceGrid.setVisible(false);
-
-        // Run a refactor.
-        game.startRefactor(200);
+        pieceGrid.setVisible(false);        
+        
+        // Run a refactor.       
+        game.startRefactor(Game.RefactorType.NORMAL);
 
         // Reset flag.
         clearMouseButtons();
