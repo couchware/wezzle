@@ -32,6 +32,7 @@ public class PieceLine extends Piece
 		this.size = 3;
 	}
 	
+    @Override
 	public void rotate()
 	{
 		// Transpose the structure.		

@@ -129,9 +129,9 @@ public class WorldManager
 //		itemList.add(new Item(BombTileEntity.class, 1, 20));
 //      itemList.add(new Item(StarTileEntity.class, 0, 5));
 //      itemList.add(new Item(RocketTileEntity.class, 1, 50));
-		itemList.add(new Item(Multiply2xTileEntity.class, 2, 50));
-        itemList.add(new Item(Multiply3xTileEntity.class, 0, 20));
-        itemList.add(new Item(Multiply4xTileEntity.class, 0, 10));
+		itemList.add(new Item(x2TileEntity.class, 2, 50));
+        itemList.add(new Item(x3TileEntity.class, 0, 20));
+        itemList.add(new Item(x4TileEntity.class, 0, 10));
         
         // Set the rules.
         masterRuleList = new LinkedList<Rule>();

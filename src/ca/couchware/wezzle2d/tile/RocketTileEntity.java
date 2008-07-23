@@ -1,18 +1,17 @@
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.util.Util;
 
 /**
- * A bomb tile.
+ * A rocket tile.
  * 
  * @author cdmckay
  */
 
-public class RocketTileEntity extends TileEntity
+public class RocketTileEntity extends ItemTileEntity
 {
+    
     /**
      * The rocket is facing up.
      */
@@ -36,12 +35,7 @@ public class RocketTileEntity extends TileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = Game.SPRITES_PATH + "/ItemRocket.png";
-    
-    /**
-     * The sprite representing the item graphic.
-     */
-    final private Sprite itemSprite;       
+    final private static String PATH = Game.SPRITES_PATH + "/ItemRocket.png";      
     
     /**
      * The rotation of the rocket.
@@ -65,11 +59,8 @@ public class RocketTileEntity extends TileEntity
             final int x, final int y)
     {
         // Invoke super.
-        super(boardMan, color, x, y);
-                       
-        // Load bomb sprite.
-        itemSprite = ResourceFactory.get().getSprite(PATH);
-        
+        super(PATH, boardMan, color, x, y);
+                               
         // Determine a random rotation.
         degrees = Util.random.nextInt(4) * 90;
         itemTheta = Math.toRadians(degrees);               
@@ -87,9 +78,8 @@ public class RocketTileEntity extends TileEntity
         // Invoke super draw.
         super.draw();        
         
-        // Draw bomb on top of it.
-        itemSprite.draw((int) x2, (int) y2, width, height, 
-                itemTheta, opacity);
+        // Draw the rocket on top of it.
+        itemSprite.draw((int) x2, (int) y2, width, height, itemTheta, opacity);
     }
 
     public double getItemRotation()
@@ -110,5 +100,6 @@ public class RocketTileEntity extends TileEntity
     public void setDirection(int direction)
     {
         this.degrees = direction;
-    }        
+    } 
+    
 }

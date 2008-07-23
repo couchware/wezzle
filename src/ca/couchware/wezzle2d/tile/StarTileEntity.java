@@ -1,29 +1,24 @@
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.tile.TileColor;
 
 /**
- * A bomb tile.
+ * A star tile.
  * 
  * @author cdmckay
  */
 
-public class StarTileEntity extends TileEntity
+public class StarTileEntity extends ItemTileEntity
 {
+    
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = Game.SPRITES_PATH + "/ItemStar.png";
-    
-    /**
-     * The sprite representing the item graphic.
-     */
-    final private Sprite itemSprite;
+    final private static String PATH = Game.SPRITES_PATH + "/ItemStar.png";
     
     /**
      * The constructor.
+     * 
      * @param boardMan
      * @param color
      * @param x
@@ -33,25 +28,7 @@ public class StarTileEntity extends TileEntity
             final int x, final int y)
     {
         // Invoke super.
-        super(boardMan, color, x, y);
-        
-        // Load bomb sprite.
-        itemSprite = ResourceFactory.get().getSprite(PATH);
+        super(PATH, boardMan, color, x, y);
     }
     
-    
-    /**
-     * Override that draw muthafucka.
-     */
-    public void draw()
-    {
-        if (isVisible() == false)
-            return;
-        
-        // Invoke super draw.
-        super.draw();        
-        
-        // Draw bomb on top of it.
-        itemSprite.draw((int) x2, (int) y2, width, height, theta, opacity);
-    }
 }

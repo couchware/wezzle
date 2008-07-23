@@ -32,6 +32,7 @@ public class PieceDash extends Piece
 		this.size = 2;
 	}
 	
+    @Override
 	public void rotate()
 	{
 		// Transpose the structure.		

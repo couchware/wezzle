@@ -16,6 +16,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -88,6 +89,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
     private volatile boolean mouseRightReleased;        
     
     /**
+     * The piece map.
+     */
+    private EnumMap<PieceType, Piece> pieceMap;
+    
+    /**
      * The current piece.
      */
     private Piece piece;
@@ -137,6 +143,14 @@ public class PieceManager implements MouseListener, MouseMotionListener
         mouseLeftReleased = false;
         mouseRightReleased = false;
         
+        // Create the piece map.
+        pieceMap = new EnumMap<PieceType, Piece>(PieceType.class);
+        pieceMap.put(PieceType.DASH, new PieceDash());
+        pieceMap.put(PieceType.DIAGONAL, new PieceDiagonal());
+        pieceMap.put(PieceType.DOT, new PieceDot());
+        pieceMap.put(PieceType.L, new PieceL());
+        pieceMap.put(PieceType.LINE, new PieceLine());
+        
         // Create new piece entity at the origin of the board.
 		pieceGrid = new PieceGrid(boardMan, 
                 boardMan.getX() + boardMan.getCellWidth(),
@@ -172,10 +186,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
      * 
 	 * @param piece The piece to set.
 	 */
-	public void loadPiece(final Piece piece)
+	public void loadPiece(final PieceType type)
 	{
         // Remember which piece it is for rotating.
-        this.piece = piece;
+        this.piece = pieceMap.get(type);
         
         // Load the piece into the piece grid.
 		pieceGrid.loadStructure(piece.getStructure());
@@ -186,42 +200,19 @@ public class PieceManager implements MouseListener, MouseMotionListener
      */
     public void loadPiece()
     {
-		switch(Util.random.nextInt(5))		
-		{
-			case Piece.PIECE_DOT:
-				loadPiece(new PieceDot());
-				break;
-				
-			case Piece.PIECE_DASH:
-				loadPiece(new PieceDash());
-				break;
-				
-			case Piece.PIECE_LINE:
-				loadPiece(new PieceLine());
-				break;
-				
-			case Piece.PIECE_DIAGONAL:
-				loadPiece(new PieceDiagonal());
-				break;
-				
-			case Piece.PIECE_L:
-				loadPiece(new PieceL());
-				break;
-				
-			default:
-				throw new RuntimeException("Unrecognized piece number.");
-		}
+        // Get an array of all the types.
+        PieceType[] pt = PieceType.values();
         
+        // Load a random one.
+		loadPiece(pt[Util.random.nextInt(pt.length)]);		
+		        
         // Rotate it up to 3 times.
-        int numberOfRotations = Util.random.nextInt(4);
+        int numberOfRotations = Util.random.nextInt(4);        
+        for (int i = 0; i <= numberOfRotations; i++)        
+            piece.rotate();                    
         
-        for (int i = 0; i <= numberOfRotations; i++)
-        {
-            piece.rotate();            
-        }
-        
-        pieceGrid.setXYPosition(adjustPosition(
-                pieceGrid.getXYPosition()));
+        // Adjust the piece grid.
+        pieceGrid.setXYPosition(adjustPosition(pieceGrid.getXYPosition()));
         pieceGrid.setDirty(true);
 	}
     

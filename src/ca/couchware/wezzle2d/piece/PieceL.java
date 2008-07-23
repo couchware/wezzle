@@ -32,6 +32,7 @@ public class PieceL extends Piece
 		this.size = 3;
 	}
 	
+    @Override
 	public void rotate()
 	{
 		Util.swap2d(structure, 1, 0, 2, 1);

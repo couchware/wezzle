@@ -4,13 +4,7 @@ public abstract class Piece
 {
 	// ---------------------------------------------------------------------------
 	// Constants
-	// ---------------------------------------------------------------------------
-	
-	public static final int PIECE_DOT = 0;
-	public static final int PIECE_DASH = 1;
-	public static final int PIECE_LINE = 2;
-	public static final int PIECE_DIAGONAL = 3;
-	public static final int PIECE_L = 4;
+	// ---------------------------------------------------------------------------	    
 	
 	public static final int MAX_COLUMNS = 3;
 	public static final int MAX_ROWS = 3;

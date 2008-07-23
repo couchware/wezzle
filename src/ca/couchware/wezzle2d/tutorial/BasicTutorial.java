@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.piece.PieceDot;
+import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.ui.MultiLabel;
@@ -252,7 +253,7 @@ public class BasicTutorial extends Tutorial
         createBoard(game);
         
         // Change the piece to the dot.
-        game.pieceMan.loadPiece(new PieceDot());    
+        game.pieceMan.loadPiece(PieceType.DOT);    
         
         // Make sure buttons aren't visible.
         repeatButton.setVisible(false);
