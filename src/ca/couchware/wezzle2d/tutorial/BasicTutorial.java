@@ -20,7 +20,6 @@ import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.ui.MultiLabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
-import ca.couchware.wezzle2d.ui.Window;
 import ca.couchware.wezzle2d.ui.button.RectangularBooleanButton;
 import java.util.EnumSet;
 
@@ -33,29 +32,29 @@ public class BasicTutorial extends Tutorial
 {   
     
     /**
+     * Is the menu visible?
+     */
+    private boolean menuShown = false;
+    
+    /**
      * The text that directs the user.
      */
-    Label label;
+    private Label label;
     
     /**
      * A speech bubble that indicates where the user should press.
      */
-    SpeechBubble bubble;
-    
-    /**
-     * The animation that makes the bubble blink.
-     */
-    BlinkAnimation bubbleAnimation;
+    private SpeechBubble bubble;       
     
     /**
      * The repeat button.
      */
-    RectangularBooleanButton repeatButton;
+    private RectangularBooleanButton repeatButton;
     
     /**
      * The continue button.
      */
-    RectangularBooleanButton continueButton;
+    private RectangularBooleanButton continueButton;
     
     /**
      * The constructor.
@@ -151,16 +150,11 @@ public class BasicTutorial extends Tutorial
     protected boolean updateTutorial(final Game game)
     {
         // If the move count is not 0, then the tutorial is over.
-        if (game.statMan.getMoveCount() != 0
-                && bubbleAnimation != null)
+        if (game.statMan.getMoveCount() != 0 && menuShown == false)
         {               
             // Stop the piece animation.
             game.pieceMan.getPieceGrid().setVisible(false); 
-            game.pieceMan.stopAnimation();             
-            
-            // Remove the bubble animation.
-            game.animationMan.remove(bubbleAnimation);
-            bubbleAnimation = null;           
+            game.pieceMan.stopAnimation();                                            
             
             // Fade the board out.
             //game.startBoardHideAnimation();
@@ -179,6 +173,9 @@ public class BasicTutorial extends Tutorial
             f.setMaxOpacity(70);
             game.animationMan.add(f);
             
+            // Menu is now shown.
+            menuShown = true;
+            
             // Create the confirm window.
 //            confirmWindow = new Window(game.getGameWindow(), 
 //                    400, 300, 
@@ -189,7 +186,7 @@ public class BasicTutorial extends Tutorial
             
             return true;
         }
-        else if (bubbleAnimation == null)
+        else if (menuShown == true)
         {
             if (repeatButton.isActivated() == true)
             {
@@ -266,14 +263,13 @@ public class BasicTutorial extends Tutorial
         if (continueButton.isActivated() == true)
             continueButton.setActivated(false);
         
+        // Menu is not shown.
+        menuShown = false;
+        
         // Make sure the bubble opacity is full.
-        bubble.setOpacity(100);
+        bubble.setOpacity(100);            
         
-        // Add the bubble animation.
-        bubbleAnimation = new BlinkAnimation(DurationType.CONTINUOUS, 
-                4000, 300, bubble);        
-        game.animationMan.add(bubbleAnimation);
-        
+        // Piece is visible.
         game.pieceMan.getPieceGrid().setVisible(true);
     }
     
