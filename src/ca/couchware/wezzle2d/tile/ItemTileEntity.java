@@ -17,6 +17,11 @@ public class ItemTileEntity extends TileEntity
     final protected Sprite itemSprite;
     
     /**
+     * The rotation of the item.
+     */
+    protected double itemTheta;
+    
+    /**
      * The constructor.
      * @param boardMan
      * @param color
@@ -32,6 +37,9 @@ public class ItemTileEntity extends TileEntity
         
         // Load bomb sprite.
         itemSprite = ResourceFactory.get().getSprite(path);
+        
+        // Initialize the item theta.
+        itemTheta = 0;
     }
     
     
@@ -48,6 +56,17 @@ public class ItemTileEntity extends TileEntity
         super.draw();        
         
         // Draw bomb on top of it.
-        itemSprite.draw((int) x2, (int) y2, width, height, theta, opacity);
+        itemSprite.draw((int) x2, (int) y2, width, height, itemTheta, opacity);
     }
+
+    public double getItemTheta()
+    {
+        return itemTheta;
+    }
+
+    public void setItemTheta(double itemTheta)
+    {
+        this.itemTheta = itemTheta;
+    }
+        
 }

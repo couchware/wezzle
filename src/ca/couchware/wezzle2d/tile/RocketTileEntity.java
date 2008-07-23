@@ -35,18 +35,12 @@ public class RocketTileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Game.SPRITES_PATH + "/ItemRocket.png";      
-    
-    /**
-     * The rotation of the rocket.
-     */
-    private double itemTheta;
+    final private static String PATH = Game.SPRITES_PATH + "/ItemRocket.png";          
     
     /**
      * The direction of the rocket.
      */
-    private int degrees;
-    
+    private int degrees;    
     
     /**
      * The constructor.
@@ -64,23 +58,7 @@ public class RocketTileEntity extends ItemTileEntity
         // Determine a random rotation.
         degrees = Util.random.nextInt(4) * 90;
         itemTheta = Math.toRadians(degrees);               
-    }
-        
-    /**
-     * Override that draw muthafucka.
-     */
-    @Override
-    public void draw()
-    {
-        if (isVisible() == false)
-            return;
-        
-        // Invoke super draw.
-        super.draw();        
-        
-        // Draw the rocket on top of it.
-        itemSprite.draw((int) x2, (int) y2, width, height, itemTheta, opacity);
-    }
+    }          
 
     public double getItemRotation()
     {
