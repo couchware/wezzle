@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.graphics.*;
+import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class LayerManager
     /**
      * TODO Add documentation.
      */
-    private ArrayList<ArrayList<Drawable>> layerList;
+    private ArrayList<ArrayList<IDrawable>> layerList;
     
     /**
      * The list of hidden layers.
@@ -40,7 +41,7 @@ public class LayerManager
      * The remove clip.  This clip is used to make sure that things that are
      * removed are drawn over.
      */
-    private Rectangle removeClip;
+    private Rectangle removeRect;
     
     /**
      * The constructor.
@@ -58,7 +59,7 @@ public class LayerManager
         this.numberOfLayers = numberOfLayers;
         
         // Initialize layer arraylist.
-        layerList = new ArrayList<ArrayList<Drawable>>(numberOfLayers);
+        layerList = new ArrayList<ArrayList<IDrawable>>(numberOfLayers);
         
         // Initialize hidden layer map.
         hiddenLayers = new boolean[numberOfLayers];
@@ -66,19 +67,19 @@ public class LayerManager
         // Create layers.
         for (int i = 0; i < numberOfLayers; i++)
         {
-            layerList.add(new ArrayList<Drawable>());
+            layerList.add(new ArrayList<IDrawable>());
             hiddenLayers[i] = false;
         }        
         
         // Initialize remove clip.
-        this.removeClip = new Rectangle();
+        this.removeRect = new Rectangle();
     }
     
     /**
      * Adds a drawable to the layer specified.  If the layer does not exist,
      * it is created.
      */
-    public void add(final Drawable element, final int layerNum)
+    public void add(final IDrawable element, final int layerNum)
     {            
         if (layerExists(layerNum) == false)
             return;
@@ -91,13 +92,13 @@ public class LayerManager
      * Remove an element from the layer specified.
      * @return True if the element was removed, false if it was not found.
      */
-    public boolean remove(final Drawable element, final int layerNum)
+    public boolean remove(final IDrawable element, final int layerNum)
     {   
         if (layerExists(layerNum) == false)
             return false;
         
         // Get the layer.
-        final ArrayList<Drawable> layer = layerList.get(layerNum);
+        final ArrayList<IDrawable> layer = layerList.get(layerNum);
         
         // Get the index.
         int index = layer.indexOf(element);
@@ -105,7 +106,7 @@ public class LayerManager
         // If the index is -1, the element is not in this layer.
         if (index != -1)
         {
-            getRemoveClip().add(layer.get(index).getDrawRect());
+            addRemoveRect(layer.get(index).getDrawRect());
             layer.remove(index);
             return true;
         }
@@ -128,9 +129,9 @@ public class LayerManager
         hiddenLayers[layerNum] = false;
         
         // Grab the layer.
-        final ArrayList<Drawable> layer = layerList.get(layerNum);
+        final ArrayList<IDrawable> layer = layerList.get(layerNum);
         
-        for (Drawable d : layer)
+        for (IDrawable d : layer)
             d.setDirty(true);
     }
     
@@ -145,13 +146,13 @@ public class LayerManager
         hiddenLayers[layerNum] = true;
         
         // Grab the layer.
-        final ArrayList<Drawable> layer = layerList.get(layerNum);
+        final ArrayList<IDrawable> layer = layerList.get(layerNum);
         
-        for (Drawable d : layer)
+        for (IDrawable d : layer)
             d.setDirty(true);
     }
     
-    public void toFront(final Drawable d, int layerNum)
+    public void toFront(final IDrawable d, int layerNum)
     {
         if (layerExists(layerNum) == false)     
             return;        
@@ -166,6 +167,11 @@ public class LayerManager
      */
     public void draw()
     {
+        // The number of sprites drawn.
+        //int count = 0;
+        //int total = 0;
+        
+        // The clipping area.        
         Rectangle clip;
         
         if (window.getClip() !=  null)
@@ -181,15 +187,22 @@ public class LayerManager
                 continue;
             
             // Grab this layer.
-            final ArrayList<Drawable> layer = layerList.get(i);
+            final ArrayList<IDrawable> layer = layerList.get(i);
             
             // Draw its contents.
-            for (Drawable d : layer)
-            {
+            for (IDrawable d : layer)
+            {                                
                 if (clip == null || d.getDrawRect().intersects(clip) == true)
-                        d.draw();                
+                {                   
+                    //count++;
+                    d.draw();                
+                }
+                //total++;
             }           
-        } // end for            
+        } // end for
+        
+        // Report the number of sprites drawn.
+        //Util.handleMessage("Drew " + count + " of " + total + " drawables.");
     }
     
     /**
@@ -209,10 +222,10 @@ public class LayerManager
         for (int i = 0; i < numberOfLayers; i++)
         {                                             
             // Grab this layer.
-            ArrayList<Drawable> layer = layerList.get(i);
+            ArrayList<IDrawable> layer = layerList.get(i);
             
             // See if it's in the region.
-            for (Drawable d : layer)
+            for (IDrawable d : layer)
             {
                 if (d.isDirty() == false)
                     continue;                                
@@ -229,7 +242,12 @@ public class LayerManager
                             "LayerManager#drawRegion");
                     Util.handleWarning("Rectangle is " + r,
                             "LayerManager#drawRegion");
+                    
+                    if (d instanceof ILabel)
+                        Util.handleWarning(((ILabel) d).getText());
                 }
+                
+                //Util.handleWarning(r + "");
                 
                 if (region.intersects(r) == true)
                 {   
@@ -251,17 +269,17 @@ public class LayerManager
                     else
                         clip.add(r);
                 }
-            }           
+            }                            
         }     
         
         // If the remove clip is not empty.
-        if (getRemoveClip().isEmpty() == false)
+        if (getRemoveRect() != null)
         {
             // See if there's a clip to add to, or if we need to make one.
             if (clip == null)
-                clip = getRemoveClip();
+                clip = getRemoveRect();
             else
-                clip.add(getRemoveClip());
+                clip.add(getRemoveRect());
         }
              
         if (clip != null)
@@ -275,9 +293,10 @@ public class LayerManager
             // Uncomment the next line if you want boxes to be drawn around
             // each region being drawn.
             //window.drawClip(clip);
+            //Util.handleMessage("clip = " + clip);
                
             // Reset the remove clip.
-            resetRemoveClip();
+            resetRemoveRect();
             
             return true;
         }        
@@ -310,16 +329,23 @@ public class LayerManager
             return true;
         }
     }
-
-    public Rectangle getRemoveClip()
+    
+    private void addRemoveRect(Rectangle r)
     {
-        return removeClip;
+        if (removeRect == null)
+            removeRect = new Rectangle(r);
+        else
+            removeRect.add(r);
+    }
+    
+    private Rectangle getRemoveRect()
+    {
+        return removeRect;
     }   
     
-    public void resetRemoveClip()
-    {
-        if (removeClip.isEmpty() == false)
-            removeClip = new Rectangle();
+    private void resetRemoveRect()
+    {       
+        removeRect = null;
     }
 
 }

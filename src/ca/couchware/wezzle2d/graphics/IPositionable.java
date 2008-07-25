@@ -10,8 +10,9 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public interface Positionable 
+public interface IPositionable 
 {
+    
     /**
      * Possible alignments.
      */
@@ -123,5 +124,6 @@ public interface Positionable
      * 
      * @param bitmask An integer bitmask representing the alignment.
      */
-    public void setAlignment(final EnumSet<Alignment> alignment);
+    public void setAlignment(final EnumSet<Alignment> alignment);     
+    
 }

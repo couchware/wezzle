@@ -3,7 +3,7 @@ package ca.couchware.wezzle2d.tile;
 import static ca.couchware.wezzle2d.BoardManager.Direction;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
-import ca.couchware.wezzle2d.graphics.Movable;
+import ca.couchware.wezzle2d.graphics.IMovable;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
 import java.awt.Rectangle;
@@ -16,7 +16,7 @@ import java.util.EnumMap;
  *
  */
 
-public class TileEntity extends GraphicEntity implements Movable
+public class TileEntity extends GraphicEntity implements IMovable
 {                                 
 	
 	/**

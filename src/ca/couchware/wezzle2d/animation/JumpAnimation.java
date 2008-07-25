@@ -11,8 +11,14 @@ import ca.couchware.wezzle2d.util.XYPosition;
  * 
  * @author cdmckay
  */
-public class JumpAnimation extends Animation
-{                                       
+public class JumpAnimation extends ReferenceAnimation
+{    
+    
+    /**
+     * The counter.
+     */
+    private long counter;
+    
     /**
      * The entity being float faded.
      */
@@ -98,14 +104,15 @@ public class JumpAnimation extends Animation
         
         if (counter > duration)   
         {
-            done = true;                                            
+            setDone(true);                                            
         }
     }
     
     @Override
     public void setVisible(final boolean visible)
     {
-        this.visible = visible;        
+        super.setVisible(visible);
+        
         if (entity != null)
             entity.setVisible(visible);
     }

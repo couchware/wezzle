@@ -45,6 +45,11 @@ public class TimerManager
      * of how many turns have taken place (more permanent).
      */
     private boolean stopped;
+    
+    /**
+     * Has the time changed since this value was checked?
+     */
+    private boolean changed;
 	
 	/**
 	 * The overloaded constructor created a timer manager with a passed in 
@@ -152,7 +157,10 @@ public class TimerManager
 			// A second has elapsed, decrement the current time and the
             // internal time by 1000 (a second).
 			this.currentTime--;
-			this.internalTime -= 1000;            			
+			this.internalTime -= 1000;          
+            
+            // Notify that it has changed.
+            changed = true;
 		}
 		else
 		{
@@ -189,6 +197,13 @@ public class TimerManager
     public void setStopped(boolean stopped)
     {
         this.stopped = stopped;
+    }
+
+    public boolean isChanged()
+    {
+        boolean c = changed;
+        changed = false;
+        return c;
     }        
 		
 }

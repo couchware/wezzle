@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.ui.group.options.*;
@@ -22,7 +23,7 @@ public class OptionsGroup extends Group
     /**
      * The header label.
      */
-    private Label headerLabel;
+    private ILabel headerLabel;
     
     /**
      * The help button.
@@ -63,30 +64,34 @@ public class OptionsGroup extends Group
         super(window, layerMan, groupMan);                
         
         // Create the options header.
-        headerLabel = ResourceFactory.get().getLabel(400, 171);        
-        headerLabel.setSize(26);
-        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        headerLabel.setColor(Game.TEXT_COLOR);
-        headerLabel.setText("Options");
-        headerLabel.setVisible(false);
+//        headerLabel = ResourceFactory.get().getLabel(400, 171);        
+//        headerLabel.setSize(26);
+//        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+//        headerLabel.setColor(Game.TEXT_COLOR);
+//        headerLabel.setText("Options");
+//        headerLabel.setVisible(false);
+        headerLabel = new LabelBuilder(400, 171)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(Game.TEXT_COLOR).size(26).text("Options")
+                .visible(false).end();
         layerMan.add(headerLabel, Game.LAYER_UI);
         entityList.add(headerLabel);
         
         // Create help button.
-        helpButton = new RectangularBooleanButton(window, 400, 246);
+        helpButton = new RectangularBooleanButton(window, 400, 246, "Help");
         helpButton.setNormalOpacity(70);
-        helpButton.setText("Help");
-        helpButton.getLabel().setSize(18);
+//        helpButton.setText("Help");
+//        helpButton.getLabel().setSize(18);
         helpButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         helpButton.setVisible(false);
         layerMan.add(helpButton, Game.LAYER_UI);
         entityList.add(helpButton);
         
         // Create audio button.
-        audioButton = new RectangularBooleanButton(window, 400, 300);
+        audioButton = new RectangularBooleanButton(window, 400, 300, "Sound/Music");
         audioButton.setNormalOpacity(70);
-        audioButton.setText("Sound/Music");
-        audioButton.getLabel().setSize(18);
+//        audioButton.setText("Sound/Music");
+//        audioButton.getLabel().setSize(18);
         audioButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         audioButton.setVisible(false);
         layerMan.add(audioButton, Game.LAYER_UI);
@@ -98,20 +103,20 @@ public class OptionsGroup extends Group
         groupMan.register(audioGroup);
         
         // Create main menu button.
-        mainMenuButton = new RectangularBooleanButton(window, 400, 354);        
+        mainMenuButton = new RectangularBooleanButton(window, 400, 354, "Main Menu");        
         mainMenuButton.setNormalOpacity(70);
-        mainMenuButton.setText("Main Menu");
-        mainMenuButton.getLabel().setSize(18);
+//        mainMenuButton.setText("Main Menu");
+//        mainMenuButton.getLabel().setSize(18);
         mainMenuButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         mainMenuButton.setVisible(false);
         layerMan.add(mainMenuButton, Game.LAYER_UI);
         entityList.add(mainMenuButton);
         
         // Create back button.
-        backButton = new RectangularBooleanButton(window, 400, 408);
+        backButton = new RectangularBooleanButton(window, 400, 408, "Back");
         backButton.setNormalOpacity(70);
-        backButton.setText("Back");
-        backButton.getLabel().setSize(18);
+//        backButton.setText("Back");
+//        backButton.getLabel().setSize(18);
         backButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         backButton.setVisible(false);
         layerMan.add(backButton, Game.LAYER_UI);     

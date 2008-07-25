@@ -1,8 +1,8 @@
 package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.LayerManager;
-import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.XYPosition;
 
@@ -11,29 +11,35 @@ import ca.couchware.wezzle2d.util.XYPosition;
  * 
  * @author cdmckay
  */
-public class FloatAnimation extends Animation
+public class FloatAnimation extends ReferenceAnimation
 {  
+    
     /**
      * The default duration.
      * Timed to match the default fade wait/duration so they can be
      * combined easily.
      */
-    final static protected int DEFAULT_DURATION = 1150;
+    final static private int DEFAULT_DURATION = 1150;
     
     /**
      * The speed of the float.
      */
-    final static protected double SPEED = 0.03;       
+    final static private double SPEED = 0.03;       
+    
+    /**
+     * The counter.
+     */
+    private long counter;
     
     /**
      * Reference to the layer manager.
      */
-    final protected LayerManager layerMan;
+    final private LayerManager layerMan;
     
     /**
      * The entity being float faded.
      */
-    final protected Entity entity;       
+    final private IEntity entity;       
     
      /**
      * The initial position.
@@ -43,12 +49,12 @@ public class FloatAnimation extends Animation
     /**
      * The speed of the float in the x direction.
      */
-    final protected double vX;
+    final private double vX;
     
     /**
      * The speed of the float in the y direction.
      */
-    final protected double vY;      
+    final private double vY;      
     
     /**
      * The amount of time the entity should spend fading out.
@@ -69,7 +75,7 @@ public class FloatAnimation extends Animation
             final int duration,
             final double dirX, final double dirY,                    
             final LayerManager layerMan,
-            final Entity entity)
+            final IEntity entity)
     {                
         // Invoke super constructor.
         super();    
@@ -97,7 +103,7 @@ public class FloatAnimation extends Animation
     public FloatAnimation(
             final double dirX, final double dirY,                    
             final LayerManager layerMan,
-            final Entity entity)            
+            final IEntity entity)            
     {
         this(DEFAULT_DURATION, dirX, dirY, layerMan, entity);
     }
@@ -122,7 +128,7 @@ public class FloatAnimation extends Animation
         // See if we're done.
         if (counter > duration)   
         {
-            done = true;   
+            setDone(true);   
             layerMan.remove(entity, Game.LAYER_EFFECT);
         }
     }
@@ -130,7 +136,8 @@ public class FloatAnimation extends Animation
     @Override
     public void setVisible(final boolean visible)
     {
-        this.visible = visible;        
+        super.setVisible(visible);
+        
         if (entity != null)
             entity.setVisible(visible);
     }

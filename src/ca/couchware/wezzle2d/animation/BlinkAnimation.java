@@ -13,9 +13,14 @@ import ca.couchware.wezzle2d.graphics.Entity;
  * 
  * @author cdmckay
  */
-public class BlinkAnimation extends Animation
+public class BlinkAnimation extends ReferenceAnimation
 {
 
+    /**
+     * The counter.
+     */
+    private long counter;
+    
     /**
      * The duration types.
      */
@@ -27,32 +32,32 @@ public class BlinkAnimation extends Animation
     /**
      * The duration type of this animation.
      */
-    final protected DurationType type;
+    final private DurationType type;
     
     /**
      * The duration of the animation.
      */
-    final protected int duration;
+    final private int duration;
     
     /**
      * The period the entity is shown for.
      */
-    final protected int showPeriod;
+    final private int showPeriod;
     
     /**
      * The period the entity is hidden for.
      */
-    final protected int hidePeriod;
+    final private int hidePeriod;
     
     /**
      * The entity that is being blinked.
      */
-    final protected Entity entity;
+    final private Entity entity;
     
     /**
      * The possible states for the blink animation to be in.
      */
-    protected static enum BlinkState
+    private static enum BlinkState
     {
         SHOW, HIDE
     }
@@ -60,13 +65,13 @@ public class BlinkAnimation extends Animation
     /**
      * The current state of the animation.
      */
-    protected BlinkState state;
+    private BlinkState state;
     
     /**
      * The state counter: counts how long we've been
      * in this state.
      */
-    protected int stateCounter;
+    private int stateCounter;
     
     /**
      * Create a blink animation on an entity
@@ -127,7 +132,7 @@ public class BlinkAnimation extends Animation
         // See if we're done.
         if (type == DurationType.FIXED && counter > duration)   
         {
-            done = true;                                            
+            setDone(true);
         }
         
         // Increment state counter.
@@ -163,7 +168,7 @@ public class BlinkAnimation extends Animation
     @Override
     public void setVisible(final boolean visible)
     {
-        this.visible = visible;        
+        super.setVisible(visible);    
         if (entity != null)
             entity.setVisible(visible);
     }

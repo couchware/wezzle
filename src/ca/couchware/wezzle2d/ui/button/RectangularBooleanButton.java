@@ -3,6 +3,8 @@ package ca.couchware.wezzle2d.ui.button;
 import ca.couchware.wezzle2d.graphics.Sprite;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -41,7 +43,7 @@ public class RectangularBooleanButton extends BooleanButton
     /**
      * The button text.
      */
-    final protected Label buttonLabel;   
+    final protected ILabel buttonLabel;   
     
     /**
      * The hover opacity.
@@ -59,7 +61,7 @@ public class RectangularBooleanButton extends BooleanButton
      * @param y
      */
     public RectangularBooleanButton(final GameWindow window, 
-            final int x, final int y, int type)
+            final int x, final int y, int type, String text)
     {
         // Invoke super.
         super(window, x, y, 
@@ -77,11 +79,17 @@ public class RectangularBooleanButton extends BooleanButton
         spriteNormal = ResourceFactory.get()
                 .getSprite(Game.SPRITES_PATH + "/" + spriteNormalName);             
         
+        // Set the text.
+        setText(text);
+        
         // Create the button text.
-        buttonLabel = ResourceFactory.get().getLabel(0, 0);        
-        buttonLabel.setSize(22);
-        buttonLabel.setColor(Game.TEXT_COLOR);
-        buttonLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));    
+//        buttonLabel = ResourceFactory.get().getLabel(0, 0);        
+//        buttonLabel.setSize(18);
+//        buttonLabel.setColor(Game.TEXT_COLOR);
+//        buttonLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));    
+        buttonLabel = new LabelBuilder(x, y)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(Game.TEXT_COLOR).size(18).text(getText()).end();                
         
         // Set the normal and active opacities.        
         hoverOpacity = 100;
@@ -89,9 +97,9 @@ public class RectangularBooleanButton extends BooleanButton
     }
     
     public RectangularBooleanButton(final GameWindow window, 
-            final int x, final int y)
+            final int x, final int y, String text)
     {
-        this(window, x, y, TYPE_NORMAL);
+        this(window, x, y, TYPE_NORMAL, text);
     }
     
     @Override
@@ -100,9 +108,9 @@ public class RectangularBooleanButton extends BooleanButton
         spriteNormal.draw(x + offsetX, y + offsetY, 
                 width, height, 0.0, opacity);
         
-        buttonLabel.setX(x + offsetX + width / 2);
-        buttonLabel.setY(y + offsetY + height / 2);
-        buttonLabel.setText(getText());
+//        buttonLabel.setX(x + offsetX + width / 2);
+//        buttonLabel.setY(y + offsetY + height / 2);
+//        buttonLabel.setText(getText());
         buttonLabel.draw();
     }
 
@@ -112,9 +120,9 @@ public class RectangularBooleanButton extends BooleanButton
         spriteNormal.draw(x + offsetX, y + offsetY, 
                 width, height, 0.0, activeOpacity);
         
-        buttonLabel.setX(x + offsetX + width / 2);
-        buttonLabel.setY(y + offsetY + height / 2);
-        buttonLabel.setText(getText());
+//        buttonLabel.setX(x + offsetX + width / 2);
+//        buttonLabel.setY(y + offsetY + height / 2);
+//        buttonLabel.setText(getText());
         buttonLabel.draw();
     }
 
@@ -131,9 +139,9 @@ public class RectangularBooleanButton extends BooleanButton
 //            
 //        }
         
-        buttonLabel.setX(x + offsetX + width / 2);
-        buttonLabel.setY(y + offsetY + height / 2);
-        buttonLabel.setText(getText());
+//        buttonLabel.setX(x + offsetX + width / 2);
+//        buttonLabel.setY(y + offsetY + height / 2);
+//        buttonLabel.setText(getText());
         buttonLabel.draw();
     }
 
@@ -142,21 +150,11 @@ public class RectangularBooleanButton extends BooleanButton
     {
         spriteNormal.draw(x + offsetX, y + offsetY, width, height, 0.0, 70);
         
-        buttonLabel.setX(x + offsetX + width / 2);
-        buttonLabel.setY(y + offsetY + height / 2 + 1);
-        buttonLabel.setText(getText());
+//        buttonLabel.setX(x + offsetX + width / 2);
+//        buttonLabel.setY(y + offsetY + height / 2 + 1);
+//        buttonLabel.setText(getText());
         buttonLabel.draw();
-    }
-   
-    /**
-     * Get the label object for this button.
-     * 
-     * @return The label object.
-     */
-    public Label getLabel()
-    {
-        return buttonLabel;
-    }
+    }   
 
     public int getActiveOpacity()
     {

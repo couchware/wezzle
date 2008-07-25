@@ -15,27 +15,27 @@ public class AnimationManager
     /**
      * The animation linked list.
      */
-    private ArrayList<Animation> animationList;
+    private ArrayList<IAnimation> animationList;
     
     public AnimationManager()
     {
         // Initialize animation list.
-        animationList = new ArrayList<Animation>();
+        animationList = new ArrayList<IAnimation>();
     }
     
-    public void add(Animation a)
+    public void add(IAnimation a)
     {
         animationList.add(a);
         a.onStart();
     }
     
-    public void remove(Animation a)
+    public void remove(IAnimation a)
     {
         if (contains(a) == true)
             animationList.remove(a);
     }
     
-    public boolean contains(Animation a)
+    public boolean contains(IAnimation a)
     {
         return animationList.contains(a);
     }      
@@ -44,7 +44,7 @@ public class AnimationManager
     {
         for (Iterator it = animationList.iterator(); it.hasNext(); ) 
         {
-            Animation a = (Animation) it.next();
+            IAnimation a = (IAnimation) it.next();
             if (a.isDone() == true)
             {
                 a.onFinish();

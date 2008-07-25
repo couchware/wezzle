@@ -1151,7 +1151,7 @@ public class BoardManager
      *      
      * @return An animation that can be checked for doneness.
      */
-    public Animation animateShow()
+    public IAnimation animateShow()
     {
         // Sanity check.
         assert(animationMan != null);
@@ -1173,8 +1173,9 @@ public class BoardManager
 			
 			if (t != null)		
 			{	
-                Animation a = new FadeAnimation(FadeType.IN, 0, 700, t);
-                a.setDelay(delay);
+                //Animation a = new FadeAnimation(FadeType.IN, 0, 700, t);
+                IAnimation a = new FadeAnimation.Builder(FadeType.IN, t)
+                        .wait(delay).duration(700).end();                
                 t.setAnimation(a);
                 animationMan.add(a);
                 
@@ -1209,7 +1210,7 @@ public class BoardManager
      *      
      * @return An animation that can be checked for doneness.
      */
-    public Animation animateHide()
+    public IAnimation animateHide()
     {
         // Sanity check.
         assert(animationMan != null);
@@ -1231,8 +1232,9 @@ public class BoardManager
 			
 			if (t != null)		
 			{	
-                Animation a = new FadeAnimation(FadeType.OUT, 0, 700, t);
-                a.setDelay(delay);
+                //Animation a = new FadeAnimation(FadeType.OUT, 0, 700, t);
+                IAnimation a = new FadeAnimation.Builder(FadeType.OUT, t)
+                        .wait(delay).duration(700).end();                 
                 t.setAnimation(a);
                 animationMan.add(a);
                 

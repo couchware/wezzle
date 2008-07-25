@@ -5,11 +5,14 @@
 
 package ca.couchware.wezzle2d.java2d;
 
-import ca.couchware.wezzle2d.ui.Label;
+import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
@@ -20,144 +23,184 @@ import java.util.EnumSet;
 
 /**
  * This class provides a Java2D implementation of the Label interface.
- * The font is hard coded as BubbleBoy2 but maybe be changed in the future.
+ * The font is hard coded as BubbleBoy2 but may be be changed in the future.
  * 
  * @author Kevin, Cameron
  *
  */
 
-public class Java2DLabel extends Label
+public class Java2DLabel implements ILabel
 {    
+    
+    /** 
+     * The game window to which this text is going to be drawn 
+     */
+	final private Java2DGameWindow window;	
+    
+    /**
+     * The x-coordinate of the label.     
+     */
+    private int x;
+    private int x_;
+    
+    /**
+     * The y-coordinate of the label.     
+     */
+    private int y;
+    private int y_;
+    
+    /**
+     * The previous width.  Used for calculating the draw rectangle.
+     */
+    private int width_ = 0;
+    
+    /**
+     * The previous height.  Used for calculating the draw rectangle.
+     */
+    private int height_ = 0;
+    
+    /**
+     * The color of the label.
+     */
+    final private Color color;
+    
+    /**
+     * The size of the label.
+     */
+    final private float size;
+    
+    /**
+     * The text of the label.
+     */
+    final private String text;
     
 	/** 
      * The font. 
      */
-	private Font font;       
+	final private Font font;  
+    
+     /** 
+     * Is this visible? 
+     */
+    private boolean visible = true;
+    
+    /**
+     * Is it dirty (i.e. does it need to be redrawn)?
+     */
+    private boolean dirty = true;           
+    
+    /**
+     * The opacity (in percent).
+     */
+    private int opacity = 100;
+    
+    /**
+     * The cached draw rectangle.
+     */
+    private Rectangle drawRect;
+        
+    /**
+     * The alignment of the label.
+     */
+    final private EnumSet<Alignment> alignment;
+    
+    /**
+     * The x-offset.
+     */
+    final private int offsetX;
+    
+    /**
+     * The y-offset.
+     */
+    final private int offsetY;	
     
     /**
      * The text layout instance.
      */
-	private TextLayout textLayout;
+	final private TextLayout textLayout;		        
+    
+	/**
+	 * Create a new Java2D label.	 
+	 */
+	public Java2DLabel(Java2DGameWindow window,
+            int x, int y,
+            EnumSet<Alignment> alignment,
+            Color color,
+            int opacity,
+            float size,
+            String text,
+            boolean visible)
+	{                		
+        // Setup the values.
+		this.window = window;
+        this.x  = x;
+        this.x_ = x;
+        this.y  = y;
+        this.y_ = y;        
+        this.alignment = alignment;
+        this.color = color;
+        this.opacity = limitOpacity(opacity);
+        this.size = size;
+        this.text = text;
+        this.visible = visible;
+                       
+        // Get the font.
+        this.font = Java2DFontStore.get().getFont((int) size);
+        
+        // Create the text layout object.
+        this.textLayout = createTextLayout(window.getDrawGraphics(), font);
+        
+        // Set the old widths.
+//        this.width_ = getWidth();
+//        this.height_ = getHeight();
+        
+        // Setup the alignment.  This should be replaced, alignment should
+        // be immutable.        
+        int[] offsets = determineOffsets(alignment);
+        this.offsetX = offsets[0];
+        this.offsetY = offsets[1];        
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
+	}		           		
 	
-	/** 
-     * The game window to which this text is going to be drawn 
-     */
-	private Java2DGameWindow window;	
+    public EnumSet<Alignment> getAlignment()
+    {
+        return alignment;
+    }
     
     /**
-     * Do we need to update the text layout?
-     */
-    private boolean updateTextLayoutNextDraw = false;
-    
-	/**
-	 * The constructor loads the default text settings.
-	 * The default settings are:
-	 * 
-	 * size: 14pt.
-	 * Color: Black.
-	 * Text: "".
-	 * 
-	 * @param window The game window to be drawn to.
-	 */
-	public Java2DLabel(Java2DGameWindow window, final int x, final int y)
-	{
-        // Invoke super.
-        super(x, y);
-        		
-        // Setup some values.       
-		this.window = window;
-        setText(text);        
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-	}			
-    
-	/**
-	 * Set the text.
-	 * Recalculate any anchor points.
-	 * 
-	 * @param t The text.
-	 */
-    @Override
-	public void setText(final String text)
-	{
-        // Return if the text is the same.
-        if (text != null && text.equals(this.text) == true)
-            return;
-        
-        // Set the text.
-		this.text = text;        
-        
-        // Get rid of old layout.
-        this.textLayout = null;
-        
-        // Schedule a text layout update if necessary.        
-        this.updateTextLayoutNextDraw = true;
-		
-		// Recalculate the anchor points.
-		// The anchor will be automatically recalculated with the next 
-        // text layout update.
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-	}		
-	
-	/**
-	 * Set the color of the text.
-	 * 
-	 * @param s The size.
-	 */
-    @Override
-	public void setSize(float size)
-	{
-        // Update size.
-		this.size = size;
-        
-        // Derive font with updated size.
-		this.font = Java2DFontStore.get().getFont(new Integer((int) size));
-        
-        // Update the text layout.
-        this.textLayout = null;
-        this.updateTextLayoutNextDraw = true;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-	}
-	
-	/**
 	 * Set the anchor of the text box. The anchor is initially set to the top left. 
 	 * 
 	 * @param x The x anchor coordinate with respect to the top left corner of the text box.
 	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
-	 */
-    @Override
+	 */    
 	public void setAlignment(EnumSet<Alignment> alignment)
-	{
-        // Remember the anchor.
-		this.alignment = alignment;                
-        
-        // Return if there's no text or text layout object.
-		if (text == null 
-                || text.equals("") == true 
-                || textLayout == null)
-			return;
-		
-		// Get the width and height of the font.
+	{                                     						
+        throw new UnsupportedOperationException("Not supported");
+	}
+    
+    private int[] determineOffsets(EnumSet<Alignment> alignment)
+    {
+        // Get the width and height of the font.
 		Rectangle2D bounds = textLayout.getBounds();
+        
+        // Create two offset variables.
+        int offsetX_, offsetY_;
         
 		// The Y alignment.
 		if (alignment.contains(Alignment.BOTTOM))
 		{
             // TODO This may not work.  It has not been tested.
-			this.offsetY = 0;
+			offsetY_ = 0;
 		}        
 		else if (alignment.contains(Alignment.MIDDLE))
 		{			
-            this.offsetY = (int) (-bounds.getY() / 2f + 0.5);                        
+            offsetY_ = (int) (-bounds.getY() / 2f + 0.5);                        
 		}
 		else if (alignment.contains(Alignment.TOP))
 		{
-			this.offsetY = (int) (-bounds.getY() + 0.5);                                              
+			offsetY_ = (int) (-bounds.getY() + 0.5);                                              
 		}
 		else
 		{
@@ -167,31 +210,30 @@ public class Java2DLabel extends Label
 		// The X alignment. 
 		if (alignment.contains(Alignment.LEFT))
 		{
-			this.offsetX = (int) -bounds.getMinX();
+			offsetX_ = (int) -bounds.getMinX();
 		}
 		else if (alignment.contains(Alignment.CENTER))
 		{
-			this.offsetX = (int) -(bounds.getMinX() + bounds.getWidth() / 2);			
+			offsetX_ = (int) -(bounds.getMinX() + bounds.getWidth() / 2);			
 		}
 		else if (alignment.contains(Alignment.RIGHT))
 		{
-			this.offsetX = (int) -bounds.getMaxX();
+			offsetX_ = (int) -bounds.getMaxX();
 		}
 		else
 		{
 			throw new IllegalStateException("No X alignment set!");
-		}		
+		}
         
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-	}
+        return new int[] { offsetX_, offsetY_ };
+    }    	
 	
     /**
      * Updates the text layout instance.
      * @param frctx The current font render context.
      */
-    private void updateTextLayout(final Graphics2D g)
-    {      
+    private TextLayout createTextLayout(Graphics2D g, Font font)
+    {             
         // Set the font.
         g.setFont(font);  
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -202,13 +244,15 @@ public class Java2DLabel extends Label
         // Get the render context.
         FontRenderContext frctx = g.getFontRenderContext();
         
-        // Create new text layout.
-        if (text != null)
-            this.textLayout = new TextLayout(text, font, frctx);                
-        
-        // Update anchor.
-        this.setAlignment(alignment);
+        // Create new text layout.        
+        return new TextLayout(text, font, frctx);                     
     }    
+    
+    private int getLetterHeight()
+    {        
+        // Return the height.
+        return (int) -textLayout.getBounds().getY();            
+    }
     
 	/**
 	 * Draw the text onto the graphics context provided.	   
@@ -221,212 +265,73 @@ public class Java2DLabel extends Label
         width_ = getWidth();
         height_ = getHeight();
         
-		// Return immediately is string is empty.
-		if (isVisible() == false || text == null || text.equals("") == true)
-			return;                
-		
-		try
-		{
-			// Get the graphics.
-			Graphics2D g = window.getDrawGraphics();                        				            
+		// Return if the label is invisible.
+		if (isVisible() == false)
+			return;                					
             
-            // Update the text layout if flagged.
-            if (updateTextLayoutNextDraw == true)
-            {
-                // Clear the flag.
-                updateTextLayoutNextDraw = false;
-                
-                // Update it.
-                updateTextLayout(g);
-            }
-            			
-			// Test font.
-			assert (font != null);
-			
-			g.setFont(font);			
-            
-            // Opacity.
-            Composite c = null;
-            if (opacity != 100)
-            {
-                c = g.getComposite();
-                g.setComposite(
-                        AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
-                        ((float) opacity) / 100.0f));
-            }
-			
-            g.setColor(Color.BLACK);
-            
-            textLayout.draw(g, x + offsetX + 1, y + offsetY + 1);            
-            
-            g.setColor(this.color);		
-            
-			textLayout.draw(g, x + offsetX, y + offsetY);            
-            
-            // Opacity.
-            if (opacity != 100)        
-                g.setComposite(c);            
-		}
-		catch(Exception e)
-		{
-			Util.handleException(e);
-		}		
-	}
-    
-    public int getOffsetX()
-    {   
-        // See if the graphics are available.
+        // Get the graphics context.
         Graphics2D g = window.getDrawGraphics();
         
-        // If we don't, throw an exception.
-        if (g == null)
+        // Deal with opacity.
+        Composite c = null;        
+        if (opacity != 100)
         {
-            throw new IllegalStateException("Graphics2D is not availabe yet!");            
+            c = g.getComposite();
+            g.setComposite(
+                    AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 
+                    ((float) opacity) / 100.0f));
         }
-        else
-        {
-            // Update the text layout if flagged.
-            if (updateTextLayoutNextDraw == true)
-            {
-                // Clear the flag.
-                updateTextLayoutNextDraw = false;
-                
-                // Update it.
-                updateTextLayout(g);
-            }
-            
-            // Null reference.
-            g = null;
-            
-            return offsetX;
-        } // end if                 
-    }
 
-    public int getOffsetY()
-    {
-        // See if the graphics are available.
-        Graphics2D g = window.getDrawGraphics();
-        
-        // If we don't, throw an exception.
-        if (g == null)
-        {
-            throw new IllegalStateException("Graphics2D is not availabe yet!");            
-        }
-        else
-        {
-            // Update the text layout if flagged.
-            if (updateTextLayoutNextDraw == true)
-            {
-                // Clear the flag.
-                updateTextLayoutNextDraw = false;
-                
-                // Update it.
-                updateTextLayout(g);
-            }
-            
-            // Null reference.
-            g = null;
-            
-            return offsetY;
-        } // end if
-    }
+        g.setColor(Color.BLACK);
+
+        textLayout.draw(g, x + offsetX + 1, y + offsetY + 1);            
+
+        g.setColor(this.color);		
+
+        textLayout.draw(g, x + offsetX, y + offsetY);            
+
+        // Opacity.
+        if (opacity != 100)        
+            g.setComposite(c);            					
+	}        
 
     /**
-     * This method will only work when the Graphics2D instance is available.
-     * @return The width of the text.
-     */
-    @Override
+     * Returns the width of the label.
+     * 
+     * @return The width of the label.
+     */    
     public int getWidth()
-    {
-        // See if the graphics are available.
-        Graphics2D g = window.getDrawGraphics();
-        
-        // If we don't, throw an exception.
-        if (g == null)
-        {
-            throw new IllegalStateException("Graphics2D is not availabe yet!");            
-        }
-        else
-        {
-            // Update the text layout if flagged.
-            if (updateTextLayoutNextDraw == true)
-            {
-                // Clear the flag.
-                updateTextLayoutNextDraw = false;
-                
-                // Update it.
-                updateTextLayout(g);
-            }
-            
-            // Null reference.
-            g = null;
-            
-            if (textLayout != null)
-                return (int) textLayout.getBounds().getMaxX();
-            else
-                return 0;
-        } // end if     
+    {        
+        return (int) textLayout.getBounds().getMaxX();         
     }
 
     /**
      * This method is not supported.  Do not use.
      * 
      * @param width
-     */
-    @Override
+     */    
     public void setWidth(int width)
     {
         // This is not supported.        
         throw new UnsupportedOperationException(
-                "Width should be changed via the size and text attributes.");
+                "Not supported.");
     }
 
     /**
-     * This method will only work when the Graphics2D instance is available.
-     * @return The height of the text.
-     */
-    @Override
+     * Returns the height of the label.
+     * 
+     * @return The height of the label.
+     */    
     public int getHeight()
-    {
-        // See if the graphics are available.
-        Graphics2D g = window.getDrawGraphics();
-        
-        // If we don't, throw an exception.
-        if (g == null)
-        {
-            throw new IllegalStateException("Graphics2D is not availabe yet!");            
-        }
-        else
-        {
-            // Update the text layout if flagged.
-            if (updateTextLayoutNextDraw == true)
-            {
-                // Clear the flag.
-                updateTextLayoutNextDraw = false;
-                
-                // Update it.                
-                updateTextLayout(g);
-            }
-            
-            // Null the reference.
-            g = null;
-            
-            if (textLayout != null)
-            {                
-                int h = (int) textLayout.getBounds().getHeight();
-                return h;
-            }
-            else
-                return 0;
-        } // end if 
+    {        
+        return (int) textLayout.getBounds().getHeight();
     }
 
     /**
      * This method is not supported.  Do not use.
      * 
      * @param height
-     */
-    @Override
+     */    
     public void setHeight(int height)
     {
         // This is not supported.        
@@ -434,34 +339,175 @@ public class Java2DLabel extends Label
                 "Height should be changed via the size and text attribute.");
     }
     
-    public int getLetterHeight()
+    
+    
+    public Rectangle getDrawRect()
     {
-        // See if the graphics are available.
-        Graphics2D g = window.getDrawGraphics();
-        
-        // If we don't, throw an exception.
-        if (g == null)
-        {
-            throw new IllegalStateException("Graphics2D is not availabe yet!");            
-        }
-        else
-        {
-            // Update the text layout if flagged.
-            if (updateTextLayoutNextDraw == true)
-            {
-                // Clear the flag.
-                updateTextLayoutNextDraw = false;
-                
-                // Update it.                
-                updateTextLayout(g);
-            }
-                        
-            // Null reference.
-            g = null;                       
+        // If the draw rect is null, generate it.
+        if (drawRect == null)
+        {            
+            // Draw a rectangle that can fully cover the text.
+            Rectangle rect = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);      
             
-            // Return the height.
-            return (int) -textLayout.getBounds().getY();            
+            // Move it so it covers the text.
+            rect.translate(offsetX, offsetY);
+            
+            // Add the old rectangle.
+            rect.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));                             
+                                     
+            // Move the point up to the top left corner.
+            rect.translate(0, -(getLetterHeight() + 1));
+
+//            if (rect.getMinX() < 0 || rect.getMinY() < 0)
+//            {
+//                Util.handleWarning("Label drawn outside of screen.", 
+//                        Thread.currentThread());
+//                
+//                Rectangle r = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);
+//                Util.handleWarning("r1 = " + r, Thread.currentThread());
+//                r.translate(offsetX, offsetY);
+//                Util.handleWarning("r2 = " + r, Thread.currentThread());
+//                r.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));
+//                Util.handleWarning("r3 = " + r, Thread.currentThread());                
+//                r.translate(0, -(getLetterHeight() + 1));
+//                Util.handleWarning("r4 = " + r, Thread.currentThread());
+//                Util.handleWarning("Offending text is " + text,
+//                        Thread.currentThread());
+//            }
+        
+            drawRect = rect;
         }
+               
+        return drawRect;
     }
+       
+    public void resetDrawRect()
+    {
+        x_ = x;
+        y_ = y;
+        
+        width_ = getWidth();
+        height_ = getHeight();
+    }
+
+    public Color getColor()
+    {
+        return color;
+    }
+
+    public float getSize()
+    {
+        return size;
+    }
+
+    public String getText()
+    {
+        return text;
+    }
+
+    public void setOpacity(int opacity)
+    {        
+        this.opacity = limitOpacity(opacity);
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
+    }
+
+    public int getOpacity()
+    {
+        return opacity;
+    }
+    
+    private int limitOpacity(int opacity)
+    {
+        if (opacity < 0) return 0;
+        if (opacity > 100) return 100;
+        return opacity;
+    }
+
+    public void setRotation(double theta)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public double getRotation()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }  
+
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
+        
+        // Set dirty so it will be drawn.
+        setDirty(true);
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
+    }
+
+    public void setDirty(boolean dirty)
+    {
+        this.dirty = dirty;
+        
+        // Set draw rect to null so it'll be regenerated.
+        this.drawRect = null;
+    }
+
+    public boolean isDirty()
+    {
+        return dirty;
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public void setX(int x)
+    {        
+        this.x = x;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public void setY(int y)
+    {
+        this.y = y;
+        
+        // Set dirty so it will be drawn.        
+        setDirty(true);
+    }
+
+    public XYPosition getXYPosition()
+    {
+        return new XYPosition(getX(), getY());
+    }
+
+    public void setXYPosition(int x, int y)
+    {
+        setX(x);
+        setY(y);
+    }
+
+    public void setXYPosition(XYPosition p)
+    {
+        setX(p.getX());
+        setY(p.getY());
+    }
+
+    public void translate(int dx, int dy)
+    {
+        setX(getX() + dx);
+        setY(getY() + dy);
+    }    
     
 }

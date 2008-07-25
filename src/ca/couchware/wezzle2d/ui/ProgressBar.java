@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
@@ -50,12 +51,12 @@ public class ProgressBar extends Entity
     /**
      * Does the progress bar have text?
      */
-    private boolean withText;
+    private boolean withLabel;
     
     /**
      * The progress text.
      */
-    private Label progressText;
+    private ILabel progressLabel;
     
     /**
      * The container sprite.
@@ -160,18 +161,22 @@ public class ProgressBar extends Entity
 		if (withText == true)
 		{
 			// Set the variable.
-			this.withText = withText;
+			this.withLabel = withText;
 			
 			// Create progress text.		
-			progressText = ResourceFactory.get().getLabel(
-                    x + getWidth() / 2, y + 47);
-			
-			// Set text attributes.			
-            progressText.setSize(14);
-            progressText.setAlignment(
-                    EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-            progressText.setColor(Game.TEXT_COLOR);
-            progressText.setText(progress + "/" + progressMax);
+//			progressText = ResourceFactory.get().getLabel(
+//                    x + getWidth() / 2, y + 47);
+//			
+//			// Set text attributes.			
+//            progressText.setSize(14);
+//            progressText.setAlignment(
+//                    EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+//            progressText.setColor(Game.TEXT_COLOR);
+//            progressText.setText(progress + "/" + progressMax);
+            progressLabel = new LabelBuilder(x + getWidth() / 2, y + 47)
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .color(Game.TEXT_COLOR).size(14)
+                    .text(progress + "/" + progressMax).end();                    
 		}	                
         
         // Initialize.
@@ -192,8 +197,8 @@ public class ProgressBar extends Entity
                 0.0, 90);
         
         // Draw the text.
-        if (withText == true)
-            progressText.draw();
+        if (withLabel == true)
+            progressLabel.draw();
         
         // Adjust the local x and y.
         int alignedX = x + padX + offsetX;
@@ -245,8 +250,12 @@ public class ProgressBar extends Entity
 	public void setProgressMax(int progressMax)
 	{
 		// Update the text, if needed.
-		if (withText == true)
-			progressText.setText(progress + "/" + progressMax);
+		if (withLabel == true)
+        {
+			//progressText.setText(progress + "/" + progressMax);
+            progressLabel = new LabelBuilder(progressLabel)
+                    .text(progress + "/" + progressMax).end();
+        }
 		
 		// Update the progress.
 		this.progressMax = progressMax;
@@ -273,8 +282,11 @@ public class ProgressBar extends Entity
             return;
         
 		// Update the text, if needed.
-		if (withText == true)
-			progressText.setText(progress + "/" + progressMax);
+		if (withLabel == true)
+        {            
+			progressLabel = new LabelBuilder(progressLabel)
+                    .text(progress + "/" + progressMax).end();
+        }
 		
 		// Update the progress.
 		this.progress = progress;	
@@ -375,10 +387,10 @@ public class ProgressBar extends Entity
 		}	
         
         // Update the text if necessary.
-        if (withText == true)
+        if (withLabel == true)
         {
-            progressText.setX(progressText.getX() + offsetX);
-            progressText.setY(progressText.getY() + offsetY);
+            progressLabel.setX(progressLabel.getX() + offsetX);
+            progressLabel.setY(progressLabel.getY() + offsetY);
         }               
                 
         // Set dirty so it will be drawn.        
@@ -400,8 +412,8 @@ public class ProgressBar extends Entity
             rect.translate(offsetX, offsetY);
 
             // Add the text too.
-            if (withText == true)
-                rect.add(progressText.getDrawRect());
+            if (withLabel == true)
+                rect.add(progressLabel.getDrawRect());
             
             drawRect = rect;
         }

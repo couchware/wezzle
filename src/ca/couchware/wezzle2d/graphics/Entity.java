@@ -17,7 +17,7 @@ import java.util.EnumSet;
  * 
  * @author Cameron McKay (based on code by Kevin Glass)
  */
-public abstract class Entity implements Drawable, Positionable
+public abstract class Entity implements IEntity
 {
     /** 
      * Is this visible? 

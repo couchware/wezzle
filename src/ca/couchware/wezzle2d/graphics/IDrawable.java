@@ -2,7 +2,7 @@ package ca.couchware.wezzle2d.graphics;
 
 import java.awt.Rectangle;
 
-public interface Drawable
+public interface IDrawable
 {
 	public void draw();
     public Rectangle getDrawRect();

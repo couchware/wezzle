@@ -5,7 +5,7 @@ package ca.couchware.wezzle2d.graphics;
  * 
  * @author cdmckay
  */
-public interface Movable 
+public interface IMovable 
 {
     /**
      * Move the movable by an amount related to delta.

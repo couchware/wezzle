@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.ui.group.options;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.util.Util;
@@ -25,7 +26,7 @@ public class SoundMusicGroup extends Group
     /**
      * The header label.
      */
-    private Label headerLabel;
+    private ILabel headerLabel;
     
     /**
      * The sound on/off button.
@@ -68,17 +69,21 @@ public class SoundMusicGroup extends Group
         super(window, layerMan, groupMan);
         
         // Create the options header.
-        headerLabel = ResourceFactory.get().getLabel(400, 171);        
-        headerLabel.setSize(26);
-        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        headerLabel.setColor(Game.TEXT_COLOR);
-        headerLabel.setText("Sound/Music");
-        headerLabel.setVisible(false);
+//        headerLabel = ResourceFactory.get().getLabel(400, 171);        
+//        headerLabel.setSize(26);
+//        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+//        headerLabel.setColor(Game.TEXT_COLOR);
+//        headerLabel.setText("Sound/Music");
+//        headerLabel.setVisible(false);
+        headerLabel = new LabelBuilder(400, 171)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(Game.TEXT_COLOR).size(26).text("Sound/Music")
+                .visible(false).end();
         layerMan.add(headerLabel, Game.LAYER_UI);
         entityList.add(headerLabel);
         
         // Create the sound on/off button.
-        soundButton = new RectangularBooleanButton(window, 400, 233)
+        soundButton = new RectangularBooleanButton(window, 400, 233, "Sound: On")
         {
             // Make it so the button text changes to resume when
             // the button is activated.
@@ -100,7 +105,7 @@ public class SoundMusicGroup extends Group
         };
         soundButton.setNormalOpacity(70);
         soundButton.setText("Sound: Off");
-        soundButton.getLabel().setSize(18);
+//        soundButton.getLabel().setSize(18);
         soundButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         soundButton.setVisible(false);
         layerMan.add(soundButton, Game.LAYER_UI);
@@ -126,7 +131,7 @@ public class SoundMusicGroup extends Group
         entityList.add(soundSlider);        
                 
         // Create the music on/off button.
-        musicButton = new RectangularBooleanButton(window, 400, 321)
+        musicButton = new RectangularBooleanButton(window, 400, 321, "Music: On")
         {
             // Make it so the button text changes to resume when
             // the button is activated.
@@ -148,7 +153,7 @@ public class SoundMusicGroup extends Group
         };
         musicButton.setNormalOpacity(70);
         musicButton.setText("Music: Off");
-        musicButton.getLabel().setSize(18);
+//        musicButton.getLabel().setSize(18);
         musicButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         musicButton.setVisible(false);
         layerMan.add(musicButton, Game.LAYER_UI);
@@ -174,10 +179,10 @@ public class SoundMusicGroup extends Group
         entityList.add(musicSlider);
         
         // Create back button.
-        backButton = new RectangularBooleanButton(window, 400, 408);
+        backButton = new RectangularBooleanButton(window, 400, 408, "Back");
         backButton.setNormalOpacity(70);
         backButton.setText("Back");
-        backButton.getLabel().setSize(18);
+//        backButton.getLabel().setSize(18);
         backButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         backButton.setVisible(false);
         layerMan.add(backButton, Game.LAYER_UI);     

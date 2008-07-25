@@ -7,10 +7,11 @@ package ca.couchware.wezzle2d.tutorial;
 
 import static ca.couchware.wezzle2d.animation.BlinkAnimation.DurationType;
 import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
-import static ca.couchware.wezzle2d.graphics.Positionable.Alignment;
+import static ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import static ca.couchware.wezzle2d.ui.SpeechBubble.BubbleType;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
+import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.BlinkAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
@@ -19,7 +20,7 @@ import ca.couchware.wezzle2d.piece.PieceDot;
 import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.ui.Label;
-import ca.couchware.wezzle2d.ui.MultiLabel;
+//import ca.couchware.wezzle2d.ui.MultiLabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.button.RectangularBooleanButton;
 import java.util.EnumSet;
@@ -91,17 +92,17 @@ public class BasicTutorial extends Tutorial
         game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
         
         // Create the text that instructs the user to click the block.
-        label = new MultiLabel(280, 166, 22);
-        label.setColor(Game.TEXT_COLOR);
-        label.setSize(16);
-        label.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT));
-        label.setText(
-                "Lines are made by lining\n" +
-                "up 3 tiles of the same\n" +
-                "colour."               
-                );
-        game.layerMan.add(label, Game.LAYER_EFFECT);                 
-        game.layerMan.toFront(label, Game.LAYER_EFFECT);
+//        label = new MultiLabel(280, 166, 22);
+//        label.setColor(Game.TEXT_COLOR);
+//        label.setSize(16);
+//        label.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT));
+//        label.setText(
+//                "Lines are made by lining\n" +
+//                "up 3 tiles of the same\n" +
+//                "colour."               
+//                );
+//        game.layerMan.add(label, Game.LAYER_EFFECT);                 
+//        game.layerMan.toFront(label, Game.LAYER_EFFECT);
         
         // Stop the piece manager from dropping.
         game.pieceMan.setTileDropOnCommit(false);
@@ -124,20 +125,18 @@ public class BasicTutorial extends Tutorial
         
         // Create repeat button.
         repeatButton = new RectangularBooleanButton(
-                game.getGameWindow(), 400, 310);        
+                game.getGameWindow(), 400, 310, "Repeat");        
         repeatButton.setNormalOpacity(70);
-        repeatButton.setText("Repeat");
-        repeatButton.getLabel().setSize(18);
+//        repeatButton.setText("Repeat");        
         repeatButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         repeatButton.setVisible(false);
         game.layerMan.add(repeatButton, Game.LAYER_EFFECT);
         
          // Create continue button.
         continueButton = new RectangularBooleanButton(
-                game.getGameWindow(), 400, 370);
+                game.getGameWindow(), 400, 370, "Continue");
         continueButton.setNormalOpacity(70);
-        continueButton.setText("Continue");
-        continueButton.getLabel().setSize(18);
+//        continueButton.setText("Continue");        
         continueButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
         continueButton.setVisible(false);
         game.layerMan.add(continueButton, Game.LAYER_EFFECT);    
@@ -161,17 +160,24 @@ public class BasicTutorial extends Tutorial
             //game.startBoardHideAnimation();
             EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
                     game.boardMan.getCells() - 1);
-            game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 500, e));
+            //game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 500, e));
+            IAnimation a = new FadeAnimation.Builder(FadeType.OUT, e)
+                    .wait(0).duration(500).end();
+            game.animationMan.add(a);
                         
             // Fade in two new buttons.
             FadeAnimation f;                        
              
-            f = new FadeAnimation(FadeType.IN, 100, 500, repeatButton);
-            f.setMaxOpacity(70);
+            //f = new FadeAnimation(FadeType.IN, 100, 500, repeatButton);
+            //f.setMaxOpacity(70);
+            f = new FadeAnimation.Builder(FadeType.IN, repeatButton)
+                    .wait(100).duration(500).maxOpacity(70).end();            
             game.animationMan.add(f);
                          
-            f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
-            f.setMaxOpacity(70);
+            //f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
+            //f.setMaxOpacity(70);
+            f = new FadeAnimation.Builder(FadeType.IN, continueButton)
+                    .wait(100).duration(500).maxOpacity(70).end();
             game.animationMan.add(f);
             
             // Menu is now shown.
@@ -285,8 +291,12 @@ public class BasicTutorial extends Tutorial
            @Override
            public void onClick()
            {
-                // Fade out the bubble.
-                game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 500, bubble));       
+               
+               // Fade out the bubble.
+               //Animation f = new FadeAnimation(FadeType.OUT, 0, 500, bubble);
+               IAnimation f = new FadeAnimation.Builder(FadeType.OUT, bubble)
+                       .wait(0).duration(500).end();
+               game.animationMan.add(f);       
            }
         };        
         game.boardMan.addTile(0, game.boardMan.getRows() - 1, t);        

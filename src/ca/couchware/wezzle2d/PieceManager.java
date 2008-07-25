@@ -1,8 +1,9 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import static ca.couchware.wezzle2d.BoardManager.Direction;
 import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
-import static ca.couchware.wezzle2d.graphics.Positionable.Alignment;
+import static ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.util.*;
@@ -11,6 +12,7 @@ import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.AudioTrack;
 
 import ca.couchware.wezzle2d.piece.*;
+import ca.couchware.wezzle2d.ui.ILabel;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -364,7 +366,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             if (t == null)                    
                 continue;
                         
-            Animation a = t.getAnimation();
+            IAnimation a = t.getAnimation();
             
             if (a == null || a instanceof PulseAnimation == false)
                 continue;
@@ -392,7 +394,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             if (t == null)
                 continue;
 
-            Animation a = t.getAnimation();            
+            IAnimation a = t.getAnimation();            
 
             if (a != null)
                 a.cleanUp();
@@ -542,7 +544,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     {
                         if (tileDropped[i] != null)
                         {           
-                            Animation a = new ZoomInAnimation(tileDropped[i]);
+                            IAnimation a = new ZoomInAnimation(tileDropped[i]);
                             tileDropped[i].setAnimation(a);
                             animationMan.add(a);
                         }
@@ -695,14 +697,20 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 
         // Add score SCT.
         XYPosition p = boardMan.determineCenterPoint(indexSet);
-        Label label = ResourceFactory.get().getLabel(p.x, p.y);        
-        label.setText(String.valueOf(deltaScore));
-        label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        label.setColor(Game.SCORE_PIECE_COLOR);
-        label.setSize(game.scoreMan.determineFontSize(deltaScore));
+//        Label label = ResourceFactory.get().getLabel(p.x, p.y);        
+//        label.setText(String.valueOf(deltaScore));
+//        label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+//        label.setColor(Game.SCORE_PIECE_COLOR);
+//        label.setSize(game.scoreMan.determineFontSize(deltaScore));
+        ILabel label = new LabelBuilder(p.getX(), p.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(Game.SCORE_PIECE_COLOR)
+                .size(game.scoreMan.determineFontSize(deltaScore))
+                .text(String.valueOf(deltaScore))
+                .end();
         
-        Animation a1 = new FadeAnimation(FadeType.OUT, label);
-        Animation a2 = new FloatAnimation(0, -1, game.layerMan, label);                    
+        IAnimation a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
+        IAnimation a2 = new FloatAnimation(0, -1, game.layerMan, label);                    
         game.animationMan.add(a1);
         game.animationMan.add(a2);
         a1 = null;

@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.animation.Animation;
+import ca.couchware.wezzle2d.animation.IAnimation;
 
 /**
  * An entity that represents a graphical image, like a button image or a tile
@@ -19,7 +19,7 @@ public class GraphicEntity extends Entity
     /**
      * The animation attached to this entity.
      */
-    protected Animation animation;		
+    protected IAnimation animation;		
     
     /**
 	 * Construct a entity based on a sprite image and a location.
@@ -72,12 +72,12 @@ public class GraphicEntity extends Entity
                 width, height, theta, opacity);                
 	}     
     
-    public Animation getAnimation()
+    public IAnimation getAnimation()
     {
         return animation;
     }
 
-    public void setAnimation(Animation animation)
+    public void setAnimation(IAnimation animation)
     {
         this.animation = animation;
         

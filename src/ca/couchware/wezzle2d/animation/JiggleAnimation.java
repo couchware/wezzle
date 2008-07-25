@@ -9,7 +9,7 @@ import ca.couchware.wezzle2d.*;
  * 
  * @author cdmckay
  */
-public class JiggleAnimation extends Animation
+public class JiggleAnimation extends ReferenceAnimation
 {            
     
     /**
@@ -18,24 +18,29 @@ public class JiggleAnimation extends Animation
     final private static int JIGGLE_FACTOR = 40;                
     
     /**
+     * The counter.
+     */
+    private long counter;
+    
+    /**
      * The number of jiggles to occur, so far.
      */
-    protected int jiggles;
+    private int jiggles;
     
     /**
      * The entity being animated.
      */
-    protected Entity entity;
+    private Entity entity;
     
     /**
      * The duration of the animation.
      */
-    final protected int duration;
+    final private int duration;
     
     /**
      * The amount of time per frame.
      */
-    protected int period;
+    private int period;
 
     /**
      * Creates a jiggle animation that runs for the passed duration and jiggles
@@ -80,7 +85,7 @@ public class JiggleAnimation extends Animation
         // If we reach the minimum opacity, then we're done.            
         if (counter >= duration)
         {                
-            done = true;                
+            setDone(true);
         }         
     }
 }

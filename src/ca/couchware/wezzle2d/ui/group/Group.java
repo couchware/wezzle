@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.ui.group;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.util.Util;
@@ -54,7 +55,7 @@ public class Group extends Entity
     /**
      * An linked list of all the entities in this screen.
      */
-    final protected LinkedList<Entity> entityList;
+    final protected LinkedList<IEntity> entityList;
 
     //--------------------------------------------------------------------------
     // Constructor
@@ -81,7 +82,7 @@ public class Group extends Entity
         this.groupMan = groupMan;
 
         // Create the entity list.
-        this.entityList = new LinkedList<Entity>();
+        this.entityList = new LinkedList<IEntity>();
     }
     
     //--------------------------------------------------------------------------
@@ -98,7 +99,7 @@ public class Group extends Entity
     {
         boolean changed = false;
 
-        for (Entity e : entityList)
+        for (IEntity e : entityList)
             if (e instanceof Button)
                 changed = changed || ((Button) e).clicked(true);
             else if (e instanceof SliderBar)
@@ -115,7 +116,7 @@ public class Group extends Entity
     {
         Util.handleMessage("Cleared by a group.", "Group#clearChanged");
 
-        for (Entity e : entityList)
+        for (IEntity e : entityList)
             if (e instanceof Button)
                 ((Button) e).clicked();
             else if (e instanceof SliderBar)
@@ -156,7 +157,7 @@ public class Group extends Entity
         super.setVisible(visible);
 
         // Adjust all the member entities.
-        for (Entity e : entityList)
+        for (IEntity e : entityList)
             e.setVisible(visible);
     }
 

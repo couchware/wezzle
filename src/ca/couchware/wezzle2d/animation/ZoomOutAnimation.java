@@ -8,8 +8,14 @@ import ca.couchware.wezzle2d.*;
  * 
  * @author cdmckay
  */
-public class ZoomOutAnimation extends Animation
-{     
+public class ZoomOutAnimation extends ReferenceAnimation
+{    
+    
+    /**
+     * The counter.
+     */
+    private long counter;
+    
     /**
      * The amount of time per frame.
      */
@@ -57,25 +63,7 @@ public class ZoomOutAnimation extends Animation
     {
         // Check if we're done, if we are, return.
         if (isDone() == true)
-            return;
-        
-       // Is there any delay left?
-        if (delay > 0)
-        {
-            // See if this delta will eliminate the delay.
-            if (delta > delay)
-            {
-                // If it will, subtract the remaing delay from the delta.
-                delay = 0;
-                delta -= delay;
-            }
-            // Otherwise, subtract delta from delay and we're done.
-            else
-            {
-                delay -= delta;
-                return;
-            }
-        }
+            return;               
         
         // Add to counter.
         counter += delta;
@@ -97,9 +85,10 @@ public class ZoomOutAnimation extends Animation
             // If we reach the minimum size, then we're done.
             if (entity.getWidth() == MIN_WIDTH)
             {                
-                done = true;
+                setDone(true);
                 break;
             }
         } // end if          
     }
+    
 }

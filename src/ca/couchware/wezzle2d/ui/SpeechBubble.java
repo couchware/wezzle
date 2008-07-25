@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Dimension;
@@ -50,7 +51,7 @@ public class SpeechBubble extends GraphicEntity
     /**
      * The label representing the text in the speech bubble.
      */
-    protected Label label;
+    protected ILabel label;
     
     /**
      * Static constructor.
@@ -88,10 +89,13 @@ public class SpeechBubble extends GraphicEntity
                 
                 super.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER));
                 
-                label = ResourceFactory.get()
-                        .getLabel(x, y - offsetList.get(type));
-                label.setAlignment(
-                        EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+//                label = ResourceFactory.get()
+//                        .getLabel(x, y - offsetList.get(type));
+//                label.setAlignment(
+//                        EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+                label = new LabelBuilder(x, y - offsetList.get(type))
+                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                        .color(Game.TEXT_COLOR).size(16).text(text).end();
                 
                 break;
                 
@@ -99,18 +103,21 @@ public class SpeechBubble extends GraphicEntity
                 
                 super.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT));
                 
-                label = ResourceFactory.get()
-                        .getLabel(x - offsetList.get(type), y);
-                label.setAlignment(
-                        EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+//                label = ResourceFactory.get()
+//                        .getLabel(x - offsetList.get(type), y);
+//                label.setAlignment(
+//                        EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+                label = new LabelBuilder(x - offsetList.get(type), y)
+                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                        .color(Game.TEXT_COLOR).size(16).text(text).end();
                 
                 break;
         }
       
         // Create the speech label.        
-        label.setSize(16);        
-        label.setColor(Game.TEXT_COLOR);
-        label.setText(text);
+//        label.setSize(16);        
+//        label.setColor(Game.TEXT_COLOR);
+//        label.setText(text);
         
         //label.translate(offsetX, offsetY);               
     }

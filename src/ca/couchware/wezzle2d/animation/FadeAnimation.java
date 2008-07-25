@@ -1,35 +1,31 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.graphics.Entity;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.util.Util;
 
 /**
- * An animation that zooms the animation out into nothing.
+ * An animation that slowly changes the opacity of an entity.
  * 
  * @author cdmckay
  */
-public class FadeAnimation extends Animation
-{   
-    /**
-     * The default wait.
-     */
-    final static protected int DEFAULT_WAIT = 400;
+public class FadeAnimation extends ReferenceAnimation
+{       
     
     /**
-     * The default duration.
+     * The counter.
      */
-    final static protected int DEFAULT_DURATION = 750;
+    private long counter;
     
     /**
      * The minimum opacity the fade should go to.
      */
-    protected int minOpacity = 0;
+    final private int minOpacity;
     
     /**
      * The maximum opacity the fade should go to.
      */
-    protected int maxOpacity = 100;
+    final private int maxOpacity;
     
     /**
      * The fade possibilities.
@@ -45,82 +41,89 @@ public class FadeAnimation extends Animation
     /**
      * The entity being animated.
      */
-    protected Entity entity;
+    private IEntity entity;
 
     /**
      * Is the animation fade in?
      */
-    protected FadeType type;
+    private FadeType type;
     
     /**
      * The amount of time, in ms, to wait before fading out.
      */
-    protected int wait;
+    private int wait;
     
     /**
      * The max time for the animation to run for, in ms.
      */
-    protected int duration;
+    private int duration;
     
     /**
      * The constructor.
      */
-    public FadeAnimation(FadeType type, int wait, int duration, 
-            final Entity entity)
+    private FadeAnimation(Builder builder)
     {                
         // Invoke super constructor.
         super();
         
         // Is it fade in?
-        this.type = type;
-        
-        // Save the wait.
-        this.wait = wait;
-        
-        // Save the duration.
-        this.duration = duration;
+        this.type = builder.type;
         
         // Save a reference to the entity.
-        this.entity = entity;
+        this.entity = builder.entity;
         
+        // Save the wait.
+        this.wait = builder.wait;
+        
+        // Save the duration.
+        this.duration = builder.duration;        
+        
+        // Set the opacities.
+        this.minOpacity = builder.minOpacity;
+        this.maxOpacity = builder.maxOpacity;
+                
         // Set the initial opacity.
         if (type == FadeType.IN)        
-            this.entity.setOpacity(0);
+            this.entity.setOpacity(minOpacity);
         else
-            this.entity.setOpacity(100);
+            this.entity.setOpacity(maxOpacity);
         
         // Make sure the entities are visible.
         this.entity.setVisible(true);
     }
     
-    public FadeAnimation(FadeType type, final Entity entity)
+    public static class Builder implements IBuilder<FadeAnimation>
     {
-        this(type, DEFAULT_WAIT, DEFAULT_DURATION, entity);
+        private final FadeType type;
+        private final IEntity entity;
+        
+        private int wait = 400;
+        private int duration = 750;
+        private int minOpacity = 0;
+        private int maxOpacity = 100;
+        
+        public Builder(FadeType type, IEntity entity)
+        {
+            this.type = type;
+            this.entity = entity;
+        }
+        
+        public Builder wait(int val) { wait = val; return this; }
+        public Builder duration(int val) { duration = val; return this; }
+        public Builder minOpacity(int val) { minOpacity = val; return this; }
+        public Builder maxOpacity(int val) { maxOpacity = val; return this; }
+
+        public FadeAnimation end()
+        {
+            return new FadeAnimation(this);
+        }                
     }
 
     public void nextFrame(long delta)
     {
         // Check if we're done, if we are, return.
         if (isDone() == true)
-            return;
-        
-       // Is there any delay left?
-        if (delay > 0)
-        {
-            // See if this delta will eliminate the delay.
-            if (delta > delay)
-            {
-                // If it will, subtract the remaing delay from the delta.
-                delay = 0;
-                delta -= delay;
-            }
-            // Otherwise, subtract delta from delay and we're done.
-            else
-            {
-                delay -= delta;
-                return;
-            }
-        }
+            return;              
         
         // Add to counter.
         counter += delta;
@@ -161,7 +164,7 @@ public class FadeAnimation extends Animation
                 case IN:
                 case OUT:
                     
-                    done = true;   
+                    setDone(true);
                     break;
                     
                 case LOOP_IN:
@@ -190,26 +193,6 @@ public class FadeAnimation extends Animation
     public FadeType getType()
     {
         return type;
-    }
-
-    public int getMaxOpacity()
-    {
-        return maxOpacity;
-    }
-
-    public void setMaxOpacity(int maxOpacity)
-    {
-        this.maxOpacity = maxOpacity;
-    }
-
-    public int getMinOpacity()
-    {
-        return minOpacity;
-    }
-
-    public void setMinOpacity(int minOpacity)
-    {
-        this.minOpacity = minOpacity;
     }
         
 }

@@ -12,8 +12,14 @@ import ca.couchware.wezzle2d.*;
  * 
  * @author cdmckay
  */
-public class ZoomInAnimation extends Animation
-{     
+public class ZoomInAnimation extends ReferenceAnimation
+{  
+    
+    /**
+     * The counter.
+     */
+    private long counter;
+    
     /**
      * The period of each frame.
      */
@@ -78,25 +84,7 @@ public class ZoomInAnimation extends Animation
     {
         // Check if we're done, if we are, return.
         if (isDone() == true)
-            return;
-        
-        // Is there any delay left?
-        if (delay > 0)
-        {
-            // See if this delta will eliminate the delay.
-            if (delta > delay)
-            {
-                // If it will, subtract the remaing delay from the delta.
-                delay = 0;
-                delta -= delay;
-            }
-            // Otherwise, subtract delta from delay and we're done.
-            else
-            {
-                delay -= delta;
-                return;
-            }
-        }
+            return;               
         
         // Add to counter.
         counter += delta;
@@ -121,9 +109,10 @@ public class ZoomInAnimation extends Animation
             // If we reach the minimum size, then we're done.
             if (entity.getWidth() == maxWidth)
             {
-                done = true;
+                setDone(true);
                 break;
             }
         } // end if          
     }
+    
 }

@@ -11,9 +11,9 @@ import java.awt.Dimension;
  * 
  * @author cdmckay
  */
-public class PulseAnimation extends Animation
+public class PulseAnimation extends ReferenceAnimation
 {  
-    
+        
     /**
      * The pulse down state.
      */
@@ -25,19 +25,24 @@ public class PulseAnimation extends Animation
     final private static int PULSE_UP = 1;
     
     /**
+     * The counter.
+     */
+    private long counter;
+    
+    /**
      * The amount of time per frame.
      */
-    protected int period;
+    private int period;
     
     /**
      * The current frame.
      */
-    protected int frames;
+    private int frames;
     
     /**
      * The entity being animated.
      */
-    protected Entity entity;
+    private Entity entity;
     
     /**
      * The minimum width the entity may become before switching 
@@ -85,25 +90,7 @@ public class PulseAnimation extends Animation
     }
 
     public void nextFrame(long delta)
-    {
-        // Is there any delay left?
-        if (delay > 0)
-        {
-            // See if this delta will eliminate the delay.
-            if (delta > delay)
-            {
-                // If it will, subtract the remaing delay from the delta.
-                delay = 0;
-                delta -= delay;
-            }
-            // Otherwise, subtract delta from delay and we're done.
-            else
-            {
-                delay -= delta;
-                return;
-            }
-        }
-        
+    {               
         // Add to counter.
         counter += delta;
         

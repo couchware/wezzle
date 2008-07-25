@@ -1,10 +1,14 @@
         package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
 import ca.couchware.wezzle2d.java2d.Java2DSpriteStore;
 import ca.couchware.wezzle2d.java2d.Java2DLabel;
+import ca.couchware.wezzle2d.ui.ILabel;
+import java.awt.Color;
+import java.util.EnumSet;
 
 /**
  * A central reference point for creating resources for use in the game. The
@@ -151,7 +155,7 @@ public class ResourceFactory
 	 *
 	 * @return A Text object that can be modified and drawn to screen.
 	 */
-	public Label getLabel(final int x, final int y)
+	private ILabel getLabel(LabelBuilder builder)
 	{
 		if (window == null)
 		{
@@ -164,14 +168,73 @@ public class ResourceFactory
 			case JAVA2D:
 			{
 				return new Java2DLabel((Java2DGameWindow) window,
-                        x, y);
+                        builder.x,
+                        builder.y,
+                        builder.alignment,                       
+                        builder.color,
+                        builder.opacity,
+                        builder.size,
+                        builder.text,
+                        builder.visible);
 			}		
 		}
 
 		throw new RuntimeException("Unknown rendering type: " + renderType);
-	}
+	}      
     
-  
-    
-	
+    public static class LabelBuilder implements IBuilder<ILabel>
+    {        
+        private final int x;
+        private final int y;        
+                
+        private EnumSet<Alignment> alignment = 
+                EnumSet.of(Alignment.TOP, Alignment.LEFT);
+        private Color color = Color.WHITE;
+        private int opacity = 100;
+        private float size = 14.0f;
+        private String text = ""; 
+        private boolean visible = true;
+        
+        public LabelBuilder(int x, int y)
+        {            
+            this.x = x;
+            this.y = y;
+        }
+        
+        public LabelBuilder(ILabel label)
+        {
+            this.x = label.getX();
+            this.y = label.getY();
+            this.alignment = label.getAlignment();
+            this.color = label.getColor();
+            this.opacity = label.getOpacity();
+            this.size = label.getSize();
+            this.text = label.getText();
+            this.visible = label.isVisible();
+        }
+        
+        public LabelBuilder alignment(EnumSet<Alignment> val)
+        { alignment = val; return this; }
+        
+        public LabelBuilder color(Color val)        
+        { color = val; return this; }
+        
+        public LabelBuilder opacity(int val)
+        { opacity = val; return this; }         
+        
+        public LabelBuilder size(float val)
+        { size = val; return this; }
+        
+        public LabelBuilder text(String val)
+        { text = val; return this; }     
+        
+        public LabelBuilder visible(boolean val)
+        { visible = val; return this; }                
+
+        public ILabel end()
+        {
+            return get().getLabel(this);
+        }                
+    }
+    	
 }

@@ -13,8 +13,14 @@ import java.awt.Dimension;
  * 
  * @author cdmckay
  */
-public class ExplosionAnimation extends Animation
+public class ExplosionAnimation extends ReferenceAnimation
 {    
+    
+    /**
+     * The counter.
+     */
+    private long counter;
+    
     /**
      * Path to the explosion sprite.
      */
@@ -23,37 +29,37 @@ public class ExplosionAnimation extends Animation
     /**
      * The entity being animated.
      */
-    final protected Entity entity;
+    final private Entity entity;
     
     /**
      * Reference to the layer manager.
      */
-    final protected LayerManager layerMan;        
+    final private LayerManager layerMan;        
     
     /**
      * The explosion entity.
      */
-    final protected Entity explosion;   
+    final private Entity explosion;   
     
     /**
      * The initial position.
      */
-    final protected XYPosition initialPosition;
+    final private XYPosition initialPosition;
     
     /**
      * The initial dimensions.
      */
-    final protected Dimension initialDimensions;
+    final private Dimension initialDimensions;
     
     /**
      * Explode out/in duration, in ms.
      */
-    final protected int duration;
+    final private int duration;
     
     /**
      * The speed of the explosion.
      */
-    final protected double v;
+    final private double v;
     
     /**
      * The constructor.
@@ -101,25 +107,7 @@ public class ExplosionAnimation extends Animation
     {
         // Check if we're done, if we are, return.
         if (isDone() == true)
-            return;
-        
-        // Is there any delay left?
-        if (delay > 0)
-        {
-            // See if this delta will eliminate the delay.
-            if (delta > delay)
-            {
-                // If it will, subtract the remaing delay from the delta.
-                delay = 0;
-                delta -= delay;
-            }
-            // Otherwise, subtract delta from delay and we're done.
-            else
-            {
-                delay -= delta;
-                return;
-            }
-        }
+            return;               
         
         // Add to counter.
         counter += delta;                    
@@ -147,7 +135,7 @@ public class ExplosionAnimation extends Animation
         // See if we're done.
         else if (counter >= duration * 2)
         {
-            done = true;
+            setDone(true);
             layerMan.remove(explosion, Game.LAYER_EFFECT);
         }                        
     }
@@ -155,7 +143,7 @@ public class ExplosionAnimation extends Animation
     @Override
     public void setVisible(final boolean visible)
     {
-        this.visible = visible;
+        super.setVisible(visible);
         
         if (explosion != null)
             explosion.setVisible(visible);
