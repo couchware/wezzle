@@ -10,7 +10,7 @@ package ca.couchware.wezzle2d.animation;
  * 
  * @author cdmckay
  */
-public abstract class ReferenceAnimation implements IAnimation
+public abstract class AbstractAnimation implements IAnimation
 {
 
     /**

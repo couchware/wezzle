@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.ui.button.*;
 import ca.couchware.wezzle2d.ui.group.Group;
 import ca.couchware.wezzle2d.util.*;
@@ -91,7 +90,7 @@ public class GroupManager
                 
     }     
     
-    public void showGroup(BooleanButton button, Group showGroup, 
+    public void showGroup(IButton button, Group showGroup, 
             int classNum, int layerNum)
     {
         // Remove all groups that aren't part of the passed class.
@@ -254,7 +253,7 @@ public class GroupManager
      * This is an inner class represented an entry in 
      * the the group linked list.
      */
-    protected class Entry
+    protected static class Entry
     {               
         /**
          * The group associated with this entry.
@@ -264,7 +263,7 @@ public class GroupManager
         /**
          * The button that was used to open this group.
          */
-        final protected BooleanButton button;
+        final protected IButton button;
         
         /**
          * The class of the group.  This is used to hide or show many groups
@@ -281,7 +280,7 @@ public class GroupManager
         /**
          * The constructor.
          */
-        public Entry(Group group, BooleanButton button, 
+        public Entry(Group group, IButton button, 
                 int classNum, int layerNum)
         {
             // Set the references.
@@ -296,7 +295,7 @@ public class GroupManager
             return group;
         }    
         
-        public BooleanButton getButton()
+        public IButton getButton()
         {
             return button;
         }

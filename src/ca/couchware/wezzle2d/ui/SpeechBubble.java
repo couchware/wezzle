@@ -7,10 +7,9 @@ package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.util.*;
-import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 
@@ -20,7 +19,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class SpeechBubble extends GraphicEntity
+public class SpeechBubble extends AbstractEntity
 {
     
     /**
@@ -41,17 +40,22 @@ public class SpeechBubble extends GraphicEntity
     /**
      * The offset array.
      */
-    protected static EnumMap<BubbleType, Integer> offsetList;        
+    private static EnumMap<BubbleType, Integer> offsetList;        
     
     /**
      * The label type.
      */
-    protected BubbleType type;
+    private BubbleType type;
+    
+    /**
+     * The bubble sprite.
+     */
+    private ISprite sprite;
     
     /**
      * The label representing the text in the speech bubble.
      */
-    protected ILabel label;
+    private ILabel label;
     
     /**
      * Static constructor.
@@ -73,26 +77,23 @@ public class SpeechBubble extends GraphicEntity
      * @param text
      */    
     public SpeechBubble(int x, int y, BubbleType type, String text)
-    { 
-        // Invoke super.
-        super(x, y,
-                Game.SPRITES_PATH + "/"
-                + "SpeechBubble" + type + ".png");
-        
+    {                 
         // Set the type.
         this.type = type;
+        
+        // The sprite path.
+        String path = Game.SPRITES_PATH + "/" + "SpeechBubble" + type + ".png";
+        
+        // Create the sprite.
+        sprite = ResourceFactory.get().getSprite(path);
         
         // Set alignment.
         switch (type)
         {
             case VERTICAL:
                 
-                super.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER));
-                
-//                label = ResourceFactory.get()
-//                        .getLabel(x, y - offsetList.get(type));
-//                label.setAlignment(
-//                        EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+                alignment = EnumSet.of(Alignment.BOTTOM, Alignment.CENTER);
+                                
                 label = new LabelBuilder(x, y - offsetList.get(type))
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .color(Game.TEXT_COLOR).size(16).text(text).end();
@@ -101,51 +102,19 @@ public class SpeechBubble extends GraphicEntity
                 
             case HORIZONTAL:
                 
-                super.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT));
+                alignment = EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT);
                 
-//                label = ResourceFactory.get()
-//                        .getLabel(x - offsetList.get(type), y);
-//                label.setAlignment(
-//                        EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
                 label = new LabelBuilder(x - offsetList.get(type), y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .color(Game.TEXT_COLOR).size(16).text(text).end();
                 
                 break;
-        }
-      
-        // Create the speech label.        
-//        label.setSize(16);        
-//        label.setColor(Game.TEXT_COLOR);
-//        label.setText(text);
+        }             
         
-        //label.translate(offsetX, offsetY);               
-    }
-    
-    @Override
-    public void setAlignment(EnumSet<Alignment> alignment)
-    {
-        if (this.alignment == alignment)
-            return;                
-        
-        if (alignment.containsAll(EnumSet.of(Alignment.TOP, Alignment.CENTER)))
-        {
-            // Do nothing.
-        }
-        else if (alignment.containsAll(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT)))
-        {
-            
-        }
-        else if (alignment.containsAll(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT)))
-        {
-            
-        }
-        else
-        {
-            throw new UnsupportedOperationException(
-                "That alignment is not supported.");
-        }        
-    }   
+        // Determine offsets.
+        offsetX = determineOffsetX(alignment);
+        offsetY = determineOffsetY(alignment);
+    }       
     
     @Override
     public void setOpacity(int opacity)
@@ -166,7 +135,7 @@ public class SpeechBubble extends GraphicEntity
     @Override
     public void draw()
     {
-        super.draw();
+        sprite.draw(x + offsetX, y + offsetY, width, height, theta, opacity);
         label.draw();
     }              
 }

@@ -8,7 +8,7 @@ package ca.couchware.wezzle2d.graphics;
  * 
  * @author Kevin Glass
  */
-public interface Sprite
+public interface ISprite
 {
 	/**
 	 * Get the width of the drawn sprite

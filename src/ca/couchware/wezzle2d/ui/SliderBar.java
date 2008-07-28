@@ -5,8 +5,8 @@
 
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.graphics.Sprite;
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.ISprite;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Cursor;
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author cdmckay
  */
-public class SliderBar extends Entity implements        
+public class SliderBar extends AbstractEntity implements        
         MouseListener, 
         MouseMotionListener
 {
@@ -48,14 +48,12 @@ public class SliderBar extends Entity implements
     final private static int HEIGHT = 15;     
     
     /**
-     * The normal state.
+     * The slider states.
      */
-    final private static int STATE_NORMAL = 0;
-    
-    /**
-     * The pressed state.
-     */
-    final private static int STATE_PRESSED = 1;
+    private static enum State
+    {
+        NORMAL, PRESSED
+    }
 
     // -------------------------------------------------------------------------
     // Instance Attributes
@@ -75,22 +73,22 @@ public class SliderBar extends Entity implements
     /**
      * The current state of the button.
      */
-    protected int state;
+    protected State state;
     
     /**
 	 * The current location of the mouse pointer.
 	 */
-	protected XYPosition mousePosition;
+	protected WPosition mousePosition;
     
     /**
      * The sprite for the rail.
      */
-    protected Sprite spriteRail;
+    protected ISprite spriteRail;
     
     /**
      * The sprite for the handle.
      */
-    protected Sprite spriteHandle;
+    protected ISprite spriteHandle;
     
     /**
      * The slide offset, starting from the left side.
@@ -130,19 +128,22 @@ public class SliderBar extends Entity implements
      * The constructor.
      * @param shape The shape of the button.
      */
-    public SliderBar(final GameWindow window, final int x, final int y)
+    public SliderBar(Builder builder)
     {
         // Set to visible.
-        visible = true;
-        window.addMouseListener(this);
-        window.addMouseMotionListener(this);
-     
+        this.visible = true;
+        
         // Store the window reference.
-        this.window = window;
+        this.window = builder.window;
+        window.addMouseListener(this);
+        window.addMouseMotionListener(this);             
+        
+        // Set the visibility.
+        setVisible(builder.visible);
         
         // Set the position.
-        this.x = x;
-        this.y = y;
+        this.x = builder.x;
+        this.y = builder.y;
         
         this.x_ = x;
         this.y_ = y;
@@ -152,7 +153,9 @@ public class SliderBar extends Entity implements
         this.height = HEIGHT;
         
         // Set default anchor.
-        this.alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
+        this.alignment = builder.alignment;
+        this.offsetX = determineOffsetX(alignment);
+        this.offsetY = determineOffsetY(alignment);
         
         // Save shape reference.
         this.shape = new Rectangle(x, y, WIDTH, HEIGHT);                      
@@ -165,7 +168,7 @@ public class SliderBar extends Entity implements
                 .getSprite(Game.SPRITES_PATH + "/SliderBarHandle.png");
         
         // Start in normal state.
-        state = STATE_NORMAL;
+        state = State.NORMAL;
         
         // Default the slider to the far left.
         slideOffset = 0;
@@ -176,8 +179,71 @@ public class SliderBar extends Entity implements
         // Initially it is not changed.
         changed = new AtomicBoolean(false);
         
+        // Set the virtual stuff.
+        setVirtualRange(builder.virtualLower, builder.virtualUpper);
+        setVirtualValue(builder.virtualValue);
+        
         // Set dirty so it will be drawn.        
         setDirty(true);
+    }
+    
+    public static class Builder implements IBuilder<SliderBar>
+    {
+        // Required values.  
+        private final GameWindow window;
+        private int x;
+        private int y;     
+        
+        // Optional values.
+        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
+        private int opacity = 100;
+        private boolean visible = true;
+        private double virtualLower = 0.0;
+        private double virtualUpper = 1.0;
+        private double virtualValue = 0.5;
+        
+        public Builder(GameWindow window, int x, int y)
+        {            
+            this.window = window;
+            this.x = x;
+            this.y = y;
+        }
+        
+        public Builder(SliderBar sliderBar)
+        {            
+            this.window = sliderBar.window;
+            this.x = sliderBar.x;
+            this.y = sliderBar.y;
+            this.alignment = sliderBar.alignment;            
+            this.opacity = sliderBar.opacity;                        
+            this.visible = sliderBar.visible;
+            this.virtualLower = sliderBar.virtualLower;
+            this.virtualUpper = sliderBar.virtualUpper;
+            this.virtualValue = sliderBar.virtualValue;
+        }
+        
+        public Builder x(int val) { x = val; return this; }        
+        public Builder y(int val) { y = val; return this; }
+               
+        public Builder alignment(EnumSet<Alignment> val) 
+        { alignment = val; return this; }
+                        
+        public Builder opacity(int val)
+        { opacity = val; return this; }
+        
+        public Builder visible(boolean val) 
+        { visible = val; return this; }
+        
+        public Builder virtualRange(double l, double u)
+        { virtualLower = l; virtualUpper = u; return this; }   
+        
+        public Builder virtualValue(double val)        
+        { virtualValue = val; return this; }           
+        
+        public SliderBar end()
+        {
+            return new SliderBar(this);
+        }                
     }
     
     // -------------------------------------------------------------------------
@@ -211,10 +277,10 @@ public class SliderBar extends Entity implements
 	{
 		// Retrieve the mouse position.
         setMousePosition(e.getX(), e.getY());
-        final XYPosition p = getMousePosition();                
+        final WPosition p = getMousePosition();                
         
         // Ignore click if we're outside the button.
-        if (shape.contains(p.x, p.y) == false)
+        if (shape.contains(p.getX(), p.getY()) == false)
             return;                    
                             
         //Util.handleMessage("Pressed.", Thread.currentThread());
@@ -224,8 +290,8 @@ public class SliderBar extends Entity implements
         {
             // Left mouse clicked.
             case MouseEvent.BUTTON1:
-                state = STATE_PRESSED; 
-                setSlideOffset(p.x - x - offsetX - spriteHandle.getWidth() / 2);
+                state = State.PRESSED; 
+                setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
                 
             default:                
                 break;   
@@ -237,7 +303,7 @@ public class SliderBar extends Entity implements
         //Util.handleMessage("Released.", Thread.currentThread());
         
         // Reset the state.
-        state = STATE_NORMAL;
+        state = State.NORMAL;
     }
 
     public void mouseEntered(MouseEvent e)
@@ -252,40 +318,40 @@ public class SliderBar extends Entity implements
 
     public void mouseDragged(MouseEvent e)
     {   
-        if (state == STATE_PRESSED)
+        if (state == State.PRESSED)
         {
              // Retrieve the mouse position.
             setMousePosition(e.getX(), e.getY());
-            final XYPosition p = getMousePosition();
+            final WPosition p = getMousePosition();
 
             // If the state is pressed, then move the slider around.        
-            setSlideOffset(p.x - x - offsetX - spriteHandle.getWidth() / 2);
+            setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
         }       
     }
 
     public void mouseMoved(MouseEvent e)
     {
         // Get the last position.
-        XYPosition lp = getMousePosition(); 
+        WPosition lp = getMousePosition(); 
         
 		// Set the mouse position.
 		setMousePosition(e.getX(), e.getY());
         
         // Retrieve the mouse position.
-        final XYPosition p = getMousePosition();  
+        final WPosition p = getMousePosition();  
         
         // Handle case where there is no last position.
         if (lp == null) lp = p;
         
         // Mouse over.
-        if (shape.contains(lp.x, lp.y) == false 
-                && shape.contains(p.x, p.y) == true)
+        if (shape.contains(lp.getX(), lp.getY()) == false 
+                && shape.contains(p.getX(), p.getY()) == true)
         {
             window.setCursor(Cursor.HAND_CURSOR);            
         }
         // Mouse out.
-        else if (shape.contains(lp.x, lp.y) == true
-                && shape.contains(p.x, p.y) == false)
+        else if (shape.contains(lp.getX(), lp.getY()) == true
+                && shape.contains(p.getX(), p.getY()) == false)
         {
             window.setCursor(Cursor.DEFAULT_CURSOR);
         }
@@ -324,23 +390,23 @@ public class SliderBar extends Entity implements
 	 * @param y The y alignment coordinate with respect 
      * to the top left corner of the button.
 	 */
-    @Override
-	public void setAlignment(final EnumSet<Alignment> alignment)
-	{
-        // Invoke super.
-        super.setAlignment(alignment);	                
-        
-        // Move the shape.        
-        shape.setFrame(x + offsetX, y + offsetY,
-                shape.getWidth(), shape.getHeight());                
-	}    
+//    @Override
+//	public void setAlignment(final EnumSet<Alignment> alignment)
+//	{
+//        // Invoke super.
+//        super.setAlignment(alignment);	                
+//        
+//        // Move the shape.        
+//        shape.setFrame(x + offsetX, y + offsetY,
+//                shape.getWidth(), shape.getHeight());                
+//	}    
     
     /**
 	 * Gets the mousePosition.
      * 
 	 * @return The mousePosition.
 	 */
-	public synchronized XYPosition getMousePosition()
+	public synchronized WPosition getMousePosition()
 	{        
 		return mousePosition;
 	}
@@ -352,7 +418,7 @@ public class SliderBar extends Entity implements
 	 */
 	public synchronized void setMousePosition(final int x, final int y)
 	{
-		this.mousePosition = new XYPosition(x, y);
+		this.mousePosition = new WPosition(x, y);
 	}    
     
     @Override
@@ -385,7 +451,7 @@ public class SliderBar extends Entity implements
      * @param lower
      * @param upper
      */
-    public void setVirtualRange(double lower, double upper)
+    final public void setVirtualRange(double lower, double upper)
     {
         assert(upper > lower);
         
@@ -416,7 +482,7 @@ public class SliderBar extends Entity implements
      * the correct range.
      * @param slideOffset
      */
-    protected void setSlideOffset(final int slideOffset)
+    final protected void setSlideOffset(final int slideOffset)
     {
         // Make sure the slider stays on the rail.
         if (slideOffset < 0)
@@ -427,7 +493,7 @@ public class SliderBar extends Entity implements
             this.slideOffset = slideOffset;                
         
         // Make it dirty so we get a redraw.
-        setDirty(true);
+        dirty = true;
         
         // Set changed.
         changed.set(true);
@@ -438,7 +504,7 @@ public class SliderBar extends Entity implements
      * ensures that the passed value is within the range.
      * @param slideOffsetPercent
      */
-    public void setSlideOffsetPercent(final double slideOffsetPercent)
+    final public void setSlideOffsetPercent(final double slideOffsetPercent)
     {
         setSlideOffset((int) ((double) maxOffset * slideOffsetPercent));
     }      
@@ -453,7 +519,7 @@ public class SliderBar extends Entity implements
      *
      * @param value
      */
-    public void setVirtualValue(double value)
+    final public void setVirtualValue(double value)
     {
         assert(value >= virtualLower);
         assert(value <= virtualUpper);

@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.java2d;
 
-import ca.couchware.wezzle2d.util.XYPosition;
+import ca.couchware.wezzle2d.util.WPosition;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics2D;

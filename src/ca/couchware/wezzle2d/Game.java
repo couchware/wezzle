@@ -18,6 +18,7 @@ import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
+import ca.couchware.wezzle2d.ui.button.SpriteButton.ButtonType;
 import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Canvas;
@@ -266,17 +267,17 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The pause button.
      */
-    public RectangularBooleanButton pauseButton;
+    public SpriteButton pauseButton;
        
     /**
      * The options button.
      */
-    public RectangularBooleanButton optionsButton;
+    public SpriteButton optionsButton;
     
     /**
      * The help button.
      */
-    public RectangularBooleanButton helpButton;
+    public SpriteButton helpButton;
     
     /**
      * The progress bar.
@@ -444,7 +445,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The background sprite.
      */
-    private Entity background;
+    private AbstractEntity background;
     
 	/** 
      * The timer text. 
@@ -474,7 +475,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The high score header button.
      */
-    private RectangularBooleanButton highScoreButton;
+    private SpriteButton highScoreButton;
 
     
     /**
@@ -636,7 +637,8 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan = new LayerManager(window, 4);        
         
         // Draw the current background.
-		background = new GraphicEntity(0, 0, SPRITES_PATH + "/Background2.png");
+		background = new GraphicEntity
+                .Builder(0, 0, SPRITES_PATH + "/Background2.png").end();
         layerMan.add(background, LAYER_BACKGROUND);                
         
         // Create the animation manager.
@@ -722,65 +724,34 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------                                                      
         
         // The high score button.
-        highScoreButton = new RectangularBooleanButton(window, 128, 299,
-                RectangularBooleanButton.TYPE_LARGE, " ");
-//        highScoreButton.setText(" ");
-        highScoreButton.setNormalOpacity(0);
-        highScoreButton.setHoverOpacity(70);
-        highScoreButton.setActiveOpacity(90);
-        highScoreButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+        highScoreButton = new SpriteButton.Builder(window, 128, 299)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .type(ButtonType.LARGE).text("")
+                .normalOpacity(0).hoverOpacity(70).activeOpacity(100).end();
         layerMan.add(highScoreButton, Game.LAYER_UI);
                 
         // Create pause button.        
-        pauseButton = new RectangularBooleanButton(window, 668, 211, "Pause")
-        {
-            // Make it so the button text changes to resume when
-            // the button is activated.
-            // Kevin: Be sure to read the comment in BooleanButton before
-            // using this.
-            @Override
-            public void onActivation()
-            {
-                this.setText("Resume");
-            }
-            
-            // Make it so the button text changes to pause when
-            // the button is deactivated.
-            @Override
-            public void onDeactivation()
-            {
-                this.setText("Pause");
-            }
-        };
-        pauseButton.setNormalOpacity(70);
-//        pauseButton.setText("Pause");        
-        pauseButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));        
+        pauseButton = new SpriteButton.Builder(window, 668, 211)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .type(ButtonType.NORMAL).text("Pause").activeText("Resume")
+                .normalOpacity(70).end();
         layerMan.add(pauseButton, Game.LAYER_UI);    
         
-        // Create the options button.
-        optionsButton = new RectangularBooleanButton(window, 668, 299, "Options");
-        optionsButton.setNormalOpacity(70);
-//        optionsButton.setText("Options");        
-        optionsButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+        // Create the options button, using pause button as a template.
+        optionsButton = new SpriteButton.Builder(pauseButton).y(299)
+                .text("Options").end();
         layerMan.add(optionsButton, Game.LAYER_UI);                
         
-        // Create the help buttton.
-        helpButton = new RectangularBooleanButton(window, 668, 387, "Help");
-        helpButton.setNormalOpacity(70);
-//        helpButton.setText("Help");        
-        helpButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+        // Create the help buttton, using pause button as a template.
+        helpButton = new SpriteButton.Builder(optionsButton).y(387)
+                .text("Help").end();               
         layerMan.add(helpButton, LAYER_UI);                              
         
         //----------------------------------------------------------------------
         // Initialize labels.
         //----------------------------------------------------------------------                
               
-        // Set up the version text.
-//		versionLabel = ResourceFactory.get().getLabel(800 - 10, 600 - 10);        
-//		versionLabel.setSize(12);
-//		versionLabel.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT));
-//		versionLabel.setColor(TEXT_COLOR);
-//      versionLabel.setText(applicationName + " Build " + buildNumber);
+        // Set up the version text.		
         versionLabel = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
                 .color(TEXT_COLOR).size(12)
@@ -788,25 +759,17 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(versionLabel, LAYER_UI);
         
 		// Set up the timer text.
-//		timerLabel = ResourceFactory.get().getLabel(400, 70);        
-//		timerLabel.setSize(50);
-//		timerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//		timerLabel.setColor(TEXT_COLOR);
         timerLabel = new LabelBuilder(400, 70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(TEXT_COLOR).size(50).text("--").end();
         layerMan.add(timerLabel, LAYER_UI);
              
         // Set up the level header.
-        levelHeader = new GraphicEntity(126, 153, LEVEL_HEADER_PATH);
-        levelHeader.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+        levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();        
         layerMan.add(levelHeader, LAYER_UI);
         
         // Set up the level text.
-//        levelLabel = ResourceFactory.get().getLabel(126, 210);        
-//        levelLabel.setSize(20);
-//        levelLabel.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER));
-//        levelLabel.setColor(TEXT_COLOR);
         levelLabel = new LabelBuilder(126, 210)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .color(TEXT_COLOR).size(20).text("--").end();                
@@ -814,32 +777,22 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Set up the score header.
         highScoreHeaderLabel = 
-                new GraphicEntity(127, 278, HIGH_SCORE_HEADER_PATH);        
-        highScoreHeaderLabel
-                .setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));        
+                new GraphicEntity.Builder(127, 278, HIGH_SCORE_HEADER_PATH)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
         layerMan.add(highScoreHeaderLabel, LAYER_UI);
                         
         // Set up the high score text.
-//        highScoreLabel = ResourceFactory.get().getLabel(126, 337);        
-//        highScoreLabel.setSize(20);
-//        highScoreLabel.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER));
-//        highScoreLabel.setColor(TEXT_COLOR);
         highScoreLabel = new LabelBuilder(126, 337)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .color(TEXT_COLOR).size(20).text("--").end();
         layerMan.add(highScoreLabel, LAYER_UI);
         
         // Set up the score header.
-        scoreHeaderLabel = new GraphicEntity(128, 403, SCORE_HEADER_PATH);
-        scoreHeaderLabel
-                .setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
+        scoreHeaderLabel = new GraphicEntity.Builder(128, 403, SCORE_HEADER_PATH)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
         layerMan.add(scoreHeaderLabel, LAYER_UI);
         
         // Set up the score text.
-//        scoreLabel = ResourceFactory.get().getLabel(126, 460);        
-//        scoreLabel.setSize(20);
-//        scoreLabel.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER));
-//        scoreLabel.setColor(TEXT_COLOR);     
         scoreLabel = new LabelBuilder(126, 460)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .color(TEXT_COLOR).size(20).text("--").end();
@@ -850,9 +803,9 @@ public class Game extends Canvas implements GameWindowCallback
         //----------------------------------------------------------------------
         
         // Create the progress bar.
-        progressBar = new ProgressBar(393, 501, ProgressBar.WIDTH_200, true);
-        progressBar.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        progressBar.setProgressMax(scoreMan.getTargetLevelScore());
+        progressBar = new ProgressBar.Builder(393, 501)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .progressMax(scoreMan.getTargetLevelScore()).end();
         layerMan.add(progressBar, LAYER_UI);
         
         //----------------------------------------------------------------------
@@ -1424,7 +1377,7 @@ public class Game extends Canvas implements GameWindowCallback
                             statMan.getChainCount());                               
                 
                     // Show the SCT.
-                    XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                    WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
 //                    Label label = ResourceFactory.get().getLabel(p.x, p.y);                
 //                    label.setText(String.valueOf(deltaScore));
 //                    label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
@@ -1569,7 +1522,7 @@ public class Game extends Canvas implements GameWindowCallback
                         statMan.getChainCount());
                 
                 // Show the SCT.
-                XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
 //                Label label = ResourceFactory.get().getLabel(p.x, p.y);
 //                label.setText(String.valueOf(deltaScore));
 //                label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
@@ -1698,7 +1651,7 @@ public class Game extends Canvas implements GameWindowCallback
                         statMan.getChainCount());
                 
                 // Show the SCT.
-                XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
 //                Label label = ResourceFactory.get().getLabel(p.x, p.y);
 //                label.setText(String.valueOf(deltaScore));
 //                label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
@@ -1778,7 +1731,7 @@ public class Game extends Canvas implements GameWindowCallback
                         statMan.getChainCount());
                 
                 // Show the SCT.
-                XYPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
 //                Label label = ResourceFactory.get().getLabel(p.x, p.y);
 //                label.setText(String.valueOf(deltaScore));
 //                label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));

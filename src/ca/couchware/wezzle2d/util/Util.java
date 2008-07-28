@@ -10,6 +10,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Random;
 
+/**
+ * A utilty static class providing various convenience methods.
+ * 
+ * @author cdmckay
+ */
 public class Util
 {	
 	/**
@@ -200,6 +205,12 @@ public class Util
         return n;
     }
     
+    /**
+     * Extracts the file extension from a file with the name.ext format.
+     * 
+     * @param path
+     * @return The .ext part of the path.
+     */
     public static String getFileExtension(final String path)
     {
         String fileName = new java.io.File(path).getName();
@@ -210,6 +221,6 @@ public class Util
             ext = fileName.substring(fileName.lastIndexOf(".") + 1);        
         
         return ext;
-    }
+    }       
     
 }

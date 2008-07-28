@@ -8,8 +8,8 @@ package ca.couchware.wezzle2d.ui;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.GameWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.graphics.Entity;
-import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.graphics.ISprite;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.EnumSet;
@@ -18,7 +18,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class Window extends Entity
+public class Window extends AbstractEntity
 {
 
     /**
@@ -47,17 +47,17 @@ public class Window extends Entity
     /**
      * The corner sprite.
      */
-    protected Sprite cornerSprite;
+    protected ISprite cornerSprite;
     
     /**
      * The horizontal sprite.
      */
-    protected Sprite horizontalSprite;
+    protected ISprite horizontalSprite;
     
     /**
      * The vertical sprite.
      */
-    protected Sprite verticalSprite;
+    protected ISprite verticalSprite;
     
     /**
      * The color of the window background.

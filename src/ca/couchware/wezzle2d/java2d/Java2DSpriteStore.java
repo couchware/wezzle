@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.image.VolatileImage;
 
@@ -46,7 +46,7 @@ public class Java2DSpriteStore
 	/**
 	 * The cached sprite map, from reference to sprite instance
 	 */
-	private HashMap<String, Sprite> sprites = new HashMap<String, Sprite>();
+	private HashMap<String, ISprite> sprites = new HashMap<String, ISprite>();
 
 	/**
 	 * Retrieve a sprite from the store
@@ -58,13 +58,13 @@ public class Java2DSpriteStore
 	 * @return A sprite instance containing an accelerate image of the request
 	 *         reference
 	 */
-	public Sprite getSprite(Java2DGameWindow window, String path)
+	public ISprite getSprite(Java2DGameWindow window, String path)
 	{
 		// if we've already got the sprite in the cache
 		// then just return the existing version
 		if (sprites.get(path) != null)
 		{
-			return (Sprite) sprites.get(path);
+			return (ISprite) sprites.get(path);
 		}
 
 		// otherwise, go away and grab the sprite from the resource
@@ -106,7 +106,7 @@ public class Java2DSpriteStore
 //		image.getGraphics().drawImage(sourceImage, 0, 0, null);
 
 		// create a sprite, add it the cache then return it
-		Sprite sprite = new Java2DSprite(window, sourceImage);
+		ISprite sprite = new Java2DSprite(window, sourceImage);
 		sprites.put(path, sprite);
 
 		return sprite;

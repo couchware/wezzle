@@ -15,7 +15,7 @@ import ca.couchware.wezzle2d.piece.Piece;
  *
  */
 
-public class PieceGrid extends Entity
+public class PieceGrid extends AbstractEntity
 {
     /**
      * Path to the piece selector sprite.
@@ -34,7 +34,7 @@ public class PieceGrid extends Entity
 	 * structure.  Each cell is only drawn if the corresponding structure
 	 * cell is true.
 	 */
-	private Sprite[][] sprites;      
+	private ISprite[][] sprites;      
     
     /**
      * The board manager reference.
@@ -70,7 +70,7 @@ public class PieceGrid extends Entity
 			Arrays.fill(structure[i], new Boolean(false));
 		
 		// Load in all the sprites.
-		sprites = new Sprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
+		sprites = new ISprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 		
 		for (int i = 0; i < sprites.length; i++)
 			for (int j = 0; j < sprites[0].length; j++)
@@ -144,25 +144,19 @@ public class PieceGrid extends Entity
     @Override
     public void setWidth(int width)
     {
-        throw new UnsupportedOperationException("You may not adjust this property.");
+        throw new UnsupportedOperationException("Not supported..");
     }
 
     @Override
     public void setHeight(int height)
     {
-        throw new UnsupportedOperationException("You may not adjust this property.");
+        throw new UnsupportedOperationException("Not supported..");
     }
 
     @Override
     public EnumSet<Alignment> getAlignment()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setAlignment(EnumSet<Alignment> alignment)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
     
 }

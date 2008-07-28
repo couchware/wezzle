@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
 
 /**
@@ -8,7 +8,7 @@ import ca.couchware.wezzle2d.*;
  * 
  * @author cdmckay
  */
-public class ZoomOutAnimation extends ReferenceAnimation
+public class ZoomOutAnimation extends AbstractAnimation
 {    
     
     /**
@@ -45,12 +45,12 @@ public class ZoomOutAnimation extends ReferenceAnimation
     /**
      * The entity being animated.
      */
-    protected Entity entity;
+    protected AbstractEntity entity;
     
     /**
      * The constructor.
      */
-    public ZoomOutAnimation(final Entity entity)
+    public ZoomOutAnimation(final AbstractEntity entity)
     {                
         // Invoke super constructor.
         this.period = FRAME_PERIOD;

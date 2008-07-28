@@ -1,17 +1,17 @@
 package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.LayerManager;
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.XYPosition;
+import ca.couchware.wezzle2d.util.WPosition;
 
 /**
  * An animation that starts an explosion in the middle of the entity.
  * 
  * @author cdmckay
  */
-public class JumpAnimation extends ReferenceAnimation
+public class JumpAnimation extends AbstractAnimation
 {    
     
     /**
@@ -22,12 +22,12 @@ public class JumpAnimation extends ReferenceAnimation
     /**
      * The entity being float faded.
      */
-    final Entity entity;
+    final AbstractEntity entity;
     
     /**
      * The initial position.
      */
-    private XYPosition initialPosition;
+    private WPosition initialPosition;
     
     /**
      * The x-component of the launch speed.
@@ -63,7 +63,7 @@ public class JumpAnimation extends ReferenceAnimation
             final int theta,
             final double g,     
             final int duration,            
-            final Entity entity)
+            final AbstractEntity entity)
     {                
         // Invoke super constructor.
         super();    
@@ -99,8 +99,8 @@ public class JumpAnimation extends ReferenceAnimation
         double y = vY * t - 0.5 * g * t * t;
         
         // Move the entity.
-        entity.setX(initialPosition.x + (int) x);
-        entity.setY(initialPosition.y - (int) y);        
+        entity.setX(initialPosition.getX() + (int) x);
+        entity.setY(initialPosition.getY() - (int) y);        
         
         if (counter > duration)   
         {

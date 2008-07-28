@@ -31,7 +31,7 @@ public class SoundMusicGroup extends Group
     /**
      * The sound on/off button.
      */
-    private RectangularBooleanButton soundButton;
+    private SpriteButton soundButton;
     
     /**
      * The sound slider bar.
@@ -41,7 +41,7 @@ public class SoundMusicGroup extends Group
     /**
      * The music on/off button.
      */
-    private RectangularBooleanButton musicButton;
+    private SpriteButton musicButton;
     
     /**
      * The music slider bar.
@@ -51,7 +51,7 @@ public class SoundMusicGroup extends Group
     /**
      * The back button.
      */
-    private RectangularBooleanButton backButton; 
+    private SpriteButton backButton; 
     
     /**
      * The constructor.
@@ -83,31 +83,10 @@ public class SoundMusicGroup extends Group
         entityList.add(headerLabel);
         
         // Create the sound on/off button.
-        soundButton = new RectangularBooleanButton(window, 400, 233, "Sound: On")
-        {
-            // Make it so the button text changes to resume when
-            // the button is activated.
-            // Kevin: Be sure to read the comment in BooleanButton before
-            // using this.
-            @Override
-            public void onActivation()
-            {
-                this.setText("Sound: On");
-            }
-            
-            // Make it so the button text changes to pause when
-            // the button is deactivated.
-            @Override
-            public void onDeactivation()
-            {
-                this.setText("Sound: Off");
-            }
-        };
-        soundButton.setNormalOpacity(70);
-        soundButton.setText("Sound: Off");
-//        soundButton.getLabel().setSize(18);
-        soundButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        soundButton.setVisible(false);
+        soundButton = new SpriteButton.Builder(window, 400, 233)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .text("Sound: Off").activeText("Sound: On")
+                .normalOpacity(70).visible(false).end();       
         layerMan.add(soundButton, Game.LAYER_UI);
         entityList.add(soundButton);
         
@@ -119,43 +98,20 @@ public class SoundMusicGroup extends Group
         }
         
         // Create the sound slider bar.
-        soundSlider = new SliderBar(window, 400, 272);
-        soundSlider.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        soundSlider.setVisible(false);
-        soundSlider.setVirtualRange(
-                propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_MIN),
-                propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_MAX));
-        soundSlider.setVirtualValue(
-                propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME));
+        soundSlider = new SliderBar.Builder(window, 400, 272)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .virtualRange(
+                    propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_MIN),
+                    propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_MAX))
+                .virtualValue(
+                    propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME))
+                .visible(false).end();
         layerMan.add(soundSlider, Game.LAYER_UI);
         entityList.add(soundSlider);        
                 
         // Create the music on/off button.
-        musicButton = new RectangularBooleanButton(window, 400, 321, "Music: On")
-        {
-            // Make it so the button text changes to resume when
-            // the button is activated.
-            // Kevin: Be sure to read the comment in BooleanButton before
-            // using this.
-            @Override
-            public void onActivation()
-            {
-                this.setText("Music: On");
-            }
-            
-            // Make it so the button text changes to pause when
-            // the button is deactivated.
-            @Override
-            public void onDeactivation()
-            {
-                this.setText("Music: Off");
-            }
-        };
-        musicButton.setNormalOpacity(70);
-        musicButton.setText("Music: Off");
-//        musicButton.getLabel().setSize(18);
-        musicButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        musicButton.setVisible(false);
+        musicButton = new SpriteButton.Builder(soundButton).y(321)
+                .text("Music: Off").activeText("Music: On").end();     
         layerMan.add(musicButton, Game.LAYER_UI);
         entityList.add(musicButton);
         
@@ -167,24 +123,20 @@ public class SoundMusicGroup extends Group
         }
         
         // Create the music slider bar.
-        musicSlider = new SliderBar(window, 400, 359);
-        musicSlider.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        musicSlider.setVisible(false);
-        musicSlider.setVirtualRange(
-                propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_MIN),
-                propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_MAX));
-        musicSlider.setVirtualValue(
-                propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME));
+        musicSlider = new SliderBar.Builder(window, 400, 359)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .virtualRange(
+                    propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_MIN),
+                    propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_MAX))
+                .virtualValue(
+                    propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME))
+                .visible(false).end();
         layerMan.add(musicSlider, Game.LAYER_UI);
-        entityList.add(musicSlider);
+        entityList.add(musicSlider);                      
         
         // Create back button.
-        backButton = new RectangularBooleanButton(window, 400, 408, "Back");
-        backButton.setNormalOpacity(70);
-        backButton.setText("Back");
-//        backButton.getLabel().setSize(18);
-        backButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        backButton.setVisible(false);
+        backButton = new SpriteButton.Builder(soundButton).y(408)
+                .text("Back").end();      
         layerMan.add(backButton, Game.LAYER_UI);     
         entityList.add(backButton);
     }

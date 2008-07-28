@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
 
@@ -9,7 +9,7 @@ import ca.couchware.wezzle2d.*;
  * 
  * @author cdmckay
  */
-public class JiggleAnimation extends ReferenceAnimation
+public class JiggleAnimation extends AbstractAnimation
 {            
     
     /**
@@ -30,7 +30,7 @@ public class JiggleAnimation extends ReferenceAnimation
     /**
      * The entity being animated.
      */
-    private Entity entity;
+    private AbstractEntity entity;
     
     /**
      * The duration of the animation.
@@ -53,7 +53,7 @@ public class JiggleAnimation extends ReferenceAnimation
     public JiggleAnimation(
             final int duration, 
             final int period, 
-            final Entity entity)
+            final AbstractEntity entity)
     {                        
         // Set values.
         this.jiggles = 0;

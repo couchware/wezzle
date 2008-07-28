@@ -14,12 +14,12 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class EntityGroup extends Entity
+public class EntityGroup extends AbstractEntity
 {
 
-    protected Entity[] entities;
+    protected AbstractEntity[] entities;
     
-    public EntityGroup(Entity ... entities)
+    public EntityGroup(AbstractEntity ... entities)
     {
         // Remember the entities.
         this.entities = entities;
@@ -35,7 +35,7 @@ public class EntityGroup extends Entity
     {
         super.setVisible(visible);
         
-        for (Entity e : entities)
+        for (AbstractEntity e : entities)
             e.setVisible(visible);
     }  
         
@@ -82,7 +82,7 @@ public class EntityGroup extends Entity
     @Override
     public void translate(final int dx, final int dy)
     {
-        for (Entity e : entities)
+        for (AbstractEntity e : entities)
             e.translate(dx, dy);
     }
     
@@ -120,7 +120,7 @@ public class EntityGroup extends Entity
     {       
         super.setOpacity(opacity);
         
-        for (Entity e : entities)
+        for (AbstractEntity e : entities)
             e.setOpacity(opacity);
     }       
     
@@ -132,7 +132,7 @@ public class EntityGroup extends Entity
     {
         super.setRotation(theta);
         
-        for (Entity e : entities)
+        for (AbstractEntity e : entities)
             e.setRotation(theta);
     }        
     
@@ -142,7 +142,7 @@ public class EntityGroup extends Entity
 	 */
     public void draw()
     {
-        for (Entity e : entities)
+        for (AbstractEntity e : entities)
             e.draw();
     }
 
@@ -150,24 +150,14 @@ public class EntityGroup extends Entity
     public EnumSet<Alignment> getAlignment()
     {
         return alignment;
-    }
-
-    @Override
-    public void setAlignment(final EnumSet<Alignment> alignment)
-    {
-        // Remember the anchor.
-		this.alignment = alignment;               
-				
-		for (Entity e : entities)
-            e.setAlignment(alignment);
-    }
+    }   
 
     @Override
     public void setDirty(boolean dirty)
     {
         super.setDirty(dirty);
         
-        for (Entity e : entities)
+        for (AbstractEntity e : entities)
             e.setDirty(dirty);
     }  
     
@@ -176,7 +166,7 @@ public class EntityGroup extends Entity
     {
         drawRect = entities[0].getDrawRect();
                         
-        for (Entity e : entities)
+        for (AbstractEntity e : entities)
             drawRect.add(e.getDrawRect());
         
         return drawRect;
@@ -185,19 +175,8 @@ public class EntityGroup extends Entity
     @Override
     public void resetDrawRect()
     {
-        for (Entity e : entities)
+        for (AbstractEntity e : entities)
             e.resetDrawRect();
     }
     
-    /**
-     * This method should be run whenever you are done with an entity to
-     * clean up things like animations and resources.
-     */
-    @Override
-    public void dispose()
-    {
-        for (Entity e : entities)
-            e.dispose();     
-    }  
-
 }

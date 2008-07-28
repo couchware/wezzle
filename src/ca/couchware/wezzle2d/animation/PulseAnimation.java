@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.graphics.Entity;
-import ca.couchware.wezzle2d.util.XYPosition;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.util.WPosition;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
 import java.awt.Dimension;
@@ -11,7 +11,7 @@ import java.awt.Dimension;
  * 
  * @author cdmckay
  */
-public class PulseAnimation extends ReferenceAnimation
+public class PulseAnimation extends AbstractAnimation
 {  
         
     /**
@@ -42,7 +42,7 @@ public class PulseAnimation extends ReferenceAnimation
     /**
      * The entity being animated.
      */
-    private Entity entity;
+    private AbstractEntity entity;
     
     /**
      * The minimum width the entity may become before switching 
@@ -63,12 +63,12 @@ public class PulseAnimation extends ReferenceAnimation
     /**
      * The initial position of the entity.
      */
-    final private XYPosition p;
+    final private WPosition p;
     
     /**
      * The constructor.
      */
-    public PulseAnimation(final Entity entity, final int period)
+    public PulseAnimation(final AbstractEntity entity, final int period)
     {                
         // Invoke super constructor.
         this.period = period;       
@@ -86,7 +86,7 @@ public class PulseAnimation extends ReferenceAnimation
         d = new Dimension(entity.getWidth(), entity.getHeight());
         
         // Remember initial position.
-        p = new XYPosition(entity.getX(), entity.getY());        
+        p = new WPosition(entity.getX(), entity.getY());        
     }
 
     public void nextFrame(long delta)

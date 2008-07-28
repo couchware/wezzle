@@ -4,14 +4,14 @@ import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.XYPosition;
+import ca.couchware.wezzle2d.util.WPosition;
 
 /**
  * An animation that starts an explosion in the middle of the entity.
  * 
  * @author cdmckay
  */
-public class FloatAnimation extends ReferenceAnimation
+public class FloatAnimation extends AbstractAnimation
 {  
     
     /**
@@ -44,7 +44,7 @@ public class FloatAnimation extends ReferenceAnimation
      /**
      * The initial position.
      */
-    private XYPosition initialPosition;
+    private WPosition initialPosition;
     
     /**
      * The speed of the float in the x direction.
@@ -122,8 +122,8 @@ public class FloatAnimation extends ReferenceAnimation
         double dX = vX * t;
         double dY = vY * t;
         
-        entity.setX(initialPosition.x + (int) dX);
-        entity.setY(initialPosition.y + (int) dY);                            
+        entity.setX(initialPosition.getX() + (int) dX);
+        entity.setY(initialPosition.getY() + (int) dY);                            
         
         // See if we're done.
         if (counter > duration)   

@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 
 /**
  * An animation that will blink an entity for a given duration, or
@@ -13,7 +13,7 @@ import ca.couchware.wezzle2d.graphics.Entity;
  * 
  * @author cdmckay
  */
-public class BlinkAnimation extends ReferenceAnimation
+public class BlinkAnimation extends AbstractAnimation
 {
 
     /**
@@ -52,7 +52,7 @@ public class BlinkAnimation extends ReferenceAnimation
     /**
      * The entity that is being blinked.
      */
-    final private Entity entity;
+    final private AbstractEntity entity;
     
     /**
      * The possible states for the blink animation to be in.
@@ -84,7 +84,7 @@ public class BlinkAnimation extends ReferenceAnimation
      */    
     public BlinkAnimation(DurationType type, int duration, 
             int showPeriod, int hidePeriod,
-            Entity entity) 
+            AbstractEntity entity) 
     {
         // Assign references.
         this.type = type;
@@ -109,7 +109,7 @@ public class BlinkAnimation extends ReferenceAnimation
      * @param entity
      */
     public BlinkAnimation(DurationType type, int showPeriod, int hidePeriod,
-            Entity entity)
+            AbstractEntity entity)
     {
         this(type, 0, showPeriod, hidePeriod, entity);
     }

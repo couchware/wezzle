@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.graphics;
 
-import ca.couchware.wezzle2d.util.XYPosition;
+import ca.couchware.wezzle2d.util.WPosition;
 import java.util.EnumSet;
 
 /**
@@ -59,7 +59,7 @@ public interface IPositionable
      * 
      * @return The x- and y-coordinates.
      */
-    public XYPosition getXYPosition();
+    public WPosition getXYPosition();
     
     /**
      * Sets the x- and y-coordiantes.
@@ -74,7 +74,7 @@ public interface IPositionable
      * 
      * @param p
      */
-    public void setXYPosition(final XYPosition p);
+    public void setXYPosition(final WPosition p);
     
     /**
      * Translate the positionable by the given (x,y) amount.
@@ -117,13 +117,6 @@ public interface IPositionable
      * 
      * @return An integer bitmask representing the alignment.
      */
-    public EnumSet<Alignment> getAlignment();
-    
-    /**
-     * Sets the alignment.
-     * 
-     * @param bitmask An integer bitmask representing the alignment.
-     */
-    public void setAlignment(final EnumSet<Alignment> alignment);     
+    public EnumSet<Alignment> getAlignment();      
     
 }

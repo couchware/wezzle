@@ -8,10 +8,10 @@ import java.awt.Point;
  *
  */
 
-public class XYPosition
+public final class WPosition
 {
-	public final int x;
-	public final int y;
+	private final int x;
+	private final int y;
 	
     /**
      * Creates an XYPosition from two integer coordinates.
@@ -19,7 +19,7 @@ public class XYPosition
      * @param x
      * @param y
      */
-	public XYPosition(final int x, final int y)
+	public WPosition(final int x, final int y)
 	{
 		this.x = x;
 		this.y = y;
@@ -30,7 +30,7 @@ public class XYPosition
      * 
      * @param pt
      */
-    public XYPosition(Point pt)
+    public WPosition(Point pt)
     {
         this.x = pt.x;
         this.y = pt.y;
@@ -57,8 +57,9 @@ public class XYPosition
     /**
      * Converts it to a pretty string.
      */
+    @Override
     public String toString()
     {
-        return "(" + x + "," + y + ")";
+        return "(x,y) = (" + x + "," + y + ")";
     }
 }

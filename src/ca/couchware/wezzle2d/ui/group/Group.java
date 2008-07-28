@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.LayerManager;
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.*;
@@ -19,7 +19,7 @@ import java.util.LinkedList;
  *
  * @author cdmckay
  */
-public class Group extends Entity
+public class Group extends AbstractEntity
 {        
     //--------------------------------------------------------------------------
     // Protected Members
@@ -100,8 +100,8 @@ public class Group extends Entity
         boolean changed = false;
 
         for (IEntity e : entityList)
-            if (e instanceof Button)
-                changed = changed || ((Button) e).clicked(true);
+            if (e instanceof IButton)
+                changed = changed || ((IButton) e).clicked(true);
             else if (e instanceof SliderBar)
                 changed = changed || ((SliderBar) e).changed(true);
 
@@ -117,8 +117,8 @@ public class Group extends Entity
         Util.handleMessage("Cleared by a group.", "Group#clearChanged");
 
         for (IEntity e : entityList)
-            if (e instanceof Button)
-                ((Button) e).clicked();
+            if (e instanceof IButton)
+                ((IButton) e).clicked();
             else if (e instanceof SliderBar)
                 ((SliderBar) e).changed();
     }    

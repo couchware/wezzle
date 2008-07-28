@@ -4,7 +4,7 @@ import ca.couchware.wezzle2d.animation.AnimationManager;
 import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.*;
@@ -212,8 +212,8 @@ public class BoardManager
         scratchBoard = new TileEntity[cells];
         
         // Create the board background graphic.
-        GraphicEntity entity = new GraphicEntity(x - 12, y - 12, PATH);
-        entity.setOpacity(90);
+        GraphicEntity entity = new GraphicEntity.Builder(x - 12, y - 12, PATH)
+                .opacity(90).end();        
         layerMan.add(entity, Game.LAYER_BACKGROUND);
 	}
     
@@ -903,14 +903,14 @@ public class BoardManager
             if (getTile(index1 + i) != null)
                 count++;
         
-        Entity[] entities = new Entity[count];
+        AbstractEntity[] entities = new AbstractEntity[count];
         
         // The array index.
         int index = 0;
         
         for (int i = 0; i < length; i++)
         {
-            Entity e = getTile(index1 + i);
+            AbstractEntity e = getTile(index1 + i);
             
             if (e != null)
                 entities[index++] = e;
@@ -1269,7 +1269,7 @@ public class BoardManager
      * @param indexSet
      * @return
      */
-    public XYPosition determineCenterPoint(final Set<Integer> indexSet)
+    public WPosition determineCenterPoint(final Set<Integer> indexSet)
     {
         // The furthest left, right, up and down locations.
         int l = Integer.MAX_VALUE;
@@ -1307,7 +1307,7 @@ public class BoardManager
         cy = u + (d - u) / 2;
         
         // Return centerpoint.
-        return new XYPosition(cx, cy);
+        return new WPosition(cx, cy);
     }
     
 	/**

@@ -3,7 +3,7 @@ package ca.couchware.wezzle2d.ui;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
 import java.util.EnumSet;
@@ -14,20 +14,13 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class ProgressBar extends Entity
+public class ProgressBar extends AbstractEntity
 {
-
-    /**
-     * The availble progress bar widths.
-     */
-    final public static int WIDTH_200 = 0;
-    //final public static int WIDTH_400 = 1;
-    //final public static int WIDTH_600 = 2;
     
     /**
      * The path to the progress bar container for 200 pixel bar.
      */    
-    final private static String PATH_CONTAINER_200 =
+    final private static String PATH_CONTAINER =
             Game.SPRITES_PATH + "/ProgressBarContainer_200.png";
     
     /**
@@ -51,7 +44,7 @@ public class ProgressBar extends Entity
     /**
      * Does the progress bar have text?
      */
-    private boolean withLabel;
+    private boolean useLabel;
     
     /**
      * The progress text.
@@ -61,22 +54,22 @@ public class ProgressBar extends Entity
     /**
      * The container sprite.
      */   
-    private Sprite containerSprite;
+    private ISprite containerSprite;
     
     /**
      * The left sprite.
      */
-    private Sprite leftSprite;
+    private ISprite leftSprite;
     
     /**
      * The right sprite.
      */
-    private Sprite rightSprite;
+    private ISprite rightSprite;
     
     /**
      * The middle sprite.
      */
-    private Sprite middleSprite;          		
+    private ISprite middleSprite;          		
 	
 	/**
 	 * The current progress.
@@ -116,75 +109,119 @@ public class ProgressBar extends Entity
      * @param y
      * @param withText
      */    
-    public ProgressBar(int x, int y, int type, boolean withText)
+    public ProgressBar(Builder builder)
     {                   
         // Set progress to 0.
         // Set progressMax to 100.
-        this.progress = 0;
-        this.progressMax = 100;  
-        
-        switch (type)
-        {
-            case WIDTH_200:
+        this.progress = builder.progress;
+        this.progressMax = builder.progressMax;  
                 
-                // Set width max.
-                this.progressMaxWidth = 200 - 14;
-                
-                 // Load the container sprite.
-                containerSprite = 
-                        ResourceFactory.get().getSprite(PATH_CONTAINER_200);
-                padX = 7;
-                padY = 7;
-                
-                break;
-                
-            default:
-                throw new IllegalArgumentException("Unknown width type!");
-        }        
-                      
+        // Set width max.
+        this.progressMaxWidth = 200 - 14;
+
+         // Load the container sprite.
+        containerSprite = 
+                ResourceFactory.get().getSprite(PATH_CONTAINER);
+        padX = 7;
+        padY = 7;
+               
         // Load the sprites.
         leftSprite = ResourceFactory.get().getSprite(PATH_SPRITE_LEFT);
         rightSprite = ResourceFactory.get().getSprite(PATH_SPRITE_RIGHT);
         middleSprite = ResourceFactory.get().getSprite(PATH_SPRITE_MIDDLE);     
                
         // Set coordinates.
-        this.x = x;
-        this.y = y;
+        this.x = builder.x;
+        this.y = builder.y;
         
         this.x_ = x;
         this.y_ = y;
         
         // Set initial alignment.
-        this.alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
+        this.alignment = builder.alignment;
+        this.offsetX = determineProgressBarOffsetX(alignment);
+        this.offsetY = determineOffsetY(alignment);
         
         // Add text if specified.
-		if (withText == true)
+        this.useLabel = builder.useLabel;
+		if (useLabel == true)
 		{
-			// Set the variable.
-			this.withLabel = withText;
-			
-			// Create progress text.		
-//			progressText = ResourceFactory.get().getLabel(
-//                    x + getWidth() / 2, y + 47);
-//			
-//			// Set text attributes.			
-//            progressText.setSize(14);
-//            progressText.setAlignment(
-//                    EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//            progressText.setColor(Game.TEXT_COLOR);
-//            progressText.setText(progress + "/" + progressMax);
+            // Set the label.
             progressLabel = new LabelBuilder(x + getWidth() / 2, y + 47)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .color(Game.TEXT_COLOR).size(14)
-                    .text(progress + "/" + progressMax).end();                    
-		}	                
+                    .text(progress + "/" + progressMax).end();   
+            
+            // Update the text if necessary.        
+            progressLabel.setX(progressLabel.getX() + offsetX);
+            progressLabel.setY(progressLabel.getY() + offsetY);
+        }                                                
         
         // Initialize.
         setProgress(progress);
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        dirty = true;
     }
+    
+    public static class Builder implements IBuilder<ProgressBar>
+    {
+        // Required values.        
+        private int x;
+        private int y;     
+        
+        // Optional values.
+        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
+        private boolean useLabel = true;
+        private int progress = 0;
+        private int progressMax = 100;        
+        private int opacity = 100;
+        private boolean visible = true;
+        
+        public Builder(int x, int y)
+        {            
+            this.x = x;
+            this.y = y;
+        }
+        
+        public Builder(ProgressBar progressBar)
+        {            
+            this.x = progressBar.x;
+            this.y = progressBar.y;
+            this.alignment = progressBar.alignment;
+            this.useLabel = progressBar.useLabel;
+            this.progress = progressBar.progress;
+            this.progressMax = progressBar.progressMax;
+            this.opacity = progressBar.opacity;                        
+            this.visible = progressBar.visible;
+        }
+        
+        public Builder x(int val) { x = val; return this; }        
+        public Builder y(int val) { y = val; return this; }
+               
+        public Builder alignment(EnumSet<Alignment> val) 
+        { alignment = val; return this; }
+        
+        public Builder useLabel(boolean val)
+        { useLabel = val; return this; }
+        
+        public Builder progress(int val)
+        { progress = val; return this; }
+        
+        public Builder progressMax(int val)
+        { progressMax = val; return this; }
+        
+        public Builder opacity(int val)
+        { opacity = val; return this; }
+        
+        public Builder visible(boolean val) 
+        { visible = val; return this; }
+        
+        public ProgressBar end()
+        {
+            return new ProgressBar(this);
+        }                
+    }   
     
     public void draw()
     {
@@ -197,7 +234,7 @@ public class ProgressBar extends Entity
                 0.0, 90);
         
         // Draw the text.
-        if (withLabel == true)
+        if (useLabel == true)
             progressLabel.draw();
         
         // Adjust the local x and y.
@@ -250,7 +287,7 @@ public class ProgressBar extends Entity
 	public void setProgressMax(int progressMax)
 	{
 		// Update the text, if needed.
-		if (withLabel == true)
+		if (useLabel == true)
         {
 			//progressText.setText(progress + "/" + progressMax);
             progressLabel = new LabelBuilder(progressLabel)
@@ -275,14 +312,14 @@ public class ProgressBar extends Entity
 	/**
 	 * @param progressPercent the progress to set
 	 */
-	public void setProgress(int progress)
+	final public void setProgress(int progress)
 	{
         // Don't do anything if it's the same.
         if (this.progress == progress)
             return;
         
 		// Update the text, if needed.
-		if (withLabel == true)
+		if (useLabel == true)
         {            
 			progressLabel = new LabelBuilder(progressLabel)
                     .text(progress + "/" + progressMax).end();
@@ -304,11 +341,13 @@ public class ProgressBar extends Entity
 		setProgress(progress + deltaProgress);				
 	}
 
+    @Override
     public int getWidth()
     {
         return containerSprite.getWidth();
     }
 
+    @Override
     public void setWidth(int width)
     {       
         this.progressMaxWidth = width;
@@ -343,58 +382,25 @@ public class ProgressBar extends Entity
         throw new UnsupportedOperationException(
                 "Height cannot be set on progress bar.");
     }
-
-    @Override
-    public void setAlignment(EnumSet<Alignment> alignment)
-    {
-        // Remember the alignment.
-		this.alignment = alignment;
-        
-		// The Y alignment.
-		if (alignment.contains(Alignment.BOTTOM))
-		{
-			this.offsetY = 0;
-		}
-		else if (alignment.contains(Alignment.MIDDLE))
-		{
-			this.offsetY = -getHeight() / 2;
-		}
-		else if (alignment.contains(Alignment.TOP))
-		{
-			this.offsetY = -getHeight();
-		}
-		else
-		{
-			Util.handleWarning("No Y alignment set!", "ProgressBar#setAlignment");
-		}
-		
-		// The X alignment. 
+   
+    protected int determineProgressBarOffsetX(EnumSet<Alignment> alignment)
+    {       
 		if (alignment.contains(Alignment.LEFT))
 		{
-			this.offsetX = 0;
+			return 0;
 		}
 		else if (alignment.contains(Alignment.CENTER))
 		{
-			this.offsetX = -progressMaxWidth / 2;			
+			return -progressMaxWidth / 2;			
 		}
 		else if (alignment.contains(Alignment.RIGHT))
 		{
-			this.offsetX = -progressMaxWidth;
+			return -progressMaxWidth;
 		}
 		else
 		{
-			Util.handleWarning("No X alignment set!", "ProgressBar#setAlignment");
-		}	
-        
-        // Update the text if necessary.
-        if (withLabel == true)
-        {
-            progressLabel.setX(progressLabel.getX() + offsetX);
-            progressLabel.setY(progressLabel.getY() + offsetY);
-        }               
-                
-        // Set dirty so it will be drawn.        
-        setDirty(true);
+			throw new IllegalStateException("No X alignment set!");
+		}	              
     }       
     
     @Override
@@ -412,7 +418,7 @@ public class ProgressBar extends Entity
             rect.translate(offsetX, offsetY);
 
             // Add the text too.
-            if (withLabel == true)
+            if (useLabel == true)
                 rect.add(progressLabel.getDrawRect());
             
             drawRect = rect;

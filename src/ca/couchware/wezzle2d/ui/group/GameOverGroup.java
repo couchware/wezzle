@@ -31,12 +31,12 @@ public class GameOverGroup extends Group
     /**
      * The restart button.
      */
-    private RectangularBooleanButton restartButton;
+    private SpriteButton restartButton;
     
     /**
      * The continue button.
      */
-    private RectangularBooleanButton continueButton;
+    private SpriteButton continueButton;
     
     /**
      * The constructor.
@@ -50,12 +50,6 @@ public class GameOverGroup extends Group
         super(window, layerMan, groupMan);
         
         // Create the game over header.
-//        headerLabel = ResourceFactory.get().getLabel(400, 181);        
-//        headerLabel.setSize(26);
-//        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        headerLabel.setColor(Game.TEXT_COLOR);
-//        headerLabel.setText("Game over :(");
-//        headerLabel.setVisible(false);
         headerLabel = new LabelBuilder(400, 181)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(26).text("Game over :(")
@@ -64,12 +58,6 @@ public class GameOverGroup extends Group
         entityList.add(headerLabel);
         
         // Create the final score header.
-//        scoreHeaderLabel = ResourceFactory.get().getLabel(400, 234);        
-//        scoreHeaderLabel.setSize(14);
-//        scoreHeaderLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        scoreHeaderLabel.setColor(Game.TEXT_COLOR);
-//        scoreHeaderLabel.setText("Your final score was");
-//        scoreHeaderLabel.setVisible(false);
         scoreHeaderLabel = new LabelBuilder(400, 234)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(14)
@@ -79,12 +67,6 @@ public class GameOverGroup extends Group
         entityList.add(scoreHeaderLabel);
         
         // Create the final score label.
-//        scoreLabel = ResourceFactory.get().getLabel(400, 270);        
-//        scoreLabel.setSize(30);
-//        scoreLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        scoreLabel.setColor(Game.TEXT_COLOR);
-//        scoreLabel.setText("0");
-//        scoreLabel.setVisible(false);
         scoreLabel = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).text("0").visible(false).end();
@@ -92,20 +74,15 @@ public class GameOverGroup extends Group
         entityList.add(scoreLabel);
         
         // Create restart button.
-        restartButton = new RectangularBooleanButton(window, 400, 345, "Restart");        
-        restartButton.setNormalOpacity(70);
-//        restartButton.setText("Restart");        
-        restartButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        restartButton.setVisible(false);
+        restartButton = new SpriteButton.Builder(window, 400, 345)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .text("Restart").normalOpacity(70).visible(false).end();
         layerMan.add(restartButton, Game.LAYER_UI);
         entityList.add(restartButton);
         
-        // Create continue button.
-        continueButton = new RectangularBooleanButton(window, 400, 406, "Continue");
-        continueButton.setNormalOpacity(70);
-//        continueButton.setText("Continue");        
-        continueButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        continueButton.setVisible(false);
+        // Create continue button, using the restart button as a template.
+        continueButton = new SpriteButton.Builder(restartButton).y(406)
+                .text("Continue").end();
         layerMan.add(continueButton, Game.LAYER_UI);
         entityList.add(continueButton);
     }        

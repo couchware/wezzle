@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IMovable;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -65,9 +66,8 @@ public class TileEntity extends GraphicEntity implements IMovable
 	public TileEntity(BoardManager boardMan, TileColor color, int x, int y) 
 	{
 		// Invoke super.		
-		super(x, y, 
-                Game.SPRITES_PATH + "/Tile" + color + ".png");
-                				
+		super(new Builder(x, y, Game.SPRITES_PATH + "/Tile" + color + ".png"));                
+        
         // Set the position.
         this.x2 = x;
         this.y2 = y;

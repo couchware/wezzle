@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.*;
 
 /**
@@ -14,7 +14,7 @@ public class ItemTileEntity extends TileEntity
     /**
      * The sprite representing the bomb graphic.
      */
-    final protected Sprite itemSprite;
+    final protected ISprite itemSprite;
     
     /**
      * The rotation of the item.

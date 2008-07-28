@@ -5,10 +5,9 @@
 
 package ca.couchware.wezzle2d.java2d;
 
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.ui.ILabel;
-import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.XYPosition;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -29,35 +28,13 @@ import java.util.EnumSet;
  *
  */
 
-public class Java2DLabel implements ILabel
+public class Java2DLabel extends AbstractEntity implements ILabel
 {    
     
     /** 
      * The game window to which this text is going to be drawn 
      */
-	final private Java2DGameWindow window;	
-    
-    /**
-     * The x-coordinate of the label.     
-     */
-    private int x;
-    private int x_;
-    
-    /**
-     * The y-coordinate of the label.     
-     */
-    private int y;
-    private int y_;
-    
-    /**
-     * The previous width.  Used for calculating the draw rectangle.
-     */
-    private int width_ = 0;
-    
-    /**
-     * The previous height.  Used for calculating the draw rectangle.
-     */
-    private int height_ = 0;
+	final private Java2DGameWindow window;	       
     
     /**
      * The color of the label.
@@ -77,42 +54,7 @@ public class Java2DLabel implements ILabel
 	/** 
      * The font. 
      */
-	final private Font font;  
-    
-     /** 
-     * Is this visible? 
-     */
-    private boolean visible = true;
-    
-    /**
-     * Is it dirty (i.e. does it need to be redrawn)?
-     */
-    private boolean dirty = true;           
-    
-    /**
-     * The opacity (in percent).
-     */
-    private int opacity = 100;
-    
-    /**
-     * The cached draw rectangle.
-     */
-    private Rectangle drawRect;
-        
-    /**
-     * The alignment of the label.
-     */
-    final private EnumSet<Alignment> alignment;
-    
-    /**
-     * The x-offset.
-     */
-    final private int offsetX;
-    
-    /**
-     * The y-offset.
-     */
-    final private int offsetY;	
+	final private Font font;         
     
     /**
      * The text layout instance.
@@ -143,90 +85,74 @@ public class Java2DLabel implements ILabel
         this.size = size;
         this.text = text;
         this.visible = visible;
-                       
-        // Get the font.
-        this.font = Java2DFontStore.get().getFont((int) size);
-        
-        // Create the text layout object.
-        this.textLayout = createTextLayout(window.getDrawGraphics(), font);
-        
-        // Set the old widths.
-//        this.width_ = getWidth();
-//        this.height_ = getHeight();
-        
-        // Setup the alignment.  This should be replaced, alignment should
-        // be immutable.        
-        int[] offsets = determineOffsets(alignment);
-        this.offsetX = offsets[0];
-        this.offsetY = offsets[1];        
+           
+        // If the string is empty, then don't do anything.
+        if (text.length() != 0)
+        {
+            // Get the font.
+            this.font = Java2DFontStore.get().getFont((int) size);
+
+            // Create the text layout object.
+            this.textLayout = createTextLayout(window.getDrawGraphics(), font);                
+
+            // Setup the alignment.  This should be replaced, alignment should
+            // be immutable.                   
+            this.offsetX = determineLabelOffsetX(alignment);
+            this.offsetY = determineLabelOffsetY(alignment);
+        }     
+        else
+        {
+            this.font = null;
+            this.textLayout = null;
+        }
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
-	}		           		
-	
-    public EnumSet<Alignment> getAlignment()
-    {
-        return alignment;
-    }
-    
-    /**
-	 * Set the anchor of the text box. The anchor is initially set to the top left. 
-	 * 
-	 * @param x The x anchor coordinate with respect to the top left corner of the text box.
-	 * @param y The y anchor coordinate with respect to the top left corner of the text box.
-	 */    
-	public void setAlignment(EnumSet<Alignment> alignment)
-	{                                     						
-        throw new UnsupportedOperationException("Not supported");
-	}
-    
-    private int[] determineOffsets(EnumSet<Alignment> alignment)
-    {
-        // Get the width and height of the font.
-		Rectangle2D bounds = textLayout.getBounds();
+        dirty = true;
+	}		           			           
         
-        // Create two offset variables.
-        int offsetX_, offsetY_;
+    protected int determineLabelOffsetX(EnumSet<Alignment> alignment)
+    {        
+        Rectangle2D bounds = textLayout.getBounds();
         
-		// The Y alignment.
-		if (alignment.contains(Alignment.BOTTOM))
+     	if (alignment.contains(Alignment.LEFT))
 		{
-            // TODO This may not work.  It has not been tested.
-			offsetY_ = 0;
+			return (int) -bounds.getMinX();
+		}
+		else if (alignment.contains(Alignment.CENTER))
+		{
+			return (int) -(bounds.getMinX() + bounds.getWidth() / 2);			
+		}
+		else if (alignment.contains(Alignment.RIGHT))
+		{
+			return (int) -bounds.getMaxX();
+		}
+		else
+		{
+			throw new IllegalStateException("No X alignment set!");
+		}        
+    }   
+        
+    protected int determineLabelOffsetY(EnumSet<Alignment> alignment)
+    {      
+        Rectangle2D bounds = textLayout.getBounds();
+        
+		if (alignment.contains(Alignment.BOTTOM))
+		{            
+			return 0;
 		}        
 		else if (alignment.contains(Alignment.MIDDLE))
 		{			
-            offsetY_ = (int) (-bounds.getY() / 2f + 0.5);                        
+            return (int) (-bounds.getY() / 2f + 0.5);                        
 		}
 		else if (alignment.contains(Alignment.TOP))
 		{
-			offsetY_ = (int) (-bounds.getY() + 0.5);                                              
+			return (int) (-bounds.getY() + 0.5);                                              
 		}
 		else
 		{
 			throw new IllegalStateException("No Y alignment set!");
 		}
-		
-		// The X alignment. 
-		if (alignment.contains(Alignment.LEFT))
-		{
-			offsetX_ = (int) -bounds.getMinX();
-		}
-		else if (alignment.contains(Alignment.CENTER))
-		{
-			offsetX_ = (int) -(bounds.getMinX() + bounds.getWidth() / 2);			
-		}
-		else if (alignment.contains(Alignment.RIGHT))
-		{
-			offsetX_ = (int) -bounds.getMaxX();
-		}
-		else
-		{
-			throw new IllegalStateException("No X alignment set!");
-		}
-        
-        return new int[] { offsetX_, offsetY_ };
-    }    	
+    }
 	
     /**
      * Updates the text layout instance.
@@ -259,6 +185,9 @@ public class Java2DLabel implements ILabel
 	 */
 	public void draw()
 	{
+        // Do nothing if the string is empty.
+        if (text.length() == 0) return;            
+        
         x_ = x + offsetX;
         y_ = y + offsetY;
         
@@ -300,9 +229,11 @@ public class Java2DLabel implements ILabel
      * 
      * @return The width of the label.
      */    
+    @Override
     public int getWidth()
-    {        
-        return (int) textLayout.getBounds().getMaxX();         
+    {   
+        if (text.length() == 0) return 0;
+        else return (int) textLayout.getBounds().getMaxX();         
     }
 
     /**
@@ -310,11 +241,11 @@ public class Java2DLabel implements ILabel
      * 
      * @param width
      */    
+    @Override
     public void setWidth(int width)
     {
         // This is not supported.        
-        throw new UnsupportedOperationException(
-                "Not supported.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     /**
@@ -322,9 +253,11 @@ public class Java2DLabel implements ILabel
      * 
      * @return The height of the label.
      */    
+    @Override
     public int getHeight()
-    {        
-        return (int) textLayout.getBounds().getHeight();
+    {    
+        if (text.length() == 0) return 0;
+        else return (int) textLayout.getBounds().getHeight();
     }
 
     /**
@@ -332,17 +265,21 @@ public class Java2DLabel implements ILabel
      * 
      * @param height
      */    
+    @Override
     public void setHeight(int height)
     {
         // This is not supported.        
         throw new UnsupportedOperationException(
                 "Height should be changed via the size and text attribute.");
     }
-    
-    
-    
+          
+    @Override
     public Rectangle getDrawRect()
     {
+        // Return an empty (null) draw-rect if the string is length 0.
+        if (text.length() == 0)
+            return null;
+        
         // If the draw rect is null, generate it.
         if (drawRect == null)
         {            
@@ -381,8 +318,13 @@ public class Java2DLabel implements ILabel
         return drawRect;
     }
        
+    @Override
     public void resetDrawRect()
     {
+        // Do nothing if the text is length 0.
+        if (text.length() == 0)
+            return;
+        
         x_ = x;
         y_ = y;
         
@@ -403,20 +345,7 @@ public class Java2DLabel implements ILabel
     public String getText()
     {
         return text;
-    }
-
-    public void setOpacity(int opacity)
-    {        
-        this.opacity = limitOpacity(opacity);
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    public int getOpacity()
-    {
-        return opacity;
-    }
+    }   
     
     private int limitOpacity(int opacity)
     {
@@ -425,89 +354,16 @@ public class Java2DLabel implements ILabel
         return opacity;
     }
 
+    @Override
     public void setRotation(double theta)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public double getRotation()
     {
         throw new UnsupportedOperationException("Not supported yet.");
-    }  
-
-    public void setVisible(boolean visible)
-    {
-        this.visible = visible;
-        
-        // Set dirty so it will be drawn.
-        setDirty(true);
-    }
-
-    public boolean isVisible()
-    {
-        return visible;
-    }
-
-    public void setDirty(boolean dirty)
-    {
-        this.dirty = dirty;
-        
-        // Set draw rect to null so it'll be regenerated.
-        this.drawRect = null;
-    }
-
-    public boolean isDirty()
-    {
-        return dirty;
-    }
-
-    public int getX()
-    {
-        return x;
-    }
-
-    public void setX(int x)
-    {        
-        this.x = x;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    public int getY()
-    {
-        return y;
-    }
-
-    public void setY(int y)
-    {
-        this.y = y;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
-
-    public XYPosition getXYPosition()
-    {
-        return new XYPosition(getX(), getY());
-    }
-
-    public void setXYPosition(int x, int y)
-    {
-        setX(x);
-        setY(y);
-    }
-
-    public void setXYPosition(XYPosition p)
-    {
-        setX(p.getX());
-        setY(p.getY());
-    }
-
-    public void translate(int dx, int dy)
-    {
-        setX(getX() + dx);
-        setY(getY() + dy);
-    }    
+    }     
     
 }

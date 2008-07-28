@@ -9,7 +9,7 @@ import ca.couchware.wezzle2d.util.Util;
  * 
  * @author cdmckay
  */
-public class FadeAnimation extends ReferenceAnimation
+public class FadeAnimation extends AbstractAnimation
 {       
     
     /**

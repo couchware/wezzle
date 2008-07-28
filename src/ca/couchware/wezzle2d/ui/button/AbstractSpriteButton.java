@@ -1,49 +1,40 @@
 package ca.couchware.wezzle2d.ui.button;
 
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Cursor;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A class representing a clickable button.
  * 
  * @author cdmckay
  */
-public abstract class Button extends Entity implements        
+public abstract class AbstractSpriteButton extends AbstractEntity implements        
+        IButton,
         MouseListener, 
         MouseMotionListener
 {
-    // -------------------------------------------------------------------------
-    // Constants
-    // -------------------------------------------------------------------------        
     
     /**
-     * The normal state.
+     * The button's current state.
      */
-    final protected static int STATE_NORMAL = 0;
-
-    /**
-     * The active state.
-     */
-    final protected static int STATE_ACTIVE = 1;
+    protected static enum ButtonState
+    {
+        NORMAL, HOVER, ACTIVE, PRESSED
+    }      
     
     /**
-     * The hover state.
+     * The current state of the button.
      */
-    final protected static int STATE_HOVER = 2;
-    
-    /**
-     * The pressed state.
-     */
-    final protected static int STATE_PRESSED = 3;        
+    protected ButtonState state;
     
     // -------------------------------------------------------------------------
     // Instance Attributes
@@ -53,33 +44,29 @@ public abstract class Button extends Entity implements
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    protected final GameWindow window;
+    final protected GameWindow window;    
     
     /**
      * The shape of the button.
      */
-    protected final RectangularShape shape;
-    
-    /**
-     * The button text.
-     */
-    protected AtomicReference<String> textReference;
-    
-    /**
-     * The current state of the button.
-     */
-    protected int state;
+    protected RectangularShape shape;  
     
     /**
 	 * The current location of the mouse pointer.
 	 */
-	protected XYPosition mousePosition;
+	private WPosition mousePosition;             
     
-     /**
-     * Was the button just pushed?  This flag is cleared once it
+    /**
+     * Was the button just clicked?  This flag is cleared once it
      * is read.
      */
-    protected AtomicBoolean clicked;
+    private AtomicBoolean clicked = new AtomicBoolean(false);  
+    
+    /**
+     * Was the button just clicked?  This flag is cleared once it
+     * is read.
+     */
+    private AtomicBoolean activated = new AtomicBoolean(false);  
     
     // -------------------------------------------------------------------------
     // Constructors
@@ -89,129 +76,68 @@ public abstract class Button extends Entity implements
      * The constructor.
      * @param shape The shape of the button.
      */
-    public Button(final GameWindow window,
-            final int x, final int y, 
-            final int width, final int height,
-            final RectangularShape shape)
+    public AbstractSpriteButton(final GameWindow window, final int x, final int y)
     {
         // Set to visible.
         visible = true;
         window.addMouseListener(this);
-        window.addMouseMotionListener(this);
+        window.addMouseMotionListener(this);        
      
         // Store the window reference.
         this.window = window;
+        
+        // Set the initial state.
+        this.state = ButtonState.NORMAL;
+        
+        // Set the shape.
+        shape = new Rectangle();
         
         // Set the position.
         this.x = x;
         this.y = y;
         
         this.x_ = x;
-        this.y_ = y;
-        
-        // Set the dimensions.
-        this.width = width;
-        this.height = height;
-        
-        // Set default anchor.
-        this.alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
-        
-        // Save shape reference.
-        this.shape = shape;               
-        
-        // Set text to an empty string.
-        this.textReference = new AtomicReference<String>("");        
-        
-        // Set the initial state.
-        this.state = STATE_NORMAL;        
-        
-        // Initially it is not clicked.
-        clicked = new AtomicBoolean(false);
-        
+        this.y_ = y;                
+                
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        dirty = true;
     }
     
     // -------------------------------------------------------------------------
     // Instance Methods
-    // -------------------------------------------------------------------------
-       
-    /**
-     * Draws the button in its normal state.
-     */
-    public abstract void drawNormal();    
+    // -------------------------------------------------------------------------                                      
     
-    /**
-     * Draws the button in its active state.
-     */
-    public abstract void drawActive();
-    
-    /**
-     * Draws the button in its hover state.
-     */
-    public abstract void drawHover();
-    
-    /**
-     * Draws the button in its pressed (but not yet released) state.
-     */
-    public abstract void drawPressed();                 
-    
-    public void draw()
+    private void handleReleased()
     {
-        x_ = x;
-        y_ = y;
-        
-        // Don't draw if not visible.
-        if (isVisible() == false)
-            return;
-
-        // See what state we're in.
-        switch (state)
+        // Retrieve the mouse position.        
+        final WPosition p = getMousePosition(); 
+                
+        if (shape.contains(p.getX(), p.getY()) == true)
         {
-            case STATE_NORMAL:
-                drawNormal();
-                break;
-                
-            case STATE_ACTIVE:
-                drawActive();
-                break;
-                
-            case STATE_HOVER:
-                drawHover();
-                break;
-                
-            case STATE_PRESSED:
-                drawPressed();
-                break;                           
-                
-            default:
-                Util.handleWarning("Unrecognized or unhandled state.", 
-                        "Button#draw");
-        } // end switch
-    }
-    
-    /**
-     * Checks to see if the passed position is on top of the button.
-     * @param x
-     * @param y
-     */
-    public boolean contains(final int x, final int y)
-    {
-        return shape.contains(x, y);
-    }
-    
-    public void handleReleased()
-    {
-        if (state == STATE_PRESSED)
-            state = STATE_HOVER;
-        
-        // Set dirty so it will be drawn.        
+            // If the mouse is released over a button that is depressed, then
+            // that's a click.
+            if (state == ButtonState.PRESSED)
+            {
+                clicked.set(true);        
+                activated.set(isActivated() == true ? false : true);
+            }
+            
+            state = ButtonState.HOVER;                        
+        }        
+        else
+        {
+            if (isActivated() == true)
+                state = ButtonState.ACTIVE;
+            else
+                state = ButtonState.NORMAL;
+        }
+                            
         setDirty(true);
     }
     
-    public void handlePressed()
+    private void handlePressed()
     {        
-        state = STATE_PRESSED;
+        state = ButtonState.PRESSED;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -223,45 +149,57 @@ public abstract class Button extends Entity implements
      * 
      * @param pos
      */
-    public void handleMoved(XYPosition pos)
+    public void handleMoved(WPosition pos)
     {
         // Get the last position.
-        XYPosition lastPos = getMousePosition(); 
+        WPosition lastPos = getMousePosition(); 
         
 		// Set the new mouse position.
-		setMousePosition(pos.x, pos.y);          
+		setMousePosition(pos.getX(), pos.getY());          
         
         // Handle case where there is no last position.
         if (lastPos == null) lastPos = pos;
         
         // Ignore click if we're outside the button.
-        if (contains(lastPos.x, lastPos.y) == false 
-                && contains(pos.x, pos.y) == true)
+        if (shape.contains(lastPos.getX(), lastPos.getY()) == false 
+                && shape.contains(pos.getX(), pos.getY()) == true)
         {
             handleMouseOn();                
         }
-        else if (contains(lastPos.x, lastPos.y) == true
-                && contains(pos.x, pos.y) == false)
+        else if (shape.contains(lastPos.getX(), lastPos.getY()) == true
+                && shape.contains(pos.getX(), pos.getY()) == false)
         {
             handleMouseOff();
         }
     }
-    
+       
     public void handleMouseOn()
     {
-        if (state != STATE_PRESSED)
-            state = STATE_HOVER;
+        //Util.handleWarning("Hand", Thread.currentThread());
+        window.setCursor(Cursor.HAND_CURSOR);
         
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }        
+        if (state != ButtonState.PRESSED && state != ButtonState.HOVER)
+        {
+            state = ButtonState.HOVER;
+            setDirty(true);
+        }                
+    }           
     
     public void handleMouseOff()
-    {        
-        state = STATE_NORMAL;
+    {   
+        //Util.handleWarning("Default", Thread.currentThread());
+        window.setCursor(Cursor.DEFAULT_CURSOR);
         
-        // Set dirty so it will be drawn.        
-        setDirty(true);
+        if (isActivated() == true && state != ButtonState.ACTIVE)
+        {
+            state = ButtonState.ACTIVE;
+            setDirty(true);
+        }
+        else if (isActivated() == false && state != ButtonState.NORMAL)
+        {
+            state = ButtonState.NORMAL;
+            setDirty(true);
+        }                
     }
     
     public boolean clicked()
@@ -282,7 +220,7 @@ public abstract class Button extends Entity implements
             return clicked.get();
         else
             return clicked();
-    }
+    }        
         
     //--------------------------------------------------------------------------
     // Getters and Setters
@@ -292,7 +230,7 @@ public abstract class Button extends Entity implements
 	 * Gets the mousePosition.
 	 * @return The mousePosition.
 	 */
-	public synchronized XYPosition getMousePosition()
+	public synchronized WPosition getMousePosition()
 	{
 //        if (mousePosition == null)
 //            Util.handleWarning("Mouse position is null!", 
@@ -307,20 +245,8 @@ public abstract class Button extends Entity implements
 	 */
 	public synchronized void setMousePosition(final int x, final int y)
 	{
-		this.mousePosition = new XYPosition(x, y);
-	}       
-    
-    public String getText()
-    {
-        return textReference.get();
-    }
-
-    public void setText(String text)
-    {
-        this.textReference.set(text);
-        
-        setDirty(true);
-    }
+		this.mousePosition = new WPosition(x, y);
+	}             
     
     /**
 	 * Set the alignment of the button. 
@@ -331,15 +257,15 @@ public abstract class Button extends Entity implements
 	 * @param y The y alignment coordinate with respect 
      * to the top left corner of the button.
 	 */
-    @Override
-	public void setAlignment(final EnumSet<Alignment> alignment)
+	private int[] determineOffsets(final EnumSet<Alignment> alignment)
 	{
-        // Invoke super.
-        super.setAlignment(alignment);	                
-        
-        // Move the shape.
-        shape.setFrame(x + offsetX, y + offsetY,
-                shape.getWidth(), shape.getHeight());
+//        // Invoke super.
+//        super.setAlignment(alignment);	                
+//        
+//        // Move the shape.
+//        shape.setFrame(x + offsetX, y + offsetY,
+//                shape.getWidth(), shape.getHeight());
+        return null;
 	}             
     
     @Override
@@ -356,7 +282,7 @@ public abstract class Button extends Entity implements
         if (visible == true)
         {
             // Pretend like we just moved the mouse.
-            handleMoved(new XYPosition(window.getMousePosition()));
+            handleMoved(new WPosition(window.getMousePosition()));
             
             window.addMouseListener(this);
             window.addMouseMotionListener(this);
@@ -364,13 +290,36 @@ public abstract class Button extends Entity implements
         else
         {          
             // Clear the last mouse position.
-            handleMoved(new XYPosition(0, 0));
+            handleMoved(new WPosition(0, 0));
             
             window.setCursor(Cursor.DEFAULT_CURSOR);
             
             window.removeMouseListener(this);
             window.removeMouseMotionListener(this);
         }        
+    }
+    
+    public boolean isActivated()
+    {
+        return activated.get();
+    }
+
+    public void setActivated(boolean activated)
+    {
+        this.activated.set(activated);
+        
+        if (isActivated() == true)
+        {
+            state = ButtonState.ACTIVE;            
+        }
+        else
+        {            
+            state = ButtonState.NORMAL;           
+            setMousePosition(0, 0);
+            handleMoved(new WPosition(window.getMousePosition()));
+        }
+        
+        setDirty(true);
     }
     
     //--------------------------------------------------------------------------
@@ -399,10 +348,10 @@ public abstract class Button extends Entity implements
 	{
 		// Retrieve the mouse position.
         setMousePosition(e.getX(), e.getY());
-        final XYPosition p = getMousePosition();                
+        final WPosition p = getMousePosition();                
         
         // Ignore click if we're outside the button.
-        if (contains(p.x, p.y) == false)
+        if (shape.contains(p.getX(), p.getY()) == false)
             return;                    
             
 		// Check which button.
@@ -445,6 +394,7 @@ public abstract class Button extends Entity implements
 	 */
 	public void mouseMoved(MouseEvent e)
 	{	
-        handleMoved(new XYPosition(e.getX(), e.getY()));
-    }             
+        handleMoved(new WPosition(e.getX(), e.getY()));
+    }        
+            
 }

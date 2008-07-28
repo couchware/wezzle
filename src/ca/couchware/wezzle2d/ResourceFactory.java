@@ -1,8 +1,7 @@
-        package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
 import ca.couchware.wezzle2d.java2d.Java2DSpriteStore;
 import ca.couchware.wezzle2d.java2d.Java2DLabel;
@@ -128,7 +127,7 @@ public class ResourceFactory
 	 *            A reference to the image to load
 	 * @return A sprite that can be drawn onto the current graphics context.
 	 */
-	public Sprite getSprite(String path)
+	public ISprite getSprite(String path)
 	{
 		if (window == null)
 		{
@@ -184,8 +183,8 @@ public class ResourceFactory
     
     public static class LabelBuilder implements IBuilder<ILabel>
     {        
-        private final int x;
-        private final int y;        
+        private int x;
+        private int y;        
                 
         private EnumSet<Alignment> alignment = 
                 EnumSet.of(Alignment.TOP, Alignment.LEFT);
@@ -199,7 +198,7 @@ public class ResourceFactory
         {            
             this.x = x;
             this.y = y;
-        }
+        }               
         
         public LabelBuilder(ILabel label)
         {
@@ -212,6 +211,11 @@ public class ResourceFactory
             this.text = label.getText();
             this.visible = label.isVisible();
         }
+        
+        public LabelBuilder x(int val) { x = val; return this; }        
+        public LabelBuilder y(int val) { y = val; return this; }
+        public LabelBuilder xy(int xval, int yval) 
+        { x(xval); y(yval); return this; }
         
         public LabelBuilder alignment(EnumSet<Alignment> val)
         { alignment = val; return this; }

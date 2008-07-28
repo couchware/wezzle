@@ -106,7 +106,8 @@ public class LayerManager
         // If the index is -1, the element is not in this layer.
         if (index != -1)
         {
-            addRemoveRect(layer.get(index).getDrawRect());
+            Rectangle r = layer.get(index).getDrawRect();
+            if (r != null) addRemoveRect(r);
             layer.remove(index);
             return true;
         }
@@ -192,7 +193,9 @@ public class LayerManager
             // Draw its contents.
             for (IDrawable d : layer)
             {                                
-                if (clip == null || d.getDrawRect().intersects(clip) == true)
+                if (clip == null 
+                        || (d.getDrawRect() != null 
+                            && d.getDrawRect().intersects(clip) == true))
                 {                   
                     //count++;
                     d.draw();                
@@ -235,7 +238,7 @@ public class LayerManager
                 
                 Rectangle r = d.getDrawRect();                
                 
-                if (r == null || r.getMinX() < 0 || r.getMinY() < 0)
+                if (r != null && (r.getMinX() < 0 || r.getMinY() < 0))
                 {
                     Util.handleWarning("Offending class is " 
                             + d.getClass().getSimpleName(), 
@@ -249,7 +252,7 @@ public class LayerManager
                 
                 //Util.handleWarning(r + "");
                 
-                if (region.intersects(r) == true)
+                if (r != null && region.intersects(r) == true)
                 {   
 //                    Util.handleWarning("Offending class is " 
 //                            + d.getClass().getSimpleName(), 

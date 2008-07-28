@@ -42,7 +42,7 @@ public class HighScoreGroup extends Group
     /**
      * The close button.
      */
-    private RectangularBooleanButton closeButton;
+    private SpriteButton closeButton;
     
     /**
      * The constructor.
@@ -61,12 +61,6 @@ public class HighScoreGroup extends Group
         highScoreList = highScoreMan.getHighScoreList();
         
         // Create the high score header.
-//        headerLabel = ResourceFactory.get().getLabel(400, 171);        
-//        headerLabel.setSize(26);
-//        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        headerLabel.setColor(Game.TEXT_COLOR);
-//        headerLabel.setText("High Scores");
-//        headerLabel.setVisible(false);
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(26).text("High Scores")
@@ -75,25 +69,13 @@ public class HighScoreGroup extends Group
         entityList.add(headerLabel);     
         
         // Create the no high score label.
-//        noHighScoreLabel1 = ResourceFactory.get().getLabel(400, 270);
-//        noHighScoreLabel1.setSize(20);
-//        noHighScoreLabel1.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        noHighScoreLabel1.setColor(Game.TEXT_COLOR);
-//        noHighScoreLabel1.setText("There are no");
-//        noHighScoreLabel1.setVisible(false);
         noHighScoreLabel1 = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(20).text("There are no")
                 .visible(false).end();
         layerMan.add(noHighScoreLabel1, Game.LAYER_UI);
         entityList.add(noHighScoreLabel1);
-        
-//        noHighScoreLabel2 = ResourceFactory.get().getLabel(400, 300);
-//        noHighScoreLabel2.setSize(20);
-//        noHighScoreLabel2.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        noHighScoreLabel2.setColor(Game.TEXT_COLOR);
-//        noHighScoreLabel2.setText("high scores yet.");
-//        noHighScoreLabel2.setVisible(false);
+                
         noHighScoreLabel2 = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(20).text("high scores yet")
@@ -106,15 +88,7 @@ public class HighScoreGroup extends Group
         
         // Create all the labels.
         for (int i = 0; i < scoreLabels.length; i++)
-        {           
-//            scoreLabels[i] = ResourceFactory.get()
-//                    .getLabel(400, 225 + (30 * i));        
-//            scoreLabels[i].setSize(16);
-//            scoreLabels[i].setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//            scoreLabels[i].setColor(Game.TEXT_COLOR);
-//            scoreLabels[i].setText(" "); // hack
-//            scoreLabels[i].setVisible(false);
-//            scoreLabels[i].setOpacity(0); // hack
+        {                      
             scoreLabels[i] = new LabelBuilder(400, 225 + (30 * i))
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .color(Game.TEXT_COLOR).opacity(0).size(16).text(" ")
@@ -127,12 +101,9 @@ public class HighScoreGroup extends Group
         updateScoreLabels();
         
         // Create close button.
-        closeButton = new RectangularBooleanButton(window, 400, 408, "Close");
-        closeButton.setNormalOpacity(70);
-//        closeButton.setText("Close");
-//        closeButton.getLabel().setSize(18);
-        closeButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        closeButton.setVisible(false);
+        closeButton = new SpriteButton.Builder(window, 400, 400)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .normalOpacity(70).visible(false).end();
         layerMan.add(closeButton, Game.LAYER_UI);
         entityList.add(closeButton);
     }

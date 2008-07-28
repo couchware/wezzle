@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.graphics.Entity;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
 
 /**
@@ -12,7 +12,7 @@ import ca.couchware.wezzle2d.*;
  * 
  * @author cdmckay
  */
-public class ZoomInAnimation extends ReferenceAnimation
+public class ZoomInAnimation extends AbstractAnimation
 {  
     
     /**
@@ -48,7 +48,7 @@ public class ZoomInAnimation extends ReferenceAnimation
     /**
      * The entity being animated.
      */
-    protected Entity entity;
+    protected AbstractEntity entity;
     
     /**
      * The maximum width of the entity.  This will be the size it
@@ -59,7 +59,7 @@ public class ZoomInAnimation extends ReferenceAnimation
     /**
      * The constructor.
      */
-    public ZoomInAnimation(final Entity entity)
+    public ZoomInAnimation(final AbstractEntity entity)
     {                
         // Invoke super constructor.
         this.period = FRAME_PERIOD;

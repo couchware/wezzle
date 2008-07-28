@@ -5,7 +5,6 @@ import static ca.couchware.wezzle2d.BoardManager.Direction;
 import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import static ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.PieceGrid;
-import ca.couchware.wezzle2d.ui.Label;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
@@ -78,7 +77,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
 	/**
 	 * The current location of the mouse pointer.
 	 */
-	private volatile XYPosition mousePosition;
+	private volatile WPosition mousePosition;
 	
     /**
      * Was the left mouse button clicked?
@@ -162,10 +161,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
         loadPiece();
 		
 		// Create initial mouse position.
-		mousePosition = new XYPosition(boardMan.getX(), boardMan.getY());
+		mousePosition = new WPosition(boardMan.getX(), boardMan.getY());
         
         // Adjust the position.
-        XYPosition ap = adjustPosition(mousePosition);
+        WPosition ap = adjustPosition(mousePosition);
         
         // Move the piece there.
         pieceGrid.setX(ap.getX());
@@ -225,7 +224,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
      * @param p The position to adjust.
      * @return The adjusted position.
      */
-    public XYPosition adjustPosition(XYPosition p)
+    public WPosition adjustPosition(WPosition p)
 	{
 		int column = convertXToColumn(p.getX());
 		int row = convertYToRow(p.getY());
@@ -259,7 +258,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
 			} // end for				
 		} // end for
 		
-		return new XYPosition(
+		return new WPosition(
                 boardMan.getX() + (column * boardMan.getCellWidth()), 
                 boardMan.getY() + (row * boardMan.getCellHeight()));
 	}
@@ -273,12 +272,12 @@ public class PieceManager implements MouseListener, MouseMotionListener
      * @param tileSet
      * @param emptySet
      */
-    public void getSelectedIndexSet(XYPosition p, 
+    public void getSelectedIndexSet(WPosition p, 
             Set<Integer> tileSet, 
             Set<Integer> blankSet)
     {                
         // Convert to rows and columns.
-        XYPosition ap = adjustPosition(p);
+        WPosition ap = adjustPosition(p);
         int column = convertXToColumn(ap.getX());
 		int row = convertYToRow(ap.getY());
         
@@ -312,7 +311,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         refactored = true;
     }
     
-    private boolean isOnBoard(final XYPosition p)
+    private boolean isOnBoard(final WPosition p)
     {
         if (p.getX() > boardMan.getX()
                 && p.getX() <= boardMan.getX() + boardMan.getWidth()
@@ -333,7 +332,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
        return (y - boardMan.getY()) / boardMan.getCellHeight(); 
     }
     
-    private void startAnimationAt(final XYPosition p, int period)
+    private void startAnimationAt(final WPosition p, int period)
     {
         // Add new animations.
         Set<Integer> indexSet = new HashSet<Integer>();
@@ -353,7 +352,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         }
     }
     
-    private void adjustAnimationAt(final XYPosition p, int period)
+    private void adjustAnimationAt(final WPosition p, int period)
     {
         Set<Integer> indexSet = new HashSet<Integer>();
         getSelectedIndexSet(p, indexSet, null);
@@ -380,7 +379,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         stopAnimationAt(pieceGrid.getXYPosition());
     }
     
-    private void stopAnimationAt(final XYPosition p)
+    private void stopAnimationAt(final WPosition p)
     {
         // Remove old animations.
         Set<Integer> indexSet = new HashSet<Integer>();
@@ -597,7 +596,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         else
         {      
             // Grab the current mouse position.
-            final XYPosition p = getMousePosition();             
+            final WPosition p = getMousePosition();             
             
             if (isMouseLeftReleased() == true)
             {                          
@@ -623,7 +622,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             else if (isOnBoard(p) == true)
             {
                 // Filter the current position.
-                XYPosition ap = adjustPosition(p);
+                WPosition ap = adjustPosition(p);
 
                 int period = Util.scaleInt(
                         0, game.timerMan.getInitialTime(), 
@@ -696,7 +695,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
                 
         // Add score SCT.
-        XYPosition p = boardMan.determineCenterPoint(indexSet);
+        WPosition p = boardMan.determineCenterPoint(indexSet);
 //        Label label = ResourceFactory.get().getLabel(p.x, p.y);        
 //        label.setText(String.valueOf(deltaScore));
 //        label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
@@ -835,7 +834,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
 	 * Gets the mousePosition.
 	 * @return The mousePosition.
 	 */
-	public XYPosition getMousePosition()
+	public WPosition getMousePosition()
 	{
 		return mousePosition;
 	}
@@ -846,7 +845,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
 	 */
 	public void setMousePosition(int x, int y)
 	{
-		this.mousePosition = new XYPosition(x, y);
+		this.mousePosition = new WPosition(x, y);
 	}
 
     public boolean isMouseLeftReleased()
@@ -957,7 +956,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         //Util.handleMessage("Button clicked.", Thread.currentThread());                
         
         // Retrieve the mouse position.
-        final XYPosition p = getMousePosition();
+        final WPosition p = getMousePosition();
         
         // Ignore click if we're outside the board.
         if (isOnBoard(p) == false)                

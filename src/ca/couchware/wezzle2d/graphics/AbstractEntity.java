@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.XYPosition;
+import ca.couchware.wezzle2d.util.WPosition;
 import java.awt.Rectangle;
 import java.util.EnumSet;
 
@@ -17,7 +17,7 @@ import java.util.EnumSet;
  * 
  * @author Cameron McKay (based on code by Kevin Glass)
  */
-public abstract class Entity implements IEntity
+public abstract class AbstractEntity implements IEntity
 {
     /** 
      * Is this visible? 
@@ -165,9 +165,9 @@ public abstract class Entity implements IEntity
         setDirty(true);
 	}
     
-    public XYPosition getXYPosition()
+    public WPosition getXYPosition()
     {
-        return new XYPosition(getX(), getY());
+        return new WPosition(getX(), getY());
     }
 
     public void setXYPosition(int x, int y)
@@ -176,16 +176,16 @@ public abstract class Entity implements IEntity
         setY(y);
     }
 
-    public void setXYPosition(XYPosition p)
+    public void setXYPosition(WPosition p)
     {
-        setX(p.x);
-        setY(p.y);
+        setX(p.getX());
+        setY(p.getY());
     }
     
     public void translate(final int dx, final int dy)
     {
-        setX(this.x + dx);
-        setY(this.y + dy);
+        setX(getX() + dx);
+        setY(getY() + dy);
     }
     
     public int getHeight()
@@ -219,14 +219,11 @@ public abstract class Entity implements IEntity
      * 
      * @param opacity The opacity.
      */
-    public void setOpacity(final int opacity)
+    public void setOpacity(int opacity)
     {       
-        if (opacity < 0)
-            this.opacity = 0;
-        else if (opacity > 100)
-            this.opacity = 100;
-        else
-            this.opacity = opacity;
+        if (opacity < 0) opacity = 0;
+        else if (opacity > 100) opacity = 100;        
+        this.opacity = opacity;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -266,56 +263,56 @@ public abstract class Entity implements IEntity
      * or an animation is attached (the animation will handle the drawing).
 	 */
     public abstract void draw();    	
-
-    public EnumSet<Alignment> getAlignment()
-    {
-        return alignment;
-    }
-
-    public void setAlignment(final EnumSet<Alignment> alignment)
-    {
-        // Remember the anchor.
-		this.alignment = alignment;               
-				
-		// The Y anchors.
-		if (alignment.contains(Alignment.BOTTOM))
-		{
-			this.offsetY = -height;
-		}
-		else if (alignment.contains(Alignment.MIDDLE))
-		{
-			this.offsetY = -height / 2;
-		}
-		else if (alignment.contains(Alignment.TOP))
-		{
-			this.offsetY = 0;
-		}
-		else
-		{
-			Util.handleWarning("No Y alignment set!", "Entity#setAlignment");
-		}
-		
-		// The X anchors. 
+    
+    /**
+     * A convenience method for determine offsets when doing alignment.
+     * 
+     * @param alignment
+     */
+    final protected int determineOffsetX(final EnumSet<Alignment> alignment)
+    {       				
 		if (alignment.contains(Alignment.LEFT))
 		{
-			this.offsetX = 0;
+			return 0;
 		}
 		else if (alignment.contains(Alignment.CENTER))
 		{
-			this.offsetX = -width / 2;			
+			return -getWidth() / 2;			
 		}
 		else if (alignment.contains(Alignment.RIGHT))
 		{
-			this.offsetX = -width;
+			return -getWidth();
 		}
 		else
 		{
-			Util.handleWarning("No X alignment set!", "Entity#setAlignment");
+			throw new IllegalStateException("No X alignment set!");
 		}	
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
     }
+    
+    final protected int determineOffsetY(final EnumSet<Alignment> alignment)
+    {       
+		if (alignment.contains(Alignment.BOTTOM))
+		{
+			return -getHeight();
+		}
+		else if (alignment.contains(Alignment.MIDDLE))
+		{
+			return -getHeight() / 2;
+		}
+		else if (alignment.contains(Alignment.TOP))
+		{
+			return 0;
+		}
+		else
+		{
+			throw new IllegalStateException("No Y alignment set!");
+		}
+    }
+    
+    public EnumSet<Alignment> getAlignment()
+    {
+        return alignment;
+    }   
 
     public void setDirty(boolean dirty)
     {
@@ -344,11 +341,6 @@ public abstract class Entity implements IEntity
             
             drawRect = rect1;
         }
-        else
-        {
-//            Util.handleMessage("Using cached draw-rect.", 
-//                    Thread.currentThread());
-        }
         
         return drawRect;
     }
@@ -360,19 +352,6 @@ public abstract class Entity implements IEntity
         
         width_ = width;
         height_ = height;
-    }
-    
-    /**
-     * This method should be run whenever you are done with an entity to
-     * clean up things like animations and resources.
-     */
-    public void dispose()
-    {
-        // Release the draw rectangle.
-        drawRect = null;
-        
-        // Release the alignment.
-        alignment = null;        
-    }
+    }        
     
 }

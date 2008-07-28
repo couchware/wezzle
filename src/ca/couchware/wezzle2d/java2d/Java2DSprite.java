@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 
-import ca.couchware.wezzle2d.graphics.Sprite;
+import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -24,7 +24,7 @@ import java.awt.image.VolatileImage;
  * 
  * @author Cameron McKay (based on code by Kevin Glass)
  */
-public class Java2DSprite implements Sprite
+public class Java2DSprite implements ISprite
 {    
 	/** 
      * The image to be drawn for this sprite.

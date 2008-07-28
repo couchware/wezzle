@@ -19,10 +19,11 @@ import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.piece.PieceDot;
 import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.tile.TileEntity;
-import ca.couchware.wezzle2d.ui.Label;
 //import ca.couchware.wezzle2d.ui.MultiLabel;
+import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
-import ca.couchware.wezzle2d.ui.button.RectangularBooleanButton;
+import ca.couchware.wezzle2d.ui.button.IButton;
+import ca.couchware.wezzle2d.ui.button.SpriteButton;
 import java.util.EnumSet;
 
 /**
@@ -41,7 +42,7 @@ public class BasicTutorial extends Tutorial
     /**
      * The text that directs the user.
      */
-    private Label label;
+    private ILabel label;
     
     /**
      * A speech bubble that indicates where the user should press.
@@ -51,12 +52,12 @@ public class BasicTutorial extends Tutorial
     /**
      * The repeat button.
      */
-    private RectangularBooleanButton repeatButton;
+    private IButton repeatButton;
     
     /**
      * The continue button.
      */
-    private RectangularBooleanButton continueButton;
+    private IButton continueButton;
     
     /**
      * The constructor.
@@ -124,21 +125,14 @@ public class BasicTutorial extends Tutorial
         game.layerMan.toFront(bubble, Game.LAYER_EFFECT);           
         
         // Create repeat button.
-        repeatButton = new RectangularBooleanButton(
-                game.getGameWindow(), 400, 310, "Repeat");        
-        repeatButton.setNormalOpacity(70);
-//        repeatButton.setText("Repeat");        
-        repeatButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        repeatButton.setVisible(false);
+        repeatButton = new SpriteButton.Builder(game.getGameWindow(), 400, 310)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .text("Repeat").normalOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Game.LAYER_EFFECT);
         
-         // Create continue button.
-        continueButton = new RectangularBooleanButton(
-                game.getGameWindow(), 400, 370, "Continue");
-        continueButton.setNormalOpacity(70);
-//        continueButton.setText("Continue");        
-        continueButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        continueButton.setVisible(false);
+         // Create continue button, using the repeat button as a template.
+        continueButton = new SpriteButton.Builder((SpriteButton) repeatButton)
+                .y(370).text("Continue").end();
         game.layerMan.add(continueButton, Game.LAYER_EFFECT);    
         
         // Run the repeat tutorial method, that sets up the things that must

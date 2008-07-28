@@ -15,5 +15,5 @@ package ca.couchware.wezzle2d;
  */
 public interface IBuilder<T>
 {
-    public T end();
+    public T end();    
 }

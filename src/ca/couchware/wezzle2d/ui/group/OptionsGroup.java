@@ -16,11 +16,6 @@ import java.util.EnumSet;
 public class OptionsGroup extends Group
 {
     /**
-     * The options button. 
-     */
-    private RectangularBooleanButton optionsButton;    
-    
-    /**
      * The header label.
      */
     private ILabel headerLabel;
@@ -28,12 +23,12 @@ public class OptionsGroup extends Group
     /**
      * The help button.
      */
-    private RectangularBooleanButton helpButton;
+    private IButton helpButton;
     
     /**
      * The audio button.
      */
-    private RectangularBooleanButton audioButton;
+    private IButton audioButton;
     
     /**
      * The audio group.
@@ -43,12 +38,12 @@ public class OptionsGroup extends Group
     /**
      * The main menu button.
      */
-    private RectangularBooleanButton mainMenuButton;
+    private IButton mainMenuButton;
 
     /**
      * The back button.
      */
-    private RectangularBooleanButton backButton;    
+    private IButton backButton;    
     
     /**
      * The constructor.
@@ -64,12 +59,6 @@ public class OptionsGroup extends Group
         super(window, layerMan, groupMan);                
         
         // Create the options header.
-//        headerLabel = ResourceFactory.get().getLabel(400, 171);        
-//        headerLabel.setSize(26);
-//        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        headerLabel.setColor(Game.TEXT_COLOR);
-//        headerLabel.setText("Options");
-//        headerLabel.setVisible(false);
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(26).text("Options")
@@ -78,22 +67,15 @@ public class OptionsGroup extends Group
         entityList.add(headerLabel);
         
         // Create help button.
-        helpButton = new RectangularBooleanButton(window, 400, 246, "Help");
-        helpButton.setNormalOpacity(70);
-//        helpButton.setText("Help");
-//        helpButton.getLabel().setSize(18);
-        helpButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        helpButton.setVisible(false);
+        helpButton = new SpriteButton.Builder(window, 400, 246)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .text("Help").normalOpacity(70).visible(false).end();        
         layerMan.add(helpButton, Game.LAYER_UI);
         entityList.add(helpButton);
         
         // Create audio button.
-        audioButton = new RectangularBooleanButton(window, 400, 300, "Sound/Music");
-        audioButton.setNormalOpacity(70);
-//        audioButton.setText("Sound/Music");
-//        audioButton.getLabel().setSize(18);
-        audioButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        audioButton.setVisible(false);
+        audioButton = new SpriteButton.Builder((SpriteButton) helpButton).y(300)
+            .text("Sound/Music").end();
         layerMan.add(audioButton, Game.LAYER_UI);
         entityList.add(audioButton);
         
@@ -103,22 +85,14 @@ public class OptionsGroup extends Group
         groupMan.register(audioGroup);
         
         // Create main menu button.
-        mainMenuButton = new RectangularBooleanButton(window, 400, 354, "Main Menu");        
-        mainMenuButton.setNormalOpacity(70);
-//        mainMenuButton.setText("Main Menu");
-//        mainMenuButton.getLabel().setSize(18);
-        mainMenuButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        mainMenuButton.setVisible(false);
+        mainMenuButton = new SpriteButton.Builder((SpriteButton) helpButton).y(354)
+            .text("Main Menu").end();
         layerMan.add(mainMenuButton, Game.LAYER_UI);
         entityList.add(mainMenuButton);
         
         // Create back button.
-        backButton = new RectangularBooleanButton(window, 400, 408, "Back");
-        backButton.setNormalOpacity(70);
-//        backButton.setText("Back");
-//        backButton.getLabel().setSize(18);
-        backButton.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-        backButton.setVisible(false);
+        backButton = new SpriteButton.Builder((SpriteButton) helpButton).y(408)
+            .text("Back").end();
         layerMan.add(backButton, Game.LAYER_UI);     
         entityList.add(backButton);
     }      
