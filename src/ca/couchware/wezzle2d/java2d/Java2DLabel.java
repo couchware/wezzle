@@ -345,14 +345,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     public String getText()
     {
         return text;
-    }   
-    
-    private int limitOpacity(int opacity)
-    {
-        if (opacity < 0) return 0;
-        if (opacity > 100) return 100;
-        return opacity;
-    }
+    }          
 
     @Override
     public void setRotation(double theta)

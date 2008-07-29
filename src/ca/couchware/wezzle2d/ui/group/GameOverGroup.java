@@ -69,7 +69,8 @@ public class GameOverGroup extends Group
         // Create the final score label.
         scoreLabel = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).text("0").visible(false).end();
+                .color(Game.TEXT_COLOR).size(30)
+                .text("0").visible(false).end();
         layerMan.add(scoreLabel, Game.LAYER_UI); 
         entityList.add(scoreLabel);
         
@@ -89,8 +90,12 @@ public class GameOverGroup extends Group
     
     public void setScore(final int score)
     {
+        layerMan.remove(scoreLabel, Game.LAYER_UI);
+        entityList.remove(scoreLabel);
         scoreLabel = new LabelBuilder(scoreLabel)
                 .text(String.valueOf(score)).end();
+        layerMan.add(scoreLabel, Game.LAYER_UI);
+        entityList.add(scoreLabel);
     }
     
     public int getScore()

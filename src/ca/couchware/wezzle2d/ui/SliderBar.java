@@ -158,7 +158,7 @@ public class SliderBar extends AbstractEntity implements
         this.offsetY = determineOffsetY(alignment);
         
         // Save shape reference.
-        this.shape = new Rectangle(x, y, WIDTH, HEIGHT);                      
+        this.shape = new Rectangle(x + offsetX, y + offsetY, WIDTH, HEIGHT);                      
         
         // Load in the sprites.
         spriteRail = ResourceFactory.get()

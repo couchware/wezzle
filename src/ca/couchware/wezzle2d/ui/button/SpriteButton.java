@@ -307,14 +307,7 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
     public void setNormalOpacity(int normalOpacity)
     {
         setOpacity(normalOpacity);
-    }
-    
-    private int limitOpacity(int opacity)
-    {
-        if (opacity < 0) return 0;
-        if (opacity > 100) return 100;
-        return opacity;
-    }        
+    }             
 
     public String getNormalText()
     {

@@ -221,9 +221,7 @@ public abstract class AbstractEntity implements IEntity
      */
     public void setOpacity(int opacity)
     {       
-        if (opacity < 0) opacity = 0;
-        else if (opacity > 100) opacity = 100;        
-        this.opacity = opacity;
+        this.opacity = limitOpacity(opacity);
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -238,6 +236,20 @@ public abstract class AbstractEntity implements IEntity
     {
         return opacity;
     }
+    
+    /**
+     * A method for ensuring that the opacity is between 0 and 100.
+     * 
+     * @param opacity
+     * @return
+     */
+    final protected int limitOpacity(int opacity)
+    {
+        if (opacity < 0) return 0;
+        if (opacity > 100) return 100;
+        return opacity;
+    }   
+    
     
     /**
      * Rotates the image by theta.

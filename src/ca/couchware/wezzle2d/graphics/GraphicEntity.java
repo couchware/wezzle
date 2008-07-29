@@ -60,6 +60,9 @@ public class GraphicEntity extends AbstractEntity
         // Set the alignment.
         this.alignment = builder.alignment;
         
+        // Set the opacity.
+        this.opacity = limitOpacity(builder.opacity);
+        
         // Set the offsets.        
         offsetX = determineOffsetX(alignment);
         offsetY = determineOffsetY(alignment);
