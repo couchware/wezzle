@@ -29,5 +29,11 @@ public final class WDimension
     public int getWidth()
     {
         return width;
-    }        
+    }    
+    
+    @Override
+    public String toString()
+    {
+        return "(w,h) = (" + width + "," + height +")";
+    }
 }

@@ -837,9 +837,7 @@ public class BoardManager
             this.decrementNumberOfItems();
         
         // Remove from layer manager.
-        if (layerMan.remove(t, Game.LAYER_TILE) == false)
-            throw new IllegalStateException(
-                    "Tile could not be removed from the layer manager.");
+        layerMan.remove(t, Game.LAYER_TILE);
         
         // Remove the tile.
         setTile(index, null);  

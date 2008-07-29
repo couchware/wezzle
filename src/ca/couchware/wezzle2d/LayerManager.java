@@ -77,12 +77,12 @@ public class LayerManager
     
     /**
      * Adds a drawable to the layer specified.  If the layer does not exist,
-     * it is created.
+     * an exception is thrown
      */
     public void add(final IDrawable element, final int layerNum)
     {            
         if (layerExists(layerNum) == false)
-            return;
+            throw new RuntimeException("Layer does not exist!");
 
         // Add the element to the layer.
         layerList.get(layerNum).add(element);        
@@ -92,10 +92,10 @@ public class LayerManager
      * Remove an element from the layer specified.
      * @return True if the element was removed, false if it was not found.
      */
-    public boolean remove(final IDrawable element, final int layerNum)
+    public void remove(final IDrawable element, final int layerNum)
     {   
         if (layerExists(layerNum) == false)
-            return false;
+            throw new RuntimeException("Layer does not exist!"); 
         
         // Get the layer.
         final ArrayList<IDrawable> layer = layerList.get(layerNum);
@@ -108,14 +108,11 @@ public class LayerManager
         {
             Rectangle r = layer.get(index).getDrawRect();
             if (r != null) addRemoveRect(r);
-            layer.remove(index);
-            return true;
+            layer.remove(index);            
         }
         else        
         {
-            Util.handleWarning("Tried to remove an element that did not exist.", 
-                    "LayerManager#remove");
-            return false;
+            throw new RuntimeException("Tried to remove non-exist element!");            
         }
     }    
     
@@ -322,9 +319,7 @@ public class LayerManager
         
         // Check if layer exists then error out.
         if (layerNum >= layerList.size())
-        {      
-            Util.handleWarning("Layer does not exist!", 
-                    "LayerManager#layerExists");
+        {                  
             return false;                    
         }
         else

@@ -48,6 +48,11 @@ public class SpeechBubble extends AbstractEntity
     private BubbleType type;
     
     /**
+     * The text of the bubble.
+     */
+    private String text;
+    
+    /**
      * The bubble sprite.
      */
     private ISprite sprite;
@@ -76,16 +81,37 @@ public class SpeechBubble extends AbstractEntity
      * @param type
      * @param text
      */    
-    public SpeechBubble(int x, int y, BubbleType type, String text)
+    public SpeechBubble(Builder builder)
     {                 
         // Set the type.
-        this.type = type;
+        this.type = builder.type;
         
         // The sprite path.
         String path = Game.SPRITES_PATH + "/" + "SpeechBubble" + type + ".png";
         
         // Create the sprite.
         sprite = ResourceFactory.get().getSprite(path);
+        
+        // Set the x and y.
+        this.x = builder.x;
+        this.y = builder.y;
+        this.x_ = x;
+        this.y_ = y;
+        
+        // The width and height.
+        this.width = sprite.getWidth();
+        this.height = sprite.getHeight();
+        this.width_ = width;
+        this.height_ = height;
+        
+        // Set opacity.
+        this.opacity = limitOpacity(builder.opacity);
+        
+        // Set visible.
+        this.visible = builder.visible;
+        
+        // Set the text.
+        this.text = builder.text;
         
         // Set alignment.
         switch (type)
@@ -114,7 +140,53 @@ public class SpeechBubble extends AbstractEntity
         // Determine offsets.
         offsetX = determineOffsetX(alignment);
         offsetY = determineOffsetY(alignment);
-    }       
+    }      
+    
+    public static class Builder implements IBuilder<SpeechBubble>
+    {
+        // Required values.          
+        private int x;
+        private int y;     
+        
+        // Optional values.        
+        private int opacity = 100;
+        private boolean visible = true;
+        private String text = "Default";
+        private BubbleType type = BubbleType.VERTICAL;
+        
+        public Builder(int x, int y)
+        {                        
+            this.x = x;
+            this.y = y;
+        }
+        
+        public Builder(SpeechBubble bubble)
+        {                      
+            this.x = bubble.x;
+            this.y = bubble.y;            
+            this.opacity = bubble.opacity;                        
+            this.visible = bubble.visible;
+            this.text = bubble.text;
+            this.type = bubble.type;
+        }
+        
+        public Builder x(int val) { x = val; return this; }        
+        public Builder y(int val) { y = val; return this; }                       
+                        
+        public Builder opacity(int val)
+        { opacity = val; return this; }
+        
+        public Builder text(String val)  
+        { text = val; return this; }
+        
+        public Builder type(BubbleType val)
+        { type = val; return this; }                    
+        
+        public SpeechBubble end()
+        {
+            return new SpeechBubble(this);
+        }                
+    }
     
     @Override
     public void setOpacity(int opacity)

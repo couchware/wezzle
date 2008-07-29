@@ -648,7 +648,7 @@ public class Game extends Canvas implements GameWindowCallback
         tutorialMan = new TutorialManager();
         
         // Add the tutorials to it.
-        //tutorialMan.add(new BasicTutorial());
+        tutorialMan.add(new BasicTutorial());
         
 		// Create the board manager.
 		boardMan = new BoardManager(animationMan, layerMan, 272, 139, 8, 10);        

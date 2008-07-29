@@ -5,26 +5,25 @@
 
 package ca.couchware.wezzle2d.tutorial;
 
-import static ca.couchware.wezzle2d.animation.BlinkAnimation.DurationType;
-import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
-import static ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import static ca.couchware.wezzle2d.ui.SpeechBubble.BubbleType;
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.IAnimation;
-import ca.couchware.wezzle2d.animation.BlinkAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
-import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.piece.PieceDot;
+import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.piece.PieceType;
+import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileEntity;
-//import ca.couchware.wezzle2d.ui.MultiLabel;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
+import ca.couchware.wezzle2d.ui.SpeechBubble.BubbleType;
 import ca.couchware.wezzle2d.ui.button.IButton;
 import ca.couchware.wezzle2d.ui.button.SpriteButton;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * This is the basic tutorial.  It teaches the elementary rules of Wezzle.
@@ -42,7 +41,7 @@ public class BasicTutorial extends Tutorial
     /**
      * The text that directs the user.
      */
-    private ILabel label;
+    private List<ILabel> labelList;
     
     /**
      * A speech bubble that indicates where the user should press.
@@ -92,18 +91,32 @@ public class BasicTutorial extends Tutorial
         game.pieceMan.reverseRestrictionBoard();
         game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
         
-        // Create the text that instructs the user to click the block.
-//        label = new MultiLabel(280, 166, 22);
-//        label.setColor(Game.TEXT_COLOR);
-//        label.setSize(16);
-//        label.setAlignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT));
-//        label.setText(
-//                "Lines are made by lining\n" +
-//                "up 3 tiles of the same\n" +
-//                "colour."               
-//                );
-//        game.layerMan.add(label, Game.LAYER_EFFECT);                 
-//        game.layerMan.toFront(label, Game.LAYER_EFFECT);
+        // Create the text that instructs the user to click the block.        
+        labelList = new ArrayList<ILabel>();
+        ILabel label = null;
+        
+        // Line 1.
+        label = new LabelBuilder(280, 166)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
+                .color(Game.TEXT_COLOR).size(16)
+                .text("Lines are made by lining").end();
+        game.layerMan.add(label, Game.LAYER_EFFECT);   
+        labelList.add(label);
+        
+        // Line 2.
+        label = new LabelBuilder(label).y(166 + 22)
+                .text("up 3 tiles of the same").end();
+        game.layerMan.add(label, Game.LAYER_EFFECT);                 
+        labelList.add(label);
+        
+        // Line 3.
+        label = new LabelBuilder(label).y(166 + 22 + 22)
+                .text("colour.").end();
+        game.layerMan.add(label, Game.LAYER_EFFECT);                                 
+        labelList.add(label);
+        
+        // All done.
+        label = null;
         
         // Stop the piece manager from dropping.
         game.pieceMan.setTileDropOnCommit(false);
@@ -114,13 +127,11 @@ public class BasicTutorial extends Tutorial
         // Create the speech bubble and add it to the layer manaager.
         // The speech bubble will be positioned over the button right
         // corner of the board.
-        bubble = new SpeechBubble(
+        bubble = new SpeechBubble.Builder(
                     game.boardMan.getX() + game.boardMan.getCellWidth() / 2,
                     game.boardMan.getY() + game.boardMan.getHeight() 
-                        - game.boardMan.getCellHeight(),
-                    BubbleType.VERTICAL,
-                    "Click here"                    
-                );        
+                        - game.boardMan.getCellHeight())
+                .type(BubbleType.VERTICAL).text("Click here").end();                
         game.layerMan.add(bubble, Game.LAYER_EFFECT);   
         game.layerMan.toFront(bubble, Game.LAYER_EFFECT);           
         
@@ -224,8 +235,9 @@ public class BasicTutorial extends Tutorial
         bubble = null;
         
         // Remove the text label.
-        game.layerMan.remove(label, Game.LAYER_EFFECT);
-        label = null;
+        for (ILabel label : labelList)
+            game.layerMan.remove(label, Game.LAYER_EFFECT);       
+        labelList = null;
         
         // Remove the restriction board.
         game.pieceMan.clearRestrictionBoard();

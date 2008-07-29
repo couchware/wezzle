@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 /**
  * Manages the world.
+ * 
  * @author kgrad
  *
  */
