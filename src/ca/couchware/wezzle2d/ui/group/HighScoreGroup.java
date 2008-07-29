@@ -42,7 +42,7 @@ public class HighScoreGroup extends Group
     /**
      * The close button.
      */
-    private SpriteButton closeButton;
+    private IButton closeButton;
     
     /**
      * The constructor.

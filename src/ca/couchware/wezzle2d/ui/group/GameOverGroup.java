@@ -31,12 +31,12 @@ public class GameOverGroup extends Group
     /**
      * The restart button.
      */
-    private SpriteButton restartButton;
+    private IButton restartButton;
     
     /**
      * The continue button.
      */
-    private SpriteButton continueButton;
+    private IButton continueButton;
     
     /**
      * The constructor.
@@ -82,8 +82,8 @@ public class GameOverGroup extends Group
         entityList.add(restartButton);
         
         // Create continue button, using the restart button as a template.
-        continueButton = new SpriteButton.Builder(restartButton).y(406)
-                .text("Continue").end();
+        continueButton = new SpriteButton.Builder((SpriteButton) restartButton)
+                .y(406).text("Continue").end();
         layerMan.add(continueButton, Game.LAYER_UI);
         entityList.add(continueButton);
     }        

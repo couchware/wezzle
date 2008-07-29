@@ -30,7 +30,7 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class BasicTutorial extends Tutorial
+public class BasicTutorial extends AbstractTutorial
 {   
     
     /**
@@ -66,10 +66,8 @@ public class BasicTutorial extends Tutorial
         // Set the name.
         super("Basic Tutorial");
         
-        // This tutorial has a single rule.  It activates on level one.
-        Rule[] rules = new Rule[1];
-        rules[0] = new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1);     
-        setRules(rules);
+        // This tutorial has a single rule.  It activates on level one.        
+        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));
     }
     
     @Override
@@ -328,6 +326,6 @@ public class BasicTutorial extends Tutorial
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
                 TileEntity.class, TileColor.YELLOW);
-    }
+    }   
 
 }

@@ -7,25 +7,21 @@ package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.util.Util;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author cdmckay
  */
-public abstract class Tutorial 
+public abstract class AbstractTutorial implements ITutorial 
 {
 
     /**
      * The name of the tutorial.
      */
     private String name;
-    
-    /**
-     * The list of rules that must be true in order for this tutorial to 
-     * activated.
-     */
-    private Rule[] rules;
-    
+       
     /**
      * Is this tutorial activated?
      * Initially false.
@@ -39,27 +35,43 @@ public abstract class Tutorial
     private boolean done = false;
     
     /**
+     * The list of rules.
+     */
+    private List<Rule> ruleList = new ArrayList<Rule>();
+    
+    /**
      * Create a new tutorial that is activated when the associated rule is
      * true.
      * 
      * @param rule
      */    
-    public Tutorial(String name) 
+    public AbstractTutorial(String name) 
     { 
         // Set the tutorial name.
         this.name = name;
     }
     
+    public void addRule(Rule rule)
+    {
+        ruleList.add(rule);
+    }
+
+    public void removeRule(Rule rule)
+    {
+        ruleList.remove(rule);
+    }
+    
     /**
-     * Evaluates the tutorial activation rules.
+     * Evaluates the tutorial activation rules.  Returns true if they are
+     * met, false otherwise.
      * 
      * @param game
      * @return
      */
-    public boolean evaluateRules(Game game)
+    protected boolean evaluate(Game game)
     {
         // Check all the rules.  If any of them are false, return false.
-        for (Rule rule : rules)
+        for (Rule rule : ruleList)
             if (rule.evaluate(game) == false)
                 return false;
         
@@ -79,7 +91,7 @@ public abstract class Tutorial
         // Check to see if the tutorial is activated.
         if (isActivated() == false)
         {
-            if (evaluateRules(game) == false)
+            if (evaluate(game) == false)
                 return;
             else
             {      
@@ -133,17 +145,7 @@ public abstract class Tutorial
     {
         finishTutorial(game);
         initializeTutorial(game);
-    }
-    
-    public Rule[] getRules()
-    {
-        return rules;
-    }
-
-    public void setRules(Rule[] rules)
-    {
-        this.rules = rules;
-    }        
+    }       
     
     public boolean isActivated()
     {

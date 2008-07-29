@@ -267,17 +267,17 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The pause button.
      */
-    public SpriteButton pauseButton;
+    public IButton pauseButton;
        
     /**
      * The options button.
      */
-    public SpriteButton optionsButton;
+    public IButton optionsButton;
     
     /**
      * The help button.
      */
-    public SpriteButton helpButton;
+    public IButton helpButton;
     
     /**
      * The progress bar.
@@ -738,13 +738,13 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(pauseButton, Game.LAYER_UI);    
         
         // Create the options button, using pause button as a template.
-        optionsButton = new SpriteButton.Builder(pauseButton).y(299)
-                .text("Options").end();
+        optionsButton = new SpriteButton.Builder((SpriteButton) pauseButton)
+                .y(299).text("Options").end();
         layerMan.add(optionsButton, Game.LAYER_UI);                
         
         // Create the help buttton, using pause button as a template.
-        helpButton = new SpriteButton.Builder(optionsButton).y(387)
-                .text("Help").end();               
+        helpButton = new SpriteButton.Builder((SpriteButton) optionsButton)
+                .y(387).text("Help").end();               
         layerMan.add(helpButton, LAYER_UI);                              
         
         //----------------------------------------------------------------------

@@ -19,17 +19,17 @@ public class TutorialManager
     /**
      * The tutorial list.
      */
-    private ArrayList<Tutorial> tutorialList;
+    private ArrayList<ITutorial> tutorialList;
     
     /**
      * The currently running tutorial.
      */    
-    private Tutorial currentTutorial;
+    private ITutorial currentTutorial;
     
     public TutorialManager()
     {
         // Initialize animation list.
-        tutorialList = new ArrayList<Tutorial>();                
+        tutorialList = new ArrayList<ITutorial>();                
     }
     
     /**
@@ -37,7 +37,7 @@ public class TutorialManager
      * 
      * @param t
      */
-    public void add(Tutorial t)
+    public void add(AbstractTutorial t)
     {
         tutorialList.add(t);       
     }
@@ -47,7 +47,7 @@ public class TutorialManager
      * 
      * @param t
      */
-    public void remove(Tutorial t)
+    public void remove(AbstractTutorial t)
     {
         if (contains(t) == true)
             tutorialList.remove(t);
@@ -59,7 +59,7 @@ public class TutorialManager
      * @param t
      * @return
      */
-    public boolean contains(Tutorial t)
+    public boolean contains(AbstractTutorial t)
     {
         return tutorialList.contains(t);
     }   
@@ -79,7 +79,7 @@ public class TutorialManager
      * 
      * @return The currently running tutorial, or null, if no tutorial is running.
      */
-    public Tutorial getTutorialInProgress()
+    public ITutorial getTutorialInProgress()
     {
         return currentTutorial;
     }
@@ -101,9 +101,9 @@ public class TutorialManager
         // If no tutorial is running, look for a new one to run.
         if (currentTutorial == null && tutorialList.isEmpty() == false)
         {
-            for (Iterator<Tutorial> it = tutorialList.iterator(); it.hasNext(); ) 
+            for (Iterator<ITutorial> it = tutorialList.iterator(); it.hasNext(); ) 
             {
-                Tutorial t = it.next();
+                ITutorial t = it.next();
                 t.updateLogic(game);
                 
                 // Check to see if this tutorial activated.

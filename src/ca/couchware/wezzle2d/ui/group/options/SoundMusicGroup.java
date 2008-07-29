@@ -31,7 +31,7 @@ public class SoundMusicGroup extends Group
     /**
      * The sound on/off button.
      */
-    private SpriteButton soundButton;
+    private IButton soundButton;
     
     /**
      * The sound slider bar.
@@ -41,7 +41,7 @@ public class SoundMusicGroup extends Group
     /**
      * The music on/off button.
      */
-    private SpriteButton musicButton;
+    private IButton musicButton;
     
     /**
      * The music slider bar.
@@ -51,7 +51,7 @@ public class SoundMusicGroup extends Group
     /**
      * The back button.
      */
-    private SpriteButton backButton; 
+    private IButton backButton; 
     
     /**
      * The constructor.
@@ -110,8 +110,8 @@ public class SoundMusicGroup extends Group
         entityList.add(soundSlider);        
                 
         // Create the music on/off button.
-        musicButton = new SpriteButton.Builder(soundButton).y(321)
-                .text("Music: Off").activeText("Music: On").end();     
+        musicButton = new SpriteButton.Builder((SpriteButton) soundButton)
+                .y(321).text("Music: Off").activeText("Music: On").end();     
         layerMan.add(musicButton, Game.LAYER_UI);
         entityList.add(musicButton);
         
@@ -135,8 +135,8 @@ public class SoundMusicGroup extends Group
         entityList.add(musicSlider);                      
         
         // Create back button.
-        backButton = new SpriteButton.Builder(soundButton).y(408)
-                .text("Back").end();      
+        backButton = new SpriteButton.Builder((SpriteButton) soundButton)
+                .y(408).text("Back").end();      
         layerMan.add(backButton, Game.LAYER_UI);     
         entityList.add(backButton);
     }
