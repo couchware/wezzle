@@ -152,37 +152,37 @@ public class FadeAnimation extends AbstractAnimation
                     break;
                    
                 default:
-                    throw new IllegalStateException("Unknown fade type.");
-            }            
-        }
-                
-        // See if we're done.
-        if (counter > wait + duration)   
-        {
-            switch (type)
+                    throw new AssertionError();
+            }   
+            
+            // See if we're done.
+            if (counter > wait + duration)   
             {
-                case IN:
-                case OUT:
-                    
-                    setDone(true);
-                    break;
-                    
-                case LOOP_IN:
-                    
-                    counter -= duration;
-                    type = FadeType.LOOP_OUT;
-                    break;
-                    
-                case LOOP_OUT:
-                    
-                    counter -= duration;
-                    type = FadeType.LOOP_IN;
-                    break;
-                
-                default:
-                    throw new IllegalStateException("Unknown fade type.");
-            }
-        } // end if
+                switch (type)
+                {
+                    case IN:
+                    case OUT:
+
+                        setDone(true);
+                        break;
+
+                    case LOOP_IN:
+
+                        counter -= duration;
+                        type = FadeType.LOOP_OUT;
+                        break;
+
+                    case LOOP_OUT:
+
+                        counter -= duration;
+                        type = FadeType.LOOP_IN;
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+            } // end if
+        }                        
     }
 
     /**

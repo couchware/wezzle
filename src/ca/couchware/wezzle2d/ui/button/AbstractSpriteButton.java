@@ -153,6 +153,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     {
         // Get the last position.
         WPosition lastPos = getMousePosition(); 
+        if (lastPos == null) lastPos = WPosition.ORIGIN;
         
 		// Set the new mouse position.
 		setMousePosition(pos.getX(), pos.getY());          

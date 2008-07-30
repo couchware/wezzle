@@ -10,27 +10,31 @@ import ca.couchware.wezzle2d.util.Util;
  */
 
 public class RocketTileEntity extends ItemTileEntity
-{
-    
+{       
     /**
-     * The rocket is facing up.
-     */
-    final public static int ANGLE_UP = 0;
-    
-    /**
-     * The rocket is facing up.
-     */
-    final public static int ANGLE_LEFT = 270;
-    
-    /**
-     * The rocket is facing up.
-     */
-    final public static int ANGLE_RIGHT = 90;
-    
-    /**
-     * The rocket is facing up.
-     */
-    final public static int ANGLE_DOWN = 180;
+     * The possible directions for the rocket.
+     */    
+    public static enum Direction
+    {
+        UP, DOWN, LEFT, RIGHT;
+        
+        public int toDegrees()
+        {
+            switch (this)
+            {
+                case UP:
+                    return 90;
+                case DOWN:
+                    return 270;
+                case LEFT:
+                    return 180;
+                case RIGHT:
+                    return 0;
+                default:
+                    throw new AssertionError();
+            }
+        }
+    }
     
     /**
      * Path to the piece selector sprite.
@@ -40,7 +44,7 @@ public class RocketTileEntity extends ItemTileEntity
     /**
      * The direction of the rocket.
      */
-    private int degrees;    
+    private final Direction direction;         
     
     /**
      * The constructor.
@@ -56,8 +60,28 @@ public class RocketTileEntity extends ItemTileEntity
         super(PATH, boardMan, color, x, y);
                                
         // Determine a random rotation.
-        degrees = Util.random.nextInt(4) * 90;
-        itemTheta = Math.toRadians(degrees);               
+        Direction[] values = Direction.values();
+        direction = values[Util.random.nextInt(values.length)];
+        
+        // Set the item theta.
+        switch (direction)
+        {
+            case UP:
+                // Do nothing, it is already pointing up.
+                break;
+                
+            case DOWN:
+                itemTheta = Math.toRadians(180);
+                break;
+                
+            case LEFT:
+                itemTheta = Math.toRadians(-90);
+                break;
+                
+            case RIGHT:
+                itemTheta = Math.toRadians(90);
+                break;
+        }
     }          
 
     public double getItemRotation()
@@ -70,14 +94,9 @@ public class RocketTileEntity extends ItemTileEntity
         this.itemTheta = itemTheta;
     }   
     
-    public int getDirection()
+    public Direction getDirection()
     {
-        return degrees;
-    }
-
-    public void setDirection(int direction)
-    {
-        this.degrees = direction;
-    } 
+        return direction;
+    }   
     
 }

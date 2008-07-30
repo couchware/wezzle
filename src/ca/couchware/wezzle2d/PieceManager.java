@@ -696,12 +696,8 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 
         // Add score SCT.
         WPosition p = boardMan.determineCenterPoint(indexSet);
-//        Label label = ResourceFactory.get().getLabel(p.x, p.y);        
-//        label.setText(String.valueOf(deltaScore));
-//        label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        label.setColor(Game.SCORE_PIECE_COLOR);
-//        label.setSize(game.scoreMan.determineFontSize(deltaScore));
-        ILabel label = new LabelBuilder(p.getX(), p.getY())
+        
+        final ILabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.SCORE_PIECE_COLOR)
                 .size(game.scoreMan.determineFontSize(deltaScore))
@@ -709,15 +705,28 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 .end();
         
         IAnimation a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
-        IAnimation a2 = new FloatAnimation(0, -1, game.layerMan, label);                    
+        IAnimation a2 = new MoveAnimation.Builder(label)
+                        .duration(1150).v(0.03).theta(90).end();
+                    
+        a2.setStartAction(new Runnable()
+        {
+            public void run()
+            { game.layerMan.add(label, Game.LAYER_EFFECT); }
+        });
+
+        a2.setFinishAction(new Runnable()
+        {
+            public void run()
+            { game.layerMan.remove(label, Game.LAYER_EFFECT); }
+        });          
+        
         game.animationMan.add(a1);
         game.animationMan.add(a2);
         a1 = null;
         a2 = null;
         
         // Release references.
-        p = null;
-        label = null;
+        p = null;       
         
         // Remove the tiles.
         game.boardMan.removeTiles(indexSet);

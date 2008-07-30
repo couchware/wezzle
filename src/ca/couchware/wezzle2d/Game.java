@@ -648,7 +648,7 @@ public class Game extends Canvas implements GameWindowCallback
         tutorialMan = new TutorialManager();
         
         // Add the tutorials to it.
-        tutorialMan.add(new BasicTutorial());
+//        tutorialMan.add(new BasicTutorial());
 //        tutorialMan.add(new RocketTutorial());
     
         // Create the property manager. Must be done before Score manager.
@@ -1152,12 +1152,13 @@ public class Game extends Canvas implements GameWindowCallback
         // Check to see if we should be showing the board.
         if (activateBoardShowAnimation == true)
         {
+            // Hide the piece.            
+            pieceMan.getPieceGrid().setVisible(false);                               
+            pieceMan.stopAnimation();
+            
             // Start board show animation.            
             boardAnimation = boardMan.animateShow();                 
-            boardMan.setDirty(true);
-
-            // Hide the piece.
-            pieceMan.getPieceGrid().setVisible(false);                               
+            boardMan.setDirty(true);            
 
             // Clear flag.
             clearBoardShowAnimation();                                
@@ -1166,12 +1167,15 @@ public class Game extends Canvas implements GameWindowCallback
         // Check to see if we should be hiding the board.
         if (activateBoardHideAnimation == true)
         {
+            // Hide the piece.
+            pieceMan.getPieceGrid().setVisible(false); 
+            pieceMan.stopAnimation();
+            
             // Start board hide animation.            
             boardAnimation = boardMan.animateHide(); 
             boardMan.setDirty(true);
 
-            // Hide the piece.
-            pieceMan.getPieceGrid().setVisible(false);                               
+                                          
 
             // Clear flag.
             clearBoardHideAnimation();                                
@@ -1223,19 +1227,30 @@ public class Game extends Canvas implements GameWindowCallback
                     int y = pieceMan.getPieceGrid().getY() 
                             + boardMan.getCellHeight() / 2;
                     
-                    ILabel label = new LabelBuilder(x, y)
+                    final ILabel label = new LabelBuilder(x, y)
                             .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                             .color(TEXT_COLOR).size(26).text("Level Up!").end();
-                                        
-                    //Animation a1 = new FadeAnimation(FadeType.OUT, label);
-                    IAnimation a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
-                    IAnimation a2 = new FloatAnimation(1, 0, layerMan, label);                    
+                                                            
+                    IAnimation a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();                 
+                    IAnimation a2 = new MoveAnimation.Builder(label)
+                            .duration(1150).theta(0).v(0.03).end();
+                    
+                    a2.setStartAction(new Runnable()
+                    {
+                        public void run()
+                        { layerMan.add(label, LAYER_EFFECT); }
+                    });
+                    
+                    a2.setFinishAction(new Runnable()
+                    {
+                        public void run()
+                        { layerMan.remove(label, LAYER_EFFECT); }
+                    });
+                    
                     animationMan.add(a1);
                     animationMan.add(a2);
                     a1 = null;
-                    a2 = null;
-                    
-                    label = null;
+                    a2 = null;                    
                 }
             } // end if
             
@@ -1376,27 +1391,37 @@ public class Game extends Canvas implements GameWindowCallback
                 
                     // Show the SCT.
                     WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
-//                    Label label = ResourceFactory.get().getLabel(p.x, p.y);                
-//                    label.setText(String.valueOf(deltaScore));
-//                    label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//                    label.setColor(SCORE_LINE_COLOR);
-//                    label.setSize(scoreMan.determineFontSize(deltaScore));
-                    ILabel label = new LabelBuilder(p.getX(), p.getY())
+                    
+                    final ILabel label = new LabelBuilder(p.getX(), p.getY())
                             .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                             .color(SCORE_LINE_COLOR)
                             .size(scoreMan.determineFontSize(deltaScore))
                             .text(String.valueOf(deltaScore)).end();
 
                     IAnimation a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
-                    IAnimation a2 = new FloatAnimation(0, -1, layerMan, label);                    
+                    //IAnimation a2 = new FloatAnimation(0, -1, layerMan, label);                    
+                    IAnimation a2 = new MoveAnimation.Builder(label)
+                            .duration(1150).v(0.03).theta(90).end();
+                    
+                    a2.setStartAction(new Runnable()
+                    {
+                        public void run()
+                        { layerMan.add(label, LAYER_EFFECT); }
+                    });
+                    
+                    a2.setFinishAction(new Runnable()
+                    {
+                        public void run()
+                        { layerMan.remove(label, LAYER_EFFECT); }
+                    });
+                    
                     animationMan.add(a1);
                     animationMan.add(a2);
                     a1 = null;
                     a2 = null;
 
                     // Release references.
-                    p = null;
-                    label = null;                                         
+                    p = null;                                                       
                 }                  
                 else
                 {
@@ -1449,12 +1474,16 @@ public class Game extends Canvas implements GameWindowCallback
                         {
                             i++;
                             int angle = i % 2 == 0 ? 70 : 180 - 70; 
+                            //int angle = 0;
                             
                             // Bring this tile to the top.
                             layerMan.toFront(t, Game.LAYER_TILE);
                             
-                            IAnimation a1 = new JumpAnimation(0.3, angle, 0.001, 750, t);
+                            //IAnimation a1 = new JumpAnimation(0.3, angle, 0.001, 750, t);
                             //Animation a2 = new FadeAnimation(FadeType.OUT, 0, 750, t);                                        
+                            IAnimation a1 = new MoveAnimation.Builder(t)
+                                    .duration(750).theta(angle).v(0.3)
+                                    .g(0.001).end();                                    
                             IAnimation a2 = new FadeAnimation.Builder(FadeType.OUT, t)
                                     .wait(0).duration(750).end();
                             t.setAnimation(a1);
@@ -1521,12 +1550,8 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Show the SCT.
                 WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
-//                Label label = ResourceFactory.get().getLabel(p.x, p.y);
-//                label.setText(String.valueOf(deltaScore));
-//                label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//                label.setColor(SCORE_BOMB_COLOR);
-//                label.setSize(scoreMan.determineFontSize(deltaScore));
-                ILabel label = new LabelBuilder(p.getX(), p.getY())
+
+                final ILabel label = new LabelBuilder(p.getX(), p.getY())
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .color(SCORE_BOMB_COLOR)
                         .size(scoreMan.determineFontSize(deltaScore))
@@ -1534,15 +1559,29 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 //a1 = new FadeAnimation(FadeType.OUT, label);
                 a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
-                a2 = new FloatAnimation(0, -1, layerMan, label);                    
+                //a2 = new FloatAnimation(0, -1, layerMan, label);    
+                a2 = new MoveAnimation.Builder(label)
+                            .duration(1150).v(0.03).theta(90).end();
+                    
+                a2.setStartAction(new Runnable()
+                {
+                    public void run()
+                    { layerMan.add(label, LAYER_EFFECT); }
+                });
+
+                a2.setFinishAction(new Runnable()
+                {
+                    public void run()
+                    { layerMan.remove(label, LAYER_EFFECT); }
+                });
+                
                 animationMan.add(a1);
                 animationMan.add(a2);
                 a1 = null;
                 a2 = null;
                                         
                 // Release references.
-                p = null;
-                label = null;                
+                p = null;                             
                                 
                 // Play the sound.
                 soundMan.play(AudioTrack.SOUND_ROCKET);
@@ -1579,8 +1618,11 @@ public class Game extends Canvas implements GameWindowCallback
                         // Cast it.
                         RocketTileEntity r = (RocketTileEntity) t;                                                                                           
                         
-                        a1 = new JumpAnimation(0.3, r.getDirection() + 90, 0, 750, r);
+                        //a1 = new JumpAnimation(0.3, r.getDirection() + 90, 0, 750, r);
                         //a2 = new FadeAnimation(FadeType.OUT, 0, 750, t); 
+                        a1 = new MoveAnimation.Builder(r).duration(750)
+                                .theta(r.getDirection().toDegrees())
+                                .v(0.3).g(0).end();
                         a2 = new FadeAnimation.Builder(FadeType.OUT, t)
                                 .wait(0).duration(750).end();
                         t.setAnimation(a1);
@@ -1593,7 +1635,9 @@ public class Game extends Canvas implements GameWindowCallback
                     {
                         i++;
                         int angle = i % 2 == 0 ? 70 : 180 - 70;                        
-                        a1 = new JumpAnimation(0.3, angle, 0.001, 750, t);
+                        //int angle = 360 - 180 + 70;
+                        a1 = new MoveAnimation.Builder(t).duration(750)
+                                .theta(angle).v(0.3).g(0.001).end();     
                         //a2 = new FadeAnimation(FadeType.OUT, 0, 750, t);                                        
                         a2 = new FadeAnimation.Builder(FadeType.OUT, t)
                                 .wait(0).duration(750).end();
@@ -1650,19 +1694,30 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Show the SCT.
                 WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
-//                Label label = ResourceFactory.get().getLabel(p.x, p.y);
-//                label.setText(String.valueOf(deltaScore));
-//                label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//                label.setColor(SCORE_BOMB_COLOR);
-//                label.setSize(scoreMan.determineFontSize(deltaScore));
-                ILabel label = new LabelBuilder(p.getX(), p.getY())
+
+                final ILabel label = new LabelBuilder(p.getX(), p.getY())
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .color(SCORE_BOMB_COLOR)
                         .size(scoreMan.determineFontSize(deltaScore))
                         .text(String.valueOf(deltaScore)).end();                        
                 
                 a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
-                a2 = new FloatAnimation(0, -1, layerMan, label);                    
+                //a2 = new FloatAnimation(0, -1, layerMan, label);                    
+                a2 = new MoveAnimation.Builder(label)
+                        .duration(1150).v(0.03).theta(90).end();
+                    
+                a2.setStartAction(new Runnable()
+                {
+                    public void run()
+                    { layerMan.add(label, LAYER_EFFECT); }
+                });
+
+                a2.setFinishAction(new Runnable()
+                {
+                    public void run()
+                    { layerMan.remove(label, LAYER_EFFECT); }
+                });
+                
                 animationMan.add(a1);
                 animationMan.add(a2);
                 a1 = null;
@@ -1670,8 +1725,7 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Release references.
                 p = null;
-                label = null;                
-                                
+                
                 // Play the sound.
                 soundMan.play(AudioTrack.SOUND_STAR);
                 
@@ -1688,8 +1742,10 @@ public class Game extends Canvas implements GameWindowCallback
                     i++;
                     
                     int angle = i % 2 == 0 ? 70 : 180 - 70;                                                                
-                    a1 = new JumpAnimation(0.3, angle, 0.001, 750, t);
+                    //a1 = new JumpAnimation(0.3, angle, 0.001, 750, t);
                     //a2 = new FadeAnimation(FadeType.OUT, 0, 750, t);                                        
+                    a1 = new MoveAnimation.Builder(t).duration(750)
+                            .theta(angle).v(0.3).g(0.001).end();                            
                     a2 = new FadeAnimation.Builder(FadeType.OUT, t)
                             .wait(0).duration(750).end();
                     t.setAnimation(a1);
@@ -1730,27 +1786,36 @@ public class Game extends Canvas implements GameWindowCallback
                 
                 // Show the SCT.
                 WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
-//                Label label = ResourceFactory.get().getLabel(p.x, p.y);
-//                label.setText(String.valueOf(deltaScore));
-//                label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//                label.setColor(SCORE_BOMB_COLOR);
-//                label.setSize(scoreMan.determineFontSize(deltaScore));
-                ILabel label = new LabelBuilder(p.getX(), p.getY())
+
+                final ILabel label = new LabelBuilder(p.getX(), p.getY())
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .color(SCORE_BOMB_COLOR)
                         .size(scoreMan.determineFontSize(deltaScore))
                         .text(String.valueOf(deltaScore)).end();
                 
                 a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
-                a2 = new FloatAnimation(0, -1, layerMan, label);                    
+                a2 = new MoveAnimation.Builder(label)
+                        .duration(1150).v(0.03).theta(90).end();
+                    
+                a2.setStartAction(new Runnable()
+                {
+                    public void run()
+                    { layerMan.add(label, LAYER_EFFECT); }
+                });
+
+                a2.setFinishAction(new Runnable()
+                {
+                    public void run()
+                    { layerMan.remove(label, LAYER_EFFECT); }
+                });
+                
                 animationMan.add(a1);
                 animationMan.add(a2);
                 a1 = null;
                 a2 = null;
                 
                 // Release references.
-                p = null;
-                label = null;                
+                p = null;                
                                 
                 // Play the sound.
                 soundMan.play(AudioTrack.SOUND_BOMB);

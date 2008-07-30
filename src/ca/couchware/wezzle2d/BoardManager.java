@@ -997,14 +997,15 @@ public class BoardManager implements IManager
             row = rocketIndex / columns;
             
             // Depending on the direction, collect the appropriate tiles.                                           
-            int dir = ((RocketTileEntity) getTile(rocketIndex.intValue()))
+            RocketTileEntity.Direction dir = 
+                    ((RocketTileEntity) getTile(rocketIndex.intValue()))
                     .getDirection();
             
             int index;
 
             switch (dir)
             {
-                case RocketTileEntity.ANGLE_UP:
+                case UP:
                         
                     //Util.handleWarning("Dir is up!", Thread.currentThread());
                     
@@ -1018,7 +1019,7 @@ public class BoardManager implements IManager
 
                     break;
 
-                case RocketTileEntity.ANGLE_DOWN:
+                case DOWN:
                     
                     //Util.handleWarning("Dir is down!", Thread.currentThread());
 
@@ -1032,7 +1033,7 @@ public class BoardManager implements IManager
 
                     break;
 
-                case RocketTileEntity.ANGLE_LEFT:
+                case LEFT:
                     
                     //Util.handleWarning("Dir is left!", Thread.currentThread());
 
@@ -1046,7 +1047,7 @@ public class BoardManager implements IManager
 
                     break;
 
-                case RocketTileEntity.ANGLE_RIGHT:
+                case RIGHT:
                     
                     //Util.handleWarning("Dir is right!", Thread.currentThread());
                     

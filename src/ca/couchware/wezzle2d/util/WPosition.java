@@ -10,6 +10,8 @@ import java.awt.Point;
 
 public final class WPosition
 {
+    public static final WPosition ORIGIN = new WPosition(0, 0);
+    
 	private final int x;
 	private final int y;
 	

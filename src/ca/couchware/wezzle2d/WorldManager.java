@@ -129,7 +129,7 @@ public class WorldManager
 		itemList.add(new Item(TileEntity.class, 28, 20));
 //		itemList.add(new Item(BombTileEntity.class, 10, 20));
 //      itemList.add(new Item(StarTileEntity.class, 0, 5));
-//      itemList.add(new Item(RocketTileEntity.class, 1, 50));
+      itemList.add(new Item(RocketTileEntity.class, 15, 50));
 		itemList.add(new Item(x2TileEntity.class, 2, 50));
         itemList.add(new Item(x3TileEntity.class, 0, 20));
         itemList.add(new Item(x4TileEntity.class, 0, 10));
