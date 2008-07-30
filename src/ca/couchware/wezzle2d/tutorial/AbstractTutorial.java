@@ -18,21 +18,21 @@ public abstract class AbstractTutorial implements ITutorial
 {
 
     /**
-     * The name of the tutorial.
-     */
-    private String name;
-       
-    /**
-     * Is this tutorial activated?
+     * Has this tutorial been initalized?
      * Initially false.
      */
-    private boolean activated = false;
+    protected boolean initialized = false;
     
     /**
      * Has the tutorial been completed?
      * Initially false.
      */
-    private boolean done = false;
+    protected boolean done = false;
+    
+    /**
+     * The name of the tutorial.
+     */
+    private String name;                  
     
     /**
      * The list of rules.
@@ -68,7 +68,7 @@ public abstract class AbstractTutorial implements ITutorial
      * @param game
      * @return
      */
-    protected boolean evaluate(Game game)
+    public boolean evaluateRules(Game game)
     {
         // Check all the rules.  If any of them are false, return false.
         for (Rule rule : ruleList)
@@ -87,37 +87,15 @@ public abstract class AbstractTutorial implements ITutorial
      * @param game
      */
     public void updateLogic(Game game)
-    {
-        // Check to see if the tutorial is activated.
-        if (isActivated() == false)
-        {
-            if (evaluate(game) == false)
-                return;
-            else
-            {      
-                Util.handleMessage("Activating tutorial: " + name + ".", 
-                        "Tutorial#updateLogic");
-                setActivated(true);
-                initializeTutorial(game);
-            }
-        }
-        
+    {                
         // If we're activated, run the tutorial logic.
-        if (updateTutorial(game) == false)
+        if (initialized == true && update(game) == false)
         {
-            setActivated(false);
-            finishTutorial(game);
+            initialized = false;
+            finish(game);
             done = true;
         }
-    }
-    
-    /**
-     * Deals with the initialization of the tutorial.  Typically includes
-     * logic that adjusts the managers to work with the tutorial.
-     * 
-     * @param game
-     */
-    protected abstract void initializeTutorial(Game game);    
+    }       
     
     /**
      * The tutorial logic goes here.
@@ -125,7 +103,7 @@ public abstract class AbstractTutorial implements ITutorial
      * @param game
      * @return True if the tutorial is still running, false otherwise.
      */
-    protected abstract boolean updateTutorial(Game game);
+    protected abstract boolean update(Game game);
 
     /**
      * Is run when the tutorial is completed.  Typically deals with resetting 
@@ -133,7 +111,7 @@ public abstract class AbstractTutorial implements ITutorial
      * 
      * @param game
      */
-    protected abstract void finishTutorial(Game game);
+    protected abstract void finish(Game game);
     
     /**
      * Restarts the tutorial at the beginning.  This method can be overwritten
@@ -141,21 +119,16 @@ public abstract class AbstractTutorial implements ITutorial
      * 
      * @return
      */
-    protected void repeatTutorial(Game game)
+    protected void repeat(Game game)
     {
-        finishTutorial(game);
-        initializeTutorial(game);
-    }       
+        finish(game);
+        initialize(game);
+    }              
     
-    public boolean isActivated()
+    public boolean isInitialized()
     {
-        return activated;
-    }
-
-    public void setActivated(boolean activated)
-    {
-        this.activated = activated;
-    }
+        return initialized;
+    }   
 
     public boolean isDone()
     {

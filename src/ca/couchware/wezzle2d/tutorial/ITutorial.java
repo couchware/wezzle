@@ -30,6 +30,15 @@ public interface ITutorial
     public void removeRule(Rule rule);        
 
     /**
+     * Evaluates the tutorial activation rules.  Returns true if they are
+     * met, false otherwise.
+     * 
+     * @param game
+     * @return
+     */
+    public boolean evaluateRules(Game game);
+    
+    /**
      * Gets the name of tutorial, suitable for showing on the screen.
      * i.e. "Rocket Tutorial".
      * 
@@ -38,11 +47,17 @@ public interface ITutorial
     public String getName();  
 
     /**
+     * Initializes the tutorial.  Once a tutorial has been initialized,
+     * it will cause <pre>isActivated</pre> to return true.
+     */
+    public void initialize(Game game);
+    
+    /**
      * Is the tutorial currently activated?
      * 
      * @return
      */
-    public boolean isActivated();    
+    public boolean isInitialized();            
 
     /**
      * Has the tutorial completed running?

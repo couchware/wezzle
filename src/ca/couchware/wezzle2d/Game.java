@@ -1223,11 +1223,6 @@ public class Game extends Canvas implements GameWindowCallback
                     int y = pieceMan.getPieceGrid().getY() 
                             + boardMan.getCellHeight() / 2;
                     
-//                    Label label = ResourceFactory.get().getLabel(x, y);                                                
-//                    label.setText("Level Up!");
-//                    label.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT));
-//                    label.setColor(Game.TEXT_COLOR);
-//                    label.setSize(26);
                     ILabel label = new LabelBuilder(x, y)
                             .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                             .color(TEXT_COLOR).size(26).text("Level Up!").end();

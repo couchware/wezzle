@@ -70,8 +70,7 @@ public class RocketTutorial extends AbstractTutorial
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 2));
     }
     
-    @Override
-    protected void initializeTutorial(Game game)
+    public void initialize(Game game)
     {
         // Save the manager states.
         game.boardMan.saveState();
@@ -147,11 +146,11 @@ public class RocketTutorial extends AbstractTutorial
         
         // Run the repeat tutorial method, that sets up the things that must
         // be reset each time the tutorial is run.
-        repeatTutorial(game);                                                                                                                                     
+        repeat(game);                                                                                                                                     
     }
 
     @Override
-    protected boolean updateTutorial(final Game game)
+    protected boolean update(final Game game)
     {
         // If the move count is not 0, then the tutorial is over.
         if (game.statMan.getMoveCount() != 0 && menuShown == false)
@@ -201,7 +200,7 @@ public class RocketTutorial extends AbstractTutorial
         {
             if (repeatButton.isActivated() == true)
             {
-                repeatTutorial(game);                
+                repeat(game);                
             }
             else if (continueButton.isActivated() == true)
             {
@@ -213,7 +212,7 @@ public class RocketTutorial extends AbstractTutorial
     }
 
     @Override
-    protected void finishTutorial(final Game game)
+    protected void finish(final Game game)
     {   
         // Load the score managers state.
         game.boardMan.loadState();
@@ -253,7 +252,7 @@ public class RocketTutorial extends AbstractTutorial
     }
     
     @Override
-    protected void repeatTutorial(final Game game)
+    protected void repeat(final Game game)
     {
         // Reset move counter.
         game.statMan.resetMoveCount();      

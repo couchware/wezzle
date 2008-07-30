@@ -90,6 +90,24 @@ public class TutorialManager
         if (game.isBusy() == true)
              return;
         
+        // If no tutorial is running, look for a new one to run.
+        if (currentTutorial == null && tutorialList.isEmpty() == false)
+        {
+            for (Iterator<ITutorial> it = tutorialList.iterator(); it.hasNext(); ) 
+            {
+                ITutorial t = it.next();
+                
+                // Check to see if the tutorial is activated.                
+                if (t.evaluateRules(game) == true)
+                {                                                            
+                    currentTutorial = t;
+                    currentTutorial.initialize(game);
+                    it.remove();                    
+                    break;
+                }                                                                    
+            } // end for
+        }    
+        
         // See if there is a tutorial running.
         if (currentTutorial != null)
         {
@@ -97,25 +115,7 @@ public class TutorialManager
             if (currentTutorial.isDone() == true)
                 currentTutorial = null;
         }
-        
-        // If no tutorial is running, look for a new one to run.
-        if (currentTutorial == null && tutorialList.isEmpty() == false)
-        {
-            for (Iterator<ITutorial> it = tutorialList.iterator(); it.hasNext(); ) 
-            {
-                ITutorial t = it.next();
-                t.updateLogic(game);
-                
-                // Check to see if this tutorial activated.
-                if (t.isActivated() == true)
-                {
-                    currentTutorial = t;
-                    it.remove();
-                    break;
-                }
-            } // end for
-        }        
-        
+
         //Util.handleMessage(animationList.size() + "", "AnimationManager#animate");
     }
     

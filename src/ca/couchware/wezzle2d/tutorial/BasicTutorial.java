@@ -31,7 +31,7 @@ import java.util.List;
  * @author cdmckay
  */
 public class BasicTutorial extends AbstractTutorial
-{   
+{          
     
     /**
      * Is the menu visible?
@@ -70,9 +70,11 @@ public class BasicTutorial extends AbstractTutorial
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));
     }
     
-    @Override
-    protected void initializeTutorial(final Game game)
+    public void initialize(final Game game)
     {
+        // Set the activataed variable.
+        initialized = true;
+        
         // Save the manager states.
         game.boardMan.saveState();
         game.statMan.saveState();
@@ -162,12 +164,12 @@ public class BasicTutorial extends AbstractTutorial
         
         // Run the repeat tutorial method, that sets up the things that must
         // be reset each time the tutorial is run.
-        repeatTutorial(game);                                                                                                                                     
+        repeat(game);                                                                                                                                     
     }
 
     @Override
-    protected boolean updateTutorial(final Game game)
-    {
+    protected boolean update(final Game game)
+    {        
         // If the move count is not 0, then the tutorial is over.
         if (game.statMan.getMoveCount() != 0 && menuShown == false)
         {               
@@ -214,7 +216,7 @@ public class BasicTutorial extends AbstractTutorial
         {
             if (repeatButton.isActivated() == true)
             {
-                repeatTutorial(game);                
+                repeat(game);                
             }
             else if (continueButton.isActivated() == true)
             {
@@ -226,7 +228,7 @@ public class BasicTutorial extends AbstractTutorial
     }
 
     @Override
-    protected void finishTutorial(final Game game)
+    protected void finish(final Game game)
     {   
         // Load the score managers state.
         game.boardMan.loadState();
@@ -266,7 +268,7 @@ public class BasicTutorial extends AbstractTutorial
     }
     
     @Override
-    protected void repeatTutorial(final Game game)
+    protected void repeat(final Game game)
     {
         // Reset move counter.
         game.statMan.resetMoveCount();      
