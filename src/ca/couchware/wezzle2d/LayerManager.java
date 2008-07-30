@@ -79,21 +79,27 @@ public class LayerManager
      * Adds a drawable to the layer specified.  If the layer does not exist,
      * an exception is thrown
      */
-    public void add(final IDrawable element, final int layerNum)
-    {            
+    public void add(final IDrawable drawable, final int layerNum)
+    {         
+        // The drawable cannot be null.
+        assert drawable != null;
+        
         if (layerExists(layerNum) == false)
             throw new RuntimeException("Layer does not exist!");
 
         // Add the element to the layer.
-        layerList.get(layerNum).add(element);        
+        layerList.get(layerNum).add(drawable);        
     }
     
     /**
      * Remove an element from the layer specified.
      * @return True if the element was removed, false if it was not found.
      */
-    public void remove(final IDrawable element, final int layerNum)
+    public void remove(final IDrawable drawable, final int layerNum)
     {   
+        // The drawable cannot be null.
+        assert drawable != null;
+        
         if (layerExists(layerNum) == false)
             throw new RuntimeException("Layer does not exist!"); 
         
@@ -101,7 +107,7 @@ public class LayerManager
         final ArrayList<IDrawable> layer = layerList.get(layerNum);
         
         // Get the index.
-        int index = layer.indexOf(element);
+        int index = layer.indexOf(drawable);
         
         // If the index is -1, the element is not in this layer.
         if (index != -1)
@@ -116,10 +122,25 @@ public class LayerManager
         }
     }    
     
+    public boolean exists(final IDrawable drawable, final int layerNum)
+    {
+        // The drawable cannot be null.
+        assert drawable != null;
+        
+        // Get the layer.
+        final ArrayList<IDrawable> layer = layerList.get(layerNum);
+        
+        // Get the index.
+        int index = layer.indexOf(drawable);
+        
+        // If it's -1, it doesn't exist.
+        return (index != -1);
+    }
+    
     public void show(final int layerNum)
     {
         if (layerExists(layerNum) == false)
-            return;
+            throw new RuntimeException("Layer does not exist!");
         
         if (hiddenLayers[layerNum] == false)
             return;
@@ -136,7 +157,7 @@ public class LayerManager
     public void hide(final int layerNum)
     {             
         if (layerExists(layerNum) == false)
-            return;
+            throw new RuntimeException("Layer does not exist!");
         
         if (hiddenLayers[layerNum] == true)
             return;
@@ -153,7 +174,7 @@ public class LayerManager
     public void toFront(final IDrawable d, int layerNum)
     {
         if (layerExists(layerNum) == false)     
-            return;        
+            throw new RuntimeException("Layer does not exist!");      
                 
         remove(d, layerNum);
         add(d, layerNum);

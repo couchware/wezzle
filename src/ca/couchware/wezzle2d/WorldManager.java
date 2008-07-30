@@ -316,9 +316,7 @@ public class WorldManager
             setGameInProgress(true);
             
             // Generate the game board.            
-            game.boardMan.clearBoard();
-            game.boardMan.setVisible(false);
-            game.boardMan.generateBoard(getItemList());                           
+//            game.boardMan.clearBoard();            
             game.startBoardShowAnimation();
         }                
         

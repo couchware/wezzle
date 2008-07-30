@@ -30,7 +30,7 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class BasicTutorial extends AbstractTutorial
+public class RocketTutorial extends AbstractTutorial
 {   
     
     /**
@@ -39,7 +39,7 @@ public class BasicTutorial extends AbstractTutorial
     private boolean menuShown = false;
     
     /**
-     * The text that directs the user.crea
+     * The text that directs the user.
      */
     private List<ILabel> labelList;
     
@@ -61,22 +61,22 @@ public class BasicTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public BasicTutorial()
+    public RocketTutorial()
     {
         // Set the name.
-        super("Basic Tutorial");
+        super("Rocket Tutorial");
         
-        // This tutorial has a single rule.  It activates on level one.        
-        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));
+        // This tutorial has a single rule.  It activates on level 4.        
+        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 2));
     }
     
     @Override
-    protected void initializeTutorial(final Game game)
+    protected void initializeTutorial(Game game)
     {
         // Save the manager states.
         game.boardMan.saveState();
         game.statMan.saveState();
-        game.scoreMan.saveState();
+        game.scoreMan.saveState();        
         
         // Turn off the game in progress variable in the world manager.
         game.worldMan.setGameInProgress(false);
@@ -143,22 +143,7 @@ public class BasicTutorial extends AbstractTutorial
          // Create continue button, using the repeat button as a template.
         continueButton = new SpriteButton.Builder((SpriteButton) repeatButton)
                 .y(370).text("Continue").end();
-        game.layerMan.add(continueButton, Game.LAYER_EFFECT);   
-        
-        // Fade the old board out.
-//        final EntityGroup e = 
-//                game.boardMan.getTiles(0, game.boardMan.getCells() - 1); 
-//        
-//        IAnimation a = new FadeAnimation.Builder(FadeType.OUT, e)
-//                .wait(0).duration(500).end();             
-//        game.animationMan.add(a);        
-//                
-//        game.layerMan.add(e, Game.LAYER_EFFECT);        
-//        a.setFinishAction(new Runnable()
-//        {
-//            public void run()
-//            { game.layerMan.remove(e, Game.LAYER_EFFECT); }
-//        });
+        game.layerMan.add(continueButton, Game.LAYER_EFFECT);    
         
         // Run the repeat tutorial method, that sets up the things that must
         // be reset each time the tutorial is run.
@@ -175,13 +160,15 @@ public class BasicTutorial extends AbstractTutorial
             game.pieceMan.getPieceGrid().setVisible(false); 
             game.pieceMan.stopAnimation();                                            
             
-            // Fade the board out.            
+            // Fade the board out.
+            //game.startBoardHideAnimation();
             EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
-                    game.boardMan.getCells() - 1);            
+                    game.boardMan.getCells() - 1);
+            //game.animationMan.add(new FadeAnimation(FadeType.OUT, 0, 500, e));
             IAnimation a = new FadeAnimation.Builder(FadeType.OUT, e)
                     .wait(0).duration(500).end();
             game.animationMan.add(a);
-                                    
+                        
             // Fade in two new buttons.
             FadeAnimation f;                        
              
@@ -277,13 +264,6 @@ public class BasicTutorial extends AbstractTutorial
         // Create the fake board.
         createBoard(game);
         
-        // Fade board in.
-        EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
-                game.boardMan.getCells() - 1);            
-        IAnimation a = new FadeAnimation.Builder(FadeType.IN, e)
-                .wait(0).duration(300).end();
-        game.animationMan.add(a);
-        
         // Change the piece to the dot.
         game.pieceMan.loadPiece(PieceType.DOT);    
         
@@ -312,20 +292,20 @@ public class BasicTutorial extends AbstractTutorial
         game.boardMan.clearBoard();
                 
         // Create bottom row.        
-        TileEntity t = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.RED);
-        
-        // Set a click action.
-        t.setClickAction(new Runnable()
-        {           
-           public void run()
-           {               
-               // Fade out the bubble.            
+        TileEntity t = new TileEntity(game.boardMan, TileColor.RED, 0, 0)
+        {
+           @Override
+           public void onClick()
+           {
+               
+               // Fade out the bubble.
+               //Animation f = new FadeAnimation(FadeType.OUT, 0, 500, bubble);
                IAnimation f = new FadeAnimation.Builder(FadeType.OUT, bubble)
                        .wait(0).duration(500).end();
                game.animationMan.add(f);       
            }
-        });                
+        };        
+        game.boardMan.addTile(0, game.boardMan.getRows() - 1, t);        
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
                 TileEntity.class, TileColor.BLUE);
@@ -348,8 +328,6 @@ public class BasicTutorial extends AbstractTutorial
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
                 TileEntity.class, TileColor.YELLOW);
-        
-        game.boardMan.setVisible(true);
     }   
 
 }

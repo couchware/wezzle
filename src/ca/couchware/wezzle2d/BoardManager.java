@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,7 +26,7 @@ import java.util.Set;
  * 
  */
 
-public class BoardManager
+public class BoardManager implements IManager
 {	
     //--------------------------------------------------------------------------
     // Static Members
@@ -111,9 +112,28 @@ public class BoardManager
 	 */
 	final private int cellHeight;        
     
+    /**
+     * The hash map keys for storing the score manager state.
+     */
+    private static enum Keys
+    {
+        NUMBER_OF_COLORS,
+        NUMBER_OF_TILES,
+        NUMBER_OF_ITEMS,
+        GRAVITY,
+        BOARD,
+        SCRATCH_BOARD
+    }
+    
+    /**
+     * The hash map used to save the score manager's state.
+     */
+    final private EnumMap<Keys, Object> managerState = 
+            new EnumMap<Keys, Object>(Keys.class);
+    
     //--------------------------------------------------------------------------
     // Instance Members
-    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------        
     
     /**
      * Whether or not this is visible.
@@ -293,7 +313,7 @@ public class BoardManager
             if (this.getTile(i) != null)
                 this.removeTile(i);
         }
-    }
+    }       
         
 	/**
 	 * Shuffles the board randomly.
@@ -471,7 +491,6 @@ public class BoardManager
 	 */
 	public void synchronize()
 	{				
-//		TileEntity[] newBoard = new TileEntity[columns * rows];
         Arrays.fill(scratchBoard, null);
 		
 		for (int i = 0; i < cells; i++)
@@ -479,15 +498,10 @@ public class BoardManager
 			if (board[i] != null)
 			{
 				TileEntity t = board[i];
-//				Util.handleMessage("" + (t.getX() - x), null);
 				int column = (t.getX() - x) / cellWidth;
 				int row = (t.getY() - y) / cellHeight;
 												
-//				if (column + (row * columns) != i)
-//				{
-					scratchBoard[column + (row * columns)] = board[i];
-//					board[i] = null;
-//				}
+    			scratchBoard[column + (row * columns)] = board[i];
 			}
 		}
         
@@ -509,6 +523,18 @@ public class BoardManager
 		board = scratchBoard;
         scratchBoard = swapBoard;
 	}
+    
+    /**
+     * This method is used to re-add all the tiles to the layer manager if they
+     * are not already there.  It is principally used for restoring an old board
+     * in the manager <pre>loadState()</pre> method.
+     */
+    private void layerize()
+    {
+        for (TileEntity tile : board)            
+            if (tile != null && layerMan.exists(tile, Game.LAYER_TILE) == false)
+                layerMan.add(tile, Game.LAYER_TILE);
+    }
 	
     /**
      * TODO Documentation.
@@ -737,19 +763,23 @@ public class BoardManager
         
         // If this is an item, increment the count.
         if (t.getClass() != TileEntity.class)
+        {
+            Util.handleMessage("Item added.", "BoardManager#addTile");
             this.incrementNumberOfItems();                
-        
+        }
+                       
         // If we're overwriting a tile, remove it first.
         if (getTile(index) != null)
             removeTile(index);
-
-        setTile(index, t);
+        
+		// Set the tile.
+		board[index] = t;
         
         // Increment tile count.
         numberOfTiles++;
 
         // Set the tile visibility to that of the board.
-        t.setVisible(this.isVisible());
+        t.setVisible(visible);
         
         // Add the tile to the bottom layer too.        
         layerMan.add(t, Game.LAYER_TILE);               
@@ -828,21 +858,26 @@ public class BoardManager
     {
         // Sanity check.
 		assert(index >= 0 && index < cells);
-
+        
         // Get the tile.
         TileEntity t = getTile(index);
+        
+        // If the tile does not exist, throw an exception.
+        if (t == null)
+            throw new NullPointerException("No tile at that index.");        
         
         // If this is an item, decrement the item count.
         if (t.getClass() != TileEntity.class)
             this.decrementNumberOfItems();
         
         // Remove from layer manager.
-        layerMan.remove(t, Game.LAYER_TILE);
+        if (layerMan.exists(t, Game.LAYER_TILE))
+            layerMan.remove(t, Game.LAYER_TILE);
         
         // Remove the tile.
-        setTile(index, null);  
+        board[index] = null;
         
-        // Remove the animation.
+        // Remove the animation.        
         animationMan.remove(t.getAnimation());
         
         // Decrement tile counter.
@@ -915,25 +950,7 @@ public class BoardManager
         }
         
         return new EntityGroup(entities);
-    }
-	
-	public void setTile(int index, TileEntity tile)
-	{
-		// Sanity check.
-		assert(index >= 0 && index < cells);
-		
-		// Set the tile.
-		board[index] = tile;
-	}
-	
-	public void setTile(int column, int row, TileEntity tile)
-	{
-		// Make sure we're within parameters.
-		assert(column < columns && row < rows);
-		
-		// Forward.
-		setTile(column + (row * columns), tile);
-	}
+    }	
 
 	public void swapTile(int index1, int index2)
 	{
@@ -1406,9 +1423,7 @@ public class BoardManager
     {
         return cells;
     }
-    
-    
-    
+            
     public int getNumberOfItems()
     {
         return this.numberOfItems;
@@ -1481,6 +1496,39 @@ public class BoardManager
     public boolean isDirty()
     {
         return dirty;
+    }
+
+    public void saveState()
+    {
+        managerState.put(Keys.NUMBER_OF_COLORS, numberOfColors);
+        managerState.put(Keys.NUMBER_OF_ITEMS, numberOfItems);
+        managerState.put(Keys.NUMBER_OF_TILES, numberOfTiles);
+        managerState.put(Keys.GRAVITY, gravity);
+        managerState.put(Keys.BOARD, board.clone());
+        managerState.put(Keys.SCRATCH_BOARD, scratchBoard.clone());
+        
+        Util.handleMessage("Saved " + numberOfTiles + " tiles.");  
+        Util.handleMessage("Saved " + numberOfItems + " items.");
+    }
+
+    @SuppressWarnings("unchecked") 
+    public void loadState()
+    {
+        // Clear the board.
+        clearBoard();
+                
+        numberOfColors = (Integer) managerState.get(Keys.NUMBER_OF_COLORS);
+        numberOfItems = (Integer) managerState.get(Keys.NUMBER_OF_ITEMS);
+        numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);        
+        gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
+        scratchBoard = (TileEntity[]) managerState.get(Keys.SCRATCH_BOARD);   
+        board = (TileEntity[]) managerState.get(Keys.BOARD);        
+        
+        // Make sure that this board is in the layer manager.
+        layerize();
+        
+        Util.handleMessage("Loaded " + numberOfTiles + " tiles.");
+        Util.handleMessage("Loaded " + numberOfItems + " items.");
     }
 
 }

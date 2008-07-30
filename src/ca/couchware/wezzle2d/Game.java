@@ -649,19 +649,8 @@ public class Game extends Canvas implements GameWindowCallback
         
         // Add the tutorials to it.
         tutorialMan.add(new BasicTutorial());
-        
-		// Create the board manager.
-		boardMan = new BoardManager(animationMan, layerMan, 272, 139, 8, 10);        
-        
-		// Create the piece manager.
-		pieceMan = new PieceManager(animationMan, boardMan);        
-        layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);
-		window.addMouseListener(pieceMan);
-		window.addMouseMotionListener(pieceMan);	
-        
-        // Create group manager.
-        groupMan = new GroupManager(layerMan, pieceMan);
-	
+//        tutorialMan.add(new RocketTutorial());
+    
         // Create the property manager. Must be done before Score manager.
         propertyMan = new PropertyManager();        
         
@@ -671,6 +660,20 @@ public class Game extends Canvas implements GameWindowCallback
         // Create the world manager.
         worldMan = new WorldManager(propertyMan);        
         
+		// Create the board manager.
+		boardMan = new BoardManager(animationMan, layerMan, 272, 139, 8, 10);    
+        boardMan.setVisible(false);
+        boardMan.generateBoard(worldMan.getItemList());                           
+        
+		// Create the piece manager.
+		pieceMan = new PieceManager(animationMan, boardMan);        
+        layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);
+		window.addMouseListener(pieceMan);
+		window.addMouseMotionListener(pieceMan);	
+        
+        // Create group manager.
+        groupMan = new GroupManager(layerMan, pieceMan);
+	        
         // Create the score manager.
         scoreMan = new ScoreManager(boardMan, propertyMan, highScoreMan);
         scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());

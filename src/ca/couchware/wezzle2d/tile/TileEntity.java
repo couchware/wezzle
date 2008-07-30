@@ -36,6 +36,11 @@ public class TileEntity extends GraphicEntity implements IMovable
 	protected final TileColor color;		
     
     /**
+     * The click runnable.
+     */
+    protected Runnable clickAction;
+    
+    /**
      * Make x a double.
      */
     protected double x2;
@@ -326,10 +331,26 @@ public class TileEntity extends GraphicEntity implements IMovable
     }		
     
     /**
+     * Sets the click runnable.
+     */
+    public void setClickAction(Runnable clickAction)
+    { 
+        this.clickAction = clickAction;
+    }
+    
+    /**
+     * Gets the click runnable.
+     */
+    public Runnable getClickAction()
+    {
+        return clickAction;
+    }
+    
+    /**
      * This method is called when the tile is clicked.
      */
     public void onClick()
     {
-        // To be overridden.
+        if (clickAction != null) clickAction.run();
     }
 }

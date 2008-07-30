@@ -14,7 +14,7 @@ import java.util.EnumMap;
  * @author Kevin, Cameron
  */
 
-public class StatManager implements Manager
+public class StatManager implements IManager
 {	
     
 	/**

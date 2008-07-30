@@ -10,7 +10,7 @@ package ca.couchware.wezzle2d;
  * 
  * @author cdmckay
  */
-public interface Manager 
+public interface IManager 
 {
     /**
      * Saves the state of the manager to memory.

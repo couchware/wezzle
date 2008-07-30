@@ -43,6 +43,26 @@ public interface IAnimation
     public void setVisible(final boolean visible);       
     
     /**
+     * Set the start action.
+     */
+    public void setStartAction(Runnable startAction);
+    
+    /**
+     * Get the start action.
+     */
+    public Runnable getStartAction();
+    
+    /**
+     * Set the finish action.
+     */
+    public void setFinishAction(Runnable finishAction);
+    
+    /**
+     * Get the finish action.
+     */
+    public Runnable getFinishAction();        
+    
+    /**
      * This method is run when the animation is first loaded by the
      * animation manager.
      */

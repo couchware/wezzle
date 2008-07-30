@@ -22,7 +22,22 @@ public abstract class AbstractAnimation implements IAnimation
      * Whether or not the animation is done.
      */
     private boolean done = false;
-
+    
+    /**
+     * The start action.
+     */
+    private Runnable startAction;
+    
+    /**
+     * The finish action.
+     */
+    private Runnable finishAction;
+    
+    /**
+     * Advance the frame.
+     * 
+     * @param delta
+     */
     public abstract void nextFrame(long delta);
 
     public void cleanUp()
@@ -49,15 +64,47 @@ public abstract class AbstractAnimation implements IAnimation
     {
         this.visible = visible;
     }
+    
+    /**
+     * Set the start action.
+     */
+    public void setStartAction(Runnable startAction)
+    {
+        this.startAction = startAction;
+    }
+    
+    /**
+     * Get the start action.
+     */
+    public Runnable getStartAction()
+    {
+        return startAction;
+    }
+    
+    /**
+     * Set the finish action.
+     */
+    public void setFinishAction(Runnable finishAction)
+    {
+        this.finishAction = finishAction;
+    }
+    
+    /**
+     * Get the finish action.
+     */
+    public Runnable getFinishAction()
+    {
+        return finishAction;
+    }
 
     public void onStart()
     {
-        // Override.
+        if (startAction != null) startAction.run();
     }
 
     public void onFinish()
     {
-        // Override.
+        if (finishAction != null) finishAction.run();
     }        
     
 }

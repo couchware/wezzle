@@ -10,7 +10,7 @@ import java.util.Set;
  *
  * @author Kevin
  */
- public class ScoreManager implements Manager
+ public class ScoreManager implements IManager
  {    
      
     /**
