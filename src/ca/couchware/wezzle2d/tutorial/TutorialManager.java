@@ -124,6 +124,7 @@ public class TutorialManager
             currentTutorial.updateLogic(game);
             if (currentTutorial.isDone() == true)
             {
+                game.boardMan.setVisible(false);
                 game.startBoardShowAnimation(AnimationType.SLIDE_FADE);
                 currentTutorial = null;
             }

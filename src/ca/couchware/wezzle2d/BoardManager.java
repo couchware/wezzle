@@ -1688,6 +1688,11 @@ public class BoardManager implements IManager
     {        
         Util.handleMessage("Board visible: " + visible + ".", 
                 "BoardManager#setVisible");
+        
+        for (TileEntity tile : board)
+            if (tile != null)
+                tile.setVisible(visible);
+            
         this.visible = visible;        
     }   
     
