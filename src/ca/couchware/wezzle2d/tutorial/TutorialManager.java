@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -99,7 +100,16 @@ public class TutorialManager
                 
                 // Check to see if the tutorial is activated.                
                 if (t.evaluateRules(game) == true)
-                {                                                            
+                {       
+                    if (game.boardMan.isVisible() == true)                    
+                    {
+                        // Hide the board nicely.
+                        // Make sure the grid doesn't flicker on for a second.
+                        game.startBoardHideAnimation(AnimationType.SLIDE_FADE);    
+                        game.pieceMan.getPieceGrid().setVisible(false); 
+                        break;
+                    }
+                    
                     currentTutorial = t;
                     currentTutorial.initialize(game);
                     it.remove();                    
@@ -113,7 +123,10 @@ public class TutorialManager
         {
             currentTutorial.updateLogic(game);
             if (currentTutorial.isDone() == true)
+            {
+                game.startBoardShowAnimation(AnimationType.SLIDE_FADE);
                 currentTutorial = null;
+            }
         }
 
         //Util.handleMessage(animationList.size() + "", "AnimationManager#animate");

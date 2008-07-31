@@ -14,6 +14,12 @@ public class MoveAnimation extends AbstractAnimation
 {    
     
     /**
+     * Is skip on?  This is engaged when both x and y boundaries are met to
+     * tell the animation to skip calculations until done.
+     */
+    private boolean skip = false;
+    
+    /**
      * The counter.
      */
     private long counter;
@@ -37,6 +43,27 @@ public class MoveAnimation extends AbstractAnimation
      * The y-component of the launch speed.
      */
     private double vY;
+    
+    /**
+     * The minimum x that the animation may move to.
+     */
+    private int minX;
+    
+    /**
+     * The minimum y that the animation may move to.
+     */
+    
+    private int minY;
+    
+    /**
+     * The maximum x that the animation may move to.
+     */
+    private int maxX;
+    
+    /**
+     * The maximum y that the animation may move to.
+     */
+    private int maxY;
     
     /**
      * The launch angle, in degrees.
@@ -74,7 +101,12 @@ public class MoveAnimation extends AbstractAnimation
         this.theta = builder.theta;
         this.g = builder.g;        
         this.wait = builder.wait;
-        this.duration = builder.duration;      
+        this.duration = builder.duration;  
+        
+        this.minX = builder.minX;
+        this.minY = builder.minY;
+        this.maxX = builder.maxX;
+        this.maxY = builder.maxY;
         
         // Determine the components of the launch velocity.
         vX = builder.v * Math.cos(Math.toRadians(theta));
@@ -90,6 +122,10 @@ public class MoveAnimation extends AbstractAnimation
         private int theta = 0;
         private double g = 0;   
         private double v = 0;
+        private int minX = Integer.MIN_VALUE;
+        private int minY = Integer.MIN_VALUE;
+        private int maxX = Integer.MAX_VALUE;
+        private int maxY = Integer.MAX_VALUE;
         
         public Builder(IEntity entity)
         {            
@@ -100,7 +136,11 @@ public class MoveAnimation extends AbstractAnimation
         public Builder duration(int val) { duration = val; return this; }
         public Builder theta(int val) { theta = val; return this; }
         public Builder v(double val) { v = val; return this; }
-        public Builder g(double val) { g = val; return this; }        
+        public Builder g(double val) { g = val; return this; }     
+        public Builder minX(int val) { minX = val; return this; }
+        public Builder minY(int val) { minY = val; return this; }
+        public Builder maxX(int val) { maxX = val; return this; }
+        public Builder maxY(int val) { maxY = val; return this; }
                 
         public MoveAnimation end()
         {
@@ -116,7 +156,15 @@ public class MoveAnimation extends AbstractAnimation
               
         // Add delta to counter.  This serves as the time variable.
         counter += delta;                               
-            
+        
+        // Skip if necessary.
+        if (skip == true)
+        {
+            if (counter > wait + duration)
+                setDone(true);
+            return;
+        }
+        
         if (counter > wait)
         {
             // Determine the current x and y.
@@ -125,13 +173,38 @@ public class MoveAnimation extends AbstractAnimation
             double y = vY * t - 0.5 * g * t * t;
 
             // Move the entity.
-            entity.setX(initialPosition.getX() + (int) x);
-            entity.setY(initialPosition.getY() - (int) y);        
-        
-            if (counter > wait + duration)   
-            {
-                setDone(true);                                            
+            int newX = initialPosition.getX() + (int) x;
+            int newY = initialPosition.getY() - (int) y;
+            
+            boolean doneX = false;
+            boolean doneY = false;
+            
+            if (newX < minX) 
+            { 
+                newX = minX; doneX = true;
             }
+            else if (newX > maxX) 
+            {
+                newX = maxX; doneX = true;
+            }            
+            
+            if (newY < minY) 
+            {
+                newY = minY; doneY = true;
+            }
+            else if (newY > maxY)
+            {
+                newY = maxY; doneY = true;
+            }           
+            
+            entity.setX(newX);                        
+            entity.setY(newY);        
+                    
+            if (doneX == true && doneY == true)
+                skip = true;
+            
+            if (counter > wait + duration)   
+                setDone(true);                                                        
         }        
     }
     

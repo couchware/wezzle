@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationManager;
 import static ca.couchware.wezzle2d.BoardManager.Direction;
@@ -401,6 +402,11 @@ public class Game extends Canvas implements GameWindowCallback
     private boolean activateBoardHideAnimation = false;
     
     /**
+     * The board animation type to use.
+     */
+    private AnimationType boardAnimationType;
+    
+    /**
      * The animation that will indicate whether the board animation is 
      * complete.
      */
@@ -648,7 +654,7 @@ public class Game extends Canvas implements GameWindowCallback
         tutorialMan = new TutorialManager();
         
         // Add the tutorials to it.
-//        tutorialMan.add(new BasicTutorial());
+        tutorialMan.add(new BasicTutorial());
 //        tutorialMan.add(new RocketTutorial());
     
         // Create the property manager. Must be done before Score manager.
@@ -658,12 +664,14 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreMan = new HighScoreManager(propertyMan);                
 
         // Create the world manager.
-        worldMan = new WorldManager(propertyMan);        
+        worldMan = new WorldManager(propertyMan);  
+        worldMan.setGameInProgress(true);
         
 		// Create the board manager.
 		boardMan = new BoardManager(animationMan, layerMan, 272, 139, 8, 10);    
         boardMan.setVisible(false);
-        boardMan.generateBoard(worldMan.getItemList());                           
+        boardMan.generateBoard(worldMan.getItemList());          
+        startBoardShowAnimation(AnimationType.ROW_FADE);        
         
 		// Create the piece manager.
 		pieceMan = new PieceManager(animationMan, boardMan);        
@@ -977,22 +985,40 @@ public class Game extends Canvas implements GameWindowCallback
                || this.tileRemovalInProgress;
     }
     
-    public void startBoardShowAnimation()
+    public void startBoardShowAnimation(AnimationType type)
     {
         // Set the flag.
+        if (activateBoardHideAnimation == true)
+            throw new IllegalStateException(
+                    "Attempted to show board while it is being hidden.");
+        
+        if (activateBoardShowAnimation == true)
+            throw new IllegalStateException(
+                    "Attempted to show board while it is already being shown.");
+        
         activateBoardShowAnimation = true;
+        boardAnimationType = type;
     }
     
     public void clearBoardShowAnimation()
     {
         // Clear the flag.
-        activateBoardShowAnimation = false;
+        activateBoardShowAnimation = false;        
     }
     
-    public void startBoardHideAnimation()
+    public void startBoardHideAnimation(AnimationType type)
     {
         // Set the flag.
+        if (activateBoardShowAnimation == true)
+            throw new IllegalStateException(
+                    "Attempted to hide board while it is being shown.");
+        
+        if (activateBoardHideAnimation == true)
+            throw new IllegalStateException(
+                    "Attempted to hide board while it is already being hidden.");
+        
         activateBoardHideAnimation = true;
+        boardAnimationType = type;
     }
     
     public void clearBoardHideAnimation()
@@ -1157,7 +1183,7 @@ public class Game extends Canvas implements GameWindowCallback
             pieceMan.stopAnimation();
             
             // Start board show animation.            
-            boardAnimation = boardMan.animateShow();                 
+            boardAnimation = boardMan.animateShow(boardAnimationType);                 
             boardMan.setDirty(true);            
 
             // Clear flag.
@@ -1172,11 +1198,9 @@ public class Game extends Canvas implements GameWindowCallback
             pieceMan.stopAnimation();
             
             // Start board hide animation.            
-            boardAnimation = boardMan.animateHide(); 
+            boardAnimation = boardMan.animateHide(boardAnimationType); 
             boardMan.setDirty(true);
-
                                           
-
             // Clear flag.
             clearBoardHideAnimation();                                
         }      
@@ -1264,7 +1288,7 @@ public class Game extends Canvas implements GameWindowCallback
                 gameOverGroup.setActivated(true);
                 
                 // Hide the board.
-                startBoardHideAnimation();                
+                startBoardHideAnimation(AnimationType.ROW_FADE);                
             }                                                                  
             
             // See if we need to activate the refactor.

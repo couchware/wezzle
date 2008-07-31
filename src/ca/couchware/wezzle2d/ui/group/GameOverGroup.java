@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.button.*;
@@ -165,7 +166,7 @@ public class GameOverGroup extends Group
 
         // Start the board show animation.  This will
         // make the board visible when it's done.
-        game.startBoardShowAnimation();
+        game.startBoardShowAnimation(AnimationType.ROW_FADE);
     }
             
 }

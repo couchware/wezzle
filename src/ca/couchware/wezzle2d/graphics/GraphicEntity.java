@@ -41,6 +41,7 @@ public class GraphicEntity extends AbstractEntity
 	protected GraphicEntity(Builder builder)           
 	{        
         // Load the sprite.
+        this.path = builder.path;
 		this.sprite = ResourceFactory.get().getSprite(builder.path);        		
                 
         // Set the position.
@@ -155,6 +156,6 @@ public class GraphicEntity extends AbstractEntity
         
         // Set dirty so it will be drawn.        
         setDirty(true);
-    }               
+    }    
     
 }

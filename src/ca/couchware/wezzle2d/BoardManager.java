@@ -43,6 +43,15 @@ public class BoardManager implements IManager
     }
     
     /**
+     * The types of board animations.
+     */
+    public static enum AnimationType
+    {
+        ROW_FADE, SLIDE_FADE
+    
+    }
+    
+    /**
      * The path to the board background graphic.
      */
     final private String PATH = Game.SPRITES_PATH + "/Board.png";        
@@ -533,7 +542,10 @@ public class BoardManager implements IManager
     {
         for (TileEntity tile : board)            
             if (tile != null && layerMan.exists(tile, Game.LAYER_TILE) == false)
+            {
+                tile.setVisible(visible);
                 layerMan.add(tile, Game.LAYER_TILE);
+            }
     }
 	
     /**
@@ -1165,13 +1177,27 @@ public class BoardManager implements IManager
     /**
      * Animates the showing of the board.
      *      
+     * @param type The type of animation to use.
      * @return An animation that can be checked for doneness.
      */
-    public IAnimation animateShow()
+    public IAnimation animateShow(AnimationType type)
+    {                
+         // Animate based on the type.
+        switch (type)
+        {
+            case ROW_FADE:
+                return animateRowFadeIn();                
+                
+            case SLIDE_FADE:
+                return animateSlideFadeIn();
+                
+            default:
+                throw new AssertionError();
+        }      
+    }
+    
+    private IAnimation animateRowFadeIn()
     {
-        // Sanity check.
-        assert(animationMan != null);
-        
         // The amount of delay between each row.
         int delay = 0;
         int deltaDelay = 200;
@@ -1207,9 +1233,7 @@ public class BoardManager implements IManager
         }
         
         // If there are any tiles, there at least must be a tile in the bottom
-        // left corner.
-        
-        
+        // left corner.                
         if (tileCount > 0)
         {
             for (int i = cells - 1; i >= 0; i--)
@@ -1222,18 +1246,126 @@ public class BoardManager implements IManager
     }
     
     /**
+     * Slides the board on the screen and fades it in as it does so.
+     * 
+     * @return An animation object that can be tested for doneness.
+     */
+    private IAnimation animateSlideFadeIn()
+    {
+        // Count the number of tiles.
+        int tileCount = 0;
+        
+        // The animation variables that will be used.
+        IAnimation a1 = null;
+        IAnimation a2 = null;
+        
+        // Get all the tiles on the board.
+        for (int i = 0; i < cells; i++)
+        {
+            // Get the tile.
+            final TileEntity tile = getTile(i);                        
+            
+            // Get the row.
+            int row = i / columns;
+            
+            if (tile != null)		
+			{
+                // Make a copy and hide the original.                
+                final TileEntity t = new TileEntity(tile);
+                tile.setVisible(false);
+                layerMan.add(t, Game.LAYER_TILE);
+                
+                // Count it.
+                tileCount++;
+                
+                // Create the animation.
+                a1 = new FadeAnimation.Builder(FadeType.IN, t)
+                        .wait(0).duration(500).end();
+                
+                // Make the animation remove itself.                
+                a1.setFinishAction(new Runnable()
+                {
+                   public void run()
+                   {
+                       layerMan.remove(t, Game.LAYER_TILE);
+                       tile.setVisible(true);
+                   }
+                });
+
+                // Determine the theta.
+                int theta = 180 * ((row + 1) % 2);
+                
+                // The min and max x values.
+                int minX = Integer.MIN_VALUE;
+                int maxX = Integer.MAX_VALUE;
+                
+                // If the theta is facing right, move the copy that direction.
+                if (theta == 0)
+                {
+                    t.translate(-(int) (500.0 * 0.15), 0);
+                    maxX = x + width;
+                }
+                else if (theta == 180)
+                {
+                    t.translate((int) (500.0 * 0.15), 0);
+                    minX = x;
+                }
+                else
+                    throw new AssertionError("Angle should only be 0 or 180.");
+                
+                a2 = new MoveAnimation.Builder(t).minX(minX).maxX(maxX)
+                        .wait(0).duration(500).theta(theta).v(0.15).end();                                
+                
+                // Add them to the animation manager.
+                t.setAnimation(a1);
+                animationMan.add(a1);
+                animationMan.add(a2);
+            }
+        }
+                
+        // If there are any tiles, there at least must be a tile in the bottom
+        // left corner.
+        if (tileCount > 0)
+        {
+            return a1;
+        }
+        else
+            return null;                
+    }
+    
+    /**
      * Animates the hiding of the board.
      *      
+     * @param type The type of animation to use.
      * @return An animation that can be checked for doneness.
      */
-    public IAnimation animateHide()
+    public IAnimation animateHide(AnimationType type)
+    {       
+        // Animate based on the type.
+        switch (type)
+        {
+            case ROW_FADE:
+                return animateRowFadeOut();                
+                
+            case SLIDE_FADE:
+                return animateSlideFadeOut();
+                
+            default:
+                throw new AssertionError();
+        }                
+    }
+    
+    /**
+     * Create an animation that fades each row slowly, starting from the
+     * top to the bottom.
+     * 
+     * @return An animation object that can be tested for doneness.
+     */
+    private IAnimation animateRowFadeOut()
     {
-        // Sanity check.
-        assert(animationMan != null);
-        
         // The amount of delay between each row.
-        int delay = 0;
-        int deltaDelay = 200;
+        int wait = 0;
+        int deltaWait = 200;
         
         // True if a tile was found this row.
         boolean tileFound = false;
@@ -1247,10 +1379,9 @@ public class BoardManager implements IManager
 			TileEntity t = getTile(i);
 			
 			if (t != null)		
-			{	
-                //Animation a = new FadeAnimation(FadeType.OUT, 0, 700, t);
+			{	                
                 IAnimation a = new FadeAnimation.Builder(FadeType.OUT, t)
-                        .wait(delay).duration(700).end();                 
+                        .wait(wait).duration(700).end();                 
                 t.setAnimation(a);
                 animationMan.add(a);
                 
@@ -1261,7 +1392,7 @@ public class BoardManager implements IManager
 			if (tileFound == true && (i + 1) % columns == 0)
             {
                 tileFound = false;
-				delay += deltaDelay;
+				wait += deltaWait;
             }
         }
         
@@ -1276,6 +1407,77 @@ public class BoardManager implements IManager
         }
         else
             return null;
+    }
+    
+    /**
+     * Slides the board off the screen and fades it as it does so.
+     * 
+     * ---->
+     * <----
+     * ---->
+     * <----
+     * 
+     * @return An animation object that can be tested for doneness.
+     */
+    private IAnimation animateSlideFadeOut()
+    {
+        // Count the number of tiles.
+        int tileCount = 0;
+        
+        // The animation variables that will be used.
+        IAnimation a1 = null;
+        IAnimation a2 = null;
+        
+        // Get all the tiles on the board.
+        for (int i = 0; i < cells; i++)
+        {
+            // Get the tile.
+            TileEntity tile = getTile(i);                        
+            
+            // Get the row.
+            int row = i / columns;
+            
+            if (tile != null)		
+			{
+                // Make a copy and hide the original.                
+                final TileEntity t = new TileEntity(tile);
+                tile.setVisible(false);
+                layerMan.add(t, Game.LAYER_TILE);
+                
+                // Count it.
+                tileCount++;
+                
+                // Create the animation.
+                a1 = new FadeAnimation.Builder(FadeType.OUT, t)
+                        .wait(0).duration(500).end();
+
+                a2 = new MoveAnimation.Builder(t).wait(0)
+                        .duration(500).theta(180 * (row % 2)).v(0.15).end();
+                
+                // Make the animation remove itself.                
+                a1.setFinishAction(new Runnable()
+                {
+                   public void run()
+                   {
+                       layerMan.remove(t, Game.LAYER_TILE);
+                   }
+                });
+                
+                // Add them to the animation manager.
+                t.setAnimation(a1);
+                animationMan.add(a1);
+                animationMan.add(a2);
+            }
+        }
+                
+        // If there are any tiles, there at least must be a tile in the bottom
+        // left corner.
+        if (tileCount > 0)
+        {
+            return a1;
+        }
+        else
+            return null;                
     }
     
     /**

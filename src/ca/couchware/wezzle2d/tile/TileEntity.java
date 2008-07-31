@@ -1,14 +1,10 @@
 package ca.couchware.wezzle2d.tile;
 
 import static ca.couchware.wezzle2d.BoardManager.Direction;
-import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IMovable;
-import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.EnumMap;
 
 /**
@@ -64,6 +60,7 @@ public class TileEntity extends GraphicEntity implements IMovable
     
 	/**
 	 * Creates a tile at (x,y) with the specified color.
+     * 
 	 * @param color
 	 * @param x
 	 * @param y
@@ -92,7 +89,18 @@ public class TileEntity extends GraphicEntity implements IMovable
         bounds.put(Direction.LEFT, Integer.MIN_VALUE);
         bounds.put(Direction.RIGHT, Integer.MAX_VALUE);
 	}
-	
+    
+    /**
+     * Used to make a new tile entity that is roughly the same as the one
+     * passed.
+     * 
+     * @param tile
+     */
+    public TileEntity(TileEntity tile)
+    {
+        this(tile.boardMan, tile.color, (int) tile.x2, (int) tile.y2);
+    }
+    
 	/**
 	 * Override move.
 	 */

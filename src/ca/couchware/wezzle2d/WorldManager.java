@@ -313,11 +313,11 @@ public class WorldManager
                 && game.tutorialMan.isTutorialInProgress() == false)
         {
             // Game is now in progress.
-            setGameInProgress(true);
+            //setGameInProgress(true);
             
             // Generate the game board.            
-//            game.boardMan.clearBoard();            
-            game.startBoardShowAnimation();
+            //game.boardMan.clearBoard();            
+            //game.startBoardShowAnimation();
         }                
         
         for (Iterator<Rule> it = currentRuleList.iterator(); it.hasNext(); )
