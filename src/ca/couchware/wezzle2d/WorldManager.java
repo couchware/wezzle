@@ -478,7 +478,7 @@ public class WorldManager
 		}
 		
 		// We should never get here.
-		Util.handleWarning(
+		LogManager.recordWarning(
                 "Random number out of range! (" + randomNumber + ").", 
                 "WorldManager#getItem");
         

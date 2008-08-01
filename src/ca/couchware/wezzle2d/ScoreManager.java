@@ -133,7 +133,7 @@ import java.util.Set;
      * @param cascadeCount
      * @return The change in score.
      */
-    public int calculateLineScore(Set set, ScoreType type, int cascadeCount)
+    public int calculateLineScore(Set set, ScoreType type, int chainCount)
     {
         // Initialize tile counts.
         int numNormal = 0;
@@ -202,9 +202,9 @@ import java.util.Set;
                 * Math.pow(2, numMultiply2x)
                 * Math.pow(3, numMultiply3x)
                 * Math.pow(4, numMultiply4x)
-                * cascadeCount);
+                * chainCount);
 
-        Util.handleMessage("cascadeCount == " + cascadeCount, 
+        LogManager.recordMessage("chainCount = " + chainCount, 
                 "ScoreManager#calculateLineScore");
         
         // Update progress and text.
@@ -432,7 +432,7 @@ import java.util.Set;
         // See if there is a save state.
         if (managerState.isEmpty() == true)
         {
-            Util.handleWarning("No save state exists.", "ScoreManager#load");
+            LogManager.recordWarning("No save state exists.", "ScoreManager#load");
             return;
         }
         

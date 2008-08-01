@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.java2d;
 
+import ca.couchware.wezzle2d.LogManager;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -298,7 +299,7 @@ public class Java2DSprite implements ISprite
         // If it's not, try again until we get an image.
         if (valid == VolatileImage.IMAGE_INCOMPATIBLE)
         {
-            Util.handleWarning("Image was incompatible.", "Java2DSprite#createVolatileImage");
+            LogManager.recordWarning("Image was incompatible.", "Java2DSprite#createVolatileImage");
             newImage = this.createVolatileImage(width, height, transparency);
             return newImage;
         }
@@ -326,7 +327,7 @@ public class Java2DSprite implements ISprite
 
             if (valid == VolatileImage.IMAGE_INCOMPATIBLE)
             {
-                Util.handleWarning("Image was incompatible.", "Java2DSprite#render");
+                LogManager.recordWarning("Image was incompatible.", "Java2DSprite#render");
                 vimage = createVolatileImage(
                         image.getWidth(), 
                         image.getHeight(), 

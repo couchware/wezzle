@@ -89,7 +89,7 @@ public class MoveAnimation extends AbstractAnimation
     * Fire an entity with the given launch speed, angle and gravity and 
     * rotation speed.        
     */
-    public MoveAnimation(Builder builder)
+    private MoveAnimation(Builder builder)
     {                
         // Set a reference to the entity.
         this.entity = builder.entity;            

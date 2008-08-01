@@ -114,7 +114,7 @@ public class Group extends AbstractEntity
      */
     public void clearChanged()
     {
-        Util.handleMessage("Cleared by a group.", "Group#clearChanged");
+        LogManager.recordMessage("Cleared by a group.", "Group#clearChanged");
 
         for (IEntity e : entityList)
             if (e instanceof IButton)

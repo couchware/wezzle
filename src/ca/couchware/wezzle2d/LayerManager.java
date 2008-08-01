@@ -18,6 +18,11 @@ public class LayerManager
 {
     
     /**
+     * The platform specific newline character.
+     */
+    private static String NL = System.getProperty("line.separator");
+    
+    /**
      * The number of layers.
      */
     private int numberOfLayers;
@@ -258,14 +263,14 @@ public class LayerManager
                 
                 if (r != null && (r.getMinX() < 0 || r.getMinY() < 0))
                 {
-                    Util.handleWarning("Offending class is " 
+                    LogManager.recordWarning("Offending class is " 
                             + d.getClass().getSimpleName(), 
                             "LayerManager#drawRegion");
-                    Util.handleWarning("Rectangle is " + r,
+                    LogManager.recordWarning("Rectangle is " + r,
                             "LayerManager#drawRegion");
                     
                     if (d instanceof ILabel)
-                        Util.handleWarning(((ILabel) d).getText());
+                        LogManager.handleWarning(((ILabel) d).getText());
                 }
                 
                 //Util.handleWarning(r + "");
@@ -366,5 +371,23 @@ public class LayerManager
     {       
         removeRect = null;
     }
-
+    
+    @Override
+    public String toString()
+    {
+        // Create a string builda'.
+        StringBuilder buffer = new StringBuilder();
+        
+        // Print out the number of drawables on each layer.
+        int i = 0;
+        for (ArrayList<IDrawable> layer : layerList)
+        {            
+            buffer.append("Layer " + i + ": " 
+                    + layer.size() + " drawables." + NL);
+            i++;
+        }       
+        
+        return buffer.toString();
+    }
+    
 }

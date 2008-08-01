@@ -211,7 +211,7 @@ public class StatManager implements IManager
         // See if there is a save state.
         if (managerState.isEmpty() == true)
         {
-            Util.handleWarning("No save state exists.", "MoveManager#load");
+            LogManager.recordWarning("No save state exists.", "MoveManager#load");
             return;
         }
         

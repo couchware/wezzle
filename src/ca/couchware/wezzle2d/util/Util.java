@@ -16,97 +16,12 @@ import java.util.Random;
  * @author cdmckay
  */
 public class Util
-{	
-	/**
-	 * Use stack traces.  Allow for easier debugging but they
-	 * affect performance.
-	 */
-	private static final boolean USE_STACK_TRACE = true;
-	
-	/**
-	 * Write out to the log. If this is set to true, all messages and
-	 * errors will be written out to the log file.
-	 */
-	private static final boolean USE_LOG = true;
+{	    	
 	
 	/**
 	 * The random number generator.
 	 */
-	public static Random random = new Random(System.currentTimeMillis());
-	
-	/**
-	 * Prints an error to standard error and dumps the stack.
-	 * @param message The error message.
-	 * @param t The current thread, usually Thread.currentThread().
-	 */
-	public static void handleException(Exception e)
-	{
-		String method;
-		
-		if (USE_STACK_TRACE == true && e.getStackTrace().length >= 4)
-            method = e.getStackTrace()[3].getMethodName();        
-		else
-			method = "Unknown";
-		
-        StringWriter out = new StringWriter();
-        
-		out.write("[Exception] (" + System.currentTimeMillis() + ") " 
-                + method + " - \"" + e.getMessage() + "\"" + Game.NL);                
-		e.printStackTrace(new PrintWriter(out, true));
-        
-		System.err.println(out.toString());
-		
-		if (USE_LOG == true)
-			LogManager.appendToLog(out.toString());				
-	}
-	
-	/**
-	 * Prints a warning to standard error.  Does not dump the stack.
-	 * @param message The error message.
-	 * @param t The current thread, usually Thread.currentThread().
-	 */
-	public static void handleWarning(String message, String method)
-	{
-		if (method == null)
-			method = "...";
-		
-		String output = "[Warning] (" + System.currentTimeMillis() + ") " 
-                + method + " - \"" + message + "\"";        
-		
-		System.err.println(output);
-		
-		if (USE_LOG == true)
-			LogManager.appendToLog(output);
-	}
-    
-    public static void handleWarning(String message)
-    {
-        handleWarning(message, null);
-    }
-	
-	/**
-	 * Prints a message to standard out.  Does not dump the stack.
-	 * @param message The error message.
-	 * @param t The current thread, usually Thread.currentThread().
-	 */
-	public static void handleMessage(String message, String method)
-	{				
-		if (method == null)
-			method = "...";
-		
-		String output = "[Message] (" + System.currentTimeMillis() + ") " 
-                + method + " - \"" + message + "\"";
-		
-		System.out.println(output);	
-		
-		if (USE_LOG == true)
-			LogManager.appendToLog(output);
-	}
-    
-    public static void handleMessage(String message)
-    {
-        handleMessage(message, null);
-    }
+	public static Random random = new Random(System.currentTimeMillis());		
 	
 	/**
 	 * A method for transposing square 2D arrays in-place.

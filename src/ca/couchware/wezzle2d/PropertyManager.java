@@ -115,9 +115,9 @@ public class PropertyManager
             }
             catch(Exception e)
             {
-                Util.handleWarning("Url is " + f.getAbsolutePath(), 
+                LogManager.recordWarning("Url is " + f.getAbsolutePath(), 
                         "PropertyManager#this");
-                Util.handleException(e);
+                LogManager.handleException(e);
             }
         }
         else
@@ -131,9 +131,9 @@ public class PropertyManager
             }
             catch(Exception e)
             {
-                Util.handleWarning("Url is " + f.getAbsolutePath(), 
+                LogManager.recordWarning("Url is " + f.getAbsolutePath(), 
                         "PropertyManager#this");
-                Util.handleException(e);
+                LogManager.handleException(e);
             }
         } // end if
 		

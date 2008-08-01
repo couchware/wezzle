@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.audio;
 
+import ca.couchware.wezzle2d.LogManager;
 import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.io.*;
@@ -136,17 +137,16 @@ public class AudioPlayer
                         
                         while (paused) 
                         {
-                            if (line.isRunning()) 
-                            {
+                            if (line.isRunning())                             
                                 line.stop();
-                            }
+                            
                             try 
                             {
                                 this.wait();
                             }
-                            catch(InterruptedException e) 
+                            catch (InterruptedException e) 
                             {
-                               Util.handleException(e);
+                               LogManager.handleException(e);
                             }
                         }
 	
@@ -171,7 +171,7 @@ public class AudioPlayer
         }
         catch(Exception e)
         {
-           Util.handleException(e);   
+           LogManager.handleException(e);   
         }
     }        
 
@@ -223,9 +223,9 @@ public class AudioPlayer
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, decodedFormat);
             line = (SourceDataLine) AudioSystem.getLine(info);                           
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Util.handleException(e);
+            LogManager.handleException(e);
         }
     }
        

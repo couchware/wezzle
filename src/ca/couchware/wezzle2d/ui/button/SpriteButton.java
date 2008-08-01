@@ -155,11 +155,7 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
         if (activeText != null)
             activeLabel = new LabelBuilder(normalLabel).text(activeText).end();                
         else
-            activeLabel = null;
-        
-        // Set the normal and active opacities.        
-        hoverOpacity = 100;
-        activeOpacity = 100;
+            activeLabel = null;                
     }
     
     public static class Builder implements IBuilder<SpriteButton>
@@ -196,6 +192,7 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
             this.normalText = button.normalText;
             this.hoverText = button.hoverText;
             this.normalOpacity = button.opacity;
+            this.hoverOpacity = button.hoverOpacity;
             this.activeOpacity = button.activeOpacity;
             this.type = button.type;
             this.visible = button.visible;

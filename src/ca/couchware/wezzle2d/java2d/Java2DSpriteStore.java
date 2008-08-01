@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.java2d;
 
+import ca.couchware.wezzle2d.LogManager;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -81,7 +82,7 @@ public class Java2DSpriteStore
 
 			if (url == null)
 			{
-				Util.handleMessage("Can't find path: " + path, 
+				LogManager.recordMessage("Can't find path: " + path, 
                         "Java2DSpriteStore#getSprite");
 			}
 
@@ -90,7 +91,7 @@ public class Java2DSpriteStore
 		}
 		catch (IOException e)
 		{
-			Util.handleMessage("Failed to load: " + path,
+			LogManager.recordMessage("Failed to load: " + path,
                     "Java2DSpriteStore#getSprite");
 		}
 

@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.java2d;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.LogManager;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Font;
 import java.io.InputStream;
@@ -65,13 +66,13 @@ public class Java2DFontStore
             }
             catch(Exception e)
             {
-                Util.handleException(e);
+                LogManager.handleException(e);
             }
         }
         // Otherwise, derive all other fonts from the size 1.        
         else
         {
-            Util.handleMessage("Font size " + size + " created.", 
+            LogManager.recordMessage("Font size " + size + " created.", 
                     "Java2DFontStore#getFont");
             Font base = (Font) getFont(new Integer(1));
             Font font = base.deriveFont((float) size);

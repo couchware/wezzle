@@ -8,6 +8,7 @@ import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
 import ca.couchware.wezzle2d.audio.AudioTrack;
 
 import ca.couchware.wezzle2d.piece.*;
@@ -34,6 +35,11 @@ import java.util.Set;
 
 public class PieceManager implements MouseListener, MouseMotionListener
 {	
+    private static int SLOW_SPEED_INVERSE = 125;
+    private static int FAST_SPEED_INVERSE = 20;
+    private static double SLOW_SPEED = 1.0 / (double) SLOW_SPEED_INVERSE;
+    private static double FAST_SPEED = 1.0 / (double) FAST_SPEED_INVERSE;
+    
     // -------------------------------------------------------------------------
     // Private Members
     // -------------------------------------------------------------------------       
@@ -332,7 +338,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
        return (y - boardMan.getY()) / boardMan.getCellHeight(); 
     }
     
-    private void startAnimationAt(final WPosition p, int period)
+    private void startAnimationAt(final WPosition p, double speed)
     {
         // Add new animations.
         Set<Integer> indexSet = new HashSet<Integer>();
@@ -347,12 +353,13 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 continue;
 
             // Make sure they have a pulse animation.                   
-            t.setAnimation(new PulseAnimation(t, period));    
+            t.setAnimation(new ZoomAnimation.Builder(ZoomType.LOOP_IN, t)
+                    .minWidth(t.getWidth() - 8).v(speed).end());
             animationMan.add(t.getAnimation());
         }
     }
     
-    private void adjustAnimationAt(final WPosition p, int period)
+    private void adjustAnimationAt(final WPosition p, double speed)
     {
         Set<Integer> indexSet = new HashSet<Integer>();
         getSelectedIndexSet(p, indexSet, null);
@@ -367,10 +374,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
                         
             IAnimation a = t.getAnimation();
             
-            if (a == null || a instanceof PulseAnimation == false)
+            if (a == null || a instanceof ZoomAnimation == false)
                 continue;
             
-            ((PulseAnimation) a).setPeriod(period);
+            ((ZoomAnimation) a).v(speed);            
         }
     }
     
@@ -543,7 +550,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     {
                         if (tileDropped[i] != null)
                         {           
-                            IAnimation a = new ZoomInAnimation(tileDropped[i]);
+                            //IAnimation a = new ZoomInAnimation(tileDropped[i]);
+                            IAnimation a = new ZoomAnimation
+                                    .Builder(ZoomType.OUT, tileDropped[i])
+                                    .v(0.05).end();
                             tileDropped[i].setAnimation(a);
                             animationMan.add(a);
                         }
@@ -605,7 +615,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             else if (isMouseRightReleased() == true)
             {
                 // Rotate the piece.            
-                stopAnimationAt(pieceGrid.getXYPosition());
+                stopAnimation();
                 
                 piece.rotate();
                 pieceGrid.setXYPosition(adjustPosition(
@@ -613,7 +623,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 pieceGrid.setDirty(true);                                
                 
                 if (pieceGrid.isVisible() == true)
-                    startAnimationAt(pieceGrid.getXYPosition(), 120);
+                    startAnimationAt(pieceGrid.getXYPosition(), SLOW_SPEED);
 
                 // Reset flag.
                 clearMouseButtons();
@@ -624,10 +634,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 // Filter the current position.
                 WPosition ap = adjustPosition(p);
 
-                int period = Util.scaleInt(
-                        0, game.timerMan.getInitialTime(), 
-                        20, 120, 
-                        game.timerMan.getTime());
+                double speed = 1.0 / (double) 
+                        Util.scaleInt(0, game.timerMan.getInitialTime(), 
+                            FAST_SPEED_INVERSE, SLOW_SPEED_INVERSE, 
+                            game.timerMan.getTime());
                 
                 // If the position changed, or the board was refactored.
                 if (ap.getX() != pieceGrid.getX()
@@ -646,11 +656,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
                                         
                     // Start new animation.   
                     if (pieceGrid.isVisible() == true)
-                        startAnimationAt(ap, period);
+                        startAnimationAt(ap, speed);
                 } 
                 else
                 {                                        
-                    adjustAnimationAt(pieceGrid.getXYPosition(), period);
+                    adjustAnimationAt(pieceGrid.getXYPosition(), speed);
                 }
             } // end if
         } // end if
@@ -763,15 +773,18 @@ public class PieceManager implements MouseListener, MouseMotionListener
      * @param tiles
      * @return
      */
-    private boolean isAnimationDone(TileEntity [] tiles)
+    private boolean isAnimationDone(TileEntity[] tiles)
     {   
-        for (int i = 0; i < tiles.length; i++)
-        {
-            if (tiles[i] == null)
-                continue;
-            else if (tiles[i].getAnimation().isDone() == false)
+        for (TileEntity tile : tiles)
+        {            
+            if (tiles != null && tile.getAnimation().isDone() == false)
+            {
                 return false;  
-        }
+            }
+        } // end for
+        
+        for (TileEntity tile : tiles)
+            tile.setAnimation(null);
         
         return true;
     }
@@ -867,10 +880,10 @@ public class PieceManager implements MouseListener, MouseMotionListener
         this.mouseLeftReleased = mouseLeftReleased;
         
         if (mouseLeftReleased == true)
-            Util.handleMessage("Left mouse set.", 
+            LogManager.recordMessage("Left mouse set.", 
                     "PieceManager#setMouseLeftReleased");
         else
-            Util.handleMessage("Left mouse cleared.", 
+            LogManager.recordMessage("Left mouse cleared.", 
                     "PieceManager#setMouseLeftReleased");
     }
 
@@ -985,7 +998,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 break;
                 
             default:
-                Util.handleMessage("No recognized button pressed.", 
+                LogManager.recordMessage("No recognized button pressed.", 
                         "PieceManager#mouseReleased");
         }
 	}

@@ -220,7 +220,7 @@ public class MusicManager
                 }
                 catch (Exception e) 
                 { 
-                    Util.handleException(e); 
+                    LogManager.handleException(e); 
                 }
             }
         });
@@ -259,7 +259,7 @@ public class MusicManager
                 }
                 catch (Exception e) 
                 { 
-                    Util.handleException(e); 
+                    LogManager.handleException(e); 
                 }
             }
         }.start();

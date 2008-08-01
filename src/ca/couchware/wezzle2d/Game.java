@@ -14,6 +14,7 @@ import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import static ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
 import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.tutorial.*;
@@ -56,12 +57,7 @@ public class Game extends Canvas implements GameWindowCallback
 {	  
     //--------------------------------------------------------------------------
     // Static Members
-    //--------------------------------------------------------------------------
-    
-    /**
-     * The platform specific newline character.
-     */
-    public static String NL = System.getProperty("line.separator");
+    //--------------------------------------------------------------------------        
                 
     /**
      * The refator types.
@@ -549,8 +545,8 @@ public class Game extends Canvas implements GameWindowCallback
         }
         catch (Exception e)
         {
-            Util.handleException(e);
-            Util.handleWarning("Could not find build number at: "
+            LogManager.handleException(e);
+            LogManager.recordWarning("Could not find build number at: "
                     + BUILD_NUMBER_PATH + "!",
                     "Game#this");
             buildNumber = "???";
@@ -562,11 +558,11 @@ public class Game extends Canvas implements GameWindowCallback
         }
         
         // Print the build number.
-        Util.handleMessage("Wezzle Build " + buildNumber + " @ " + (new Date()));   
-        Util.handleMessage("Java Version: " + System.getProperty("java.version"));
-        Util.handleMessage("OS Name: " + System.getProperty("os.name"));
-        Util.handleMessage("OS Architecture: " + System.getProperty("os.arch"));
-        Util.handleMessage("OS Version: " + System.getProperty("os.version"));
+        LogManager.handleMessage("Wezzle Build " + buildNumber + " @ " + (new Date()));   
+        LogManager.handleMessage("Java Version: " + System.getProperty("java.version"));
+        LogManager.handleMessage("OS Name: " + System.getProperty("os.name"));
+        LogManager.handleMessage("OS Architecture: " + System.getProperty("os.arch"));
+        LogManager.handleMessage("OS Version: " + System.getProperty("os.version"));
         
 		// Create a window based on a chosen rendering method.
 		ResourceFactory.get().setRenderingType(renderType);		        
@@ -588,11 +584,11 @@ public class Game extends Canvas implements GameWindowCallback
 		}
 		catch (InterruptedException e)
 		{
-			Util.handleException(e);
+			LogManager.handleException(e);
 		}
 		catch (InvocationTargetException e)
 		{
-			Util.handleException(e);
+			LogManager.handleException(e);
 		}		
 	}
 
@@ -738,7 +734,7 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreButton = new SpriteButton.Builder(window, 128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(ButtonType.LARGE).text("")
-                .normalOpacity(0).hoverOpacity(70).activeOpacity(100).end();
+                .normalOpacity(0).hoverOpacity(70).activeOpacity(95).end();
         layerMan.add(highScoreButton, Game.LAYER_UI);
                 
         // Create pause button.        
@@ -1029,7 +1025,7 @@ public class Game extends Canvas implements GameWindowCallback
     
     public void startGameOver()
     {
-        Util.handleMessage("Game over!", "Game#frameRendering");
+        LogManager.recordMessage("Game over!", "Game#frameRendering");
 
         // Add the new score.
         highScoreMan.addScore("Tester", scoreMan.getTotalScore());
@@ -1221,7 +1217,7 @@ public class Game extends Canvas implements GameWindowCallback
                     pieceMan.getPieceGrid().setVisible(false);
                     pieceMan.stopAnimation();
                     
-                    Util.handleMessage("Level up!!!", "Game#frameRendering");
+                    LogManager.recordMessage("Level up!!!", "Game#frameRendering");
                     worldMan.levelUp(this);
                     
                     this.activateLineRemoval = true;
@@ -1518,7 +1514,9 @@ public class Game extends Canvas implements GameWindowCallback
                         }
                         else                        
                         {
-                            t.setAnimation(new ZoomOutAnimation(t));                        
+//                            t.setAnimation(new ZoomOutAnimation(t));                        
+                            t.setAnimation(new ZoomAnimation
+                                    .Builder(ZoomType.IN, t).v(0.05).end());
                             animationMan.add(t.getAnimation());
                         }
                     }
@@ -1976,7 +1974,7 @@ public class Game extends Canvas implements GameWindowCallback
             // Draw the high score text.
             if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
             {
-                Util.handleMessage("New high score label created.");
+                LogManager.handleMessage("New high score label created.");
                 layerMan.remove(highScoreLabel, LAYER_UI);
                 highScoreLabel = new LabelBuilder(highScoreLabel)
                         .text(String.valueOf(scoreMan.getHighScore())).end();
@@ -2049,6 +2047,8 @@ public class Game extends Canvas implements GameWindowCallback
         {                       
             updated = layerMan.drawRegion(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);         
         }        
+        
+        //Util.handleMessage(layerMan.toString());
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
@@ -2107,23 +2107,22 @@ public class Game extends Canvas implements GameWindowCallback
 	 * Notification that the game window has been closed
 	 */
 	public void windowClosed()
-	{
-        if (this.propertyMan != null)
-        {            
-            try
-            {
-                propertyMan.saveProperties();
-            }
-            catch(Exception e)
-            {
-                Util.handleException(e);
-            }
-        }
-        else
+	{                    
+        try
         {
-            // Do nothin. The property man is not yet initialized.
+            // Save the properites.
+            if (propertyMan != null)        
+                propertyMan.saveProperties();
+
+            // Save the log data.            
+            LogManager.write();
         }
-		System.exit(0);
+        catch(Exception e)
+        {
+            LogManager.handleException(e);
+        }        
+        
+     	System.exit(0);
 	}        
     
     /**
@@ -2183,7 +2182,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
         catch (Exception e)
         {
-            Util.handleException(e);
+            LogManager.handleException(e);
         }
 	}    
   

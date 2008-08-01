@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 
 import ca.couchware.wezzle2d.GameWindow;
 import ca.couchware.wezzle2d.GameWindowCallback;
+import ca.couchware.wezzle2d.LogManager;
 import ca.couchware.wezzle2d.util.Keyboard;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
@@ -218,12 +219,12 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 		catch (InterruptedException e)
 		{
 			// TODO Auto-generated catch block
-			Util.handleException(e);
+			LogManager.handleException(e);
 		}
 		catch (InvocationTargetException e)
 		{
 			// TODO Auto-generated catch block
-			Util.handleException(e);
+			LogManager.handleException(e);
 		}		
 
 		// If we have a callback registered then notify
@@ -287,7 +288,7 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	 */
 	private void gameLoop()
 	{
-        Util.handleMessage("Game loop started.", "Java2DGameWindow#gameLoop");
+        LogManager.recordMessage("Game loop started.", "Java2DGameWindow#gameLoop");
         
         // Did the screen get updated?
         boolean updated = false;

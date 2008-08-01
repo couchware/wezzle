@@ -130,7 +130,7 @@ public class GroupManager
         layerMan.hide(Game.LAYER_TILE);
         layerMan.hide(Game.LAYER_EFFECT);
         
-        Util.handleMessage("Groups open: " + entryList.size(), 
+        LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#showGroup");
     }    
     
@@ -179,7 +179,7 @@ public class GroupManager
         else
             entryList.getFirst().getGroup().setVisible(true);
         
-        Util.handleMessage("Groups open: " + entryList.size(), 
+        LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#hideGroup");
     }   
     
@@ -209,7 +209,7 @@ public class GroupManager
         else
             entryList.getFirst().getGroup().setVisible(true);
         
-        Util.handleMessage("Groups open: " + entryList.size(), 
+        LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#hideGroup");
     }
     

@@ -415,7 +415,7 @@ public class BoardManager implements IManager
 			// Check if we have a match.
 			if (j >= minimumMatch)
 			{
-				Util.handleMessage("XMatch of length " + j + " found.",
+				LogManager.recordMessage("XMatch of length " + j + " found.",
                         "BoardManager#findXMatch");
                 
                 lineCount++;
@@ -476,7 +476,7 @@ public class BoardManager implements IManager
 			// Check if we have a match.
 			if (j >= minimumMatch)
 			{
-				Util.handleMessage("YMatch of length " + j + " found.", 
+				LogManager.recordMessage("YMatch of length " + j + " found.", 
                         "BoardManager#findYMatch");
 				
                 lineCount++;
@@ -776,7 +776,7 @@ public class BoardManager implements IManager
         // If this is an item, increment the count.
         if (t.getClass() != TileEntity.class)
         {
-            Util.handleMessage("Item added.", "BoardManager#addTile");
+            LogManager.recordMessage("Item added.", "BoardManager#addTile");
             this.incrementNumberOfItems();                
         }
                        
@@ -838,7 +838,7 @@ public class BoardManager implements IManager
         }
         catch (Exception ex)
         {
-            Util.handleException(ex);
+            LogManager.handleException(ex);
             return null;
         }        
         
@@ -1504,7 +1504,7 @@ public class BoardManager implements IManager
             TileEntity t = getTile(index); 
             
             if (t == null)
-                Util.handleWarning("Tile was null: " + index , 
+                LogManager.recordWarning("Tile was null: " + index , 
                         "BoardManager#determineCenterPoint");
 
             if (t.getX() < l) 
@@ -1686,7 +1686,7 @@ public class BoardManager implements IManager
     
     public void setVisible(boolean visible)
     {        
-        Util.handleMessage("Board visible: " + visible + ".", 
+        LogManager.recordMessage("Board visible: " + visible + ".", 
                 "BoardManager#setVisible");
         
         for (TileEntity tile : board)
@@ -1715,8 +1715,8 @@ public class BoardManager implements IManager
         managerState.put(Keys.BOARD, board.clone());
         managerState.put(Keys.SCRATCH_BOARD, scratchBoard.clone());
         
-        Util.handleMessage("Saved " + numberOfTiles + " tiles.");  
-        Util.handleMessage("Saved " + numberOfItems + " items.");
+        LogManager.handleMessage("Saved " + numberOfTiles + " tiles.");  
+        LogManager.handleMessage("Saved " + numberOfItems + " items.");
     }
 
     @SuppressWarnings("unchecked") 
@@ -1735,8 +1735,8 @@ public class BoardManager implements IManager
         // Make sure that this board is in the layer manager.
         layerize();
         
-        Util.handleMessage("Loaded " + numberOfTiles + " tiles.");
-        Util.handleMessage("Loaded " + numberOfItems + " items.");
+        LogManager.handleMessage("Loaded " + numberOfTiles + " tiles.");
+        LogManager.handleMessage("Loaded " + numberOfItems + " items.");
     }
 
 }

@@ -237,7 +237,7 @@ public class SoundManager
                 }
                 catch (Exception e) 
                 { 
-                    Util.handleException(e); 
+                    LogManager.handleException(e); 
                 }
             }
         });

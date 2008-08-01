@@ -103,7 +103,7 @@ public class HighScoreGroup extends Group
         // Create close button.
         closeButton = new SpriteButton.Builder(window, 400, 400)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .normalOpacity(70).visible(false).end();
+                .text("Close").normalOpacity(70).visible(false).end();
         layerMan.add(closeButton, Game.LAYER_UI);
         entityList.add(closeButton);
     }
