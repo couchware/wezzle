@@ -44,7 +44,7 @@ public class RocketTileEntity extends ItemTileEntity
     /**
      * The direction of the rocket.
      */
-    private final Direction direction;         
+    private Direction direction;         
     
     /**
      * The constructor.
@@ -64,26 +64,30 @@ public class RocketTileEntity extends ItemTileEntity
         direction = values[Util.random.nextInt(values.length)];
         
         // Set the item theta.
+        itemTheta = determineItemTheta(direction);
+    }              
+    
+    final private double determineItemTheta(Direction direction)
+    {
+        // Set the item theta.
         switch (direction)
         {
             case UP:
-                // Do nothing, it is already pointing up.
-                break;
+                return 0;                
                 
             case DOWN:
-                itemTheta = Math.toRadians(180);
-                break;
+                return Math.toRadians(180);                
                 
             case LEFT:
-                itemTheta = Math.toRadians(-90);
-                break;
+                return Math.toRadians(-90);                
                 
             case RIGHT:
-                itemTheta = Math.toRadians(90);
-                break;
+                return Math.toRadians(90);
+                
+            default: throw new AssertionError();
         }
-    }          
-
+    }
+    
     public double getItemRotation()
     {
         return itemTheta;
@@ -97,6 +101,12 @@ public class RocketTileEntity extends ItemTileEntity
     public Direction getDirection()
     {
         return direction;
-    }   
+    } 
+    
+    public void setDirection(Direction direction)
+    {
+        this.direction = direction;
+        this.itemTheta = determineItemTheta(direction);
+    }
     
 }

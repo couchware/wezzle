@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.piece.PieceType;
+import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.ui.ILabel;
@@ -30,7 +31,7 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class BasicTutorial extends AbstractTutorial
+public class RocketTutorial extends AbstractTutorial
 {          
     
     /**
@@ -61,13 +62,13 @@ public class BasicTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public BasicTutorial()
+    public RocketTutorial()
     {
         // Set the name.
-        super("Basic Tutorial");
+        super("Rocket Tutorial");
         
-        // This tutorial has a single rule.  It activates on level one.        
-        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));
+        // This tutorial has a single rule.  It activates on level 4.        
+        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 4));
     }
     
     public void initialize(final Game game)
@@ -84,13 +85,16 @@ public class BasicTutorial extends AbstractTutorial
         game.worldMan.setGameInProgress(false);
         
         // Slow down refactor so the user can see more clearly what happens.
-        game.setRefactorSpeed(50);
+        game.setRefactorSpeed(100);
         
          // Set restriction board so that only the bottom left corner is
         // clickable.
         game.pieceMan.clearRestrictionBoard();
         game.pieceMan.reverseRestrictionBoard();
         game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
+        game.pieceMan.setRestrictionCell(1, game.boardMan.getRows() - 3, true);
+        game.pieceMan.setRestrictionCell(2, game.boardMan.getRows() - 1, true);
+        game.pieceMan.setRestrictionCell(2, game.boardMan.getRows() - 2, true);
         
         // Create the text that instructs the user to click the block.        
         labelList = new ArrayList<ILabel>();
@@ -100,19 +104,19 @@ public class BasicTutorial extends AbstractTutorial
         label = new LabelBuilder(280, 166)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .color(Game.TEXT_COLOR).size(16)
-                .text("Lines are made by lining").end();
+                .text("Rockets destroy all tiles").end();
         game.layerMan.add(label, Game.LAYER_EFFECT);   
         labelList.add(label);
         
         // Line 2.
         label = new LabelBuilder(label).y(166 + 24)
-                .text("up 3 tiles of the same").end();
+                .text("in their path. Get one in a").end();
         game.layerMan.add(label, Game.LAYER_EFFECT);                 
         labelList.add(label);
         
         // Line 3.
         label = new LabelBuilder(label).y(166 + 24 + 24)
-                .text("colour.").end();
+                .text("line to fire it.").end();
         game.layerMan.add(label, Game.LAYER_EFFECT);                                 
         labelList.add(label);
         
@@ -129,9 +133,10 @@ public class BasicTutorial extends AbstractTutorial
         // The speech bubble will be positioned over the button right
         // corner of the board.
         bubble = new SpeechBubble.Builder(
-                    game.boardMan.getX() + game.boardMan.getCellWidth() / 2,
+                    game.boardMan.getX() + game.boardMan.getCellWidth()
+                        + game.boardMan.getCellWidth() / 2,
                     game.boardMan.getY() + game.boardMan.getHeight() 
-                        - game.boardMan.getCellHeight())
+                        - game.boardMan.getCellHeight() * 3)
                 .type(BubbleType.VERTICAL).text("Click here").end();                
         game.layerMan.add(bubble, Game.LAYER_EFFECT);   
         game.layerMan.toFront(bubble, Game.LAYER_EFFECT);           
@@ -145,22 +150,7 @@ public class BasicTutorial extends AbstractTutorial
          // Create continue button, using the repeat button as a template.
         continueButton = new SpriteButton.Builder((SpriteButton) repeatButton)
                 .y(370).text("Continue").end();
-        game.layerMan.add(continueButton, Game.LAYER_EFFECT);   
-        
-        // Fade the old board out.
-//        final EntityGroup e = 
-//                game.boardMan.getTiles(0, game.boardMan.getCells() - 1); 
-//        
-//        IAnimation a = new FadeAnimation.Builder(FadeType.OUT, e)
-//                .wait(0).duration(500).end();             
-//        game.animationMan.add(a);        
-//                
-//        game.layerMan.add(e, Game.LAYER_EFFECT);        
-//        a.setFinishAction(new Runnable()
-//        {
-//            public void run()
-//            { game.layerMan.remove(e, Game.LAYER_EFFECT); }
-//        });
+        game.layerMan.add(continueButton, Game.LAYER_EFFECT);                   
         
         // Run the repeat tutorial method, that sets up the things that must
         // be reset each time the tutorial is run.
@@ -186,29 +176,17 @@ public class BasicTutorial extends AbstractTutorial
                                     
             // Fade in two new buttons.
             FadeAnimation f;                        
-             
-            //f = new FadeAnimation(FadeType.IN, 100, 500, repeatButton);
-            //f.setMaxOpacity(70);
+            
             f = new FadeAnimation.Builder(FadeType.IN, repeatButton)
                     .wait(100).duration(500).maxOpacity(70).end();            
             game.animationMan.add(f);
-                         
-            //f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
-            //f.setMaxOpacity(70);
+                                  
             f = new FadeAnimation.Builder(FadeType.IN, continueButton)
                     .wait(100).duration(500).maxOpacity(70).end();
             game.animationMan.add(f);
             
             // Menu is now shown.
             menuShown = true;
-            
-            // Create the confirm window.
-//            confirmWindow = new Window(game.getGameWindow(), 
-//                    400, 300, 
-//                    310, 150);
-//            confirmWindow.setAlignment(
-//                    EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));            
-//            game.layerMan.add(confirmWindow, Game.LAYER_EFFECT);            
             
             return true;
         }
@@ -312,13 +290,9 @@ public class BasicTutorial extends AbstractTutorial
     {        
         // Clear it first.
         game.boardMan.clearBoard();
-                
-        // Create bottom row.        
-        TileEntity t = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.RED);
-        
+         
         // Set a click action.
-        t.setClickAction(new Runnable()
+        Runnable r = new Runnable()
         {           
            public void run()
            {               
@@ -327,29 +301,65 @@ public class BasicTutorial extends AbstractTutorial
                        .wait(0).duration(500).end();
                game.animationMan.add(f);       
            }
-        });                
+        };                   
+        
+        // Create bottom row.        
+        TileEntity t1 = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
+                TileEntity.class, TileColor.RED);                         
+        t1.setClickAction(r);
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
                 TileEntity.class, TileColor.BLUE);
         
-        game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.BLUE);
+        TileEntity t2 = game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
+                TileEntity.class, TileColor.RED);
+        t2.setClickAction(r);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.YELLOW);
+                TileEntity.class, TileColor.BLUE);
+        
+        game.boardMan.createTile(4, game.boardMan.getRows() - 1, 
+                TileEntity.class, TileColor.GREEN);
+        
+        game.boardMan.createTile(5, game.boardMan.getRows() - 1, 
+                TileEntity.class, TileColor.BLUE);
         
         // Create second-from-bottom row.
         game.boardMan.createTile(0, game.boardMan.getRows() - 2, 
                 TileEntity.class, TileColor.BLUE);
         
-        game.boardMan.createTile(1, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.BLUE);
+        // Create the rocket.     
+        RocketTileEntity rocket = (RocketTileEntity) game.boardMan.createTile(
+                1, game.boardMan.getRows() - 2, 
+                RocketTileEntity.class, TileColor.BLUE);
+        rocket.setDirection(RocketTileEntity.Direction.RIGHT);
         
-        game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.PURPLE);
+        TileEntity t3 = game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
+                TileEntity.class, TileColor.RED);
+        t3.setClickAction(r);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
+                TileEntity.class, TileColor.BLUE);
+        
+        game.boardMan.createTile(4, game.boardMan.getRows() - 2, 
+                TileEntity.class, TileColor.GREEN);
+        
+        game.boardMan.createTile(5, game.boardMan.getRows() - 2, 
                 TileEntity.class, TileColor.YELLOW);
+        
+        // Create third-from-bottom row.
+        game.boardMan.createTile(0, game.boardMan.getRows() - 3, 
+                TileEntity.class, TileColor.BLUE);     
+        
+        TileEntity t4 = game.boardMan.createTile(1, game.boardMan.getRows() - 3, 
+                TileEntity.class, TileColor.RED);
+        t4.setClickAction(r);
+        
+        game.boardMan.createTile(2, game.boardMan.getRows() - 3, 
+                TileEntity.class, TileColor.BLUE);
+        
+        game.boardMan.createTile(3, game.boardMan.getRows() - 3, 
+                TileEntity.class, TileColor.GREEN);
         
         game.boardMan.setVisible(true);
     }   
