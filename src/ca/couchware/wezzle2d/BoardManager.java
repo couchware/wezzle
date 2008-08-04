@@ -10,12 +10,14 @@ import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -287,7 +289,7 @@ public class BoardManager implements IManager
         }      
 		
 		shuffleBoard();
-		refactorBoard();
+		instantRefactorBoard();
 		
 		HashSet<Integer> set = new HashSet<Integer>();		
 
@@ -336,46 +338,86 @@ public class BoardManager implements IManager
 	/**
 	 * An instant refactor used for generating boards.
 	 */
-	private void refactorBoard()
-	{      
-        // Check the gravity vertical direction.  It is in if-else format
-        // because having a gravity of both up and down would not make sense.                        
-        if (gravity.contains(Direction.DOWN))
+	private void instantRefactorBoard()
+	{
+        // Check the vertical direction.
+        if (gravity.contains(Direction.DOWN) == true)
         {
-            startShift(Direction.DOWN, 200);
             for (int i = 0; i < cells; i++)
-                if (board[i] != null)
-                    board[i].setYMovement(rows * cellHeight);
+            {
+                TileEntity tile = board[i];
+                if (tile == null) continue;
+                
+                int tiles = countTilesInDirection(Direction.DOWN, i);
+                int bound = calculateBound(Direction.DOWN, tiles);
+                
+                if (bound != board[i].getY())
+                {
+                    board[i].setY(bound);
+                    //synchronizeTile(board[i]);
+                    //board[i] = null;
+                }                             
+            }
         }
         else
         {
-            startShift(Direction.UP, 200);
             for (int i = 0; i < cells; i++)
-                if (board[i] != null)
-                    board[i].setYMovement(-rows * cellHeight);
-        }		
+            {
+                TileEntity tile = board[i];
+                if (tile == null) continue;
+                
+                int tiles = countTilesInDirection(Direction.UP, i);
+                int bound = calculateBound(Direction.UP, tiles);
+                
+                if (bound != board[i].getY())
+                {
+                    board[i].setY(bound);
+                    //synchronizeTile(board[i]);
+                    //board[i] = null;
+                }
+            }
+        }     
+                
+        synchronize();
         
-		moveAll(1000);		
-		synchronize();
-		
-        // Check the gravity horizontal direction.
-        if (gravity.contains(Direction.LEFT))
+        // Check the horizontal direction.
+        if (gravity.contains(Direction.LEFT) == true)
         {
-            startShift(Direction.LEFT, 200);
             for (int i = 0; i < cells; i++)
-                if (board[i] != null)
-                    board[i].setXMovement(-columns * cellWidth);
+            {
+                TileEntity tile = board[i];
+                if (tile == null) continue;
+                
+                int tiles = countTilesInDirection(Direction.LEFT, i);
+                int bound = calculateBound(Direction.LEFT, tiles);
+                
+                if (bound != board[i].getX())
+                {
+                    board[i].setX(bound);
+                    //synchronizeTile(board[i]);
+                    //board[i] = null;
+                }
+            }
         }
         else
         {
-            startShift(Direction.RIGHT, 200);
             for (int i = 0; i < cells; i++)
-                if (board[i] != null)
-                    board[i].setXMovement(columns * cellWidth);
-        }
-		        
-		moveAll(1000);		
-		synchronize();
+            {
+                TileEntity tile = board[i];
+                if (tile == null) continue;
+                
+                int tiles = countTilesInDirection(Direction.RIGHT, i);
+                int bound = calculateBound(Direction.RIGHT, tiles);                
+                if (bound != board[i].getX())
+                {
+                    board[i].setX(bound);
+                    //synchronizeTile(board[i]);
+                    //board[i] = null;
+                }
+            }
+        } 
+        
+        synchronize();        
 	}
 	
 	/**
@@ -531,7 +573,7 @@ public class BoardManager implements IManager
         TileEntity[] swapBoard = board;
 		board = scratchBoard;
         scratchBoard = swapBoard;
-	}
+	}      
     
     /**
      * This method is used to re-add all the tiles to the layer manager if they
@@ -554,8 +596,18 @@ public class BoardManager implements IManager
      * @param direction
      * @param speed
      */
-    public void startShift(final Direction direction, final int speed)
+    public List<IAnimation> startShift(final Direction direction, final int speed)
     {
+        // The list of new animations made.
+        List<IAnimation> animationList = new ArrayList<IAnimation>();
+        
+        // The new animation.
+        IAnimation a;
+        int bound;
+        
+        // The v.
+        double v = (double) speed / 1000.0;
+        
         switch (direction)
         {
             case UP:
@@ -563,10 +615,16 @@ public class BoardManager implements IManager
                 for (int i = 0; i < cells; i++)
                 {
                     if (board[i] != null)
-                    {
-                        board[i].setYMovement(-speed);
-                        board[i].calculateBound(direction,
+                    {                                               
+//                        board[i].setYMovement(-speed);
+//                        board[i].calculateBound(direction,
+//                                countTilesInDirection(direction, i));
+                        bound = calculateBound(direction,
                                 countTilesInDirection(direction, i));
+                        
+                        a = new MoveAnimation.Builder(board[i]).v(v)
+                                .minX(board[i].getX()).minY(bound).theta(90).end();                        
+                        animationList.add(a);
                     }
                 }  
                 
@@ -578,9 +636,15 @@ public class BoardManager implements IManager
                 {
                     if (board[i] != null)
                     {
-                        board[i].setYMovement(+speed);
-                        board[i].calculateBound(direction,
+//                        board[i].setYMovement(+speed);
+//                        board[i].calculateBound(direction,
+//                                countTilesInDirection(direction, i));
+                        bound = calculateBound(direction,
                                 countTilesInDirection(direction, i));
+                        
+                        a = new MoveAnimation.Builder(board[i]).v(v)
+                                .minX(board[i].getX()).maxY(bound).theta(-90).end();                        
+                        animationList.add(a);
                     }
                 }  
                 
@@ -593,9 +657,15 @@ public class BoardManager implements IManager
                 {
                     if (board[i] != null)
                     {
-                        board[i].setXMovement(-speed);
-                        board[i].calculateBound(direction,
+//                        board[i].setXMovement(-speed);
+//                        board[i].calculateBound(direction,
+//                                countTilesInDirection(direction, i));
+                        bound = calculateBound(direction,
                                 countTilesInDirection(direction, i));
+                        
+                        a = new MoveAnimation.Builder(board[i]).v(v)
+                                .minX(bound).minY(board[i].getY()).theta(180).end();                        
+                        animationList.add(a);
                     }
                 }
                 
@@ -608,17 +678,25 @@ public class BoardManager implements IManager
                 {
                     if (board[i] != null)
                     {
-                        board[i].setXMovement(+speed);
-                        board[i].calculateBound(direction,
+//                        board[i].setXMovement(+speed);
+//                        board[i].calculateBound(direction,
+//                                countTilesInDirection(direction, i));
+                        bound = calculateBound(direction,
                                 countTilesInDirection(direction, i));
+                        
+                        a = new MoveAnimation.Builder(board[i]).v(v)
+                                .maxX(bound).minY(board[i].getY()).theta(0).end();                        
+                        animationList.add(a);
                     }
                 }
                 
                 break;
                 
             default:
-                throw new IllegalStateException("Unknown direction.");
+                throw new AssertionError();                           
         }              
+        
+        return animationList;
     }    	
     
     /**
@@ -627,12 +705,12 @@ public class BoardManager implements IManager
      * 
      * @param speed
      */
-    public void startVerticalShift(final int speed)
+    public List<IAnimation> startVerticalShift(final int speed)
     {
         if (gravity.contains(Direction.DOWN))
-            startShift(Direction.DOWN, speed);
+            return startShift(Direction.DOWN, speed);
         else
-            startShift(Direction.UP, speed);
+            return startShift(Direction.UP, speed);
     }
     
     /**
@@ -641,37 +719,37 @@ public class BoardManager implements IManager
      * 
      * @param speed
      */
-    public void startHorizontalShift(final int speed)
+    public List<IAnimation> startHorizontalShift(final int speed)
     {
         if (gravity.contains(Direction.LEFT))
-            startShift(Direction.LEFT, speed);
+            return startShift(Direction.LEFT, speed);
         else
-            startShift(Direction.RIGHT, speed);
+            return startShift(Direction.RIGHT, speed);
     }
     
 	/**
 	 * Moves all currently moving tiles.
 	 * @returns True if there is still more moving to happen.
 	 */
-	public boolean moveAll(long delta)
-	{
-		// Set to true if there are more movement to happen.
-		boolean moreMovement = false;
-		
-		for (int i = 0; i < cells; i++)		
-			if (board[i] != null)
-			{
-				board[i].move(delta);
-				if (board[i].getXMovement() != 0 
-						|| board[i].getYMovement() != 0)
-					moreMovement = true;
-			}
-		
-        // Dirty board.
-        setDirty(true);
-        
-		return moreMovement;
-	}    
+//	public boolean moveAll(long delta)
+//	{
+//		// Set to true if there are more movement to happen.
+//		boolean moreMovement = false;
+//		
+//		for (int i = 0; i < cells; i++)		
+//			if (board[i] != null)
+//			{
+//				board[i].move(delta);
+//				if (board[i].getXMovement() != 0 
+//						|| board[i].getYMovement() != 0)
+//					moreMovement = true;
+//			}
+//		
+//        // Dirty board.
+//        setDirty(true);
+//        
+//		return moreMovement;
+//	}    
 	
 	/**
 	 * Counts all the tiles that are under the tile at the specified
@@ -762,6 +840,30 @@ public class BoardManager implements IManager
         // Return the count.
         return count;
     }    
+    
+    public int calculateBound(Direction direction, int tileCount)
+    {
+        switch (direction)
+        {
+            case UP:
+                
+                return tileCount * getCellHeight();                
+                
+            case DOWN:
+                
+                return getY() + getHeight() - ((tileCount + 1) * getCellHeight());
+                
+            case LEFT:
+                
+                return getX() + (tileCount * getCellWidth());                
+                
+            case RIGHT:
+                
+                return getX() + getWidth() - ((tileCount + 1) * getCellWidth());
+                
+            default: throw new AssertionError();
+        }
+    }
     
     public void addTile(final int index, final TileEntity t)
     {

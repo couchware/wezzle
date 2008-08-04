@@ -34,6 +34,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -304,6 +305,11 @@ public class Game extends Canvas implements GameWindowCallback
      * If true, the board is currently being refactored leftward.
      */
 	private boolean refactorHorizontalInProgress = false;
+    
+    /**
+     * The current refactor animations.
+     */
+    private List<IAnimation> refactorAnimationList;
     
     /**
      * The refactor type.
@@ -1028,8 +1034,9 @@ public class Game extends Canvas implements GameWindowCallback
         LogManager.recordMessage("Game over!", "Game#frameRendering");
 
         // Add the new score.
-        highScoreMan.addScore("Tester", scoreMan.getTotalScore());
-        highScoreGroup.updateScoreLabels();
+        highScoreMan.addScore("TST", scoreMan.getTotalScore(), 
+                worldMan.getLevel());
+        highScoreGroup.updateLabels();
         
         // Activate the game over process.
         activateGameOver = true;
@@ -1297,13 +1304,22 @@ public class Game extends Canvas implements GameWindowCallback
                 switch (refactorType)
                 {
                     case NORMAL:
-                        boardMan.startVerticalShift(refactorSpeed);
+                        refactorAnimationList = 
+                                boardMan.startVerticalShift(refactorSpeed);
                         break;
                         
                     case DROP:
-                        boardMan.startVerticalShift(dropSpeed);
+                        refactorAnimationList =
+                                boardMan.startVerticalShift(dropSpeed);
                         break;                    
+                        
+                    default: throw new AssertionError();
                 }
+                
+                // Add to the animation manager.
+                // No need to worry about removing them, that'll happen
+                // automatically when they are done.
+                animationMan.addAll(refactorAnimationList);
                 
                 refactorVerticalInProgress = true;
 
@@ -1314,8 +1330,16 @@ public class Game extends Canvas implements GameWindowCallback
             // See if we're down refactoring.
             if (refactorVerticalInProgress == true)
             {
-                if (boardMan.moveAll(delta) == false)
-                {			
+                boolean done = true;
+                for (IAnimation a : refactorAnimationList)
+                    if (a.isDone() == false)
+                        done = false;
+                
+                if (done == true)
+                {		
+                    // Clear the animation list.
+                    refactorAnimationList = null;
+                    
                     // Clear down flag.
                     refactorVerticalInProgress = false;
 
@@ -1327,14 +1351,23 @@ public class Game extends Canvas implements GameWindowCallback
                     switch (refactorType)
                     {
                         case NORMAL:
-                             boardMan.startHorizontalShift(refactorSpeed);
+                            refactorAnimationList = 
+                                    boardMan.startHorizontalShift(refactorSpeed);
                             break;
 
                         case DROP:
-                             boardMan.startHorizontalShift(dropSpeed);
-                            break;                    
+                            refactorAnimationList = 
+                                    boardMan.startHorizontalShift(dropSpeed);
+                            break; 
+                            
+                        default: throw new AssertionError();
                     }
-                                       
+                         
+                    // Add to the animation manager.
+                    // No need to worry about removing them, that'll happen
+                    // automatically when they are done.
+                    animationMan.addAll(refactorAnimationList);
+                    
                     refactorHorizontalInProgress = true;								
                 }
             } // end if
@@ -1342,8 +1375,16 @@ public class Game extends Canvas implements GameWindowCallback
             // See if we're left refactoring.
             if (refactorHorizontalInProgress == true)
             {
-                if (boardMan.moveAll(delta) == false)
-                {
+                boolean done = true;
+                for (IAnimation a : refactorAnimationList)
+                    if (a.isDone() == false)
+                        done = false;
+                
+                if (done == true)
+                {		
+                    // Clear the animation list.
+                    refactorAnimationList = null;
+                    
                     // Clear left flag.
                     refactorHorizontalInProgress = false;
 

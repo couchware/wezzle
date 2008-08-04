@@ -56,7 +56,8 @@ public class ItemTileEntity extends TileEntity
         super.draw();        
         
         // Draw bomb on top of it.
-        itemSprite.draw((int) x2, (int) y2, width, height, itemTheta, opacity);
+        //itemSprite.draw((int) x2, (int) y2, width, height, itemTheta, opacity);
+        itemSprite.draw(x, y, width, height, itemTheta, opacity);
     }
 
     public double getItemTheta()

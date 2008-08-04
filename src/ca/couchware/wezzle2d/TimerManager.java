@@ -85,7 +85,7 @@ public class TimerManager
 	 */
 	public void setTime(int time)
 	{
-		assert(time > 0);
+		assert time >= 0;
 		
 		this.currentTime = time;
 	}

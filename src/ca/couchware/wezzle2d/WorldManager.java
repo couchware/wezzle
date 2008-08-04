@@ -411,7 +411,7 @@ public class WorldManager
      * Get the parallel drop in amount.
      * @return The amount.
      */
-    public int getParallelDropInAmount()
+    public int getParallelTileDropInAmount()
     {
         return this.parallelDropInAmount;
     }

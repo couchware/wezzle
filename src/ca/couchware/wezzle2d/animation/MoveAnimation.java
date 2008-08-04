@@ -118,7 +118,7 @@ public class MoveAnimation extends AbstractAnimation
         private final IEntity entity;
         
         private int wait = 0;
-        private int duration = 750;
+        private int duration = -1;
         private int theta = 0;
         private double g = 0;   
         private double v = 0;
@@ -162,6 +162,7 @@ public class MoveAnimation extends AbstractAnimation
         {
             if (counter > wait + duration)
                 setDone(true);
+            
             return;
         }
         
@@ -179,20 +180,20 @@ public class MoveAnimation extends AbstractAnimation
             boolean doneX = false;
             boolean doneY = false;
             
-            if (newX < minX) 
+            if (newX <= minX) 
             { 
                 newX = minX; doneX = true;
             }
-            else if (newX > maxX) 
+            else if (newX >= maxX) 
             {
                 newX = maxX; doneX = true;
             }            
             
-            if (newY < minY) 
+            if (newY <= minY) 
             {
                 newY = minY; doneY = true;
             }
-            else if (newY > maxY)
+            else if (newY >= maxY)
             {
                 newY = maxY; doneY = true;
             }           
@@ -201,9 +202,12 @@ public class MoveAnimation extends AbstractAnimation
             entity.setY(newY);        
                     
             if (doneX == true && doneY == true)
-                skip = true;
+            {
+                if (duration == -1) setDone(true);
+                else skip = true;
+            }
             
-            if (counter > wait + duration)   
+            if (duration != - 1 && counter > wait + duration)   
                 setDone(true);                                                        
         }        
     }

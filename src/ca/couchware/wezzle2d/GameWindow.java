@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.WPosition;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -166,6 +167,6 @@ public interface GameWindow
      * 
      * @return The current mouse position.
      */
-    public Point getMousePosition();        
+    public WPosition getMouseWPosition();        
     
 }

@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  * @author Kevin, Cameron
  */
 public class HighScoreManager 
-{
+{        
     
     /**
      * The symbol indicating an empty name.
@@ -24,7 +24,7 @@ public class HighScoreManager
     /**
      * The prefix to use in the properties file.
      */
-    private final static String PREFIX = "wezzle.HighScore";
+    private final static String PREFIX = "wezzle.highScore";       
     
     /**
      * The number of high scores to keep track of.
@@ -78,17 +78,8 @@ public class HighScoreManager
      */
     public int getLowestScore()
     {
-        return this.highScoreList[this.highScoreList.length -1 ].getScore();
-    }
-    
-    /**
-     * Get the score list.
-     * @return the score list.
-     */
-    public HighScore[] getHighScoreList()
-    {
-        return this.highScoreList;
-    }
+        return this.highScoreList[highScoreList.length - 1].getScore();
+    }       
     
     /**
      * Add a score to the list. If the list has 10 values, 
@@ -101,20 +92,13 @@ public class HighScoreManager
      * @param key The key associated with the score.
      * @param score The score associated with the key.
      */
-    public void addScore(String key, int score)
+    public void addScore(String name, int score, int level)
     {
         // See if the score belongs on the list.
         if (score < getLowestScore())
             return;
         
-        HighScore newScore = new HighScore(key, score);
-        
-        // Check the lowest value, just incase.
-        if (newScore.getScore() < this.getLowestScore())
-        {
-            throw new IllegalStateException(
-                    "Error, adding high score lower than the lowest");                   
-        }
+        HighScore newScore = HighScore.newInstance(name, score, level);       
         
         // Add the score.
         this.highScoreList[this.highScoreList.length - 1] = newScore;
@@ -159,7 +143,9 @@ public class HighScoreManager
         for (int i = 0; i < highScoreList.length; i++)
         {
             this.propertyMan.setProperty(PREFIX + i, 
-                    highScoreList[i].getKey() + " " + highScoreList[i].getScore());
+                    highScoreList[i].getName() 
+                    + " " + highScoreList[i].getScore()
+                    + " " + highScoreList[i].getLevel());
         }
     }
     
@@ -183,19 +169,20 @@ public class HighScoreManager
             StringTokenizer tokenizer = new StringTokenizer(property); 
             String key = tokenizer.nextToken();
             int score = Integer.parseInt(tokenizer.nextToken());
+            int level = Integer.parseInt(tokenizer.nextToken());
             
-            highScoreList[i] = new HighScore(key, score);           
+            highScoreList[i] = HighScore.newInstance(key, score, level);           
         }
         
         return true;
     }
     
     /**
-     * reset the list.
+     * Reset the list.
      */
     public void resetScoreList()
     {
-        HighScore dummyScore = new HighScore("-", 0);
+        HighScore dummyScore = HighScore.newInstance("-", 0, 0);
         
         // Load with dummy scores.
         for (int i = 0; i < highScoreList.length; i++)        
@@ -206,15 +193,16 @@ public class HighScoreManager
     }
     
     /**
-     * Print the high score list to console.
+     * Returns a copy of the high score list.
      */
-    public void printToConsole()
+    public HighScore[] getScoreList()
     {
-        for (int i = 0; i < highScoreList.length; i++)
-        {
-            System.out.println((i+1) +". " + highScoreList[i].getKey() + " " + 
-                    highScoreList[i].getScore());
-        }
+        return highScoreList.clone();
     }
+
+    public int getNumberOfScores()
+    {
+        return NUMBER_OF_SCORES;
+    }                
     
 }

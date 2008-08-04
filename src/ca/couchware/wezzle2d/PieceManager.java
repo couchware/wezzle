@@ -18,11 +18,15 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -61,19 +65,19 @@ public class PieceManager implements MouseListener, MouseMotionListener
     private boolean tileDropAnimationInProgress = false;        
     
     /**
-     * The tile drop count.
+     * The number of tiles to drop this turn.
      */
-    private int tileDropCount = 0;
+    private int totalTileDropInAmount = 0;
     
     /**
      * The index list.
      */
-    private ArrayList<Integer> indexList;
+    private ArrayList<Integer> openIndexList;
     
     /**
      * The tile currently being dropped.
      */
-    private TileEntity tileDropped[];
+    private List<TileEntity> tileDropList = new ArrayList<TileEntity>();
     
      /**
      * Was the board recently refactored?
@@ -177,7 +181,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         pieceGrid.setY(ap.getY());
         
         // Create the index list.
-        this.indexList = new ArrayList<Integer>();    
+        this.openIndexList = new ArrayList<Integer>();    
         
         // Create the restriction board and fill it with trues.
         restrictionBoard = new boolean[boardMan.getCells()];
@@ -438,53 +442,52 @@ public class PieceManager implements MouseListener, MouseMotionListener
             if (tileDropAnimationInProgress == false)
             {
                 // The number of pieces to drop in.
-                int numberToDropIn = game.worldMan.getParallelDropInAmount();
+                int parallelTileDropInAmount = game.worldMan.getParallelTileDropInAmount();                                
                 
                 // Adjust for the pieces left to drop in.
-                if (numberToDropIn > tileDropCount)
-                    numberToDropIn = tileDropCount;                              
+                if (parallelTileDropInAmount > totalTileDropInAmount)
+                    parallelTileDropInAmount = totalTileDropInAmount;                              
                 
-                // Count the openColumns and build a list of all open indeces.
-                indexList.clear();
-                int openColumns = 0;                                                
+                // Count the open columns and build a list of all open indices.
+                openIndexList.clear();
+                int openColumnCount = 0;                                                
                 for (int i = 0; i < boardMan.getColumns(); i++)
                 {
                     if (boardMan.getTile(i, dropRow) == null)
                     {
-                        openColumns++;
-                        indexList.add(new Integer(i));
+                        openColumnCount++;
+                        openIndexList.add(new Integer(i));
                     }
-                }                                        
+                }                         
+                
+                // At this point these must be equal.
+                assert openColumnCount == openIndexList.size();
                 
                 // Automatically adjust the number of pieces to fall in based
                 // on the number of open columns.
-                if (numberToDropIn > openColumns)
-                    numberToDropIn = openColumns;
-                              
-                // The indices, corresponds 1:1 with the tileDropped.
-                int[] index = new int[numberToDropIn];
+                if (parallelTileDropInAmount > openColumnCount)
+                    parallelTileDropInAmount = openColumnCount;                              
                 
-                assert(index.length <= indexList.size());
+                // Create a queue holding all the open columns in a randomized
+                // order.
+                LinkedList<Integer> randomIndexQueue = new LinkedList<Integer>();
+                randomIndexQueue.addAll(openIndexList);
+                Collections.shuffle(randomIndexQueue, Util.random);
                 
                 // Generate the indices. pick a random index from the available
                 // indices in the indexList.
-                for (int i = 0; i < index.length; i++)
-                {
-                    int randIndex =  Util.random.nextInt(indexList.size());
-                    index[i] = ((Integer) indexList.get(randIndex)).intValue();
-                    indexList.remove(randIndex);
-                }                
-
-                // Determine the type of tile to drop. This is done by 
-                // consulting the available tiles and their probabilities
-                // from the item list and checking to see if a special tile
-                // needs to be dropped.                      
-                tileDropped = new TileEntity[numberToDropIn];
+//                for (int i = 0; i < openIndexList.size(); i++)
+//                {
+//                    int r = Util.random.nextInt(openIndexList.size());
+//                    Integer randomIndex = openIndexList.get(r);
+//                    randomIndexQueue.add(randomIndex);
+//                    openIndexList.remove(openIndexList.indexOf(randomIndex));
+//                }                                                                   
                 
                 // If there are less items left (to ensure only 1 drop per drop 
                 // in) and we have less than the max number of items...
-                //  drop an item in. Otherwise drop a normal.
-                if (openColumns == 0 && tileDropCount > 0)                
+                // drop an item in. Otherwise drop a normal.
+                if (openColumnCount == 0 && totalTileDropInAmount > 0)                
                 {                    
                     // The tile drop is no longer in progress.
                     tileDropInProgress = false;
@@ -492,49 +495,38 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     // Start the game over routine.
                     game.startGameOver();
                 }
-                else if (tileDropCount == 1 && game.boardMan.getNumberOfItems() 
-                        < game.worldMan.getMaxItems())
+                else if (totalTileDropInAmount == 1 
+                        && game.boardMan.getNumberOfItems() < game.worldMan.getMaxItems())
                 {
                     // The tile is an item.
-                    tileDropped[0] = boardMan.createTile(index[0], dropRow,
-                            game.worldMan.getItem().getItemClass()); 
-                    
-                    // Null out the rest.
-                    for (int i = 1; i < tileDropped.length; i++)                    
-                        tileDropped[i] = null;                    
+                    tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
+                            dropRow, game.worldMan.getItem().getItemClass()));
+                                  
                 }
-                else if (tileDropCount <= tileDropped.length 
-                       && game.boardMan.getNumberOfItems() 
-                       < game.worldMan.getMaxItems())
+                else if (totalTileDropInAmount <= parallelTileDropInAmount
+                       && game.boardMan.getNumberOfItems() < game.worldMan.getMaxItems())
                 {
-                    // Drop in the first x amount.
-                    for (int i = 0; i < tileDropCount-1; i++)
+                    // This must be true.
+                    assert totalTileDropInAmount <= randomIndexQueue.size();
+                    
+                    // Drop in the first amount.
+                    for (int i = 0; i < totalTileDropInAmount - 1; i++)
                     {
-                        tileDropped[i] =
-                                boardMan.createTile(index[i], dropRow,
-                                TileEntity.class); 
-
+                        tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
+                                dropRow, TileEntity.class)); 
                     }
                     
                     // Drop in the item tile.
-                    tileDropped[tileDropped.length - 1] =
-                            boardMan.createTile(index[tileDropped.length - 1],
-                            dropRow,
-                            game.worldMan.getItem().getItemClass()); 
-                    
-                    // Any unused slots should be nulled.
-                    for(int i = tileDropCount+1; i < tileDropped.length; i++)
-                    {
-                        tileDropped[i] = null;
-                    }
+                    tileDropList.add(boardMan.createTile(randomIndexQueue.remove(),
+                            dropRow, game.worldMan.getItem().getItemClass()));                     
                 }
                 else
                 {
                     // They are all normals.
-                    for (int i = 0; i < tileDropped.length; i++)
+                    for (int i = 0; i < parallelTileDropInAmount; i++)
                     {
-                        tileDropped[i] = boardMan.createTile(index[i], dropRow,
-                                TileEntity.class); 
+                        tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
+                                dropRow, TileEntity.class));
                     }                 
                 }                
                           
@@ -546,15 +538,19 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     // Start the animation.
                     game.soundMan.play(AudioTrack.SOUND_BLEEP);
                     
-                    for (int i = 0; i < tileDropped.length; i++)
+                    for (TileEntity tile : tileDropList)
                     {
-                        if (tileDropped[i] != null)
+                        if (tile == null)
+                        {
+                            throw new NullPointerException(
+                                    "A tile was null in the tile drop list.");
+                        }
+                        else
                         {           
                             //IAnimation a = new ZoomInAnimation(tileDropped[i]);
                             IAnimation a = new ZoomAnimation
-                                    .Builder(ZoomType.OUT, tileDropped[i])
-                                    .v(0.05).end();
-                            tileDropped[i].setAnimation(a);
+                                    .Builder(ZoomType.OUT, tile).v(0.05).end();
+                            tile.setAnimation(a);
                             animationMan.add(a);
                         }
                     }
@@ -565,40 +561,32 @@ public class PieceManager implements MouseListener, MouseMotionListener
             } 
             // If we got here, the animating is in progress, so we need to check
             // if it's done.  If it is, de-reference it and refactor.
-            else if (isAnimationDone(tileDropped) == true)
+            else if (isAnimationDone(tileDropList) == true)
             {
                 // Clear the flag.
                 tileDropAnimationInProgress = false;
                                
                 // Run refactor.
-                game.startRefactor(Game.RefactorType.DROP);                
+                game.startRefactor(Game.RefactorType.DROP);                                
                 
-                // Decrement the number of tiles by the number of tiles that are
-                // not null in the array.                
-                int numberToDecrement = 0;
-                for (int i = 0; i < tileDropped.length; i++)
-                {
-                    if (tileDropped[i] != null)
-                        numberToDecrement++;
-                }
-                
-                tileDropCount -= numberToDecrement;
+                // Remove the amount just removed from the total.
+                totalTileDropInAmount -= tileDropList.size();
                 
                 // De-reference the tile dropped.
-                tileDropped = null;
+                tileDropList.clear();
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
-                if (tileDropCount == 0)                
+                if (totalTileDropInAmount == 0)  
+                {
                     tileDropInProgress = false;
-                else if (tileDropCount < 0)
+                }
+                // Defensive.
+                else if (totalTileDropInAmount < 0)
                 {
                     throw new IllegalStateException("Tile drop count is: "
-                            + tileDropCount);
-                }
-                else
-                    // Continue with loop.
-                    ;
+                            + totalTileDropInAmount);
+                }                
             }
         }
         // In this case, the tile drop is not activated, so proceed normally
@@ -742,7 +730,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         game.boardMan.removeTiles(indexSet);
 
         // Set the count to the piece size.
-        this.tileDropCount = 
+        this.totalTileDropInAmount = 
                 game.worldMan.calculateDropNumber(game, this.piece.getSize());
 
         // Increment the moves.
@@ -773,21 +761,18 @@ public class PieceManager implements MouseListener, MouseMotionListener
      * @param tiles
      * @return
      */
-    private boolean isAnimationDone(TileEntity[] tiles)
+    private boolean isAnimationDone(List<TileEntity> tiles)
     {   
         for (TileEntity tile : tiles)
         {            
-            if (tiles != null && tile.getAnimation().isDone() == false)
+            if (tile != null && tile.getAnimation().isDone() == false)
             {
                 return false;  
             }
         } // end for
-        
-        for (TileEntity tile : tiles)
-            tile.setAnimation(null);
-        
+                        
         return true;
-    }
+    }        
 
     /**
      * Gets the current restriction board.

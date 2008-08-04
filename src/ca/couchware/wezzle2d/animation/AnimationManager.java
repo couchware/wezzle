@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -27,6 +28,12 @@ public class AnimationManager
     {
         animationList.add(a);
         a.onStart();
+    }
+    
+    public void addAll(Collection<IAnimation> collection)
+    {
+        for (IAnimation a : collection) 
+            add(a);
     }
     
     public void remove(IAnimation a)

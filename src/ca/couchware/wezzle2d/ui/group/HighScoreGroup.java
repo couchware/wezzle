@@ -15,6 +15,11 @@ public class HighScoreGroup extends Group
 {
     
     /**
+     * A reference to the high score manager.
+     */
+    private HighScoreManager highScoreMan;
+    
+    /**
      * The header label.
      */
     private ILabel headerLabel;
@@ -27,12 +32,7 @@ public class HighScoreGroup extends Group
     /**
      * The "no high score" label, line 2.
      */
-    private ILabel noHighScoreLabel2;
-    
-    /**
-     * The high score list.
-     */
-    public HighScore[] highScoreList;        
+    private ILabel noHighScoreLabel2;    
     
     /**
      * The player score labels.
@@ -56,9 +56,9 @@ public class HighScoreGroup extends Group
     {
         // Invoke super.
         super(window, layerMan, groupMan);
-        
-        // Get the high score list.
-        highScoreList = highScoreMan.getHighScoreList();
+         
+        // Save the reference.
+        this.highScoreMan = highScoreMan;
         
         // Create the high score header.
         headerLabel = new LabelBuilder(400, 171)
@@ -78,13 +78,13 @@ public class HighScoreGroup extends Group
                 
         noHighScoreLabel2 = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(20).text("high scores yet")
+                .color(Game.TEXT_COLOR).size(20).text("high scores yet.")
                 .visible(false).end();
         layerMan.add(noHighScoreLabel2, Game.LAYER_UI);
         entityList.add(noHighScoreLabel2);                
         
         // Create the score labels.
-        scoreLabels = new ILabel[highScoreList.length];                
+        scoreLabels = new ILabel[highScoreMan.getNumberOfScores()];                
         
         // Create all the labels.
         for (int i = 0; i < scoreLabels.length; i++)
@@ -98,7 +98,7 @@ public class HighScoreGroup extends Group
         }       
         
         // Update the labels.
-        updateScoreLabels();
+        updateLabels();
         
         // Create close button.
         closeButton = new SpriteButton.Builder(window, 400, 400)
@@ -122,28 +122,29 @@ public class HighScoreGroup extends Group
         super.setVisible(visible);
     }
     
-    public void updateScoreLabels()
+    public void updateLabels()
     {
         // This variable is set to true if there is a high score.
         boolean highScoreExists = false;
         
+        // Get the high score list.
+        HighScore[] highScoreList = highScoreMan.getScoreList();
+        
         for (int i = 0; i < scoreLabels.length; i++)
         {                        
             // Skip if empty.
-            if (highScoreList[i].getKey().equals(HighScoreManager.EMPTY_NAME))
+            if (highScoreList[i].getName().equals(HighScoreManager.EMPTY_NAME))
                 continue;
             
             // A high score must exist then.
             highScoreExists = true;
               
+            layerMan.remove(scoreLabels[i], Game.LAYER_UI);
+            entityList.remove(scoreLabels[i]);
             scoreLabels[i] = new LabelBuilder(scoreLabels[i])
-                    .text((i + 1) + ". " + highScoreList[i].getKey() + " " 
-                    + highScoreList[i].getScore()).opacity(100).end();
-            
-//            scoreLabels[i].setText((i + 1) + ". " 
-//                    + highScoreList[i].getKey() + " " 
-//                    + highScoreList[i].getScore()); 
-//            scoreLabels[i].setOpacity(100);
+                .text(createScoreLabel(i, highScoreList[i])).opacity(100).end();
+            layerMan.add(scoreLabels[i], Game.LAYER_UI);
+            entityList.add(scoreLabels[i]);            
         }                       
         
         // If no high scores exist, tell the user.
@@ -174,6 +175,12 @@ public class HighScoreGroup extends Group
             closeButton.setActivated(false);
             game.groupMan.hideGroup(this);
         }       
+    }
+    
+    private String createScoreLabel(int rank, HighScore highScore)
+    {
+        return (rank + 1) + ". " + highScore.getName() + "  " 
+            + highScore.getScore() + "  L" + highScore.getLevel() + "";
     }
     
 }

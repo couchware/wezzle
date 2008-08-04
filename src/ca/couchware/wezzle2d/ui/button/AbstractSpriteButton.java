@@ -283,7 +283,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         if (visible == true)
         {
             // Pretend like we just moved the mouse.
-            handleMoved(new WPosition(window.getMousePosition()));
+            handleMoved(window.getMouseWPosition());
             
             window.addMouseListener(this);
             window.addMouseMotionListener(this);
@@ -317,7 +317,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         {            
             state = ButtonState.NORMAL;           
             setMousePosition(0, 0);
-            handleMoved(new WPosition(window.getMousePosition()));
+            handleMoved(window.getMouseWPosition());
         }
         
         setDirty(true);

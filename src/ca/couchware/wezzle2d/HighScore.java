@@ -8,13 +8,20 @@ package ca.couchware.wezzle2d;
 public class HighScore 
 {
     
-    private final String key;
-    private final int score;    
+    private final String name;
+    private final int score;   
+    private final int level;
     
-    public HighScore(String key, int score)
+    private HighScore(String name, int score, int level)
     {
-        this.key = key;
+        this.name = name;
         this.score = score;
+        this.level = level;
+    }
+    
+    public static HighScore newInstance(String name, int score, int level)
+    {
+        return new HighScore(name, score, level);
     }
     
     public int getScore()
@@ -22,9 +29,14 @@ public class HighScore
         return this.score;
     }
     
-    public String getKey()
+    public String getName()
     {
-        return this.key;
+        return this.name;
     }
+
+    public int getLevel()
+    {
+        return level;
+    }        
     
 }

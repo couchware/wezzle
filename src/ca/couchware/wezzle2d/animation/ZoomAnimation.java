@@ -275,16 +275,31 @@ public class ZoomAnimation extends AbstractAnimation
     @Override
     public void cleanUp()
     {
-        // Resize entity to original dimensions.
-        entity.setWidth(d.getWidth());
-        entity.setHeight(d.getHeight());
-        
-        // Move back to original position.
-        entity.setX(p.getX());
-        entity.setY(p.getY());
-        
-        // Mark the animation as done.
-        setDone(true);
+        switch (type)
+        {
+            case LOOP_IN:
+            case LOOP_OUT:
+                
+                // Resize entity to original dimensions.
+                entity.setWidth(d.getWidth());
+                entity.setHeight(d.getHeight());
+
+                // Move back to original position.
+                entity.setX(p.getX());
+                entity.setY(p.getY());
+
+                // Mark the animation as done.
+                setDone(true);
+                
+                break;
+                
+            case IN:
+            case OUT:
+                
+                break;
+                
+            default: throw new AssertionError();
+        }
     }
 
     public void vin(double val)

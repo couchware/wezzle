@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.util.WPosition;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -429,8 +430,19 @@ public class Java2DGameWindow extends Canvas implements GameWindow
      * @param type
      */
     public void setCursor(int type)
+    {                
+        Cursor c = Cursor.getPredefinedCursor(type);
+        
+        if (getCursor().equals(c) == false)
+            setCursor(c);
+    }
+    
+    public WPosition getMouseWPosition()
     {
-        setCursor(Cursor.getPredefinedCursor(type));
+        if (getMousePosition() != null)
+            return new WPosition(getMousePosition());
+        else
+            return WPosition.ORIGIN;
     }
              
 }
