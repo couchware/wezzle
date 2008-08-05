@@ -103,6 +103,7 @@ public class RocketTutorial extends AbstractTutorial
         // Line 1.
         label = new LabelBuilder(280, 166)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
+                .cached(false)
                 .color(Game.TEXT_COLOR).size(16)
                 .text("Rockets destroy all tiles").end();
         game.layerMan.add(label, Game.LAYER_EFFECT);   
@@ -142,15 +143,15 @@ public class RocketTutorial extends AbstractTutorial
         game.layerMan.toFront(bubble, Game.LAYER_EFFECT);           
         
         // Create repeat button.
-        repeatButton = new SpriteButton.Builder(game.getGameWindow(), 400, 310)
+        repeatButton = new SpriteButton.Builder(game.getGameWindow(), 400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Repeat").normalOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Game.LAYER_EFFECT);
         
          // Create continue button, using the repeat button as a template.
         continueButton = new SpriteButton.Builder((SpriteButton) repeatButton)
-                .y(370).text("Continue").end();
-        game.layerMan.add(continueButton, Game.LAYER_EFFECT);                   
+                .y(390).text("Continue").end();
+        game.layerMan.add(continueButton, Game.LAYER_EFFECT);                  
         
         // Run the repeat tutorial method, that sets up the things that must
         // be reset each time the tutorial is run.

@@ -63,10 +63,10 @@ public class Java2DTextLayoutStore
         else            
         {
             misses++;
-            LogManager.recordMessage("TextLayout '" + text + "' created.", 
-                    "Java2DTextLayoutStore#getTextLayout");           
-            LogManager.recordMessage("There are now " + textLayoutMap.size() + " cached layouts.",
-                    "Java2DTextLayoutStore#getTextLayout");
+//            LogManager.recordMessage("TextLayout '" + text + "' created.", 
+//                    "Java2DTextLayoutStore#getTextLayout");           
+//            LogManager.recordMessage("There are now " + textLayoutMap.size() + " cached layouts.",
+//                    "Java2DTextLayoutStore#getTextLayout");
                         
             TextLayout textLayout = createTextLayout(g, text, font);
             

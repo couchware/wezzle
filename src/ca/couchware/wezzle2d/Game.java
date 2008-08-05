@@ -658,6 +658,7 @@ public class Game extends Canvas implements GameWindowCallback
         // Add the tutorials to it.
         tutorialMan.add(new BasicTutorial());
         tutorialMan.add(new RocketTutorial());
+        tutorialMan.add(new BombTutorial());
     
         // Create the property manager. Must be done before Score manager.
         propertyMan = new PropertyManager();        
