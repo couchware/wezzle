@@ -248,7 +248,11 @@ public class ZoomAnimation extends AbstractAnimation
                     entity.setY(p.getY() + (maxWidth - minWidth) / 2 - dx);
                     
                     if (entity.getWidth() == maxWidth)                    
-                    {                                               
+                    {         
+                        // Make sure they're at the right spot.
+                        entity.setX(p.getX());
+                        entity.setY(p.getY());
+                        
                         switch (type)
                         {
                             case OUT:
