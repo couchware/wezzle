@@ -220,12 +220,12 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 		catch (InterruptedException e)
 		{
 			// TODO Auto-generated catch block
-			LogManager.handleException(e);
+			LogManager.recordException(e);
 		}
 		catch (InvocationTargetException e)
 		{
 			// TODO Auto-generated catch block
-			LogManager.handleException(e);
+			LogManager.recordException(e);
 		}		
 
 		// If we have a callback registered then notify

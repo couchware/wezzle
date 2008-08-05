@@ -270,7 +270,7 @@ public class LayerManager
                             "LayerManager#drawRegion");
                     
                     if (d instanceof ILabel)
-                        LogManager.handleWarning(((ILabel) d).getText());
+                        LogManager.recordWarning(((ILabel) d).getText());
                 }
                 
                 //Util.handleWarning(r + "");

@@ -551,7 +551,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
         catch (Exception e)
         {
-            LogManager.handleException(e);
+            LogManager.recordException(e);
             LogManager.recordWarning("Could not find build number at: "
                     + BUILD_NUMBER_PATH + "!",
                     "Game#this");
@@ -564,11 +564,11 @@ public class Game extends Canvas implements GameWindowCallback
         }
         
         // Print the build number.
-        LogManager.handleMessage("Wezzle Build " + buildNumber + " @ " + (new Date()));   
-        LogManager.handleMessage("Java Version: " + System.getProperty("java.version"));
-        LogManager.handleMessage("OS Name: " + System.getProperty("os.name"));
-        LogManager.handleMessage("OS Architecture: " + System.getProperty("os.arch"));
-        LogManager.handleMessage("OS Version: " + System.getProperty("os.version"));
+        LogManager.recordMessage("Wezzle Build " + buildNumber + " @ " + (new Date()));   
+        LogManager.recordMessage("Java Version: " + System.getProperty("java.version"));
+        LogManager.recordMessage("OS Name: " + System.getProperty("os.name"));
+        LogManager.recordMessage("OS Architecture: " + System.getProperty("os.arch"));
+        LogManager.recordMessage("OS Version: " + System.getProperty("os.version"));
         
 		// Create a window based on a chosen rendering method.
 		ResourceFactory.get().setRenderingType(renderType);		        
@@ -590,11 +590,11 @@ public class Game extends Canvas implements GameWindowCallback
 		}
 		catch (InterruptedException e)
 		{
-			LogManager.handleException(e);
+			LogManager.recordException(e);
 		}
 		catch (InvocationTargetException e)
 		{
-			LogManager.handleException(e);
+			LogManager.recordException(e);
 		}		
 	}
 
@@ -2015,7 +2015,7 @@ public class Game extends Canvas implements GameWindowCallback
             // Draw the high score text.
             if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
             {
-                LogManager.handleMessage("New high score label created.");
+                LogManager.recordMessage("New high score label created.");
                 layerMan.remove(highScoreLabel, LAYER_UI);
                 highScoreLabel = new LabelBuilder(highScoreLabel)
                         .text(String.valueOf(scoreMan.getHighScore())).end();
@@ -2160,7 +2160,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
         catch(Exception e)
         {
-            LogManager.handleException(e);
+            LogManager.recordException(e);
         }        
         
      	System.exit(0);
@@ -2223,7 +2223,7 @@ public class Game extends Canvas implements GameWindowCallback
         }
         catch (Exception e)
         {
-            LogManager.handleException(e);
+            LogManager.recordException(e);
         }
 	}    
   

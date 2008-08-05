@@ -66,7 +66,7 @@ public class Java2DFontStore
             }
             catch(Exception e)
             {
-                LogManager.handleException(e);
+                LogManager.recordException(e);
             }
         }
         // Otherwise, derive all other fonts from the size 1.        

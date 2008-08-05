@@ -97,11 +97,11 @@ public class MusicManager
         // Add some music.  This is the order they will play in, but it will
         // not necessarily start on the first song.
         this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON1, Game.MUSIC_PATH 
-                + "/IntergalacticTron.ogg"));
+                + "/IntergalacticTron.ogg", false));
         this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON2, Game.MUSIC_PATH 
-                + "/IntergalacticTron2.ogg"));
+                + "/IntergalacticTron2.ogg", false));
         this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON3, Game.MUSIC_PATH 
-                + "/IntergalacticTron3.ogg"));        
+                + "/IntergalacticTron3.ogg", false));        
         
         // Randomly pick a starting song.
         //this.songNum = Util.random.nextInt(songList.size());
@@ -220,7 +220,7 @@ public class MusicManager
                 }
                 catch (Exception e) 
                 { 
-                    LogManager.handleException(e); 
+                    LogManager.recordException(e); 
                 }
             }
         });
@@ -238,7 +238,7 @@ public class MusicManager
         this.trackNum = (this.trackNum + 1) % this.musicList.size();
         
         // Grab that song.
-        final AudioPlayer song = musicList.get(trackNum);
+        final AudioPlayer player = musicList.get(trackNum);
         
         // Run in new thread to play in background.
         new Thread() 
@@ -249,17 +249,17 @@ public class MusicManager
                 try 
                 {                     
                     // Set the volume.
-                    song.setVolume(getVolume());
+                    player.setVolume(getVolume());
                     
                     // Play the current song.
-                    song.play(); 
+                    player.play(); 
                     
                     // Signal song is done.
                     setPlaying(false);
                 }
                 catch (Exception e) 
                 { 
-                    LogManager.handleException(e); 
+                    LogManager.recordException(e); 
                 }
             }
         }.start();

@@ -23,8 +23,32 @@ import javax.sound.sampled.*;
 
 public class AudioPlayer 
 {        
+    
+    /**
+     * The types of audio player.
+     */
+    private static enum Type
+    {
+        /** 
+         * The audio track is loaded into a clip in memory.  This is only suitable
+         * for small files.
+         */
+        CLIP,
+        
+        /**
+         * The audio track is streamed from a file and played.  More suitable
+         * for long file like OGGs.
+         */
+        LINE
+    }
+    
+    /**
+     * The type of audio player.
+     */
+    private Type type;
+    
     /** 
-     * The numeric identifier for the audio file.
+     * The audio track.
      */
     private AudioTrack track;
     
@@ -32,6 +56,11 @@ public class AudioPlayer
      * The audio file extension.
      */
     private String ext;
+    
+    /** 
+     * The url for the file.
+     */
+    URL url;   
     
     /** 
      * A line of music data.
@@ -53,10 +82,10 @@ public class AudioPlayer
      */
     AudioInputStream decodedIn;
     
-    /** 
-     * The url for the file.
+    /**
+     * The sound clip?
      */
-    URL url;   
+    Clip clip;      
     
     /** 
      * Is the music paused?
@@ -66,20 +95,21 @@ public class AudioPlayer
     /** 
      * The volume control.
      */
-    FloatControl volume = null;
+    FloatControl volumeControl = null;
     
     /** 
      * The current volume.
      */
-    private float currentVolume;
+    private float volume;
 
     /**
      * The constructor.
      * 
      * @param key
      * @param path
+     * @param cache
      */
-    public AudioPlayer(AudioTrack track, String path)
+    public AudioPlayer(AudioTrack track, String path, boolean cache)
     {
         // The associated key.
         this.track = track;
@@ -96,11 +126,49 @@ public class AudioPlayer
         // Determine the extension.
         ext = Util.getFileExtension(path);
         
-        // Load the audio.
-        load();
+        // Determine the type.
+        if (cache == true) type = Type.CLIP;
+        else type = Type.LINE;
+            
+        // Load the stream.
+        loadStream();
          
         // Set the current volumne.
-        this.currentVolume = 0.0f;                    
+        this.volume = 0.0f;                    
+    }
+    
+    public void play()
+    {
+        switch (type)
+        {
+            case CLIP:
+                playClip();
+                break;
+                
+            case LINE:
+                playLine();
+                break;
+                
+            default: throw new AssertionError();
+        }
+    }
+    
+    private void playClip()
+    {
+        //LogManager.recordMessage("Playing in clip-mode.", "AudioPlayer#playClip");                
+        
+        // Play clip from the start.
+        clip.setFramePosition(0);
+        clip.start();
+        
+        try
+        {
+            Thread.sleep(clip.getMicrosecondLength());            
+        }
+        catch (InterruptedException e)
+        {
+            LogManager.recordException(e);
+        }
     }
     
     /**
@@ -113,8 +181,10 @@ public class AudioPlayer
      * this method.
      * 
      */
-    public void play()
+    private void playLine()
     {
+        //LogManager.recordMessage("Playing in line-mode.", "AudioPlayer#playLine");
+        
         try
         {
             if (line != null) 
@@ -132,12 +202,12 @@ public class AudioPlayer
                     while ((nBytesRead = decodedIn.read(data, 0, data.length)) != -1) 
                     {	
                         // The volume control, must apply to every line of data.
-                        volume = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
-                        volume.setValue(this.currentVolume);
+                        volumeControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+                        volumeControl.setValue(volume);
                         
-                        while (paused) 
+                        while (paused == true) 
                         {
-                            if (line.isRunning())                             
+                            if (line.isRunning() == true)                             
                                 line.stop();
                             
                             try 
@@ -146,39 +216,35 @@ public class AudioPlayer
                             }
                             catch (InterruptedException e) 
                             {
-                               LogManager.handleException(e);
+                               LogManager.recordException(e);
                             }
                         }
 	
-                        if(!line.isRunning()) 
-                        {
-                            line.start();
-                        }
+                        if (line.isRunning() == false)                         
+                            line.start();                        
 		
                         line.write(data, 0, nBytesRead);
                     }
                 }
                 
 				// The song is done, close it.
-				line.drain();
-				line.stop();
-				line.close();
-				decodedIn.close();
+				line.drain();				
+				line.close();				
                 
                 // The song is done, have to reload it so we can play again.
-                load();
-			}
+                loadStream();
+			}                        
         }
         catch(Exception e)
         {
-           LogManager.handleException(e);   
+           LogManager.recordException(e);   
         }
     }        
 
     /**
      * A method to load/rest an audio file.      
      */
-    public void load()
+    private void loadStream()
     {
         // Make sure everything is null.
         line = null;
@@ -217,17 +283,34 @@ public class AudioPlayer
             }
             
             // The decoded input stream.
-            decodedIn = AudioSystem.getAudioInputStream(decodedFormat, in);
+            decodedIn = AudioSystem.getAudioInputStream(decodedFormat, in);                       
 
-            //Set up a line of audio data from our decoded stream.
-            DataLine.Info info = new DataLine.Info(SourceDataLine.class, decodedFormat);
-            line = (SourceDataLine) AudioSystem.getLine(info);                           
+            // Set up a line of audio data from our decoded stream.
+            switch (type)
+            {
+                case CLIP:
+                    
+                    clip = AudioSystem.getClip();
+                    clip.open(decodedIn);   
+                    setVolume(volume);
+                  
+                    break;
+                    
+                case LINE:
+                    
+                    DataLine.Info info = new DataLine.Info(SourceDataLine.class, decodedFormat);
+                    line = (SourceDataLine) AudioSystem.getLine(info);
+                    
+                    break;
+                    
+                default: throw new AssertionError();
+            }            
         }
         catch (Exception e)
         {
-            LogManager.handleException(e);
+            LogManager.recordException(e);
         }
-    }
+    }        
        
     //--------------------------------------------------------------------------
     // Getters and setters.
@@ -269,7 +352,15 @@ public class AudioPlayer
      */
     public void setVolume(float volume)
     {  
-        this.currentVolume = volume;
+        this.volume = volume;
+        
+        // If we're in clip mode, update the clip volume.
+        if (type == Type.CLIP)
+        {
+            // Set the volume.
+            volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            volumeControl.setValue(volume);
+        }
     }
     
     /**
@@ -279,7 +370,7 @@ public class AudioPlayer
      */
     public float getVolume()
     {
-        return currentVolume;
+        return volume;
     }
    
     /**

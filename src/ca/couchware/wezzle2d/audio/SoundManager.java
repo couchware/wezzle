@@ -144,13 +144,13 @@ public class SoundManager
     {
         AudioPlayer sounds[] = new AudioPlayer[NUM_BUFFERS];
         for (int i = 0; i < sounds.length; i++)
-            sounds[i] = new AudioPlayer(track, path);
+            sounds[i] = new AudioPlayer(track, path, true);
         
         // Add the effect.
         this.soundList.add(sounds);
         
         // Add the corresponding buffer pointer.
-        this.bufferPointerList.add(new Integer(0));
+        this.bufferPointerList.add(0);
     }
         
     /**
@@ -237,7 +237,7 @@ public class SoundManager
                 }
                 catch (Exception e) 
                 { 
-                    LogManager.handleException(e); 
+                    LogManager.recordException(e); 
                 }
             }
         });

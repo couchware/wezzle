@@ -117,7 +117,7 @@ public class PropertyManager
             {
                 LogManager.recordWarning("Url is " + f.getAbsolutePath(), 
                         "PropertyManager#this");
-                LogManager.handleException(e);
+                LogManager.recordException(e);
             }
         }
         else
@@ -133,7 +133,7 @@ public class PropertyManager
             {
                 LogManager.recordWarning("Url is " + f.getAbsolutePath(), 
                         "PropertyManager#this");
-                LogManager.handleException(e);
+                LogManager.recordException(e);
             }
         } // end if
 		

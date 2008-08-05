@@ -107,7 +107,7 @@ public class LogManager
         }
         catch (Exception e)
         {
-            handleException(e);
+            recordException(e);
         }
     }
 	
@@ -141,7 +141,7 @@ public class LogManager
 		}
 		catch (Exception e)
 		{
-			handleException(e);
+			recordException(e);
 		}
     }
     
@@ -158,7 +158,7 @@ public class LogManager
 		}
 		catch(Exception e)
 		{
-			handleException(e);
+			recordException(e);
 		}
 	}
     
@@ -184,7 +184,7 @@ public class LogManager
 			LogManager.append(out.toString());				
 	}
     
-    public static void handleException(Exception e)
+    public static void recordException(Exception e)
     {
         recordException(e, null);
     }
@@ -208,7 +208,7 @@ public class LogManager
 			LogManager.append(output);
 	}
     
-    public static void handleWarning(String message)
+    public static void recordWarning(String message)
     {
         recordWarning(message, null);
     }
@@ -232,7 +232,7 @@ public class LogManager
 			LogManager.append(output);
 	}
     
-    public static void handleMessage(String message)
+    public static void recordMessage(String message)
     {
         recordMessage(message, null);
     }

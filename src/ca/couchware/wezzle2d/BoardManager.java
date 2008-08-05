@@ -940,7 +940,7 @@ public class BoardManager implements IManager
         }
         catch (Exception ex)
         {
-            LogManager.handleException(ex);
+            LogManager.recordException(ex);
             return null;
         }        
         
@@ -1817,8 +1817,8 @@ public class BoardManager implements IManager
         managerState.put(Keys.BOARD, board.clone());
         managerState.put(Keys.SCRATCH_BOARD, scratchBoard.clone());
         
-        LogManager.handleMessage("Saved " + numberOfTiles + " tiles.");  
-        LogManager.handleMessage("Saved " + numberOfItems + " items.");
+        LogManager.recordMessage("Saved " + numberOfTiles + " tiles.");  
+        LogManager.recordMessage("Saved " + numberOfItems + " items.");
     }
 
     @SuppressWarnings("unchecked") 
@@ -1837,8 +1837,8 @@ public class BoardManager implements IManager
         // Make sure that this board is in the layer manager.
         layerize();
         
-        LogManager.handleMessage("Loaded " + numberOfTiles + " tiles.");
-        LogManager.handleMessage("Loaded " + numberOfItems + " items.");
+        LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
+        LogManager.recordMessage("Loaded " + numberOfItems + " items.");
     }
 
 }
