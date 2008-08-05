@@ -63,62 +63,62 @@ public class SliderBar extends AbstractEntity implements
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    protected final GameWindow window;
+    private final GameWindow window;
     
     /**
      * The shape of the button.
      */
-    protected final RectangularShape shape;       
+    private final RectangularShape shape;       
     
     /**
      * The current state of the button.
      */
-    protected State state;
+    private State state;
     
     /**
 	 * The current location of the mouse pointer.
 	 */
-	protected WPosition mousePosition;
+	private WPosition mousePosition;
     
     /**
      * The sprite for the rail.
      */
-    protected ISprite spriteRail;
+    private ISprite spriteRail;
     
     /**
      * The sprite for the handle.
      */
-    protected ISprite spriteHandle;
+    private ISprite spriteHandle;
     
     /**
      * The slide offset, starting from the left side.
      */
-    protected int slideOffset;
+    private int slideOffset;
     
     /**
      * The maximum value for the slide offset.
      */
-    final protected int maxOffset;
+    final private int maxOffset;
             
     /**
      * The lower part of the virtual range.
      */
-    protected double virtualLower;
+    private double virtualLower;
     
     /**
      * The upper part of the virutal range.
      */
-    protected double virtualUpper;
+    private double virtualUpper;
     
     /**
      * The current virtual value.
      */
-    protected double virtualValue;
+    private double virtualValue;
     
     /**
      * Whether or not the slider value has changed.
      */
-    protected AtomicBoolean changed;
+    private AtomicBoolean changed;
     
     // -------------------------------------------------------------------------
     // Constructors
@@ -379,27 +379,7 @@ public class SliderBar extends AbstractEntity implements
     
     //--------------------------------------------------------------------------
     // Getters and Setters
-    //--------------------------------------------------------------------------
-    
-    /**
-	 * Set the alignment of the button. 
-     * The alignment is initially set to the top left. 
-	 * 
-	 * @param x The x alignment coordinate with respect 
-     * to the top left corner of the button.
-	 * @param y The y alignment coordinate with respect 
-     * to the top left corner of the button.
-	 */
-//    @Override
-//	public void setAlignment(final EnumSet<Alignment> alignment)
-//	{
-//        // Invoke super.
-//        super.setAlignment(alignment);	                
-//        
-//        // Move the shape.        
-//        shape.setFrame(x + offsetX, y + offsetY,
-//                shape.getWidth(), shape.getHeight());                
-//	}    
+    //--------------------------------------------------------------------------       
     
     /**
 	 * Gets the mousePosition.

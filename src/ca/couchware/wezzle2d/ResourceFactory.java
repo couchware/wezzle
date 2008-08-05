@@ -174,7 +174,8 @@ public class ResourceFactory
                         builder.opacity,
                         builder.size,
                         builder.text,
-                        builder.visible);
+                        builder.visible,
+                        builder.cached);
 			}		
 		}
 
@@ -193,6 +194,7 @@ public class ResourceFactory
         private float size = 14.0f;
         private String text = ""; 
         private boolean visible = true;
+        private boolean cached = true;
         
         public LabelBuilder(int x, int y)
         {            
@@ -210,6 +212,7 @@ public class ResourceFactory
             this.size = label.getSize();
             this.text = label.getText();
             this.visible = label.isVisible();
+            this.cached = label.isCached();
         }
         
         public LabelBuilder x(int val) { x = val; return this; }        
@@ -233,7 +236,10 @@ public class ResourceFactory
         { text = val; return this; }     
         
         public LabelBuilder visible(boolean val)
-        { visible = val; return this; }                
+        { visible = val; return this; } 
+        
+        public LabelBuilder cached(boolean val)
+        { cached = val; return this; }
 
         public ILabel end()
         {

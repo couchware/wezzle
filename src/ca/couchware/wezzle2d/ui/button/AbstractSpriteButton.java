@@ -247,27 +247,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
 	public synchronized void setMousePosition(final int x, final int y)
 	{
 		this.mousePosition = new WPosition(x, y);
-	}             
-    
-    /**
-	 * Set the alignment of the button. 
-     * The alignment is initially set to the top left. 
-	 * 
-	 * @param x The x alignment coordinate with respect 
-     * to the top left corner of the button.
-	 * @param y The y alignment coordinate with respect 
-     * to the top left corner of the button.
-	 */
-	private int[] determineOffsets(final EnumSet<Alignment> alignment)
-	{
-//        // Invoke super.
-//        super.setAlignment(alignment);	                
-//        
-//        // Move the shape.
-//        shape.setFrame(x + offsetX, y + offsetY,
-//                shape.getWidth(), shape.getHeight());
-        return null;
-	}             
+	}                    
     
     @Override
     public void setVisible(boolean visible)

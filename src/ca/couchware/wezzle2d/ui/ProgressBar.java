@@ -150,7 +150,7 @@ public class ProgressBar extends AbstractEntity
             progressLabel = new LabelBuilder(x + getWidth() / 2, y + 47)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .color(Game.TEXT_COLOR).size(14)
-                    .text(progress + "/" + progressMax).end();   
+                    .text(progress + "/" + progressMax).cached(false).end();   
             
             // Update the text if necessary.        
             progressLabel.setX(progressLabel.getX() + offsetX);

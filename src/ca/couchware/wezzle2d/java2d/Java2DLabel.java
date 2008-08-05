@@ -59,7 +59,12 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     /**
      * The text layout instance.
      */
-	final private TextLayout textLayout;		        
+	final private TextLayout textLayout;		
+    
+    /**
+     * Should the text layout be cached?
+     */
+    final private boolean cached;
     
 	/**
 	 * Create a new Java2D label.	 
@@ -71,7 +76,8 @@ public class Java2DLabel extends AbstractEntity implements ILabel
             int opacity,
             float size,
             String text,
-            boolean visible)
+            boolean visible,
+            boolean cached)
 	{                		
         // Setup the values.
 		this.window = window;
@@ -85,6 +91,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         this.size = size;
         this.text = text;
         this.visible = visible;
+        this.cached = cached;
            
         // If the string is empty, then don't do anything.
         if (text.length() != 0)
@@ -93,7 +100,8 @@ public class Java2DLabel extends AbstractEntity implements ILabel
             this.font = Java2DFontStore.get().getFont((int) size);
 
             // Create the text layout object.
-            this.textLayout = createTextLayout(window.getDrawGraphics(), font);                
+            this.textLayout = Java2DTextLayoutStore.get()
+                    .getTextLayout(window.getDrawGraphics(), text, font, cached);
 
             // Setup the alignment.  This should be replaced, alignment should
             // be immutable.                   
@@ -152,27 +160,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
 		{
 			throw new IllegalStateException("No Y alignment set!");
 		}
-    }
-	
-    /**
-     * Updates the text layout instance.
-     * @param frctx The current font render context.
-     */
-    private TextLayout createTextLayout(Graphics2D g, Font font)
-    {             
-        // Set the font.
-        g.setFont(font);  
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-                RenderingHints.VALUE_FRACTIONALMETRICS_ON);        
-        
-        // Get the render context.
-        FontRenderContext frctx = g.getFontRenderContext();
-        
-        // Create new text layout.        
-        return new TextLayout(text, font, frctx);                     
-    }    
+    }	    
     
     private int getLetterHeight()
     {        
@@ -357,6 +345,11 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     public double getRotation()
     {
         throw new UnsupportedOperationException("Not supported yet.");
-    }     
+    }
+
+    public boolean isCached()
+    {
+        return cached;
+    }        
     
 }

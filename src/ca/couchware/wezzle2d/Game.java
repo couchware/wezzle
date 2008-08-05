@@ -767,7 +767,8 @@ public class Game extends Canvas implements GameWindowCallback
         // Set up the version text.		
         versionLabel = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .color(TEXT_COLOR).size(12)
+                .cached(false)
+                .color(TEXT_COLOR).size(12)                
                 .text(applicationName + " Build " + buildNumber).end();
         layerMan.add(versionLabel, LAYER_UI);
         
@@ -778,13 +779,14 @@ public class Game extends Canvas implements GameWindowCallback
         layerMan.add(timerLabel, LAYER_UI);
              
         // Set up the level header.
-        levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)
+        levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();        
         layerMan.add(levelHeader, LAYER_UI);
         
         // Set up the level text.
         levelLabel = new LabelBuilder(126, 210)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
+                .cached(false)
                 .color(TEXT_COLOR).size(20).text("--").end();                
         layerMan.add(levelLabel, LAYER_UI);        
         
@@ -797,6 +799,7 @@ public class Game extends Canvas implements GameWindowCallback
         // Set up the high score text.
         highScoreLabel = new LabelBuilder(126, 337)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
+                .cached(false)
                 .color(TEXT_COLOR).size(20).text("--").end();
         layerMan.add(highScoreLabel, LAYER_UI);
         
@@ -808,6 +811,7 @@ public class Game extends Canvas implements GameWindowCallback
         // Set up the score text.
         scoreLabel = new LabelBuilder(126, 460)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
+                .cached(false)
                 .color(TEXT_COLOR).size(20).text("--").end();
         layerMan.add(scoreLabel, LAYER_UI);
              

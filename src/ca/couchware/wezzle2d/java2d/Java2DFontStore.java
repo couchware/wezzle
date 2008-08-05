@@ -2,12 +2,10 @@ package ca.couchware.wezzle2d.java2d;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.LogManager;
-import ca.couchware.wezzle2d.util.Util;
 import java.awt.Font;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  *

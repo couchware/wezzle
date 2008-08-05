@@ -28,6 +28,11 @@ public interface ILabel extends IEntity
     /**
      * Get the text contained in the label.
      */
-    public String getText();           
+    public String getText();     
+    
+    /**
+     * Is the label cached in some way?
+     */
+    public boolean isCached();
     
 }
