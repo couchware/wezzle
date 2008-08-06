@@ -169,13 +169,7 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The UI layer.
      */
-    final public static int LAYER_UI = 3;
-    
-    /**
-     * The build nunber path.
-     */
-    final public static String BUILD_NUMBER_PATH = 
-            RESOURCES_PATH + "/build.number";
+    final public static int LAYER_UI = 3;        
     
     //--------------------------------------------------------------------------
     // Public Members
@@ -285,6 +279,27 @@ public class Game extends Canvas implements GameWindowCallback
     //--------------------------------------------------------------------------
     // Private Members
     //--------------------------------------------------------------------------
+    
+    /**
+     * The build nunber path.
+     */
+    final private static String BUILD_NUMBER_PATH = 
+            RESOURCES_PATH + "/build.number";
+    
+    /**
+     * The name of the application.
+     */
+    private final static String APPLICATION_NAME = "Wezzle";
+    
+    /**
+     * The current wezzle version number.
+     */
+    final private static String VERSION = "Test 5";       
+    
+	/** 
+     * The normal title of the window. 
+     */
+	private String windowTitle = APPLICATION_NAME;	        
     
     /**
      * The executor used by certain managers.
@@ -438,17 +453,7 @@ public class Game extends Canvas implements GameWindowCallback
 	/** 
      * The recorded FPS. 
      */
-	private int framesPerSecond;
-
-    /**
-     * The name of the application.
-     */
-    private String applicationName = "Wezzle";
-    
-	/** 
-     * The normal title of the window. 
-     */
-	private String windowTitle = applicationName;	    
+	private int framesPerSecond;   
     
     /**
      * The background sprite.
@@ -564,7 +569,9 @@ public class Game extends Canvas implements GameWindowCallback
         }
         
         // Print the build number.
-        LogManager.recordMessage("Wezzle Build " + buildNumber + " @ " + (new Date()));   
+        LogManager.recordMessage("Date: " + (new Date()));   
+        LogManager.recordMessage("Wezzle Build: " + buildNumber);
+        LogManager.recordMessage("Wezzle Version: " + VERSION);
         LogManager.recordMessage("Java Version: " + System.getProperty("java.version"));
         LogManager.recordMessage("OS Name: " + System.getProperty("os.name"));
         LogManager.recordMessage("OS Architecture: " + System.getProperty("os.arch"));
@@ -771,7 +778,8 @@ public class Game extends Canvas implements GameWindowCallback
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
                 .cached(false)
                 .color(TEXT_COLOR).size(12)                
-                .text(applicationName + " Build " + buildNumber).end();
+                .text(APPLICATION_NAME + " " + VERSION + " (Build " + buildNumber + ")")
+                .end();
         layerMan.add(versionLabel, LAYER_UI);
         
 		// Set up the timer text.
