@@ -659,6 +659,7 @@ public class Game extends Canvas implements GameWindowCallback
         tutorialMan.add(new BasicTutorial());
         tutorialMan.add(new RocketTutorial());
         tutorialMan.add(new BombTutorial());
+        tutorialMan.add(new StarTutorial());
     
         // Create the property manager. Must be done before Score manager.
         propertyMan = new PropertyManager();        
@@ -1539,14 +1540,11 @@ public class Game extends Canvas implements GameWindowCallback
                         if (tileRemovalUseJumpAnimation == true)
                         {
                             i++;
-                            int angle = i % 2 == 0 ? 70 : 180 - 70; 
-                            //int angle = 0;
+                            int angle = i % 2 == 0 ? 70 : 180 - 70;                             
                             
                             // Bring this tile to the top.
                             layerMan.toFront(t, Game.LAYER_TILE);
                             
-                            //IAnimation a1 = new JumpAnimation(0.3, angle, 0.001, 750, t);
-                            //Animation a2 = new FadeAnimation(FadeType.OUT, 0, 750, t);                                        
                             IAnimation a1 = new MoveAnimation.Builder(t)
                                     .duration(750).theta(angle).v(0.3)
                                     .g(0.001).end();                                    
@@ -1560,7 +1558,6 @@ public class Game extends Canvas implements GameWindowCallback
                         }
                         else                        
                         {
-//                            t.setAnimation(new ZoomOutAnimation(t));                        
                             t.setAnimation(new ZoomAnimation
                                     .Builder(ZoomType.IN, t).v(0.05).end());
                             animationMan.add(t.getAnimation());

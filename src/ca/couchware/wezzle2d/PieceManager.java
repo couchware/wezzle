@@ -685,6 +685,9 @@ public class PieceManager implements MouseListener, MouseMotionListener
             }
         } // end for
         
+        // Play the sound.
+        game.soundMan.play(AudioTrack.SOUND_CLICK);
+        
         for (Integer index : indexSet)
             boardMan.getTile(index).onClick();
         
@@ -733,10 +736,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 game.worldMan.calculateDropNumber(game, this.piece.getSize());
 
         // Increment the moves.
-        game.statMan.incrementMoveCount();
-
-        // Play the sound.
-        game.soundMan.play(AudioTrack.SOUND_CLICK);
+        game.statMan.incrementMoveCount();       
 
         // Start a tile drop.
         if (tileDropOnCommit == true)
