@@ -706,10 +706,10 @@ public class Game extends Canvas implements GameWindowCallback
         achievementMan = new AchievementManager();
         
         // Load the test achievements.        
-        LinkedList<Rule> rules1 = new LinkedList<Rule>();
-        LinkedList<Rule> rules2 = new LinkedList<Rule>();
-        LinkedList<Rule> rules3 = new LinkedList<Rule>();
-        LinkedList<Rule> rules4 = new LinkedList<Rule>();
+        List<Rule> rules1 = new LinkedList<Rule>();
+        List<Rule> rules2 = new LinkedList<Rule>();
+        List<Rule> rules3 = new LinkedList<Rule>();
+        List<Rule> rules4 = new LinkedList<Rule>();
         
         rules1.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 2000));
         
@@ -1040,7 +1040,7 @@ public class Game extends Canvas implements GameWindowCallback
         LogManager.recordMessage("Game over!", "Game#frameRendering");
 
         // Add the new score.
-        highScoreMan.addScore("TST", scoreMan.getTotalScore(), 
+        highScoreMan.addScore("TEST", scoreMan.getTotalScore(), 
                 worldMan.getLevel());
         highScoreGroup.updateLabels();
         

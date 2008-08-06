@@ -5,8 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.Util;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * An achievement will hold all the state information required for that 
@@ -41,7 +40,7 @@ public class Achievement
         BRONZE, SILVER, GOLD, PLATINUM
     }
        
-    private LinkedList<Rule> ruleList;
+    private List<Rule> ruleList;
     private String description;
     private Difficulty difficulty;    
 
@@ -54,7 +53,7 @@ public class Achievement
      * @param description
      * @param difficulty
      */
-    public Achievement(LinkedList<Rule> ruleList, String description, 
+    public Achievement(List<Rule> ruleList, String description, 
             Difficulty difficulty)
     {
         this.ruleList = ruleList;
