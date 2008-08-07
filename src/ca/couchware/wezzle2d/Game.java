@@ -872,6 +872,10 @@ public class Game extends Canvas implements GameWindowCallback
         // Start        
         //----------------------------------------------------------------------                      
         
+//        RadioItem r = new RadioItem.Builder(window, 300, 300).text("Test")
+//                .state(RadioItem.State.ON).end();
+//        layerMan.add(r, Game.LAYER_UI);
+        
         // Start the game.
 		startGame();
 	}

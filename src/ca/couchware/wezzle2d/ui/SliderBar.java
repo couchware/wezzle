@@ -45,7 +45,7 @@ public class SliderBar extends AbstractEntity implements
     /**
      * The height of the clickable slider bar area.
      */
-    final private static int HEIGHT = 15;     
+    final private static int HEIGHT = 16;     
     
     /**
      * The slider states.
@@ -162,10 +162,10 @@ public class SliderBar extends AbstractEntity implements
         
         // Load in the sprites.
         spriteRail = ResourceFactory.get()
-                .getSprite(Game.SPRITES_PATH + "/SliderBarRail.png");
+                .getSprite(Game.SPRITES_PATH + "/SliderBarRailThick.png");
         
         spriteHandle = ResourceFactory.get()
-                .getSprite(Game.SPRITES_PATH + "/SliderBarHandle.png");
+                .getSprite(Game.SPRITES_PATH + "/SliderBarHandleRounded.png");
         
         // Start in normal state.
         state = State.NORMAL;
@@ -262,7 +262,7 @@ public class SliderBar extends AbstractEntity implements
             return;
         
         // Draw the rail.
-        spriteRail.draw(x + offsetX, y + offsetY + 7);
+        spriteRail.draw(x + offsetX, y + offsetY + (HEIGHT - spriteRail.getHeight()) / 2);
         
         // Draw the handle.
         spriteHandle.draw(x + offsetX + slideOffset, y + offsetY);
