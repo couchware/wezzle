@@ -2185,16 +2185,16 @@ public class Game extends Canvas implements GameWindowCallback
      */
     public void windowDeactivated()
     {
-//        // Don't pause game if we're showing the game over screen.
-//        if (groupMan.isActivated() == false)
-//        {
-//            updatePauseGroup();
-//            groupMan.showGroup(pauseButton, pauseGroup, 
-//                    GroupManager.CLASS_PAUSE,
-//                    GroupManager.LAYER_MIDDLE);
-//        }
-//        
-//        this.background.setDirty(true);
+        // Don't pause game if we're showing the game over screen.
+        if (groupMan.isActivated() == false)
+        {
+            updatePauseGroup();
+            groupMan.showGroup(pauseButton, pauseGroup, 
+                    GroupManager.CLASS_PAUSE,
+                    GroupManager.LAYER_MIDDLE);
+        }
+        
+        this.background.setDirty(true);
     }
     
      /**
