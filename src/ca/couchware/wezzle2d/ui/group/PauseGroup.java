@@ -9,7 +9,6 @@ import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.ILabel;
-import ca.couchware.wezzle2d.ui.button.*;
 import java.util.EnumSet;
 
 /**

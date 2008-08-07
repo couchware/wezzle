@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationManager;
@@ -19,8 +20,7 @@ import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.ui.*;
-import ca.couchware.wezzle2d.ui.button.*;
-import ca.couchware.wezzle2d.ui.button.SpriteButton.ButtonType;
+import ca.couchware.wezzle2d.ui.SpriteButton.ButtonType;
 import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Canvas;
@@ -872,9 +872,9 @@ public class Game extends Canvas implements GameWindowCallback
         // Start        
         //----------------------------------------------------------------------                      
         
-//        RadioItem r = new RadioItem.Builder(window, 300, 300).text("Test")
-//                .state(RadioItem.State.ON).end();
-//        layerMan.add(r, Game.LAYER_UI);
+        RadioItem r = new RadioItem.Builder(window, 100, 100).text("Test")
+                .state(RadioItem.State.NORMAL).end();
+        layerMan.add(r, Game.LAYER_UI);
         
         // Start the game.
 		startGame();

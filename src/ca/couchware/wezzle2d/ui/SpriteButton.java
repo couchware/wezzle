@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d.ui.button;
+package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
@@ -102,7 +102,7 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
      * @param x
      * @param y
      */
-    public SpriteButton(Builder builder)
+    private SpriteButton(Builder builder)
     {      
         // Invoke the super on the required arguments.
         // This will set their variables as well.

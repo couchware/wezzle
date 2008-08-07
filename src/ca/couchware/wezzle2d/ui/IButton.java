@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d.ui.button;
+package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;

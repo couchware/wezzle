@@ -5,6 +5,9 @@
 
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import java.util.List;
+
 /**
  * A UI element for representing a group of RadioItems.
  * Typically used for allowing the user to select among mutually exclusive
@@ -17,7 +20,16 @@ package ca.couchware.wezzle2d.ui;
  * 
  * @author cdmckay
  */
-public class RadioGroup 
+public class RadioGroup extends AbstractEntity
 {
+    /** The list of radio items. */
+    private List<RadioItem> radioItemList;
 
+    
+    
+    @Override
+    public void draw()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }        
 }

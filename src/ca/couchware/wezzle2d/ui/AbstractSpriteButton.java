@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d.ui.button;
+package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
-import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -26,7 +25,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     /**
      * The button's current state.
      */
-    protected static enum ButtonState
+    public static enum State
     {
         NORMAL, HOVER, ACTIVE, PRESSED
     }      
@@ -34,7 +33,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     /**
      * The current state of the button.
      */
-    protected ButtonState state;
+    protected State state;
     
     // -------------------------------------------------------------------------
     // Instance Attributes
@@ -87,7 +86,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         this.window = window;
         
         // Set the initial state.
-        this.state = ButtonState.NORMAL;
+        this.state = State.NORMAL;
         
         // Set the shape.
         shape = new Rectangle();
@@ -116,20 +115,20 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         {
             // If the mouse is released over a button that is depressed, then
             // that's a click.
-            if (state == ButtonState.PRESSED)
+            if (state == State.PRESSED)
             {
                 clicked.set(true);        
                 activated.set(isActivated() == true ? false : true);
             }
             
-            state = ButtonState.HOVER;                        
+            state = State.HOVER;                        
         }        
         else
         {
             if (isActivated() == true)
-                state = ButtonState.ACTIVE;
+                state = State.ACTIVE;
             else
-                state = ButtonState.NORMAL;
+                state = State.NORMAL;
         }
                             
         setDirty(true);
@@ -137,7 +136,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     
     private void handlePressed()
     {        
-        state = ButtonState.PRESSED;
+        state = State.PRESSED;
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -179,9 +178,9 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         //Util.handleWarning("Hand", Thread.currentThread());
         window.setCursor(Cursor.HAND_CURSOR);
         
-        if (state != ButtonState.PRESSED && state != ButtonState.HOVER)
+        if (state != State.PRESSED && state != State.HOVER)
         {
-            state = ButtonState.HOVER;
+            state = State.HOVER;
             setDirty(true);
         }                
     }           
@@ -191,14 +190,14 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         //Util.handleWarning("Default", Thread.currentThread());
         window.setCursor(Cursor.DEFAULT_CURSOR);
         
-        if (isActivated() == true && state != ButtonState.ACTIVE)
+        if (isActivated() == true && state != State.ACTIVE)
         {
-            state = ButtonState.ACTIVE;
+            state = State.ACTIVE;
             setDirty(true);
         }
-        else if (isActivated() == false && state != ButtonState.NORMAL)
+        else if (isActivated() == false && state != State.NORMAL)
         {
-            state = ButtonState.NORMAL;
+            state = State.NORMAL;
             setDirty(true);
         }                
     }
@@ -291,11 +290,11 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         
         if (isActivated() == true)
         {
-            state = ButtonState.ACTIVE;            
+            state = State.ACTIVE;            
         }
         else
         {            
-            state = ButtonState.NORMAL;           
+            state = State.NORMAL;           
             setMousePosition(0, 0);
             handleMoved(window.getMouseWPosition());
         }

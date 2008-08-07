@@ -1,11 +1,12 @@
 package ca.couchware.wezzle2d.ui.group;
 
+import ca.couchware.wezzle2d.ui.IButton;
+import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
-import ca.couchware.wezzle2d.ui.button.*;
 import java.util.EnumSet;
 
 /**

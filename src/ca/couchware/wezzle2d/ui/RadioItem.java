@@ -9,8 +9,8 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.GameWindow;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.ISprite;
+import java.awt.Rectangle;
 import java.util.EnumSet;
 
 /**
@@ -19,41 +19,43 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class RadioItem extends AbstractEntity
+public class RadioItem extends AbstractSpriteButton
 {
     /** The path to the on sprite. */
-    final public static String PATH_ON = Game.SPRITES_PATH + "/" + "RadioOn.png";
+    final public static String PATH_ON = 
+            Game.SPRITES_PATH + "/" + "RadioOn.png";
     
     /** The path to the off sprite. */
-    final public static String PATH_OFF = Game.SPRITES_PATH + "/" + "RadioOff.png";
+    final public static String PATH_OFF = 
+            Game.SPRITES_PATH + "/" + "RadioOff.png";  
     
-    /**
-     * The possible states of the radio item.
-     */
-    public static enum State
-    {
-        ON, OFF
-    }
+    /** The path to the on sprite (hover). */
+    final public static String PATH_HOVER_ON = 
+            Game.SPRITES_PATH + "/" + "RadioHoverOn.png";
     
-    /**
-     * The window the radio item is drawing to.
-     */
-    private GameWindow window;    
-    
-    /**
-     * The state of the radio button.
-     */
-    private State state;
+    /** The path to the off sprite (hover). */
+    final public static String PATH_HOVER_OFF = 
+            Game.SPRITES_PATH + "/" + "RadioHoverOff.png";  
     
     /**
      * The sprite for the radio button being off.
      */
-    private ISprite spriteOn;
+    final private ISprite spriteOn;
     
     /**
      * The sprite for the radio button being on.
      */
-    private ISprite spriteOff;
+    final private ISprite spriteOff;
+    
+    /**
+     * The sprite for the radio button being off (hover).
+     */
+    final private ISprite spriteHoverOn;
+    
+    /**
+     * The sprite for the radio button being on (hover)
+     */
+    final private ISprite spriteHoverOff;
 
     /**
      * The label associated with the radio item.
@@ -85,11 +87,7 @@ public class RadioItem extends AbstractEntity
     private RadioItem(Builder builder)
     {
         // Set the game window and coordinates.
-        this.window = builder.window;
-        this.x = builder.x;
-        this.y = builder.y;
-        this.x_ = x;
-        this.y_ = y;
+        super(builder.window, builder.x, builder.y);
         
         // Set the text.
         this.text = builder.text;
@@ -99,9 +97,11 @@ public class RadioItem extends AbstractEntity
         this.state = builder.state;
         this.pad = builder.pad;
         
-        // Create the sprite.
+        // Create the sprites.
         spriteOn = ResourceFactory.get().getSprite(PATH_ON);
         spriteOff = ResourceFactory.get().getSprite(PATH_OFF);
+        spriteHoverOn = ResourceFactory.get().getSprite(PATH_HOVER_ON);
+        spriteHoverOff = ResourceFactory.get().getSprite(PATH_HOVER_OFF);
         
         // Make sure that both sprites are the same width and height.
         if ((spriteOn.getWidth() != spriteOff.getWidth())
@@ -130,6 +130,13 @@ public class RadioItem extends AbstractEntity
         this.offsetX = determineOffsetX(alignment);
         this.offsetY = determineOffsetX(alignment);    
         
+        // Adjust the height so that it'll include the label.
+        this.height = label.getHeight();
+        this.height_ = height;
+        
+        // Set the shape.
+        this.shape = new Rectangle(x + offsetX, y + offsetY, width, height);
+        
         // Adjust the label with the offsets.
         label.translate(offsetX, offsetY);
     }
@@ -145,7 +152,7 @@ public class RadioItem extends AbstractEntity
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
         private int opacity = 100;
         private boolean visible = true;
-        private State state = State.OFF;
+        private State state = State.NORMAL;
         private String text = "";
         private float textSize = 20f;
         private int pad = 10;        
@@ -204,24 +211,79 @@ public class RadioItem extends AbstractEntity
     @Override
     public void draw()
     {
+        x_ = x;
+        y_ = y;
+        
+        // Don't draw if not visible.
+        if (isVisible() == false)
+            return;
+
+        // See what state we're in.
         switch (state)
         {
-            case ON:
-                spriteOn.draw(x + offsetX, y + offsetY, 
-                        spriteOn.getWidth(), spriteOn.getHeight(),
-                        0, opacity);
+            case NORMAL:
+                drawNormal();
                 break;
                 
-            case OFF:
-                spriteOff.draw(x + offsetX, y + offsetY, 
-                        spriteOn.getWidth(), spriteOn.getHeight(),
-                        0, opacity);
+            case ACTIVE:
+                drawActive();
                 break;
                 
-            default: throw new AssertionError();
-        }
+            case HOVER:
+                drawHover();
+                break;
+                
+            case PRESSED:
+                drawPressed();                
+                break;                           
+                
+            default:
+                throw new AssertionError();
+        } // end switch                
         
         label.draw();
-    }        
+    }     
+    
+    private void drawNormal()
+    {
+        spriteOff.draw(x + offsetX, y + offsetY, 
+                        spriteOn.getWidth(), spriteOn.getHeight(),
+                        0, opacity);
+    }
+    
+    private void drawActive()
+    {
+        spriteOn.draw(x + offsetX, y + offsetY, 
+                        spriteOn.getWidth(), spriteOn.getHeight(),
+                        0, opacity);
+    }      
+    
+    private void drawHover()
+    {
+        if (isActivated() == true)
+        {
+            spriteHoverOn.draw(x + offsetX, y + offsetY, 
+                        spriteOn.getWidth(), spriteOn.getHeight(),
+                        0, opacity);
+        }
+        else
+        {
+            spriteHoverOff.draw(x + offsetX, y + offsetY, 
+                        spriteOn.getWidth(), spriteOn.getHeight(),
+                        0, opacity);
+        }
+    }
+    
+    private void drawPressed()
+    {
+        drawHover();
+    }
+    
+    @Override
+    public void setVisible(boolean visible)
+    {
+        super.setVisible(visible);
+        label.setVisible(visible);
+    }
     
 }
