@@ -499,7 +499,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                 {
                     // The tile is an item.
                     tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
-                            dropRow, game.worldMan.getItem().getItemClass()));
+                            dropRow, game.worldMan.getItem().getTileType()));
                                   
                 }
                 else if (totalTileDropInAmount <= parallelTileDropInAmount
@@ -512,12 +512,12 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     for (int i = 0; i < totalTileDropInAmount - 1; i++)
                     {
                         tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
-                                dropRow, TileEntity.class)); 
+                                dropRow, TileType.NORMAL)); 
                     }
                     
                     // Drop in the item tile.
                     tileDropList.add(boardMan.createTile(randomIndexQueue.remove(),
-                            dropRow, game.worldMan.getItem().getItemClass()));                     
+                            dropRow, game.worldMan.getItem().getTileType()));                     
                 }
                 else
                 {
@@ -525,7 +525,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     for (int i = 0; i < parallelTileDropInAmount; i++)
                     {
                         tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
-                                dropRow, TileEntity.class));
+                                dropRow, TileType.NORMAL));
                     }                 
                 }                
                           

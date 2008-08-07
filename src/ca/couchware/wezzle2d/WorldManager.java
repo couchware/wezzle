@@ -126,13 +126,13 @@ public class WorldManager
         
         // Set the items.
 		itemList = new LinkedList<Item>();
-		itemList.add(new Item(TileEntity.class, 28, 20));
-//		itemList.add(new Item(BombTileEntity.class, 10, 20));
-//      itemList.add(new Item(StarTileEntity.class, 0, 5));
-//      itemList.add(new Item(RocketTileEntity.class, 15, 50));
-		itemList.add(new Item(x2TileEntity.class, 2, 50));
-        itemList.add(new Item(x3TileEntity.class, 0, 20));
-        itemList.add(new Item(x4TileEntity.class, 0, 10));
+		itemList.add(new Item(TileType.NORMAL, 28, 20));
+//        itemList.add(new Item(TileType.BOMB, 10, 20));
+//        itemList.add(new Item(TileType.STAR, 0, 5));
+//        itemList.add(new Item(TileType.ROCKET, 15, 50));
+		itemList.add(new Item(TileType.X2, 2, 50));
+        itemList.add(new Item(TileType.X3, 0, 20));
+        itemList.add(new Item(TileType.X4, 0, 10));
         
         // Set the rules.
         masterRuleList = new LinkedList<Rule>();
@@ -144,7 +144,7 @@ public class WorldManager
             public void performAction(Game game)
             {
                 // Increase the number of colours.
-                itemList.add(new Item(RocketTileEntity.class, 1, 50));
+                itemList.add(new Item(TileType.ROCKET, 1, 50));
             }            
         });  
         
@@ -155,7 +155,7 @@ public class WorldManager
             public void performAction(Game game)
             {
                 // Increase the number of colours.
-                itemList.add(new Item(BombTileEntity.class, 1, 20));
+                itemList.add(new Item(TileType.BOMB, 1, 20));
             }            
         });   
         
@@ -166,7 +166,7 @@ public class WorldManager
             public void performAction(Game game)
             {
                 // Increase the number of colours.
-                itemList.add(new Item(StarTileEntity.class, 0, 5));
+                itemList.add(new Item(TileType.STAR, 0, 5));
             }            
         });   
         
@@ -364,10 +364,10 @@ public class WorldManager
 	/**
 	 * @param currentLevel the currentLevel to set
 	 */
-	public void setLevel(int currentLevel)
+	public void setLevel(int level)
 	{
 		// Set the level.
-		this.level = currentLevel;								
+		this.level = level;								
 	}	
 	
     /**
@@ -375,15 +375,15 @@ public class WorldManager
      */
     public int getMaxItems()
     {
-        return this.maxItems;
+        return maxItems;
     }
     
     /**
      * set the maximum number of items.
      */
-    public void setMaxItems(int max)
+    public void setMaxItems(int maxItems)
     {
-        this.maxItems = max;
+        this.maxItems = maxItems;
     }    
     
     /**
@@ -392,7 +392,7 @@ public class WorldManager
      */
     public int getInitialTimer()
     {
-        return this.initialTimer;
+        return initialTimer;
     }        
     
 	/**
@@ -404,7 +404,7 @@ public class WorldManager
 		getItem(0).incrementInitialAmount();
 		
 		// Increment the level.
-		this.setLevel(level + 1);
+		setLevel(level + 1);
 	}	
 	            
     /**
@@ -424,22 +424,22 @@ public class WorldManager
 	 */
 	public Item getItem(int index)
 	{
-		return (Item) this.itemList.get(index);
+		return itemList.get(index);
 	}
 	
 	/**
 	 * Get the descriptor for the item with the specified class.
 	 * Returns null if the class does not exist.
 	 * 
-	 * @param c The item class.
-	 * @return The ItemDescriptor.
+	 * @param type
+	 * @return 
 	 */
-	public Item getItem(Class c)
+	public Item getItem(TileType type)
 	{
-		for (Iterator it = itemList.iterator(); it.hasNext(); )
+		for (Item item : itemList)
         {
-			if (((Item) it).getItemClass().equals(c))
-				return (Item) it;
+			if (item.getTileType() == type)
+				return item;
         }
 		
 		return null;

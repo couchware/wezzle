@@ -29,6 +29,9 @@ public class StarTileEntity extends ItemTileEntity
     {
         // Invoke super.
         super(PATH, boardMan, color, x, y);
+        
+        // Set the type.
+        this.type = TileType.STAR;
     }
     
 }

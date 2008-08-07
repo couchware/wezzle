@@ -4,12 +4,12 @@ import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.*;
 
 /**
- * A bomb tile.
+ * An abstract class for making item tiles like bombs and rockets.
  * 
  * @author cdmckay
  */
 
-public class ItemTileEntity extends TileEntity
+public abstract class ItemTileEntity extends TileEntity
 {
     /**
      * The sprite representing the bomb graphic.

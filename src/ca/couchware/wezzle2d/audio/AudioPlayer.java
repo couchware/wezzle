@@ -256,7 +256,8 @@ public class AudioPlayer
         try
         {
             // Create the Audio Stream.
-            in = AudioSystem.getAudioInputStream(url.openStream());
+            in = AudioSystem.getAudioInputStream(
+                    new BufferedInputStream(url.openStream()));
 
             // The base audio format.
             AudioFormat baseFormat = in.getFormat();                             

@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.SpeechBubble.BubbleType;
@@ -316,7 +317,7 @@ public class BasicTutorial extends AbstractTutorial
                 
         // Create bottom row.        
         TileEntity t = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.RED);
+                TileType.NORMAL, TileColor.RED);
         
         // Set a click action.
         t.setClickAction(new Runnable()
@@ -331,26 +332,26 @@ public class BasicTutorial extends AbstractTutorial
         });                
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.YELLOW);
+                TileType.NORMAL, TileColor.YELLOW);
         
         // Create second-from-bottom row.
         game.boardMan.createTile(0, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         game.boardMan.createTile(1, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.PURPLE);
+                TileType.NORMAL, TileColor.PURPLE);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.YELLOW);
+                TileType.NORMAL, TileColor.YELLOW);
         
         game.boardMan.setVisible(true);
     }   

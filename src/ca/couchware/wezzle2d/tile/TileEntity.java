@@ -20,7 +20,12 @@ public class TileEntity extends GraphicEntity
 	/**
 	 * The colour of the tile.
 	 */
-	protected final TileColor color;		
+	protected final TileColor color;	
+    
+    /**
+     * The tile type.
+     */
+    protected TileType type;
     
     /**
      * The click runnable.
@@ -47,7 +52,8 @@ public class TileEntity extends GraphicEntity
         
 		// Set board manager and color reference.
 		this.boardMan = boardMan;	
-		this.color = color;                               
+		this.color = color;                
+        this.type = TileType.NORMAL;
 	}
     
     /**
@@ -62,13 +68,24 @@ public class TileEntity extends GraphicEntity
     }    	
     
 	/**
-	 * Gets the color.
+	 * Gets the tile color.
+     *      
 	 * @return The color.
 	 */
 	public TileColor getColor()
 	{
 		return color;
-	}   
+	}
+
+    /**
+     * Gets the tile type.
+     * 
+     * @return
+     */
+    public TileType getType()
+    {
+        return type;
+    }        
     
 	@Override
     public void draw()

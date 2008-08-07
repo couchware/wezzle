@@ -283,7 +283,7 @@ public class BoardManager implements IManager
             for (int j = 0; 
                 j < itemList.get(i).getInitialAmount(); j++)
             {
-                this.createTile(count, itemList.get(i).getItemClass());
+                this.createTile(count, itemList.get(i).getTileType());
                 count++;
             }
         }      
@@ -304,7 +304,7 @@ public class BoardManager implements IManager
 				{
 					Integer n = (Integer) it.next();
 					this.createTile(n.intValue(), 
-                            getTile(n.intValue()).getClass());
+                            getTile(n.intValue()).getType());
 				}
 				
 				set.clear();
@@ -912,37 +912,71 @@ public class BoardManager implements IManager
      * color.  The new tile is also returned.
      * 
      * @param index
-     * @param c
+     * @param type
      * @param color
      * @return
      */
-	public TileEntity createTile(final int index, final Class c, 
+	public TileEntity createTile(final int index, final TileType type, 
             final TileColor color)
 	{
         // Sanity check.
         assert (index >= 0 && index < cells);
-        assert (c != null);      
+        assert (type != null);      
         
         // The new tile.
         TileEntity t = null;
+        int tx = x + (index % columns) * cellWidth;
+        int ty = y + (index / columns) * cellHeight;
         
-        try
-        {           
-            // Get the constructor.  All tiles must have the same constructor.
-            Constructor con = c.getConstructor(new Class[] { BoardManager.class, 
-                TileColor.class, Integer.TYPE, Integer.TYPE });
-
-            t = (TileEntity) con.newInstance(this, color, 
-				x + (index % columns) * cellWidth,
-				y + (index / columns) * cellHeight);          
-            
-            con = null;
-        }
-        catch (Exception ex)
+//        try
+//        {           
+//            // Get the constructor.  All tiles must have the same constructor.
+//            Constructor con = c.getConstructor(new Class[] { BoardManager.class, 
+//                TileColor.class, Integer.TYPE, Integer.TYPE });
+//
+//            t = (TileEntity) con.newInstance(this, color, 
+//				x + (index % columns) * cellWidth,
+//				y + (index / columns) * cellHeight);          
+//            
+//            con = null;
+//        }
+//        catch (Exception ex)
+//        {
+//            LogManager.recordException(ex);
+//            return null;
+//        }        
+        switch (type)
         {
-            LogManager.recordException(ex);
-            return null;
-        }        
+            case NORMAL:
+                t = new TileEntity(this, color, tx, ty);
+                break;
+                
+            case X2:
+                t = new X2TileEntity(this, color, tx, ty);
+                break;
+                
+            case X3:
+                t = new X3TileEntity(this, color, tx, ty);
+                break;
+                
+            case X4:
+                t = new X4TileEntity(this, color, tx, ty);
+                break;
+
+            case ROCKET:
+                t = new RocketTileEntity(this, color, tx, ty);
+                break;
+
+            case BOMB:
+                t = new BombTileEntity(this, color, tx, ty);
+                break;
+
+            case STAR:
+                t = new StarTileEntity(this, color, tx, ty);
+                break;
+                
+            default: throw new AssertionError("Unknown type.");
+        }
         
         // Add the tile.
         addTile(index, t);
@@ -951,21 +985,22 @@ public class BoardManager implements IManager
         return t;
 	}
     
-    public TileEntity createTile(final int column, final int row, final Class c,
-            final TileColor color)
+    public TileEntity createTile(final int column, final int row, 
+            final TileType type, final TileColor color)
     {
-        return createTile(row * columns + column, c, color);
+        return createTile(row * columns + column, type, color);
     }
     
-    public TileEntity createTile(final int index, final Class c)
+    public TileEntity createTile(final int index, final TileType type)
     {
-        return createTile(index, c, 
+        return createTile(index, type, 
                 TileColor.getRandomColor(getNumberOfColors()));
     }
     
-    public TileEntity createTile(final int column, final int row, final Class c)
+    public TileEntity createTile(final int column, final int row, 
+            final TileType type)
     {
-        return createTile(row * columns + column, c);
+        return createTile(row * columns + column, type);
     }
     
     public void removeTile(final int index)

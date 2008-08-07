@@ -17,6 +17,7 @@ import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.SpeechBubble.BubbleType;
@@ -306,61 +307,61 @@ public class RocketTutorial extends AbstractTutorial
         
         // Create bottom row.        
         TileEntity t1 = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.RED);                         
+                TileType.NORMAL, TileColor.RED);                         
         t1.setClickAction(r);
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         TileEntity t2 = game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.RED);
+                TileType.NORMAL, TileColor.RED);
         t2.setClickAction(r);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         game.boardMan.createTile(4, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.GREEN);
+                TileType.NORMAL, TileColor.GREEN);
         
         game.boardMan.createTile(5, game.boardMan.getRows() - 1, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         // Create second-from-bottom row.
         game.boardMan.createTile(0, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         // Create the rocket.     
         RocketTileEntity rocket = (RocketTileEntity) game.boardMan.createTile(
                 1, game.boardMan.getRows() - 2, 
-                RocketTileEntity.class, TileColor.BLUE);
+                TileType.ROCKET, TileColor.BLUE);
         rocket.setDirection(RocketTileEntity.Direction.RIGHT);
         
         TileEntity t3 = game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.RED);
+                TileType.NORMAL, TileColor.RED);
         t3.setClickAction(r);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         game.boardMan.createTile(4, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.GREEN);
+                TileType.NORMAL, TileColor.GREEN);
         
         game.boardMan.createTile(5, game.boardMan.getRows() - 2, 
-                TileEntity.class, TileColor.YELLOW);
+                TileType.NORMAL, TileColor.YELLOW);
         
         // Create third-from-bottom row.
         game.boardMan.createTile(0, game.boardMan.getRows() - 3, 
-                TileEntity.class, TileColor.BLUE);     
+                TileType.NORMAL, TileColor.BLUE);     
         
         TileEntity t4 = game.boardMan.createTile(1, game.boardMan.getRows() - 3, 
-                TileEntity.class, TileColor.RED);
+                TileType.NORMAL, TileColor.RED);
         t4.setClickAction(r);
         
         game.boardMan.createTile(2, game.boardMan.getRows() - 3, 
-                TileEntity.class, TileColor.BLUE);
+                TileType.NORMAL, TileColor.BLUE);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 3, 
-                TileEntity.class, TileColor.GREEN);
+                TileType.NORMAL, TileColor.GREEN);
         
         game.boardMan.setVisible(true);
     }   

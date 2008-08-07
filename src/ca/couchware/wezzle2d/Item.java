@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.tile.TileType;
+
 /**
  * A class to describe an item on the board.
  * @author Kevin
@@ -14,7 +16,7 @@ public class Item
 	/**
 	 * The class of the tile we are describing.
 	 */
-	private Class itemClass;
+	private TileType tileType;
 	
 	/**
 	 * The initial number of this item.
@@ -39,9 +41,9 @@ public class Item
 	 * A constructor to construct an item descriptor for the passed in class.
 	 * @param itemClass The class we are describing.
 	 */
-	public Item(Class itemClass, int initialAmount, int probability)
+	public Item(TileType tileType, int initialAmount, int probability)
 	{
-		this.itemClass = itemClass;
+		this.tileType = tileType;
 		this.initialAmount = initialAmount;
 		this.currentAmount = 0;
 		this.probability = probability;
@@ -51,7 +53,7 @@ public class Item
 	 * The overloaded constructor. Parses the data from an XML file.
 	 * @param file The file to parse
 	 */
-	public Item(String file)
+	public Item(String path)
 	{
 		
 	}
@@ -64,14 +66,14 @@ public class Item
 	 * Get the Item class of this descriptor.
 	 * @return The itemClass.
 	 */
-	public Class getItemClass()
+	public TileType getTileType()
 	{
-		return this.itemClass;
+		return tileType;
 	}
 	
-	public void setItemClass(Class itemClass)
+	public void setTileType(TileType tileType)
 	{
-		this.itemClass = itemClass;
+		this.tileType = tileType;
 	}
 
 	/**

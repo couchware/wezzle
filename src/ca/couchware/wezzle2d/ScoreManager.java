@@ -157,15 +157,15 @@ import java.util.Set;
                 {
                     numNormal++;
                 }
-                else if (t.getClass() == x2TileEntity.class)                    
+                else if (t.getClass() == X2TileEntity.class)                    
                 {
                     numMultiply2x++;
                 }
-                else if (t.getClass() == x3TileEntity.class)                    
+                else if (t.getClass() == X3TileEntity.class)                    
                 {
                     numMultiply3x++;
                 }
-                else if (t.getClass() == x4TileEntity.class)                    
+                else if (t.getClass() == X4TileEntity.class)                    
                 {
                     numMultiply4x++;
                 }

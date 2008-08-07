@@ -65,6 +65,9 @@ public class RocketTileEntity extends ItemTileEntity
         
         // Set the item theta.
         itemTheta = determineItemTheta(direction);
+        
+        // Set the type.
+        this.type = TileType.ROCKET;
     }              
     
     final private double determineItemTheta(Direction direction)
