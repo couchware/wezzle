@@ -69,7 +69,7 @@ public class BombTutorial extends AbstractTutorial
         // Set the name.
         super("Bomb Tutorial");
         
-        // This tutorial has a single rule.  It activates on level 4.        
+        // This tutorial has a single rule.  It activates on level 8.        
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 8));
     }
     
@@ -92,8 +92,7 @@ public class BombTutorial extends AbstractTutorial
          // Set restriction board so that only the bottom left corner is
         // clickable.
         game.pieceMan.clearRestrictionBoard();
-        game.pieceMan.reverseRestrictionBoard();
-        game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
+        game.pieceMan.reverseRestrictionBoard();       
         game.pieceMan.setRestrictionCell(1, game.boardMan.getRows() - 3, true);
         game.pieceMan.setRestrictionCell(2, game.boardMan.getRows() - 1, true);
         game.pieceMan.setRestrictionCell(2, game.boardMan.getRows() - 2, true);
@@ -312,9 +311,8 @@ public class BombTutorial extends AbstractTutorial
         };                   
         
         // Create bottom row.        
-        TileEntity t1 = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
-                TileType.NORMAL, TileColor.RED);                         
-        t1.setClickAction(r);
+        game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
+                TileType.NORMAL, TileColor.GREEN);                                 
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.YELLOW);

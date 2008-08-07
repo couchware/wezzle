@@ -263,13 +263,13 @@ public class RadioItem extends AbstractSpriteButton
         if (isActivated() == true)
         {
             spriteHoverOn.draw(x + offsetX, y + offsetY, 
-                        spriteOn.getWidth(), spriteOn.getHeight(),
+                        spriteHoverOn.getWidth(), spriteHoverOn.getHeight(),
                         0, opacity);
         }
         else
         {
             spriteHoverOff.draw(x + offsetX, y + offsetY, 
-                        spriteOn.getWidth(), spriteOn.getHeight(),
+                        spriteHoverOff.getWidth(), spriteHoverOff.getHeight(),
                         0, opacity);
         }
     }
