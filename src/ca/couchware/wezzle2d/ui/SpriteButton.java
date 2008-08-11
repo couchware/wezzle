@@ -1,12 +1,10 @@
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.*;
-import java.awt.Rectangle;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
@@ -16,7 +14,7 @@ import java.util.Map;
  * 
  * @author cdmckay
  */
-public class SpriteButton extends AbstractSpriteButton implements IButton
+public class SpriteButton extends AbstractSpriteButton
 {          
     /**
      * The different sizes of the boolean buttons.
@@ -29,16 +27,16 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
     /**
      * The button dimensions.
      */
-    final private static Map<ButtonType, WDimension> dimensionMap;       
+    final private static Map<ButtonType, ImmutableDimension> dimensionMap;       
     
     /**
      * The static constructor.
      */
     static
     {
-        dimensionMap = new EnumMap<ButtonType, WDimension>(ButtonType.class);        
-        dimensionMap.put(ButtonType.NORMAL, new WDimension(153, 49));
-        dimensionMap.put(ButtonType.LARGE, new WDimension(210, 130));
+        dimensionMap = new EnumMap<ButtonType, ImmutableDimension>(ButtonType.class);        
+        dimensionMap.put(ButtonType.NORMAL, new ImmutableDimension(153, 49));
+        dimensionMap.put(ButtonType.LARGE, new ImmutableDimension(210, 130));
     }
            
     /**
@@ -78,9 +76,14 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
     private int hoverOpacity;
     
     /**
+     * The pressed opacity.
+     */
+    private int pressedOpacity;
+    
+    /**
      * The active opacity.
      */
-    private int activeOpacity;
+    private int onOpacity;
     
     /**
      * The normal text.
@@ -112,26 +115,27 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
         this.normalText = builder.normalText;       
         this.hoverText = builder.hoverText;
         this.activeText = builder.activeText;
-        this.opacity = limitOpacity(builder.normalOpacity);
+        this.opacity = limitOpacity(builder.offOpacity);
         this.hoverOpacity = limitOpacity(builder.hoverOpacity);
-        this.activeOpacity = limitOpacity(builder.activeOpacity);
+        this.pressedOpacity = limitOpacity(builder.pressedOpacity);
+        this.onOpacity = limitOpacity(builder.onOpacity);
         this.type = builder.type;
         
         // Set the visibility.
-        setVisible(builder.visible);
+        this.visible = builder.visible;
         
         // Assign values based on the values from builder.
-        final WDimension d = dimensionMap.get(type);
+        final ImmutableDimension d = dimensionMap.get(type);
         this.width = d.getWidth();
         this.height = d.getHeight();                
         
         // Determine the offsets.
          this.alignment = builder.alignment;
-        offsetX = determineOffsetX(alignment);
-        offsetY = determineOffsetY(alignment);
+        offsetX = determineOffsetX(alignment, width);
+        offsetY = determineOffsetY(alignment, height);
         
         // Set the shape.
-        this.shape = new Rectangle(x + offsetX, y + offsetY, width, height);
+        this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);
         
         // Construct the sprite name.                
         String spriteNormalName = "RectangularButton_" 
@@ -161,7 +165,7 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
     public static class Builder implements IBuilder<SpriteButton>
     {
         // Required values.
-        private final GameWindow window;
+        private final IGameWindow window;
         private int x;
         private int y;        
         
@@ -170,13 +174,14 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
         private String normalText = "Default";
         private String hoverText = null;
         private String activeText = null;
-        private int normalOpacity = 80;
+        private int offOpacity = 80;
         private int hoverOpacity = 100;
-        private int activeOpacity = 100;
+        private int pressedOpacity = 100;
+        private int onOpacity = 100;
         private ButtonType type = ButtonType.NORMAL;  
         private boolean visible = true;
         
-        public Builder(GameWindow window, int x, int y)
+        public Builder(IGameWindow window, int x, int y)
         {
             this.window = window;
             this.x = x;
@@ -188,12 +193,13 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
             this.window = button.window;
             this.x = button.x;
             this.y = button.y;
-            this.alignment = button.alignment;
+            this.alignment = button.alignment.clone();
             this.normalText = button.normalText;
             this.hoverText = button.hoverText;
-            this.normalOpacity = button.opacity;
+            this.offOpacity = button.opacity;
             this.hoverOpacity = button.hoverOpacity;
-            this.activeOpacity = button.activeOpacity;
+            this.pressedOpacity = button.pressedOpacity;
+            this.onOpacity = button.onOpacity;
             this.type = button.type;
             this.visible = button.visible;
         }
@@ -219,14 +225,14 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
         public Builder activeText(String val)                 
         { activeText = val; return this; }
         
-        public Builder normalOpacity(int val)                 
-        { normalOpacity = val; return this; }
+        public Builder offOpacity(int val)                 
+        { offOpacity = val; return this; }
         
         public Builder hoverOpacity(int val) 
         { hoverOpacity = val; return this; }
         
-        public Builder activeOpacity(int val) 
-        { activeOpacity = val; return this; }
+        public Builder onOpacity(int val) 
+        { onOpacity = val; return this; }
         
         public Builder type(ButtonType val) 
         { type = val; return this; }
@@ -236,7 +242,12 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
         
         public SpriteButton end()
         {
-            return new SpriteButton(this);
+            SpriteButton button = new SpriteButton(this);
+            
+            if (visible == true)
+                window.addMouseListener(button);           
+            
+            return button;
         }                
     }    
         
@@ -246,15 +257,15 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
         normalLabel.draw();
     }
     
-    private void drawActive()
+    private void drawActivated()
     {        
-        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, activeOpacity);
+        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, onOpacity);
         
         if (activeLabel != null) activeLabel.draw();
         else normalLabel.draw();
     }
     
-    private void drawHover()
+    private void drawHovered()
     {
         sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, hoverOpacity);
         
@@ -270,18 +281,20 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
     
     private void drawPressed()
     {
-        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, 70);
+        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, pressedOpacity);
+        normalLabel.translate(0, 1);
         normalLabel.draw();
+        normalLabel.translate(0, -1);
     }   
 
     public int getActiveOpacity()
     {
-        return activeOpacity;
+        return onOpacity;
     }
 
     public void setActiveOpacity(int activeOpacity)
     {
-        this.activeOpacity = limitOpacity(activeOpacity);
+        this.onOpacity = limitOpacity(activeOpacity);
         setDirty(true);
     }
 
@@ -294,7 +307,18 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
     {
         this.hoverOpacity = limitOpacity(hoverOpacity);
         setDirty(true);
-    }        
+    }     
+    
+     public int getPressedOpacity()
+    {
+        return pressedOpacity;
+    }
+
+    public void setPressedOpacity(int pressedOpacity)
+    {
+        this.pressedOpacity = limitOpacity(pressedOpacity);
+        setDirty(true);
+    }    
 
     public int getNormalOpacity()
     {
@@ -331,27 +355,36 @@ public class SpriteButton extends AbstractSpriteButton implements IButton
             return;
 
         // See what state we're in.
-        switch (state)
-        {
-            case NORMAL:
-                drawNormal();
-                break;
-                
-            case ACTIVE:
-                drawActive();
-                break;
-                
-            case HOVER:
-                drawHover();
-                break;
-                
-            case PRESSED:
-                drawPressed();
-                break;                           
-                
-            default:
-                throw new AssertionError();
-        } // end switch
-    }   
+        if (state.contains(State.PRESSED))        
+            drawPressed();
+        else if (state.contains(State.HOVERED))
+            drawHovered();
+        else if (state.contains(State.ACTIVATED))
+            drawActivated();
+        else
+            drawNormal();
+        
+//        switch (buttonState)
+//        {
+//            case OFF:
+//                drawOff();
+//                break;
+//                
+//            case ON:
+//                drawOn();
+//                break;
+//                
+//            case HOVER:
+//                drawHover();
+//                break;
+//                
+//            case PRESSED:
+//                drawPressed();
+//                break;                           
+//                
+//            default:
+//                throw new AssertionError();
+//        } // end switch
+    }
 
 }

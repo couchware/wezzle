@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.util.WDimension;
-import ca.couchware.wezzle2d.util.WPosition;
+import ca.couchware.wezzle2d.util.ImmutableDimension;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
@@ -62,12 +62,12 @@ public class ZoomAnimation extends AbstractAnimation
     /**
      * The initial dimensions of the entity.
      */
-    final private WDimension d;
+    final private ImmutableDimension d;
     
     /**
      * The initial position of the entity.
      */
-    final private WPosition p;
+    final private ImmutablePosition p;
     
     /**
      * The amount of time, in ms, to wait before fading out.
@@ -96,10 +96,10 @@ public class ZoomAnimation extends AbstractAnimation
         maxWidth = builder.maxWidth;
                
         // Remember initial dimensions.
-        d = new WDimension(entity.getWidth(), entity.getHeight());
+        d = new ImmutableDimension(entity.getWidth(), entity.getHeight());
         
         // Remember initial position.
-        p = new WPosition(entity.getX(), entity.getY());      
+        p = new ImmutablePosition(entity.getX(), entity.getY());      
         
         // Set the entity up based on what type of zoom we're doing.'
         int dw = 0;

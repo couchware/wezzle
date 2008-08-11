@@ -282,23 +282,6 @@ public class Java2DLabel extends AbstractEntity implements ILabel
                                      
             // Move the point up to the top left corner.
             rect.translate(0, -(getLetterHeight() + 1));
-
-//            if (rect.getMinX() < 0 || rect.getMinY() < 0)
-//            {
-//                Util.handleWarning("Label drawn outside of screen.", 
-//                        Thread.currentThread());
-//                
-//                Rectangle r = new Rectangle(x, y, getWidth() + 2, getHeight() + 2);
-//                Util.handleWarning("r1 = " + r, Thread.currentThread());
-//                r.translate(offsetX, offsetY);
-//                Util.handleWarning("r2 = " + r, Thread.currentThread());
-//                r.add(new Rectangle(x_, y_, width_ + 2, height_ + 2));
-//                Util.handleWarning("r3 = " + r, Thread.currentThread());                
-//                r.translate(0, -(getLetterHeight() + 1));
-//                Util.handleWarning("r4 = " + r, Thread.currentThread());
-//                Util.handleWarning("Offending text is " + text,
-//                        Thread.currentThread());
-//            }
         
             drawRect = rect;
         }

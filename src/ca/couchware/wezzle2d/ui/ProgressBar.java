@@ -140,7 +140,7 @@ public class ProgressBar extends AbstractEntity
         // Set initial alignment.
         this.alignment = builder.alignment;
         this.offsetX = determineProgressBarOffsetX(alignment);
-        this.offsetY = determineOffsetY(alignment);
+        this.offsetY = determineOffsetY(alignment, getHeight());
         
         // Add text if specified.
         this.useLabel = builder.useLabel;
@@ -188,7 +188,7 @@ public class ProgressBar extends AbstractEntity
         {            
             this.x = progressBar.x;
             this.y = progressBar.y;
-            this.alignment = progressBar.alignment;
+            this.alignment = progressBar.alignment.clone();
             this.useLabel = progressBar.useLabel;
             this.progress = progressBar.progress;
             this.progressMax = progressBar.progressMax;

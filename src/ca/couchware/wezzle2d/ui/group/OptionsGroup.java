@@ -51,7 +51,7 @@ public class OptionsGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public OptionsGroup(final GameWindow window, 
+    public OptionsGroup(final IGameWindow window, 
             final LayerManager layerMan, final GroupManager groupMan,
             final PropertyManager propertyMan)
     {
@@ -69,7 +69,7 @@ public class OptionsGroup extends Group
         // Create help button.
         helpButton = new SpriteButton.Builder(window, 400, 246)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Help").normalOpacity(70).visible(false).end();        
+                .text("Help").offOpacity(70).visible(false).end();        
         layerMan.add(helpButton, Game.LAYER_UI);
         entityList.add(helpButton);
         

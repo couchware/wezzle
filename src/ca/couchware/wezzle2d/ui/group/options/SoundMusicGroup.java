@@ -22,16 +22,20 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class SoundMusicGroup extends Group
-{
+{    
+    
     /**
      * The header label.
      */
-    private ILabel headerLabel;
+    private ILabel headerLabel;       
     
     /**
      * The sound on/off button.
      */
-    private IButton soundButton;
+    //private IButton soundButton;
+    private RadioItem soundOnItem;
+    private RadioItem soundOffItem;
+    private RadioGroup soundRadio;    
     
     /**
      * The sound slider bar.
@@ -41,7 +45,10 @@ public class SoundMusicGroup extends Group
     /**
      * The music on/off button.
      */
-    private IButton musicButton;
+    //private IButton musicButton;
+    private RadioItem musicOnItem;
+    private RadioItem musicOffItem;
+    private RadioGroup musicRadio; 
     
     /**
      * The music slider bar.
@@ -61,20 +68,14 @@ public class SoundMusicGroup extends Group
      * @param groupMan
      * @param propertyMan
      */    
-    public SoundMusicGroup(final GameWindow window, 
+    public SoundMusicGroup(final IGameWindow window, 
             final LayerManager layerMan, final GroupManager groupMan,
             final PropertyManager propertyMan)
     {
         // Invoke super.
-        super(window, layerMan, groupMan);
-        
+        super(window, layerMan, groupMan);               
+                
         // Create the options header.
-//        headerLabel = ResourceFactory.get().getLabel(400, 171);        
-//        headerLabel.setSize(26);
-//        headerLabel.setAlignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));
-//        headerLabel.setColor(Game.TEXT_COLOR);
-//        headerLabel.setText("Sound/Music");
-//        headerLabel.setVisible(false);
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(26).text("Sound/Music")
@@ -83,19 +84,36 @@ public class SoundMusicGroup extends Group
         entityList.add(headerLabel);
         
         // Create the sound on/off button.
-        soundButton = new SpriteButton.Builder(window, 400, 233)
+//        soundButton = new SpriteButton.Builder(window, 400, 233)
+//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+//                .text("Sound: Off").activeText("Sound: On")
+//                .offOpacity(70).visible(false).end();       
+//        layerMan.add(soundButton, Game.LAYER_UI);
+//        entityList.add(soundButton);
+        // Create the "on" and "off" radio items.  These are used
+        // in the radio groups below.
+        soundOnItem = new RadioItem.Builder(window).text("Sound On").end();
+        soundOffItem = new RadioItem.Builder(window).text("Off").end();        
+        soundRadio = new RadioGroup.Builder(window, 400, 233)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Sound: Off").activeText("Sound: On")
-                .normalOpacity(70).visible(false).end();       
-        layerMan.add(soundButton, Game.LAYER_UI);
-        entityList.add(soundButton);
+                .add(soundOnItem).add(soundOffItem)
+                .visible(false).end();
+        layerMan.add(soundRadio, Game.LAYER_UI);
+        entityList.add(soundRadio);
         
         // Check the properties.
         if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
-                .equals(PropertyManager.VALUE_ON))
+                .equals(PropertyManager.VALUE_ON))  
         {
-            soundButton.setActivated(true);
+            soundRadio.setSelectedItem(0);                    
         }
+        else        
+        {
+            soundRadio.setSelectedItem(1);            
+        }
+        
+        // Clear flag.
+        soundRadio.changed();
         
         // Create the sound slider bar.
         soundSlider = new SliderBar.Builder(window, 400, 272)
@@ -110,17 +128,36 @@ public class SoundMusicGroup extends Group
         entityList.add(soundSlider);        
                 
         // Create the music on/off button.
-        musicButton = new SpriteButton.Builder((SpriteButton) soundButton)
-                .y(321).text("Music: Off").activeText("Music: On").end();     
-        layerMan.add(musicButton, Game.LAYER_UI);
-        entityList.add(musicButton);
+//        musicButton = new SpriteButton.Builder(window, 400, 321)
+//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+//                .text("Music: Off").activeText("Music: On")
+//                .offOpacity(70).visible(false).end();  
+//        layerMan.add(musicButton, Game.LAYER_UI);
+//        entityList.add(musicButton);
+        // Create the "on" and "off" radio items.  These are used
+        // in the radio groups below.
+        musicOnItem = new RadioItem.Builder(window).text("Music On").end();
+        musicOffItem = new RadioItem.Builder(window).text("Off").end();        
+        musicRadio = new RadioGroup.Builder(window, 400, 321)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .add(musicOnItem).add(musicOffItem)
+                .visible(false).end();
+        layerMan.add(musicRadio, Game.LAYER_UI);
+        entityList.add(musicRadio);
         
         // Check the properties.
         if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
                 .equals(PropertyManager.VALUE_ON))
-        {           
-            musicButton.setActivated(true);
+        {
+            musicRadio.setSelectedItem(0);                    
         }
+        else        
+        {
+            musicRadio.setSelectedItem(1);            
+        }
+        
+        // Clear flag.
+        musicRadio.changed();
         
         // Create the music slider bar.
         musicSlider = new SliderBar.Builder(window, 400, 359)
@@ -135,8 +172,9 @@ public class SoundMusicGroup extends Group
         entityList.add(musicSlider);                      
         
         // Create back button.
-        backButton = new SpriteButton.Builder((SpriteButton) soundButton)
-                .y(408).text("Back").end();      
+        backButton = new SpriteButton.Builder(window, 400, 408)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .text("Back").offOpacity(70).visible(false).end();        
         layerMan.add(backButton, Game.LAYER_UI);     
         entityList.add(backButton);
     }
@@ -159,29 +197,33 @@ public class SoundMusicGroup extends Group
             // Save the volume settings.
             
         }   
-        else if (soundButton.clicked() == true)
+        else if (soundRadio.changed() == true)
         {
+            boolean soundOn = soundRadio.getSelectedItem().equals(soundOnItem);
+            
             // Set the property.            
             game.propertyMan.setProperty(PropertyManager.KEY_SOUND,
-                    soundButton.isActivated() == true
+                    soundOn == true
                     ? PropertyManager.VALUE_ON
                     : PropertyManager.VALUE_OFF);
             
          
             // Pause or unpause the sound depending on whether or not
             // the button is activated.
-            game.soundMan.setPaused(!soundButton.isActivated());            
+            game.soundMan.setPaused(!soundOn);            
         }
-        else if (musicButton.clicked() == true)
+        else if (musicRadio.changed() == true)
         {
+            boolean musicOn = musicRadio.getSelectedItem().equals(musicOnItem);
+            
             // Set the property.            
             game.propertyMan.setProperty(PropertyManager.KEY_MUSIC,
-                    musicButton.isActivated() == true
+                    musicOn == true
                     ? PropertyManager.VALUE_ON
                     : PropertyManager.VALUE_OFF);
             
             // Unpause or start the music.
-            if (musicButton.isActivated() == true)
+            if (musicOn == true)
             {
                 game.musicMan.setPaused(false);
                 

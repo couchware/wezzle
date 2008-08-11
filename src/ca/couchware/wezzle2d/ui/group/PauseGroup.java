@@ -43,7 +43,7 @@ public class PauseGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public PauseGroup(final GameWindow window, 
+    public PauseGroup(final IGameWindow window, 
             final LayerManager layerMan, final GroupManager groupMan)
     {
         // Invoke super.

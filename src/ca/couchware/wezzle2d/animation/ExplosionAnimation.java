@@ -3,10 +3,9 @@ package ca.couchware.wezzle2d.animation;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
-import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.util.WDimension;
-import ca.couchware.wezzle2d.util.WPosition;
+import ca.couchware.wezzle2d.util.ImmutableDimension;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 
 /**
  * An animation that starts an explosion in the middle of the entity.
@@ -44,12 +43,12 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * The initial position.
      */
-    final private WPosition initialPosition;
+    final private ImmutablePosition initialPosition;
     
     /**
      * The initial dimensions.
      */
-    final private WDimension initialDimensions;
+    final private ImmutableDimension initialDimensions;
     
     /**
      * Explode out/in duration, in ms.
@@ -87,7 +86,7 @@ public class ExplosionAnimation extends AbstractAnimation
         // Set the initial dimensions to 2x2.
         explosion.setWidth(2);
         explosion.setHeight(2);
-        this.initialDimensions = new WDimension(2, 2);
+        this.initialDimensions = new ImmutableDimension(2, 2);
         
         // Move it to the centre of the entity.
         explosion.setX(entity.getX() + (entity.getWidth() / 2) - 1);

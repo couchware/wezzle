@@ -121,7 +121,12 @@ public class BoardManager implements IManager
 	/**
 	 * The height of a grid cell.
 	 */
-	final private int cellHeight;        
+	final private int cellHeight;      
+    
+    /**
+     * The shape of the board.
+     */
+    final private ImmutableRectangle shape;
     
     /**
      * The hash map keys for storing the score manager state.
@@ -225,6 +230,9 @@ public class BoardManager implements IManager
 		// Set the board width and height.
 		this.width = columns * cellWidth;
 		this.height = rows * cellHeight;
+        
+        // Create the shape.
+        this.shape = new ImmutableRectangle(x, y, width, height);
         
         // Set the number of colours.
         this.numberOfColors = 5;
@@ -1063,9 +1071,14 @@ public class BoardManager implements IManager
 	
 	public TileEntity getTile(int column, int row)
 	{
-		// Make sure we're within parameters.
-		assert column >= 0 && column < columns;
-        assert row >= 0 && row < rows;
+		// Make sure we're within parameters.                
+		if (column < 0 || column >= columns)
+            throw new IndexOutOfBoundsException(
+                    "Column out of bounds: " + column + ".");
+        
+        if (row < 0 || row >= rows)
+            throw new IndexOutOfBoundsException(
+                    "Row out of bounds: " + row + ".");
 		
 		return getTile(column + (row * columns));
 	}
@@ -1624,7 +1637,7 @@ public class BoardManager implements IManager
      * @param indexSet
      * @return
      */
-    public WPosition determineCenterPoint(final Set<Integer> indexSet)
+    public ImmutablePosition determineCenterPoint(final Set<Integer> indexSet)
     {
         // The furthest left, right, up and down locations.
         int l = Integer.MAX_VALUE;
@@ -1662,7 +1675,7 @@ public class BoardManager implements IManager
         cy = u + (d - u) / 2;
         
         // Return centerpoint.
-        return new WPosition(cx, cy);
+        return new ImmutablePosition(cx, cy);
     }
     
 	/**
@@ -1842,6 +1855,11 @@ public class BoardManager implements IManager
     {
         return dirty;
     }
+
+    public ImmutableRectangle getShape()
+    {
+        return shape;
+    }        
 
     public void saveState()
     {

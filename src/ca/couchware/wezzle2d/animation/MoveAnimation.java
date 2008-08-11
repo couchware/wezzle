@@ -3,7 +3,7 @@ package ca.couchware.wezzle2d.animation;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.WPosition;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 
 /**
  * An animation that starts an explosion in the middle of the entity.
@@ -32,7 +32,7 @@ public class MoveAnimation extends AbstractAnimation
     /**
      * The initial position.
      */
-    private WPosition initialPosition;
+    private ImmutablePosition initialPosition;
     
     /**
      * The x-component of the launch speed.

@@ -40,7 +40,7 @@ public class LayerManager
     /**
      * The game window.  Used when drawing regions of the screen.
      */
-    private GameWindow window;
+    private IGameWindow window;
     
     /**
      * The remove clip.  This clip is used to make sure that things that are
@@ -51,7 +51,7 @@ public class LayerManager
     /**
      * The constructor.
      */
-    public LayerManager(GameWindow window, int numberOfLayers)
+    public LayerManager(IGameWindow window, int numberOfLayers)
     {
         // Must have at least 1 layer.
         assert(window != null);

@@ -45,7 +45,7 @@ public class GameOverGroup extends Group
      * 
      * @param layerMan
      */    
-    public GameOverGroup(final GameWindow window, 
+    public GameOverGroup(final IGameWindow window, 
             final LayerManager layerMan, final GroupManager groupMan)
     {        
         // Invoke super.
@@ -79,7 +79,7 @@ public class GameOverGroup extends Group
         // Create restart button.
         restartButton = new SpriteButton.Builder(window, 400, 345)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Restart").normalOpacity(70).visible(false).end();
+                .text("Restart").offOpacity(70).visible(false).end();
         layerMan.add(restartButton, Game.LAYER_UI);
         entityList.add(restartButton);
         

@@ -1,15 +1,13 @@
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.util.*;
+import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.event.MouseEvent;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Cursor;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.RectangularShape;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.EnumSet;
 
 /**
  * A class representing a clickable button.
@@ -17,23 +15,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author cdmckay
  */
 public abstract class AbstractSpriteButton extends AbstractEntity implements        
-        IButton,
-        MouseListener, 
-        MouseMotionListener
+        IButton, IMouseListener       
 {
     
     /**
-     * The button's current state.
+     * Is the mouse on or off the button.
      */
     public static enum State
     {
-        NORMAL, HOVER, ACTIVE, PRESSED
-    }      
-    
-    /**
-     * The current state of the button.
-     */
-    protected State state;
+        PRESSED,
+        HOVERED,
+        ACTIVATED
+    }
     
     // -------------------------------------------------------------------------
     // Instance Attributes
@@ -43,29 +36,23 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    final protected GameWindow window;    
+    final protected IGameWindow window;    
+    
+    /**
+     * The current state of the button.
+     */
+    protected EnumSet<State> state;
     
     /**
      * The shape of the button.
      */
-    protected RectangularShape shape;  
-    
-    /**
-	 * The current location of the mouse pointer.
-	 */
-	private WPosition mousePosition;             
+    protected ImmutableRectangle shape;                
     
     /**
      * Was the button just clicked?  This flag is cleared once it
      * is read.
      */
-    private AtomicBoolean clicked = new AtomicBoolean(false);  
-    
-    /**
-     * Was the button just clicked?  This flag is cleared once it
-     * is read.
-     */
-    private AtomicBoolean activated = new AtomicBoolean(false);  
+    private boolean clicked = false;        
     
     // -------------------------------------------------------------------------
     // Constructors
@@ -75,21 +62,19 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
      * The constructor.
      * @param shape The shape of the button.
      */
-    public AbstractSpriteButton(final GameWindow window, final int x, final int y)
+    protected AbstractSpriteButton(final IGameWindow window, final int x, final int y)
     {
         // Set to visible.
-        visible = true;
-        window.addMouseListener(this);
-        window.addMouseMotionListener(this);        
+        visible = true;              
      
         // Store the window reference.
         this.window = window;
         
         // Set the initial state.
-        this.state = State.NORMAL;
+        this.state = EnumSet.noneOf(State.class);
         
         // Set the shape.
-        shape = new Rectangle();
+        this.shape = new ImmutableRectangle();
         
         // Set the position.
         this.x = x;
@@ -100,43 +85,46 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
                 
         // Set dirty so it will be drawn.        
         dirty = true;
-    }
+    }        
     
     // -------------------------------------------------------------------------
     // Instance Methods
-    // -------------------------------------------------------------------------                                      
+    // -------------------------------------------------------------------------                                         
     
-    private void handleReleased()
+    @Override
+    public void setX(int x)
     {
-        // Retrieve the mouse position.        
-        final WPosition p = getMousePosition(); 
-                
-        if (shape.contains(p.getX(), p.getY()) == true)
+        super.setX(x);
+        shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);
+    }
+    
+    @Override
+    public void setY(int y)
+    {
+        super.setY(y);
+        shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);     
+    }
+    
+    protected void handleReleased()
+    {                                             
+        if (state.containsAll(EnumSet.of(State.PRESSED, State.HOVERED)))
         {
-            // If the mouse is released over a button that is depressed, then
-            // that's a click.
-            if (state == State.PRESSED)
-            {
-                clicked.set(true);        
-                activated.set(isActivated() == true ? false : true);
-            }
-            
-            state = State.HOVER;                        
-        }        
-        else
-        {
-            if (isActivated() == true)
-                state = State.ACTIVE;
-            else
-                state = State.NORMAL;
-        }
+           clicked = true;                      
+           
+           if (state.remove(State.ACTIVATED) == false)
+           {               
+               state.add(State.ACTIVATED);
+           }
+        }   
+        
+        state.remove(State.PRESSED);
                             
         setDirty(true);
     }
     
-    private void handlePressed()
+    protected void handlePressed()
     {        
-        state = State.PRESSED;
+        state.add(State.PRESSED);
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -148,63 +136,44 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
      * 
      * @param pos
      */
-    public void handleMoved(WPosition pos)
-    {
-        // Get the last position.
-        WPosition lastPos = getMousePosition(); 
-        if (lastPos == null) lastPos = WPosition.ORIGIN;
-        
-		// Set the new mouse position.
-		setMousePosition(pos.getX(), pos.getY());          
-        
-        // Handle case where there is no last position.
-        if (lastPos == null) lastPos = pos;
-        
-        // Ignore click if we're outside the button.
-        if (shape.contains(lastPos.getX(), lastPos.getY()) == false 
+    protected void handleMoved(ImmutablePosition pos)
+    {        
+        // See if we moved on to the button.
+        if (state.contains(State.HOVERED) == false 
                 && shape.contains(pos.getX(), pos.getY()) == true)
-        {
+        {            
+            state.add(State.HOVERED);
             handleMouseOn();                
         }
-        else if (shape.contains(lastPos.getX(), lastPos.getY()) == true
+        else if (state.contains(State.HOVERED) == true
                 && shape.contains(pos.getX(), pos.getY()) == false)
         {
+            state.remove(State.HOVERED);
             handleMouseOff();
         }
     }
        
-    public void handleMouseOn()
-    {
-        //Util.handleWarning("Hand", Thread.currentThread());
+    protected void handleMouseOn()
+    {                               
+        // Set the cursor appropriately.
         window.setCursor(Cursor.HAND_CURSOR);
-        
-        if (state != State.PRESSED && state != State.HOVER)
-        {
-            state = State.HOVER;
-            setDirty(true);
-        }                
+                
+        setDirty(true);                        
     }           
     
-    public void handleMouseOff()
-    {   
-        //Util.handleWarning("Default", Thread.currentThread());
+    protected void handleMouseOff()
+    {          
+        // Set the cursor appropriately.
         window.setCursor(Cursor.DEFAULT_CURSOR);
-        
-        if (isActivated() == true && state != State.ACTIVE)
-        {
-            state = State.ACTIVE;
-            setDirty(true);
-        }
-        else if (isActivated() == false && state != State.NORMAL)
-        {
-            state = State.NORMAL;
-            setDirty(true);
-        }                
+                
+        setDirty(true);                        
     }
     
     public boolean clicked()
     {
-        return clicked.getAndSet(false);                
+        boolean val = clicked;
+        clicked = false;
+        return val;
     }    
     
     /**
@@ -217,42 +186,20 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     public boolean clicked(boolean preserve)
     {
         if (preserve == true)
-            return clicked.get();
+            return clicked;
         else
             return clicked();
     }        
         
     //--------------------------------------------------------------------------
     // Getters and Setters
-    //--------------------------------------------------------------------------
-    
-	/**
-	 * Gets the mousePosition.
-	 * @return The mousePosition.
-	 */
-	public synchronized WPosition getMousePosition()
-	{
-//        if (mousePosition == null)
-//            Util.handleWarning("Mouse position is null!", 
-//                    Thread.currentThread());
+    //--------------------------------------------------------------------------    	
         
-		return mousePosition;
-	}
-
-	/**
-	 * Sets the mousePosition.
-	 * @param mousePosition The mousePosition to set.
-	 */
-	public synchronized void setMousePosition(final int x, final int y)
-	{
-		this.mousePosition = new WPosition(x, y);
-	}                    
-    
     @Override
     public void setVisible(boolean visible)
     {
         // Ignore if visibility not changed.
-        if (isVisible() == visible)
+        if (this.visible == visible)
             return;
         
         // Invoke super.
@@ -262,44 +209,49 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         if (visible == true)
         {
             // Pretend like we just moved the mouse.
-            handleMoved(window.getMouseWPosition());
+            handleMoved(window.getMouseImmutablePosition());
             
-            window.addMouseListener(this);
-            window.addMouseMotionListener(this);
+            window.addMouseListener(this);            
         }
         else
         {          
             // Clear the last mouse position.
-            handleMoved(new WPosition(0, 0));
+            handleMoved(ImmutablePosition.ORIGIN);
             
-            window.setCursor(Cursor.DEFAULT_CURSOR);
-            
-            window.removeMouseListener(this);
-            window.removeMouseMotionListener(this);
+            window.setCursor(Cursor.DEFAULT_CURSOR);            
+            window.removeMouseListener(this);            
         }        
     }
     
     public boolean isActivated()
     {
-        return activated.get();
+        return state.contains(State.ACTIVATED);
     }
 
     public void setActivated(boolean activated)
     {
-        this.activated.set(activated);
-        
-        if (isActivated() == true)
-        {
-            state = State.ACTIVE;            
-        }
+//        this.activated = activated;
+//        
+//        if (isActivated() == true)
+//        {
+//            buttonState = HoverState.ON;            
+//        }
+//        else
+//        {            
+//            buttonState = HoverState.OFF;                       
+//            handleMoved(window.getMouseImmutablePosition());
+//        }
+        if (activated == true)
+            state.add(State.ACTIVATED);
         else
-        {            
-            state = State.NORMAL;           
-            setMousePosition(0, 0);
-            handleMoved(window.getMouseWPosition());
-        }
-        
+            state.remove(State.ACTIVATED);
+            
         setDirty(true);
+    }
+    
+    public ImmutableRectangle getShape()
+    {
+        return shape;
     }
     
     //--------------------------------------------------------------------------
@@ -325,20 +277,16 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
 	}
 
 	public void mousePressed(MouseEvent e)
-	{
-		// Retrieve the mouse position.
-        setMousePosition(e.getX(), e.getY());
-        final WPosition p = getMousePosition();                
-        
+	{      		
         // Ignore click if we're outside the button.
-        if (shape.contains(p.getX(), p.getY()) == false)
+        if (state.contains(State.HOVERED) == false)
             return;                    
             
 		// Check which button.
         switch (e.getButton())
         {
             // Left mouse clicked.
-            case MouseEvent.BUTTON1:
+            case LEFT:
                 handlePressed();
                 break;                        
                 
@@ -348,14 +296,12 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
 	}
 
 	public void mouseReleased(MouseEvent e)
-	{      
-        setMousePosition(e.getX(), e.getY());
-        
+	{             
         // Check which button.
         switch (e.getButton())
         {
             // Left mouse clicked.
-            case MouseEvent.BUTTON1:
+            case LEFT:
                 handleReleased();
                 break;                        
 
@@ -366,7 +312,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
 
 	public void mouseDragged(MouseEvent e)
 	{
-        // Intentionally left blank.		  
+        handleMoved(e.getPosition());		  
 	}
 
 	/**
@@ -374,7 +320,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
 	 */
 	public void mouseMoved(MouseEvent e)
 	{	
-        handleMoved(new WPosition(e.getX(), e.getY()));
+        handleMoved(e.getPosition());
     }        
             
 }

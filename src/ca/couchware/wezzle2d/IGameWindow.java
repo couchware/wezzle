@@ -1,12 +1,10 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.WPosition;
+import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 /**
  * The window in which the game will be displayed. This interface exposes just
@@ -17,7 +15,7 @@ import java.awt.event.MouseMotionListener;
  * @author Kevin Glass
  */
 
-public interface GameWindow
+public interface IGameWindow
 {
 
 	/**
@@ -49,7 +47,7 @@ public interface GameWindow
 	 * @param callback
 	 *            The callback that should be notified of game window events.
 	 */
-	public void setGameWindowCallback(GameWindowCallback callback);
+	public void setGameWindowCallback(IGameWindowCallback callback);
 
 	/**
 	 * Check if a particular key is pressed
@@ -132,28 +130,14 @@ public interface GameWindow
      * 
      * @param l
 	 */
-	public void addMouseListener(MouseListener l);
-	
-	/**
-	 * Registers a mouse motion listener.
-     * 
-     * @param l
-	 */
-	public void addMouseMotionListener(MouseMotionListener l);
+	public void addMouseListener(IMouseListener l);		
     
     /**
      * Unregisters a mouse listener.
      * 
      * @param l
      */
-    public void removeMouseListener(MouseListener l);
-    
-    /**
-     * Unregisters a mouse motion listener.
-     * 
-     * @param l
-     */
-    public void removeMouseMotionListener(MouseMotionListener l); 
+    public void removeMouseListener(IMouseListener l);        
     
     /**
      * Changes the cursor.
@@ -167,6 +151,11 @@ public interface GameWindow
      * 
      * @return The current mouse position.
      */
-    public WPosition getMouseWPosition();        
+    public ImmutablePosition getMouseImmutablePosition();   
+    
+    /**
+     * Fires all the queued up mouse events.
+     */
+    public void fireMouseEvents();
     
 }

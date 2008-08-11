@@ -49,8 +49,8 @@ public class Java2DTextLayoutStore
     
     public TextLayout getTextLayout(Graphics2D g, String text, Font font, boolean cached)
     {         
-        LogManager.recordMessage("Hits: " + hits + ", Misses: " + misses + ".",
-                    "Java2DTextLayoutStore#getTextLayout");
+//        LogManager.recordMessage("Hits: " + hits + ", Misses: " + misses + ".",
+//                    "Java2DTextLayoutStore#getTextLayout");
         
         // If we already have the layout cached, return it.
 		if (textLayoutMap.containsKey(text) == true

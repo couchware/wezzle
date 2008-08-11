@@ -65,8 +65,8 @@ public class GraphicEntity extends AbstractEntity
         this.opacity = limitOpacity(builder.opacity);
         
         // Set the offsets.        
-        offsetX = determineOffsetX(alignment);
-        offsetY = determineOffsetY(alignment);
+        offsetX = determineOffsetX(alignment, width);
+        offsetY = determineOffsetY(alignment, height);
         
         // Set visible.
         setVisible(builder.visible);
@@ -100,7 +100,7 @@ public class GraphicEntity extends AbstractEntity
             this.path = entity.path;
             this.x = entity.x;
             this.y = entity.y;
-            this.alignment = entity.alignment;
+            this.alignment = entity.alignment.clone();
             this.animation = entity.animation;
             this.opacity = entity.opacity;                        
             this.visible = entity.visible;

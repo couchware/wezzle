@@ -39,7 +39,7 @@ public class ResourceFactory
 	/** 
      * The window the game should use to render.
      */
-	private GameWindow window;    
+	private IGameWindow window;    
 
 	/**
 	 * The default contructor has been made private to prevent construction of
@@ -98,7 +98,7 @@ public class ResourceFactory
 	 * 
 	 * @return The game window in which the game should be rendered
 	 */
-	public GameWindow getGameWindow()
+	public IGameWindow getGameWindow()
 	{
 		// if we've yet to create the game window, create the appropriate one
 		// now

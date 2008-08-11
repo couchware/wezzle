@@ -37,7 +37,7 @@ public class Group extends AbstractEntity
     /**
      * A reference to the game window.
      */
-    final protected GameWindow window;
+    final protected IGameWindow window;
 
     /**
      * A reference to the layer manager.  This is used by groups to add
@@ -66,7 +66,7 @@ public class Group extends AbstractEntity
      * @param window
      * @param layerMan
      */
-    public Group(final GameWindow window, 
+    public Group(final IGameWindow window, 
             final LayerManager layerMan, final GroupManager groupMan)
     {
         // Invoke super.
@@ -103,6 +103,8 @@ public class Group extends AbstractEntity
                 changed = changed || ((IButton) e).clicked(true);
             else if (e instanceof SliderBar)
                 changed = changed || ((SliderBar) e).changed(true);
+            else if (e instanceof RadioGroup)
+                changed = changed || ((RadioGroup) e).changed(true);
 
         return changed;
     }
@@ -120,6 +122,8 @@ public class Group extends AbstractEntity
                 ((IButton) e).clicked();
             else if (e instanceof SliderBar)
                 ((SliderBar) e).changed();
+            else if (e instanceof RadioGroup)
+                ((RadioGroup) e).changed();
     }    
     
     /**

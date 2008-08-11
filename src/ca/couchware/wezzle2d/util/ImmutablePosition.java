@@ -8,9 +8,9 @@ import java.awt.Point;
  *
  */
 
-public final class WPosition
+public final class ImmutablePosition
 {
-    public static final WPosition ORIGIN = new WPosition(0, 0);
+    public static final ImmutablePosition ORIGIN = new ImmutablePosition(0, 0);
     
 	private final int x;
 	private final int y;
@@ -21,7 +21,7 @@ public final class WPosition
      * @param x
      * @param y
      */
-	public WPosition(final int x, final int y)
+	public ImmutablePosition(final int x, final int y)
 	{
 		this.x = x;
 		this.y = y;
@@ -32,7 +32,7 @@ public final class WPosition
      * 
      * @param pt
      */
-    public WPosition(Point pt)
+    public ImmutablePosition(Point pt)
     {
         this.x = pt.x;
         this.y = pt.y;

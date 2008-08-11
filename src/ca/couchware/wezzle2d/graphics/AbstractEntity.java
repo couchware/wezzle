@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d.graphics;
 
-import ca.couchware.wezzle2d.util.Util;
-import ca.couchware.wezzle2d.util.WPosition;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Rectangle;
 import java.util.EnumSet;
 
@@ -19,20 +18,22 @@ import java.util.EnumSet;
  */
 public abstract class AbstractEntity implements IEntity
 {
-    /** 
-     * Is this visible? 
-     */
-    protected boolean visible = true;
     
     /**
      * Is it dirty (i.e. does it need to be redrawn)?
+     * It is atomic because it is used by some event handlers.
      */
     protected boolean dirty = true;
     
     /**
      * The cached draw rectangle.
      */
-    protected Rectangle drawRect;
+    protected Rectangle drawRect = null;
+    
+    /** 
+     * Is this visible? 
+     */
+    protected boolean visible = true;          
     
      /**
      * The rotation.
@@ -165,9 +166,9 @@ public abstract class AbstractEntity implements IEntity
         setDirty(true);
 	}
     
-    public WPosition getXYPosition()
+    public ImmutablePosition getXYPosition()
     {
-        return new WPosition(getX(), getY());
+        return new ImmutablePosition(getX(), getY());
     }
 
     public void setXYPosition(int x, int y)
@@ -176,7 +177,7 @@ public abstract class AbstractEntity implements IEntity
         setY(y);
     }
 
-    public void setXYPosition(WPosition p)
+    public void setXYPosition(ImmutablePosition p)
     {
         setX(p.getX());
         setY(p.getY());
@@ -281,7 +282,8 @@ public abstract class AbstractEntity implements IEntity
      * 
      * @param alignment
      */
-    final protected int determineOffsetX(final EnumSet<Alignment> alignment)
+    final protected int determineOffsetX(final EnumSet<Alignment> alignment,
+            int width)
     {       				
 		if (alignment.contains(Alignment.LEFT))
 		{
@@ -289,11 +291,11 @@ public abstract class AbstractEntity implements IEntity
 		}
 		else if (alignment.contains(Alignment.CENTER))
 		{
-			return -getWidth() / 2;			
+			return -width / 2;			
 		}
 		else if (alignment.contains(Alignment.RIGHT))
 		{
-			return -getWidth();
+			return -width;
 		}
 		else
 		{
@@ -301,15 +303,16 @@ public abstract class AbstractEntity implements IEntity
 		}	
     }
     
-    final protected int determineOffsetY(final EnumSet<Alignment> alignment)
+    final protected int determineOffsetY(final EnumSet<Alignment> alignment,
+            int height)
     {       
 		if (alignment.contains(Alignment.BOTTOM))
 		{
-			return -getHeight();
+			return -height;
 		}
 		else if (alignment.contains(Alignment.MIDDLE))
 		{
-			return -getHeight() / 2;
+			return -height / 2;
 		}
 		else if (alignment.contains(Alignment.TOP))
 		{
@@ -323,9 +326,9 @@ public abstract class AbstractEntity implements IEntity
     
     public EnumSet<Alignment> getAlignment()
     {
-        return alignment;
+        return alignment.clone();
     }   
-
+    
     public void setDirty(boolean dirty)
     {
         this.dirty = dirty;

@@ -1,17 +1,16 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.util.*;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 /**
  * An interface for implementing a clickable button.
  * 
  * @author cdmckay
  */
-public interface IButton extends IEntity, MouseListener, MouseMotionListener
+public interface IButton extends IEntity, IMouseListener
 {        
            
     /**
@@ -45,5 +44,10 @@ public interface IButton extends IEntity, MouseListener, MouseMotionListener
      * @activated The activation status to set.
      */
     public void setActivated(boolean activated);
+    
+    /**
+     * Get the shape of the button.
+     */
+    public ImmutableRectangle getShape();
          
 }

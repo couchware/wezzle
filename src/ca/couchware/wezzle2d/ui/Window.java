@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.GameWindow;
+import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.ISprite;
@@ -42,7 +42,7 @@ public class Window extends AbstractEntity
     /**
      * The reference to the game window.
      */
-    protected GameWindow window;
+    protected IGameWindow window;
     
     /**
      * The corner sprite.
@@ -73,7 +73,7 @@ public class Window extends AbstractEntity
      * @param width
      * @param height
      */
-    public Window(GameWindow window, int x, int y, int width, int height)
+    public Window(IGameWindow window, int x, int y, int width, int height)
     {
         // Set window reference.
         this.window = window;
@@ -194,16 +194,15 @@ public class Window extends AbstractEntity
         // Check if the draw rect is null.  If it is, generate a new one.
         if (drawRect == null)
         { 
-            Rectangle r = super.getDrawRect();
+            Rectangle rect = super.getDrawRect();
 
-            r.add(r.getX() - cornerSprite.getWidth(),
-                    r.getY() - cornerSprite.getHeight());
+            rect.add(rect.getX() - cornerSprite.getWidth(),
+                    rect.getY() - cornerSprite.getHeight());
 
-            r.add(r.getMaxX() + cornerSprite.getWidth(),
-                    r.getMaxY() + cornerSprite.getHeight());
+            rect.add(rect.getMaxX() + cornerSprite.getWidth(),
+                    rect.getMaxY() + cornerSprite.getHeight());
             
-            drawRect = r;
-            r = null;
+            drawRect = rect;            
         }
         
         return drawRect;

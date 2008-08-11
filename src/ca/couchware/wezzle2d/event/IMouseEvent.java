@@ -76,7 +76,7 @@ public interface IMouseEvent
      * 
      * @return
      */
-    public int getY();
+    public int getY();       
     
     /**
      * Get the source that generated the event.

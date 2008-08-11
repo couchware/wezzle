@@ -146,7 +146,7 @@ public class RocketTutorial extends AbstractTutorial
         // Create repeat button.
         repeatButton = new SpriteButton.Builder(game.getGameWindow(), 400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Repeat").normalOpacity(70).visible(false).end();
+                .text("Repeat").offOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Game.LAYER_EFFECT);
         
          // Create continue button, using the repeat button as a template.

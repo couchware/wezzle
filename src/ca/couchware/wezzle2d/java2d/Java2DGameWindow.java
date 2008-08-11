@@ -1,29 +1,32 @@
 package ca.couchware.wezzle2d.java2d;
 
-import ca.couchware.wezzle2d.util.WPosition;
+import ca.couchware.wezzle2d.IGameWindow;
+import ca.couchware.wezzle2d.IGameWindowCallback;
+import ca.couchware.wezzle2d.LogManager;
+import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.event.MouseEvent;
+import ca.couchware.wezzle2d.util.Keyboard;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Shape;
+import java.awt.Rectangle;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.lang.reflect.InvocationTargetException;
-
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import ca.couchware.wezzle2d.GameWindow;
-import ca.couchware.wezzle2d.GameWindowCallback;
-import ca.couchware.wezzle2d.LogManager;
-import ca.couchware.wezzle2d.util.Keyboard;
-import ca.couchware.wezzle2d.util.Util;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 
 /**
  * An implementation of GameWindow which uses Java 2D rendering to produce the
@@ -31,7 +34,8 @@ import java.awt.Rectangle;
  * 
  * @author Kevin Glass
  */
-public class Java2DGameWindow extends Canvas implements GameWindow
+public class Java2DGameWindow extends Canvas implements IGameWindow, 
+        MouseListener, MouseMotionListener
 {
     
 	/** The strategy that allows us to use accelerate page flipping. */
@@ -50,7 +54,7 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	private int height;
 	
 	/** The callback which should be notified of events caused by this window */
-	private GameWindowCallback callback;
+	private IGameWindowCallback callback;
 	
 	/** The current accelerated graphics context */
 	private Graphics2D g;
@@ -111,6 +115,10 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 		{
 			public void run()
 			{
+                // Set it as it's own listener.
+                addMouseListener(Java2DGameWindow.this);              
+                addMouseMotionListener(Java2DGameWindow.this);
+                
 				// Get hold the content of the frame and set up the resolution of the
 				// game.
 				JPanel panel = (JPanel) frame.getContentPane();		
@@ -254,7 +262,7 @@ public class Java2DGameWindow extends Canvas implements GameWindow
 	 * @param callback
 	 *            The callback to be notified of display events
 	 */
-	public void setGameWindowCallback(GameWindowCallback callback)
+	public void setGameWindowCallback(IGameWindowCallback callback)
 	{
 		this.callback = callback;
 	}
@@ -437,12 +445,146 @@ public class Java2DGameWindow extends Canvas implements GameWindow
             setCursor(c);
     }
     
-    public WPosition getMouseWPosition()
+    /**
+     * The last position of the pointer.
+     */    
+    private ImmutablePosition lastPosition = ImmutablePosition.ORIGIN;
+    
+    /**
+     * Returns the position of the pointer.
+     * 
+     * @return
+     */
+    public synchronized ImmutablePosition getMouseImmutablePosition()
+    {                   
+        if (getMousePosition() != null)        
+            lastPosition = new ImmutablePosition(getMousePosition());                    
+        
+        return lastPosition;
+    }
+    
+    //--------------------------------------------------------------------------
+    // IMouseListener Fields
+    //--------------------------------------------------------------------------
+    
+    List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();    
+    Queue<MouseEvent> mouseEventQueue = new ConcurrentLinkedQueue<MouseEvent>();              
+    
+    //--------------------------------------------------------------------------
+    // IMouseListener Methods
+    //--------------------------------------------------------------------------        
+    
+    public void fireMouseEvents()
     {
-        if (getMousePosition() != null)
-            return new WPosition(getMousePosition());
-        else
-            return WPosition.ORIGIN;
+        while (mouseEventQueue.peek() != null)
+        {        
+            // Grab the first event off the queue.
+            MouseEvent event = mouseEventQueue.remove();
+            
+            // Determine which type of mouse event it is.
+            switch (event.getType())
+            {
+                case MOUSE_CLICKED:
+                    for (IMouseListener listener : mouseListenerList)
+                        listener.mouseClicked(event);
+                    break;
+                    
+                case MOUSE_PRESSED:
+                    for (IMouseListener listener : mouseListenerList)
+                        listener.mousePressed(event);
+                    break;
+                    
+                case MOUSE_RELEASED:
+                    for (IMouseListener listener : mouseListenerList)
+                        listener.mouseReleased(event);
+                    break;
+                    
+                case MOUSE_ENTERED:
+                    for (IMouseListener listener : mouseListenerList)
+                        listener.mouseEntered(event);
+                    break;
+                    
+                case MOUSE_EXITED:
+                    for (IMouseListener listener : mouseListenerList)
+                        listener.mouseExited(event);
+                    break;
+             
+                case MOUSE_DRAGGED:
+                    for (IMouseListener listener : mouseListenerList)
+                        listener.mouseDragged(event);
+                    break;
+                    
+                case MOUSE_MOVED:
+                    for (IMouseListener listener : mouseListenerList)
+                        listener.mouseMoved(event);
+                    break;
+                    
+                default:
+                    throw new IllegalStateException("Unknown event!");
+            }
+        } // end while
+    }
+    
+    public void addMouseListener(IMouseListener l)
+    {
+        if (l == null)
+            throw new NullPointerException();
+        
+        if (mouseListenerList.contains(l))
+            throw new IllegalStateException("Listener already registered!");
+        
+        mouseListenerList.add(l);
+    }
+        
+    public void removeMouseListener(IMouseListener l)
+    {
+        if (l == null)
+            throw new NullPointerException();
+        
+        if (!mouseListenerList.contains(l))
+            throw new IllegalStateException("Listener not registered!");
+        
+        if (mouseListenerList.remove(l) == false)
+            throw new IllegalStateException("Failed to remove listener!");
+    }
+    
+    //--------------------------------------------------------------------------
+    // MouseListener and MouseMotionListener Methods
+    //--------------------------------------------------------------------------
+
+    public void mouseClicked(java.awt.event.MouseEvent e)
+    {
+        mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_CLICKED));
+    }
+
+    public void mousePressed(java.awt.event.MouseEvent e)
+    {
+        mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_PRESSED));
+    }
+
+    public void mouseReleased(java.awt.event.MouseEvent e)
+    {
+        mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_RELEASED));
+    }
+
+    public void mouseEntered(java.awt.event.MouseEvent e)
+    {
+        mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_ENTERED));
+    }
+
+    public void mouseExited(java.awt.event.MouseEvent e)
+    {
+        mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_EXITED));
+    }   
+
+    public void mouseDragged(java.awt.event.MouseEvent e)
+    {
+        mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_DRAGGED));
+    }
+
+    public void mouseMoved(java.awt.event.MouseEvent e)
+    {
+        mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_MOVED));
     }
              
 }

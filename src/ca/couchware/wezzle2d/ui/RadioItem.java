@@ -6,11 +6,12 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.GameWindow;
+import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.graphics.ISprite;
-import java.awt.Rectangle;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
+import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.util.EnumSet;
 
 /**
@@ -38,24 +39,29 @@ public class RadioItem extends AbstractSpriteButton
             Game.SPRITES_PATH + "/" + "RadioHoverOff.png";  
     
     /**
+     * An entity group holding all the radio graphics.
+     */
+    final private EntityGroup radioGraphic;
+    
+    /**
      * The sprite for the radio button being off.
      */
-    final private ISprite spriteOn;
+    final private GraphicEntity radioOn;
     
     /**
      * The sprite for the radio button being on.
      */
-    final private ISprite spriteOff;
+    final private GraphicEntity radioOff;
     
     /**
      * The sprite for the radio button being off (hover).
      */
-    final private ISprite spriteHoverOn;
+    final private GraphicEntity radioHoverOn;
     
     /**
      * The sprite for the radio button being on (hover)
      */
-    final private ISprite spriteHoverOff;
+    final private GraphicEntity radioHoverOff;        
 
     /**
      * The label associated with the radio item.
@@ -89,6 +95,10 @@ public class RadioItem extends AbstractSpriteButton
         // Set the game window and coordinates.
         super(builder.window, builder.x, builder.y);
         
+        // Set various trivia.
+        this.opacity = builder.opacity;
+        this.visible = builder.visible;
+        
         // Set the text.
         this.text = builder.text;
         this.textSize = builder.textSize;
@@ -97,71 +107,78 @@ public class RadioItem extends AbstractSpriteButton
         this.state = builder.state;
         this.pad = builder.pad;
         
-        // Create the sprites.
-        spriteOn = ResourceFactory.get().getSprite(PATH_ON);
-        spriteOff = ResourceFactory.get().getSprite(PATH_OFF);
-        spriteHoverOn = ResourceFactory.get().getSprite(PATH_HOVER_ON);
-        spriteHoverOff = ResourceFactory.get().getSprite(PATH_HOVER_OFF);
+        // Create the sprites. 
+        radioOn = new GraphicEntity.Builder(0, 0, PATH_ON)
+                .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE)).end();
+        radioOff = new GraphicEntity.Builder(radioOn)
+                .path(PATH_OFF).end();
         
-        // Make sure that both sprites are the same width and height.
-        if ((spriteOn.getWidth() != spriteOff.getWidth())
-                || (spriteOn.getHeight() != spriteOff.getHeight()))
-        {
-            throw new IllegalStateException(
-                    "The on and off sprites have different dimensions.");
-        }                                
+        radioHoverOn = new GraphicEntity.Builder(0, 0, PATH_HOVER_ON)
+                .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE)).end();
+        radioHoverOff = new GraphicEntity.Builder(radioHoverOn)
+                .path(PATH_HOVER_OFF).end();
+        
+        radioGraphic = new EntityGroup(radioOn, radioOff, 
+                radioHoverOn, radioHoverOff);
+        
+        // Make sure that all radio graphics are the same width and height.
+        radioGraphic.setWidth(radioOn.getWidth());
+        radioGraphic.setHeight(radioOn.getHeight());              
         
         // Create the label.
-        label = new ResourceFactory.LabelBuilder(
-                x + spriteOn.getWidth() + pad,
-                y + spriteOn.getHeight())
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
+        label = new ResourceFactory.LabelBuilder(0, 0)  
+                .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE))
                 .cached(false).color(Game.TEXT_COLOR).text(text)
                 .visible(visible).opacity(opacity).size(textSize).end();                
-        
+            
+        // Adjust the height so that it'll include the label.
         // Set the width and height.
-        this.width = spriteOn.getWidth() + pad + label.getWidth();
-        this.height = spriteOn.getHeight();
-        this.width_ = width;
+        this.width = radioGraphic.getWidth() + pad + label.getWidth();        
+        this.width_ = width;        
+        
+        this.height = (radioGraphic.getHeight() > label.getHeight()) 
+                ? radioGraphic.getHeight() : label.getHeight();
         this.height_ = height;
+        
+        // If the height is the the same as the label, then the label is 
+        // taller than the radio sprite, so we set the X to be at the passed X.
+        radioGraphic.setX(x);
+        radioGraphic.setY(y + height / 2);               
+        label.setX(x + radioOn.getWidth() + pad);
+        label.setY(y + height / 2);
         
         // Determine the offsets.
         this.alignment = builder.alignment;
-        this.offsetX = determineOffsetX(alignment);
-        this.offsetY = determineOffsetX(alignment);    
-        
-        // Adjust the height so that it'll include the label.
-        this.height = label.getHeight();
-        this.height_ = height;
+        this.offsetX = determineOffsetX(alignment, width);
+        this.offsetY = determineOffsetY(alignment, height);                    
         
         // Set the shape.
-        this.shape = new Rectangle(x + offsetX, y + offsetY, width, height);
+        this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);
         
         // Adjust the label with the offsets.
+        radioGraphic.translate(offsetX, offsetY);       
         label.translate(offsetX, offsetY);
     }
     
     public static class Builder implements IBuilder<RadioItem>
     {
         // Required values.  
-        private final GameWindow window;
-        private int x;
-        private int y;     
+        private final IGameWindow window;           
         
         // Optional values.
+        private int x = 0;
+        private int y = 0;
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
         private int opacity = 100;
         private boolean visible = true;
-        private State state = State.NORMAL;
+        private EnumSet<State> state = EnumSet.noneOf(State.class);
         private String text = "";
         private float textSize = 20f;
         private int pad = 10;        
         
-        public Builder(GameWindow window, int x, int y)
+        public Builder(IGameWindow window)
         {            
-            this.window = window;
-            this.x = x;
-            this.y = y;
+            this.window = window;           
         }
         
         public Builder(RadioItem radioItem)
@@ -169,10 +186,10 @@ public class RadioItem extends AbstractSpriteButton
             this.window = radioItem.window;
             this.x = radioItem.x;
             this.y = radioItem.y;
-            this.alignment = radioItem.alignment;            
+            this.alignment = radioItem.alignment.clone();            
             this.opacity = radioItem.opacity;                        
             this.visible = radioItem.visible;
-            this.state = radioItem.state;
+            this.state = radioItem.state.clone();
             this.text = radioItem.text;
             this.textSize = radioItem.textSize;
             this.pad = radioItem.pad;
@@ -190,7 +207,7 @@ public class RadioItem extends AbstractSpriteButton
         public Builder visible(boolean val) 
         { visible = val; return this; }
         
-        public Builder state(State val)       
+        public Builder state(EnumSet<State> val)       
         { state = val; return this; }
         
         public Builder text(String val)
@@ -204,8 +221,29 @@ public class RadioItem extends AbstractSpriteButton
         
         public RadioItem end()
         {
-            return new RadioItem(this);
+            RadioItem item = new RadioItem(this);
+            
+            if (visible == true)
+                window.addMouseListener(item);            
+            
+            return item;
         }                
+    }
+    
+    @Override
+    public void setX(int x)
+    {
+        super.setX(x);
+        radioGraphic.setX(x + offsetX);
+        label.setX(x + offsetX + radioGraphic.getWidth() + pad);
+    }
+    
+    @Override
+    public void setY(int y)
+    {
+        super.setY(y);
+        radioGraphic.setY(y + offsetY + height / 2);
+        label.setY(y + offsetY + height / 2);
     }
     
     @Override
@@ -215,68 +253,47 @@ public class RadioItem extends AbstractSpriteButton
         y_ = y;
         
         // Don't draw if not visible.
-        if (isVisible() == false)
+        if (visible == false)
             return;
 
-        // See what state we're in.
-        switch (state)
-        {
-            case NORMAL:
-                drawNormal();
-                break;
-                
-            case ACTIVE:
-                drawActive();
-                break;
-                
-            case HOVER:
-                drawHover();
-                break;
-                
-            case PRESSED:
-                drawPressed();                
-                break;                           
-                
-            default:
-                throw new AssertionError();
-        } // end switch                
+        // See what state we're in.        
+        if (state.contains(State.PRESSED))        
+            drawPressed();
+        else if (state.contains(State.HOVERED))
+            drawHovered();
+        else if (state.contains(State.ACTIVATED))
+            drawActivated();
+        else
+            drawNormal();               
         
         label.draw();
-    }     
+    }          
     
     private void drawNormal()
     {
-        spriteOff.draw(x + offsetX, y + offsetY, 
-                        spriteOn.getWidth(), spriteOn.getHeight(),
-                        0, opacity);
+        radioOff.draw();
     }
     
-    private void drawActive()
+    private void drawActivated()
     {
-        spriteOn.draw(x + offsetX, y + offsetY, 
-                        spriteOn.getWidth(), spriteOn.getHeight(),
-                        0, opacity);
+        radioOn.draw();
     }      
     
-    private void drawHover()
+    private void drawHovered()
     {
         if (isActivated() == true)
         {
-            spriteHoverOn.draw(x + offsetX, y + offsetY, 
-                        spriteHoverOn.getWidth(), spriteHoverOn.getHeight(),
-                        0, opacity);
+            radioHoverOn.draw();
         }
         else
         {
-            spriteHoverOff.draw(x + offsetX, y + offsetY, 
-                        spriteHoverOff.getWidth(), spriteHoverOff.getHeight(),
-                        0, opacity);
+            radioHoverOff.draw();
         }
     }
     
     private void drawPressed()
     {
-        drawHover();
+        drawHovered();
     }
     
     @Override

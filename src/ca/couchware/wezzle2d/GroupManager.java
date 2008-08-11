@@ -172,7 +172,7 @@ public class GroupManager
         // Make the top of the list visible.
         if (entryList.isEmpty() == true)
         {
-            pieceMan.clearMouseButtons();
+            pieceMan.clearMouseButtonSet();
             layerMan.show(Game.LAYER_TILE);
             layerMan.show(Game.LAYER_EFFECT);
         }
@@ -202,7 +202,7 @@ public class GroupManager
         // Make the top of the list visible.
         if (entryList.isEmpty() == true)
         {
-            pieceMan.clearMouseButtons();
+            pieceMan.clearMouseButtonSet();
             layerMan.show(Game.LAYER_TILE);
             layerMan.show(Game.LAYER_EFFECT);
         }

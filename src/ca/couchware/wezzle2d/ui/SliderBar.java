@@ -8,15 +8,14 @@ package ca.couchware.wezzle2d.ui;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Cursor;
 import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.RectangularShape;
 import java.util.EnumSet;
-import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * This is a class for creating a slider bar.  A slider bar is a common
@@ -33,9 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author cdmckay
  */
-public class SliderBar extends AbstractEntity implements        
-        MouseListener, 
-        MouseMotionListener
+public class SliderBar extends AbstractEntity implements IMouseListener
 {
     /**
      * The width of the clickable slider bar area.
@@ -63,7 +60,7 @@ public class SliderBar extends AbstractEntity implements
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    private final GameWindow window;
+    private final IGameWindow window;
     
     /**
      * The shape of the button.
@@ -78,7 +75,7 @@ public class SliderBar extends AbstractEntity implements
     /**
 	 * The current location of the mouse pointer.
 	 */
-	private WPosition mousePosition;
+	private ImmutablePosition mousePosition;
     
     /**
      * The sprite for the rail.
@@ -118,7 +115,7 @@ public class SliderBar extends AbstractEntity implements
     /**
      * Whether or not the slider value has changed.
      */
-    private AtomicBoolean changed;
+    private boolean changed;
     
     // -------------------------------------------------------------------------
     // Constructors
@@ -135,8 +132,7 @@ public class SliderBar extends AbstractEntity implements
         
         // Store the window reference.
         this.window = builder.window;
-        window.addMouseListener(this);
-        window.addMouseMotionListener(this);             
+        window.addMouseListener(this);        
         
         // Set the visibility.
         setVisible(builder.visible);
@@ -154,43 +150,43 @@ public class SliderBar extends AbstractEntity implements
         
         // Set default anchor.
         this.alignment = builder.alignment;
-        this.offsetX = determineOffsetX(alignment);
-        this.offsetY = determineOffsetY(alignment);
+        this.offsetX = determineOffsetX(alignment, width);
+        this.offsetY = determineOffsetY(alignment, height);
         
         // Save shape reference.
         this.shape = new Rectangle(x + offsetX, y + offsetY, WIDTH, HEIGHT);                      
         
         // Load in the sprites.
-        spriteRail = ResourceFactory.get()
+        this.spriteRail = ResourceFactory.get()
                 .getSprite(Game.SPRITES_PATH + "/SliderBarRailThick.png");
         
-        spriteHandle = ResourceFactory.get()
+        this.spriteHandle = ResourceFactory.get()
                 .getSprite(Game.SPRITES_PATH + "/SliderBarHandleRounded.png");
         
         // Start in normal state.
-        state = State.NORMAL;
+        this.state = State.NORMAL;
         
         // Default the slider to the far left.
-        slideOffset = 0;
+        this.slideOffset = 0;
         
         // Determine the maximum slider offset.
-        maxOffset = width - spriteHandle.getWidth();
+        this.maxOffset = width - spriteHandle.getWidth();
         
         // Initially it is not changed.
-        changed = new AtomicBoolean(false);
+        this.changed = false;
         
         // Set the virtual stuff.
         setVirtualRange(builder.virtualLower, builder.virtualUpper);
         setVirtualValue(builder.virtualValue);
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
     }
     
     public static class Builder implements IBuilder<SliderBar>
     {
         // Required values.  
-        private final GameWindow window;
+        private final IGameWindow window;
         private int x;
         private int y;     
         
@@ -202,7 +198,7 @@ public class SliderBar extends AbstractEntity implements
         private double virtualUpper = 1.0;
         private double virtualValue = 0.5;
         
-        public Builder(GameWindow window, int x, int y)
+        public Builder(IGameWindow window, int x, int y)
         {            
             this.window = window;
             this.x = x;
@@ -214,7 +210,7 @@ public class SliderBar extends AbstractEntity implements
             this.window = sliderBar.window;
             this.x = sliderBar.x;
             this.y = sliderBar.y;
-            this.alignment = sliderBar.alignment;            
+            this.alignment = sliderBar.alignment.clone();            
             this.opacity = sliderBar.opacity;                        
             this.visible = sliderBar.visible;
             this.virtualLower = sliderBar.virtualLower;
@@ -277,7 +273,7 @@ public class SliderBar extends AbstractEntity implements
 	{
 		// Retrieve the mouse position.
         setMousePosition(e.getX(), e.getY());
-        final WPosition p = getMousePosition();                
+        final ImmutablePosition p = getMousePosition();                
         
         // Ignore click if we're outside the button.
         if (shape.contains(p.getX(), p.getY()) == false)
@@ -289,7 +285,7 @@ public class SliderBar extends AbstractEntity implements
         switch (e.getButton())
         {
             // Left mouse clicked.
-            case MouseEvent.BUTTON1:
+            case LEFT:
                 state = State.PRESSED; 
                 setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
                 
@@ -322,7 +318,7 @@ public class SliderBar extends AbstractEntity implements
         {
              // Retrieve the mouse position.
             setMousePosition(e.getX(), e.getY());
-            final WPosition p = getMousePosition();
+            final ImmutablePosition p = getMousePosition();
 
             // If the state is pressed, then move the slider around.        
             setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
@@ -332,13 +328,13 @@ public class SliderBar extends AbstractEntity implements
     public void mouseMoved(MouseEvent e)
     {
         // Get the last position.
-        WPosition lp = getMousePosition(); 
+        ImmutablePosition lp = getMousePosition(); 
         
 		// Set the mouse position.
 		setMousePosition(e.getX(), e.getY());
         
         // Retrieve the mouse position.
-        final WPosition p = getMousePosition();  
+        final ImmutablePosition p = getMousePosition();  
         
         // Handle case where there is no last position.
         if (lp == null) lp = p;
@@ -359,7 +355,9 @@ public class SliderBar extends AbstractEntity implements
     
     public boolean changed()
     {
-        return changed.getAndSet(false);                
+        boolean val = changed;
+        changed = false;
+        return val;             
     }    
     
     /**
@@ -372,7 +370,7 @@ public class SliderBar extends AbstractEntity implements
     public boolean changed(boolean preserve)
     {
         if (preserve == true)
-            return changed.get();
+            return changed;
         else
             return changed();
     }
@@ -386,7 +384,7 @@ public class SliderBar extends AbstractEntity implements
      * 
 	 * @return The mousePosition.
 	 */
-	public synchronized WPosition getMousePosition()
+	public synchronized ImmutablePosition getMousePosition()
 	{        
 		return mousePosition;
 	}
@@ -398,7 +396,7 @@ public class SliderBar extends AbstractEntity implements
 	 */
 	public synchronized void setMousePosition(final int x, final int y)
 	{
-		this.mousePosition = new WPosition(x, y);
+		this.mousePosition = new ImmutablePosition(x, y);
 	}    
     
     @Override
@@ -414,14 +412,12 @@ public class SliderBar extends AbstractEntity implements
         // Add or remove listener based on visibility.
         if (visible == true)
         {
-            window.addMouseListener(this);
-            window.addMouseMotionListener(this);
+            window.addMouseListener(this);            
         }
         else
         {
             window.setCursor(Cursor.DEFAULT_CURSOR);
-            window.removeMouseListener(this);
-            window.removeMouseMotionListener(this);
+            window.removeMouseListener(this);            
         }        
     }
     
@@ -472,11 +468,12 @@ public class SliderBar extends AbstractEntity implements
         else
             this.slideOffset = slideOffset;                
         
-        // Make it dirty so we get a redraw.
+        // Make it dirty so we get a redraw.  This is used
+        // in lieu of setDirty because it is called form the constructor.
         dirty = true;
         
         // Set changed.
-        changed.set(true);
+        changed = true;
     }
     
     /**

@@ -16,8 +16,8 @@ import java.util.EnumSet;
  */
 public class EntityGroup extends AbstractEntity
 {
-
-    protected AbstractEntity[] entities;
+        
+    protected AbstractEntity[] entities;        
     
     public EntityGroup(AbstractEntity ... entities)
     {
@@ -35,20 +35,9 @@ public class EntityGroup extends AbstractEntity
     {
         super.setVisible(visible);
         
-        for (AbstractEntity e : entities)
+        for (IEntity e : entities)
             e.setVisible(visible);
-    }  
-        
-    /**
-	 * Get the x location of this entity.
-	 * 
-	 * @return The x location of this entity.
-	 */
-    @Override
-	public int getX()
-	{
-		throw new UnsupportedOperationException("Operation is not supported.");
-	}
+    }            
     
 	/**
 	 * @param x The x to set.
@@ -56,18 +45,10 @@ public class EntityGroup extends AbstractEntity
     @Override
 	public void setX(final int x)
 	{                            
-		throw new UnsupportedOperationException("Operation is not supported.");
-	}
-
-	/**
-	 * Get the y location of this entity.
-	 * 
-	 * @return The y location of this entity.
-	 */
-    @Override
-	public int getY()
-	{               
-		throw new UnsupportedOperationException("Operation is not supported.");
+		super.setX(x);
+        
+        for (IEntity e : entities)
+            e.setX(x);
 	}
     
     /**
@@ -76,38 +57,35 @@ public class EntityGroup extends AbstractEntity
     @Override
 	public void setY(final int y)
 	{
-		throw new UnsupportedOperationException("Operation is not supported.");
+		super.setX(y);
+        
+        for (IEntity e : entities)
+            e.setY(y);
 	}    
     
     @Override
     public void translate(final int dx, final int dy)
     {
-        for (AbstractEntity e : entities)
+        for (IEntity e : entities)
             e.translate(dx, dy);
-    }
-    
-    @Override
-    public int getHeight()
-    {
-        throw new UnsupportedOperationException("Operation is not supported.");
-    }
+    }       
 
     @Override
     public void setHeight(int height)
     {
-        throw new UnsupportedOperationException("Operation is not supported.");
-    }
-
-    @Override
-    public int getWidth()
-    {
-        throw new UnsupportedOperationException("Operation is not supported.");
-    }
+        super.setHeight(height);
+        
+        for (IEntity e : entities)
+            e.setHeight(height);
+    }   
 
     @Override
     public void setWidth(int width)
     {
-        throw new UnsupportedOperationException("Operation is not supported.");
+        super.setWidth(width);
+        
+        for (IEntity e : entities)
+            e.setWidth(width);
     }
 
     /**
@@ -120,7 +98,7 @@ public class EntityGroup extends AbstractEntity
     {       
         super.setOpacity(opacity);
         
-        for (AbstractEntity e : entities)
+        for (IEntity e : entities)
             e.setOpacity(opacity);
     }       
     
@@ -132,7 +110,7 @@ public class EntityGroup extends AbstractEntity
     {
         super.setRotation(theta);
         
-        for (AbstractEntity e : entities)
+        for (IEntity e : entities)
             e.setRotation(theta);
     }        
     
@@ -157,7 +135,7 @@ public class EntityGroup extends AbstractEntity
     {
         super.setDirty(dirty);
         
-        for (AbstractEntity e : entities)
+        for (IEntity e : entities)
             e.setDirty(dirty);
     }  
     
@@ -166,7 +144,7 @@ public class EntityGroup extends AbstractEntity
     {
         drawRect = entities[0].getDrawRect();
                         
-        for (AbstractEntity e : entities)
+        for (IEntity e : entities)
             drawRect.add(e.getDrawRect());
         
         return drawRect;
@@ -175,7 +153,7 @@ public class EntityGroup extends AbstractEntity
     @Override
     public void resetDrawRect()
     {
-        for (AbstractEntity e : entities)
+        for (IEntity e : entities)
             e.resetDrawRect();
     }
     

@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.graphics;
 
-import ca.couchware.wezzle2d.util.WPosition;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.util.EnumSet;
 
 /**
@@ -59,7 +59,7 @@ public interface IPositionable
      * 
      * @return The x- and y-coordinates.
      */
-    public WPosition getXYPosition();
+    public ImmutablePosition getXYPosition();
     
     /**
      * Sets the x- and y-coordiantes.
@@ -74,7 +74,7 @@ public interface IPositionable
      * 
      * @param p
      */
-    public void setXYPosition(final WPosition p);
+    public void setXYPosition(final ImmutablePosition p);
     
     /**
      * Translate the positionable by the given (x,y) amount.

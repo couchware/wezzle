@@ -51,7 +51,7 @@ public class HighScoreGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public HighScoreGroup(final GameWindow window,             
+    public HighScoreGroup(final IGameWindow window,             
             final LayerManager layerMan, final GroupManager groupMan,
             final HighScoreManager highScoreMan)
     {
@@ -102,9 +102,9 @@ public class HighScoreGroup extends Group
         updateLabels();
         
         // Create close button.
-        closeButton = new SpriteButton.Builder(window, 400, 400)
+        closeButton = new SpriteButton.Builder(window, 400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Close").normalOpacity(70).visible(false).end();
+                .text("Close").offOpacity(70).visible(false).end();
         layerMan.add(closeButton, Game.LAYER_UI);
         entityList.add(closeButton);
     }

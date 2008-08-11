@@ -1,21 +1,19 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import static ca.couchware.wezzle2d.BoardManager.Direction;
-import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
-import static ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.BoardManager.Direction;
+import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
+import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
 import ca.couchware.wezzle2d.audio.AudioTrack;
-
+import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.piece.*;
 import ca.couchware.wezzle2d.ui.ILabel;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +34,7 @@ import java.util.Set;
  *
  */
 
-public class PieceManager implements MouseListener, MouseMotionListener
+public class PieceManager implements IMouseListener
 {	
     private static int SLOW_SPEED_INVERSE = 125;
     private static int FAST_SPEED_INVERSE = 20;
@@ -46,6 +44,24 @@ public class PieceManager implements MouseListener, MouseMotionListener
     // -------------------------------------------------------------------------
     // Private Members
     // -------------------------------------------------------------------------       
+    
+    /**
+     * A reference to the game window.
+     */
+    private IGameWindow window;
+    
+    /**
+     * The possible buttons that may be clicked.
+     */
+    private static enum MouseButton
+    {
+        LEFT, RIGHT
+    }            
+    
+    /**
+     * A set of buttons that were clicked.
+     */
+    private EnumSet<MouseButton> mouseButtonSet = EnumSet.noneOf(MouseButton.class);
     
     /**
      * Should the piece manager drop automatically drop tiles after a 
@@ -81,12 +97,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
      /**
      * Was the board recently refactored?
      */
-    private boolean refactored = false;
-    
-	/**
-	 * The current location of the mouse pointer.
-	 */
-	private volatile WPosition mousePosition;
+    private boolean refactored = false;    	
 	
     /**
      * Was the left mouse button clicked?
@@ -143,11 +154,16 @@ public class PieceManager implements MouseListener, MouseMotionListener
 	 * 
 	 * @param boardMan The board manager.
 	 */
-	public PieceManager(AnimationManager animationMan, BoardManager boardMan)
+	public PieceManager(IGameWindow window, AnimationManager animationMan, 
+            BoardManager boardMan)
 	{       
 		// Set the reference.
+        this.window = window;
         this.animationMan = animationMan;
 		this.boardMan = boardMan;
+        
+        // Add the mouse listener.
+        window.addMouseListener(this);
         
         // Default the mouse buttons to not clicked.
         mouseLeftReleased = false;
@@ -164,20 +180,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
         // Create new piece entity at the origin of the board.
 		pieceGrid = new PieceGrid(boardMan, 
                 boardMan.getX() + boardMan.getCellWidth(),
-                boardMan.getY() + boardMan.getCellHeight());
+                boardMan.getY() + boardMan.getCellHeight());        
         
         // Load a random piece.
         loadPiece();
-		
-		// Create initial mouse position.
-		mousePosition = new WPosition(boardMan.getX(), boardMan.getY());
-        
-        // Adjust the position.
-        WPosition ap = adjustPosition(mousePosition);
-        
-        // Move the piece there.
-        pieceGrid.setX(ap.getX());
-        pieceGrid.setY(ap.getY());
+        pieceGrid.setXYPosition(limitPosition(window.getMouseImmutablePosition()));				                
         
         // Create the index list.
         this.openIndexList = new ArrayList<Integer>();    
@@ -222,7 +229,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             piece.rotate();                    
         
         // Adjust the piece grid.
-        pieceGrid.setXYPosition(adjustPosition(pieceGrid.getXYPosition()));
+        pieceGrid.setXYPosition(limitPosition(pieceGrid.getXYPosition()));
         pieceGrid.setDirty(true);
 	}
     
@@ -233,10 +240,24 @@ public class PieceManager implements MouseListener, MouseMotionListener
      * @param p The position to adjust.
      * @return The adjusted position.
      */
-    public WPosition adjustPosition(WPosition p)
+    public ImmutablePosition limitPosition(ImmutablePosition p)
 	{
-		int column = convertXToColumn(p.getX());
-		int row = convertYToRow(p.getY());
+        int x = p.getX();
+        int y = p.getY();
+        
+        ImmutableRectangle shape = boardMan.getShape();
+        
+        if (shape.contains(p) == false)        
+        {            
+            if (x < shape.getX()) x = shape.getX();
+            else if (x > shape.getMaxX()) x = shape.getMaxX();
+            
+            if (y < shape.getY()) y = shape.getY();
+            else if (y > shape.getMaxY()) y = shape.getMaxY();
+        }
+        
+		int column = convertXToColumn(x);
+		int row = convertYToRow(y);
 		
 		if (column >= boardMan.getColumns())
 			column = boardMan.getColumns() - 1;
@@ -267,7 +288,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
 			} // end for				
 		} // end for
 		
-		return new WPosition(
+		return new ImmutablePosition(
                 boardMan.getX() + (column * boardMan.getCellWidth()), 
                 boardMan.getY() + (row * boardMan.getCellHeight()));
 	}
@@ -281,12 +302,12 @@ public class PieceManager implements MouseListener, MouseMotionListener
      * @param tileSet
      * @param emptySet
      */
-    public void getSelectedIndexSet(WPosition p, 
+    public void getSelectedIndexSet(ImmutablePosition p, 
             Set<Integer> tileSet, 
             Set<Integer> blankSet)
     {                
         // Convert to rows and columns.
-        WPosition ap = adjustPosition(p);
+        ImmutablePosition ap = limitPosition(p);
         int column = convertXToColumn(ap.getX());
 		int row = convertYToRow(ap.getY());
         
@@ -318,18 +339,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
     public void notifyRefactored()
     {
         refactored = true;
-    }
-    
-    private boolean isOnBoard(final WPosition p)
-    {
-        if (p.getX() > boardMan.getX()
-                && p.getX() <= boardMan.getX() + boardMan.getWidth()
-                && p.getY() > boardMan.getY()
-                && p.getY() <= boardMan.getY() + boardMan.getHeight())
-            return true;
-        else
-            return false;
-    }
+    }      
     
     private int convertXToColumn(final int x)
     {
@@ -341,7 +351,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
        return (y - boardMan.getY()) / boardMan.getCellHeight(); 
     }
     
-    private void startAnimationAt(final WPosition p, double speed)
+    private void startAnimationAt(final ImmutablePosition p, double speed)
     {
         // Add new animations.
         Set<Integer> indexSet = new HashSet<Integer>();
@@ -362,7 +372,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         }
     }
     
-    private void adjustAnimationAt(final WPosition p, double speed)
+    private void adjustAnimationAt(final ImmutablePosition p, double speed)
     {
         Set<Integer> indexSet = new HashSet<Integer>();
         getSelectedIndexSet(p, indexSet, null);
@@ -389,7 +399,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         stopAnimationAt(pieceGrid.getXYPosition());
     }
     
-    private void stopAnimationAt(final WPosition p)
+    private void stopAnimationAt(final ImmutablePosition p)
     {
         // Remove old animations.
         Set<Integer> indexSet = new HashSet<Integer>();
@@ -593,33 +603,33 @@ public class PieceManager implements MouseListener, MouseMotionListener
         else
         {      
             // Grab the current mouse position.
-            final WPosition p = getMousePosition();             
+            final ImmutablePosition p = window.getMouseImmutablePosition();             
             
-            if (isMouseLeftReleased() == true)
-            {                          
+            if (mouseButtonSet.contains(MouseButton.LEFT) == true)
+            {          
+               mouseButtonSet.remove(MouseButton.LEFT);
                initiateCommit(game);
             }
-            else if (isMouseRightReleased() == true)
-            {
+            else if (mouseButtonSet.contains(MouseButton.RIGHT) == true)
+            {                                
                 // Rotate the piece.            
                 stopAnimation();
                 
                 piece.rotate();
-                pieceGrid.setXYPosition(adjustPosition(
-                    pieceGrid.getXYPosition()));
+                pieceGrid.setXYPosition(limitPosition(pieceGrid.getXYPosition()));
                 pieceGrid.setDirty(true);                                
                 
                 if (pieceGrid.isVisible() == true)
                     startAnimationAt(pieceGrid.getXYPosition(), SLOW_SPEED);
 
-                // Reset flag.
-                clearMouseButtons();
+                // Reset released buttons.
+                mouseButtonSet = EnumSet.noneOf(MouseButton.class);
             }
             // Animate selected pieces.
-            else if (isOnBoard(p) == true)
+            else
             {
                 // Filter the current position.
-                WPosition ap = adjustPosition(p);
+                ImmutablePosition pos = limitPosition(p);
 
                 double speed = 1.0 / (double) 
                         Util.scaleInt(0, game.timerMan.getInitialTime(), 
@@ -627,8 +637,8 @@ public class PieceManager implements MouseListener, MouseMotionListener
                             game.timerMan.getTime());
                 
                 // If the position changed, or the board was refactored.
-                if (ap.getX() != pieceGrid.getX()
-                        || ap.getY() != pieceGrid.getY()
+                if (pos.getX() != pieceGrid.getX()
+                        || pos.getY() != pieceGrid.getY()
                         || refactored == true)                    
                 {
                     // Clear refactored flag.
@@ -638,12 +648,11 @@ public class PieceManager implements MouseListener, MouseMotionListener
                     stopAnimationAt(pieceGrid.getXYPosition());
 
                     // Update piece grid position.
-                    pieceGrid.setX(ap.getX());
-                    pieceGrid.setY(ap.getY());                    
+                    pieceGrid.setXYPosition(pos);             
                                         
                     // Start new animation.   
                     if (pieceGrid.isVisible() == true)
-                        startAnimationAt(ap, speed);
+                        startAnimationAt(pos, speed);
                 } 
                 else
                 {                                        
@@ -670,7 +679,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             if (restrictionBoard[index] == false)
             {
                 setRestrictionBoardClicked(true);
-                clearMouseButtons();
+                mouseButtonSet = EnumSet.noneOf(MouseButton.class);
                 return;
             }          
         } // end for
@@ -680,7 +689,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
             if (restrictionBoard[index] == false)
             {
                 setRestrictionBoardClicked(true);
-                clearMouseButtons();
+                mouseButtonSet = EnumSet.noneOf(MouseButton.class);
                 return;
             }
         } // end for
@@ -695,7 +704,7 @@ public class PieceManager implements MouseListener, MouseMotionListener
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
                 
         // Add score SCT.
-        WPosition p = boardMan.determineCenterPoint(indexSet);
+        ImmutablePosition p = boardMan.determineCenterPoint(indexSet);
         
         final ILabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -748,8 +757,8 @@ public class PieceManager implements MouseListener, MouseMotionListener
         // Run a refactor.       
         game.startRefactor(Game.RefactorType.NORMAL);
 
-        // Reset flag.
-        clearMouseButtons();
+        // Reset mouse buttons.
+        mouseButtonSet = EnumSet.noneOf(MouseButton.class);
 
         // Pause timer.
         game.timerMan.setPaused(true);
@@ -836,56 +845,23 @@ public class PieceManager implements MouseListener, MouseMotionListener
     // Getters and Setters
     //--------------------------------------------------------------------------
     
-	/**
-	 * Gets the mousePosition.
-	 * @return The mousePosition.
-	 */
-	public WPosition getMousePosition()
-	{
-		return mousePosition;
-	}
-
-	/**
-	 * Sets the mousePosition.
-	 * @param mousePosition The mousePosition to set.
-	 */
-	public void setMousePosition(int x, int y)
-	{
-		this.mousePosition = new WPosition(x, y);
-	}
-
-    public boolean isMouseLeftReleased()
-    {
-        return mouseLeftReleased;
-    }
-
-    public void setMouseLeftReleased(boolean mouseLeftReleased)
-    {
-        this.mouseLeftReleased = mouseLeftReleased;
-        
-        if (mouseLeftReleased == true)
-            LogManager.recordMessage("Left mouse set.", 
-                    "PieceManager#setMouseLeftReleased");
-        else
-            LogManager.recordMessage("Left mouse cleared.", 
-                    "PieceManager#setMouseLeftReleased");
-    }
-
-    public boolean isMouseRightReleased()
-    {
-        return mouseRightReleased;
-    }
-
-    public void setMouseRightReleased(boolean mouseRightReleased)
-    {
-        this.mouseRightReleased = mouseRightReleased;
-    }
-    
-    public void clearMouseButtons()
-    {
-        setMouseLeftReleased(false);
-        setMouseRightReleased(false);
-    }
+//	/**
+//	 * Gets the mousePosition.
+//	 * @return The mousePosition.
+//	 */
+//	public WPosition getMousePosition()
+//	{
+//		return mousePosition;
+//	}
+//
+//	/**
+//	 * Sets the mousePosition.
+//	 * @param mousePosition The mousePosition to set.
+//	 */
+//	public void setMousePosition(int x, int y)
+//	{
+//		this.mousePosition = new WPosition(x, y);
+//	}    
     
     public boolean isTileDropInProgress()
     {
@@ -928,6 +904,14 @@ public class PieceManager implements MouseListener, MouseMotionListener
         this.restrictionBoardClicked = clicked;
     }        
     
+    /**
+     * Clears all mouse button set flags.     
+     */
+    public void clearMouseButtonSet()
+    {
+        mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+    }
+    
     //--------------------------------------------------------------------------
     // Events
     //--------------------------------------------------------------------------
@@ -962,23 +946,23 @@ public class PieceManager implements MouseListener, MouseMotionListener
         //Util.handleMessage("Button clicked.", Thread.currentThread());                
         
         // Retrieve the mouse position.
-        final WPosition p = getMousePosition();
+        final ImmutablePosition p = window.getMouseImmutablePosition();
         
         // Ignore click if we're outside the board.
-        if (isOnBoard(p) == false)                
+        if (boardMan.getShape().contains(p) == false)
             return;                    
             
 		// Check which button.
         switch (e.getButton())
         {
             // Left mouse clicked.
-            case MouseEvent.BUTTON1:
-                this.setMouseLeftReleased(true);
+            case LEFT:
+                mouseButtonSet.add(MouseButton.LEFT);
                 break;
               
             // Right mouse clicked.
-            case MouseEvent.BUTTON3:
-                this.setMouseRightReleased(true);
+            case RIGHT:
+                mouseButtonSet.add(MouseButton.RIGHT);
                 break;
                 
             default:
@@ -987,19 +971,14 @@ public class PieceManager implements MouseListener, MouseMotionListener
         }
 	}
 
-	public void mouseDragged(MouseEvent e)
-	{
-		// Set the mouse position.
-		setMousePosition(e.getX(), e.getY());
-	}
+    public void mouseDragged(MouseEvent e)
+    {
+        // Intentionally blank.
+    }
 
-	/**
-	 * Called automatically when the mouse is moved.
-	 */
-	public void mouseMoved(MouseEvent e)
-	{	    
-		// Set the mouse position.
-		setMousePosition(e.getX(), e.getY());
+    public void mouseMoved(MouseEvent e)
+    {
+        // Intentionally blank.
     }
     
 }

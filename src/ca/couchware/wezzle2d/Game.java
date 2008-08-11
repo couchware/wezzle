@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationManager;
@@ -20,6 +19,7 @@ import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.ui.*;
+import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SpriteButton.ButtonType;
 import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.util.*;
@@ -54,7 +54,7 @@ import java.util.concurrent.Executors;
  * 
  * @author Cameron, Kevin Grad (based on code by Kevin Glass)
  */
-public class Game extends Canvas implements GameWindowCallback
+public class Game extends Canvas implements IGameWindowCallback
 {	  
     //--------------------------------------------------------------------------
     // Static Members
@@ -289,12 +289,12 @@ public class Game extends Canvas implements GameWindowCallback
     /**
      * The name of the application.
      */
-    private final static String APPLICATION_NAME = "Wezzle";
+    final private static String APPLICATION_NAME = "Wezzle";
     
     /**
      * The current wezzle version number.
      */
-    final private static String VERSION = "Test 5";       
+    final private static String VERSION = "Test 6";       
     
 	/** 
      * The normal title of the window. 
@@ -443,7 +443,7 @@ public class Game extends Canvas implements GameWindowCallback
 	/** 
      * The window that is being used to render the game. 
      */
-	private GameWindow window;
+	private IGameWindow window;
 
 	/** 
      * The time since the last record of FPS. 
@@ -685,10 +685,10 @@ public class Game extends Canvas implements GameWindowCallback
         startBoardShowAnimation(AnimationType.ROW_FADE);        
         
 		// Create the piece manager.
-		pieceMan = new PieceManager(animationMan, boardMan);        
+		pieceMan = new PieceManager(window, animationMan, boardMan);        
         layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);
-		window.addMouseListener(pieceMan);
-		window.addMouseMotionListener(pieceMan);	
+//		window.addMouseListener(pieceMan);
+//		window.addMouseMotionListener(pieceMan);	
         
         // Create group manager.
         groupMan = new GroupManager(layerMan, pieceMan);
@@ -749,14 +749,14 @@ public class Game extends Canvas implements GameWindowCallback
         highScoreButton = new SpriteButton.Builder(window, 128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(ButtonType.LARGE).text("")
-                .normalOpacity(0).hoverOpacity(70).activeOpacity(95).end();
+                .offOpacity(0).hoverOpacity(70).onOpacity(95).end();
         layerMan.add(highScoreButton, Game.LAYER_UI);
                 
         // Create pause button.        
         pauseButton = new SpriteButton.Builder(window, 668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(ButtonType.NORMAL).text("Pause").activeText("Resume")
-                .normalOpacity(70).end();
+                .offOpacity(70).end();
         layerMan.add(pauseButton, Game.LAYER_UI);    
         
         // Create the options button, using pause button as a template.
@@ -872,9 +872,22 @@ public class Game extends Canvas implements GameWindowCallback
         // Start        
         //----------------------------------------------------------------------                      
         
-//        RadioItem r = new RadioItem.Builder(window, 100, 100).text("Test")
-//                .state(RadioItem.State.NORMAL).end();
-//        layerMan.add(r, Game.LAYER_UI);
+//        RadioItem r1 = new RadioItem.Builder(window).text("Test1")
+//                .visible(false).end();
+////        r1.setVisible(true);
+////        RadioItem r2 = new RadioItem.Builder(window).text("Test2").end();
+//        RadioItem r3 = new RadioItem.Builder(r1).end();
+//        RadioGroup g = new RadioGroup.Builder(window, 800, 600).add(r1).add(r3)
+//                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
+//                .visible(true)
+//                .end();        
+//        g.setVisible(false);
+//        g.setVisible(true);
+//                        
+////        layerMan.add(r1, Game.LAYER_UI);                
+////        layerMan.add(r3, Game.LAYER_UI);
+////        r3.translate(100, 100);
+//        layerMan.add(g, Game.LAYER_UI);
         
         // Start the game.
 		startGame();
@@ -1171,8 +1184,8 @@ public class Game extends Canvas implements GameWindowCallback
             // Clear the board animation.
             boardAnimation = null;
 
-            // Claer mouse button presses.
-            pieceMan.clearMouseButtons();
+            // Clear mouse button presses.
+            pieceMan.clearMouseButtonSet();
 
             // If game over is in progress, make a new board and start.
             if (gameOverGroup.isActivated() == true)
@@ -1442,7 +1455,7 @@ public class Game extends Canvas implements GameWindowCallback
                             timerMan.setPaused(false);
 
                             // Reset the mouse.
-                            pieceMan.clearMouseButtons();
+                            pieceMan.clearMouseButtonSet();
                         }
                     }
                 } // end if
@@ -1469,7 +1482,7 @@ public class Game extends Canvas implements GameWindowCallback
                             statMan.getChainCount());                               
                 
                     // Show the SCT.
-                    WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                    ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
                     
                     final ILabel label = new LabelBuilder(p.getX(), p.getY())
                             .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -1626,7 +1639,7 @@ public class Game extends Canvas implements GameWindowCallback
                         statMan.getChainCount());
                 
                 // Show the SCT.
-                WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
                 final ILabel label = new LabelBuilder(p.getX(), p.getY())
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -1770,7 +1783,7 @@ public class Game extends Canvas implements GameWindowCallback
                         statMan.getChainCount());
                 
                 // Show the SCT.
-                WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
                 final ILabel label = new LabelBuilder(p.getX(), p.getY())
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -1862,7 +1875,7 @@ public class Game extends Canvas implements GameWindowCallback
                         statMan.getChainCount());
                 
                 // Show the SCT.
-                WPosition p = boardMan.determineCenterPoint(tileRemovalSet);
+                ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
                 final ILabel label = new LabelBuilder(p.getX(), p.getY())
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -2090,6 +2103,9 @@ public class Game extends Canvas implements GameWindowCallback
         // Whether or not the frame was updated.
         boolean updated = false;
         
+        // Fire all the mouse events.
+        window.fireMouseEvents();
+        
         // If the background is dirty, then redraw everything.
         if (background.isDirty() == true)
         {            
@@ -2149,7 +2165,7 @@ public class Game extends Canvas implements GameWindowCallback
      * 
      * @return A reference to the current game window.
      */
-    public GameWindow getGameWindow()
+    public IGameWindow getGameWindow()
     {
         return window;
     }

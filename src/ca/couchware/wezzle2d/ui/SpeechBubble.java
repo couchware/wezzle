@@ -139,8 +139,8 @@ public class SpeechBubble extends AbstractEntity
         }             
         
         // Determine offsets.
-        offsetX = determineOffsetX(alignment);
-        offsetY = determineOffsetY(alignment);
+        offsetX = determineOffsetX(alignment, width);
+        offsetY = determineOffsetY(alignment, height);
     }      
     
     public static class Builder implements IBuilder<SpeechBubble>
