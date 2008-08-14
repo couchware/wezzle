@@ -253,7 +253,7 @@ public class BoardManager implements IManager
         // Create the board background graphic.
         GraphicEntity entity = new GraphicEntity.Builder(x - 12, y - 12, PATH)
                 .opacity(90).end();        
-        layerMan.add(entity, Game.LAYER_BACKGROUND);
+        layerMan.add(entity, Game.LAYER_BACKGROUND);        
 	}
     
     //--------------------------------------------------------------------------

@@ -18,10 +18,24 @@ public class ProgressBar extends AbstractEntity
 {
     
     /**
+     * The different types of progress bars.
+     */
+    public static enum Type
+    {
+        MEDIUM, LARGE
+    }
+    
+    /**
      * The path to the progress bar container for 200 pixel bar.
      */    
-    final private static String PATH_CONTAINER =
+    final private static String PATH_CONTAINER_200 =
             Game.SPRITES_PATH + "/ProgressBarContainer_200.png";
+    
+    /**
+     * The path to the progress bar container for 400 pixel bar.
+     */    
+    final private static String PATH_CONTAINER_400 =
+            Game.SPRITES_PATH + "/ProgressBarContainer_400.png";        
     
     /**
      * The path to the left sprite.
@@ -40,11 +54,16 @@ public class ProgressBar extends AbstractEntity
      */
     final private static String PATH_SPRITE_MIDDLE =
             Game.SPRITES_PATH + "/ProgressBar_Middle.png";
+     
+    /**
+     * The type of progress bar.
+     */
+    final private Type type;
     
     /**
      * Does the progress bar have text?
      */
-    private boolean useLabel;
+    final private boolean useLabel;
     
     /**
      * The progress text.
@@ -54,22 +73,22 @@ public class ProgressBar extends AbstractEntity
     /**
      * The container sprite.
      */   
-    private ISprite containerSprite;
+    final private ISprite containerSprite;
     
     /**
      * The left sprite.
      */
-    private ISprite leftSprite;
+    final private ISprite leftSprite;
     
     /**
      * The right sprite.
      */
-    private ISprite rightSprite;
+    final private ISprite rightSprite;
     
     /**
      * The middle sprite.
      */
-    private ISprite middleSprite;          		
+    final private ISprite middleSprite;          		
 	
 	/**
 	 * The current progress.
@@ -110,18 +129,33 @@ public class ProgressBar extends AbstractEntity
      * @param withText
      */    
     public ProgressBar(Builder builder)
-    {                   
+    {            
+        // Save the type.
+        this.type = builder.type;
+        
         // Set progress to 0.
         // Set progressMax to 100.
         this.progress = builder.progress;
-        this.progressMax = builder.progressMax;  
-                
-        // Set width max.
-        this.progressMaxWidth = 200 - 14;
+        this.progressMax = builder.progressMax;                          
 
          // Load the container sprite.
-        containerSprite = 
-                ResourceFactory.get().getSprite(PATH_CONTAINER);
+        switch (type)
+        {
+            case MEDIUM:
+                // Set width max.
+                this.progressMaxWidth = 200 - 14;
+                this.containerSprite = ResourceFactory.get().getSprite(PATH_CONTAINER_200);
+                break;
+                
+            case LARGE:
+                // Set width max.
+                this.progressMaxWidth = 400 - 14;
+                containerSprite = ResourceFactory.get().getSprite(PATH_CONTAINER_400);
+                break;
+                
+            default: throw new AssertionError();
+        }
+        
         padX = 7;
         padY = 7;
                
@@ -139,7 +173,7 @@ public class ProgressBar extends AbstractEntity
         
         // Set initial alignment.
         this.alignment = builder.alignment;
-        this.offsetX = determineProgressBarOffsetX(alignment);
+        this.offsetX = determineOffsetX(alignment, getWidth());
         this.offsetY = determineOffsetY(alignment, getHeight());
         
         // Add text if specified.
@@ -172,6 +206,7 @@ public class ProgressBar extends AbstractEntity
         
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
+        private Type type = Type.MEDIUM;
         private boolean useLabel = true;
         private int progress = 0;
         private int progressMax = 100;        
@@ -189,6 +224,7 @@ public class ProgressBar extends AbstractEntity
             this.x = progressBar.x;
             this.y = progressBar.y;
             this.alignment = progressBar.alignment.clone();
+            this.type = progressBar.type;
             this.useLabel = progressBar.useLabel;
             this.progress = progressBar.progress;
             this.progressMax = progressBar.progressMax;
@@ -201,6 +237,9 @@ public class ProgressBar extends AbstractEntity
                
         public Builder alignment(EnumSet<Alignment> val) 
         { alignment = val; return this; }
+        
+        public Builder type(Type val)
+        { type = val; return this; }
         
         public Builder useLabel(boolean val)
         { useLabel = val; return this; }
@@ -345,16 +384,7 @@ public class ProgressBar extends AbstractEntity
     public int getWidth()
     {
         return containerSprite.getWidth();
-    }
-
-    @Override
-    public void setWidth(int width)
-    {       
-        this.progressMaxWidth = width;
-        
-        // Set dirty so it will be drawn.        
-        setDirty(true);
-    }
+    }  
     
     public int getProgressWidth()
     {
@@ -383,25 +413,25 @@ public class ProgressBar extends AbstractEntity
                 "Height cannot be set on progress bar.");
     }
    
-    protected int determineProgressBarOffsetX(EnumSet<Alignment> alignment)
-    {       
-		if (alignment.contains(Alignment.LEFT))
-		{
-			return 0;
-		}
-		else if (alignment.contains(Alignment.CENTER))
-		{
-			return -progressMaxWidth / 2;			
-		}
-		else if (alignment.contains(Alignment.RIGHT))
-		{
-			return -progressMaxWidth;
-		}
-		else
-		{
-			throw new IllegalStateException("No X alignment set!");
-		}	              
-    }       
+//    protected int determineProgressBarOffsetX(EnumSet<Alignment> alignment)
+//    {       
+//		if (alignment.contains(Alignment.LEFT))
+//		{
+//			return 0;
+//		}
+//		else if (alignment.contains(Alignment.CENTER))
+//		{
+//			return -progressMaxWidth / 2;			
+//		}
+//		else if (alignment.contains(Alignment.RIGHT))
+//		{
+//			return -progressMaxWidth;
+//		}
+//		else
+//		{
+//			throw new IllegalStateException("No X alignment set!");
+//		}	              
+//    }       
     
     @Override
     public Rectangle getDrawRect()

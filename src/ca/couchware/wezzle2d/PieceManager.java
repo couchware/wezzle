@@ -704,6 +704,7 @@ public class PieceManager implements IMouseListener
         // Remove and score the piece.
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);    
         
+        // Notify the listener manager.
         game.listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
                 
         // Add score SCT.
@@ -847,25 +848,7 @@ public class PieceManager implements IMouseListener
     //--------------------------------------------------------------------------
     // Getters and Setters
     //--------------------------------------------------------------------------
-    
-//	/**
-//	 * Gets the mousePosition.
-//	 * @return The mousePosition.
-//	 */
-//	public WPosition getMousePosition()
-//	{
-//		return mousePosition;
-//	}
-//
-//	/**
-//	 * Sets the mousePosition.
-//	 * @param mousePosition The mousePosition to set.
-//	 */
-//	public void setMousePosition(int x, int y)
-//	{
-//		this.mousePosition = new WPosition(x, y);
-//	}    
-    
+     
     public boolean isTileDropInProgress()
     {
         return tileDropInProgress;

@@ -1,10 +1,8 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.event.*;
 import java.util.EnumMap;
-import java.util.EventObject;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -400,13 +398,7 @@ import java.util.Set;
         }
         
         return fontSize;
-    }
-
-    @Override
-    public void handleScoreEvent(ScoreEvent evt)
-    {
-       updateScore(evt.getScore());
-    }
+    }          
     
     /**
      * Save the state.
@@ -437,6 +429,11 @@ import java.util.Set;
         targetLevelScore = (Integer) managerState.get(Keys.LEVEL_TARGET);
         targetTotalScore = (Integer) managerState.get(Keys.TOTAL_TARGET);
         highScore = (Integer) managerState.get(Keys.HIGH_SCORE);
+    }
+        
+    public void handleScoreEvent(ScoreEvent evt)
+    {
+       updateScore(evt.getScore());
     }
     
 }

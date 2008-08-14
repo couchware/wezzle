@@ -8,15 +8,42 @@ package ca.couchware.wezzle2d.event;
 //import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.util.EnumSet;
+import java.util.EventObject;
 
 /**
  *
  * @author cdmckay
  */
-public class MouseEvent implements IMouseEvent
-{
-
-    private Object source;    
+public class MouseEvent extends EventObject
+{   
+    
+    public enum Type
+    {
+        MOUSE_CLICKED,
+        MOUSE_DRAGGED,
+        MOUSE_ENTERED,
+        MOUSE_EXITED,
+        MOUSE_MOVED,
+        MOUSE_PRESSED,
+        MOUSE_RELEASED,
+        MOUSE_WHEEL
+    }
+    
+    public enum Button
+    {
+        NONE,
+        LEFT,
+        MIDDLE,
+        RIGHT
+    }
+    
+    public enum Modifier
+    {
+        ALT,
+        CTRL,
+        SHIFT,
+        META
+    }
     
     private Button button;    
     
@@ -31,7 +58,10 @@ public class MouseEvent implements IMouseEvent
             EnumSet<Modifier> modifierState,
             ImmutablePosition position,
             Type type) 
-    {        
+    {     
+        // Call super.
+        super(source);
+        
         // Check the arguments.
         if (buttonState == null)
             throw new NullPointerException("Button state cannot be null.");
@@ -44,8 +74,7 @@ public class MouseEvent implements IMouseEvent
         
         if (type == null)
             throw new NullPointerException("Type cannot be null.");
-        
-        this.source = source;
+                
         this.button = buttonState;
         this.modifierState = modifierState;
         this.position = position;
@@ -54,13 +83,13 @@ public class MouseEvent implements IMouseEvent
     
     public MouseEvent(java.awt.event.MouseEvent event, Type type)
     {
-        // Check argument.
-        if (event == null)
-            throw new NullPointerException();
-        
         // Extract the source.
-        this.source = event.getSource();
+        super(event.getSource());
         
+        // Check arguments.
+        if (event == null || type == null)
+            throw new NullPointerException();                
+                        
         // Extract the button.
         switch (event.getButton())
         {
@@ -116,11 +145,6 @@ public class MouseEvent implements IMouseEvent
     public int getY()
     {
         return position.getY();
-    }
-
-    public Object getSource()
-    {
-        return source;
     }
 
     public Type getType()

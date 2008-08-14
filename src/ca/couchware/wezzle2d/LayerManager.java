@@ -185,6 +185,15 @@ public class LayerManager
         add(d, layerNum);
     }
     
+    public void toBack(final IDrawable d, int layerNum)
+    {
+        if (layerExists(layerNum) == false)     
+            throw new RuntimeException("Layer does not exist!");
+        
+        remove(d, layerNum);
+        layerList.get(layerNum).add(0, d);
+    }
+    
     /**
      * Draws the layers to screen, in order from 0 to N (where N is the number
      * of layers).
@@ -266,34 +275,18 @@ public class LayerManager
                     LogManager.recordWarning("Offending class is " 
                             + d.getClass().getSimpleName(), 
                             "LayerManager#drawRegion");
+                    
                     LogManager.recordWarning("Rectangle is " + r,
                             "LayerManager#drawRegion");
                     
                     if (d instanceof ILabel)
                         LogManager.recordWarning(((ILabel) d).getText());
                 }
-                
-                //Util.handleWarning(r + "");
-                
+                               
                 if (r != null && region.intersects(r) == true)
-                {   
-//                    Util.handleWarning("Offending class is " 
-//                            + d.getClass().getSimpleName(), 
-//                            Thread.currentThread());
-//                    Util.handleWarning("Rectangle is " + r,
-//                            Thread.currentThread());
-                    
-//                    if (d instanceof Java2DText)
-//                    {
-//                        Java2DText j = (Java2DText) d;
-//                        Util.handleWarning(j.getText(), 
-//                            Thread.currentThread());
-//                    }
-                    
-                    if (clip == null)
-                        clip = new Rectangle(r);
-                    else
-                        clip.add(r);
+                {                                          
+                    if (clip == null) clip = new Rectangle(r);
+                    else clip.add(r);
                 }
             }                            
         }     
@@ -370,6 +363,11 @@ public class LayerManager
     private void resetRemoveRect()
     {       
         removeRect = null;
+    }
+    
+    public void forceRedraw()
+    {
+        removeRect = new Rectangle(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
     }
     
     @Override

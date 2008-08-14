@@ -23,5 +23,5 @@ public class ScoreEvent extends EventObject
         this.deltaScore = deltaScore;
     }
     
-    public int getScore(){ return deltaScore; }
+    public int getScore() { return deltaScore; }
 }

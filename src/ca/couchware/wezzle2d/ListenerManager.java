@@ -45,21 +45,17 @@ public class ListenerManager implements IListenerComponent
     public static ListenerManager get()
     {
         return listenerMan;
-    }
-    
+    }    
     
     /**
      * Register a score listener.
      * @param listener The listener to register.
-     */
-    @Override
+     */    
     public void registerScoreListener(IScoreListener listener)
     {
-        // If we try to add a second listener.
-        if (scoreListenerList.containsKey(listener))
-        {
-            throw new IllegalStateException("Adding a second score listener");
-        }
+        // If we try to add a second listener, blow up.
+        if (scoreListenerList.containsKey(listener))        
+            throw new IllegalArgumentException("Listener already registered!");        
         
         scoreListenerList.put(listener, "Score");
     }
@@ -67,15 +63,12 @@ public class ListenerManager implements IListenerComponent
     /**
      * Register a level listener.
      * @param listener The listener to register.
-     */
-    @Override
+     */    
     public void registerLevelListener(ILevelListener listener)
     {
           // If we try to add a second listener.
-        if (levelListenerList.containsKey(listener))
-        {
-            throw new IllegalStateException("Adding a second level listener");
-        }
+        if (levelListenerList.containsKey(listener))        
+            throw new IllegalStateException("Listener already registered!");        
         
         levelListenerList.put(listener, "Level");
     }
@@ -83,15 +76,12 @@ public class ListenerManager implements IListenerComponent
     /**
      * Register the listener.
      * @param listener The listener to register.
-     */
-    @Override
+     */    
     public void registerMoveListener(IMoveListener listener)
     {
           // If we try to add a second listener.
-        if (moveListenerList.containsKey(listener))
-        {
-            throw new IllegalStateException("Adding a second move listener");
-        }
+        if (moveListenerList.containsKey(listener))        
+            throw new IllegalStateException("Listener already registered!");        
         
         moveListenerList.put(listener, "Move");
     }
@@ -99,8 +89,7 @@ public class ListenerManager implements IListenerComponent
     /**
      * Notify all score listeners.
      * @param e The event.
-     */
-    @Override
+     */    
     public void notifyScoreListener(ScoreEvent e)
     {
         for (IScoreListener listener : scoreListenerList.keySet())
@@ -112,8 +101,7 @@ public class ListenerManager implements IListenerComponent
     /**
      * Notify all level listeners.
      * @param e The event.
-     */
-    @Override
+     */    
     public void notifyLevelListener(LevelEvent e)
     {
         for (ILevelListener listener : levelListenerList.keySet())
@@ -125,8 +113,7 @@ public class ListenerManager implements IListenerComponent
     /**
      * Notify all move listeners.
      * @param e The event.
-     */
-    @Override
+     */    
     public void notifyMoveListener(MoveEvent e)
     {
         for (IMoveListener listener : moveListenerList.keySet())
