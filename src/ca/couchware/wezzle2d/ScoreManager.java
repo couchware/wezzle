@@ -2,15 +2,18 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.tile.*;
+import ca.couchware.wezzle2d.event.*;
 import java.util.EnumMap;
+import java.util.EventObject;
 import java.util.Iterator;
 import java.util.Set;
+
 
 /**
  *
  * @author Kevin
  */
- public class ScoreManager implements IManager
+ public class ScoreManager implements IManager, IScoreListener
  {    
      
     /**
@@ -207,9 +210,6 @@ import java.util.Set;
         LogManager.recordMessage("chainCount = " + chainCount, 
                 "ScoreManager#calculateLineScore");
         
-        // Update progress and text.
-        updateScore(deltaScore);
-        
         // Return the delta score.
         return deltaScore;
     }
@@ -265,17 +265,7 @@ import java.util.Set;
                 deltaScore += POINTS_PER_PIECE_TILE;
             }
         }
-            
-        // Update the score if there is a score update.
-        if (deltaScore != 0)
-        {			
-            // Update scores.
-            updateScore(deltaScore);
-        }
-        else
-        {
-            // Otherwise do nothing.
-        }
+           
         
         // Return the score.
         return deltaScore;
@@ -412,6 +402,12 @@ import java.util.Set;
         return fontSize;
     }
 
+    @Override
+    public void handleScoreEvent(ScoreEvent evt)
+    {
+       updateScore(evt.getScore());
+    }
+    
     /**
      * Save the state.
      */

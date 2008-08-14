@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
 import ca.couchware.wezzle2d.audio.*;
+import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.ui.*;
@@ -188,7 +189,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
 	 * The manager in charge of maintaining the board.
 	 */
-	public BoardManager boardMan;
+    public BoardManager boardMan;
     
     /**
      * The menu manager.
@@ -214,12 +215,12 @@ public class Game extends Canvas implements IGameWindowCallback
      * The manager in charge of music.
      */
     public MusicManager musicMan;  
-    
-	/**
-	 * The manager in charge of moving the piece around with the
-	 * pointer and drawing the piece to the board.
-	 */
-	public PieceManager pieceMan;
+
+    /**
+     * The manager in charge of moving the piece around with the
+     * pointer and drawing the piece to the board.
+     */
+    public PieceManager pieceMan;
 	
     /** 
      * The manager in charge of loading and saving properties.
@@ -237,9 +238,9 @@ public class Game extends Canvas implements IGameWindowCallback
     public SoundManager soundMan;             
     
     /** 
-	 * The manager in charge of keeping track of the time. 
-	 */
-	public TimerManager timerMan;
+     * The manager in charge of keeping track of the time. 
+     */
+    public TimerManager timerMan;
     
     /**
      * The manager in charge of running tutorials.
@@ -250,6 +251,11 @@ public class Game extends Canvas implements IGameWindowCallback
      * The Manager in charge of the world.
      */
     public WorldManager worldMan;    	
+    
+    /**
+     * The Manager in charge of Listeners.
+     */
+    public ListenerManager listenerMan = ListenerManager.get();
     
     /**
      * The manager in charge of achievements
@@ -296,10 +302,10 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     final private static String VERSION = "Test 6";       
     
-	/** 
+    /** 
      * The normal title of the window. 
      */
-	private String windowTitle = APPLICATION_NAME;	        
+    private String windowTitle = APPLICATION_NAME;	        
     
     /**
      * The executor used by certain managers.
@@ -309,17 +315,17 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * If true, refactor will be activated next loop.
      */
-	private boolean activateRefactor = false;
+    private boolean activateRefactor = false;
     
     /**
      * If true, the board is currently being refactored downwards.
      */
-	private boolean refactorVerticalInProgress = false;
+    private boolean refactorVerticalInProgress = false;
     
     /**
      * If true, the board is currently being refactored leftward.
      */
-	private boolean refactorHorizontalInProgress = false;
+    private boolean refactorHorizontalInProgress = false;
     
     /**
      * The current refactor animations.
@@ -434,26 +440,26 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     private boolean activateGameOver = false;                        
         
-	/**
-	 * The time at which the last rendering looped started from the point of
-	 * view of the game logic.
-	 */
-	private long lastLoopTime;
+    /**
+     * The time at which the last rendering looped started from the point of
+     * view of the game logic.
+     */
+    private long lastLoopTime;
 	
 	/** 
      * The window that is being used to render the game. 
      */
-	private IGameWindow window;
+    private IGameWindow window;
 
 	/** 
      * The time since the last record of FPS. 
      */
-	private long lastFramesPerSecondTime = 0;
+    private long lastFramesPerSecondTime = 0;
 	
 	/** 
      * The recorded FPS. 
      */
-	private int framesPerSecond;   
+    private int framesPerSecond;   
     
     /**
      * The background sprite.
@@ -463,7 +469,7 @@ public class Game extends Canvas implements IGameWindowCallback
 	/** 
      * The timer text. 
      */
-	private ILabel timerLabel;
+    private ILabel timerLabel;
       
     /**
      * The score header graphic.
@@ -673,19 +679,19 @@ public class Game extends Canvas implements IGameWindowCallback
         
         // Create the high score manager.
         highScoreMan = new HighScoreManager(propertyMan);                
-
+        
         // Create the world manager.
         worldMan = new WorldManager(propertyMan);  
         worldMan.setGameInProgress(true);
         
-		// Create the board manager.
-		boardMan = new BoardManager(animationMan, layerMan, 272, 139, 8, 10);    
+        // Create the board manager.
+        boardMan = new BoardManager(animationMan, layerMan, 272, 139, 8, 10);    
         boardMan.setVisible(false);
         boardMan.generateBoard(worldMan.getItemList());          
         startBoardShowAnimation(AnimationType.ROW_FADE);        
         
-		// Create the piece manager.
-		pieceMan = new PieceManager(window, animationMan, boardMan);        
+        // Create the piece manager.
+        pieceMan = new PieceManager(window, animationMan, boardMan);        
         layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);
 //		window.addMouseListener(pieceMan);
 //		window.addMouseMotionListener(pieceMan);	
@@ -707,7 +713,7 @@ public class Game extends Canvas implements IGameWindowCallback
         statMan = new StatManager();
         
         // Create the time manager.
-		timerMan = new TimerManager(worldMan.getInitialTimer()); 
+        timerMan = new TimerManager(worldMan.getInitialTimer()); 
         
         // Create the achievement manager.
         achievementMan = new AchievementManager();
@@ -867,6 +873,13 @@ public class Game extends Canvas implements IGameWindowCallback
         highScoreGroup = new HighScoreGroup(window, layerMan, groupMan,
                 highScoreMan); 
         groupMan.register(highScoreGroup);
+        
+        
+        //----------------------------------------------------------------------
+        // Register the listners.
+        //----------------------------------------------------------------------
+        
+        listenerMan.registerScoreListener(scoreMan);
         
         //----------------------------------------------------------------------
         // Start        
@@ -1481,6 +1494,10 @@ public class Game extends Canvas implements IGameWindowCallback
                             ScoreType.LINE,
                             statMan.getChainCount());                               
                 
+                    
+                    // Fire a score event.
+                    listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
+                    
                     // Show the SCT.
                     ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
                     
@@ -1638,6 +1655,10 @@ public class Game extends Canvas implements IGameWindowCallback
                         ScoreType.STAR, 
                         statMan.getChainCount());
                 
+                  // Fire a score event.
+                  listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
+                    
+                
                 // Show the SCT.
                 ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
@@ -1782,6 +1803,10 @@ public class Game extends Canvas implements IGameWindowCallback
                         ScoreType.STAR, 
                         statMan.getChainCount());
                 
+                  // Fire a score event.
+                  listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
+                    
+                
                 // Show the SCT.
                 ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
@@ -1873,6 +1898,10 @@ public class Game extends Canvas implements IGameWindowCallback
                         tileRemovalSet, 
                         ScoreType.BOMB, 
                         statMan.getChainCount());
+                
+                  // Fire a score event.
+                  listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
+                    
                 
                 // Show the SCT.
                 ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);

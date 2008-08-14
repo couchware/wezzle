@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
 import ca.couchware.wezzle2d.audio.AudioTrack;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
+import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.piece.*;
 import ca.couchware.wezzle2d.ui.ILabel;
 import java.util.ArrayList;
@@ -701,7 +702,9 @@ public class PieceManager implements IMouseListener
             boardMan.getTile(index).onClick();
         
         // Remove and score the piece.
-        int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                
+        int deltaScore = game.scoreMan.calculatePieceScore(indexSet);    
+        
+        game.listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
                 
         // Add score SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(indexSet);

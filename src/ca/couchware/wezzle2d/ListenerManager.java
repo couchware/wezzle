@@ -1,0 +1,138 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
+
+package ca.couchware.wezzle2d;
+
+import ca.couchware.wezzle2d.event.*;
+import java.util.WeakHashMap;
+
+/**
+ * A class that holds the entire game state. It holds
+ * listener lists for each stat in the game. When a stat changes
+ * all the listeners in the list are updated.
+ * 
+ * Uses weakhashmaps to handle potential memory leaks.
+ * 
+ * @author kgrad
+ */
+public class ListenerManager implements IListenerComponent
+{
+    // The single listener manager.
+    private final static ListenerManager listenerMan = new ListenerManager();
+    
+    
+    // The listener lists.
+    private WeakHashMap<IScoreListener, String> scoreListenerList;
+    private WeakHashMap<ILevelListener, String> levelListenerList;
+    private WeakHashMap<IMoveListener, String> moveListenerList;
+    
+    /**
+     * private constructor to ensure only a single entity ever exists.
+     */
+    private ListenerManager()
+    {
+        scoreListenerList = new WeakHashMap<IScoreListener, String>();
+        levelListenerList = new WeakHashMap<ILevelListener, String>();
+        moveListenerList = new WeakHashMap<IMoveListener, String>();
+    }
+    
+    /**
+     * Get the one instance of this manager.
+     * @return listenerMan.
+     */
+    public static ListenerManager get()
+    {
+        return listenerMan;
+    }
+    
+    
+    /**
+     * Register a score listener.
+     * @param listener The listener to register.
+     */
+    @Override
+    public void registerScoreListener(IScoreListener listener)
+    {
+        // If we try to add a second listener.
+        if (scoreListenerList.containsKey(listener))
+        {
+            throw new IllegalStateException("Adding a second score listener");
+        }
+        
+        scoreListenerList.put(listener, "Score");
+    }
+    
+    /**
+     * Register a level listener.
+     * @param listener The listener to register.
+     */
+    @Override
+    public void registerLevelListener(ILevelListener listener)
+    {
+          // If we try to add a second listener.
+        if (levelListenerList.containsKey(listener))
+        {
+            throw new IllegalStateException("Adding a second level listener");
+        }
+        
+        levelListenerList.put(listener, "Level");
+    }
+    
+    /**
+     * Register the listener.
+     * @param listener The listener to register.
+     */
+    @Override
+    public void registerMoveListener(IMoveListener listener)
+    {
+          // If we try to add a second listener.
+        if (moveListenerList.containsKey(listener))
+        {
+            throw new IllegalStateException("Adding a second move listener");
+        }
+        
+        moveListenerList.put(listener, "Move");
+    }
+    
+    /**
+     * Notify all score listeners.
+     * @param e The event.
+     */
+    @Override
+    public void notifyScoreListener(ScoreEvent e)
+    {
+        for (IScoreListener listener : scoreListenerList.keySet())
+        {
+            listener.handleScoreEvent(e);
+        }
+    }
+    
+    /**
+     * Notify all level listeners.
+     * @param e The event.
+     */
+    @Override
+    public void notifyLevelListener(LevelEvent e)
+    {
+        for (ILevelListener listener : levelListenerList.keySet())
+        {
+            listener.handleLevelEvent(e);
+        }
+    }
+    
+    /**
+     * Notify all move listeners.
+     * @param e The event.
+     */
+    @Override
+    public void notifyMoveListener(MoveEvent e)
+    {
+        for (IMoveListener listener : moveListenerList.keySet())
+        {
+            listener.handleMoveEvent(e);
+        }
+    }
+
+}
