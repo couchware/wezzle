@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A class to manage writing out to a log file.
@@ -170,11 +172,11 @@ public class LogManager
 	public static void recordException(Exception e, String method)
 	{
 		if (method == null)
-			method = "...";
+			method = "...";                
 		
         StringWriter out = new StringWriter();
         
-		out.write("[Exception] (" + System.currentTimeMillis() + ") " 
+		out.write("E. (" + getTimeStamp() + ") " 
                 + method + " - \"" + e.getMessage() + "\"" + NL);                
 		e.printStackTrace(new PrintWriter(out, true));
         
@@ -199,7 +201,7 @@ public class LogManager
 		if (method == null)
 			method = "...";
 		
-		String output = "[Warning] (" + System.currentTimeMillis() + ") " 
+		String output = "W. (" + getTimeStamp() + ") " 
                 + method + " - \"" + message + "\"";        
 		
 		System.err.println(output);
@@ -223,7 +225,7 @@ public class LogManager
 		if (method == null)
 			method = "...";
 		
-		String output = "[Message] (" + System.currentTimeMillis() + ") " 
+		String output = "M. (" + getTimeStamp() + ") " 
                 + method + " - \"" + message + "\"";
 		
 		System.out.println(output);	
@@ -235,6 +237,15 @@ public class LogManager
     public static void recordMessage(String message)
     {
         recordMessage(message, null);
+    }
+    
+    private static String getTimeStamp()
+    {
+        Calendar now = Calendar.getInstance();
+        return String.format("%02d:%02d:%02d.%03d", now.get(Calendar.HOUR_OF_DAY), 
+                now.get(Calendar.MINUTE),
+                now.get(Calendar.SECOND), 
+                now.get(Calendar.MILLISECOND));        
     }
     
 }
