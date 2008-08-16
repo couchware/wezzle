@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
@@ -66,7 +67,7 @@ public class HighScoreGroup extends Group
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(26).text("High Scores")
                 .visible(false).end();
-        layerMan.add(headerLabel, Game.LAYER_UI);
+        layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);     
         
         // Create the no high score label.
@@ -74,14 +75,14 @@ public class HighScoreGroup extends Group
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(20).text("There are no")
                 .visible(false).end();
-        layerMan.add(noHighScoreLabel1, Game.LAYER_UI);
+        layerMan.add(noHighScoreLabel1, Layer.UI);
         entityList.add(noHighScoreLabel1);
                 
         noHighScoreLabel2 = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(20).text("high scores yet.")
                 .visible(false).end();
-        layerMan.add(noHighScoreLabel2, Game.LAYER_UI);
+        layerMan.add(noHighScoreLabel2, Layer.UI);
         entityList.add(noHighScoreLabel2);                
         
         // Create the score labels.
@@ -94,7 +95,7 @@ public class HighScoreGroup extends Group
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .color(Game.TEXT_COLOR).opacity(0).size(16).text(" ")
                     .visible(false).end();
-            layerMan.add(scoreLabels[i], Game.LAYER_UI);
+            layerMan.add(scoreLabels[i], Layer.UI);
             entityList.add(scoreLabels[i]);
         }       
         
@@ -105,7 +106,7 @@ public class HighScoreGroup extends Group
         closeButton = new SpriteButton.Builder(window, 400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Close").offOpacity(70).visible(false).end();
-        layerMan.add(closeButton, Game.LAYER_UI);
+        layerMan.add(closeButton, Layer.UI);
         entityList.add(closeButton);
     }
     
@@ -140,11 +141,11 @@ public class HighScoreGroup extends Group
             // A high score must exist then.
             highScoreExists = true;
               
-            layerMan.remove(scoreLabels[i], Game.LAYER_UI);
+            layerMan.remove(scoreLabels[i], Layer.UI);
             entityList.remove(scoreLabels[i]);
             scoreLabels[i] = new LabelBuilder(scoreLabels[i])
                 .text(createScoreLabel(i, highScoreList[i])).opacity(100).end();
-            layerMan.add(scoreLabels[i], Game.LAYER_UI);
+            layerMan.add(scoreLabels[i], Layer.UI);
             entityList.add(scoreLabels[i]);            
         }                       
         

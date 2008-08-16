@@ -247,21 +247,23 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     // -------------------------------------------------------------------------
     
     @Override
-    public void draw()
+    public boolean draw()
     {
         // Remember last coordinate.
         x_ = x;
         y_ = y;
         
         // Don't draw if not visible.
-        if (isVisible() == false)
-            return;
+        if (visible == false)
+            return false;
         
         // Draw the rail.
         spriteRail.draw(x + offsetX, y + offsetY + (HEIGHT - spriteRail.getHeight()) / 2);
         
         // Draw the handle.
         spriteHandle.draw(x + offsetX + slideOffset, y + offsetY);
+        
+        return true;
     }
 
     public void mouseClicked(MouseEvent e)

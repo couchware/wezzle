@@ -119,8 +119,17 @@ public class Window extends AbstractEntity
      * Draw the window to the screen.
      */
     @Override
-    public void draw()
+    public boolean draw()
     {
+        x_ = x;
+        y_ = y;
+        
+        width_ = width;
+        height_ = height;
+        
+        if (visible == false)
+            return false;
+        
         // Draw the inside of the window.
         window.setColor(color);
         window.fillRect(x + offsetX, y + offsetY, width, height);
@@ -186,6 +195,8 @@ public class Window extends AbstractEntity
                 y + offsetY,
                 verticalSprite.getWidth(), height,
                 Math.toRadians(180), opacity);
+        
+        return true;
     }
     
     @Override

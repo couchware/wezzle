@@ -4,7 +4,7 @@ import java.awt.Rectangle;
 
 public interface IDrawable
 {
-	public void draw();
+	public boolean draw();
     public Rectangle getDrawRect();
     public void resetDrawRect();
     public void setVisible(boolean visible);

@@ -5,10 +5,12 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationManager;
 import ca.couchware.wezzle2d.BoardManager.Direction;
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -152,25 +154,45 @@ public class Game extends Canvas implements IGameWindowCallback
      */ 
     final public static Color SCORE_BOMB_COLOR = new Color(255, 127, 0);
   
-    /**
-     * The background layer.
-     */
-    final public static int LAYER_BACKGROUND = 0;
+//    /**
+//     * The background layer.
+//     */
+//    final public static int Layer.BACKGROUND = 0;
+//    
+//    /**
+//     * The board layer.
+//     */
+//    final public static int Layer.TILE = 1;
+//    
+//    /**
+//     * The effects layer.
+//     */
+//    final public static int Layer.EFFECT = 2;
+//    
+//    /**
+//     * The UI layer.
+//     */
+//    final public static int Layer.UI = 3;     
     
     /**
-     * The board layer.
+     * The name of the application.
      */
-    final public static int LAYER_TILE = 1;
+    final private static String APPLICATION_NAME = "Wezzle";
     
     /**
-     * The effects layer.
+     * The version of the application.
      */
-    final public static int LAYER_EFFECT = 2;
+    final private static String APPLICATION_VERSION = "Test 6";     
     
     /**
-     * The UI layer.
+     * The full title of the game.
      */
-    final public static int LAYER_UI = 3;        
+    final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
+    
+    /**
+     * The copyright.
+     */
+    final public static String COPYRIGHT = "\u00A9 2008 Couchware Inc.";
     
     //--------------------------------------------------------------------------
     // Public Members
@@ -210,12 +232,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * The game layer manager.
      */
     public LayerManager layerMan;
-    
-    /**
-     * The loader layer manager.
-     */
-    public LayerManager loaderLayerMan;
-    
+        
     /** 
      * The manager in charge of the moves. 
      */
@@ -290,7 +307,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * The progress bar.
      */
-    public ProgressBar progressBar;
+    public ProgressBar progressBar;        
     
     //--------------------------------------------------------------------------
     // Private Members
@@ -300,22 +317,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * The build nunber path.
      */
     final private static String BUILD_NUMBER_PATH = 
-            RESOURCES_PATH + "/build.number";
-    
-    /**
-     * The name of the application.
-     */
-    final private static String APPLICATION_NAME = "Wezzle";
-    
-    /**
-     * The current wezzle version number.
-     */
-    final private static String VERSION = "Test 6";                  
-    
-    /**
-     * The copyright.
-     */
-    final private static String COPYRIGHT = "\u00A9 2008 Couchware Inc.";
+            RESOURCES_PATH + "/build.number";                             
     
     /** 
      * The normal title of the window. 
@@ -592,12 +594,12 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             if (buildNumber == null)
                 buildNumber = "???";
-        }
+        }               
         
         // Print the build number.
         LogManager.recordMessage("Date: " + (new Date()));   
         LogManager.recordMessage("Wezzle Build: " + buildNumber);
-        LogManager.recordMessage("Wezzle Version: " + VERSION);
+        LogManager.recordMessage("Wezzle Version: " + APPLICATION_VERSION);
         LogManager.recordMessage("Java Version: " + System.getProperty("java.version"));
         LogManager.recordMessage("OS Name: " + System.getProperty("os.name"));
         LogManager.recordMessage("OS Architecture: " + System.getProperty("os.arch"));
@@ -642,7 +644,7 @@ public class Game extends Canvas implements IGameWindowCallback
     private void initializeManagers()
     {
         // Create the layer manager.   
-        layerMan = new LayerManager(window, 4);   
+        layerMan = new LayerManager(window);   
         
         // Create the animation manager.
         animationMan = new AnimationManager();                
@@ -674,7 +676,7 @@ public class Game extends Canvas implements IGameWindowCallback
         
         // Create the piece manager.
         pieceMan = new PieceManager(window, animationMan, boardMan);        
-        layerMan.add(pieceMan.getPieceGrid(), LAYER_EFFECT);	
+        layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);	
         
         // Create group manager.
         groupMan = new GroupManager(layerMan, pieceMan);
@@ -741,77 +743,88 @@ public class Game extends Canvas implements IGameWindowCallback
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(ButtonType.LARGE).text("")
                 .offOpacity(0).hoverOpacity(70).onOpacity(95).end();
-        layerMan.add(highScoreButton, Game.LAYER_UI);
+        layerMan.add(highScoreButton, Layer.UI);
                 
         // Create pause button.        
         pauseButton = new SpriteButton.Builder(window, 668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(ButtonType.NORMAL).text("Pause").activeText("Resume")
                 .offOpacity(70).end();
-        layerMan.add(pauseButton, Game.LAYER_UI);    
+        layerMan.add(pauseButton, Layer.UI);    
         
         // Create the options button, using pause button as a template.
         optionsButton = new SpriteButton.Builder((SpriteButton) pauseButton)
                 .y(299).text("Options").end();
-        layerMan.add(optionsButton, Game.LAYER_UI);                
+        layerMan.add(optionsButton, Layer.UI);                
         
         // Create the help buttton, using pause button as a template.
         helpButton = new SpriteButton.Builder((SpriteButton) optionsButton)
                 .y(387).text("Help").end();               
-        layerMan.add(helpButton, LAYER_UI);     
+        layerMan.add(helpButton, Layer.UI);     
     }
     
     /**
      * Initializes all the labesl that appear on the main game screen.
      */
     private void initializeLabels()
-    {             
-        // Add the copyright and version labels.
-        layerMan.add(copyrightLabel, LAYER_UI);
-        layerMan.add(versionLabel, LAYER_UI);
+    {                     
+        // Set up the copyright label.
+        copyrightLabel = new LabelBuilder(10, 600 - 10)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
+                .cached(false).color(TEXT_COLOR).size(12)                
+                .text(COPYRIGHT).end();
+        layerMan.add(copyrightLabel, Layer.UI);
+        
+        // Set up the version label.	
+        versionLabel = new LabelBuilder(800 - 10, 600 - 10)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
+                .cached(false).color(TEXT_COLOR).size(12)                
+                .text(TITLE)
+                .end();                        
+        layerMan.add(versionLabel, Layer.UI);
         
 		// Set up the timer text.
         timerLabel = new LabelBuilder(400, 70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(TEXT_COLOR).size(50).text("--").end();
-        layerMan.add(timerLabel, LAYER_UI);
+        layerMan.add(timerLabel, Layer.UI);
              
         // Set up the level header.
         levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();        
-        layerMan.add(levelHeader, LAYER_UI);
+        layerMan.add(levelHeader, Layer.UI);
         
         // Set up the level text.
         levelLabel = new LabelBuilder(126, 210)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
                 .color(TEXT_COLOR).size(20).text("--").end();                
-        layerMan.add(levelLabel, LAYER_UI);        
+        layerMan.add(levelLabel, Layer.UI);        
         
         // Set up the score header.
         highScoreHeaderLabel = 
                 new GraphicEntity.Builder(127, 278, HIGH_SCORE_HEADER_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(highScoreHeaderLabel, LAYER_UI);
+        layerMan.add(highScoreHeaderLabel, Layer.UI);
                         
         // Set up the high score text.
         highScoreLabel = new LabelBuilder(126, 337)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
                 .color(TEXT_COLOR).size(20).text("--").end();
-        layerMan.add(highScoreLabel, LAYER_UI);
+        layerMan.add(highScoreLabel, Layer.UI);
         
         // Set up the score header.
         scoreHeaderLabel = new GraphicEntity.Builder(128, 403, SCORE_HEADER_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(scoreHeaderLabel, LAYER_UI);
+        layerMan.add(scoreHeaderLabel, Layer.UI);
         
         // Set up the score text.
         scoreLabel = new LabelBuilder(126, 460)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
                 .color(TEXT_COLOR).size(20).text("--").end();
-        layerMan.add(scoreLabel, LAYER_UI);
+        layerMan.add(scoreLabel, Layer.UI);
     }
     
     /**
@@ -822,14 +835,14 @@ public class Game extends Canvas implements IGameWindowCallback
         // Create the background.
 		background = new GraphicEntity
                 .Builder(0, 0, SPRITES_PATH + "/Background2.png").end();
-        layerMan.add(background, LAYER_BACKGROUND);   
-        layerMan.toBack(background, LAYER_BACKGROUND);
+        layerMan.add(background, Layer.BACKGROUND);   
+        layerMan.toBack(background, Layer.BACKGROUND);
         
         // Create the progress bar.
         progressBar = new ProgressBar.Builder(393, 501)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .progressMax(scoreMan.getTargetLevelScore()).end();
-        layerMan.add(progressBar, LAYER_UI);
+        layerMan.add(progressBar, Layer.UI);
     }
     
     /**
@@ -890,28 +903,10 @@ public class Game extends Canvas implements IGameWindowCallback
         
         // Set the refactor speeds.
         resetRefactorSpeed();
-        resetDropSpeed();
-                
-        // Create the loader layer manager.   
-        loaderLayerMan = new LayerManager(window, 4);                   
-        
-        // Set up the copyright label.
-        copyrightLabel = new LabelBuilder(10, 600 - 10)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .cached(false).color(TEXT_COLOR).size(12)                
-                .text(COPYRIGHT).end();
-        loaderLayerMan.add(copyrightLabel, LAYER_UI);   
-        
-        // Set up the version label.	
-        versionLabel = new LabelBuilder(800 - 10, 600 - 10)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .cached(false).color(TEXT_COLOR).size(12)                
-                .text(APPLICATION_NAME + " " + VERSION + " (Build " + buildNumber + ")")
-                .end();        
-        loaderLayerMan.add(versionLabel, LAYER_UI);
+        resetDropSpeed();                                               
         
         // Create the loader.
-        loader = new Loader(loaderLayerMan);        
+        loader = new Loader(window, COPYRIGHT, TITLE);        
                 
         // Initialize managers.
         loader.add(new Runnable()
@@ -1152,19 +1147,16 @@ public class Game extends Canvas implements IGameWindowCallback
         
         // If the loader is running, bypass all the rendering to show it.        
         if (loader != null)
-        {
+        {            
             if (loader.hasNext() == true)
             {
                 loader.loadNext();
-                boolean updated = loaderLayerMan.drawRegion(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);         
-                return updated;
+                return loader.draw();                
             }   
             else
-            {
-                loaderLayerMan = null;
+            {                
                 loader = null;
-                boolean updated = layerMan.drawRegion(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
-                return updated;
+                return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
             }
         }
                                
@@ -1326,7 +1318,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // Otherwise, only draw what needs to be redrawn.
         else
         {                       
-            updated = layerMan.drawRegion(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);         
+            updated = layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);         
         }        
         
         //Util.handleMessage(layerMan.toString());
@@ -1427,13 +1419,13 @@ public class Game extends Canvas implements IGameWindowCallback
                 a2.setStartAction(new Runnable()
                 {
                     public void run()
-                    { layerMan.add(label, LAYER_EFFECT); }
+                    { layerMan.add(label, Layer.EFFECT); }
                 });
 
                 a2.setFinishAction(new Runnable()
                 {
                     public void run()
-                    { layerMan.remove(label, LAYER_EFFECT); }
+                    { layerMan.remove(label, Layer.EFFECT); }
                 });
 
                 animationMan.add(a1);
@@ -1633,13 +1625,13 @@ public class Game extends Canvas implements IGameWindowCallback
                 a2.setStartAction(new Runnable()
                 {
                     public void run()
-                    { layerMan.add(label, LAYER_EFFECT); }
+                    { layerMan.add(label, Layer.EFFECT); }
                 });
 
                 a2.setFinishAction(new Runnable()
                 {
                     public void run()
-                    { layerMan.remove(label, LAYER_EFFECT); }
+                    { layerMan.remove(label, Layer.EFFECT); }
                 });
 
                 animationMan.add(a1);
@@ -1703,7 +1695,7 @@ public class Game extends Canvas implements IGameWindowCallback
                         int angle = i % 2 == 0 ? 70 : 180 - 70;                             
 
                         // Bring this tile to the top.
-                        layerMan.toFront(t, Game.LAYER_TILE);
+                        layerMan.toFront(t, Layer.TILE);
 
                         IAnimation a1 = new MoveAnimation.Builder(t)
                                 .duration(750).theta(angle).v(0.3)
@@ -1795,13 +1787,13 @@ public class Game extends Canvas implements IGameWindowCallback
             a2.setStartAction(new Runnable()
             {
                 public void run()
-                { layerMan.add(label, LAYER_EFFECT); }
+                { layerMan.add(label, Layer.EFFECT); }
             });
 
             a2.setFinishAction(new Runnable()
             {
                 public void run()
-                { layerMan.remove(label, LAYER_EFFECT); }
+                { layerMan.remove(label, Layer.EFFECT); }
             });
 
             animationMan.add(a1);
@@ -1840,7 +1832,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 TileEntity t = boardMan.getTile((Integer) it.next());
 
                 // Bring the tile to the front.
-                layerMan.toFront(t, Game.LAYER_TILE);
+                layerMan.toFront(t, Layer.TILE);
 
                 if (t.getClass() == RocketTileEntity.class)
                 {
@@ -1942,13 +1934,13 @@ public class Game extends Canvas implements IGameWindowCallback
             a2.setStartAction(new Runnable()
             {
                 public void run()
-                { layerMan.add(label, LAYER_EFFECT); }
+                { layerMan.add(label, Layer.EFFECT); }
             });
 
             a2.setFinishAction(new Runnable()
             {
                 public void run()
-                { layerMan.remove(label, LAYER_EFFECT); }
+                { layerMan.remove(label, Layer.EFFECT); }
             });
 
             animationMan.add(a1);
@@ -1969,7 +1961,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 TileEntity t = boardMan.getTile((Integer) it.next());
 
                 // Bring the entity to the front.
-                layerMan.toFront(t, Game.LAYER_TILE);
+                layerMan.toFront(t, Layer.TILE);
 
                 // Increment counter.
                 i++;
@@ -2037,13 +2029,13 @@ public class Game extends Canvas implements IGameWindowCallback
             a2.setStartAction(new Runnable()
             {
                 public void run()
-                { layerMan.add(label, LAYER_EFFECT); }
+                { layerMan.add(label, Layer.EFFECT); }
             });
 
             a2.setFinishAction(new Runnable()
             {
                 public void run()
-                { layerMan.remove(label, LAYER_EFFECT); }
+                { layerMan.remove(label, Layer.EFFECT); }
             });
 
             animationMan.add(a1);
@@ -2179,10 +2171,10 @@ public class Game extends Canvas implements IGameWindowCallback
         // Draw the timer text.
         if (!timerLabel.getText().equals(String.valueOf(timerMan.getTime())))            
         {
-            layerMan.remove(timerLabel, LAYER_UI);
+            layerMan.remove(timerLabel, Layer.UI);
             timerLabel = new LabelBuilder(timerLabel)                        
                     .text(String.valueOf(timerMan.getTime())).end();
-            layerMan.add(timerLabel, LAYER_UI);
+            layerMan.add(timerLabel, Layer.UI);
             timerLabel.getDrawRect();
         }
 
@@ -2190,10 +2182,10 @@ public class Game extends Canvas implements IGameWindowCallback
         if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
         {
             LogManager.recordMessage("New high score label created.");
-            layerMan.remove(highScoreLabel, LAYER_UI);
+            layerMan.remove(highScoreLabel, Layer.UI);
             highScoreLabel = new LabelBuilder(highScoreLabel)
                     .text(String.valueOf(scoreMan.getHighScore())).end();
-            layerMan.add(highScoreLabel, LAYER_UI);
+            layerMan.add(highScoreLabel, Layer.UI);
         }                        
 
         if (tutorialMan.isTutorialInProgress() == false)
@@ -2201,20 +2193,20 @@ public class Game extends Canvas implements IGameWindowCallback
             // Set the level text.
             if (!levelLabel.getText().equals(String.valueOf(worldMan.getLevel())))
             {
-                layerMan.remove(levelLabel, LAYER_UI);
+                layerMan.remove(levelLabel, Layer.UI);
                 levelLabel = new LabelBuilder(levelLabel)
                         .text(String.valueOf(worldMan.getLevel())).end();
-                layerMan.add(levelLabel, LAYER_UI);
+                layerMan.add(levelLabel, Layer.UI);
             }
 
             // Set the score text.
             if (!scoreLabel.getText().equals(String.valueOf(scoreMan.getTotalScore())))
             {
-                layerMan.remove(scoreLabel, LAYER_UI);
+                layerMan.remove(scoreLabel, Layer.UI);
                 scoreLabel = new LabelBuilder(scoreLabel)
                         .text(String.valueOf(scoreMan.getTotalScore()))
                         .end();
-                layerMan.add(scoreLabel, LAYER_UI);
+                layerMan.add(scoreLabel, Layer.UI);
             }
         }
         else
@@ -2223,19 +2215,19 @@ public class Game extends Canvas implements IGameWindowCallback
             if (!levelLabel.getText()
                     .equals(tutorialMan.getTutorialInProgress().getName()))
             {
-                layerMan.remove(levelLabel, LAYER_UI);
+                layerMan.remove(levelLabel, Layer.UI);
                 levelLabel = new LabelBuilder(levelLabel)
                         .text(tutorialMan.getTutorialInProgress().getName())
                         .end();
-                layerMan.add(levelLabel, LAYER_UI);
+                layerMan.add(levelLabel, Layer.UI);
             }
 
             // Set the score text.
             if (!scoreLabel.getText().equals("--"))
             {
-                layerMan.remove(scoreLabel, LAYER_UI);
+                layerMan.remove(scoreLabel, Layer.UI);
                 scoreLabel = new LabelBuilder(scoreLabel).text("--").end();
-                layerMan.add(scoreLabel, LAYER_UI);
+                layerMan.add(scoreLabel, Layer.UI);
             }
         }
 
@@ -2304,8 +2296,8 @@ public class Game extends Canvas implements IGameWindowCallback
         if (layerMan != null)
             layerMan.forceRedraw();
         
-        if (loaderLayerMan != null)
-            loaderLayerMan.forceRedraw();
+        if (loader != null)
+            loader.forceRedraw();
     }
     
      /**
@@ -2317,8 +2309,8 @@ public class Game extends Canvas implements IGameWindowCallback
         if (layerMan != null)
             layerMan.forceRedraw();
         
-        if (loaderLayerMan != null)
-            loaderLayerMan.forceRedraw();    
+        if (loader != null)
+            loader.forceRedraw();    
     }        
     
     //--------------------------------------------------------------------------

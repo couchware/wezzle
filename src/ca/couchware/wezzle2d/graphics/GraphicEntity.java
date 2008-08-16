@@ -130,7 +130,7 @@ public class GraphicEntity extends AbstractEntity
         }                
     }    
     
-    public void draw()
+    public boolean draw()
 	{
         this.x_ = x + offsetX;
         this.y_ = y + offsetY;
@@ -139,10 +139,12 @@ public class GraphicEntity extends AbstractEntity
         this.height_ = height;
         
         if (isVisible() == false)
-            return;
+            return false;
                         
         sprite.draw(x + offsetX, y + offsetY, 
-                width, height, theta, opacity);                
+                width, height, theta, opacity);      
+        
+        return true;
 	}     
     
     public IAnimation getAnimation()

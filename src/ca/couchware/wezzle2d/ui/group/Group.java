@@ -137,7 +137,7 @@ public class Group extends AbstractEntity
     }
 
     @Override
-    public void draw()
+    public boolean draw()
     {
         throw new UnsupportedOperationException(
                 "This method is not supported for groups");

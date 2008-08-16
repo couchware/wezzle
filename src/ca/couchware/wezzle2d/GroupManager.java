@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.group.Group;
 import ca.couchware.wezzle2d.util.*;
@@ -127,8 +128,8 @@ public class GroupManager
         if (button != null)
             button.setActivated(true);
         
-        layerMan.hide(Game.LAYER_TILE);
-        layerMan.hide(Game.LAYER_EFFECT);
+        layerMan.hide(Layer.TILE);
+        layerMan.hide(Layer.EFFECT);
         
         LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#showGroup");
@@ -173,8 +174,8 @@ public class GroupManager
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
-            layerMan.show(Game.LAYER_TILE);
-            layerMan.show(Game.LAYER_EFFECT);
+            layerMan.show(Layer.TILE);
+            layerMan.show(Layer.EFFECT);
         }
         else
             entryList.getFirst().getGroup().setVisible(true);
@@ -203,8 +204,8 @@ public class GroupManager
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
-            layerMan.show(Game.LAYER_TILE);
-            layerMan.show(Game.LAYER_EFFECT);
+            layerMan.show(Layer.TILE);
+            layerMan.show(Layer.EFFECT);
         }
         else
             entryList.getFirst().getGroup().setVisible(true);

@@ -2,15 +2,13 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.ui.ILabel;
-import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.LinkedList;
-
+import java.util.List;
 /**
  * A class for managaing layer draw order.  Layer 0 is the bottom (lowest)
  * layer, followed by Layer 1, Layer 2, etc.  Negative layers are not 
- * permitted.
+ * permitted.  
  * 
  * @author cdmckay
  */
@@ -23,9 +21,15 @@ public class LayerManager
     private static String NL = System.getProperty("line.separator");
     
     /**
-     * The number of layers.
+     * The different layers supported by the layer manager.
      */
-    private int numberOfLayers;
+    public static enum Layer
+    {
+        BACKGROUND,        
+        TILE,
+        EFFECT,
+        UI
+    }        
         
     /**
      * TODO Add documentation.
@@ -35,7 +39,7 @@ public class LayerManager
     /**
      * The list of hidden layers.
      */
-    private boolean[] hiddenLayers;
+    private boolean[] isHidden;
     
     /**
      * The game window.  Used when drawing regions of the screen.
@@ -51,29 +55,26 @@ public class LayerManager
     /**
      * The constructor.
      */
-    public LayerManager(IGameWindow window, int numberOfLayers)
+    public LayerManager(IGameWindow window)
     {
         // Must have at least 1 layer.
-        assert(window != null);
-        assert(numberOfLayers > 0);       
+        if (window == null)  
+            throw new NullPointerException("Window must not be null.");
         
         // Set the window reference.
-        this.window = window;                
-        
-        // Record number of layers.
-        this.numberOfLayers = numberOfLayers;
+        this.window = window;                                
         
         // Initialize layer arraylist.
-        layerList = new ArrayList<ArrayList<IDrawable>>(numberOfLayers);
+        layerList = new ArrayList<ArrayList<IDrawable>>(Layer.values().length);
         
         // Initialize hidden layer map.
-        hiddenLayers = new boolean[numberOfLayers];
+        isHidden = new boolean[Layer.values().length];
         
         // Create layers.
-        for (int i = 0; i < numberOfLayers; i++)
+        for (int i = 0; i < Layer.values().length; i++)
         {
             layerList.add(new ArrayList<IDrawable>());
-            hiddenLayers[i] = false;
+            isHidden[i] = false;
         }        
         
         // Initialize remove clip.
@@ -84,42 +85,43 @@ public class LayerManager
      * Adds a drawable to the layer specified.  If the layer does not exist,
      * an exception is thrown
      */
-    public void add(final IDrawable drawable, final int layerNum)
+    public void add(final IDrawable drawable, Layer layer)
     {         
         // The drawable cannot be null.
         assert drawable != null;
         
-        if (layerExists(layerNum) == false)
-            throw new RuntimeException("Layer does not exist!");
+        if (layer == null)
+            throw new NullPointerException("Layer does not exist!");
 
         // Add the element to the layer.
-        layerList.get(layerNum).add(drawable);        
+        layerList.get(layer.ordinal()).add(drawable);        
     }
     
     /**
      * Remove an element from the layer specified.
      * @return True if the element was removed, false if it was not found.
      */
-    public void remove(final IDrawable drawable, final int layerNum)
+    public void remove(final IDrawable drawable, Layer layer)
     {   
         // The drawable cannot be null.
-        assert drawable != null;
+        if (drawable == null)
+            throw new NullPointerException("Drawable does not exist!");
         
-        if (layerExists(layerNum) == false)
-            throw new RuntimeException("Layer does not exist!"); 
+        if (layer == null)
+            throw new NullPointerException("Layer does not exist!");
         
         // Get the layer.
-        final ArrayList<IDrawable> layer = layerList.get(layerNum);
+        final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
         
         // Get the index.
-        int index = layer.indexOf(drawable);
+        int index = list.indexOf(drawable);
         
         // If the index is -1, the element is not in this layer.
         if (index != -1)
         {
-            Rectangle r = layer.get(index).getDrawRect();
+            Rectangle r = list.get(index).getDrawRect();
             if (r != null) addRemoveRect(r);
-            layer.remove(index);            
+            list.remove(index);            
         }
         else        
         {
@@ -127,71 +129,72 @@ public class LayerManager
         }
     }    
     
-    public boolean exists(final IDrawable drawable, final int layerNum)
+    public boolean exists(final IDrawable drawable, Layer layer)
     {
         // The drawable cannot be null.
-        assert drawable != null;
+        if (drawable == null)
+            throw new NullPointerException("Drawable does not exist!");
         
         // Get the layer.
-        final ArrayList<IDrawable> layer = layerList.get(layerNum);
+        final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
         
         // Get the index.
-        int index = layer.indexOf(drawable);
+        int index = list.indexOf(drawable);
         
         // If it's -1, it doesn't exist.
         return (index != -1);
     }
     
-    public void show(final int layerNum)
+    public void show(Layer layer)
     {
-        if (layerExists(layerNum) == false)
-            throw new RuntimeException("Layer does not exist!");
+        if (layer == null)
+            throw new NullPointerException("Layer does not exist!");
         
-        if (hiddenLayers[layerNum] == false)
+        if (isHidden[layer.ordinal()] == false)
             return;
         
-        hiddenLayers[layerNum] = false;
+        isHidden[layer.ordinal()] = false;
         
         // Grab the layer.
-        final ArrayList<IDrawable> layer = layerList.get(layerNum);
+        final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
         
-        for (IDrawable d : layer)
+        for (IDrawable d : list)
             d.setDirty(true);
     }
     
-    public void hide(final int layerNum)
+    public void hide(Layer layer)
     {             
-        if (layerExists(layerNum) == false)
+        if (layer == null)
             throw new RuntimeException("Layer does not exist!");
         
-        if (hiddenLayers[layerNum] == true)
+        if (isHidden[layer.ordinal()] == true)
             return;
         
-        hiddenLayers[layerNum] = true;
+        isHidden[layer.ordinal()] = true;
         
         // Grab the layer.
-        final ArrayList<IDrawable> layer = layerList.get(layerNum);
+        final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
         
-        for (IDrawable d : layer)
+        for (IDrawable d : list)
             d.setDirty(true);
     }
     
-    public void toFront(final IDrawable d, int layerNum)
+    public void toFront(final IDrawable d, Layer layer)
     {
-        if (layerExists(layerNum) == false)     
+        if (layer == null)     
             throw new RuntimeException("Layer does not exist!");      
                 
-        remove(d, layerNum);
-        add(d, layerNum);
+        remove(d, layer);
+        add(d, layer);
     }
     
-    public void toBack(final IDrawable d, int layerNum)
+    public void toBack(final IDrawable d, Layer layer)
     {
-        if (layerExists(layerNum) == false)     
+        if (layer == null)     
             throw new RuntimeException("Layer does not exist!");
         
-        remove(d, layerNum);
-        layerList.get(layerNum).add(0, d);
+        remove(d, layer);
+        layerList.get(layer.ordinal()).add(0, d);
     }
     
     /**
@@ -213,10 +216,10 @@ public class LayerManager
             clip = null;
                 
         // Cycle through all the layers, drawing them.
-        for (int i = 0; i < numberOfLayers; i++)
+        for (int i = 0; i < Layer.values().length; i++)
         {                        
             // Check if layer exists, if it doesn't, skip this iteration.
-            if (hiddenLayers[i] == true)                 
+            if (isHidden[i] == true)                 
                 continue;
             
             // Grab this layer.
@@ -248,13 +251,13 @@ public class LayerManager
      * @param rwidth
      * @param rheight
      */
-    public boolean drawRegion(int rx, int ry, int rwidth, int rheight)
+    public boolean draw(int rx, int ry, int rwidth, int rheight)
     {
         Rectangle region = new Rectangle(rx, ry, rwidth, rheight);
         Rectangle clip = null;
         
         // Cycle through all the layers, drawing them.
-        for (int i = 0; i < numberOfLayers; i++)
+        for (int i = 0; i < Layer.values().length; i++)
         {                                             
             // Grab this layer.
             ArrayList<IDrawable> layer = layerList.get(i);
@@ -323,29 +326,7 @@ public class LayerManager
         {
             return false;
         }
-    }
-    
-    /**
-     * Checks for existance of the passed layer number.
-     * 
-     * @param layer
-     * @return
-     */
-    private boolean layerExists(int layerNum)
-    {
-        // Sanity check.
-        assert(layerNum >= 0);
-        
-        // Check if layer exists then error out.
-        if (layerNum >= layerList.size())
-        {                  
-            return false;                    
-        }
-        else
-        {
-            return true;
-        }
-    }
+    }               
     
     private void addRemoveRect(Rectangle r)
     {
@@ -378,7 +359,7 @@ public class LayerManager
         
         // Print out the number of drawables on each layer.
         int i = 0;
-        for (ArrayList<IDrawable> layer : layerList)
+        for (List<IDrawable> layer : layerList)
         {            
             buffer.append("Layer " + i + ": " 
                     + layer.size() + " drawables." + NL);
@@ -386,6 +367,45 @@ public class LayerManager
         }       
         
         return buffer.toString();
+    }   
+
+    public boolean addAll(LayerManager layerMan)
+    {
+        // Since all layer managers have the same number of layers,
+        // we can merge them by adding all the array lists together.
+        boolean changed = false; 
+        
+        for (int i = 0; i < layerList.size(); i++)        
+           if (layerList.get(i).addAll(layerMan.layerList.get(i)) == true) 
+               changed = true;
+        
+        return changed;
+    }
+
+    public boolean retainAll(LayerManager layerMan)
+    {
+        // Since all layer managers have the same number of layers,
+        // we can merge them by adding all the array lists together.
+        boolean changed = false; 
+        
+        for (int i = 0; i < layerList.size(); i++)        
+           if (layerList.get(i).retainAll(layerMan.layerList.get(i)) == true) 
+               changed = true;
+        
+        return changed;  
+    }
+
+    public boolean removeAll(LayerManager layerMan)
+    {
+        // Since all layer managers have the same number of layers,
+        // we can merge them by adding all the array lists together.
+        boolean changed = false; 
+        
+        for (int i = 0; i < layerList.size(); i++)        
+           if (layerList.get(i).removeAll(layerMan.layerList.get(i)) == true) 
+               changed = true;
+        
+        return changed;
     }
     
 }

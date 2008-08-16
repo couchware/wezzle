@@ -47,10 +47,10 @@ public abstract class ItemTileEntity extends TileEntity
      * Override that draw muthafucka.
      */
     @Override
-    public void draw()
+    public boolean draw()
     {
         if (isVisible() == false)
-            return;
+            return false;
         
         // Invoke super draw.
         super.draw();        
@@ -58,6 +58,8 @@ public abstract class ItemTileEntity extends TileEntity
         // Draw bomb on top of it.
         //itemSprite.draw((int) x2, (int) y2, width, height, itemTheta, opacity);
         itemSprite.draw(x, y, width, height, itemTheta, opacity);
+        
+        return true;
     }
 
     public double getItemTheta()

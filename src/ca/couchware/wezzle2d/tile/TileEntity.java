@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.tile;
 
+import ca.couchware.wezzle2d.ui.IClickable;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.*;
 
@@ -9,7 +10,7 @@ import ca.couchware.wezzle2d.*;
  *
  */
 
-public class TileEntity extends GraphicEntity
+public class TileEntity extends GraphicEntity implements IClickable
 {                                 
 	
 	/**
@@ -26,12 +27,7 @@ public class TileEntity extends GraphicEntity
      * The tile type.
      */
     protected TileType type;
-    
-    /**
-     * The click runnable.
-     */
-    protected Runnable clickAction;    
-    
+   
 	/**
 	 * Creates a tile at (x,y) with the specified color.
      * 
@@ -88,7 +84,7 @@ public class TileEntity extends GraphicEntity
     }        
     
 	@Override
-    public void draw()
+    public boolean draw()
 	{          
         this.x_ = x + offsetX;
         this.y_ = y + offsetY;
@@ -97,11 +93,22 @@ public class TileEntity extends GraphicEntity
         this.height_ = height;
         
         if (isVisible() == false)
-            return;
+            return false;
                         
         sprite.draw((int) x + offsetX, (int) y + offsetY, 
                 width, height, theta, opacity);                
+        
+        return true;
 	}   
+    
+    //--------------------------------------------------------------------------
+    // Clickable
+    //--------------------------------------------------------------------------
+    
+    /**
+     * The stored click action.
+     */
+    Runnable clickAction = null;
     
     /**
      * Sets the click runnable.

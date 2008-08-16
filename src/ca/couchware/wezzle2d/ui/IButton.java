@@ -10,7 +10,7 @@ import ca.couchware.wezzle2d.util.*;
  * 
  * @author cdmckay
  */
-public interface IButton extends IEntity, IMouseListener
+public interface IButton extends IEntity, IClickable, IMouseListener
 {        
            
     /**
@@ -48,6 +48,6 @@ public interface IButton extends IEntity, IMouseListener
     /**
      * Get the shape of the button.
      */
-    public ImmutableRectangle getShape();
+    public ImmutableRectangle getShape();        
          
 }

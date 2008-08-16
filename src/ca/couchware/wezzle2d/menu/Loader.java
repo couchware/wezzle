@@ -3,8 +3,11 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.menu;
 
+import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.ui.ILabel;
@@ -22,7 +25,7 @@ import java.util.Queue;
  * 
  * @author cdmckay
  */
-public class Loader 
+public class Loader
 {
 
     /** 
@@ -49,7 +52,7 @@ public class Loader
     /** 
      * The menu background graphic. 
      */
-    private GraphicEntity background;
+    private GraphicEntity backgroundGraphic;
     
     /**
      * The "Loading Wezzle..." text.
@@ -66,34 +69,47 @@ public class Loader
      * 
      * @param layerMan
      */       
-    public Loader(LayerManager layerMan)
-    { 
-        // Check arguments.
-        if (layerMan == null)
-            throw new NullPointerException("Layer Manager must not be null.");
-        
-        // Save reference.
-        this.layerMan = layerMan;
-        
-        // Initialize the loader list.
-        loaderQueue = new LinkedList<Runnable>();                
+    public Loader(IGameWindow window, String copyright, String title)
+    {        
+        // Create private layer manager.
+        this.layerMan = new LayerManager(window);
         
         // Create the loading screen.
-        this.background = new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
-        layerMan.add(background, Game.LAYER_BACKGROUND);
+        this.backgroundGraphic = new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
+        layerMan.add(backgroundGraphic, Layer.BACKGROUND);
+        
+        // A temporary label.
+        ILabel label;                
+        
+        // Set up the copyright label.               
+        label = new LabelBuilder(10, 600 - 10)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
+                .color(Game.TEXT_COLOR).size(12)                
+                .text(copyright).end();
+        layerMan.add(label, Layer.UI);
+        
+        // Set up the version label.	
+        label = new LabelBuilder(800 - 10, 600 - 10)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
+                .color(Game.TEXT_COLOR).size(12)                
+                .text(title).end();                        
+        layerMan.add(label, Layer.UI);                                 
         
         // Create the loader label.
         this.loaderLabel = new ResourceFactory.LabelBuilder(400, 273)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR)
                 .cached(false).size(26).text("Loading Wezzle...").end();
-        layerMan.add(loaderLabel, Game.LAYER_UI);
+        layerMan.add(loaderLabel, Layer.UI);
         
         // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(400, 326)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(ProgressBar.Type.LARGE).useLabel(false).end();
-        layerMan.add(progressBar, Game.LAYER_UI);
+        layerMan.add(progressBar, Layer.UI);
+        
+        // Initialize the loader list.
+        this.loaderQueue = new LinkedList<Runnable>();
         
         // Add a blank runnable first.
         add(new Runnable()
@@ -164,6 +180,19 @@ public class Loader
             LogManager.recordMessage("Preloading " + spriteName + "...");
             ResourceFactory.get().getSprite(Game.SPRITES_PATH + "/" + spriteName);         
         }   
-    }           
+    }
+
+    public boolean draw()
+    {        
+        return layerMan.draw(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
+    }
+    
+    /**
+     * This method will probably be temporary.
+     */
+    public void forceRedraw()
+    {
+        layerMan.forceRedraw();
+    }
         
 }

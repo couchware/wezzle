@@ -141,7 +141,7 @@ public class WorldManager
         masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 4)
         {
             @Override
-            public void performAction(Game game)
+            public void onMatch()
             {
                 // Increase the number of colours.
                 itemList.add(new Item(TileType.ROCKET, 1, 50));
@@ -152,7 +152,7 @@ public class WorldManager
         masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 8)
         {
             @Override
-            public void performAction(Game game)
+            public void onMatch()
             {
                 // Increase the number of colours.
                 itemList.add(new Item(TileType.BOMB, 1, 20));
@@ -163,7 +163,7 @@ public class WorldManager
         masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 12)
         {
             @Override
-            public void performAction(Game game)
+            public void onMatch()
             {
                 // Increase the number of colours.
                 itemList.add(new Item(TileType.STAR, 0, 5));
@@ -326,7 +326,7 @@ public class WorldManager
             
             if (rule.evaluate(game) == true)
             {
-                rule.performAction(game);
+                rule.onMatch();
                 it.remove();
             }
         }            

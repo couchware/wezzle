@@ -21,7 +21,7 @@ public class SpriteButton extends AbstractSpriteButton
      */
     public static enum ButtonType
     {
-        NORMAL, LARGE
+        NORMAL, LARGE, THIN
     }
     
     /**
@@ -37,6 +37,7 @@ public class SpriteButton extends AbstractSpriteButton
         dimensionMap = new EnumMap<ButtonType, ImmutableDimension>(ButtonType.class);        
         dimensionMap.put(ButtonType.NORMAL, new ImmutableDimension(153, 49));
         dimensionMap.put(ButtonType.LARGE, new ImmutableDimension(210, 130));
+        dimensionMap.put(ButtonType.THIN, new ImmutableDimension(220, 40));
     }
            
     /**
@@ -345,14 +346,14 @@ public class SpriteButton extends AbstractSpriteButton
         return activeText;
     }
     
-    public void draw()
+    public boolean draw()
     {
         x_ = x;
         y_ = y;
         
         // Don't draw if not visible.
-        if (isVisible() == false)
-            return;
+        if (visible == false)
+            return false;
 
         // See what state we're in.
         if (state.contains(State.PRESSED))        
@@ -362,29 +363,9 @@ public class SpriteButton extends AbstractSpriteButton
         else if (state.contains(State.ACTIVATED))
             drawActivated();
         else
-            drawNormal();
+            drawNormal();        
         
-//        switch (buttonState)
-//        {
-//            case OFF:
-//                drawOff();
-//                break;
-//                
-//            case ON:
-//                drawOn();
-//                break;
-//                
-//            case HOVER:
-//                drawHover();
-//                break;
-//                
-//            case PRESSED:
-//                drawPressed();
-//                break;                           
-//                
-//            default:
-//                throw new AssertionError();
-//        } // end switch
+        return true;
     }
 
 }

@@ -171,10 +171,10 @@ public class Java2DLabel extends AbstractEntity implements ILabel
 	/**
 	 * Draw the text onto the graphics context provided.	   
 	 */
-	public void draw()
+	public boolean draw()
 	{
         // Do nothing if the string is empty.
-        if (text.length() == 0) return;            
+        if (text.length() == 0) return false;            
         
         x_ = x + offsetX;
         y_ = y + offsetY;
@@ -184,7 +184,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         
 		// Return if the label is invisible.
 		if (isVisible() == false)
-			return;                					
+			return false;                					
             
         // Get the graphics context.
         Graphics2D g = window.getDrawGraphics();
@@ -209,7 +209,9 @@ public class Java2DLabel extends AbstractEntity implements ILabel
 
         // Opacity.
         if (opacity != 100)        
-            g.setComposite(c);            					
+            g.setComposite(c);  
+        
+        return true;
 	}        
 
     /**

@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
@@ -80,7 +81,7 @@ public class SoundMusicGroup extends Group
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(26).text("Sound/Music")
                 .visible(false).end();
-        layerMan.add(headerLabel, Game.LAYER_UI);
+        layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
         // Create the sound on/off button.
@@ -88,7 +89,7 @@ public class SoundMusicGroup extends Group
 //                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
 //                .text("Sound: Off").activeText("Sound: On")
 //                .offOpacity(70).visible(false).end();       
-//        layerMan.add(soundButton, Game.LAYER_UI);
+//        layerMan.add(soundButton, Layer.UI);
 //        entityList.add(soundButton);
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
@@ -98,7 +99,7 @@ public class SoundMusicGroup extends Group
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(soundOnItem).add(soundOffItem)
                 .visible(false).end();
-        layerMan.add(soundRadio, Game.LAYER_UI);
+        layerMan.add(soundRadio, Layer.UI);
         entityList.add(soundRadio);
         
         // Check the properties.
@@ -124,7 +125,7 @@ public class SoundMusicGroup extends Group
                 .virtualValue(
                     propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME))
                 .visible(false).end();
-        layerMan.add(soundSlider, Game.LAYER_UI);
+        layerMan.add(soundSlider, Layer.UI);
         entityList.add(soundSlider);        
                 
         // Create the music on/off button.
@@ -132,7 +133,7 @@ public class SoundMusicGroup extends Group
 //                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
 //                .text("Music: Off").activeText("Music: On")
 //                .offOpacity(70).visible(false).end();  
-//        layerMan.add(musicButton, Game.LAYER_UI);
+//        layerMan.add(musicButton, Layer.UI);
 //        entityList.add(musicButton);
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
@@ -142,7 +143,7 @@ public class SoundMusicGroup extends Group
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(musicOnItem).add(musicOffItem)
                 .visible(false).end();
-        layerMan.add(musicRadio, Game.LAYER_UI);
+        layerMan.add(musicRadio, Layer.UI);
         entityList.add(musicRadio);
         
         // Check the properties.
@@ -168,14 +169,14 @@ public class SoundMusicGroup extends Group
                 .virtualValue(
                     propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME))
                 .visible(false).end();
-        layerMan.add(musicSlider, Game.LAYER_UI);
+        layerMan.add(musicSlider, Layer.UI);
         entityList.add(musicSlider);                      
         
         // Create back button.
         backButton = new SpriteButton.Builder(window, 400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Back").offOpacity(70).visible(false).end();        
-        layerMan.add(backButton, Game.LAYER_UI);     
+        layerMan.add(backButton, Layer.UI);     
         entityList.add(backButton);
     }
     

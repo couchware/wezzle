@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -103,19 +104,19 @@ public class BasicTutorial extends AbstractTutorial
                 .cached(false)
                 .color(Game.TEXT_COLOR).size(16)
                 .text("Lines are made by lining").end();
-        game.layerMan.add(label, Game.LAYER_EFFECT);   
+        game.layerMan.add(label, Layer.EFFECT);   
         labelList.add(label);
         
         // Line 2.
         label = new LabelBuilder(label).y(166 + 24)
                 .text("up 3 tiles of the same").end();
-        game.layerMan.add(label, Game.LAYER_EFFECT);                 
+        game.layerMan.add(label, Layer.EFFECT);                 
         labelList.add(label);
         
         // Line 3.
         label = new LabelBuilder(label).y(166 + 24 + 24)
                 .text("colour.").end();
-        game.layerMan.add(label, Game.LAYER_EFFECT);                                 
+        game.layerMan.add(label, Layer.EFFECT);                                 
         labelList.add(label);
         
         // All done.
@@ -135,19 +136,19 @@ public class BasicTutorial extends AbstractTutorial
                     game.boardMan.getY() + game.boardMan.getHeight() 
                         - game.boardMan.getCellHeight())
                 .type(BubbleType.VERTICAL).text("Click here").end();                
-        game.layerMan.add(bubble, Game.LAYER_EFFECT);   
-        game.layerMan.toFront(bubble, Game.LAYER_EFFECT);           
+        game.layerMan.add(bubble, Layer.EFFECT);   
+        game.layerMan.toFront(bubble, Layer.EFFECT);           
         
         // Create repeat button.
         repeatButton = new SpriteButton.Builder(game.getGameWindow(), 400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Repeat").offOpacity(70).visible(false).end();
-        game.layerMan.add(repeatButton, Game.LAYER_EFFECT);
+        game.layerMan.add(repeatButton, Layer.EFFECT);
         
          // Create continue button, using the repeat button as a template.
         continueButton = new SpriteButton.Builder((SpriteButton) repeatButton)
                 .y(390).text("Continue").end();
-        game.layerMan.add(continueButton, Game.LAYER_EFFECT);  
+        game.layerMan.add(continueButton, Layer.EFFECT);  
         
         // Fade the old board out.
 //        final EntityGroup e = 
@@ -157,11 +158,11 @@ public class BasicTutorial extends AbstractTutorial
 //                .wait(0).duration(500).end();             
 //        game.animationMan.add(a);        
 //                
-//        game.layerMan.add(e, Game.LAYER_EFFECT);        
+//        game.layerMan.add(e, Layer.EFFECT);        
 //        a.setFinishAction(new Runnable()
 //        {
 //            public void run()
-//            { game.layerMan.remove(e, Game.LAYER_EFFECT); }
+//            { game.layerMan.remove(e, Layer.EFFECT); }
 //        });
         
         // Run the repeat tutorial method, that sets up the things that must
@@ -210,7 +211,7 @@ public class BasicTutorial extends AbstractTutorial
 //                    310, 150);
 //            confirmWindow.setAlignment(
 //                    EnumSet.of(Alignment.MIDDLE, Alignment.CENTER));            
-//            game.layerMan.add(confirmWindow, Game.LAYER_EFFECT);            
+//            game.layerMan.add(confirmWindow, Layer.EFFECT);            
             
             return true;
         }
@@ -239,21 +240,21 @@ public class BasicTutorial extends AbstractTutorial
         
         // Remove the repeat button.
         repeatButton.setVisible(false);
-        game.layerMan.remove(repeatButton, Game.LAYER_EFFECT);
+        game.layerMan.remove(repeatButton, Layer.EFFECT);
         repeatButton = null;
         
         // Remove the continue button.
         continueButton.setVisible(false);
-        game.layerMan.remove(continueButton, Game.LAYER_EFFECT);
+        game.layerMan.remove(continueButton, Layer.EFFECT);
         continueButton = null;
         
         // Remove the speech bubble.
-        game.layerMan.remove(bubble, Game.LAYER_EFFECT);
+        game.layerMan.remove(bubble, Layer.EFFECT);
         bubble = null;
         
         // Remove the text label.
         for (ILabel label : labelList)
-            game.layerMan.remove(label, Game.LAYER_EFFECT);       
+            game.layerMan.remove(label, Layer.EFFECT);       
         labelList = null;
         
         // Remove the restriction board.

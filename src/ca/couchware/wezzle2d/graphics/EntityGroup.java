@@ -118,10 +118,14 @@ public class EntityGroup extends AbstractEntity
 	 * Draw this entity to the graphics context unless it is not visible
      * or an animation is attached (the animation will handle the drawing).
 	 */
-    public void draw()
+    public boolean draw()
     {
+        boolean updated = false;
+        
         for (AbstractEntity e : entities)
-            e.draw();
+            if (e.draw() == true) updated = true;
+        
+        return updated;
     }
 
     @Override

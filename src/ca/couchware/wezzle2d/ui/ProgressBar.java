@@ -262,10 +262,14 @@ public class ProgressBar extends AbstractEntity
         }                
     }   
     
-    public void draw()
+    public boolean draw()
     {
         x_ = x;
         y_ = y;
+        
+        // Check visibility.
+        if (visible == false)
+            return false;
         
         // Draw the container.
         containerSprite.draw(x + offsetX, y + offsetY,
@@ -273,16 +277,15 @@ public class ProgressBar extends AbstractEntity
                 0.0, 90);
         
         // Draw the text.
-        if (useLabel == true)
-            progressLabel.draw();
+        if (useLabel == true) progressLabel.draw();
         
         // Adjust the local x and y.
         int alignedX = x + padX + offsetX;
         int alignedY = y + padY + offsetY;
         
-        // Draw the bar.
-        if (progressWidth == 0)
-            return;        
+        // Draw the bar.        
+        if (progress == 0)
+            ; // Do nada.
         else if (progressWidth <= 8)
         {
             int w = progressWidth / 2;
@@ -299,9 +302,7 @@ public class ProgressBar extends AbstractEntity
                     rightSprite.getWidth(), rightSprite.getHeight(),
                     rightSprite.getWidth() - w, 0,
                     w, rightSprite.getHeight(), 
-                    0.0, 100);
-            
-            return;
+                    0.0, 100);                        
         }
         else
         {
@@ -310,6 +311,8 @@ public class ProgressBar extends AbstractEntity
                 middleSprite.draw(alignedX + i, alignedY);
             rightSprite.draw(alignedX + progressWidth - 4, alignedY);
         }
+        
+        return true;
     }    
 
     /**

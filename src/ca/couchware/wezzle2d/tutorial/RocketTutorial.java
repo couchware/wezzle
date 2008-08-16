@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -107,19 +108,19 @@ public class RocketTutorial extends AbstractTutorial
                 .cached(false)
                 .color(Game.TEXT_COLOR).size(16)
                 .text("Rockets destroy all tiles").end();
-        game.layerMan.add(label, Game.LAYER_EFFECT);   
+        game.layerMan.add(label, Layer.EFFECT);   
         labelList.add(label);
         
         // Line 2.
         label = new LabelBuilder(label).y(166 + 24)
                 .text("in their path. Get one in a").end();
-        game.layerMan.add(label, Game.LAYER_EFFECT);                 
+        game.layerMan.add(label, Layer.EFFECT);                 
         labelList.add(label);
         
         // Line 3.
         label = new LabelBuilder(label).y(166 + 24 + 24)
                 .text("line to fire it.").end();
-        game.layerMan.add(label, Game.LAYER_EFFECT);                                 
+        game.layerMan.add(label, Layer.EFFECT);                                 
         labelList.add(label);
         
         // All done.
@@ -140,19 +141,19 @@ public class RocketTutorial extends AbstractTutorial
                     game.boardMan.getY() + game.boardMan.getHeight() 
                         - game.boardMan.getCellHeight() * 3)
                 .type(BubbleType.VERTICAL).text("Click here").end();                
-        game.layerMan.add(bubble, Game.LAYER_EFFECT);   
-        game.layerMan.toFront(bubble, Game.LAYER_EFFECT);           
+        game.layerMan.add(bubble, Layer.EFFECT);   
+        game.layerMan.toFront(bubble, Layer.EFFECT);           
         
         // Create repeat button.
         repeatButton = new SpriteButton.Builder(game.getGameWindow(), 400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Repeat").offOpacity(70).visible(false).end();
-        game.layerMan.add(repeatButton, Game.LAYER_EFFECT);
+        game.layerMan.add(repeatButton, Layer.EFFECT);
         
          // Create continue button, using the repeat button as a template.
         continueButton = new SpriteButton.Builder((SpriteButton) repeatButton)
                 .y(390).text("Continue").end();
-        game.layerMan.add(continueButton, Game.LAYER_EFFECT);                  
+        game.layerMan.add(continueButton, Layer.EFFECT);                  
         
         // Run the repeat tutorial method, that sets up the things that must
         // be reset each time the tutorial is run.
@@ -217,21 +218,21 @@ public class RocketTutorial extends AbstractTutorial
         
         // Remove the repeat button.
         repeatButton.setVisible(false);
-        game.layerMan.remove(repeatButton, Game.LAYER_EFFECT);
+        game.layerMan.remove(repeatButton, Layer.EFFECT);
         repeatButton = null;
         
         // Remove the continue button.
         continueButton.setVisible(false);
-        game.layerMan.remove(continueButton, Game.LAYER_EFFECT);
+        game.layerMan.remove(continueButton, Layer.EFFECT);
         continueButton = null;
         
         // Remove the speech bubble.
-        game.layerMan.remove(bubble, Game.LAYER_EFFECT);
+        game.layerMan.remove(bubble, Layer.EFFECT);
         bubble = null;
         
         // Remove the text label.
         for (ILabel label : labelList)
-            game.layerMan.remove(label, Game.LAYER_EFFECT);       
+            game.layerMan.remove(label, Layer.EFFECT);       
         labelList = null;
         
         // Remove the restriction board.

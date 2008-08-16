@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.BoardManager.Direction;
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.PieceGrid;
@@ -724,13 +725,13 @@ public class PieceManager implements IMouseListener
         a2.setStartAction(new Runnable()
         {
             public void run()
-            { game.layerMan.add(label, Game.LAYER_EFFECT); }
+            { game.layerMan.add(label, Layer.EFFECT); }
         });
 
         a2.setFinishAction(new Runnable()
         {
             public void run()
-            { game.layerMan.remove(label, Game.LAYER_EFFECT); }
+            { game.layerMan.remove(label, Layer.EFFECT); }
         });          
         
         game.animationMan.add(a1);

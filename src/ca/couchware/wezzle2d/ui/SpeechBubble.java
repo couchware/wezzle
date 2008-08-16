@@ -206,9 +206,20 @@ public class SpeechBubble extends AbstractEntity
     }
     
     @Override
-    public void draw()
+    public boolean draw()
     {
+        x_ = x;
+        y_ = y;
+        
+        width_ = width;
+        height_ = height;
+        
+        if (visible == false)
+            return false;
+        
         sprite.draw(x + offsetX, y + offsetY, width, height, theta, opacity);
         label.draw();
+        
+        return true;
     }              
 }

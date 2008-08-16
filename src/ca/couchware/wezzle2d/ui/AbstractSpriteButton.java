@@ -255,6 +255,39 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     }
     
     //--------------------------------------------------------------------------
+    // Clickable
+    //--------------------------------------------------------------------------
+    
+    /**
+     * The stored click action.
+     */
+    Runnable clickAction = null;
+    
+    /**
+     * Sets the click runnable.
+     */
+    public void setClickAction(Runnable clickAction)
+    { 
+        this.clickAction = clickAction;
+    }
+    
+    /**
+     * Gets the click runnable.
+     */
+    public Runnable getClickAction()
+    {
+        return clickAction;
+    }
+    
+    /**
+     * This method is called when the tile is clicked.
+     */
+    public void onClick()
+    {
+        if (clickAction != null) clickAction.run();
+    }
+    
+    //--------------------------------------------------------------------------
     // Events
     //--------------------------------------------------------------------------
     

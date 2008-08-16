@@ -275,7 +275,7 @@ public abstract class AbstractEntity implements IEntity
 	 * Draw this entity to the graphics context unless it is not visible
      * or an animation is attached (the animation will handle the drawing).
 	 */
-    public abstract void draw();    	
+    public abstract boolean draw();    	
     
     /**
      * A convenience method for determine offsets when doing alignment.

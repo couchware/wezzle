@@ -247,14 +247,14 @@ public class RadioItem extends AbstractSpriteButton
     }
     
     @Override
-    public void draw()
+    public boolean draw()
     {
         x_ = x;
         y_ = y;
         
         // Don't draw if not visible.
         if (visible == false)
-            return;
+            return false;
 
         // See what state we're in.        
         if (state.contains(State.PRESSED))        
@@ -267,6 +267,8 @@ public class RadioItem extends AbstractSpriteButton
             drawNormal();               
         
         label.draw();
+        
+        return true;
     }          
     
     private void drawNormal()

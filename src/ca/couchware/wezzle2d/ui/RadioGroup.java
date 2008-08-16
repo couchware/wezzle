@@ -280,13 +280,15 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
     }
     
     @Override
-    public void draw()
+    public boolean draw()
     {
         if (visible == false)
-            return;
+            return false;
         
         for (RadioItem item : itemList)
             item.draw();
+        
+        return true;
     }
 
     public void mouseClicked(MouseEvent e)

@@ -98,7 +98,7 @@ public class PieceGrid extends AbstractEntity
      * Draw the piece grid at the predefined location x,y.
      */
     @Override
-	public void draw()
+	public boolean draw()
 	{
         // Make current (x,y) the old one.
         x_ = x;
@@ -106,7 +106,7 @@ public class PieceGrid extends AbstractEntity
         
         // Don't draw if we're not visible.
         if (isVisible() == false)
-            return;
+            return false;
         
 		// Cycle through, drawing only the sprites that should be shown.
         for (int i = 0; i < structure.length; i++)
@@ -119,7 +119,9 @@ public class PieceGrid extends AbstractEntity
                             y + (j - 1) * boardMan.getCellHeight());
                 } // end if
             } // end for
-        } // end for			
+        } // end for	
+        
+        return true;
 	}   
 
     @Override

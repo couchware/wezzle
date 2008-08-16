@@ -62,7 +62,7 @@ public class Rule
         this.value = value;
     }
     
-    public void performAction(Game game)
+    public void onMatch()
     {
         // Optionally overridden.
     }

@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.group.options.*;
@@ -63,20 +64,20 @@ public class OptionsGroup extends Group
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(26).text("Options")
                 .visible(false).end();
-        layerMan.add(headerLabel, Game.LAYER_UI);
+        layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
         // Create help button.
         helpButton = new SpriteButton.Builder(window, 400, 246)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Help").offOpacity(70).visible(false).end();        
-        layerMan.add(helpButton, Game.LAYER_UI);
+        layerMan.add(helpButton, Layer.UI);
         entityList.add(helpButton);
         
         // Create audio button.
         audioButton = new SpriteButton.Builder((SpriteButton) helpButton).y(300)
             .text("Sound/Music").end();
-        layerMan.add(audioButton, Game.LAYER_UI);
+        layerMan.add(audioButton, Layer.UI);
         entityList.add(audioButton);
         
         // Create the audio group.
@@ -87,13 +88,13 @@ public class OptionsGroup extends Group
         // Create main menu button.
         mainMenuButton = new SpriteButton.Builder((SpriteButton) helpButton).y(354)
             .text("Main Menu").end();
-        layerMan.add(mainMenuButton, Game.LAYER_UI);
+        layerMan.add(mainMenuButton, Layer.UI);
         entityList.add(mainMenuButton);
         
         // Create back button.
         backButton = new SpriteButton.Builder((SpriteButton) helpButton).y(408)
             .text("Back").end();
-        layerMan.add(backButton, Game.LAYER_UI);     
+        layerMan.add(backButton, Layer.UI);     
         entityList.add(backButton);
     }      
     

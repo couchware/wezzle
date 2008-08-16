@@ -1,9 +1,10 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.graphics.GraphicEntity;
-import ca.couchware.wezzle2d.LayerManager;
-import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.LayerManager;
+import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.graphics.IEntity;
+import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.util.ImmutableDimension;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 
@@ -28,7 +29,7 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * The entity being animated.
      */
-    final private AbstractEntity entity;
+    final private IEntity entity;
     
     /**
      * Reference to the layer manager.
@@ -38,7 +39,7 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * The explosion entity.
      */
-    final private AbstractEntity explosion;   
+    final private IEntity explosion;   
     
     /**
      * The initial position.
@@ -63,7 +64,7 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * The constructor.
      */
-    public ExplosionAnimation(final AbstractEntity entity, final LayerManager layerMan)
+    public ExplosionAnimation(final IEntity entity, final LayerManager layerMan)
     {                
         // Invoke super constructor.
         super();    
@@ -98,7 +99,7 @@ public class ExplosionAnimation extends AbstractAnimation
         explosion.setDirty(true);
         
         // Add explosion to the layer manager.
-        layerMan.add(explosion, Game.LAYER_EFFECT);
+        layerMan.add(explosion, Layer.EFFECT);
     }
 
     public void nextFrame(long delta)
@@ -134,7 +135,7 @@ public class ExplosionAnimation extends AbstractAnimation
         else if (counter >= duration * 2)
         {
             setDone(true);
-            layerMan.remove(explosion, Game.LAYER_EFFECT);
+            layerMan.remove(explosion, Layer.EFFECT);
         }                        
     }
     

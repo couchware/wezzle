@@ -5,6 +5,7 @@ import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.BoardManager.AnimationType;
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
@@ -56,7 +57,7 @@ public class GameOverGroup extends Group
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(26).text("Game over :(")
                 .visible(false).end();
-        layerMan.add(headerLabel, Game.LAYER_UI);
+        layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
         // Create the final score header.
@@ -65,7 +66,7 @@ public class GameOverGroup extends Group
                 .color(Game.TEXT_COLOR).size(14)
                 .text("Your final score was")
                 .visible(false).end();
-        layerMan.add(scoreHeaderLabel, Game.LAYER_UI); 
+        layerMan.add(scoreHeaderLabel, Layer.UI); 
         entityList.add(scoreHeaderLabel);
         
         // Create the final score label.
@@ -73,30 +74,30 @@ public class GameOverGroup extends Group
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR).size(30)
                 .text("0").visible(false).end();
-        layerMan.add(scoreLabel, Game.LAYER_UI); 
+        layerMan.add(scoreLabel, Layer.UI); 
         entityList.add(scoreLabel);
         
         // Create restart button.
         restartButton = new SpriteButton.Builder(window, 400, 345)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Restart").offOpacity(70).visible(false).end();
-        layerMan.add(restartButton, Game.LAYER_UI);
+        layerMan.add(restartButton, Layer.UI);
         entityList.add(restartButton);
         
         // Create continue button, using the restart button as a template.
         continueButton = new SpriteButton.Builder((SpriteButton) restartButton)
                 .y(406).text("Continue").end();
-        layerMan.add(continueButton, Game.LAYER_UI);
+        layerMan.add(continueButton, Layer.UI);
         entityList.add(continueButton);
     }        
     
     public void setScore(final int score)
     {
-        layerMan.remove(scoreLabel, Game.LAYER_UI);
+        layerMan.remove(scoreLabel, Layer.UI);
         entityList.remove(scoreLabel);
         scoreLabel = new LabelBuilder(scoreLabel)
                 .text(String.valueOf(score)).end();
-        layerMan.add(scoreLabel, Game.LAYER_UI);
+        layerMan.add(scoreLabel, Layer.UI);
         entityList.add(scoreLabel);
     }
     

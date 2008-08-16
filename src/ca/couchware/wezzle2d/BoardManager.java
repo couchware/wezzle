@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.AnimationManager;
 import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
@@ -253,7 +254,7 @@ public class BoardManager implements IManager
         // Create the board background graphic.
         GraphicEntity entity = new GraphicEntity.Builder(x - 12, y - 12, PATH)
                 .opacity(90).end();        
-        layerMan.add(entity, Game.LAYER_BACKGROUND);        
+        layerMan.add(entity, Layer.BACKGROUND);        
 	}
     
     //--------------------------------------------------------------------------
@@ -591,10 +592,10 @@ public class BoardManager implements IManager
     private void layerize()
     {
         for (TileEntity tile : board)            
-            if (tile != null && layerMan.exists(tile, Game.LAYER_TILE) == false)
+            if (tile != null && layerMan.exists(tile, Layer.TILE) == false)
             {
                 tile.setVisible(visible);
-                layerMan.add(tile, Game.LAYER_TILE);
+                layerMan.add(tile, Layer.TILE);
             }
     }
 	
@@ -904,7 +905,7 @@ public class BoardManager implements IManager
         t.setVisible(visible);
         
         // Add the tile to the bottom layer too.        
-        layerMan.add(t, Game.LAYER_TILE);               
+        layerMan.add(t, Layer.TILE);               
         
         // Dirty board.
         setDirty(true);                
@@ -1028,8 +1029,8 @@ public class BoardManager implements IManager
             this.decrementNumberOfItems();
         
         // Remove from layer manager.
-        if (layerMan.exists(t, Game.LAYER_TILE))
-            layerMan.remove(t, Game.LAYER_TILE);
+        if (layerMan.exists(t, Layer.TILE))
+            layerMan.remove(t, Layer.TILE);
         
         // Remove the tile.
         board[index] = null;
@@ -1423,7 +1424,7 @@ public class BoardManager implements IManager
                 // Make a copy and hide the original.                
                 final TileEntity t = new TileEntity(tile);
                 tile.setVisible(false);
-                layerMan.add(t, Game.LAYER_TILE);
+                layerMan.add(t, Layer.TILE);
                 
                 // Count it.
                 tileCount++;
@@ -1437,7 +1438,7 @@ public class BoardManager implements IManager
                 {
                    public void run()
                    {
-                       layerMan.remove(t, Game.LAYER_TILE);
+                       layerMan.remove(t, Layer.TILE);
                        tile.setVisible(true);
                    }
                 });
@@ -1592,7 +1593,7 @@ public class BoardManager implements IManager
                 // Make a copy and hide the original.                
                 final TileEntity t = new TileEntity(tile);
                 tile.setVisible(false);
-                layerMan.add(t, Game.LAYER_TILE);
+                layerMan.add(t, Layer.TILE);
                 
                 // Count it.
                 tileCount++;
@@ -1609,7 +1610,7 @@ public class BoardManager implements IManager
                 {
                    public void run()
                    {
-                       layerMan.remove(t, Game.LAYER_TILE);
+                       layerMan.remove(t, Layer.TILE);
                    }
                 });
                 
