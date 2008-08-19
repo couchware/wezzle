@@ -81,7 +81,7 @@ public class GroupManager
     /**
      * The constructor.
      */
-    public GroupManager(LayerManager layerMan, PieceManager pieceMan)
+    private GroupManager(LayerManager layerMan, PieceManager pieceMan)
     {
         groupList = new ArrayList<Group>();
         entryList = new LinkedList<Entry>();        
@@ -90,6 +90,12 @@ public class GroupManager
         this.pieceMan = pieceMan;
                 
     }     
+    
+    // Public API.
+    public static GroupManager newInstance(LayerManager layerMan, PieceManager pieceMan)
+    {
+        return new GroupManager(layerMan, pieceMan);
+    }
     
     public void showGroup(IButton button, Group showGroup, 
             int classNum, int layerNum)

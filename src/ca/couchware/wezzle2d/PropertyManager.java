@@ -25,6 +25,7 @@ public class PropertyManager
      * 
      * Note: This is not yet implemented.
      */
+    public static final String DEFAULT_FILE_NAME = "/settings.txt";
     public static final String KEY_VERSION = "wezzle.confVersion";
     public static final String VALUE_VERSION = "2";
     
@@ -32,7 +33,7 @@ public class PropertyManager
     public static final String VALUE_JAVA2D = "java2d";
     public static final String VALUE_LWJGL = "lwjgl";
     
-	public static final String KEY_DIFFICULTY = "wezzle.difficulty";
+    public static final String KEY_DIFFICULTY = "wezzle.difficulty";
     public static final String KEY_MUSIC = "wezzle.music";
     public static final String KEY_MUSIC_MIN = "wezzle.musicMinimum";
     public static final String KEY_MUSIC_MAX = "wezzle.musicMaximum";    
@@ -57,17 +58,9 @@ public class PropertyManager
 	private boolean webStart;
 		
 	/**
-	 * The default constructor.
-	 */
-	public PropertyManager()
-	{        
-		this("/settings.txt");		
-	}
-	
-	/**
 	 * The constructor.
 	 */
-	public PropertyManager(String fileName) 
+	private PropertyManager(String fileName) 
 	{		
 		// Create new properties.
 		this.properties = new Properties();
@@ -137,8 +130,22 @@ public class PropertyManager
             }
         } // end if
 		
-	}	
+	}
+        
+        // Public API
+        public static PropertyManager newInstance()
+        {
+            return new PropertyManager(DEFAULT_FILE_NAME);
+        }
+        
+        public static PropertyManager newInstance(String fName)
+        {
+            return new PropertyManager(fName);
+        }
 		
+        
+        
+        
     /**
      * Loads default values for all keys that need defaults.
      */

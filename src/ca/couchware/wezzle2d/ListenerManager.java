@@ -13,6 +13,8 @@ import java.util.WeakHashMap;
  * listener lists for each stat in the game. When a stat changes
  * all the listeners in the list are updated.
  * 
+ * implements the singleton pattern and the observer pattern.
+ * 
  * Uses weakhashmaps to handle potential memory leaks.
  * 
  * @author kgrad
@@ -27,6 +29,7 @@ public class ListenerManager implements IListenerComponent
     private WeakHashMap<IScoreListener, String> scoreListenerList;
     private WeakHashMap<ILevelListener, String> levelListenerList;
     private WeakHashMap<IMoveListener, String> moveListenerList;
+    private WeakHashMap<ILineListener, String> lineListenerList;
     
     /**
      * private constructor to ensure only a single entity ever exists.
@@ -36,6 +39,7 @@ public class ListenerManager implements IListenerComponent
         scoreListenerList = new WeakHashMap<IScoreListener, String>();
         levelListenerList = new WeakHashMap<ILevelListener, String>();
         moveListenerList = new WeakHashMap<IMoveListener, String>();
+        lineListenerList = new WeakHashMap<ILineListener, String>();
     }
     
     /**
@@ -86,6 +90,22 @@ public class ListenerManager implements IListenerComponent
         moveListenerList.put(listener, "Move");
     }
     
+       /**
+     * Register the listener.
+     * @param listener The listener to register.
+     */
+    @Override
+    public void registerLineListener(ILineListener listener)
+    {
+          // If we try to add a second listener.
+        if (lineListenerList.containsKey(listener))
+        {
+            throw new IllegalStateException("Adding a second move listener");
+        }
+        
+        lineListenerList.put(listener, "Line");
+    }
+    
     /**
      * Notify all score listeners.
      * @param e The event.
@@ -119,6 +139,19 @@ public class ListenerManager implements IListenerComponent
         for (IMoveListener listener : moveListenerList.keySet())
         {
             listener.handleMoveEvent(e);
+        }
+    }
+    
+    /**
+     * Notify all line listeners.
+     * @param e The event.
+     */
+    @Override
+    public void notifyLineListener(LineEvent e)
+    {
+        for (ILineListener listener : lineListenerList.keySet())
+        {
+            listener.handleLineEvent(e);
         }
     }
 

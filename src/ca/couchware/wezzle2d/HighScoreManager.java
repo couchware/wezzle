@@ -46,7 +46,7 @@ public class HighScoreManager
      * 
      * @param properytMan
      */
-    public HighScoreManager(PropertyManager propertyMan)
+    private HighScoreManager(PropertyManager propertyMan)
     {
         // Initialize 
         this.highScoreList = new HighScore[NUMBER_OF_SCORES];
@@ -58,6 +58,13 @@ public class HighScoreManager
         // Every other time it will load the list from file.
         if (readProperties() == false)
             resetScoreList();
+    }
+    
+    
+    // Public API.
+    public static HighScoreManager newInstance(PropertyManager propMan)
+    {
+        return new HighScoreManager(propMan);
     }
     
     /**

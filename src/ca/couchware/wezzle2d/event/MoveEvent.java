@@ -14,8 +14,14 @@ import java.util.EventObject;
  */
 public class MoveEvent extends EventObject
 {
-    public MoveEvent(Object eventSource)
+    private int moveCount;
+    
+    public MoveEvent(int deltaMoves, Object eventSource)
     {
         super(eventSource);
+        
+        moveCount = deltaMoves;
     }
+    
+    public int getMoveCount(){ return this.moveCount; }
 }

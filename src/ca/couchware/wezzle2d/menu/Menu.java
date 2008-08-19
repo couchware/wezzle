@@ -54,7 +54,7 @@ public class Menu
     public Menu(IGameWindow window)
     {
         // Create the menu layer manager.
-        this.layerMan = new LayerManager(window);
+        this.layerMan = LayerManager.newInstance(window);
         
         // Add the default background.
         backgroundGraphic = new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();

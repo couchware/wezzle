@@ -72,7 +72,7 @@ public class Loader
     public Loader(IGameWindow window, String copyright, String title)
     {        
         // Create private layer manager.
-        this.layerMan = new LayerManager(window);
+        this.layerMan = LayerManager.newInstance(window);
         
         // Create the loading screen.
         this.backgroundGraphic = new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();

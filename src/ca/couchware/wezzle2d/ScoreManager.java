@@ -110,7 +110,7 @@ import java.util.Set;
      * The constructor.
      * @param properties A property manager to load properties from.
      */
-    public ScoreManager(BoardManager boardMan, PropertyManager propertyMan,
+    private ScoreManager(BoardManager boardMan, PropertyManager propertyMan,
             HighScoreManager highScoreMan)
     {
         // Create the save state.
@@ -126,6 +126,14 @@ import java.util.Set;
         this.highScore = highScoreMan.getHighestScore();
     }
 
+    
+    // Public API.
+    public static ScoreManager newInstance(BoardManager boardMan, PropertyManager propertyMan,
+            HighScoreManager highScoreMan)
+    {
+        return new ScoreManager(boardMan, propertyMan, highScoreMan);
+    }
+    
     /**
      * Requires documentation.
      * 

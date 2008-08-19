@@ -199,7 +199,7 @@ public class BoardManager implements IManager
 	/**
 	 * The constructor.
 	 */
-	public BoardManager(
+	private BoardManager(
             final AnimationManager animationMan,
             final LayerManager layerMan,
             final int x, final int y, 
@@ -257,6 +257,16 @@ public class BoardManager implements IManager
         layerMan.add(entity, Layer.BACKGROUND);        
 	}
     
+        
+        // Public API
+        
+        public static BoardManager newInstance(  final AnimationManager animationMan,
+            final LayerManager layerMan,
+            final int x, final int y, 
+            final int columns, final int rows)
+        {
+            return new BoardManager(animationMan, layerMan, x, y, columns, rows);
+        }
     //--------------------------------------------------------------------------
     // Instance Methods
     //--------------------------------------------------------------------------

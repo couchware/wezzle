@@ -18,10 +18,16 @@ public class AnimationManager
      */
     private ArrayList<IAnimation> animationList;
     
-    public AnimationManager()
+    private AnimationManager()
     {
         // Initialize animation list.
         animationList = new ArrayList<IAnimation>();
+    }
+    
+    // Public API.
+    public static AnimationManager newInstance()
+    {
+        return new AnimationManager();
     }
     
     public void add(IAnimation a)

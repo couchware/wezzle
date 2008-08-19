@@ -16,7 +16,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class PauseGroup extends Group
+public class PauseGroup extends Group 
 {       
     /**
      * The main label showing the paused text.
@@ -150,5 +150,5 @@ public class PauseGroup extends Group
         // Invoke super.
         super.setActivated(activated);               
     }        
-            
+    
 }

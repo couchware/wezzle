@@ -34,10 +34,16 @@ public class AchievementManager
     /**
      * The constructor.
      */
-    public AchievementManager()
+    private AchievementManager()
     {
         this.incompleteList = new LinkedList<Achievement>();
         this.completeList = new LinkedList<Achievement>();
+    }
+    
+    // Public API.
+    public static AchievementManager newInstance()
+    {
+        return new AchievementManager();
     }
     
     /**

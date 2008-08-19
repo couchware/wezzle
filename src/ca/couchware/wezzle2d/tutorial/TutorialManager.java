@@ -27,12 +27,18 @@ public class TutorialManager
      */    
     private ITutorial currentTutorial;
     
-    public TutorialManager()
+    private TutorialManager()
     {
         // Initialize animation list.
         tutorialList = new ArrayList<ITutorial>();                
     }
     
+    
+    // Public API.
+    public static TutorialManager newInstance()
+    {
+        return new TutorialManager();
+    }
     /**
      * Add a tutorial to the manager's list.
      * 

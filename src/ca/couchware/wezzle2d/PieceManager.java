@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
 import ca.couchware.wezzle2d.audio.AudioTrack;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
+import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.piece.*;
 import ca.couchware.wezzle2d.ui.ILabel;
@@ -156,7 +157,7 @@ public class PieceManager implements IMouseListener
 	 * 
 	 * @param boardMan The board manager.
 	 */
-	public PieceManager(IGameWindow window, AnimationManager animationMan, 
+	private PieceManager(IGameWindow window, AnimationManager animationMan, 
             BoardManager boardMan)
 	{       
 		// Set the reference.
@@ -195,6 +196,13 @@ public class PieceManager implements IMouseListener
         restrictionBoard = new boolean[boardMan.getCells()];
         clearRestrictionBoard();
 	}	
+        
+        // Public API.
+        public static PieceManager newInstance(IGameWindow window, AnimationManager animationMan, 
+            BoardManager boardMan)
+        {
+            return new PieceManager(window, animationMan, boardMan);
+        }
     
     //--------------------------------------------------------------------------
     // Instance Methods
@@ -750,7 +758,7 @@ public class PieceManager implements IMouseListener
                 game.worldMan.calculateDropNumber(game, this.piece.getSize());
 
         // Increment the moves.
-        game.statMan.incrementMoveCount();       
+        game.listenerMan.notifyMoveListener(new MoveEvent(1, this));       
 
         // Start a tile drop.
         if (tileDropOnCommit == true)

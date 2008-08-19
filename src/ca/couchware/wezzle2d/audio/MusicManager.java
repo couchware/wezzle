@@ -76,7 +76,7 @@ public class MusicManager
     /**
      * Creates the song list.
      */
-    public MusicManager(Executor executor, PropertyManager propertyMan) 
+    private MusicManager(Executor executor, PropertyManager propertyMan) 
     {        
         // The executor.
         this.executor = executor;
@@ -125,6 +125,13 @@ public class MusicManager
             setPaused(false);
             playNext();
         }        
+    }
+    
+    
+    // Public API.
+    public static MusicManager newInstance(Executor exec, PropertyManager propMan)
+    {
+        return new MusicManager(exec, propMan);
     }
     
     /**

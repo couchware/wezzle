@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.util.Util;
 public class TimerManager 
 {
 
+    private static final int DEFAULT_TIME = 20;
 	/** 
      * The current time on the timer. 
      */
@@ -57,7 +58,7 @@ public class TimerManager
 	 * 
 	 * @param initialTime The initial time on the timer.
 	 */
-	public TimerManager(int initialTime)
+	private TimerManager(int initialTime)
 	{
 		assert(initialTime > 0);
 		
@@ -67,16 +68,18 @@ public class TimerManager
         this.paused = false;
         this.stopped = false;
 	}
-
-	/**
-	 * The Default constructor constructs a timer manager with an 
-	 * initial time of 20 seconds.
-	 */
-	public TimerManager()
-	{
-		// Call the overloaded constructor.
-		this(20);
-	}
+        
+        // Public API
+        
+        public static TimerManager newInstance()
+        {
+            return new TimerManager(DEFAULT_TIME);
+        }
+        
+        public static TimerManager newInstance(int initialTime)
+        {
+            return new TimerManager(initialTime);
+        }
 
 	/**
 	 * A method to set the time on the timer.

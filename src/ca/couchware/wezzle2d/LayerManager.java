@@ -55,7 +55,7 @@ public class LayerManager
     /**
      * The constructor.
      */
-    public LayerManager(IGameWindow window)
+    private LayerManager(IGameWindow window)
     {
         // Must have at least 1 layer.
         if (window == null)  
@@ -79,6 +79,13 @@ public class LayerManager
         
         // Initialize remove clip.
         this.removeRect = new Rectangle();
+    }
+    
+    
+    // Public API.
+    public static LayerManager newInstance(IGameWindow window)
+    {
+        return new LayerManager(window);
     }
     
     /**

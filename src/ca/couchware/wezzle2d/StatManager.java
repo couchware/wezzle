@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.event.*;
 import java.util.EnumMap;
 
 /**
@@ -14,9 +14,8 @@ import java.util.EnumMap;
  * @author Kevin, Cameron
  */
 
-public class StatManager implements IManager
+public class StatManager implements IManager, IMoveListener, ILineListener
 {	
-    
 	/**
 	 * The current move count.
 	 */
@@ -55,20 +54,27 @@ public class StatManager implements IManager
 	
 	/**
 	 * The constructor.
-	 * 
+	 *  private to ensure singleton.
 	 */
-	public StatManager()
+	private StatManager()
 	{
-        // Create the save state.
-        managerState = new EnumMap<Keys, Object>(Keys.class);
-        
-        // Reset the counters.
-		this.resetMoveCount();                
-        this.resetLineCount();
-        this.resetCycleLineCount();
-        this.resetChainCount();        
-	}
+              // Create the save state.
+            managerState = new EnumMap<Keys, Object>(Keys.class);
 
+            // Reset the counters.
+            this.resetMoveCount();                
+            this.resetLineCount();
+            this.resetCycleLineCount();
+            this.resetChainCount();      
+	}
+        
+        
+        // Public APi.
+        public static StatManager newInstance()
+        {
+            return new StatManager();
+        }
+        
 	/**
 	 * @return the currentMoves
 	 */
@@ -80,7 +86,7 @@ public class StatManager implements IManager
     /**
 	 * @param currentMoves the currentMoves to set.
 	 */
-	public void setMoveCount(int currentMoveCount)
+	private void setMoveCount(int currentMoveCount)
 	{
 		this.moveCount = currentMoveCount;
 	}
@@ -88,7 +94,7 @@ public class StatManager implements IManager
     /**
      * A method to increment the move count.
      */
-    public void incrementMoveCount()
+    private void incrementMoveCount()
     {
         this.moveCount++;
     }
@@ -106,12 +112,12 @@ public class StatManager implements IManager
         return lineCount;
     }
 
-    public void setLineCount(int lineCount)
+    private void setLineCount(int lineCount)
     {
         this.lineCount = lineCount;
     }
 
-	public void incrementLineCount()
+	private void incrementLineCount()
     {
         this.lineCount++;
     }
@@ -190,6 +196,30 @@ public class StatManager implements IManager
         }
         
         return lpm;
+    }
+    
+    /**
+     * Overridden methods
+     */
+    
+    /**
+     * handle a line event.
+     * @param e The line event.
+     */
+    @Override
+    public void handleLineEvent(LineEvent e)
+    {
+        this.incrementLineCount(e.getLineCount());
+    }
+    
+    /**
+     * Handle a move event.
+     * @param e The move event.
+     */
+    @Override
+    public void handleMoveEvent(MoveEvent e)
+    {
+        this.setMoveCount(this.getMoveCount() + e.getMoveCount());
     }
 
     /**

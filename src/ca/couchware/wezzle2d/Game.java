@@ -8,7 +8,6 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.animation.AnimationManager;
 import ca.couchware.wezzle2d.BoardManager.Direction;
 import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ScoreManager.ScoreType;
@@ -18,6 +17,8 @@ import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
 import ca.couchware.wezzle2d.audio.*;
+import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.tutorial.*;
@@ -69,6 +70,15 @@ public class Game extends Canvas implements IGameWindowCallback
     public static enum RefactorType
     {
         NORMAL, DROP
+    }
+    
+    /**
+     * The Manager Types.
+     */
+    public static enum ManagerType
+    {
+        ACHIEVEMENT, BOARD, GROUP, HIGHSCORE, LAYER, LISTENER, PIECE, PROPERTY,
+        SCORE, STAT, TIMER, WORLD, ANIMATION, TUTORIAL, MUSIC, SOUND
     }
     
     /**
@@ -641,96 +651,155 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * Initializes all the managers (except for the layer manager).
      */
-    private void initializeManagers()
+    private void initializeManagers(EnumSet eSet)
     {
-        // Create the layer manager.   
-        layerMan = new LayerManager(window);   
         
-        // Create the animation manager.
-        animationMan = new AnimationManager();                
+        if (eSet.contains(ManagerType.LAYER))
+        {
+            // Create the layer manager.   
+            layerMan = LayerManager.newInstance(window);  
+        }
         
-        // Create the tutorial manager.
-        tutorialMan = new TutorialManager();
+        if (eSet.contains(ManagerType.ANIMATION))
+        {
+            // Create the animation manager.
+            animationMan = AnimationManager.newInstance();                
+         }
         
-        // Add the tutorials to it.
-        tutorialMan.add(new BasicTutorial());
-        tutorialMan.add(new RocketTutorial());
-        tutorialMan.add(new BombTutorial());
-        tutorialMan.add(new StarTutorial());
+        if (eSet.contains(ManagerType.TUTORIAL))
+        {
+            // Create the tutorial manager.
+            tutorialMan = TutorialManager.newInstance();
+
+            // Add the tutorials to it.
+            tutorialMan.add(new BasicTutorial());
+            tutorialMan.add(new RocketTutorial());
+            tutorialMan.add(new BombTutorial());
+            tutorialMan.add(new StarTutorial());
+        }
     
-        // Create the property manager. Must be done before Score manager.
-        propertyMan = new PropertyManager();        
+        if (eSet.contains(ManagerType.PROPERTY))
+        {
+            // Create the property manager. Must be done before Score manager.
+            propertyMan = PropertyManager.newInstance();
+        }
         
-        // Create the high score manager.
-        highScoreMan = new HighScoreManager(propertyMan);                
+        if (eSet.contains(ManagerType.HIGHSCORE))
+        {
+            // Create the high score manager.
+            highScoreMan = HighScoreManager.newInstance(propertyMan);  
+        }
         
-        // Create the world manager.
-        worldMan = new WorldManager(propertyMan);  
-        worldMan.setGameInProgress(true);
+        if (eSet.contains(ManagerType.WORLD))
+        {
+            // Create the world manager.
+            worldMan = WorldManager.newInstance(propertyMan);  
+            worldMan.setGameInProgress(true);
+        }
         
-        // Create the board manager.
-        boardMan = new BoardManager(animationMan, layerMan, 272, 139, 8, 10);    
-        boardMan.setVisible(false);
-        boardMan.generateBoard(worldMan.getItemList());          
-        startBoardShowAnimation(AnimationType.ROW_FADE);        
+        if (eSet.contains(ManagerType.BOARD))
+        {
+            // Create the board manager.
+            boardMan = BoardManager.newInstance(animationMan, layerMan, 272, 139, 8, 10);    
+            boardMan.setVisible(false);
+            boardMan.generateBoard(worldMan.getItemList());          
+            startBoardShowAnimation(AnimationType.ROW_FADE);  
+        }
         
-        // Create the piece manager.
-        pieceMan = new PieceManager(window, animationMan, boardMan);        
-        layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);	
+        if (eSet.contains(ManagerType.PIECE))
+        {
+            // Create the piece manager.
+            pieceMan = PieceManager.newInstance(window, animationMan, boardMan);        
+            layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);
+        }
         
-        // Create group manager.
-        groupMan = new GroupManager(layerMan, pieceMan);
+        if (eSet.contains(ManagerType.GROUP))
+        {
+            // Create group manager.
+            groupMan = GroupManager.newInstance(layerMan, pieceMan);
+        }
 	        
-        // Create the score manager.
-        scoreMan = new ScoreManager(boardMan, propertyMan, highScoreMan);
-        scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
+        if (eSet.contains(ManagerType.SCORE))
+        {
+            // Create the score manager.
+            scoreMan = ScoreManager.newInstance(boardMan, propertyMan, highScoreMan);
+            scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
+        }
         
-        // Create the sound manager.
-        soundMan = new SoundManager(executor, propertyMan);
+        if (eSet.contains(ManagerType.SOUND))
+        {
+            // Create the sound manager.
+            soundMan = SoundManager.newInstance(executor, propertyMan);
+        }
         
-        // Create the music manager.
-        musicMan = new MusicManager(executor, propertyMan);                  
+        if (eSet.contains(ManagerType.MUSIC))
+        {
+            // Create the music manager.
+            musicMan = MusicManager.newInstance(executor, propertyMan);  
+        }
         
-        // Create the move manager.
-        statMan = new StatManager();
+        if (eSet.contains(ManagerType.STAT))
+        {
+            // Create the move manager.
+            statMan = StatManager.newInstance();
+        }
         
-        // Create the time manager.
-        timerMan = new TimerManager(worldMan.getInitialTimer()); 
+        if (eSet.contains(ManagerType.TIMER))
+        {
+            // Create the time manager.
+            timerMan = TimerManager.newInstance(worldMan.getInitialTimer()); 
+        }
         
-        // Create the achievement manager.
-        achievementMan = new AchievementManager();
+        if (eSet.contains(ManagerType.ACHIEVEMENT))
+        {
+            // Create the achievement manager.
+            achievementMan = AchievementManager.newInstance();
         
-        // Load the test achievements.        
-        List<Rule> rules1 = new LinkedList<Rule>();
-        List<Rule> rules2 = new LinkedList<Rule>();
-        List<Rule> rules3 = new LinkedList<Rule>();
-        List<Rule> rules4 = new LinkedList<Rule>();
+            // Load the test achievements.        
+            List<Rule> rules1 = new LinkedList<Rule>();
+            List<Rule> rules2 = new LinkedList<Rule>();
+            List<Rule> rules3 = new LinkedList<Rule>();
+            List<Rule> rules4 = new LinkedList<Rule>();
+
+            rules1.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 2000));
+
+            achievementMan.add(new Achievement(rules1, 
+                     "Score greater than 2000", Achievement.Difficulty.BRONZE));        
+
+            rules2.add(new Rule(Rule.Type.SCORE, 
+                    Rule.Operation.GT, 5000));
+
+            achievementMan.add(new Achievement(rules2, 
+                     "Score greater than 5000", Achievement.Difficulty.BRONZE));
+
+            rules3.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 1000));        
+            rules3.add(new Rule(Rule.Type.MOVES, Rule.Operation.LTEQ, 3));
+
+            achievementMan.add(new Achievement(rules3, 
+                     "Score greater than 1000, Moves less than or equal to 3", 
+                     Achievement.Difficulty.BRONZE));
+
+            rules4.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GT, 2));
+
+            achievementMan.add(new Achievement(rules4, 
+                     "Level greater than 2", Achievement.Difficulty.BRONZE));
+        }
         
-        rules1.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 2000));
+        // Register the listeners. 
+        if (eSet.contains(ManagerType.SCORE))
+        {
+            listenerMan.registerScoreListener(scoreMan);
+        }
         
-        achievementMan.add(new Achievement(rules1, 
-                 "Score greater than 2000", Achievement.Difficulty.BRONZE));        
-                
-        rules2.add(new Rule(Rule.Type.SCORE, 
-                Rule.Operation.GT, 5000));
-        
-        achievementMan.add(new Achievement(rules2, 
-                 "Score greater than 5000", Achievement.Difficulty.BRONZE));
-                
-        rules3.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 1000));        
-        rules3.add(new Rule(Rule.Type.MOVES, Rule.Operation.LTEQ, 3));
-        
-        achievementMan.add(new Achievement(rules3, 
-                 "Score greater than 1000, Moves less than or equal to 3", 
-                 Achievement.Difficulty.BRONZE));
-                
-        rules4.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GT, 2));
-        
-        achievementMan.add(new Achievement(rules4, 
-                 "Level greater than 2", Achievement.Difficulty.BRONZE));
-        
-        // Register the listeners.                
-        listenerMan.registerScoreListener(scoreMan);
+        if (eSet.contains(ManagerType.STAT))
+        {
+            listenerMan.registerMoveListener(statMan);
+            listenerMan.registerLineListener(statMan);
+        }
+        if (eSet.contains(ManagerType.WORLD))
+        {
+            listenerMan.registerLevelListener(worldMan);
+        }
     }
     
     /**
@@ -911,7 +980,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // Initialize managers.
         loader.add(new Runnable()
         {
-           public void run() { initializeManagers(); }
+           public void run() { initializeManagers(EnumSet.allOf(ManagerType.class)); }
         });
                                
         // Initialize buttons.    
@@ -1379,8 +1448,10 @@ public class Game extends Canvas implements IGameWindowCallback
                 pieceMan.stopAnimation();
 
                 LogManager.recordMessage("Level up!", "Game#frameRendering");
-                worldMan.levelUp(this);
+                //worldMan.levelUp(this);
 
+                listenerMan.notifyLevelListener(new LevelEvent(1, this, this));
+                
                 this.activateLineRemoval = true;
                 this.tileRemovalUseJumpAnimation = true;
                 this.tileRemovalNoScore = true;
@@ -2235,7 +2306,8 @@ public class Game extends Canvas implements IGameWindowCallback
         progressBar.setProgress(scoreMan.getLevelScore());
 
         // Reset the line count.
-        statMan.incrementLineCount(statMan.getCycleLineCount());
+        //statMan.incrementLineCount(statMan.getCycleLineCount());
+        listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), this));
         statMan.resetCycleLineCount();
     }
     

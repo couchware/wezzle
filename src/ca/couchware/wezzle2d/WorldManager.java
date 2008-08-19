@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.Iterator;
@@ -12,7 +14,7 @@ import java.util.LinkedList;
  *
  */
 
-public class WorldManager
+public class WorldManager implements ILevelListener
 {       
 	//--------------------------------------------------------------------------
 	// Instance Members
@@ -105,7 +107,7 @@ public class WorldManager
 	 * @param board
 	 * @param scoreManager
 	 */
-	public WorldManager(final PropertyManager propertyMan)
+	private WorldManager(final PropertyManager propertyMan)
 	{						
 		// Store a reference to the property manager.
 		this.propertyMan = propertyMan;
@@ -187,6 +189,13 @@ public class WorldManager
         currentRuleList.addAll(masterRuleList);
 	}
 	
+        
+        // Public API
+        
+        public static WorldManager newInstance(final PropertyManager propMan)
+        {
+            return new WorldManager(propMan);
+        }
     //--------------------------------------------------------------------------
 	// Instance Methods
 	//--------------------------------------------------------------------------
@@ -492,5 +501,12 @@ public class WorldManager
 	{
 		return itemList;
 	}               	
+        
+        @Override
+        public void handleLevelEvent(LevelEvent e)
+        {
+            for (int i = 0; i < e.getLevelChange(); i++)
+                this.levelUp(e.getGame());
+        }
 	
 }

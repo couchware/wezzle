@@ -77,7 +77,7 @@ public class SoundManager
     /**
      * Creates the effect list.
      */
-    public SoundManager(Executor executor, PropertyManager propertyMan) 
+    private SoundManager(Executor executor, PropertyManager propertyMan) 
     {        
         // The executor.
         this.executor = executor;
@@ -133,6 +133,12 @@ public class SoundManager
         {
             setPaused(true);
         }
+    }
+    
+    // Public API.
+    public static SoundManager newInstance(Executor exec, PropertyManager propMan)
+    {
+        return new SoundManager(exec, propMan);
     }
     
     /**
