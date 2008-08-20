@@ -1,15 +1,14 @@
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.Util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.jnlp.PersistenceService;
-import javax.jnlp.ServiceManager;
-import javax.jnlp.UnavailableServiceException;
+//import javax.jnlp.PersistenceService;
+//import javax.jnlp.ServiceManager;
+//import javax.jnlp.UnavailableServiceException;
 
 /**
  * A wrapper class for writing out and reading in properties from files.
@@ -50,7 +49,7 @@ public class PropertyManager
     public static final String DIR_PATH = 
             System.getProperty("user.home") + "/Wezzle";
 	
-	PersistenceService pService;
+//	PersistenceService pService;
 	
 	private String filePath;
 	private Properties properties;
@@ -167,11 +166,11 @@ public class PropertyManager
 	/**
 	 * Checks if webstart is running.
 	 */
-	public void checkWebStart() throws UnavailableServiceException
-	{
-		this.pService = (PersistenceService) ServiceManager
-                .lookup("javax.jnlp.PersistenceService"); 		
-	}
+//	public void checkWebStart() throws UnavailableServiceException
+//	{
+//		this.pService = (PersistenceService) ServiceManager
+//                .lookup("javax.jnlp.PersistenceService"); 		
+//	}
 	
 	// ---------------------------------------------------------------------------
 	// Instance Methods

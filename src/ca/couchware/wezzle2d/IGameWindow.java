@@ -158,4 +158,11 @@ public interface IGameWindow
      */
     public void fireMouseEvents();
     
+    /**
+     * Clears all the queued up mouse events.  Both this method and 
+     * <pre>fireMouseEvents()</pre> clear the queue.  However, this method
+     * does not fire the events in the queue, it just deletes them. 
+     */
+    public void clearMouseEvents();
+    
 }

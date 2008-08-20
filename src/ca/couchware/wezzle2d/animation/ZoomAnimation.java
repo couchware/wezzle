@@ -13,13 +13,38 @@ import ca.couchware.wezzle2d.graphics.IEntity;
  */
 public class ZoomAnimation extends AbstractAnimation
 {  
-    
+   
     /**
      * The zoom types.
      */
-    public static enum ZoomType
+    public static enum Type
     {
-        IN, OUT, LOOP_IN, LOOP_OUT
+        /**
+         * The entity will start at the max size and reduce itself to its
+         * min size.  At that point the animation will report as done.
+         */
+        IN, 
+        
+        /**
+         * The entity will start at the min size and increase to its max
+         * size.  At that point it will report done.
+         */
+        OUT, 
+        
+        /**
+         * The entity will act that same as the case of IN, except will
+         * not end once min size has been reached.  Instead, it will
+         * switch its type to LOOP_OUT and grow to max size.  This will
+         * continue indefinitely until the animation is manually stopped
+         * or cleaned up.
+         */
+        LOOP_IN, 
+        
+        /**
+         * Same as LOOP_IN, but starts in the min size and expands to
+         * the max size.
+         */
+        LOOP_OUT
     }        
     
     /**
@@ -57,7 +82,7 @@ public class ZoomAnimation extends AbstractAnimation
     /**
      * The current zoom type.
      */
-    private ZoomType type;
+    private Type type;
     
     /**
      * The initial dimensions of the entity.
@@ -71,13 +96,9 @@ public class ZoomAnimation extends AbstractAnimation
     
     /**
      * The amount of time, in ms, to wait before fading out.
+     * Right now, the wait is buggy.
      */
-    private int wait;
-    
-    /**
-     * The max time for the animation to run for, in ms.
-     */
-    private int duration;
+    private int wait;        
     
     private ZoomAnimation(Builder builder)
     {                        
@@ -131,29 +152,10 @@ public class ZoomAnimation extends AbstractAnimation
                 throw new AssertionError();
         }
     }
-    
-    /**
-     * Creates a new zoom animation with the given parameters.  
-     * If the type is:
-     * 
-     *   IN: The entity will start at the max size and reduce itself to its
-     *       min size.  At that point the animation will report as done.
-     * 
-     *   OUT: The entity will start at the min size and increase to its max
-     *        size.  At that point it will report done.
-     * 
-     *   LOOP_IN: The entity will act that same as the case of IN, except will
-     *            not end once min size has been reached.  Instead, it will
-     *            switch its type to LOOP_OUT and grow to max size.  This will
-     *            continue indefinitely until the animation is manually stopped
-     *            or cleaned up.
-     * 
-     *   LOOP_OUT: Same as LOOP_IN, but starts in the min size and expands to
-     *             the max size.
-     */
+      
     public static class Builder implements IBuilder<ZoomAnimation>
     {
-        private final ZoomType type;
+        private final Type type;
         private final IEntity entity;
         
         private int wait = 0;
@@ -163,7 +165,7 @@ public class ZoomAnimation extends AbstractAnimation
         private double vin = 0.008;
         private double vout = 0.008;
         
-        public Builder(ZoomType type, IEntity entity)
+        public Builder(Type type, IEntity entity)
         {
             assert type != null;
             assert entity != null;
@@ -221,12 +223,12 @@ public class ZoomAnimation extends AbstractAnimation
                         switch (type)
                         {
                             case IN:
-                                setDone(true);
+                                setFinished(true);
                                 break;
                                 
                             case LOOP_IN:
                                 counter = 0;
-                                type = ZoomType.LOOP_OUT;
+                                type = Type.LOOP_OUT;
                                 break;
                                 
                             default: throw new AssertionError();
@@ -256,12 +258,12 @@ public class ZoomAnimation extends AbstractAnimation
                         switch (type)
                         {
                             case OUT:
-                                setDone(true);
+                                setFinished(true);
                                 break;
                                 
                             case LOOP_OUT:
                                 counter = 0;
-                                type = ZoomType.LOOP_IN;
+                                type = Type.LOOP_IN;
                                 break;
                                 
                             default: throw new AssertionError();
@@ -293,7 +295,7 @@ public class ZoomAnimation extends AbstractAnimation
                 entity.setY(p.getY());
 
                 // Mark the animation as done.
-                setDone(true);
+                setFinished(true);
                 
                 break;
                 

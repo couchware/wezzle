@@ -66,17 +66,13 @@ public class Group extends AbstractEntity
      * @param window
      * @param layerMan
      */
-    public Group(final IGameWindow window, 
-            final LayerManager layerMan, final GroupManager groupMan)
-    {
-        // Invoke super.
-        super();
-
+    public Group(final LayerManager layerMan, final GroupManager groupMan)
+    {       
         // Make all groups start invisible.
         super.setVisible(false);
 
         // Store the reference.
-        this.window = window;
+        this.window = ResourceFactory.get().getGameWindow();
         this.layerMan = layerMan;
         this.groupMan = groupMan;
 

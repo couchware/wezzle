@@ -52,12 +52,12 @@ public class HighScoreGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public HighScoreGroup(final IGameWindow window,             
-            final LayerManager layerMan, final GroupManager groupMan,
+    public HighScoreGroup(final LayerManager layerMan, 
+            final GroupManager groupMan,
             final HighScoreManager highScoreMan)
     {
         // Invoke super.
-        super(window, layerMan, groupMan);
+        super(layerMan, groupMan);
          
         // Save the reference.
         this.highScoreMan = highScoreMan;
@@ -65,7 +65,7 @@ public class HighScoreGroup extends Group
         // Create the high score header.
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(26).text("High Scores")
+                .color(Game.TEXT_COLOR1).size(26).text("High Scores")
                 .visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);     
@@ -73,14 +73,14 @@ public class HighScoreGroup extends Group
         // Create the no high score label.
         noHighScoreLabel1 = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(20).text("There are no")
+                .color(Game.TEXT_COLOR1).size(20).text("There are no")
                 .visible(false).end();
         layerMan.add(noHighScoreLabel1, Layer.UI);
         entityList.add(noHighScoreLabel1);
                 
         noHighScoreLabel2 = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(20).text("high scores yet.")
+                .color(Game.TEXT_COLOR1).size(20).text("high scores yet.")
                 .visible(false).end();
         layerMan.add(noHighScoreLabel2, Layer.UI);
         entityList.add(noHighScoreLabel2);                
@@ -93,7 +93,7 @@ public class HighScoreGroup extends Group
         {                      
             scoreLabels[i] = new LabelBuilder(400, 225 + (30 * i))
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(Game.TEXT_COLOR).opacity(0).size(16).text(" ")
+                    .color(Game.TEXT_COLOR1).opacity(0).size(16).text(" ")
                     .visible(false).end();
             layerMan.add(scoreLabels[i], Layer.UI);
             entityList.add(scoreLabels[i]);
@@ -103,7 +103,7 @@ public class HighScoreGroup extends Group
         updateLabels();
         
         // Create close button.
-        closeButton = new SpriteButton.Builder(window, 400, 408)
+        closeButton = new SpriteButton.Builder(400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Close").offOpacity(70).visible(false).end();
         layerMan.add(closeButton, Layer.UI);

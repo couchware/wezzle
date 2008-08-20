@@ -3,13 +3,12 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.BoardManager.Direction;
 import ca.couchware.wezzle2d.LayerManager.Layer;
-import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
+import ca.couchware.wezzle2d.animation.FadeAnimation.Type;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
 import ca.couchware.wezzle2d.audio.AudioTrack;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
@@ -376,7 +375,7 @@ public class PieceManager implements IMouseListener
                 continue;
 
             // Make sure they have a pulse animation.                   
-            t.setAnimation(new ZoomAnimation.Builder(ZoomType.LOOP_IN, t)
+            t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.LOOP_IN, t)
                     .minWidth(t.getWidth() - 8).v(speed).end());
             animationMan.add(t.getAnimation());
         }
@@ -567,8 +566,8 @@ public class PieceManager implements IMouseListener
                         else
                         {           
                             //IAnimation a = new ZoomInAnimation(tileDropped[i]);
-                            IAnimation a = new ZoomAnimation
-                                    .Builder(ZoomType.OUT, tile).v(0.05).end();
+                            IAnimation a = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, tile)
+                                    .v(0.05).end();
                             tile.setAnimation(a);
                             animationMan.add(a);
                         }
@@ -726,7 +725,7 @@ public class PieceManager implements IMouseListener
                 .text(String.valueOf(deltaScore))
                 .end();
         
-        IAnimation a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
+        IAnimation a1 = new FadeAnimation.Builder(Type.OUT, label).end();
         IAnimation a2 = new MoveAnimation.Builder(label)
                         .duration(1150).v(0.03).theta(90).end();
                     
@@ -786,7 +785,7 @@ public class PieceManager implements IMouseListener
     {   
         for (TileEntity tile : tiles)
         {            
-            if (tile != null && tile.getAnimation().isDone() == false)
+            if (tile != null && tile.getAnimation().isFinished() == false)
             {
                 return false;  
             }

@@ -90,11 +90,10 @@ public class ListenerManager implements IListenerComponent
         moveListenerList.put(listener, "Move");
     }
     
-       /**
+    /**
      * Register the listener.
      * @param listener The listener to register.
-     */
-    @Override
+     */    
     public void registerLineListener(ILineListener listener)
     {
           // If we try to add a second listener.
@@ -145,8 +144,7 @@ public class ListenerManager implements IListenerComponent
     /**
      * Notify all line listeners.
      * @param e The event.
-     */
-    @Override
+     */    
     public void notifyLineListener(LineEvent e)
     {
         for (ILineListener listener : lineListenerList.keySet())

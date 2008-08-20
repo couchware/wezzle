@@ -123,7 +123,7 @@ public class BlinkAnimation extends AbstractAnimation
     public void nextFrame(long delta)
     {
         // Check if we're done, if we are, return.
-        if (isDone() == true)
+        if (isFinished() == true)
             return;
               
         // Add delta to counter.  This serves as the time variable.
@@ -132,7 +132,7 @@ public class BlinkAnimation extends AbstractAnimation
         // See if we're done.
         if (type == DurationType.FIXED && counter > duration)   
         {
-            setDone(true);
+            setFinished(true);
         }
         
         // Increment state counter.

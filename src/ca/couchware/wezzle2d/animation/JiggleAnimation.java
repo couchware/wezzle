@@ -67,7 +67,7 @@ public class JiggleAnimation extends AbstractAnimation
     public void nextFrame(long delta)
     {
         // Check if we're done, if we are, return.
-        if (isDone() == true)
+        if (isFinished() == true)
             return;
         
         // Add to counter.
@@ -85,7 +85,7 @@ public class JiggleAnimation extends AbstractAnimation
         // If we reach the minimum opacity, then we're done.            
         if (counter >= duration)
         {                
-            setDone(true);
+            setFinished(true);
         }         
     }
 }

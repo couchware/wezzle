@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.ui;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.LogManager;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
@@ -135,9 +136,9 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         private int pad = 20;
         private final List<RadioItem> itemList = new ArrayList<RadioItem>();  
         
-        public Builder(IGameWindow window, int x, int y)
+        public Builder(int x, int y)
         {         
-            this.window = window;
+            this.window = ResourceFactory.get().getGameWindow();
             this.x = x;
             this.y = y;
         }

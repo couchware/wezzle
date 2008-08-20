@@ -183,7 +183,7 @@ public class ProgressBar extends AbstractEntity
             // Set the label.
             progressLabel = new LabelBuilder(x + getWidth() / 2, y + 47)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(Game.TEXT_COLOR).size(14)
+                    .color(Game.TEXT_COLOR1).size(14)
                     .text(progress + "/" + progressMax).cached(false).end();   
             
             // Update the text if necessary.        
@@ -274,7 +274,7 @@ public class ProgressBar extends AbstractEntity
         // Draw the container.
         containerSprite.draw(x + offsetX, y + offsetY,
                 containerSprite.getWidth(), containerSprite.getHeight(),
-                0.0, 90);
+                0.0, Util.scaleInt(0, 100, 0, 90, opacity));
         
         // Draw the text.
         if (useLabel == true) progressLabel.draw();
@@ -295,21 +295,31 @@ public class ProgressBar extends AbstractEntity
                     leftSprite.getWidth(), leftSprite.getHeight(),
                     0, 0, 
                     w, leftSprite.getHeight(), 
-                    0.0, 100);                 
+                    0.0, opacity);                 
             
             rightSprite.drawRegion(                    
                     alignedX + w, alignedY,
                     rightSprite.getWidth(), rightSprite.getHeight(),
                     rightSprite.getWidth() - w, 0,
                     w, rightSprite.getHeight(), 
-                    0.0, 100);                        
+                    0.0, opacity);                        
         }
         else
         {
-            leftSprite.draw(alignedX, alignedY);
+            leftSprite.draw(alignedX, alignedY,
+                    leftSprite.getWidth(), leftSprite.getHeight(),
+                    0.0, opacity);
+            
             for (int i = 4; i < progressWidth - 4; i++)
-                middleSprite.draw(alignedX + i, alignedY);
-            rightSprite.draw(alignedX + progressWidth - 4, alignedY);
+            {
+                middleSprite.draw(alignedX + i, alignedY,
+                        middleSprite.getWidth(), middleSprite.getHeight(),
+                        0.0, opacity);
+            }
+            
+            rightSprite.draw(alignedX + progressWidth - 4, alignedY,
+                    rightSprite.getWidth(), rightSprite.getHeight(),
+                    0.0, opacity);
         }
         
         return true;
@@ -414,27 +424,7 @@ public class ProgressBar extends AbstractEntity
         // Wig out.
         throw new UnsupportedOperationException(
                 "Height cannot be set on progress bar.");
-    }
-   
-//    protected int determineProgressBarOffsetX(EnumSet<Alignment> alignment)
-//    {       
-//		if (alignment.contains(Alignment.LEFT))
-//		{
-//			return 0;
-//		}
-//		else if (alignment.contains(Alignment.CENTER))
-//		{
-//			return -progressMaxWidth / 2;			
-//		}
-//		else if (alignment.contains(Alignment.RIGHT))
-//		{
-//			return -progressMaxWidth;
-//		}
-//		else
-//		{
-//			throw new IllegalStateException("No X alignment set!");
-//		}	              
-//    }       
+    }       
     
     @Override
     public Rectangle getDrawRect()

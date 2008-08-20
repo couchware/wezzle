@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.ui.ILabel;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 /**
  * A class for managaing layer draw order.  Layer 0 is the bottom (lowest)
@@ -55,14 +56,10 @@ public class LayerManager
     /**
      * The constructor.
      */
-    private LayerManager(IGameWindow window)
+    private LayerManager()
     {
-        // Must have at least 1 layer.
-        if (window == null)  
-            throw new NullPointerException("Window must not be null.");
-        
         // Set the window reference.
-        this.window = window;                                
+        this.window = ResourceFactory.get().getGameWindow();                                
         
         // Initialize layer arraylist.
         layerList = new ArrayList<ArrayList<IDrawable>>(Layer.values().length);
@@ -83,9 +80,9 @@ public class LayerManager
     
     
     // Public API.
-    public static LayerManager newInstance(IGameWindow window)
+    public static LayerManager newInstance()
     {
-        return new LayerManager(window);
+        return new LayerManager();
     }
     
     /**
@@ -135,6 +132,34 @@ public class LayerManager
             throw new RuntimeException("Tried to remove non-exist element!");            
         }
     }    
+    
+    /**
+     * Returns a read-only list representing the specified layer.
+     * 
+     * @param layer
+     * @return
+     */
+    public List<IDrawable> getLayer(Layer layer)
+    {
+        return Collections.unmodifiableList(layerList.get(layer.ordinal()));
+    }
+    
+    /**
+     * Gets all the entities in the layer manager as a list.
+     * 
+     * @return
+     */
+    public List<IEntity> getEntities()
+    {
+        List<IEntity> entityList = new ArrayList<IEntity>();
+        
+        for (Layer l : Layer.values())
+            for (IDrawable d : layerList.get(l.ordinal()))
+                if (d instanceof IEntity)
+                    entityList.add((IEntity) d);
+        
+        return entityList;
+    }
     
     public boolean exists(final IDrawable drawable, Layer layer)
     {
@@ -388,6 +413,17 @@ public class LayerManager
         
         return changed;
     }
+    
+    public boolean addAll(UnmodifiableLayerManager layerMan)
+    {
+        boolean changed = false; 
+        
+        for (Layer l : Layer.values())
+            if (layerList.get(l.ordinal()).addAll(layerMan.getLayer(l)) == true)
+                changed = true;
+        
+        return changed;
+    }
 
     public boolean retainAll(LayerManager layerMan)
     {
@@ -401,6 +437,17 @@ public class LayerManager
         
         return changed;  
     }
+    
+    public boolean retainAll(UnmodifiableLayerManager layerMan)
+    {
+        boolean changed = false; 
+        
+        for (Layer l : Layer.values())
+            if (layerList.get(l.ordinal()).retainAll(layerMan.getLayer(l)) == true)
+                changed = true;
+        
+        return changed;
+    }
 
     public boolean removeAll(LayerManager layerMan)
     {
@@ -411,6 +458,17 @@ public class LayerManager
         for (int i = 0; i < layerList.size(); i++)        
            if (layerList.get(i).removeAll(layerMan.layerList.get(i)) == true) 
                changed = true;
+        
+        return changed;
+    }
+    
+    public boolean removeAll(UnmodifiableLayerManager layerMan)
+    {
+        boolean changed = false; 
+        
+        for (Layer l : Layer.values())
+            if (layerList.get(l.ordinal()).removeAll(layerMan.getLayer(l)) == true)
+                changed = true;
         
         return changed;
     }

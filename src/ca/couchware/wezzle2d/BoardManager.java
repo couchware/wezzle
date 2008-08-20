@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.AnimationManager;
-import static ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
@@ -10,7 +9,6 @@ import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -256,17 +254,26 @@ public class BoardManager implements IManager
                 .opacity(90).end();        
         layerMan.add(entity, Layer.BACKGROUND);        
 	}
+            
+    /**
+     * Public API.
+     * 
+     * @param animationMan
+     * @param layerMan
+     * @param x
+     * @param y
+     * @param columns
+     * @param rows
+     * @return
+     */    
+    public static BoardManager newInstance(final AnimationManager animationMan,
+        final LayerManager layerMan,
+        final int x, final int y, 
+        final int columns, final int rows)
+    {
+        return new BoardManager(animationMan, layerMan, x, y, columns, rows);
+    }
     
-        
-        // Public API
-        
-        public static BoardManager newInstance(  final AnimationManager animationMan,
-            final LayerManager layerMan,
-            final int x, final int y, 
-            final int columns, final int rows)
-        {
-            return new BoardManager(animationMan, layerMan, x, y, columns, rows);
-        }
     //--------------------------------------------------------------------------
     // Instance Methods
     //--------------------------------------------------------------------------
@@ -1375,9 +1382,8 @@ public class BoardManager implements IManager
 			TileEntity t = getTile(i);
 			
 			if (t != null)		
-			{	
-                //Animation a = new FadeAnimation(FadeType.IN, 0, 700, t);
-                IAnimation a = new FadeAnimation.Builder(FadeType.IN, t)
+			{	                
+                IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, t)
                         .wait(delay).duration(700).end();                
                 t.setAnimation(a);
                 animationMan.add(a);
@@ -1440,7 +1446,7 @@ public class BoardManager implements IManager
                 tileCount++;
                 
                 // Create the animation.
-                a1 = new FadeAnimation.Builder(FadeType.IN, t)
+                a1 = new FadeAnimation.Builder(FadeAnimation.Type.IN, t)
                         .wait(0).duration(500).end();
                 
                 // Make the animation remove itself.                
@@ -1541,7 +1547,7 @@ public class BoardManager implements IManager
 			
 			if (t != null)		
 			{	                
-                IAnimation a = new FadeAnimation.Builder(FadeType.OUT, t)
+                IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                         .wait(wait).duration(700).end();                 
                 t.setAnimation(a);
                 animationMan.add(a);
@@ -1609,7 +1615,7 @@ public class BoardManager implements IManager
                 tileCount++;
                 
                 // Create the animation.
-                a1 = new FadeAnimation.Builder(FadeType.OUT, t)
+                a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                         .wait(0).duration(500).end();
 
                 a2 = new MoveAnimation.Builder(t).wait(0)

@@ -105,7 +105,7 @@ public class ExplosionAnimation extends AbstractAnimation
     public void nextFrame(long delta)
     {
         // Check if we're done, if we are, return.
-        if (isDone() == true)
+        if (isFinished() == true)
             return;               
         
         // Add to counter.
@@ -134,7 +134,7 @@ public class ExplosionAnimation extends AbstractAnimation
         // See if we're done.
         else if (counter >= duration * 2)
         {
-            setDone(true);
+            setFinished(true);
             layerMan.remove(explosion, Layer.EFFECT);
         }                        
     }

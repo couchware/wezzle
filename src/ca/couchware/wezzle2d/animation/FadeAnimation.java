@@ -30,7 +30,7 @@ public class FadeAnimation extends AbstractAnimation
     /**
      * The fade possibilities.
      */
-    public static enum FadeType
+    public static enum Type
     {
         IN, 
         OUT, 
@@ -46,7 +46,7 @@ public class FadeAnimation extends AbstractAnimation
     /**
      * Is the animation fade in?
      */
-    private FadeType type;
+    private Type type;
     
     /**
      * The amount of time, in ms, to wait before fading out.
@@ -62,10 +62,7 @@ public class FadeAnimation extends AbstractAnimation
      * The constructor.
      */
     private FadeAnimation(Builder builder)
-    {                
-        // Invoke super constructor.
-        super();
-        
+    {                        
         // Is it fade in?
         this.type = builder.type;
         
@@ -83,7 +80,7 @@ public class FadeAnimation extends AbstractAnimation
         this.maxOpacity = builder.maxOpacity;
                 
         // Set the initial opacity.
-        if (type == FadeType.IN)        
+        if (type == Type.IN)        
             this.entity.setOpacity(minOpacity);
         else
             this.entity.setOpacity(maxOpacity);
@@ -94,7 +91,7 @@ public class FadeAnimation extends AbstractAnimation
     
     public static class Builder implements IBuilder<FadeAnimation>
     {
-        private final FadeType type;
+        private final Type type;
         private final IEntity entity;
         
         private int wait = 400;
@@ -102,7 +99,7 @@ public class FadeAnimation extends AbstractAnimation
         private int minOpacity = 0;
         private int maxOpacity = 100;
         
-        public Builder(FadeType type, IEntity entity)
+        public Builder(Type type, IEntity entity)
         {
             this.type = type;
             this.entity = entity;
@@ -122,7 +119,7 @@ public class FadeAnimation extends AbstractAnimation
     public void nextFrame(long delta)
     {
         // Check if we're done, if we are, return.
-        if (isDone() == true)
+        if (isFinished() == true)
             return;              
         
         // Add to counter.
@@ -147,7 +144,7 @@ public class FadeAnimation extends AbstractAnimation
                     
                     int o = Util.scaleInt(0, duration, 
                             minOpacity, maxOpacity, (int) counter - wait);
-                    entity.setOpacity(maxOpacity - o + minOpacity);                         
+                    entity.setOpacity(maxOpacity - o + minOpacity);                        
                     
                     break;
                    
@@ -163,19 +160,19 @@ public class FadeAnimation extends AbstractAnimation
                     case IN:
                     case OUT:
 
-                        setDone(true);
+                        setFinished(true);
                         break;
 
                     case LOOP_IN:
 
                         counter -= duration;
-                        type = FadeType.LOOP_OUT;
+                        type = Type.LOOP_OUT;
                         break;
 
                     case LOOP_OUT:
 
                         counter -= duration;
-                        type = FadeType.LOOP_IN;
+                        type = Type.LOOP_IN;
                         break;
 
                     default:
@@ -190,7 +187,7 @@ public class FadeAnimation extends AbstractAnimation
      * 
      * @return
      */
-    public FadeType getType()
+    public Type getType()
     {
         return type;
     }

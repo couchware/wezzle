@@ -21,7 +21,7 @@ public abstract class AbstractAnimation implements IAnimation
     /**
      * Whether or not the animation is done.
      */
-    private boolean done = false;
+    private boolean finished = false;
     
     /**
      * The start action.
@@ -45,14 +45,14 @@ public abstract class AbstractAnimation implements IAnimation
         // Override.
     }       
     
-    public boolean isDone()
+    public boolean isFinished()
     {
-        return done;
+        return finished;
     }
     
-    protected void setDone(boolean done)
+    protected void setFinished(boolean done)
     {
-        this.done = done;
+        this.finished = done;
     }
 
     public boolean isVisible()

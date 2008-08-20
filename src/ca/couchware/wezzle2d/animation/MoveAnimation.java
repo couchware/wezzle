@@ -151,7 +151,7 @@ public class MoveAnimation extends AbstractAnimation
     public void nextFrame(long delta)
     {
         // Check if we're done, if we are, return.
-        if (isDone() == true)
+        if (isFinished() == true)
             return;
               
         // Add delta to counter.  This serves as the time variable.
@@ -161,7 +161,7 @@ public class MoveAnimation extends AbstractAnimation
         if (skip == true)
         {
             if (counter > wait + duration)
-                setDone(true);
+                setFinished(true);
             
             return;
         }
@@ -203,12 +203,12 @@ public class MoveAnimation extends AbstractAnimation
                     
             if (doneX == true && doneY == true)
             {
-                if (duration == -1) setDone(true);
+                if (duration == -1) setFinished(true);
                 else skip = true;
             }
             
             if (duration != - 1 && counter > wait + duration)   
-                setDone(true);                                                        
+                setFinished(true);                                                        
         }        
     }
     

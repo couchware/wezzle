@@ -5,26 +5,24 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.BoardManager.Direction;
 import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ScoreManager.ScoreType;
-import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
+import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
-import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.animation.ZoomAnimation.ZoomType;
-import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.menu2.Loader;
+import ca.couchware.wezzle2d.menu2.MainMenu;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.ui.*;
-import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.SpriteButton.ButtonType;
 import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Canvas;
@@ -147,7 +145,12 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * The text color.
      */
-    final public static Color TEXT_COLOR = new Color(252, 233, 45);
+    final public static Color TEXT_COLOR1 = new Color(252, 233, 45);
+    
+    /**
+     * The secondary colour.
+     */
+    final public static Color TEXT_COLOR2 = new Color(178, 178, 178);
         
     /**
      * The line score color.
@@ -219,6 +222,11 @@ public class Game extends Canvas implements IGameWindowCallback
     public Loader loader;
     
     /**
+     * The main menu.
+     */
+    public MainMenu mainMenu;
+    
+    /**
      * The animation manager in charge of animations.
      */
     public AnimationManager animationMan;
@@ -247,6 +255,11 @@ public class Game extends Canvas implements IGameWindowCallback
      * The manager in charge of the moves. 
      */
     public StatManager statMan;	
+    
+    /**
+     * The menu manager.
+     */
+    //public MenuManager menuMan;
     
     /**
      * The manager in charge of music.
@@ -651,22 +664,21 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * Initializes all the managers (except for the layer manager).
      */
-    private void initializeManagers(EnumSet eSet)
-    {
-        
-        if (eSet.contains(ManagerType.LAYER))
+    private void initializeManagers(EnumSet<ManagerType> managerSet)
+    {        
+        if (managerSet.contains(ManagerType.LAYER))
         {
             // Create the layer manager.   
-            layerMan = LayerManager.newInstance(window);  
+            layerMan = LayerManager.newInstance();  
         }
         
-        if (eSet.contains(ManagerType.ANIMATION))
+        if (managerSet.contains(ManagerType.ANIMATION))
         {
             // Create the animation manager.
             animationMan = AnimationManager.newInstance();                
          }
         
-        if (eSet.contains(ManagerType.TUTORIAL))
+        if (managerSet.contains(ManagerType.TUTORIAL))
         {
             // Create the tutorial manager.
             tutorialMan = TutorialManager.newInstance();
@@ -678,26 +690,26 @@ public class Game extends Canvas implements IGameWindowCallback
             tutorialMan.add(new StarTutorial());
         }
     
-        if (eSet.contains(ManagerType.PROPERTY))
+        if (managerSet.contains(ManagerType.PROPERTY))
         {
             // Create the property manager. Must be done before Score manager.
             propertyMan = PropertyManager.newInstance();
         }
         
-        if (eSet.contains(ManagerType.HIGHSCORE))
+        if (managerSet.contains(ManagerType.HIGHSCORE))
         {
             // Create the high score manager.
             highScoreMan = HighScoreManager.newInstance(propertyMan);  
         }
         
-        if (eSet.contains(ManagerType.WORLD))
+        if (managerSet.contains(ManagerType.WORLD))
         {
             // Create the world manager.
             worldMan = WorldManager.newInstance(propertyMan);  
             worldMan.setGameInProgress(true);
         }
         
-        if (eSet.contains(ManagerType.BOARD))
+        if (managerSet.contains(ManagerType.BOARD))
         {
             // Create the board manager.
             boardMan = BoardManager.newInstance(animationMan, layerMan, 272, 139, 8, 10);    
@@ -706,51 +718,51 @@ public class Game extends Canvas implements IGameWindowCallback
             startBoardShowAnimation(AnimationType.ROW_FADE);  
         }
         
-        if (eSet.contains(ManagerType.PIECE))
+        if (managerSet.contains(ManagerType.PIECE))
         {
             // Create the piece manager.
             pieceMan = PieceManager.newInstance(window, animationMan, boardMan);        
             layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);
         }
         
-        if (eSet.contains(ManagerType.GROUP))
+        if (managerSet.contains(ManagerType.GROUP))
         {
             // Create group manager.
             groupMan = GroupManager.newInstance(layerMan, pieceMan);
         }
 	        
-        if (eSet.contains(ManagerType.SCORE))
+        if (managerSet.contains(ManagerType.SCORE))
         {
             // Create the score manager.
             scoreMan = ScoreManager.newInstance(boardMan, propertyMan, highScoreMan);
             scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
         }
         
-        if (eSet.contains(ManagerType.SOUND))
+        if (managerSet.contains(ManagerType.SOUND))
         {
             // Create the sound manager.
             soundMan = SoundManager.newInstance(executor, propertyMan);
         }
         
-        if (eSet.contains(ManagerType.MUSIC))
+        if (managerSet.contains(ManagerType.MUSIC))
         {
             // Create the music manager.
             musicMan = MusicManager.newInstance(executor, propertyMan);  
         }
         
-        if (eSet.contains(ManagerType.STAT))
+        if (managerSet.contains(ManagerType.STAT))
         {
             // Create the move manager.
             statMan = StatManager.newInstance();
         }
         
-        if (eSet.contains(ManagerType.TIMER))
+        if (managerSet.contains(ManagerType.TIMER))
         {
             // Create the time manager.
             timerMan = TimerManager.newInstance(worldMan.getInitialTimer()); 
         }
         
-        if (eSet.contains(ManagerType.ACHIEVEMENT))
+        if (managerSet.contains(ManagerType.ACHIEVEMENT))
         {
             // Create the achievement manager.
             achievementMan = AchievementManager.newInstance();
@@ -786,17 +798,17 @@ public class Game extends Canvas implements IGameWindowCallback
         }
         
         // Register the listeners. 
-        if (eSet.contains(ManagerType.SCORE))
+        if (managerSet.contains(ManagerType.SCORE))
         {
             listenerMan.registerScoreListener(scoreMan);
         }
         
-        if (eSet.contains(ManagerType.STAT))
+        if (managerSet.contains(ManagerType.STAT))
         {
             listenerMan.registerMoveListener(statMan);
             listenerMan.registerLineListener(statMan);
         }
-        if (eSet.contains(ManagerType.WORLD))
+        if (managerSet.contains(ManagerType.WORLD))
         {
             listenerMan.registerLevelListener(worldMan);
         }
@@ -806,18 +818,18 @@ public class Game extends Canvas implements IGameWindowCallback
      * Initializes all the buttons that appear on the main game screen.
      */
     private void initializeButtons()
-    {
+    {        
         // The high score button.
-        highScoreButton = new SpriteButton.Builder(window, 128, 299)
+        highScoreButton = new SpriteButton.Builder(128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(ButtonType.LARGE).text("")
+                .type(SpriteButton.Type.LARGE).text("")
                 .offOpacity(0).hoverOpacity(70).onOpacity(95).end();
         layerMan.add(highScoreButton, Layer.UI);
                 
         // Create pause button.        
-        pauseButton = new SpriteButton.Builder(window, 668, 211)
+        pauseButton = new SpriteButton.Builder(668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(ButtonType.NORMAL).text("Pause").activeText("Resume")
+                .type(SpriteButton.Type.NORMAL).text("Pause").activeText("Resume")
                 .offOpacity(70).end();
         layerMan.add(pauseButton, Layer.UI);    
         
@@ -840,14 +852,14 @@ public class Game extends Canvas implements IGameWindowCallback
         // Set up the copyright label.
         copyrightLabel = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .cached(false).color(TEXT_COLOR).size(12)                
+                .cached(false).color(TEXT_COLOR1).size(12)                
                 .text(COPYRIGHT).end();
         layerMan.add(copyrightLabel, Layer.UI);
         
         // Set up the version label.	
         versionLabel = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .cached(false).color(TEXT_COLOR).size(12)                
+                .cached(false).color(TEXT_COLOR1).size(12)                
                 .text(TITLE)
                 .end();                        
         layerMan.add(versionLabel, Layer.UI);
@@ -855,7 +867,7 @@ public class Game extends Canvas implements IGameWindowCallback
 		// Set up the timer text.
         timerLabel = new LabelBuilder(400, 70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(TEXT_COLOR).size(50).text("--").end();
+                .color(TEXT_COLOR1).size(50).text("--").end();
         layerMan.add(timerLabel, Layer.UI);
              
         // Set up the level header.
@@ -867,7 +879,7 @@ public class Game extends Canvas implements IGameWindowCallback
         levelLabel = new LabelBuilder(126, 210)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(TEXT_COLOR).size(20).text("--").end();                
+                .color(TEXT_COLOR1).size(20).text("--").end();                
         layerMan.add(levelLabel, Layer.UI);        
         
         // Set up the score header.
@@ -880,7 +892,7 @@ public class Game extends Canvas implements IGameWindowCallback
         highScoreLabel = new LabelBuilder(126, 337)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(TEXT_COLOR).size(20).text("--").end();
+                .color(TEXT_COLOR1).size(20).text("--").end();
         layerMan.add(highScoreLabel, Layer.UI);
         
         // Set up the score header.
@@ -892,7 +904,7 @@ public class Game extends Canvas implements IGameWindowCallback
         scoreLabel = new LabelBuilder(126, 460)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(TEXT_COLOR).size(20).text("--").end();
+                .color(TEXT_COLOR1).size(20).text("--").end();
         layerMan.add(scoreLabel, Layer.UI);
     }
     
@@ -920,21 +932,19 @@ public class Game extends Canvas implements IGameWindowCallback
     private void initializeGroups()
     {        
         // Initialize pause group.                
-        pauseGroup = new PauseGroup(window, layerMan, groupMan);
+        pauseGroup = new PauseGroup(layerMan, groupMan);
         groupMan.register(pauseGroup);
              
         // Initialize game over group.
-        gameOverGroup = new GameOverGroup(window, layerMan, groupMan);    
+        gameOverGroup = new GameOverGroup(layerMan, groupMan);    
         groupMan.register(gameOverGroup);
         
         // Initialize options group.
-        optionsGroup = new OptionsGroup(window, layerMan, groupMan, 
-                propertyMan);
+        optionsGroup = new OptionsGroup(layerMan, groupMan, propertyMan);
         groupMan.register(optionsGroup);
         
         // Initialize high score group.
-        highScoreGroup = new HighScoreGroup(window, layerMan, groupMan,
-                highScoreMan); 
+        highScoreGroup = new HighScoreGroup(layerMan, groupMan, highScoreMan); 
         groupMan.register(highScoreGroup);
     }
     
@@ -974,35 +984,35 @@ public class Game extends Canvas implements IGameWindowCallback
         resetRefactorSpeed();
         resetDropSpeed();                                               
         
-        // Create the loader.
-        loader = new Loader(window, COPYRIGHT, TITLE);        
+        // Create the loader.        
+        loader = new Loader();               
                 
         // Initialize managers.
-        loader.add(new Runnable()
+        loader.addRunnable(new Runnable()
         {
            public void run() { initializeManagers(EnumSet.allOf(ManagerType.class)); }
         });
                                
         // Initialize buttons.    
-        loader.add(new Runnable()
+        loader.addRunnable(new Runnable()
         {
            public void run() { initializeButtons(); }
         });                                 
                 
         // Initialize labels.  
-        loader.add(new Runnable()
+        loader.addRunnable(new Runnable()
         {
            public void run() { initializeLabels(); }
         });        
         
         // Initialize miscellaneous components.
-        loader.add(new Runnable()
+        loader.addRunnable(new Runnable()
         {
            public void run() { initializeComponents(); }
         });        
              
         // Initialize the groups.   
-        loader.add(new Runnable()
+        loader.addRunnable(new Runnable()
         {
            public void run() { initializeGroups(); }
         });                                        
@@ -1216,17 +1226,55 @@ public class Game extends Canvas implements IGameWindowCallback
         
         // If the loader is running, bypass all the rendering to show it.        
         if (loader != null)
-        {            
-            if (loader.hasNext() == true)
+        {   
+            // Animate all animations.
+            if (animationMan != null)
+                animationMan.animate(delta);
+            
+            if (loader.updateLogic(this) == Loader.State.FINISHED)
             {
-                loader.loadNext();
-                return loader.draw();                
+                // Remove the loader.
+                loader = null;
+                
+                // Empty the mouse events.
+                window.clearMouseEvents();
+                
+                // Draw normally.
+                return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
+                
+                // Create the main menu.
+                //mainMenu = new MainMenu();
             }   
             else
-            {                
-                loader = null;
-                return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
-            }
+            {      
+                // Draw using the loader.
+                return loader.draw();
+            }                       
+        }
+        
+        // If the main menu is running, bypass all rendering to show it.
+        if (mainMenu != null)
+        {
+            // Animate all animations.
+            if (animationMan != null)
+                animationMan.animate(delta);
+            
+            if (mainMenu.updateLogic(this) == MainMenu.State.FINISHED)
+            {
+                // Remove the loader.
+                mainMenu = null;
+                
+                // Empty the mouse events.
+                window.clearMouseEvents();                                                                    
+            }   
+            else
+            {      
+                // Fire the mouse events.
+                window.fireMouseEvents();
+                
+                // Draw using the loader.
+                return mainMenu.draw();
+            }         
         }
                                
         // If the high score button was just clicked.
@@ -1273,7 +1321,7 @@ public class Game extends Canvas implements IGameWindowCallback
         }    
         
         // Check on board animation.
-        if (boardAnimation != null && boardAnimation.isDone() == true)
+        if (boardAnimation != null && boardAnimation.isFinished() == true)
         {
             // Set animation visible depending on what animation
             // was just performed.
@@ -1324,7 +1372,7 @@ public class Game extends Canvas implements IGameWindowCallback
                         GroupManager.LAYER_BOTTOM);                  
             }
         }
-        else if (boardAnimation != null && boardAnimation.isDone() == false)
+        else if (boardAnimation != null && boardAnimation.isFinished() == false)
         {
             // Board is still dirty due to animation.
             boardMan.setDirty(true);
@@ -1481,9 +1529,9 @@ public class Game extends Canvas implements IGameWindowCallback
 
                 final ILabel label = new LabelBuilder(x, y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                        .color(TEXT_COLOR).size(26).text("Level Up!").end();
+                        .color(TEXT_COLOR1).size(26).text("Level Up!").end();
 
-                IAnimation a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();                 
+                IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();                 
                 IAnimation a2 = new MoveAnimation.Builder(label)
                         .duration(1150).theta(0).v(0.03).end();
 
@@ -1557,7 +1605,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             boolean done = true;
             for (IAnimation a : refactorAnimationList)
-                if (a.isDone() == false)
+                if (a.isFinished() == false)
                     done = false;
 
             if (done == true)
@@ -1602,7 +1650,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             boolean done = true;
             for (IAnimation a : refactorAnimationList)
-                if (a.isDone() == false)
+                if (a.isFinished() == false)
                     done = false;
 
             if (done == true)
@@ -1688,7 +1736,7 @@ public class Game extends Canvas implements IGameWindowCallback
                         .size(scoreMan.determineFontSize(deltaScore))
                         .text(String.valueOf(deltaScore)).end();
 
-                IAnimation a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
+                IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
                 //IAnimation a2 = new FloatAnimation(0, -1, layerMan, label);                    
                 IAnimation a2 = new MoveAnimation.Builder(label)
                         .duration(1150).v(0.03).theta(90).end();
@@ -1771,7 +1819,7 @@ public class Game extends Canvas implements IGameWindowCallback
                         IAnimation a1 = new MoveAnimation.Builder(t)
                                 .duration(750).theta(angle).v(0.3)
                                 .g(0.001).end();                                    
-                        IAnimation a2 = new FadeAnimation.Builder(FadeType.OUT, t)
+                        IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                                 .wait(0).duration(750).end();
                         t.setAnimation(a1);
                         animationMan.add(a1);                            
@@ -1781,8 +1829,8 @@ public class Game extends Canvas implements IGameWindowCallback
                     }
                     else                        
                     {
-                        t.setAnimation(new ZoomAnimation
-                                .Builder(ZoomType.IN, t).v(0.05).end());
+                        t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
+                                .v(0.05).end());
                         animationMan.add(t.getAnimation());
                     }
                 }
@@ -1850,7 +1898,7 @@ public class Game extends Canvas implements IGameWindowCallback
                     .text(String.valueOf(deltaScore)).end();                        
 
             //a1 = new FadeAnimation(FadeType.OUT, label);
-            a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
+            a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
             //a2 = new FloatAnimation(0, -1, layerMan, label);    
             a2 = new MoveAnimation.Builder(label)
                         .duration(1150).v(0.03).theta(90).end();
@@ -1915,7 +1963,7 @@ public class Game extends Canvas implements IGameWindowCallback
                     a1 = new MoveAnimation.Builder(r).duration(750)
                             .theta(r.getDirection().toDegrees())
                             .v(0.3).g(0).end();
-                    a2 = new FadeAnimation.Builder(FadeType.OUT, t)
+                    a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                             .wait(0).duration(750).end();
                     t.setAnimation(a1);
                     animationMan.add(a1);                            
@@ -1931,7 +1979,7 @@ public class Game extends Canvas implements IGameWindowCallback
                     a1 = new MoveAnimation.Builder(t).duration(750)
                             .theta(angle).v(0.3).g(0.001).end();     
                     //a2 = new FadeAnimation(FadeType.OUT, 0, 750, t);                                        
-                    a2 = new FadeAnimation.Builder(FadeType.OUT, t)
+                    a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                             .wait(0).duration(750).end();
                     t.setAnimation(a1);
                     animationMan.add(a1);                            
@@ -1997,7 +2045,7 @@ public class Game extends Canvas implements IGameWindowCallback
                     .size(scoreMan.determineFontSize(deltaScore))
                     .text(String.valueOf(deltaScore)).end();                        
 
-            a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
+            a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
             //a2 = new FloatAnimation(0, -1, layerMan, label);                    
             a2 = new MoveAnimation.Builder(label)
                     .duration(1150).v(0.03).theta(90).end();
@@ -2042,7 +2090,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 //a2 = new FadeAnimation(FadeType.OUT, 0, 750, t);                                        
                 a1 = new MoveAnimation.Builder(t).duration(750)
                         .theta(angle).v(0.3).g(0.001).end();                            
-                a2 = new FadeAnimation.Builder(FadeType.OUT, t)
+                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                         .wait(0).duration(750).end();
                 t.setAnimation(a1);
                 animationMan.add(a1);                            
@@ -2093,7 +2141,7 @@ public class Game extends Canvas implements IGameWindowCallback
                     .size(scoreMan.determineFontSize(deltaScore))
                     .text(String.valueOf(deltaScore)).end();
 
-            a1 = new FadeAnimation.Builder(FadeType.OUT, label).end();
+            a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
             a2 = new MoveAnimation.Builder(label)
                     .duration(1150).v(0.03).theta(90).end();
 
@@ -2152,7 +2200,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 {          
                     a1 = new JiggleAnimation(600, 50, t);
                     //a2 = new FadeAnimation(FadeType.OUT, 0, 600, t);                                        
-                    a2 = new FadeAnimation.Builder(FadeType.OUT, t)
+                    a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                             .wait(0).duration(600).end();
 
                     t.setAnimation(a1);
@@ -2181,7 +2229,7 @@ public class Game extends Canvas implements IGameWindowCallback
             for (Iterator it = tileRemovalSet.iterator(); it.hasNext(); )
             {
                 if (boardMan.getTile((Integer) it.next()).getAnimation()
-                        .isDone() == false)
+                        .isFinished() == false)
                 {
                     animationInProgress = true;
                 }
@@ -2364,25 +2412,22 @@ public class Game extends Canvas implements IGameWindowCallback
                     GroupManager.CLASS_PAUSE,
                     GroupManager.LAYER_MIDDLE);
         }
-        
+                        
         if (layerMan != null)
-            layerMan.forceRedraw();
-        
-        if (loader != null)
-            loader.forceRedraw();
+            layerMan.forceRedraw();                
     }
     
      /**
      * Notification that the game window has been reactivated in some way.
      */
     public void windowActivated()
-    {
+    {                
         // Force redraw.
-        if (layerMan != null)
-            layerMan.forceRedraw();
-        
         if (loader != null)
-            loader.forceRedraw();    
+            loader.forceRedraw();
+        
+        if (layerMan != null)
+            layerMan.forceRedraw();        
     }        
     
     //--------------------------------------------------------------------------

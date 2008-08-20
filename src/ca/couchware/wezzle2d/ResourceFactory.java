@@ -117,8 +117,6 @@ public class ResourceFactory
 		return window;
 	}
     
-   
-
 	/**
 	 * Create or get a sprite which displays the image that is pointed to in the
 	 * classpath by "ref"
@@ -146,9 +144,7 @@ public class ResourceFactory
 
 		throw new RuntimeException("Unknown rendering type: " + renderType);
 	}
-	
-	
-	
+
 	/**
 	 * Create a text object which will then be configured.
 	 *

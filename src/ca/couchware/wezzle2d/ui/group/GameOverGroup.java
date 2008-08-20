@@ -46,16 +46,16 @@ public class GameOverGroup extends Group
      * 
      * @param layerMan
      */    
-    public GameOverGroup(final IGameWindow window, 
-            final LayerManager layerMan, final GroupManager groupMan)
+    public GameOverGroup(final LayerManager layerMan, 
+            final GroupManager groupMan)
     {        
         // Invoke super.
-        super(window, layerMan, groupMan);
+        super(layerMan, groupMan);
         
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(26).text("Game over :(")
+                .color(Game.TEXT_COLOR1).size(26).text("Game over :(")
                 .visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
@@ -63,7 +63,7 @@ public class GameOverGroup extends Group
         // Create the final score header.
         scoreHeaderLabel = new LabelBuilder(400, 234)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(14)
+                .color(Game.TEXT_COLOR1).size(14)
                 .text("Your final score was")
                 .visible(false).end();
         layerMan.add(scoreHeaderLabel, Layer.UI); 
@@ -72,13 +72,13 @@ public class GameOverGroup extends Group
         // Create the final score label.
         scoreLabel = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(30)
+                .color(Game.TEXT_COLOR1).size(30)
                 .text("0").visible(false).end();
         layerMan.add(scoreLabel, Layer.UI); 
         entityList.add(scoreLabel);
         
         // Create restart button.
-        restartButton = new SpriteButton.Builder(window, 400, 345)
+        restartButton = new SpriteButton.Builder(400, 345)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Restart").offOpacity(70).visible(false).end();
         layerMan.add(restartButton, Layer.UI);

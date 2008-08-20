@@ -62,13 +62,10 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
      * The constructor.
      * @param shape The shape of the button.
      */
-    protected AbstractSpriteButton(final IGameWindow window, final int x, final int y)
-    {
-        // Set to visible.
-        visible = true;              
-     
-        // Store the window reference.
-        this.window = window;
+    protected AbstractSpriteButton(final int x, final int y)
+    {      
+        // Grab the window reference.
+        this.window = ResourceFactory.get().getGameWindow();
         
         // Set the initial state.
         this.state = EnumSet.noneOf(State.class);

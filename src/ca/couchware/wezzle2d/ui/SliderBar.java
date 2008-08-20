@@ -128,14 +128,10 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     public SliderBar(Builder builder)
     {
         // Set to visible.
-        this.visible = true;
+        this.visible = builder.visible;
         
         // Store the window reference.
-        this.window = builder.window;
-        window.addMouseListener(this);        
-        
-        // Set the visibility.
-        setVisible(builder.visible);
+        this.window = builder.window;                       
         
         // Set the position.
         this.x = builder.x;
@@ -198,9 +194,9 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         private double virtualUpper = 1.0;
         private double virtualValue = 0.5;
         
-        public Builder(IGameWindow window, int x, int y)
+        public Builder(int x, int y)
         {            
-            this.window = window;
+            this.window = ResourceFactory.get().getGameWindow();
             this.x = x;
             this.y = y;
         }
@@ -238,7 +234,12 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         
         public SliderBar end()
         {
-            return new SliderBar(this);
+            SliderBar bar = new SliderBar(this);
+            
+            if (visible == true)
+                bar.window.addMouseListener(bar);        
+            
+            return bar;
         }                
     }
     

@@ -11,7 +11,6 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
-import ca.couchware.wezzle2d.animation.FadeAnimation.FadeType;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.piece.PieceType;
@@ -104,7 +103,7 @@ public class StarTutorial extends AbstractTutorial
         label = new LabelBuilder(280, 166)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false)
-                .color(Game.TEXT_COLOR).size(16)
+                .color(Game.TEXT_COLOR1).size(16)
                 .text("Stars destroy all tiles").end();
         game.layerMan.add(label, Layer.EFFECT);   
         labelList.add(label);
@@ -148,7 +147,7 @@ public class StarTutorial extends AbstractTutorial
         game.layerMan.toFront(bubble, Layer.EFFECT);           
         
         // Create repeat button.
-        repeatButton = new SpriteButton.Builder(game.getGameWindow(), 400, 330)
+        repeatButton = new SpriteButton.Builder(400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Repeat").offOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Layer.EFFECT);
@@ -176,18 +175,18 @@ public class StarTutorial extends AbstractTutorial
             // Fade the board out.            
             EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
                     game.boardMan.getCells() - 1);            
-            IAnimation a = new FadeAnimation.Builder(FadeType.OUT, e)
+            IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
                     .wait(0).duration(500).end();
             game.animationMan.add(a);
                                     
             // Fade in two new buttons.
             FadeAnimation f;                        
             
-            f = new FadeAnimation.Builder(FadeType.IN, repeatButton)
+            f = new FadeAnimation.Builder(FadeAnimation.Type.IN, repeatButton)
                     .wait(100).duration(500).maxOpacity(70).end();            
             game.animationMan.add(f);
                                   
-            f = new FadeAnimation.Builder(FadeType.IN, continueButton)
+            f = new FadeAnimation.Builder(FadeAnimation.Type.IN, continueButton)
                     .wait(100).duration(500).maxOpacity(70).end();
             game.animationMan.add(f);
             
@@ -266,7 +265,7 @@ public class StarTutorial extends AbstractTutorial
         // Fade board in.
         EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
                 game.boardMan.getCells() - 1);            
-        IAnimation a = new FadeAnimation.Builder(FadeType.IN, e)
+        IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
                 .wait(0).duration(300).end();
         game.animationMan.add(a);
         
@@ -303,7 +302,7 @@ public class StarTutorial extends AbstractTutorial
            public void run()
            {               
                // Fade out the bubble.            
-               IAnimation f = new FadeAnimation.Builder(FadeType.OUT, bubble)
+               IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
                        .wait(0).duration(500).end();
                game.animationMan.add(f);       
            }

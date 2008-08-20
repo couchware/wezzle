@@ -58,7 +58,7 @@ public class AnimationManager
         for (Iterator it = animationList.iterator(); it.hasNext(); ) 
         {
             IAnimation a = (IAnimation) it.next();
-            if (a.isDone() == true)
+            if (a.isFinished() == true)
             {
                 a.onFinish();
                 it.remove();

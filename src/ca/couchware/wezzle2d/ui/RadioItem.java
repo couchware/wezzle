@@ -93,7 +93,7 @@ public class RadioItem extends AbstractSpriteButton
     private RadioItem(Builder builder)
     {
         // Set the game window and coordinates.
-        super(builder.window, builder.x, builder.y);
+        super(builder.x, builder.y);
         
         // Set various trivia.
         this.opacity = builder.opacity;
@@ -128,7 +128,7 @@ public class RadioItem extends AbstractSpriteButton
         // Create the label.
         label = new ResourceFactory.LabelBuilder(0, 0)  
                 .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE))
-                .cached(false).color(Game.TEXT_COLOR).text(text)
+                .cached(false).color(Game.TEXT_COLOR1).text(text)
                 .visible(visible).opacity(opacity).size(textSize).end();                
             
         // Adjust the height so that it'll include the label.
@@ -161,10 +161,7 @@ public class RadioItem extends AbstractSpriteButton
     }
     
     public static class Builder implements IBuilder<RadioItem>
-    {
-        // Required values.  
-        private final IGameWindow window;           
-        
+    {      
         // Optional values.
         private int x = 0;
         private int y = 0;
@@ -176,14 +173,11 @@ public class RadioItem extends AbstractSpriteButton
         private float textSize = 20f;
         private int pad = 10;        
         
-        public Builder(IGameWindow window)
-        {            
-            this.window = window;           
-        }
+        public Builder()
+        { }
         
         public Builder(RadioItem radioItem)
-        {            
-            this.window = radioItem.window;
+        {                        
             this.x = radioItem.x;
             this.y = radioItem.y;
             this.alignment = radioItem.alignment.clone();            
@@ -224,7 +218,7 @@ public class RadioItem extends AbstractSpriteButton
             RadioItem item = new RadioItem(this);
             
             if (visible == true)
-                window.addMouseListener(item);            
+                item.window.addMouseListener(item);            
             
             return item;
         }                

@@ -501,12 +501,11 @@ public class WorldManager implements ILevelListener
 	{
 		return itemList;
 	}               	
-        
-        @Override
-        public void handleLevelEvent(LevelEvent e)
-        {
-            for (int i = 0; i < e.getLevelChange(); i++)
-                this.levelUp(e.getGame());
-        }
+                
+    public void handleLevelEvent(LevelEvent e)
+    {
+        for (int i = 0; i < e.getLevelChange(); i++)
+            this.levelUp(e.getGame());
+    }
 	
 }

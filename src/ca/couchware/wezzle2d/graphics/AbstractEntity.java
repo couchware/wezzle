@@ -111,7 +111,7 @@ public abstract class AbstractEntity implements IEntity
         this.visible = visible;
         
         // Set dirty so it will be drawn.
-        setDirty(true);
+        this.dirty = true;
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class AbstractEntity implements IEntity
 		this.x = x;                
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
 	}
 
 	/**
@@ -163,7 +163,7 @@ public abstract class AbstractEntity implements IEntity
 		this.y = y;
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
 	}
     
     public ImmutablePosition getXYPosition()
@@ -199,7 +199,7 @@ public abstract class AbstractEntity implements IEntity
         this.height = height;
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
     }
 
     public int getWidth()
@@ -212,7 +212,7 @@ public abstract class AbstractEntity implements IEntity
         this.width = width;
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
     }
 
     /**
@@ -225,7 +225,7 @@ public abstract class AbstractEntity implements IEntity
         this.opacity = limitOpacity(opacity);
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
     }
     
     /**
@@ -260,7 +260,7 @@ public abstract class AbstractEntity implements IEntity
         this.theta = theta;
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
     }
     
     /**

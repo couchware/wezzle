@@ -73,10 +73,10 @@ public class Window extends AbstractEntity
      * @param width
      * @param height
      */
-    public Window(IGameWindow window, int x, int y, int width, int height)
+    public Window(int x, int y, int width, int height)
     {
         // Set window reference.
-        this.window = window;
+        this.window = ResourceFactory.get().getGameWindow();
         
          // Set the position.
         this.x = x;

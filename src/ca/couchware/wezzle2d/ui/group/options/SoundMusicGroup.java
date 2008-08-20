@@ -69,33 +69,26 @@ public class SoundMusicGroup extends Group
      * @param groupMan
      * @param propertyMan
      */    
-    public SoundMusicGroup(final IGameWindow window, 
+    public SoundMusicGroup(
             final LayerManager layerMan, final GroupManager groupMan,
             final PropertyManager propertyMan)
     {
         // Invoke super.
-        super(window, layerMan, groupMan);               
+        super(layerMan, groupMan);               
                 
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(26).text("Sound/Music")
+                .color(Game.TEXT_COLOR1).size(26).text("Sound/Music")
                 .visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
-        
-        // Create the sound on/off button.
-//        soundButton = new SpriteButton.Builder(window, 400, 233)
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .text("Sound: Off").activeText("Sound: On")
-//                .offOpacity(70).visible(false).end();       
-//        layerMan.add(soundButton, Layer.UI);
-//        entityList.add(soundButton);
+               
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
-        soundOnItem = new RadioItem.Builder(window).text("Sound On").end();
-        soundOffItem = new RadioItem.Builder(window).text("Off").end();        
-        soundRadio = new RadioGroup.Builder(window, 400, 233)
+        soundOnItem = new RadioItem.Builder().text("Sound On").end();
+        soundOffItem = new RadioItem.Builder().text("Off").end();        
+        soundRadio = new RadioGroup.Builder(400, 233)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(soundOnItem).add(soundOffItem)
                 .visible(false).end();
@@ -117,7 +110,7 @@ public class SoundMusicGroup extends Group
         soundRadio.changed();
         
         // Create the sound slider bar.
-        soundSlider = new SliderBar.Builder(window, 400, 272)
+        soundSlider = new SliderBar.Builder(400, 272)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(
                     propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_MIN),
@@ -127,19 +120,12 @@ public class SoundMusicGroup extends Group
                 .visible(false).end();
         layerMan.add(soundSlider, Layer.UI);
         entityList.add(soundSlider);        
-                
-        // Create the music on/off button.
-//        musicButton = new SpriteButton.Builder(window, 400, 321)
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .text("Music: Off").activeText("Music: On")
-//                .offOpacity(70).visible(false).end();  
-//        layerMan.add(musicButton, Layer.UI);
-//        entityList.add(musicButton);
+                        
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
-        musicOnItem = new RadioItem.Builder(window).text("Music On").end();
-        musicOffItem = new RadioItem.Builder(window).text("Off").end();        
-        musicRadio = new RadioGroup.Builder(window, 400, 321)
+        musicOnItem = new RadioItem.Builder().text("Music On").end();
+        musicOffItem = new RadioItem.Builder().text("Off").end();        
+        musicRadio = new RadioGroup.Builder(400, 321)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(musicOnItem).add(musicOffItem)
                 .visible(false).end();
@@ -161,7 +147,7 @@ public class SoundMusicGroup extends Group
         musicRadio.changed();
         
         // Create the music slider bar.
-        musicSlider = new SliderBar.Builder(window, 400, 359)
+        musicSlider = new SliderBar.Builder(400, 359)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(
                     propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_MIN),
@@ -173,7 +159,7 @@ public class SoundMusicGroup extends Group
         entityList.add(musicSlider);                      
         
         // Create back button.
-        backButton = new SpriteButton.Builder(window, 400, 408)
+        backButton = new SpriteButton.Builder(400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Back").offOpacity(70).visible(false).end();        
         layerMan.add(backButton, Layer.UI);     
@@ -193,10 +179,7 @@ public class SoundMusicGroup extends Group
         {                                    
             // Hide all side triggered menues.
             backButton.setActivated(false);
-            game.groupMan.hideGroup(this);
-            
-            // Save the volume settings.
-            
+            game.groupMan.hideGroup(this);                        
         }   
         else if (soundRadio.changed() == true)
         {

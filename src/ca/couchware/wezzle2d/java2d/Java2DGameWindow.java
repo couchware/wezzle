@@ -524,6 +524,11 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
         } // end while
     }
     
+    public void clearMouseEvents()           
+    {
+        mouseEventQueue.clear();
+    }
+    
     public void addMouseListener(IMouseListener l)
     {
         if (l == null)

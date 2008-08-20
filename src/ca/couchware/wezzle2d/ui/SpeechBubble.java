@@ -122,7 +122,7 @@ public class SpeechBubble extends AbstractEntity
                                 
                 label = new LabelBuilder(x, y - offsetList.get(type))
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .color(Game.TEXT_COLOR).size(16).text(text)
+                        .color(Game.TEXT_COLOR1).size(16).text(text)
                         .cached(false).end();
                 
                 break;
@@ -133,7 +133,7 @@ public class SpeechBubble extends AbstractEntity
                 
                 label = new LabelBuilder(x - offsetList.get(type), y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .color(Game.TEXT_COLOR).size(16).text(text).end();
+                        .color(Game.TEXT_COLOR1).size(16).text(text).end();
                 
                 break;
         }             

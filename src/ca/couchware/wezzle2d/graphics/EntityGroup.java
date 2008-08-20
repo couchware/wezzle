@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.graphics;
 
+import ca.couchware.wezzle2d.LogManager;
 import java.awt.Rectangle;
 import java.util.EnumSet;
 
@@ -17,9 +18,9 @@ import java.util.EnumSet;
 public class EntityGroup extends AbstractEntity
 {
         
-    protected AbstractEntity[] entities;        
+    protected IEntity[] entities;        
     
-    public EntityGroup(AbstractEntity ... entities)
+    public EntityGroup(IEntity ... entities)
     {
         // Remember the entities.
         this.entities = entities;
@@ -37,6 +38,8 @@ public class EntityGroup extends AbstractEntity
         
         for (IEntity e : entities)
             e.setVisible(visible);
+        
+        this.dirty = true;
     }            
     
 	/**
@@ -49,6 +52,8 @@ public class EntityGroup extends AbstractEntity
         
         for (IEntity e : entities)
             e.setX(x);
+        
+        this.dirty = true;
 	}
     
     /**
@@ -61,6 +66,8 @@ public class EntityGroup extends AbstractEntity
         
         for (IEntity e : entities)
             e.setY(y);
+        
+        this.dirty = true;
 	}    
     
     @Override
@@ -68,6 +75,8 @@ public class EntityGroup extends AbstractEntity
     {
         for (IEntity e : entities)
             e.translate(dx, dy);
+        
+        this.dirty = true;
     }       
 
     @Override
@@ -77,6 +86,8 @@ public class EntityGroup extends AbstractEntity
         
         for (IEntity e : entities)
             e.setHeight(height);
+        
+        this.dirty = true;
     }   
 
     @Override
@@ -86,6 +97,8 @@ public class EntityGroup extends AbstractEntity
         
         for (IEntity e : entities)
             e.setWidth(width);
+        
+        this.dirty = true;
     }
 
     /**
@@ -96,10 +109,14 @@ public class EntityGroup extends AbstractEntity
     @Override
     public void setOpacity(final int opacity)
     {       
+        //LogManager.recordMessage("Opacity = " + opacity + ".");
+        
         super.setOpacity(opacity);
         
         for (IEntity e : entities)
             e.setOpacity(opacity);
+        
+        this.dirty = true;                
     }       
     
     /**
@@ -107,11 +124,13 @@ public class EntityGroup extends AbstractEntity
      */
     @Override
     public void setRotation(double theta)
-    {
+    {                
         super.setRotation(theta);
         
         for (IEntity e : entities)
             e.setRotation(theta);
+        
+        this.dirty = true;
     }        
     
     /**
@@ -120,10 +139,13 @@ public class EntityGroup extends AbstractEntity
 	 */
     public boolean draw()
     {
+        if (visible == false)
+            return false;
+        
         boolean updated = false;
         
-        for (AbstractEntity e : entities)
-            if (e.draw() == true) updated = true;
+        for (IEntity e : entities)                    
+            if (e.draw() == true) updated = true;        
         
         return updated;
     }
@@ -132,16 +154,7 @@ public class EntityGroup extends AbstractEntity
     public EnumSet<Alignment> getAlignment()
     {
         return alignment;
-    }   
-
-    @Override
-    public void setDirty(boolean dirty)
-    {
-        super.setDirty(dirty);
-        
-        for (IEntity e : entities)
-            e.setDirty(dirty);
-    }  
+    }      
     
     @Override
     public Rectangle getDrawRect()
@@ -156,9 +169,14 @@ public class EntityGroup extends AbstractEntity
 
     @Override
     public void resetDrawRect()
-    {
+    {        
         for (IEntity e : entities)
             e.resetDrawRect();
+    }
+    
+    public int size()
+    {
+        return entities.length;
     }
     
 }

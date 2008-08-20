@@ -205,8 +205,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
     /**
      * handle a line event.
      * @param e The line event.
-     */
-    @Override
+     */    
     public void handleLineEvent(LineEvent e)
     {
         this.incrementLineCount(e.getLineCount());
@@ -215,8 +214,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
     /**
      * Handle a move event.
      * @param e The move event.
-     */
-    @Override
+     */    
     public void handleMoveEvent(MoveEvent e)
     {
         this.setMoveCount(this.getMoveCount() + e.getMoveCount());

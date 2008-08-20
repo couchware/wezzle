@@ -52,23 +52,23 @@ public class OptionsGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public OptionsGroup(final IGameWindow window, 
-            final LayerManager layerMan, final GroupManager groupMan,
+    public OptionsGroup(final LayerManager layerMan,
+            final GroupManager groupMan,
             final PropertyManager propertyMan)
     {
         // Invoke super.
-        super(window, layerMan, groupMan);                
+        super(layerMan, groupMan);                
         
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR).size(26).text("Options")
+                .color(Game.TEXT_COLOR1).size(26).text("Options")
                 .visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
         // Create help button.
-        helpButton = new SpriteButton.Builder(window, 400, 246)
+        helpButton = new SpriteButton.Builder(400, 246)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Help").offOpacity(70).visible(false).end();        
         layerMan.add(helpButton, Layer.UI);
@@ -81,7 +81,7 @@ public class OptionsGroup extends Group
         entityList.add(audioButton);
         
         // Create the audio group.
-        audioGroup = new SoundMusicGroup(window, layerMan, groupMan, 
+        audioGroup = new SoundMusicGroup(layerMan, groupMan, 
                 propertyMan);        
         groupMan.register(audioGroup);
         
