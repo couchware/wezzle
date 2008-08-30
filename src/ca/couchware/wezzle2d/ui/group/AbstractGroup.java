@@ -29,7 +29,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     /**
      * The parent of the group.  Set to null if there is no parent.
      */
-    protected AbstractGroup parent = null;
+    protected IGroup parent = null;
     
     /**
      * Is the screen activated?

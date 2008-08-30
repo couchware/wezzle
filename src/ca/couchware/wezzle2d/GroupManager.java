@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.LayerManager.Layer;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.group.AbstractGroup;
+import ca.couchware.wezzle2d.ui.group.IGroup;
 import ca.couchware.wezzle2d.util.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -61,7 +61,7 @@ public class GroupManager
      * method.  This list is useful for performing commands on all the groups,
      * such as running updateLogic().
      */
-    protected ArrayList<AbstractGroup> groupList;       
+    protected ArrayList<IGroup> groupList;       
     
     /*
      * The list of groups currently being shown.
@@ -83,7 +83,7 @@ public class GroupManager
      */
     private GroupManager(LayerManager layerMan, PieceManager pieceMan)
     {
-        groupList = new ArrayList<AbstractGroup>();
+        groupList = new ArrayList<IGroup>();
         entryList = new LinkedList<Entry>();        
         
         this.layerMan = layerMan;
@@ -97,7 +97,7 @@ public class GroupManager
         return new GroupManager(layerMan, pieceMan);
     }
     
-    public void showGroup(IButton button, AbstractGroup showGroup, 
+    public void showGroup(IButton button, IGroup showGroup, 
             int classNum, int layerNum)
     {
         // Remove all groups that aren't part of the passed class.
@@ -190,7 +190,7 @@ public class GroupManager
                 "GroupManager#hideGroup");
     }   
     
-    public void hideGroup(AbstractGroup group)
+    public void hideGroup(IGroup group)
     {
         // Remove the group.
         for (Iterator<Entry> it = entryList.iterator(); it.hasNext(); )            
@@ -225,7 +225,7 @@ public class GroupManager
      * 
      * @param group The group to register.
      */
-    public void register(AbstractGroup group)
+    public void register(IGroup group)
     {
         // Add the group to the static linked list.
         groupList.add(group);
@@ -238,7 +238,7 @@ public class GroupManager
      */
     public void updateLogic(Game game)
     {
-        for (AbstractGroup group : groupList)
+        for (IGroup group : groupList)
         {
             if (group.isActivated() == true
                     && group.controlChanged() == true)
@@ -265,7 +265,7 @@ public class GroupManager
         /**
          * The group associated with this entry.
          */
-        final protected AbstractGroup group;
+        final protected IGroup group;
         
         /**
          * The button that was used to open this group.
@@ -287,7 +287,7 @@ public class GroupManager
         /**
          * The constructor.
          */
-        public Entry(AbstractGroup group, IButton button, 
+        public Entry(IGroup group, IButton button, 
                 int classNum, int layerNum)
         {
             // Set the references.
@@ -297,7 +297,7 @@ public class GroupManager
             this.layerNum = layerNum;
         }
 
-        public AbstractGroup getGroup()
+        public IGroup getGroup()
         {
             return group;
         }    
