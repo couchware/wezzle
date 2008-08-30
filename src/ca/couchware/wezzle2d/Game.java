@@ -18,8 +18,8 @@ import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
-import ca.couchware.wezzle2d.menu2.Loader;
-import ca.couchware.wezzle2d.menu2.MainMenu;
+import ca.couchware.wezzle2d.menu.Loader;
+import ca.couchware.wezzle2d.menu.MainMenu;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.ui.*;
@@ -932,11 +932,11 @@ public class Game extends Canvas implements IGameWindowCallback
     private void initializeGroups()
     {        
         // Initialize pause group.                
-        pauseGroup = new PauseGroup(layerMan, groupMan);
+        pauseGroup = new PauseGroup(layerMan);
         groupMan.register(pauseGroup);
              
         // Initialize game over group.
-        gameOverGroup = new GameOverGroup(layerMan, groupMan);    
+        gameOverGroup = new GameOverGroup(layerMan);    
         groupMan.register(gameOverGroup);
         
         // Initialize options group.
@@ -944,7 +944,7 @@ public class Game extends Canvas implements IGameWindowCallback
         groupMan.register(optionsGroup);
         
         // Initialize high score group.
-        highScoreGroup = new HighScoreGroup(layerMan, groupMan, highScoreMan); 
+        highScoreGroup = new HighScoreGroup(layerMan, highScoreMan); 
         groupMan.register(highScoreGroup);
     }
     
@@ -990,7 +990,11 @@ public class Game extends Canvas implements IGameWindowCallback
         // Initialize managers.
         loader.addRunnable(new Runnable()
         {
-           public void run() { initializeManagers(EnumSet.allOf(ManagerType.class)); }
+           public void run() 
+           { 
+               initializeManagers(EnumSet.allOf(ManagerType.class)); 
+               layerMan.setDisabled(true);
+           }
         });
                                
         // Initialize buttons.    
@@ -1240,6 +1244,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 window.clearMouseEvents();
                 
                 // Draw normally.
+                layerMan.setDisabled(false);
                 return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
                 
                 // Create the main menu.

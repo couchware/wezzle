@@ -36,4 +36,14 @@ public interface IEntity extends IDrawable, IPositionable
      */
     public double getRotation();
     
+    /**
+     * Sets the disabled status of the entity.
+     */
+    public void setDisabled(boolean disabled);
+    
+    /**
+     * Gets the disabled status of the entity.
+     */
+    public boolean isDisabled();
+    
 }

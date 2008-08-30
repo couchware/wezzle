@@ -22,7 +22,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class SoundMusicGroup extends Group
+public class SoundMusicGroup extends AbstractGroup
 {    
     
     /**
@@ -70,11 +70,11 @@ public class SoundMusicGroup extends Group
      * @param propertyMan
      */    
     public SoundMusicGroup(
-            final LayerManager layerMan, final GroupManager groupMan,
+            final LayerManager layerMan,
             final PropertyManager propertyMan)
     {
         // Invoke super.
-        super(layerMan, groupMan);               
+        super(layerMan);               
                 
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
@@ -170,8 +170,7 @@ public class SoundMusicGroup extends Group
      * Override the update logic method.
      * 
      * @param game The game state.
-     */
-    @Override
+     */    
     public void updateLogic(Game game)
     {                
         // Check if the back button was pressed.

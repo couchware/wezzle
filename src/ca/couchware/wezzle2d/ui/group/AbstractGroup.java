@@ -9,6 +9,8 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.LayerManager;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.animation.FinishedAnimation;
+import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.LinkedList;
@@ -18,7 +20,7 @@ import java.util.LinkedList;
  *
  * @author cdmckay
  */
-public class Group extends AbstractEntity
+public abstract class AbstractGroup extends AbstractEntity implements IGroup
 {        
     //--------------------------------------------------------------------------
     // Protected Members
@@ -27,7 +29,7 @@ public class Group extends AbstractEntity
     /**
      * The parent of the group.  Set to null if there is no parent.
      */
-    protected Group parent = null;
+    protected AbstractGroup parent = null;
     
     /**
      * Is the screen activated?
@@ -43,13 +45,7 @@ public class Group extends AbstractEntity
      * A reference to the layer manager.  This is used by groups to add
      * and remove things like buttons and sliders.
      */
-    final protected LayerManager layerMan;
-    
-    /**
-     * A reference to the group manager.  This is used to give the buttons
-     * the capability to open other groups in a convenient way.
-     */
-    final protected GroupManager groupMan;
+    final protected LayerManager layerMan;       
 
     /**
      * An linked list of all the entities in this screen.
@@ -66,15 +62,14 @@ public class Group extends AbstractEntity
      * @param window
      * @param layerMan
      */
-    public Group(final LayerManager layerMan, final GroupManager groupMan)
+    public AbstractGroup(LayerManager layerMan)
     {       
         // Make all groups start invisible.
         super.setVisible(false);
 
-        // Store the reference.
+        // Store the references.
         this.window = ResourceFactory.get().getGameWindow();
-        this.layerMan = layerMan;
-        this.groupMan = groupMan;
+        this.layerMan = layerMan;       
 
         // Create the entity list.
         this.entityList = new LinkedList<IEntity>();
@@ -122,21 +117,31 @@ public class Group extends AbstractEntity
                 ((RadioGroup) e).changed();
     }    
     
-    /**
-     * This method is called when the group is activated and detects a click.
-     * 
-     * @param game The game state.
-     */
-    public void updateLogic(Game game)
-    {
-        // Overridden.
-    }
-
     @Override
     public boolean draw()
     {
         throw new UnsupportedOperationException(
-                "This method is not supported for groups");
+                "This method is not supported for groups.");
+    }
+    
+    /**
+     * Returns an animation that gradually shows the group's visual elements.
+     * 
+     * @return An animation that can be tested for doneness.
+     */
+    public IAnimation animateShow()
+    {
+        return FinishedAnimation.get();
+    }
+    
+    /**
+     * Returns an animation that gradually hides the group's visual elements.
+     * 
+     * @return An animation that can be tested for doneness.
+     */
+    public IAnimation animateHide()
+    {
+        return FinishedAnimation.get();
     }
 
     //--------------------------------------------------------------------------

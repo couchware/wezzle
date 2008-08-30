@@ -649,7 +649,7 @@ public class BoardManager implements IManager
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).v(v)
-                                .minX(board[i].getX()).minY(bound).theta(90).end();                        
+                                .minY(bound).theta(90).end();                        
                         animationList.add(a);
                     }
                 }  
@@ -669,7 +669,7 @@ public class BoardManager implements IManager
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).v(v)
-                                .minX(board[i].getX()).maxY(bound).theta(-90).end();                        
+                                .maxY(bound).theta(-90).end();                        
                         animationList.add(a);
                     }
                 }  
@@ -690,7 +690,7 @@ public class BoardManager implements IManager
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).v(v)
-                                .minX(bound).minY(board[i].getY()).theta(180).end();                        
+                                .minX(bound).theta(180).end();                        
                         animationList.add(a);
                     }
                 }
@@ -711,7 +711,7 @@ public class BoardManager implements IManager
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).v(v)
-                                .maxX(bound).minY(board[i].getY()).theta(0).end();                        
+                                .maxX(bound).theta(0).end();                        
                         animationList.add(a);
                     }
                 }

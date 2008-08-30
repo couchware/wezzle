@@ -3,7 +3,7 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d.menu2;
+package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.LayerManager;
@@ -12,13 +12,17 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
-import ca.couchware.wezzle2d.animation.ZoomAnimation;
+import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.group.IGroup;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  *
@@ -71,14 +75,19 @@ public class MainMenu
     private State state = State.READY;
         
     /**
-     * The animation that the main menu runs when it is first shown.
+     * An enum containing the main menu buttons.
      */
-    private final IAnimation showAnimation;
-    
-    /**
-     * The animation that the main menu runs when it is hidden.
-     */
-    //private final IAnimation hideAnimation;
+    private enum Button
+    {
+        NONE,
+        PLAY_NOW,
+        TUTORIAL,
+        OPTIONS,
+        UPGRADE,
+        ACHIEVEMENTS,
+        HIGH_SCORES,
+        EXIT
+    }        
     
     /**
      * The animation that the main menu is showing.
@@ -91,44 +100,24 @@ public class MainMenu
     final private GraphicEntity wezzleLogoGraphic;
     
     /**
-     * The play now button.
+     * A map containing all the buttons in the main menu.
      */
-    final private IButton playNowButton;
+    private EnumMap<Button, IButton> buttonMap;
     
     /**
-     * The tutorial button.
+     * A map containing all the groups in the main menu.
      */
-    final private IButton tutorialButton;
+    private EnumMap<Button, IGroup> groupMap;
     
     /**
-     * The options button.
+     * The current button that is activated.
      */
-    final private IButton optionsButton;
-    
-//    /**
-//     * The upgrade button.
-//     */
-//    final private IButton upgradeButton;
-//    
-//    /**
-//     * The achievements button.
-//     */
-//    final private IButton achievementsButton;
-//    
-//    /**
-//     * The high scores button.
-//     */
-//    final private IButton highScoresButton;
-//    
-//    /**
-//     * The exit button.
-//     */
-//    final private IButton exitButton;
+    private Button currentButton = Button.NONE;
     
     /**
      * The layer manager.
      */
-    final private LayerManager layerMan;
+    private LayerManager layerMan;       
     
     /**
      * Create a new main menu.
@@ -162,46 +151,215 @@ public class MainMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
         layerMan.add(wezzleLogoGraphic, Layer.BACKGROUND);
         
-        // Create the show animation.
-        IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, wezzleLogoGraphic)
-                .wait(500).duration(1500).end();
+        // Create the animation that fades in the wezzle logo.
+        IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.IN, wezzleLogoGraphic)
+                .wait(500).duration(2100).end();
         
-        // Create the buttons.
-        playNowButton = new SpriteButton.Builder(620, 191)
+        // Create the animation the shoots in the buttons.
+        IAnimation a2 = initializeButtons();
+        
+        // Create the groups.
+        initializeGroups();
+        
+        // Set the animation.
+        this.animation = new MetaAnimation.Builder()
+                .finishRule(MetaAnimation.FinishRule.ALL)
+                .add(a1)
+                .add(a2)                
+                .end();                
+                
+    };
+    
+    private IAnimation initializeButtons()
+    {
+        // The speed the buttons come in.
+        final double speed = 0.8;
+        
+        // The final X position the buttons go to.
+        final int minX = 630;
+        
+        // Create the button list.
+        this.buttonMap = new EnumMap<Button, IButton>(Button.class);
+        
+        // The button that will be used as a template for all buttons.
+        IButton templateButton = null;
+        
+        // A temporary button holder.
+        IButton button = null;
+        
+        // Create the buttons.               
+        button = new SpriteButton.Builder(910, 153)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.THIN).text("Play Now").textSize(20)
-                .hoverOpacity(70).offOpacity(0).end();
-        layerMan.add(playNowButton, Layer.UI);
+                .hoverOpacity(70).offOpacity(0).disabled(true).end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Button.PLAY_NOW, button);
         
-        tutorialButton = new SpriteButton.Builder((SpriteButton) playNowButton)
-                .y(231).text("Tutorial").end();
-        layerMan.add(tutorialButton, Layer.UI);
+        IAnimation a1 = new MoveAnimation.Builder(button)
+                .theta(180).v(speed).minX(minX).end();      
         
-        optionsButton = new SpriteButton.Builder((SpriteButton) playNowButton)
-                .y(271).text("Options").end();
-        layerMan.add(optionsButton, Layer.UI);
+        // Make this button the template.
+        templateButton = (SpriteButton) button;
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(202).text("Tutorial").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Button.TUTORIAL, button);
+        
+        IAnimation a2 = new MoveAnimation.Builder(button).wait(300)
+                .theta(180).v(speed).minX(minX).end();        
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(251).text("Options").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Button.OPTIONS, button);
+        
+        IAnimation a3 = new MoveAnimation.Builder(button).wait(600)
+                .theta(180).v(speed).minX(minX).end();
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(300).text("Upgrade").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Button.UPGRADE, button);
+        
+        IAnimation a4 = new MoveAnimation.Builder(button).wait(900)
+                .theta(180).v(speed).minX(minX).end();
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(349).text("Achievements").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Button.ACHIEVEMENTS, button);
+        
+        IAnimation a5 = new MoveAnimation.Builder(button).wait(1200)
+                .theta(180).v(speed).minX(minX).end();
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(398).text("High Scores").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Button.HIGH_SCORES, button);
+        
+        IAnimation a6 = new MoveAnimation.Builder(button).wait(1500)
+                .theta(180).v(speed).minX(minX).end();
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(447).text("Exit").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Button.EXIT, button);
+        
+        IAnimation a7 = new MoveAnimation.Builder(button).wait(1800)
+                .theta(180).v(speed).minX(minX).end();
+        
+        a7.setFinishAction(new Runnable()
+        {
+           public void run() 
+           {
+               // Enable all the buttons.
+               for (IButton b : buttonMap.values())
+                   b.setDisabled(false);
+           }
+        });
                         
-        this.showAnimation = a; //new MetaAnimation.Builder().add(a).end();
+        return new MetaAnimation.Builder()
+                .finishRule(MetaAnimation.FinishRule.ALL)                
+                .add(a1)
+                .add(a2)
+                .add(a3)
+                .add(a4)
+                .add(a5)
+                .add(a6)
+                .add(a7)
+                .end();
+    }
+    
+    private void initializeGroups()
+    {
+        // Create the group map.
+        this.groupMap = new EnumMap<Button, IGroup>(Button.class);
+        
+        // A temporary group holder.
+        IGroup group = null;
+        
+        // Create the None group.
+        group = new NoneGroup(this.layerMan);
+        this.groupMap.put(Button.NONE, group);
+        
+        // Create the "Play Now" group.
+        group = new PlayNowGroup(this.layerMan);
+        this.groupMap.put(Button.PLAY_NOW, group);
+        
+        // Create the "Tutorial" group.
+        group = new TutorialGroup(this.layerMan);
+        this.groupMap.put(Button.TUTORIAL, group);
     }
     
     public State updateLogic(Game game)
     {       
         switch (state)
         {
-            case READY:                              
+            case READY:                                                              
                 
-                if (showAnimation.isFinished() == false)
+                // See if there is an animation to run.
+                if (this.animation != null)
                 {
-                    game.animationMan.add(showAnimation);
-                    state = State.ANIMATING;
+                    game.animationMan.add(this.animation);
+                    this.state = State.ANIMATING;
                 }
+                
+                // The button that was clicked.  Null if no button was clicked.
+                IButton clickedButton = null;
+                
+                for (IButton btn : this.buttonMap.values())
+                {
+                    if (btn.clicked() == true)
+                    {
+                        clickedButton = btn;
+                        break;
+                    }
+                } // end for
+                
+                // See if a button was clicked.  If it was, then unclick all
+                // the others.
+                if (clickedButton != null)
+                {
+                    for (Button b : this.buttonMap.keySet())
+                    {
+                        // Make sure their clicked flag is clear.
+                        IButton btn = buttonMap.get(b);
+                        
+                        // Activate the button if it is the clicked button.
+                        if (btn.equals(clickedButton) == true)
+                        {
+                            // Activate the new button.
+                            btn.setActivated(true);
+                            btn.setDisabled(true);
+                            
+                            // Animate the change.
+                            this.animation = new MetaAnimation.Builder()
+                                    .runRule(MetaAnimation.RunRule.SEQUENCE)
+                                    .add(this.groupMap.get(currentButton).animateHide())
+                                    .add(this.groupMap.get(b).animateShow())
+                                    .end();
+                            
+                            // Set the new current button.
+                            this.currentButton = b;
+                        }
+                        else
+                        {
+                            btn.setActivated(false);
+                            btn.setDisabled(false);
+                        }                        
+                    } // end for
+                } // end if
                 
                 break;
                 
             case ANIMATING:                 
                 
-                if (showAnimation.isFinished() == true)
+                if (animation.isFinished() == true)
+                {
+                    animation = null;
                     state = State.READY;
+                }
                 
                 break;
                 

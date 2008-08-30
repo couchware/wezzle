@@ -130,6 +130,7 @@ public class SpriteButton extends AbstractSpriteButton
         
         // Set the visibility.
         this.visible = builder.visible;
+        this.disabled = builder.disabled;
         
         // Assign values based on the values from builder.
         final ImmutableDimension d = dimensionMap.get(type);
@@ -137,7 +138,7 @@ public class SpriteButton extends AbstractSpriteButton
         this.height = d.getHeight();                
         
         // Determine the offsets.
-         this.alignment = builder.alignment;
+        this.alignment = builder.alignment;
         offsetX = determineOffsetX(alignment, width);
         offsetY = determineOffsetY(alignment, height);
         
@@ -187,6 +188,7 @@ public class SpriteButton extends AbstractSpriteButton
         private int onOpacity = 100;
         private Type type = Type.NORMAL;  
         private boolean visible = true;
+        private boolean disabled = false;
         
         public Builder(int x, int y)
         {            
@@ -208,6 +210,7 @@ public class SpriteButton extends AbstractSpriteButton
             this.onOpacity = button.onOpacity;
             this.type = button.type;
             this.visible = button.visible;
+            this.disabled = button.disabled;
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -252,11 +255,14 @@ public class SpriteButton extends AbstractSpriteButton
         public Builder visible(boolean val) 
         { visible = val; return this; }
         
+        public Builder disabled(boolean val)
+        { disabled = val; return this; }
+        
         public SpriteButton end()
         {
             SpriteButton button = new SpriteButton(this);
             
-            if (visible == true)
+            if (visible == true && disabled == false)
                 button.window.addMouseListener(button);           
             
             return button;
@@ -357,10 +363,30 @@ public class SpriteButton extends AbstractSpriteButton
         return activeText;
     }
     
+    @Override
+    public void setX(int x)
+    {
+        super.setX(x);
+        
+        normalLabel.setX(x);
+        if (hoverLabel != null) hoverLabel.setX(x);
+        if (activeLabel != null) activeLabel.setX(x);
+    }
+    
+    @Override
+    public void setY(int y)
+    {
+        super.setY(y);
+        
+        normalLabel.setY(y);
+        if (hoverLabel != null) hoverLabel.setY(y);
+        if (activeLabel != null) activeLabel.setY(y);
+    }
+    
     public boolean draw()
     {
-        x_ = x;
-        y_ = y;
+        x_ = x + offsetX;
+        y_ = y + offsetY;
         
         // Don't draw if not visible.
         if (visible == false)
@@ -368,13 +394,15 @@ public class SpriteButton extends AbstractSpriteButton
 
         // See what state we're in.
         if (state.contains(State.PRESSED))        
-            drawPressed();
+            drawPressed();        
         else if (state.contains(State.HOVERED))
             drawHovered();
         else if (state.contains(State.ACTIVATED))
             drawActivated();
         else
-            drawNormal();        
+            drawNormal();     
+        
+        //window.drawRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
         
         return true;
     }

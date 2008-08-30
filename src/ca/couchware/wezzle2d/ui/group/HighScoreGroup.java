@@ -13,7 +13,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class HighScoreGroup extends Group
+public class HighScoreGroup extends AbstractGroup
 {
     
     /**
@@ -52,12 +52,12 @@ public class HighScoreGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public HighScoreGroup(final LayerManager layerMan, 
-            final GroupManager groupMan,
+    public HighScoreGroup(
+            final LayerManager layerMan,             
             final HighScoreManager highScoreMan)
     {
         // Invoke super.
-        super(layerMan, groupMan);
+        super(layerMan);
          
         // Save the reference.
         this.highScoreMan = highScoreMan;
@@ -166,8 +166,7 @@ public class HighScoreGroup extends Group
      * Override the update logic method.
      * 
      * @param game The game state.
-     */
-    @Override
+     */    
     public void updateLogic(Game game)
     {
         // Check if the back button was pressed.

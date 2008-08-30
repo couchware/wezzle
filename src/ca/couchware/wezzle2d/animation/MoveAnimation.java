@@ -14,6 +14,22 @@ public class MoveAnimation extends AbstractAnimation
 {    
     
     /**
+     * The finish rules.
+     */
+    public enum FinishRule
+    {
+        /**
+         * Finish the animation when the first coordinate is met (default).
+         */
+        FIRST,        
+        
+        /**
+         * Finish the animation only when both coordinates are met.
+         */
+        BOTH
+    }
+    
+    /**
      * Is skip on?  This is engaged when both x and y boundaries are met to
      * tell the animation to skip calculations until done.
      */
@@ -81,9 +97,19 @@ public class MoveAnimation extends AbstractAnimation
     private int wait;
     
     /**
+     * Whether or not wait period is finished.
+     */
+    private boolean waitFinished = false;
+    
+    /**
      * The max time for the animation to run for, in ms.
      */
     private int duration;
+    
+    /**
+     * The finish rule for the animation.
+     */
+    private final FinishRule finishRule;
 
    /**
     * Fire an entity with the given launch speed, angle and gravity and 
@@ -107,6 +133,7 @@ public class MoveAnimation extends AbstractAnimation
         this.minY = builder.minY;
         this.maxX = builder.maxX;
         this.maxY = builder.maxY;
+        this.finishRule = builder.finishRule;
         
         // Determine the components of the launch velocity.
         vX = builder.v * Math.cos(Math.toRadians(theta));
@@ -126,6 +153,7 @@ public class MoveAnimation extends AbstractAnimation
         private int minY = Integer.MIN_VALUE;
         private int maxX = Integer.MAX_VALUE;
         private int maxY = Integer.MAX_VALUE;
+        private FinishRule finishRule = FinishRule.FIRST;
         
         public Builder(IEntity entity)
         {            
@@ -141,6 +169,7 @@ public class MoveAnimation extends AbstractAnimation
         public Builder minY(int val) { minY = val; return this; }
         public Builder maxX(int val) { maxX = val; return this; }
         public Builder maxY(int val) { maxY = val; return this; }
+        public Builder finishRule(FinishRule val) { finishRule = val; return this; }
                 
         public MoveAnimation end()
         {
@@ -152,7 +181,10 @@ public class MoveAnimation extends AbstractAnimation
     {
         // Check if we're done, if we are, return.
         if (isFinished() == true)
+        {
+            LogManager.recordMessage("Move finished!");
             return;
+        }
               
         // Add delta to counter.  This serves as the time variable.
         counter += delta;                               
@@ -166,7 +198,14 @@ public class MoveAnimation extends AbstractAnimation
             return;
         }
         
-        if (counter > wait)
+        if (waitFinished == false && counter > wait)
+        {
+            waitFinished = true;
+            counter -= wait;
+        }
+        
+       
+        if (waitFinished == true)
         {
             // Determine the current x and y.
             double t = (double) counter;
@@ -201,7 +240,9 @@ public class MoveAnimation extends AbstractAnimation
             entity.setX(newX);                        
             entity.setY(newY);        
                     
-            if (doneX == true && doneY == true)
+            if ((finishRule == FinishRule.FIRST && (doneX == true || doneY == true))
+                || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))
+                
             {
                 if (duration == -1) setFinished(true);
                 else skip = true;

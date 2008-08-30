@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 /**
  * A class for managaing layer draw order.  Layer 0 is the bottom (lowest)
  * layer, followed by Layer 1, Layer 2, etc.  Negative layers are not 
@@ -32,6 +33,11 @@ public class LayerManager
         UI
     }        
         
+    /**
+     * Is the layer manager disabled?
+     */
+    private boolean disabled = false;
+    
     /**
      * TODO Add documentation.
      */
@@ -77,8 +83,7 @@ public class LayerManager
         // Initialize remove clip.
         this.removeRect = new Rectangle();
     }
-    
-    
+        
     // Public API.
     public static LayerManager newInstance()
     {
@@ -97,6 +102,10 @@ public class LayerManager
         if (layer == null)
             throw new NullPointerException("Layer does not exist!");
 
+        // Set disabledness.
+        if (disabled == true && drawable instanceof IEntity)
+            ((IEntity) drawable).setDisabled(true);
+        
         // Add the element to the layer.
         layerList.get(layer.ordinal()).add(drawable);        
     }
@@ -305,18 +314,18 @@ public class LayerManager
                 
                 Rectangle r = d.getDrawRect();                
                 
-                if (r != null && (r.getMinX() < 0 || r.getMinY() < 0))
-                {
-                    LogManager.recordWarning("Offending class is " 
-                            + d.getClass().getSimpleName(), 
-                            "LayerManager#drawRegion");
-                    
-                    LogManager.recordWarning("Rectangle is " + r,
-                            "LayerManager#drawRegion");
-                    
-                    if (d instanceof ILabel)
-                        LogManager.recordWarning(((ILabel) d).getText());
-                }
+//                if (r != null && (r.getMinX() < 0 || r.getMinY() < 0))
+//                {
+//                    LogManager.recordWarning("Offending class is " 
+//                            + d.getClass().getSimpleName(), 
+//                            "LayerManager#drawRegion");
+//                    
+//                    LogManager.recordWarning("Rectangle is " + r,
+//                            "LayerManager#drawRegion");
+//                    
+//                    if (d instanceof ILabel)
+//                        LogManager.recordWarning(((ILabel) d).getText());
+//                }
                                
                 if (r != null && region.intersects(r) == true)
                 {                                          
@@ -472,5 +481,23 @@ public class LayerManager
         
         return changed;
     }
+
+    public boolean isDisabled()
+    {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled)
+    {
+        // Save the state.
+        this.disabled = disabled;
+        
+        // Go through all the layers and call their disabled method if they
+        // are entities.
+        for (List<IDrawable> l : layerList)
+            for (IDrawable d : l)
+                if (d instanceof IEntity)
+                    ((IEntity) d).setDisabled(disabled);
+    }        
     
 }

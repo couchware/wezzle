@@ -120,7 +120,10 @@ public class FadeAnimation extends AbstractAnimation
     {
         // Check if we're done, if we are, return.
         if (isFinished() == true)
+        {
+            LogManager.recordMessage("Fade finished!");
             return;              
+        }
         
         // Add to counter.
         counter += delta;

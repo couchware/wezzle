@@ -115,6 +115,13 @@ public class ImmutableRectangle implements Shape
     public PathIterator getPathIterator(AffineTransform at, double flatness)
     {
         return rect.getPathIterator(at, flatness);
-    }              
+    }         
+    
+    @Override
+    public String toString()
+    {
+        return "(x,y) = (" + rect.x + "," + rect.y + "); " + 
+                "(w, h) = (" + rect.width + "," + rect.height + ")";
+    }
     
 }

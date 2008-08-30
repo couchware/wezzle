@@ -16,7 +16,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class PauseGroup extends Group 
+public class PauseGroup extends AbstractGroup 
 {       
     /**
      * The main label showing the paused text.
@@ -41,10 +41,10 @@ public class PauseGroup extends Group
     /**
      * The constructor.    
      */    
-    public PauseGroup(final LayerManager layerMan, final GroupManager groupMan)
+    public PauseGroup(final LayerManager layerMan)
     {
         // Invoke super.
-        super(layerMan, groupMan);
+        super(layerMan);
                
         // Create the "Paused" text.
         mainLabel = new LabelBuilder(400, 245)
@@ -145,6 +145,11 @@ public class PauseGroup extends Group
     {
         // Invoke super.
         super.setActivated(activated);               
-    }        
+    }
+    
+    public void updateLogic(Game game)
+    {
+        // Intentionally left blank.
+    }
     
 }

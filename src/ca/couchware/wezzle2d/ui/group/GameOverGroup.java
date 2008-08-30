@@ -14,7 +14,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class GameOverGroup extends Group
+public class GameOverGroup extends AbstractGroup
 {              
     /**
      * The header label.
@@ -46,11 +46,10 @@ public class GameOverGroup extends Group
      * 
      * @param layerMan
      */    
-    public GameOverGroup(final LayerManager layerMan, 
-            final GroupManager groupMan)
+    public GameOverGroup(final LayerManager layerMan)
     {        
         // Invoke super.
-        super(layerMan, groupMan);
+        super(layerMan);
         
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
@@ -120,8 +119,7 @@ public class GameOverGroup extends Group
      * Override the update logic method.
      * 
      * @param game The game state.
-     */
-    @Override
+     */    
     public void updateLogic(Game game)
     {
         // Hide the screen.

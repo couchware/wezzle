@@ -136,22 +136,33 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     protected void handleMoved(ImmutablePosition pos)
     {        
         // See if we moved on to the button.
-        if (state.contains(State.HOVERED) == false 
-                && shape.contains(pos.getX(), pos.getY()) == true)
+        if (state.contains(State.HOVERED) == false)
+        {      
+            if (shape.contains(pos.getX(), pos.getY()) == true)
+            {
+                state.add(State.HOVERED);
+                handleMouseOn();                
+            }           
+        }
+        // See if we moved off the button.
+        else if (state.contains(State.HOVERED) == true)                
         {            
-            state.add(State.HOVERED);
-            handleMouseOn();                
-        }
-        else if (state.contains(State.HOVERED) == true
-                && shape.contains(pos.getX(), pos.getY()) == false)
-        {
-            state.remove(State.HOVERED);
-            handleMouseOff();
-        }
+            if (shape.contains(pos.getX(), pos.getY()) == false)
+            {
+                state.remove(State.HOVERED);
+                handleMouseOff();
+            }
+            else
+            {
+                //LogManager.recordMessage("Hand");
+                window.setCursor(Cursor.HAND_CURSOR);
+            }
+        }        
     }
        
     protected void handleMouseOn()
-    {                               
+    {             
+        //LogManager.recordMessage(this + " on called");
         // Set the cursor appropriately.
         window.setCursor(Cursor.HAND_CURSOR);
                 
@@ -159,7 +170,8 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     }           
     
     protected void handleMouseOff()
-    {          
+    {   
+        //LogManager.recordMessage(this + " off called");
         // Set the cursor appropriately.
         window.setCursor(Cursor.DEFAULT_CURSOR);
                 
@@ -196,20 +208,54 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     public void setVisible(boolean visible)
     {
         // Ignore if visibility not changed.
-        if (this.visible == visible)
+        if (this.visible == visible || this.disabled == true)
+        {
+            this.visible = visible;
             return;
+        }
         
         // Invoke super.
         super.setVisible(visible);
         
         // Add or remove listener based on visibility.
-        if (visible == true)
+        swapMouseListener(visible);     
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled)
+    {
+        //LogManager.recordMessage("Disabled");
+        
+        // Ignore if disabled or invisible.
+        if (this.disabled == disabled || this.visible == false)            
+        {
+            this.disabled = disabled;
+            return;        
+        }
+        
+        // Invoke super class.
+        super.setDisabled(disabled);
+        
+        // Add or remove listener based on disabledness..
+        swapMouseListener(!disabled);
+    }        
+    
+    /**
+     * Adds or removes this instance from the mouse listener list.
+     * 
+     * @param add
+     */
+    private void swapMouseListener(boolean add)
+    {
+        // If we're adding the listener.
+        if (add == true)
         {
             // Pretend like we just moved the mouse.
             handleMoved(window.getMouseImmutablePosition());
             
             window.addMouseListener(this);            
         }
+        // If we're removing it.
         else
         {          
             // Clear the last mouse position.
@@ -217,7 +263,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
             
             window.setCursor(Cursor.DEFAULT_CURSOR);            
             window.removeMouseListener(this);            
-        }        
+        }  
     }
     
     public boolean isActivated()
@@ -227,17 +273,6 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
 
     public void setActivated(boolean activated)
     {
-//        this.activated = activated;
-//        
-//        if (isActivated() == true)
-//        {
-//            buttonState = HoverState.ON;            
-//        }
-//        else
-//        {            
-//            buttonState = HoverState.OFF;                       
-//            handleMoved(window.getMouseImmutablePosition());
-//        }
         if (activated == true)
             state.add(State.ACTIVATED);
         else

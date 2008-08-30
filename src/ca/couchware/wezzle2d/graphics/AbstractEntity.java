@@ -33,7 +33,12 @@ public abstract class AbstractEntity implements IEntity
     /** 
      * Is this visible? 
      */
-    protected boolean visible = true;          
+    protected boolean visible = true;         
+    
+    /**
+     * Is this entity disabled?
+     */
+    protected boolean disabled = false;
     
      /**
      * The rotation.
@@ -251,6 +256,15 @@ public abstract class AbstractEntity implements IEntity
         return opacity;
     }   
     
+    public void setDisabled(final boolean disabled)
+    {
+        this.disabled = disabled;
+    }
+    
+    public boolean isDisabled()
+    {
+        return disabled;
+    }
     
     /**
      * Rotates the image by theta.

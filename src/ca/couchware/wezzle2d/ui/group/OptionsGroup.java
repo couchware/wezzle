@@ -14,7 +14,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class OptionsGroup extends Group
+public class OptionsGroup extends AbstractGroup
 {
     /**
      * The header label.
@@ -52,12 +52,13 @@ public class OptionsGroup extends Group
      * @param window
      * @param layerMan
      */    
-    public OptionsGroup(final LayerManager layerMan,
+    public OptionsGroup(
+            final LayerManager layerMan,     
             final GroupManager groupMan,
             final PropertyManager propertyMan)
     {
         // Invoke super.
-        super(layerMan, groupMan);                
+        super(layerMan);                
         
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
@@ -81,8 +82,7 @@ public class OptionsGroup extends Group
         entityList.add(audioButton);
         
         // Create the audio group.
-        audioGroup = new SoundMusicGroup(layerMan, groupMan, 
-                propertyMan);        
+        audioGroup = new SoundMusicGroup(layerMan, propertyMan);        
         groupMan.register(audioGroup);
         
         // Create main menu button.
@@ -103,12 +103,12 @@ public class OptionsGroup extends Group
         return backButton.clicked();
     }  
     
-     public boolean isBackButtonActivated()
+    public boolean isBackButtonActivated()
     {
         return backButton.isActivated();
     }
     
-     @Override
+    @Override
     public void setVisible(final boolean visible)
     {
         // This is more important than you think.  Basically, since we might
@@ -126,8 +126,7 @@ public class OptionsGroup extends Group
      * Override the update logic method.
      * 
      * @param game The game state.
-     */
-    @Override
+     */    
     public void updateLogic(Game game)
     {
         // Check if the back button was pressed.
