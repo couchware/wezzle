@@ -1,8 +1,10 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.BoardManager.Direction;
-import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.BoardManager.Direction;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.FadeAnimation.Type;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.PieceGrid;

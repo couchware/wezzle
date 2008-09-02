@@ -5,12 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.BoardManager.Direction;
-import ca.couchware.wezzle2d.LayerManager.Layer;
-import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -18,6 +13,11 @@ import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.manager.*;
+import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
+import ca.couchware.wezzle2d.manager.BoardManager.Direction;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.menu.MainMenu;
 import ca.couchware.wezzle2d.tile.*;
@@ -746,7 +746,7 @@ public class Game extends Canvas implements IGameWindowCallback
         
         if (managerSet.contains(ManagerType.MUSIC))
         {
-            // Create the music manager.
+            // Create the music manager.            
             musicMan = MusicManager.newInstance(executor, propertyMan);  
         }
         
@@ -1248,7 +1248,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
                 
                 // Create the main menu.
-                //mainMenu = new MainMenu();
+                //mainMenu = new MainMenu(animationMan);
             }   
             else
             {      

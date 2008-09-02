@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.graphics;
 
+import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.*;
 import java.awt.Rectangle;
 import java.util.Arrays;

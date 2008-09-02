@@ -6,9 +6,10 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.LayerManager;
-import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.LayerManager;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
@@ -51,17 +52,7 @@ public class MainMenu
         /** 
          * The main menu has been initialized and is ready to go.
          */
-        READY,
-        
-        /** 
-         * The main menu is waiting for the user to do something.
-         */
-        WAITING,
-        
-        /**
-         * The main menu is animating.
-         */
-        ANIMATING,
+        READY,                
               
         /**
          * The main menu is done and is waiting for the game to take control.
@@ -115,6 +106,11 @@ public class MainMenu
     private Button currentButton = Button.NONE;
     
     /**
+     * The animation manager.
+     */
+    private AnimationManager animationMan;
+    
+    /**
      * The layer manager.
      */
     private LayerManager layerMan;       
@@ -122,11 +118,14 @@ public class MainMenu
     /**
      * Create a new main menu.
      */
-    public MainMenu()
+    public MainMenu(AnimationManager animationMan)
     {
+        // Store the animation manager reference.
+        this.animationMan = animationMan;
+        
         // Create the layer manager.
         this.layerMan = LayerManager.newInstance();
-        
+                
         // Add the background.
         GraphicEntity backgroundGraphic = 
                 new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
@@ -166,8 +165,10 @@ public class MainMenu
                 .finishRule(MetaAnimation.FinishRule.ALL)
                 .add(a1)
                 .add(a2)                
-                .end();                
-                
+                .end();   
+        
+        // Add it to the manager.
+        this.animationMan.add(this.animation);                
     };
     
     private IAnimation initializeButtons()
@@ -193,10 +194,16 @@ public class MainMenu
                 .type(SpriteButton.Type.THIN).text("Play Now").textSize(20)
                 .hoverOpacity(70).offOpacity(0).disabled(true).end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.PLAY_NOW, button);
+        buttonMap.put(Button.PLAY_NOW, button);                
         
         IAnimation a1 = new MoveAnimation.Builder(button)
                 .theta(180).v(speed).minX(minX).end();      
+        
+        a1.setFinishAction(new Runnable()
+        {
+            public void run()
+            { buttonMap.get(Button.PLAY_NOW).setDisabled(false); }
+        });
         
         // Make this button the template.
         templateButton = (SpriteButton) button;
@@ -207,7 +214,13 @@ public class MainMenu
         buttonMap.put(Button.TUTORIAL, button);
         
         IAnimation a2 = new MoveAnimation.Builder(button).wait(300)
-                .theta(180).v(speed).minX(minX).end();        
+                .theta(180).v(speed).minX(minX).end();  
+        
+        a2.setFinishAction(new Runnable()
+        {
+            public void run()
+            { buttonMap.get(Button.TUTORIAL).setDisabled(false); }
+        });
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(251).text("Options").end();
@@ -217,6 +230,12 @@ public class MainMenu
         IAnimation a3 = new MoveAnimation.Builder(button).wait(600)
                 .theta(180).v(speed).minX(minX).end();
         
+        a3.setFinishAction(new Runnable()
+        {
+            public void run()
+            { buttonMap.get(Button.OPTIONS).setDisabled(false); }
+        });
+        
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(300).text("Upgrade").end();
         layerMan.add(button, Layer.UI);
@@ -224,6 +243,12 @@ public class MainMenu
         
         IAnimation a4 = new MoveAnimation.Builder(button).wait(900)
                 .theta(180).v(speed).minX(minX).end();
+        
+        a4.setFinishAction(new Runnable()
+        {
+            public void run()
+            { buttonMap.get(Button.UPGRADE).setDisabled(false); }
+        });
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(349).text("Achievements").end();
@@ -233,6 +258,12 @@ public class MainMenu
         IAnimation a5 = new MoveAnimation.Builder(button).wait(1200)
                 .theta(180).v(speed).minX(minX).end();
         
+        a5.setFinishAction(new Runnable()
+        {
+            public void run()
+            { buttonMap.get(Button.ACHIEVEMENTS).setDisabled(false); }
+        });
+        
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(398).text("High Scores").end();
         layerMan.add(button, Layer.UI);
@@ -240,6 +271,12 @@ public class MainMenu
         
         IAnimation a6 = new MoveAnimation.Builder(button).wait(1500)
                 .theta(180).v(speed).minX(minX).end();
+        
+        a6.setFinishAction(new Runnable()
+        {
+            public void run()
+            { buttonMap.get(Button.HIGH_SCORES).setDisabled(false); }
+        });
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(447).text("Exit").end();
@@ -251,13 +288,9 @@ public class MainMenu
         
         a7.setFinishAction(new Runnable()
         {
-           public void run() 
-           {
-               // Enable all the buttons.
-               for (IButton b : buttonMap.values())
-                   b.setDisabled(false);
-           }
-        });
+            public void run()
+            { buttonMap.get(Button.EXIT).setDisabled(false); }
+        });       
                         
         return new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL)                
@@ -269,7 +302,7 @@ public class MainMenu
                 .add(a6)
                 .add(a7)
                 .end();
-    }
+    };
     
     private void initializeGroups()
     {
@@ -296,14 +329,7 @@ public class MainMenu
     {       
         switch (state)
         {
-            case READY:                                                              
-                
-                // See if there is an animation to run.
-                if (this.animation != null)
-                {
-                    game.animationMan.add(this.animation);
-                    this.state = State.ANIMATING;
-                }
+            case READY:                                                                                             
                 
                 // The button that was clicked.  Null if no button was clicked.
                 IButton clickedButton = null;
@@ -335,10 +361,12 @@ public class MainMenu
                             
                             // Animate the change.
                             this.animation = new MetaAnimation.Builder()
-                                    .runRule(MetaAnimation.RunRule.SEQUENCE)
+                                    .finishRule(MetaAnimation.FinishRule.ALL)
+                                    //.runRule(MetaAnimation.RunRule.SEQUENCE)
                                     .add(this.groupMap.get(currentButton).animateHide())
                                     .add(this.groupMap.get(b).animateShow())
                                     .end();
+                            this.animationMan.add(this.animation);
                             
                             // Set the new current button.
                             this.currentButton = b;
@@ -351,17 +379,7 @@ public class MainMenu
                     } // end for
                 } // end if
                 
-                break;
-                
-            case ANIMATING:                 
-                
-                if (animation.isFinished() == true)
-                {
-                    animation = null;
-                    state = State.READY;
-                }
-                
-                break;
+                break;                            
                 
             case FINISHED:
                 

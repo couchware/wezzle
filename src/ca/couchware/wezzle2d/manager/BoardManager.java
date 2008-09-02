@@ -1,7 +1,8 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.LayerManager.Layer;
-import ca.couchware.wezzle2d.animation.AnimationManager;
+import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;

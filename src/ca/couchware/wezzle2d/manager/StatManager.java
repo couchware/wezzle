@@ -3,7 +3,7 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.event.*;
 import java.util.EnumMap;

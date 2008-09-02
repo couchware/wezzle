@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.java2d;
 
-import ca.couchware.wezzle2d.LogManager;
+import ca.couchware.wezzle2d.manager.LogManager;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;

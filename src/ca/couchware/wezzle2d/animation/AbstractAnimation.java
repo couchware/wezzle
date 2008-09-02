@@ -16,22 +16,27 @@ public abstract class AbstractAnimation implements IAnimation
     /**
      * Whether or not the animation is visible.
      */
-    private boolean visible = true;
+    protected boolean visible = true;
+    
+    /**
+     * Whether or not the animation has started.
+     */
+    protected boolean started = false;
     
     /**
      * Whether or not the animation is done.
      */
-    private boolean finished = false;
+    protected boolean finished = false;        
     
     /**
      * The start action.
      */
-    private Runnable startAction;
+    protected Runnable startAction;
     
     /**
      * The finish action.
      */
-    private Runnable finishAction;
+    protected Runnable finishAction;       
     
     /**
      * Advance the frame.
@@ -45,14 +50,36 @@ public abstract class AbstractAnimation implements IAnimation
         // Override.
     }       
     
+    public boolean isStarted()
+    {
+        return started;
+    }
+    
+    final protected void setStarted()
+    {
+        if (this.started == false)
+        {
+            this.started = true;
+            
+            // Run the on-start runnable.
+            onStart();
+        }
+    }
+    
     public boolean isFinished()
     {
         return finished;
     }
     
-    protected void setFinished(boolean done)
-    {
-        this.finished = done;
+    final protected void setFinished()
+    {        
+        if (this.finished == false)
+        {
+            this.finished = true;
+            
+            // Run the on-finish runnable.
+            onFinish();
+        }
     }
 
     public boolean isVisible()
@@ -97,12 +124,12 @@ public abstract class AbstractAnimation implements IAnimation
         return finishAction;
     }
 
-    public void onStart()
+    final public void onStart()
     {
         if (startAction != null) startAction.run();
     }
 
-    public void onFinish()
+    final public void onFinish()
     {
         if (finishAction != null) finishAction.run();
     }        

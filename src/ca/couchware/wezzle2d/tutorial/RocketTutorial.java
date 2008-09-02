@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.IAnimation;

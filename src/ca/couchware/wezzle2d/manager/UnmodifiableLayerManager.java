@@ -3,9 +3,9 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.IDrawable;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import java.util.List;

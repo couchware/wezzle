@@ -3,9 +3,10 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import ca.couchware.wezzle2d.util.*;

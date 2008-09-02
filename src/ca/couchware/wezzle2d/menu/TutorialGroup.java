@@ -6,8 +6,8 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.LayerManager;
-import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.LayerManager;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.ui.Window;
@@ -46,8 +46,8 @@ public class TutorialGroup extends AbstractGroup
         win.setXYPosition(268, -300);
         win.setVisible(true);        
         
-        IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
-                .v(1.0).end();
+        IAnimation a = new MoveAnimation.Builder(win).theta(-90)
+                .maxY(300).v(1.0).end();
         
         
         return a;
@@ -56,8 +56,8 @@ public class TutorialGroup extends AbstractGroup
     @Override
     public IAnimation animateHide()
     {        
-        IAnimation a = new MoveAnimation.Builder(win).theta(90).minY(-300)
-                .v(1.0).end();
+        IAnimation a = new MoveAnimation.Builder(win).theta(-90)
+                .maxY(Game.SCREEN_HEIGHT + 300).v(1.0).end();
         
         return a;
     }

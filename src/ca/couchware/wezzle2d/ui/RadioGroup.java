@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.IGameWindow;
-import ca.couchware.wezzle2d.LogManager;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;

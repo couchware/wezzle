@@ -191,7 +191,10 @@ public class ZoomAnimation extends AbstractAnimation
     }
 
     public void nextFrame(long delta)
-    {               
+    {         
+        // Make sure we've set the started flag.
+        setStarted();
+        
         // Add to counter.
         counter += delta;
         
@@ -223,7 +226,7 @@ public class ZoomAnimation extends AbstractAnimation
                         switch (type)
                         {
                             case IN:
-                                setFinished(true);
+                                setFinished();
                                 break;
                                 
                             case LOOP_IN:
@@ -258,7 +261,7 @@ public class ZoomAnimation extends AbstractAnimation
                         switch (type)
                         {
                             case OUT:
-                                setFinished(true);
+                                setFinished();
                                 break;
                                 
                             case LOOP_OUT:
@@ -295,7 +298,7 @@ public class ZoomAnimation extends AbstractAnimation
                 entity.setY(p.getY());
 
                 // Mark the animation as done.
-                setFinished(true);
+                setFinished();
                 
                 break;
                 

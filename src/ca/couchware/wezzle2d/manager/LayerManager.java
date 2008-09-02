@@ -1,5 +1,6 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.ui.ILabel;
 import java.awt.Rectangle;

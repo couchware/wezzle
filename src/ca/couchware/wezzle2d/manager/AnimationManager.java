@@ -1,5 +1,6 @@
-package ca.couchware.wezzle2d.animation;
+package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +34,7 @@ public class AnimationManager
     public void add(IAnimation a)
     {
         animationList.add(a);
-        a.onStart();
+        //a.onStart();
     }
     
     public void addAll(Collection<IAnimation> collection)
@@ -60,7 +61,7 @@ public class AnimationManager
             IAnimation a = (IAnimation) it.next();
             if (a.isFinished() == true)
             {
-                a.onFinish();
+                //a.onFinish();
                 it.remove();
             }
             else            

@@ -19,7 +19,8 @@ public class FinishedAnimation extends AbstractAnimation
     private FinishedAnimation()
     {
         // The animation starts finished.
-        setFinished(true);
+        setStarted();
+        setFinished();
     }
     
     public static FinishedAnimation get()

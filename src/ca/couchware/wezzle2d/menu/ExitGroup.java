@@ -8,7 +8,6 @@ package ca.couchware.wezzle2d.menu;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.ui.Window;
@@ -16,12 +15,11 @@ import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import java.util.EnumSet;
 
 /**
- * The play now group, which holds all the configuration options for playing
- * a Wezzle game.
+ * The exit group shows a dialog asking whether the user really wants to exit.
  * 
  * @author cdmckay
  */
-public class PlayNowGroup extends AbstractGroup
+public class ExitGroup extends AbstractGroup
 {
 
     /**
@@ -29,7 +27,7 @@ public class PlayNowGroup extends AbstractGroup
      */
     Window win;
     
-    public PlayNowGroup(LayerManager layerMan)
+    public ExitGroup(LayerManager layerMan)
     {
         // Invoke super.
         super(layerMan);
@@ -47,8 +45,8 @@ public class PlayNowGroup extends AbstractGroup
         win.setXYPosition(268, -300);
         win.setVisible(true);        
         
-        IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(300).v(1.0).end();
+        IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
+                .v(1.0).end();
         
         
         return a;
@@ -57,8 +55,8 @@ public class PlayNowGroup extends AbstractGroup
     @Override
     public IAnimation animateHide()
     {        
-        IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300).v(1.0).end();
+        IAnimation a = new MoveAnimation.Builder(win).theta(90).minY(-300)
+                .v(1.0).end();
         
         return a;
     }

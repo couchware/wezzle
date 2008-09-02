@@ -2,7 +2,7 @@ package ca.couchware.wezzle2d.java2d;
 
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IGameWindowCallback;
-import ca.couchware.wezzle2d.LogManager;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.util.Keyboard;

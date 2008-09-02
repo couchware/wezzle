@@ -1,4 +1,4 @@
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.manager;
 
 /**
  * TODO Describe the class.

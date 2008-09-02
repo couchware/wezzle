@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.animation;
 
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.util.Util;
@@ -179,8 +180,11 @@ public class MoveAnimation extends AbstractAnimation
 
     public void nextFrame(long delta)
     {
+        // Make sure we've set the started flag.
+        setStarted();
+        
         // Check if we're done, if we are, return.
-        if (isFinished() == true)
+        if (this.finished == true)
         {
             LogManager.recordMessage("Move finished!");
             return;
@@ -193,7 +197,7 @@ public class MoveAnimation extends AbstractAnimation
         if (skip == true)
         {
             if (counter > wait + duration)
-                setFinished(true);
+                setFinished();
             
             return;
         }
@@ -244,12 +248,12 @@ public class MoveAnimation extends AbstractAnimation
                 || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))
                 
             {
-                if (duration == -1) setFinished(true);
+                if (duration == -1) setFinished();
                 else skip = true;
             }
             
             if (duration != - 1 && counter > wait + duration)   
-                setFinished(true);                                                        
+                setFinished();                                                        
         }        
     }
     

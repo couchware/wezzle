@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.graphics;
 
-import ca.couchware.wezzle2d.LogManager;
+import ca.couchware.wezzle2d.manager.LogManager;
 import java.awt.Rectangle;
 import java.util.EnumSet;
 

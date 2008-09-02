@@ -122,8 +122,11 @@ public class BlinkAnimation extends AbstractAnimation
     @Override
     public void nextFrame(long delta)
     {
+        // Make sure we've set the started flag.
+        setStarted();
+        
         // Check if we're done, if we are, return.
-        if (isFinished() == true)
+        if (this.finished == true)
             return;
               
         // Add delta to counter.  This serves as the time variable.
@@ -132,7 +135,7 @@ public class BlinkAnimation extends AbstractAnimation
         // See if we're done.
         if (type == DurationType.FIXED && counter > duration)   
         {
-            setFinished(true);
+            setFinished();
         }
         
         // Increment state counter.

@@ -5,8 +5,9 @@
 
 package ca.couchware.wezzle2d.ui.group;
 
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.LayerManager;
+import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;

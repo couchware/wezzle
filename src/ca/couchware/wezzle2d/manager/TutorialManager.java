@@ -3,10 +3,11 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d.tutorial;
+package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.BoardManager.AnimationType;
+import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import java.util.ArrayList;
 import java.util.Iterator;
 

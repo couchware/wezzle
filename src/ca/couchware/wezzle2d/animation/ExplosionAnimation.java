@@ -1,8 +1,8 @@
 package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.LayerManager;
-import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.LayerManager;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.util.ImmutableDimension;
@@ -65,10 +65,7 @@ public class ExplosionAnimation extends AbstractAnimation
      * The constructor.
      */
     public ExplosionAnimation(final IEntity entity, final LayerManager layerMan)
-    {                
-        // Invoke super constructor.
-        super();    
-        
+    {                       
         // Save a reference to the entity.
         this.entity = entity;
 
@@ -104,8 +101,11 @@ public class ExplosionAnimation extends AbstractAnimation
 
     public void nextFrame(long delta)
     {
+        // Make sure we've set the started flag.
+        setStarted();
+        
         // Check if we're done, if we are, return.
-        if (isFinished() == true)
+        if (this.finished == true)
             return;               
         
         // Add to counter.
@@ -134,7 +134,7 @@ public class ExplosionAnimation extends AbstractAnimation
         // See if we're done.
         else if (counter >= duration * 2)
         {
-            setFinished(true);
+            setFinished();
             layerMan.remove(explosion, Layer.EFFECT);
         }                        
     }

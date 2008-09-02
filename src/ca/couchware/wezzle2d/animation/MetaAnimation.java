@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.IBuilder;
-import ca.couchware.wezzle2d.LogManager;
+import ca.couchware.wezzle2d.manager.LogManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +60,7 @@ public class MetaAnimation extends AbstractAnimation
         this.animationList = builder.animationList;
         
         if (this.animationList.isEmpty() == true)        
-            setFinished(true);        
+            setFinished();        
     }
     
     public static class Builder implements IBuilder<MetaAnimation>
@@ -93,7 +93,10 @@ public class MetaAnimation extends AbstractAnimation
     @Override
     public void nextFrame(long delta)
     {
-        if (isFinished() == true) return;                    
+        // Make sure we've set the started flag.
+        setStarted();
+        
+        if (this.finished == true) return;                    
         
         switch (runRule)
         {            
@@ -119,14 +122,15 @@ public class MetaAnimation extends AbstractAnimation
      */
     private void handleSimultaneousRule(long delta)
     {
-        boolean finished;
+        // A temporary variable holding the finished status.
+        boolean f;
         
         switch (finishRule)
         {
             case FIRST:
          
                     // Assume that we are not finished.
-                    finished = false;
+                    f = false;
                 
                     // Cycle through the animation list.  If we find that
                     // one animation is done, then the meta animation is done.
@@ -134,7 +138,7 @@ public class MetaAnimation extends AbstractAnimation
                     {
                         a.nextFrame(delta);
                         if (a.isFinished() == true)
-                            finished = true;              
+                            f = true;              
                     }
                 
                 break;
@@ -142,7 +146,7 @@ public class MetaAnimation extends AbstractAnimation
             case ALL:
                 
                     // Assume we are finished.
-                    finished = true;
+                    f = true;
                 
                     // Cycle through the animation list.  If we find at least
                     // one animation that is not done, then we keep going.
@@ -150,7 +154,7 @@ public class MetaAnimation extends AbstractAnimation
                     {
                         a.nextFrame(delta);
                         if (a.isFinished() == false)
-                            finished = false;
+                            f = false;
                     }                                        
                 
                 break;
@@ -158,7 +162,8 @@ public class MetaAnimation extends AbstractAnimation
             default: throw new AssertionError();
         }            
         
-        setFinished(finished);
+        if (f == true)
+            setFinished();
     }
     
      /**
@@ -181,30 +186,9 @@ public class MetaAnimation extends AbstractAnimation
          // If there are no animations left, then we are done.
         if (animationList.isEmpty() == true)
         {
-            setFinished(true);
+            setFinished();
             return;
         }
-    }
-    
-    /**
-     * This method is run when the animation is first loaded by the
-     * animation manager.
-     */
-    @Override
-    public void onStart()
-    {
-        for (IAnimation a : animationList)
-            a.onStart();
-    }
-    
-    /**
-     * This method is run when the animation is finished running.
-     */
-    @Override
-    public void onFinish()
-    {
-        for (IAnimation a : animationList)
-            a.onFinish();
-    }
+    }        
 
 }

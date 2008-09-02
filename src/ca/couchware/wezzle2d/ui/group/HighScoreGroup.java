@@ -1,10 +1,12 @@
 package ca.couchware.wezzle2d.ui.group;
 
+import ca.couchware.wezzle2d.manager.HighScoreManager;
+import ca.couchware.wezzle2d.manager.HighScore;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SpriteButton;
-import ca.couchware.wezzle2d.LayerManager;
+import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;

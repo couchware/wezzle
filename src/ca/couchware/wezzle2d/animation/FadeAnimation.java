@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.animation;
 
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.util.Util;
@@ -118,8 +119,11 @@ public class FadeAnimation extends AbstractAnimation
 
     public void nextFrame(long delta)
     {
+        // Make sure we've set the started flag.
+        setStarted();
+        
         // Check if we're done, if we are, return.
-        if (isFinished() == true)
+        if (this.finished == true)
         {
             LogManager.recordMessage("Fade finished!");
             return;              
@@ -163,7 +167,7 @@ public class FadeAnimation extends AbstractAnimation
                     case IN:
                     case OUT:
 
-                        setFinished(true);
+                        setFinished();
                         break;
 
                     case LOOP_IN:
