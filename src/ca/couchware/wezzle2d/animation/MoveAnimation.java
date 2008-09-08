@@ -88,6 +88,11 @@ public class MoveAnimation extends AbstractAnimation
     private int theta;
     
     /**
+     * The anglar velocity, in rad/ms.
+     */
+    private double omega;
+    
+    /**
      * The gravity.
      */
     private double g;
@@ -124,6 +129,7 @@ public class MoveAnimation extends AbstractAnimation
         // Record other values.
         this.theta = builder.theta;
         this.g = builder.g;        
+        this.omega = builder.omega;
         this.wait = builder.wait;
         this.duration = builder.duration;  
         
@@ -147,6 +153,7 @@ public class MoveAnimation extends AbstractAnimation
         private int theta = 0;
         private double g = 0;   
         private double v = 0;
+        private double omega = 0;
         private int minX = Integer.MIN_VALUE;
         private int minY = Integer.MIN_VALUE;
         private int maxX = Integer.MAX_VALUE;
@@ -163,6 +170,7 @@ public class MoveAnimation extends AbstractAnimation
         public Builder theta(int val) { theta = val; return this; }
         public Builder v(double val) { v = val; return this; }
         public Builder g(double val) { g = val; return this; }     
+        public Builder omega(double val) { omega = val; return this; }
         public Builder minX(int val) { minX = val; return this; }
         public Builder minY(int val) { minY = val; return this; }
         public Builder maxX(int val) { maxX = val; return this; }
@@ -244,7 +252,8 @@ public class MoveAnimation extends AbstractAnimation
             }           
             
             entity.setX(newX);                        
-            entity.setY(newY);        
+            entity.setY(newY);                        
+            entity.setRotation(t * omega);
                     
             if ((finishRule == FinishRule.FIRST && (doneX == true || doneY == true))
                 || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))
@@ -254,7 +263,7 @@ public class MoveAnimation extends AbstractAnimation
                 else skip = true;
             }
             
-            if (duration != - 1 && counter > wait + duration)   
+            if (duration != -1 && counter > wait + duration)   
                 setFinished();                                                        
         }        
     }

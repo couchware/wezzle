@@ -63,7 +63,7 @@ public class ExitGroup extends AbstractGroup
         this.layerMan.add(win, Layer.UI);               
                
         // Line 1.
-        ILabel l1 = new LabelBuilder(266, 190)
+        ILabel l1 = new LabelBuilder(266, 155)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR1).size(22f).visible(false)
                 .text("Are you sure").end();           
@@ -75,27 +75,27 @@ public class ExitGroup extends AbstractGroup
         this.entityList.add(l2);                
         
         // Add the "Yes" button.
-        this.yesButton = new SpriteButton.Builder(174, 405)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.LARGE).visible(false).offOpacity(90)
-                .text("Yes").end();
-        this.entityList.add(this.yesButton);
-        
-        // Add the "No" button.
-        this.noButton = new SpriteButton.Builder((SpriteButton) yesButton).x(357)
-                .text("No").end();
-        this.entityList.add(this.noButton);
-        
-//        this.yesButton = new SpriteButton.Builder(266, 340)
+//        this.yesButton = new SpriteButton.Builder(174, 405)
 //                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .type(SpriteButton.Type.THIN).visible(false).offOpacity(90)
+//                .type(SpriteButton.Type.LARGE).visible(false).offOpacity(90)
 //                .text("Yes").end();
 //        this.entityList.add(this.yesButton);
 //        
 //        // Add the "No" button.
-//        this.noButton = new SpriteButton.Builder((SpriteButton) yesButton)
-//                .y(yesButton.getY() + 60).text("Not yet").end();
+//        this.noButton = new SpriteButton.Builder((SpriteButton) yesButton).x(357)
+//                .text("No").end();
 //        this.entityList.add(this.noButton);
+        
+        this.yesButton = new SpriteButton.Builder(266, 400)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .type(SpriteButton.Type.THIN).visible(false).offOpacity(90)
+                .text("Yes").end();
+        this.entityList.add(this.yesButton);
+        
+        // Add the "No" button.
+        this.noButton = new SpriteButton.Builder((SpriteButton) yesButton)
+                .y(yesButton.getY() + 60).text("No").end();
+        this.entityList.add(this.noButton);
         
         // Add them all to the layer manager.
         for (IEntity e : this.entityList)

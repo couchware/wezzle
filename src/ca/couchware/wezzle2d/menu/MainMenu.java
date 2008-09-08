@@ -135,9 +135,12 @@ public class MainMenu extends AbstractGroup
     /**
      * The wezzle logo.
      */
-//    final private GraphicEntity wezzleLogoGraphic;
-//    final private GraphicEntity wezzleLogoStarburst;
     final private EntityGroup logoEntity;
+    
+    /**
+     * The logo spinner animation.
+     */
+    final private IAnimation spinAnimation;
     
     /**
      * A map containing all the buttons in the main menu.
@@ -200,11 +203,13 @@ public class MainMenu extends AbstractGroup
         // Create the wezzle logo.
         IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(e1, Layer.BACKGROUND);            
+        layerMan.add(e1, Layer.BACKGROUND);      
+        spinAnimation = new MoveAnimation.Builder(e1).g(0).v(0).omega(0.0001).end();
+        animationMan.add(spinAnimation);
         
         IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(e2, Layer.BACKGROUND);               
+        layerMan.add(e2, Layer.BACKGROUND);              
         
         logoEntity = new EntityGroup(e1, e2);
                
@@ -485,7 +490,10 @@ public class MainMenu extends AbstractGroup
         f.setFinishAction(new Runnable()
         {
             public void run()
-            { logoEntity.setVisible(false); }
+            { 
+                logoEntity.setVisible(false);
+                spinAnimation.setFinished();
+            }
         });
         
         builder.add(f);

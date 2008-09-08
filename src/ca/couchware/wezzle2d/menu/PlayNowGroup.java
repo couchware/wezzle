@@ -59,6 +59,11 @@ public class PlayNowGroup extends AbstractGroup
     final private LayerManager layerMan;
     
     /**
+     * The name button.
+     */
+    final private IButton nameButton;
+    
+    /**
      * The level down button.
      */
     final private IButton levelDownButton;
@@ -134,11 +139,16 @@ public class PlayNowGroup extends AbstractGroup
 //                .visible(false).end();                        
 //        this.entityList.add(w1); 
         
-        ILabel tnl = new LabelBuilder(355, nl.getY())
+//        ILabel tnl = new LabelBuilder(355, nl.getY())
+//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+//                .color(OPTIONS_COLOR).text("TEST").size(20f)
+//                .visible(false).end();
+//        this.entityList.add(tnl);
+        this.nameButton = new SpriteButton.Builder(355, nl.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(OPTIONS_COLOR).text("TEST").size(20f)
-                .visible(false).end();
-        this.entityList.add(tnl);
+                .type(SpriteButton.Type.NORMAL).visible(false).offOpacity(90)
+                .text("TEST").end();
+        this.entityList.add(this.nameButton);
         
         // Create the level label.
         ILabel ll = new LabelBuilder(nl).y(nl.getY() + SPACING * 1).text("Level").end();
@@ -151,9 +161,9 @@ public class PlayNowGroup extends AbstractGroup
 //                .visible(false).end();                        
 //        this.entityList.add(w2); 
         
-        this.levelNumberLabel = new LabelBuilder(tnl).xy(tnl.getX(), ll.getY())
+        this.levelNumberLabel = new LabelBuilder(nameButton.getX(), ll.getY())                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("1").end();
+                .size(20f).visible(false).text("1").end();
         this.entityList.add(this.levelNumberLabel);
         
         // Create the level down button.

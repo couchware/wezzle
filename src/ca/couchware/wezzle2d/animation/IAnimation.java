@@ -26,7 +26,9 @@ public interface IAnimation
      * Checks whether the animation is done.  Always returns false if the
      * animation is a looping animation.
      */
-    public boolean isFinished();    
+    public boolean isFinished(); 
+    
+    public void setFinished();    
     
     /**
      * Checks the visibility of the animation.

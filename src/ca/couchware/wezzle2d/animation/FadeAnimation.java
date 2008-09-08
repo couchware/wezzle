@@ -129,7 +129,7 @@ public class FadeAnimation extends AbstractAnimation
         // Check if we're done, if we are, return.
         if (this.finished == true)
         {
-            LogManager.recordMessage("Fade finished!");
+            //LogManager.recordMessage("Fade finished!");
             return;              
         }
         

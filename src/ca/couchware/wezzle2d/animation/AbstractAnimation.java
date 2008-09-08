@@ -71,7 +71,7 @@ public abstract class AbstractAnimation implements IAnimation
         return finished;
     }
     
-    final protected void setFinished()
+    final public void setFinished()
     {        
         if (this.finished == false)
         {

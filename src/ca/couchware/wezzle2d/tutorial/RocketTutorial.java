@@ -88,7 +88,7 @@ public class RocketTutorial extends AbstractTutorial
         // Slow down refactor so the user can see more clearly what happens.
         game.setRefactorSpeed(100);
         
-         // Set restriction board so that only the bottom left corner is
+        // Set restriction board so that only the bottom left corner is
         // clickable.
         game.pieceMan.clearRestrictionBoard();
         game.pieceMan.reverseRestrictionBoard();
@@ -146,6 +146,7 @@ public class RocketTutorial extends AbstractTutorial
         // Create repeat button.
         repeatButton = new SpriteButton.Builder(400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .type(SpriteButton.Type.THIN)
                 .text("Repeat").offOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Layer.EFFECT);
         
@@ -170,10 +171,18 @@ public class RocketTutorial extends AbstractTutorial
             game.pieceMan.stopAnimation();                                            
             
             // Fade the board out.            
-            EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
-                    game.boardMan.getCells() - 1);            
+            final EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
+                    game.boardMan.getCells() - 1);   
+            
             IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
                     .wait(0).duration(500).end();
+            
+            a.setFinishAction(new Runnable()
+            {
+                public void run()
+                { e.setVisible(false); }
+            });
+            
             game.animationMan.add(a);
                                     
             // Fade in two new buttons.
@@ -261,9 +270,12 @@ public class RocketTutorial extends AbstractTutorial
         
         // Fade board in.
         EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
-                game.boardMan.getCells() - 1);            
+                game.boardMan.getCells() - 1);     
+        e.setVisible(false);
+        
         IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
-                .wait(0).duration(300).end();
+                .wait(0).duration(300).end();               
+        
         game.animationMan.add(a);
         
         // Change the piece to the dot.
@@ -286,7 +298,7 @@ public class RocketTutorial extends AbstractTutorial
         
         // Piece is visible.
         game.pieceMan.getPieceGrid().setVisible(true);
-    }
+    };
     
     private void createBoard(final Game game)
     {        

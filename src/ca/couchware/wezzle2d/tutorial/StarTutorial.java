@@ -149,6 +149,7 @@ public class StarTutorial extends AbstractTutorial
         // Create repeat button.
         repeatButton = new SpriteButton.Builder(400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .type(SpriteButton.Type.THIN)
                 .text("Repeat").offOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Layer.EFFECT);
         
@@ -173,10 +174,18 @@ public class StarTutorial extends AbstractTutorial
             game.pieceMan.stopAnimation();                                            
             
             // Fade the board out.            
-            EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
-                    game.boardMan.getCells() - 1);            
+            final EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
+                    game.boardMan.getCells() - 1);      
+            
             IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
                     .wait(0).duration(500).end();
+            
+            a.setFinishAction(new Runnable()
+            {
+                public void run()
+                { e.setVisible(false); }
+            });
+            
             game.animationMan.add(a);
                                     
             // Fade in two new buttons.
@@ -264,7 +273,8 @@ public class StarTutorial extends AbstractTutorial
         
         // Fade board in.
         EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
-                game.boardMan.getCells() - 1);            
+                game.boardMan.getCells() - 1);     
+        e.setVisible(false);
         IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
                 .wait(0).duration(300).end();
         game.animationMan.add(a);
