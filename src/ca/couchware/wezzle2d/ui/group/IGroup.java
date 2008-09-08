@@ -12,8 +12,9 @@ import ca.couchware.wezzle2d.animation.IAnimation;
  *
  * @author cdmckay
  */
-public interface IGroup {
-
+public interface IGroup
+{   
+    
     /**
      * Returns an animation that gradually hides the group's visual elements.
      *
@@ -67,5 +68,10 @@ public interface IGroup {
      * @param game The game state.
      */
     void updateLogic(Game game);
+    
+    /**
+     * Resets all the group controls to their starting state.
+     */
+    void resetControls();
 
 }

@@ -24,19 +24,24 @@ public class TutorialGroup extends AbstractGroup
 {
 
     /**
+     * The layer manager.
+     */
+    final private LayerManager layerMan;
+    
+    /**
      * The background window.
      */
     Window win;
     
     public TutorialGroup(LayerManager layerMan)
     {
-        // Invoke super.
-        super(layerMan);
+        // Set the layer manager.
+        this.layerMan = layerMan;
         
         // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(90).visible(false).end();
+                .opacity(MainMenu.WINDOW_OPACITY).visible(false).end();
         layerMan.add(win, Layer.UI);
     }
     
@@ -47,9 +52,8 @@ public class TutorialGroup extends AbstractGroup
         win.setVisible(true);        
         
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(300).v(1.0).end();
-        
-        
+                .maxY(300).v(MainMenu.WINDOW_SPEED).end();
+                
         return a;
     }
     
@@ -57,14 +61,14 @@ public class TutorialGroup extends AbstractGroup
     public IAnimation animateHide()
     {        
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300).v(1.0).end();
+                .maxY(Game.SCREEN_HEIGHT + 300).v(MainMenu.WINDOW_SPEED).end();
         
         return a;
     }
         
     public void updateLogic(Game game)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
     }
 
 }

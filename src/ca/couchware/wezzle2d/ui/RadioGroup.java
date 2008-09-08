@@ -14,8 +14,10 @@ import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A UI element for representing a group of RadioItems.
@@ -29,7 +31,7 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class RadioGroup extends AbstractEntity implements IMouseListener
+public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMouseListener
 {
     
     /**
@@ -48,14 +50,14 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
     private ImmutableRectangle shape;
     
     /** 
-     * List of radio items. 
-     */
-    private List<RadioItem> itemList;  
+     * Map of radio items. 
+     */    
+    private Map<T, RadioItem> itemMap;   
     
     /**
-     * The selected item.  Null if no item is selected.
+     * The key of currently selected item.
      */
-    private RadioItem selectedItem;
+    private T selectedKey;
     
     /**
      * The amount of space between each radio item.
@@ -67,13 +69,14 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
      * 
      * @param builder
      */    
-    private RadioGroup(Builder builder)
+    private RadioGroup(Builder<T> builder)
     {
         // Add the window reference.
         this.window = builder.window;
         
         // Add list reference.
-        this.itemList = builder.itemList;
+        //this.itemList = builder.itemList;
+        this.itemMap = builder.itemMap;
         
         // Set the pad.
         this.pad = builder.pad;
@@ -87,7 +90,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         // Determine the width and height.
         this.width = 0;
         this.height = 0;
-        for (RadioItem item : itemList)
+        for (RadioItem item : itemMap.values())
         {
             item.setXYPosition(x + width, y);
             this.width += pad + item.getWidth();
@@ -114,70 +117,82 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         this.visible = builder.visible;        
         
         // Adjust all the radio items.
-        for (RadioItem item : itemList)
+        for (RadioItem item : itemMap.values())
         {
             item.translate(offsetX, offsetY);        
             item.setOpacity(opacity);
             item.setVisible(visible);
         }
+        
+        // Select a key.
+        if (builder.selectedKey != null)
+            this.setSelectedKey(builder.selectedKey);
     }
     
-    public static class Builder implements IBuilder<RadioGroup>
+    public static class Builder<E extends Enum<E>> implements IBuilder<RadioGroup>
     {
         // Required values.  
         private final IGameWindow window;
         private int x;
         private int y;     
         
+        // The radio item map.
+        private final Map<E, RadioItem> itemMap;
+        private E selectedKey;
+        
         // Optional values.
-        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
+        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);                
         private int opacity = 100;
         private boolean visible = true;        
-        private int pad = 20;
-        private final List<RadioItem> itemList = new ArrayList<RadioItem>();  
+        private int pad = 20;                       
         
-        public Builder(int x, int y)
+        public Builder(int x, int y, Class<E> keyType)
         {         
             this.window = ResourceFactory.get().getGameWindow();
             this.x = x;
             this.y = y;
-        }
-        
-        public Builder(RadioGroup radioGroup)
-        {                       
-            this.window = radioGroup.window;
-            this.x = radioGroup.x;
-            this.y = radioGroup.y;
-            this.alignment = radioGroup.alignment.clone();            
-            this.opacity = radioGroup.opacity;                        
-            this.visible = radioGroup.visible;   
-            this.pad = radioGroup.pad;
             
-            for (RadioItem item : radioGroup.itemList)
-                this.itemList.add(new RadioItem.Builder(item).end());
+            this.itemMap = new EnumMap<E, RadioItem>(keyType);
         }
         
-        public Builder x(int val) { x = val; return this; }        
-        public Builder y(int val) { y = val; return this; }
+//        public Builder(RadioGroup radioGroup)
+//        {                       
+//            this.window = radioGroup.window;
+//            this.x = radioGroup.x;
+//            this.y = radioGroup.y;
+//            this.alignment = radioGroup.alignment.clone();            
+//            this.opacity = radioGroup.opacity;                        
+//            this.visible = radioGroup.visible;   
+//            this.pad = radioGroup.pad;
+//            
+//            for (RadioItem item : radioGroup.itemList)
+//                this.itemList.add(new RadioItem.Builder(item).end());
+//        }
+        
+        public Builder<E> x(int val) { x = val; return this; }        
+        public Builder<E> y(int val) { y = val; return this; }
                
-        public Builder alignment(EnumSet<Alignment> val) 
+        public Builder<E> alignment(EnumSet<Alignment> val) 
         { alignment = val; return this; }
                         
-        public Builder opacity(int val)
+        public Builder<E> opacity(int val)
         { opacity = val; return this; }
         
-        public Builder visible(boolean val) 
+        public Builder<E> visible(boolean val) 
         { visible = val; return this; }
         
-        public Builder pad(int val)
+        public Builder<E> pad(int val)
         { pad = val; return this; }
              
-        public Builder add(RadioItem val)
-        { itemList.add(val); return this; }
+        public Builder<E> add(E key, RadioItem val)        
+        { itemMap.put(key, val); return this; }
         
-        public RadioGroup end()
+        public Builder<E> add(E key, RadioItem val, boolean selected)        
+        { itemMap.put(key, val); selectedKey = key; return this; }
+        
+        public RadioGroup<E> end()
         {
-            RadioGroup group = new RadioGroup(this);
+            RadioGroup<E> group = new RadioGroup<E>(this);
             
             if (visible == true)
                 window.addMouseListener(group);            
@@ -191,7 +206,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
     {
         super.setOpacity(opacity);
         
-        for (RadioItem item : itemList)
+        for (RadioItem item : itemMap.values())
             item.setOpacity(opacity);
     }
     
@@ -205,7 +220,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         // Invoke super.
         super.setVisible(visible);
         
-        for (RadioItem item : itemList)
+        for (RadioItem item : itemMap.values())
                 item.setVisible(visible);
         
         // Add or remove listener based on visibility.
@@ -223,47 +238,36 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
     @Override
     public boolean isDirty()
     {
-        for (RadioItem item : itemList)
+        for (RadioItem item : itemMap.values())
             if (item.isDirty() == true)
                 return true;
         
         return false;
     }
 
-    public RadioItem getSelectedItem()
+    public T getSelectedKey()
     {
-        return selectedItem;
+        return selectedKey;
     }
 
-    public void setSelectedItem(RadioItem selectedItem)
-    {
-        if (itemList.contains(selectedItem) == false)
-            throw new IllegalArgumentException("RadioItem is not in this group.");
-        
-        if (this.selectedItem == null || !this.selectedItem.equals(selectedItem))                    
+    final public void setSelectedKey(T selectedKey)
+    {        
+        if (this.selectedKey == null || !(this.selectedKey ==  selectedKey))
             changed = true;
         
-        this.selectedItem = selectedItem;
+        this.selectedKey = selectedKey;
         
-        for (RadioItem item : itemList)
+        for (T key : itemMap.keySet())
         {
-            if (item.equals(selectedItem) == true)
+            if (key == selectedKey)
             {
-                item.setActivated(true);
+                this.itemMap.get(key).setActivated(true);
                 continue;
             }
             
-            item.setActivated(false);
+            this.itemMap.get(key).setActivated(false);
         }                
     }        
-    
-    public void setSelectedItem(int index)
-    {
-        if (index < 0 || index > itemList.size())
-            throw new IndexOutOfBoundsException("Index: " + index + ".");
-                
-        setSelectedItem(itemList.get(index));
-    }
             
     public boolean changed()
     {
@@ -286,7 +290,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         if (visible == false)
             return false;
         
-        for (RadioItem item : itemList)
+        for (RadioItem item : itemMap.values())
             item.draw();
         
         return true;
@@ -318,10 +322,10 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         if (shape.contains(e.getPosition()) == true)
         {            
             // See which one it was released over.
-            for (RadioItem item : itemList)
-                if (item.getShape().contains(e.getPosition()))
+            for (T key : itemMap.keySet())
+                if (itemMap.get(key).getShape().contains(e.getPosition()))
                 {
-                    setSelectedItem(item);                       
+                    setSelectedKey(key);                       
                     break;
                 }
         }

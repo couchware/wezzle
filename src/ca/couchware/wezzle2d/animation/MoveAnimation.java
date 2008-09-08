@@ -119,10 +119,7 @@ public class MoveAnimation extends AbstractAnimation
     private MoveAnimation(Builder builder)
     {                
         // Set a reference to the entity.
-        this.entity = builder.entity;            
-        
-        // Record the initial position.
-        initialPosition = entity.getXYPosition();
+        this.entity = builder.entity;                           
         
         // Record other values.
         this.theta = builder.theta;
@@ -181,12 +178,18 @@ public class MoveAnimation extends AbstractAnimation
     public void nextFrame(long delta)
     {
         // Make sure we've set the started flag.
-        setStarted();
+        if (this.started == false)
+        {
+            // Record the initial position.
+            initialPosition = entity.getXYPosition();
+            
+            setStarted();
+        }
         
         // Check if we're done, if we are, return.
         if (this.finished == true)
         {
-            LogManager.recordMessage("Move finished!");
+            //LogManager.recordMessage("Move finished!");
             return;
         }
               
@@ -206,8 +209,7 @@ public class MoveAnimation extends AbstractAnimation
         {
             waitFinished = true;
             counter -= wait;
-        }
-        
+        }                
        
         if (waitFinished == true)
         {

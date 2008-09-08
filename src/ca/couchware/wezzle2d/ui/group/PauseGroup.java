@@ -17,7 +17,14 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class PauseGroup extends AbstractGroup 
-{       
+{      
+    
+    /**
+     * A reference to the layer manager.  This is used by groups to add
+     * and remove things like buttons and sliders.
+     */
+    final protected LayerManager layerMan;       
+    
     /**
      * The main label showing the paused text.
      */
@@ -43,8 +50,8 @@ public class PauseGroup extends AbstractGroup
      */    
     public PauseGroup(final LayerManager layerMan)
     {
-        // Invoke super.
-        super(layerMan);
+        // Set the layer manager.
+        this.layerMan = layerMan;
                
         // Create the "Paused" text.
         mainLabel = new LabelBuilder(400, 245)
@@ -69,7 +76,7 @@ public class PauseGroup extends AbstractGroup
         entityList.add(linesLabel);
 
         linesPerMoveLabel = new LabelBuilder(400, 370)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .color(Game.TEXT_COLOR1).size(18).text("0.0 lines per move")
                 .visible(false).end();
         layerMan.add(linesPerMoveLabel, Layer.UI);

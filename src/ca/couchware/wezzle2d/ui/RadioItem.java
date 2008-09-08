@@ -6,12 +6,12 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import java.awt.Color;
 import java.util.EnumSet;
 
 /**
@@ -22,6 +22,7 @@ import java.util.EnumSet;
  */
 public class RadioItem extends AbstractSpriteButton
 {
+    
     /** The path to the on sprite. */
     final public static String PATH_ON = 
             Game.SPRITES_PATH + "/" + "RadioOn.png";
@@ -64,6 +65,11 @@ public class RadioItem extends AbstractSpriteButton
     final private GraphicEntity radioHoverOff;        
 
     /**
+     * The color of the text.
+     */
+    private Color color;
+    
+    /**
      * The label associated with the radio item.
      */
     private ILabel label;
@@ -96,6 +102,7 @@ public class RadioItem extends AbstractSpriteButton
         super(builder.x, builder.y);
         
         // Set various trivia.
+        this.color = builder.color;
         this.opacity = builder.opacity;
         this.visible = builder.visible;
         
@@ -128,7 +135,7 @@ public class RadioItem extends AbstractSpriteButton
         // Create the label.
         label = new ResourceFactory.LabelBuilder(0, 0)  
                 .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE))
-                .cached(false).color(Game.TEXT_COLOR1).text(text)
+                .cached(false).color(color).text(text)
                 .visible(visible).opacity(opacity).size(textSize).end();                
             
         // Adjust the height so that it'll include the label.
@@ -166,6 +173,7 @@ public class RadioItem extends AbstractSpriteButton
         private int x = 0;
         private int y = 0;
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
+        private Color color = Game.TEXT_COLOR1;
         private int opacity = 100;
         private boolean visible = true;
         private EnumSet<State> state = EnumSet.noneOf(State.class);
@@ -179,8 +187,9 @@ public class RadioItem extends AbstractSpriteButton
         public Builder(RadioItem radioItem)
         {                        
             this.x = radioItem.x;
-            this.y = radioItem.y;
+            this.y = radioItem.y;            
             this.alignment = radioItem.alignment.clone();            
+            this.color = radioItem.color;
             this.opacity = radioItem.opacity;                        
             this.visible = radioItem.visible;
             this.state = radioItem.state.clone();
@@ -194,6 +203,9 @@ public class RadioItem extends AbstractSpriteButton
                
         public Builder alignment(EnumSet<Alignment> val) 
         { alignment = val; return this; }
+        
+        public Builder color(Color val)
+        { color = val; return this; }
                         
         public Builder opacity(int val)
         { opacity = val; return this; }
@@ -238,6 +250,11 @@ public class RadioItem extends AbstractSpriteButton
         super.setY(y);
         radioGraphic.setY(y + offsetY + height / 2);
         label.setY(y + offsetY + height / 2);
+    }
+
+    public Color getColor()
+    {
+        return color;
     }
     
     @Override

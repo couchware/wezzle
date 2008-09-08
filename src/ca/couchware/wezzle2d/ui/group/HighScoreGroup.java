@@ -19,6 +19,12 @@ public class HighScoreGroup extends AbstractGroup
 {
     
     /**
+     * A reference to the layer manager.  This is used by groups to add
+     * and remove things like buttons and sliders.
+     */
+    final protected LayerManager layerMan;       
+    
+    /**
      * A reference to the high score manager.
      */
     private HighScoreManager highScoreMan;
@@ -58,8 +64,8 @@ public class HighScoreGroup extends AbstractGroup
             final LayerManager layerMan,             
             final HighScoreManager highScoreMan)
     {
-        // Invoke super.
-        super(layerMan);
+        // Set the layer man.
+        this.layerMan = layerMan;
          
         // Save the reference.
         this.highScoreMan = highScoreMan;
@@ -107,6 +113,7 @@ public class HighScoreGroup extends AbstractGroup
         // Create close button.
         closeButton = new SpriteButton.Builder(400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .type(SpriteButton.Type.THIN)
                 .text("Close").offOpacity(70).visible(false).end();
         layerMan.add(closeButton, Layer.UI);
         entityList.add(closeButton);

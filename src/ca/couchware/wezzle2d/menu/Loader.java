@@ -17,6 +17,7 @@ import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
+import java.awt.Rectangle;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -108,14 +109,14 @@ public class Loader
         // Set up the copyright label.               
         ILabel l1 = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .color(Game.TEXT_COLOR2).size(12)                
+                .color(Game.TEXT_COLOR_DISABLED).size(12)                
                 .text(Game.COPYRIGHT).end();
         layerMan.add(l1, Layer.UI);
         
         // Set up the version label.	
         ILabel l2 = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .color(Game.TEXT_COLOR2).size(12)                
+                .color(Game.TEXT_COLOR_DISABLED).size(12)                
                 .text(Game.TITLE).end();                        
         layerMan.add(l2, Layer.UI);
         
@@ -257,7 +258,7 @@ public class Loader
     
     public boolean draw()
     {
-        return layerMan.draw(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
+        return layerMan.draw();
     }
     
     public void forceRedraw()

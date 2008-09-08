@@ -14,23 +14,54 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.transition.ITransition;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.group.AbstractGroup;
+import ca.couchware.wezzle2d.ui.group.EmptyGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
-import java.util.ArrayList;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  *
  * @author cdmckay
  */
-public class MainMenu 
+public class MainMenu extends AbstractGroup
 {
+    
+    /**
+     * The opacity of the menu windows.
+     */
+    final static int WINDOW_OPACITY = 60;
+    
+    /**
+     * The speed at which the menu windows move.
+     */
+    final static double WINDOW_SPEED = 0.5;
+    
+    /**
+     *  The speed the buttons come in.
+     */
+    final private static double SLIDE_SPEED = 0.8;
+
+    /**
+     * The final X position the buttons go to.
+     */    
+    final private static int SLIDE_MIN_X = 630;
+
+    /**
+     * The amount of time between each slide in.
+     */
+    final private static int SLIDE_WAIT = 100;
     
     /** 
      * The standard menu background path.
@@ -45,6 +76,12 @@ public class MainMenu
             + "/WezzleLogo.png"; 
     
     /**
+     * The wezzle logo starburst path.
+     */
+    final private static String WEZZLE_LOGO_STARBURST_PATH = Game.SPRITES_PATH
+            + "/WezzleLogoStarburst.png";
+    
+    /**
      * An enum containing the possible states for the loader to be in.
      */
     public enum State
@@ -54,6 +91,8 @@ public class MainMenu
          */
         READY,                
               
+        ANIMATING,
+        
         /**
          * The main menu is done and is waiting for the game to take control.
          */
@@ -70,15 +109,23 @@ public class MainMenu
      */
     private enum Button
     {
-        NONE,
-        PLAY_NOW,
-        TUTORIAL,
-        OPTIONS,
-        UPGRADE,
-        ACHIEVEMENTS,
-        HIGH_SCORES,
-        EXIT
-    }        
+        NONE(-1),
+        PLAY_NOW(0),
+        TUTORIAL(1),
+        OPTIONS(2),
+        UPGRADE(3),
+        ACHIEVEMENTS(4),
+        HIGH_SCORES(5),
+        EXIT(6);
+                
+        private int rank;
+        
+        Button(int rank)
+        { this.rank = rank; }
+        
+        public int rank()
+        { return rank; }
+    }               
     
     /**
      * The animation that the main menu is showing.
@@ -88,7 +135,9 @@ public class MainMenu
     /**
      * The wezzle logo.
      */
-    final private GraphicEntity wezzleLogoGraphic;
+//    final private GraphicEntity wezzleLogoGraphic;
+//    final private GraphicEntity wezzleLogoStarburst;
+    final private EntityGroup logoEntity;
     
     /**
      * A map containing all the buttons in the main menu.
@@ -113,7 +162,7 @@ public class MainMenu
     /**
      * The layer manager.
      */
-    private LayerManager layerMan;       
+    private LayerManager layerMan;              
     
     /**
      * Create a new main menu.
@@ -125,6 +174,9 @@ public class MainMenu
         
         // Create the layer manager.
         this.layerMan = LayerManager.newInstance();
+        
+        // Set the main menu as activated.
+        this.activated = true;
                 
         // Add the background.
         GraphicEntity backgroundGraphic = 
@@ -134,51 +186,45 @@ public class MainMenu
         // Set up the copyright label.               
         ILabel l1 = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .color(Game.TEXT_COLOR2).size(12)                
+                .color(Game.TEXT_COLOR_DISABLED).size(12)                
                 .text(Game.COPYRIGHT).end();
         layerMan.add(l1, Layer.UI);
         
         // Set up the version label.	
         ILabel l2 = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .color(Game.TEXT_COLOR2).size(12)                
+                .color(Game.TEXT_COLOR_DISABLED).size(12)                
                 .text(Game.TITLE).end();                        
         layerMan.add(l2, Layer.UI);
         
         // Create the wezzle logo.
-        wezzleLogoGraphic = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
+        IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(wezzleLogoGraphic, Layer.BACKGROUND);
+        layerMan.add(e1, Layer.BACKGROUND);            
         
-        // Create the animation that fades in the wezzle logo.
-        IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.IN, wezzleLogoGraphic)
-                .wait(500).duration(2100).end();
+        IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
+        layerMan.add(e2, Layer.BACKGROUND);               
         
-        // Create the animation the shoots in the buttons.
-        IAnimation a2 = initializeButtons();
+        logoEntity = new EntityGroup(e1, e2);
+               
+        // Create the buttons.
+        initializeButtons();
         
         // Create the groups.
         initializeGroups();
-        
-        // Set the animation.
-        this.animation = new MetaAnimation.Builder()
-                .finishRule(MetaAnimation.FinishRule.ALL)
-                .add(a1)
-                .add(a2)                
-                .end();   
-        
+                
         // Add it to the manager.
-        this.animationMan.add(this.animation);                
+        //this.animationMan.add(animateShow());                
+        this.animationMan.add(new MetaAnimation.Builder()
+                .runRule(MetaAnimation.RunRule.SEQUENCE)
+                .add(animateShow())
+                //.add(animateHide())
+                .end());
     };
     
-    private IAnimation initializeButtons()
-    {
-        // The speed the buttons come in.
-        final double speed = 0.8;
-        
-        // The final X position the buttons go to.
-        final int minX = 630;
-        
+    private void initializeButtons()
+    {                
         // Create the button list.
         this.buttonMap = new EnumMap<Button, IButton>(Button.class);
         
@@ -195,113 +241,39 @@ public class MainMenu
                 .hoverOpacity(70).offOpacity(0).disabled(true).end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Button.PLAY_NOW, button);                
-        
-        IAnimation a1 = new MoveAnimation.Builder(button)
-                .theta(180).v(speed).minX(minX).end();      
-        
-        a1.setFinishAction(new Runnable()
-        {
-            public void run()
-            { buttonMap.get(Button.PLAY_NOW).setDisabled(false); }
-        });
-        
+             
         // Make this button the template.
         templateButton = (SpriteButton) button;
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(202).text("Tutorial").end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.TUTORIAL, button);
+        buttonMap.put(Button.TUTORIAL, button);                        
         
-        IAnimation a2 = new MoveAnimation.Builder(button).wait(300)
-                .theta(180).v(speed).minX(minX).end();  
-        
-        a2.setFinishAction(new Runnable()
-        {
-            public void run()
-            { buttonMap.get(Button.TUTORIAL).setDisabled(false); }
-        });
-        
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(251).text("Options").end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.OPTIONS, button);
-        
-        IAnimation a3 = new MoveAnimation.Builder(button).wait(600)
-                .theta(180).v(speed).minX(minX).end();
-        
-        a3.setFinishAction(new Runnable()
-        {
-            public void run()
-            { buttonMap.get(Button.OPTIONS).setDisabled(false); }
-        });
-        
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(300).text("Upgrade").end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.UPGRADE, button);
-        
-        IAnimation a4 = new MoveAnimation.Builder(button).wait(900)
-                .theta(180).v(speed).minX(minX).end();
-        
-        a4.setFinishAction(new Runnable()
-        {
-            public void run()
-            { buttonMap.get(Button.UPGRADE).setDisabled(false); }
-        });
-        
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(349).text("Achievements").end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.ACHIEVEMENTS, button);
-        
-        IAnimation a5 = new MoveAnimation.Builder(button).wait(1200)
-                .theta(180).v(speed).minX(minX).end();
-        
-        a5.setFinishAction(new Runnable()
-        {
-            public void run()
-            { buttonMap.get(Button.ACHIEVEMENTS).setDisabled(false); }
-        });
-        
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(398).text("High Scores").end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.HIGH_SCORES, button);
-        
-        IAnimation a6 = new MoveAnimation.Builder(button).wait(1500)
-                .theta(180).v(speed).minX(minX).end();
-        
-        a6.setFinishAction(new Runnable()
-        {
-            public void run()
-            { buttonMap.get(Button.HIGH_SCORES).setDisabled(false); }
-        });
-        
+//        button = new SpriteButton.Builder((SpriteButton) templateButton)
+//                .y(251).text("Options").end();
+//        layerMan.add(button, Layer.UI);
+//        buttonMap.put(Button.OPTIONS, button);
+//        
+//        button = new SpriteButton.Builder((SpriteButton) templateButton)
+//                .y(300).text("Upgrade").end();
+//        layerMan.add(button, Layer.UI);
+//        buttonMap.put(Button.UPGRADE, button);     
+//        
+//        button = new SpriteButton.Builder((SpriteButton) templateButton)
+//                .y(349).text("Achievements").end();
+//        layerMan.add(button, Layer.UI);
+//        buttonMap.put(Button.ACHIEVEMENTS, button);
+//        
+//        button = new SpriteButton.Builder((SpriteButton) templateButton)
+//                .y(398).text("High Scores").end();
+//        layerMan.add(button, Layer.UI);
+//        buttonMap.put(Button.HIGH_SCORES, button);
+//                
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(447).text("Exit").end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.EXIT, button);
-        
-        IAnimation a7 = new MoveAnimation.Builder(button).wait(1800)
-                .theta(180).v(speed).minX(minX).end();
-        
-        a7.setFinishAction(new Runnable()
-        {
-            public void run()
-            { buttonMap.get(Button.EXIT).setDisabled(false); }
-        });       
-                        
-        return new MetaAnimation.Builder()
-                .finishRule(MetaAnimation.FinishRule.ALL)                
-                .add(a1)
-                .add(a2)
-                .add(a3)
-                .add(a4)
-                .add(a5)
-                .add(a6)
-                .add(a7)
-                .end();
+        buttonMap.put(Button.EXIT, button);                                   
     };
     
     private void initializeGroups()
@@ -313,23 +285,36 @@ public class MainMenu
         IGroup group = null;
         
         // Create the None group.
-        group = new NoneGroup(this.layerMan);
+        group = new EmptyGroup();
+        group.setActivated(true);
         this.groupMap.put(Button.NONE, group);
         
         // Create the "Play Now" group.
-        group = new PlayNowGroup(this.layerMan);
+        group = new PlayNowGroup(this, this.layerMan);
         this.groupMap.put(Button.PLAY_NOW, group);
         
         // Create the "Tutorial" group.
         group = new TutorialGroup(this.layerMan);
         this.groupMap.put(Button.TUTORIAL, group);
+        
+        // Create the "Exit" group.
+        group = new ExitGroup(this.layerMan);
+        this.groupMap.put(Button.EXIT, group);
     }
     
-    public State updateLogic(Game game)
+    public void updateLogic(Game game)
     {       
         switch (state)
         {
             case READY:                                                                                             
+                
+                // Check for a new animation to load.
+                if (this.animation != null)
+                {
+                    this.animationMan.add(this.animation);
+                    this.state = State.ANIMATING;
+                    break;
+                }
                 
                 // The button that was clicked.  Null if no button was clicked.
                 IButton clickedButton = null;
@@ -368,18 +353,75 @@ public class MainMenu
                                     .end();
                             this.animationMan.add(this.animation);
                             
-                            // Set the new current button.
+                            // Set the new current button.                            
                             this.currentButton = b;
+                            
+                            // Activate the current group.
+                            this.groupMap.get(b).setActivated(true);
                         }
                         else
                         {
                             btn.setActivated(false);
                             btn.setDisabled(false);
+                            
+                            // Deactivate the other groups.
+                            this.groupMap.get(b).setActivated(false);
                         }                        
                     } // end for
                 } // end if
                 
-                break;                            
+                // See if the running group deactivated itself.  If it did,
+                // then we need to hide the group and deactivate the button.
+                // This will bring us back to the initial menu screen with
+                // no buttons activated.
+                IGroup group = this.groupMap.get(currentButton);
+                if (group.isActivated() == false)
+                {
+                    this.buttonMap.get(currentButton).setActivated(false);
+                    this.buttonMap.get(currentButton).setDisabled(false);
+                    
+                    this.animation = group.animateHide();
+                    this.animationMan.add(this.animation);
+                    
+                    this.currentButton = Button.NONE;
+                                       
+                    group.resetControls();
+                }
+                // Otherwise, update the logic.
+                else
+                {                       
+                    group.updateLogic(game);
+                    
+                    // See if the group deactivated the main menu.
+                    if (this.activated == false)
+                    {
+                        // Create the hide animation.
+                        IAnimation a = animateHide();
+                        
+                        // Attach a runnable setting the state to finished.
+                        a.setFinishAction(new Runnable()
+                        {
+                            public void run()
+                            { state = State.FINISHED; }
+                        });
+                        
+                        // Disable the layer manager so nothing can be pressed.
+                        this.layerMan.setDisabled(true);
+                        
+                        // Set the animation.
+                        this.animation = a;
+                    }
+                }
+                
+                break;         
+                
+            case ANIMATING:
+                
+                if (this.animation.isFinished() == true)
+                {
+                    this.animation = null;
+                    this.state = State.READY;
+                }
                 
             case FINISHED:
                 
@@ -388,16 +430,98 @@ public class MainMenu
                 break;
                 
             default: throw new AssertionError();
-        }               
-        
-        // Return the state.
-        return state;
+        }                             
     }   
     
+    @Override
+    public IAnimation animateShow()
+    {               
+        // The meta animation builder.
+        MetaAnimation.Builder builder = new MetaAnimation.Builder()
+                .finishRule(MetaAnimation.FinishRule.ALL);
+        
+        // Add the wezzle logo fade in.
+        builder.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, logoEntity)
+                .wait(500).duration(2100).end());
+        
+        // Animate the buttons coming in.        
+        for (Button b : this.buttonMap.keySet())
+        {
+            if (this.buttonMap.containsKey(b) == false)
+                continue;
+            
+            final IButton btn = this.buttonMap.get(b);
+            
+            final IAnimation a = new MoveAnimation.Builder(btn).theta(180).v(SLIDE_SPEED)
+                    .minX(SLIDE_MIN_X).wait(SLIDE_WAIT * b.rank()).end();
+            
+            builder.add(a);
+            
+            a.setFinishAction(new Runnable()
+            {
+                public void run()
+                { btn.setDisabled(false); }
+            });
+        }
+        
+        // Complete the meta animation.
+        return builder.end();
+    }
+    
+    @Override
+    public IAnimation animateHide()
+    {
+        // Create a new meta animation.
+        MetaAnimation.Builder builder = new MetaAnimation.Builder()
+                .finishRule(MetaAnimation.FinishRule.ALL);
+        
+        // Hide the current group.
+        builder.add(this.groupMap.get(this.currentButton).animateHide());
+        
+        // Fade out the logo.
+        IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
+                .wait(0).duration(1000).end();
+        
+        f.setFinishAction(new Runnable()
+        {
+            public void run()
+            { logoEntity.setVisible(false); }
+        });
+        
+        builder.add(f);
+         
+        // Slide out the buttons.
+         // Animate the buttons coming in.        
+        for (Button b : this.buttonMap.keySet())
+        {                        
+            final IButton btn = this.buttonMap.get(b);
+            
+            final IAnimation a = new MoveAnimation.Builder(btn).theta(0).v(SLIDE_SPEED)
+                    .maxX(910).wait(SLIDE_WAIT * b.rank()).end();
+            
+            builder.add(a);
+            
+            a.setStartAction(new Runnable()
+            {
+                public void run()
+                { btn.setDisabled(true); }
+            });
+        }
+        
+        // Return the new meta animation.
+        return builder.end();
+    };
+
+    public State getState()
+    {
+        return state;
+    }        
+    
+    @Override
     public boolean draw()
     {
-        return layerMan.draw(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
-    }
+        return layerMan.draw();
+    }        
     
     public void forceRedraw()
     {

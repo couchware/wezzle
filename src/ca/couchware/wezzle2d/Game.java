@@ -21,13 +21,17 @@ import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.menu.MainMenu;
 import ca.couchware.wezzle2d.tile.*;
+import ca.couchware.wezzle2d.transition.CircularTransition;
+import ca.couchware.wezzle2d.transition.ITransition;
 import ca.couchware.wezzle2d.tutorial.*;
 import ca.couchware.wezzle2d.ui.*;
 import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -100,6 +104,12 @@ public class Game extends Canvas implements IGameWindowCallback
     final public static int SCREEN_HEIGHT = 600;
     
     /**
+     * A rectangle the size of the screen.
+     */
+    final public static ImmutableRectangle SCREEN_RECTANGLE = 
+            new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    
+    /**
      * The path to the resources.
      */
     final public static String RESOURCES_PATH = "resources";        
@@ -148,9 +158,14 @@ public class Game extends Canvas implements IGameWindowCallback
     final public static Color TEXT_COLOR1 = new Color(252, 233, 45);
     
     /**
-     * The secondary colour.
+     * The secondary color.
      */
-    final public static Color TEXT_COLOR2 = new Color(178, 178, 178);
+    final public static Color TEXT_COLOR2 = Color.WHITE;
+    
+    /**
+     * The disabled colour.
+     */
+    final public static Color TEXT_COLOR_DISABLED = new Color(178, 178, 178);
         
     /**
      * The line score color.
@@ -226,6 +241,12 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     public MainMenu mainMenu;
     
+    /**
+     * The main menu transition.  This is the transition animation that is used
+     * to transition from the menu to the game.
+     */
+    public ITransition mainMenuTransition;
+        
     /**
      * The animation manager in charge of animations.
      */
@@ -721,7 +742,8 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.PIECE))
         {
             // Create the piece manager.
-            pieceMan = PieceManager.newInstance(window, animationMan, boardMan);        
+            pieceMan = PieceManager.newInstance(animationMan, boardMan);        
+            pieceMan.getPieceGrid().setVisible(false);
             layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);
         }
         
@@ -822,7 +844,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // The high score button.
         highScoreButton = new SpriteButton.Builder(128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.LARGE).text("")
+                .type(SpriteButton.Type.HUGE).text("")
                 .offOpacity(0).hoverOpacity(70).onOpacity(95).end();
         layerMan.add(highScoreButton, Layer.UI);
                 
@@ -867,7 +889,7 @@ public class Game extends Canvas implements IGameWindowCallback
 		// Set up the timer text.
         timerLabel = new LabelBuilder(400, 70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(TEXT_COLOR1).size(50).text("--").end();
+                .color(TEXT_COLOR1).size(50).text("").end();
         layerMan.add(timerLabel, Layer.UI);
              
         // Set up the level header.
@@ -1244,11 +1266,11 @@ public class Game extends Canvas implements IGameWindowCallback
                 window.clearMouseEvents();
                 
                 // Draw normally.
-                layerMan.setDisabled(false);
-                return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
+                //layerMan.setDisabled(false);
+                //return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
                 
                 // Create the main menu.
-                //mainMenu = new MainMenu(animationMan);
+                mainMenu = new MainMenu(animationMan);
             }   
             else
             {      
@@ -1264,13 +1286,29 @@ public class Game extends Canvas implements IGameWindowCallback
             if (animationMan != null)
                 animationMan.animate(delta);
             
-            if (mainMenu.updateLogic(this) == MainMenu.State.FINISHED)
-            {
-                // Remove the loader.
-                mainMenu = null;
-                
+            // Update the main menu logic.
+            mainMenu.updateLogic(this);
+            
+            if (mainMenu.getState() == MainMenu.State.FINISHED)
+            {                                
                 // Empty the mouse events.
-                window.clearMouseEvents();                                                                    
+                window.clearMouseEvents();   
+                
+                // Remove the loader.
+                mainMenu = null;   
+                
+                // Create the layer manager transition animation.
+                this.mainMenuTransition = new CircularTransition.Builder(layerMan)
+                        .minRadius(10).v(0.4).end();
+                
+                // When the transition is done, enable the game controls.
+                this.mainMenuTransition.setFinishAction(new Runnable()
+                {
+                    public void run()
+                    { layerMan.setDisabled(false); }
+                });
+                
+                this.animationMan.add(mainMenuTransition);                
             }   
             else
             {      
@@ -1279,7 +1317,24 @@ public class Game extends Canvas implements IGameWindowCallback
                 
                 // Draw using the loader.
                 return mainMenu.draw();
-            }         
+            }
+        }
+        
+        // See if the main menu transition is in progress
+        if (mainMenuTransition != null)
+        {
+            // Animate all animations.
+            if (animationMan != null)
+                animationMan.animate(delta);
+            
+            if (mainMenuTransition.isFinished() == false)
+            {
+                return mainMenuTransition.draw();                
+            }
+            else
+            {
+                mainMenuTransition = null;
+            }
         }
                                
         // If the high score button was just clicked.
@@ -1433,14 +1488,14 @@ public class Game extends Canvas implements IGameWindowCallback
         // If the background is dirty, then redraw everything.
         if (background.isDirty() == true)
         {            
-            layerMan.draw();
+            layerMan.drawAll();
             background.setDirty(false);
             updated = true;
         }
         // Otherwise, only draw what needs to be redrawn.
         else
         {                       
-            updated = layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);         
+            updated = layerMan.draw();         
         }        
         
         //Util.handleMessage(layerMan.toString());

@@ -18,6 +18,12 @@ import java.util.EnumSet;
  */
 public class OptionsGroup extends AbstractGroup
 {
+    
+    /**
+     * The layer manager.
+     */
+    final private LayerManager layerMan;
+    
     /**
      * The header label.
      */
@@ -26,7 +32,7 @@ public class OptionsGroup extends AbstractGroup
     /**
      * The help button.
      */
-    private IButton helpButton;
+    private IButton upgradeButton;
     
     /**
      * The audio button.
@@ -60,7 +66,7 @@ public class OptionsGroup extends AbstractGroup
             final PropertyManager propertyMan)
     {
         // Invoke super.
-        super(layerMan);                
+        this.layerMan = layerMan;
         
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
@@ -70,15 +76,16 @@ public class OptionsGroup extends AbstractGroup
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
-        // Create help button.
-        helpButton = new SpriteButton.Builder(400, 246)
+        // Create upgrade button.
+        upgradeButton = new SpriteButton.Builder(400, 246)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Help").offOpacity(70).visible(false).end();        
-        layerMan.add(helpButton, Layer.UI);
-        entityList.add(helpButton);
+                .type(SpriteButton.Type.THIN)
+                .text("Upgrade").offOpacity(80).visible(false).end();        
+        layerMan.add(upgradeButton, Layer.UI);
+        entityList.add(upgradeButton);
         
         // Create audio button.
-        audioButton = new SpriteButton.Builder((SpriteButton) helpButton).y(300)
+        audioButton = new SpriteButton.Builder((SpriteButton) upgradeButton).y(300)
             .text("Sound/Music").end();
         layerMan.add(audioButton, Layer.UI);
         entityList.add(audioButton);
@@ -88,13 +95,13 @@ public class OptionsGroup extends AbstractGroup
         groupMan.register(audioGroup);
         
         // Create main menu button.
-        mainMenuButton = new SpriteButton.Builder((SpriteButton) helpButton).y(354)
+        mainMenuButton = new SpriteButton.Builder((SpriteButton) upgradeButton).y(354)
             .text("Main Menu").end();
         layerMan.add(mainMenuButton, Layer.UI);
         entityList.add(mainMenuButton);
         
         // Create back button.
-        backButton = new SpriteButton.Builder((SpriteButton) helpButton).y(408)
+        backButton = new SpriteButton.Builder((SpriteButton) upgradeButton).y(408)
             .text("Back").end();
         layerMan.add(backButton, Layer.UI);     
         entityList.add(backButton);

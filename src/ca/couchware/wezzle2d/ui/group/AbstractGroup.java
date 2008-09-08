@@ -43,12 +43,6 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     final protected IGameWindow window;
 
     /**
-     * A reference to the layer manager.  This is used by groups to add
-     * and remove things like buttons and sliders.
-     */
-    final protected LayerManager layerMan;       
-
-    /**
      * An linked list of all the entities in this screen.
      */
     final protected LinkedList<IEntity> entityList;
@@ -63,17 +57,22 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
      * @param window
      * @param layerMan
      */
-    public AbstractGroup(LayerManager layerMan)
+    public AbstractGroup(IGroup parent)
     {       
         // Make all groups start invisible.
         super.setVisible(false);
 
         // Store the references.
-        this.window = ResourceFactory.get().getGameWindow();
-        this.layerMan = layerMan;       
+        this.parent = parent;
+        this.window = ResourceFactory.get().getGameWindow();        
 
         // Create the entity list.
         this.entityList = new LinkedList<IEntity>();
+    }
+    
+    public AbstractGroup()
+    {
+        this(null);
     }
     
     //--------------------------------------------------------------------------
@@ -185,6 +184,11 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     public void setActivated(boolean activated)
     {
         this.activated = activated;
-    }               
+    }    
+    
+    public void resetControls()
+    {
+        // Optionally overridden.
+    }
 
 }

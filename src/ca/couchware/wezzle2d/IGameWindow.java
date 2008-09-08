@@ -107,7 +107,7 @@ public interface IGameWindow
      * 
      * @param r
      */
-    public void setClip(Rectangle r);
+    public void setClip(Shape s);
     
     /**
      * Gets the current clip rectangle.

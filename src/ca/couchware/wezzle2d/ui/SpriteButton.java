@@ -5,9 +5,7 @@ import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.util.*;
-import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.Map;
 
 /**
  * A class for creating a rectangular boolean button.
@@ -15,30 +13,46 @@ import java.util.Map;
  * @author cdmckay
  */
 public class SpriteButton extends AbstractSpriteButton
-{          
-    /**
-     * The different sizes of the boolean buttons.
-     */
-    public static enum Type
-    {
-        NORMAL, LARGE, THIN
-    }
+{    
     
     /**
-     * The button dimensions.
+     * The different sizes of the buttons.
      */
-    final private static Map<Type, ImmutableDimension> dimensionMap;       
-    
-    /**
-     * The static constructor.
-     */
-    static
+    public enum Type
     {
-        dimensionMap = new EnumMap<Type, ImmutableDimension>(Type.class);        
-        dimensionMap.put(Type.NORMAL, new ImmutableDimension(153, 49));
-        dimensionMap.put(Type.LARGE, new ImmutableDimension(210, 130));
-        dimensionMap.put(Type.THIN, new ImmutableDimension(220, 40));
-    }
+        /** A small circular button suitable for use in +/- clickers. */
+        SMALL_CIRCULAR("Button_SmallCircular.png", 18f), 
+        
+        /** A thinner, longer button used in the main menu. */
+        THIN("Button_Thin.png", 20f),        
+        
+        /** The "normal" sized button used in the in-game UI. */
+        NORMAL("Button_Normal.png", 18f), 
+        
+        /** A larger, squarish button used in the main menu. */
+        LARGE("Button_Large.png", 24f), 
+        
+        /** A huge, squarish button used in the in-game button as the high-score button. */
+        HUGE("Button_Huge.png", 26f);       
+                
+        /** The file name of the sprite that represents the button. */
+        private String filename;
+        
+        /** The text size of the text that will be written on the button */
+        private float textSize;
+        
+        /** Constructor that stores the filename. */
+        Type(String filename, float textSize)
+        { this.filename = filename; this.textSize = textSize; }
+        
+        /** An accessor for getting the sprite's filename. */
+        public String getFilename()
+        { return filename; }
+        
+        /** An accessor for getting the sprite's text size. */
+        public float getTextSize()
+        { return textSize; }
+    }        
            
     /**
      * The type of button.
@@ -70,11 +84,10 @@ public class SpriteButton extends AbstractSpriteButton
      */
     final private float textSize;
     
-    /**
+    /*
      * The normal opacity.
      */
-    // The inherited "opacity" variable is used.
-    //private int normalOpacity;
+    // The inherited "opacity" variable is used.    
     
     /**
      * The hover opacity.
@@ -120,54 +133,64 @@ public class SpriteButton extends AbstractSpriteButton
         // Assign values from builder.               
         this.normalText = builder.normalText;       
         this.hoverText = builder.hoverText;
-        this.activeText = builder.activeText;
-        this.textSize = builder.textSize;
+        this.activeText = builder.activeText;        
         this.opacity = limitOpacity(builder.offOpacity);
         this.hoverOpacity = limitOpacity(builder.hoverOpacity);
         this.pressedOpacity = limitOpacity(builder.pressedOpacity);
         this.onOpacity = limitOpacity(builder.onOpacity);
         this.type = builder.type;
         
+        // Determine which text size to use.  If it is 0, then use the 
+        // one from the text-size map.  Otherwise, use the one provided 
+        // by the builder.
+        if (builder.textSize == 0)
+            this.textSize = this.type.getTextSize();
+        else
+            this.textSize = builder.textSize;
+        
         // Set the visibility.
         this.visible = builder.visible;
         this.disabled = builder.disabled;
+                                                                   
+        // Load the normal sprite.
+        sprite = ResourceFactory.get()
+                .getSprite(Game.SPRITES_PATH + "/" + this.type.getFilename());      
         
-        // Assign values based on the values from builder.
-        final ImmutableDimension d = dimensionMap.get(type);
-        this.width = d.getWidth();
-        this.height = d.getHeight();                
+        // Assign values based on the values from builder.        
+        this.width = sprite.getWidth();
+        this.height = sprite.getHeight();
         
         // Determine the offsets.
         this.alignment = builder.alignment;
-        offsetX = determineOffsetX(alignment, width);
-        offsetY = determineOffsetY(alignment, height);
+        this.offsetX = determineOffsetX(alignment, width);
+        this.offsetY = determineOffsetY(alignment, height);
         
         // Set the shape.
-        this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);
-        
-        // Construct the sprite name.                
-        String spriteNormalName = "RectangularButton_" 
-            + width + "x" + height + ".png";
-                                
-        // Load the normal sprite.
-        sprite = ResourceFactory.get()
-                .getSprite(Game.SPRITES_PATH + "/" + spriteNormalName);                            
+        this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);                                      
         
         // Create the normal label.
-        normalLabel = new LabelBuilder(x, y)
+        this.normalLabel = new LabelBuilder(x + offsetX + width / 2, y + offsetY + height / 2)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.TEXT_COLOR1).size(textSize).text(normalText).end(); 
         
         // Create the other labels, using the normal label as a template.
-        if (hoverText != null)            
-            hoverLabel = new LabelBuilder(normalLabel).text(hoverText).end();                
+        if (this.hoverText != null)   
+        {
+            this.hoverLabel = new LabelBuilder(normalLabel).text(hoverText).end();                
+        }
         else
-            hoverLabel = null;
+        {
+            this.hoverLabel = null;
+        }
         
-        if (activeText != null)
-            activeLabel = new LabelBuilder(normalLabel).text(activeText).end();                
+        if (this.activeText != null)
+        {
+            this.activeLabel = new LabelBuilder(normalLabel).text(activeText).end();                
+        }
         else
-            activeLabel = null;                
+        {
+            this.activeLabel = null;
+        }
     }
     
     public static class Builder implements IBuilder<SpriteButton>
@@ -181,7 +204,7 @@ public class SpriteButton extends AbstractSpriteButton
         private String normalText = "Default";
         private String hoverText = null;
         private String activeText = null;
-        private float textSize = 18f;
+        private float textSize = 0;
         private int offOpacity = 80;
         private int hoverOpacity = 100;
         private int pressedOpacity = 100;
@@ -402,6 +425,7 @@ public class SpriteButton extends AbstractSpriteButton
         else
             drawNormal();     
         
+        // Uncomment for debugging the draw rect box.
         //window.drawRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
         
         return true;

@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.ui.ILabel;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class LayerManager
 {
-    
+       
     /**
      * The platform specific newline character.
      */
@@ -243,7 +244,7 @@ public class LayerManager
      * Draws the layers to screen, in order from 0 to N (where N is the number
      * of layers).
      */
-    public void draw()
+    public void drawAll()
     {
         // The number of sprites drawn.
         //int count = 0;
@@ -286,16 +287,14 @@ public class LayerManager
     }
     
     /**
-     * Draws anything dirty in that region.
+     * Draws anything dirty touching the passed region.
      * 
-     * @param rx
-     * @param ry
-     * @param rwidth
-     * @param rheight
+     * @param shape The region to draw.
+     * @param exact Whether or not we should draw the passed region exactly. If
+     * exact is false, then only the area that has changed will be drawn.
      */
-    public boolean draw(int rx, int ry, int rwidth, int rheight)
-    {
-        Rectangle region = new Rectangle(rx, ry, rwidth, rheight);
+    public boolean draw(Shape region, boolean exact)
+    {        
         Rectangle clip = null;
         
         // Cycle through all the layers, drawing them.
@@ -349,9 +348,10 @@ public class LayerManager
         if (clip != null)
         {
             //Util.handleMessage(clip.toString(), Thread.currentThread());
-            
-            window.setClip(clip);
-            draw();            
+                        
+            window.setClip(exact == true ? region : clip);
+                
+            drawAll();            
             window.clearClip();
             
             // Uncomment the next line if you want boxes to be drawn around
@@ -369,6 +369,16 @@ public class LayerManager
             return false;
         }
     }               
+    
+    public boolean draw(Shape region)
+    {
+        return draw(region, false);
+    }
+    
+    public boolean draw()
+    {
+        return draw(Game.SCREEN_RECTANGLE, false);
+    }
     
     private void addRemoveRect(Rectangle r)
     {
@@ -390,7 +400,7 @@ public class LayerManager
     
     public void forceRedraw()
     {
-        removeRect = new Rectangle(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
+        removeRect = Game.SCREEN_RECTANGLE.toRectangle();
     }
     
     @Override

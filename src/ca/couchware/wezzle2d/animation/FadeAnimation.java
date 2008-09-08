@@ -78,16 +78,7 @@ public class FadeAnimation extends AbstractAnimation
         
         // Set the opacities.
         this.minOpacity = builder.minOpacity;
-        this.maxOpacity = builder.maxOpacity;
-                
-        // Set the initial opacity.
-        if (type == Type.IN)        
-            this.entity.setOpacity(minOpacity);
-        else
-            this.entity.setOpacity(maxOpacity);
-        
-        // Make sure the entities are visible.
-        this.entity.setVisible(true);
+        this.maxOpacity = builder.maxOpacity;                        
     }
     
     public static class Builder implements IBuilder<FadeAnimation>
@@ -120,7 +111,20 @@ public class FadeAnimation extends AbstractAnimation
     public void nextFrame(long delta)
     {
         // Make sure we've set the started flag.
-        setStarted();
+        if (this.started == false)
+        {
+            // Set the initial opacity.
+            if (type == Type.IN)        
+                this.entity.setOpacity(minOpacity);
+            else
+                this.entity.setOpacity(maxOpacity);
+
+            // Make sure the entities are visible.
+            this.entity.setVisible(true);
+            
+            // Set the started flag.
+            setStarted();
+        }
         
         // Check if we're done, if we are, return.
         if (this.finished == true)
@@ -163,8 +167,8 @@ public class FadeAnimation extends AbstractAnimation
             if (counter > wait + duration)   
             {
                 switch (type)
-                {
-                    case IN:
+                {                     
+                    case IN:                   
                     case OUT:
 
                         setFinished();

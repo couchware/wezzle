@@ -393,14 +393,14 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
      * 
      * @param r
      */
-    public void setClip(Rectangle r)
+    public void setClip(Shape s)
     {
         // Make sure setClip was called corectly.
         if (g == null)
             throw new RuntimeException(
                     "setClip must be called during frameRendering().");
                         
-        g.setClip(r);        
+        g.setClip(s);        
     }
     
     /**

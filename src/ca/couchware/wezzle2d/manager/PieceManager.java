@@ -116,7 +116,7 @@ public class PieceManager implements IMouseListener
     /**
      * The piece map.
      */
-    private EnumMap<PieceType, Piece> pieceMap;
+    //private EnumMap<PieceType, Piece> pieceMap;
     
     /**
      * The current piece.
@@ -158,11 +158,12 @@ public class PieceManager implements IMouseListener
 	 * 
 	 * @param boardMan The board manager.
 	 */
-	private PieceManager(IGameWindow window, AnimationManager animationMan, 
+	private PieceManager(
+            AnimationManager animationMan, 
             BoardManager boardMan)
 	{       
 		// Set the reference.
-        this.window = window;
+        this.window = ResourceFactory.get().getGameWindow();
         this.animationMan = animationMan;
 		this.boardMan = boardMan;
         
@@ -174,12 +175,12 @@ public class PieceManager implements IMouseListener
         mouseRightReleased = false;
         
         // Create the piece map.
-        pieceMap = new EnumMap<PieceType, Piece>(PieceType.class);
-        pieceMap.put(PieceType.DASH, new PieceDash());
-        pieceMap.put(PieceType.DIAGONAL, new PieceDiagonal());
-        pieceMap.put(PieceType.DOT, new PieceDot());
-        pieceMap.put(PieceType.L, new PieceL());
-        pieceMap.put(PieceType.LINE, new PieceLine());
+//        pieceMap = new EnumMap<PieceType, Piece>(PieceType.class);
+//        pieceMap.put(PieceType.DASH, new PieceDash());
+//        pieceMap.put(PieceType.DIAGONAL, new PieceDiagonal());
+//        pieceMap.put(PieceType.DOT, new PieceDot());
+//        pieceMap.put(PieceType.L, new PieceL());
+//        pieceMap.put(PieceType.LINE, new PieceLine());
         
         // Create new piece entity at the origin of the board.
 		pieceGrid = new PieceGrid(boardMan, 
@@ -199,10 +200,10 @@ public class PieceManager implements IMouseListener
 	}	
         
         // Public API.
-        public static PieceManager newInstance(IGameWindow window, AnimationManager animationMan, 
+        public static PieceManager newInstance(AnimationManager animationMan, 
             BoardManager boardMan)
         {
-            return new PieceManager(window, animationMan, boardMan);
+            return new PieceManager(animationMan, boardMan);
         }
     
     //--------------------------------------------------------------------------
@@ -217,7 +218,7 @@ public class PieceManager implements IMouseListener
 	public void loadPiece(final PieceType type)
 	{
         // Remember which piece it is for rotating.
-        this.piece = pieceMap.get(type);
+        this.piece = type.getPiece();
         
         // Load the piece into the piece grid.
 		pieceGrid.loadStructure(piece.getStructure());

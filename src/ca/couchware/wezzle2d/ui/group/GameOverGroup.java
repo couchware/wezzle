@@ -16,7 +16,14 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class GameOverGroup extends AbstractGroup
-{              
+{     
+    
+    /**
+     * A reference to the layer manager.  This is used by groups to add
+     * and remove things like buttons and sliders.
+     */
+    final protected LayerManager layerMan;       
+    
     /**
      * The header label.
      */
@@ -48,9 +55,9 @@ public class GameOverGroup extends AbstractGroup
      * @param layerMan
      */    
     public GameOverGroup(final LayerManager layerMan)
-    {        
-        // Invoke super.
-        super(layerMan);
+    {    
+        // Set the layer man.
+        this.layerMan = layerMan;
         
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
@@ -80,13 +87,14 @@ public class GameOverGroup extends AbstractGroup
         // Create restart button.
         restartButton = new SpriteButton.Builder(400, 345)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .type(SpriteButton.Type.THIN)
                 .text("Restart").offOpacity(70).visible(false).end();
         layerMan.add(restartButton, Layer.UI);
         entityList.add(restartButton);
         
         // Create continue button, using the restart button as a template.
         continueButton = new SpriteButton.Builder((SpriteButton) restartButton)
-                .y(406).text("Continue").end();
+                .y(405).text("Continue").end();
         layerMan.add(continueButton, Layer.UI);
         entityList.add(continueButton);
     }        

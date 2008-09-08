@@ -37,6 +37,11 @@ public class ImmutableRectangle implements Shape
         return rect.x;
     }
     
+    public int getCenterX()
+    {
+        return rect.x + rect.width / 2;
+    }
+    
     public int getMaxX()
     {
         return rect.x + rect.width;
@@ -45,6 +50,11 @@ public class ImmutableRectangle implements Shape
     public int getY()
     {
         return rect.y;
+    }
+    
+    public int getCenterY()
+    {
+        return rect.y + rect.height / 2;
     }
     
     public int getMaxY()
@@ -116,6 +126,11 @@ public class ImmutableRectangle implements Shape
     {
         return rect.getPathIterator(at, flatness);
     }         
+    
+    public Rectangle toRectangle()
+    {
+        return new Rectangle(rect);
+    }
     
     @Override
     public String toString()

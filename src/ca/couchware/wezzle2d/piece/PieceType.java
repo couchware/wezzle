@@ -12,9 +12,17 @@ package ca.couchware.wezzle2d.piece;
  */
 public enum PieceType
 {
-    DOT, 
-    DASH, 
-    LINE, 
-    DIAGONAL, 
-    L
+    DOT(new PieceDot()), 
+    DASH(new PieceDash()), 
+    LINE(new PieceLine()), 
+    DIAGONAL(new PieceDiagonal()), 
+    L(new PieceL());
+    
+    private Piece piece;
+    
+    PieceType(Piece piece)
+    { this.piece = piece; }
+    
+    public Piece getPiece()
+    { return piece; }
 }    

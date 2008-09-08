@@ -29,7 +29,12 @@ import java.util.EnumSet;
  */
 
 public class Java2DLabel extends AbstractEntity implements ILabel
-{    
+{           
+    
+    /**
+     * The text in the baseline text layout.
+     */
+    final private static String baselineText = "A";
     
     /** 
      * The game window to which this text is going to be drawn 
@@ -55,6 +60,11 @@ public class Java2DLabel extends AbstractEntity implements ILabel
      * The font. 
      */
 	final private Font font;         
+    
+    /**
+     * The baseline text layout.
+     */
+    final private TextLayout baselineLayout;
     
     /**
      * The text layout instance.
@@ -100,8 +110,10 @@ public class Java2DLabel extends AbstractEntity implements ILabel
             this.font = Java2DFontStore.get().getFont((int) size);
 
             // Create the text layout object.
+            this.baselineLayout = Java2DTextLayoutStore.get()
+                    .getTextLayout(window.getDrawGraphics(), baselineText, font, true);
             this.textLayout = Java2DTextLayoutStore.get()
-                    .getTextLayout(window.getDrawGraphics(), text, font, cached);
+                    .getTextLayout(window.getDrawGraphics(), text, font, cached);            
 
             // Setup the alignment.  This should be replaced, alignment should
             // be immutable.                   
@@ -111,7 +123,8 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         else
         {
             this.font = null;
-            this.textLayout = null;
+            this.baselineLayout = null;
+            this.textLayout = null;            
         }
         
         // Set dirty so it will be drawn.        
@@ -142,7 +155,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         
     protected int determineLabelOffsetY(EnumSet<Alignment> alignment)
     {      
-        Rectangle2D bounds = textLayout.getBounds();
+        Rectangle2D bounds = baselineLayout.getBounds();
         
 		if (alignment.contains(Alignment.BOTTOM))
 		{            
@@ -165,7 +178,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     private int getLetterHeight()
     {        
         // Return the height.
-        return (int) -textLayout.getBounds().getY();            
+        return (int) -baselineLayout.getBounds().getY();            
     }
     
 	/**
@@ -247,7 +260,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     public int getHeight()
     {    
         if (text.length() == 0) return 0;
-        else return (int) textLayout.getBounds().getHeight();
+        else return (int) baselineLayout.getBounds().getHeight();
     }
 
     /**

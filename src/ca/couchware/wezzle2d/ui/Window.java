@@ -141,6 +141,7 @@ public class Window extends AbstractEntity
             this.width = window.width;
             this.height = window.height;
             this.visible = window.visible;
+            this.opacity = window.opacity;
             this.disabled = window.disabled;
         }
         

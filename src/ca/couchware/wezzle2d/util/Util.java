@@ -5,9 +5,6 @@
 
 package ca.couchware.wezzle2d.util;
 
-import ca.couchware.wezzle2d.*;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Random;
 
 /**
@@ -23,6 +20,26 @@ public class Util
 	 */
 	public static Random random = new Random(System.currentTimeMillis());		
 	
+    /**
+     * A method for squaring integers.
+     * 
+     * @int x The integer to square.
+     */
+    public static int sq(int x)
+    {
+        return x * x;
+    }
+    
+    /**
+     * A method for squaring doubles.
+     * 
+     * @int x The double to square.
+     */
+    public static double sq(double x)
+    {
+        return x * x;
+    }
+    
 	/**
 	 * A method for transposing square 2D arrays in-place.
 	 */
