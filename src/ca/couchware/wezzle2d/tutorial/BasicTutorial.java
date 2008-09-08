@@ -268,7 +268,8 @@ public class BasicTutorial extends AbstractTutorial
         
         // Fade board in.
         EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
-                game.boardMan.getCells() - 1);            
+                game.boardMan.getCells() - 1);        
+        e.setVisible(false);
         IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
                 .wait(0).duration(300).end();
         game.animationMan.add(a);
