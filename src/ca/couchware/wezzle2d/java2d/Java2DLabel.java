@@ -336,13 +336,14 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     @Override
     public void setRotation(double theta)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Do nothing.
     }
 
     @Override
     public double getRotation()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Always no rotation.
+        return 0.0;
     }
 
     public boolean isCached()
