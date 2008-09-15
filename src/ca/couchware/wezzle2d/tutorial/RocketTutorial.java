@@ -177,7 +177,7 @@ public class RocketTutorial extends AbstractTutorial
             IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
                     .wait(0).duration(500).end();
             
-            a.setFinishAction(new Runnable()
+            a.setFinishRunnable(new Runnable()
             {
                 public void run()
                 { e.setVisible(false); }
@@ -320,14 +320,14 @@ public class RocketTutorial extends AbstractTutorial
         // Create bottom row.        
         TileEntity t1 = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);                         
-        t1.setClickAction(r);
+        t1.setClickRunnable(r);
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.BLUE);
         
         TileEntity t2 = game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);
-        t2.setClickAction(r);
+        t2.setClickRunnable(r);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.BLUE);
@@ -350,7 +350,7 @@ public class RocketTutorial extends AbstractTutorial
         
         TileEntity t3 = game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.RED);
-        t3.setClickAction(r);
+        t3.setClickRunnable(r);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.BLUE);
@@ -367,7 +367,7 @@ public class RocketTutorial extends AbstractTutorial
         
         TileEntity t4 = game.boardMan.createTile(1, game.boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.RED);
-        t4.setClickAction(r);
+        t4.setClickRunnable(r);
         
         game.boardMan.createTile(2, game.boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.BLUE);

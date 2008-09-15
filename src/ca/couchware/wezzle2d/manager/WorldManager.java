@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.manager.PropertyManager.Key;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.Iterator;
@@ -114,8 +115,7 @@ public class WorldManager implements ILevelListener
 		this.propertyMan = propertyMan;
 		
 		// Load the properties;
-		this.difficulty = propertyMan
-                .getIntegerProperty(PropertyManager.KEY_DIFFICULTY);
+		this.difficulty = propertyMan.getIntProperty(Key.DIFFICULTY);
 		
 		// Ensure that we are at least level 1.
 		if (this.difficulty < 1)

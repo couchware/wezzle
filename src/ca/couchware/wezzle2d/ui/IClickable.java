@@ -22,11 +22,11 @@ public interface IClickable
     /**
      * A method for getting a runnable that is run when the entitiy is clicked.
      */
-    public Runnable getClickAction();
+    public Runnable getClickRunnable();
     
     /**
      * A method for setting a runnable that is run when the entity is clicked.
      */
-    public void setClickAction(Runnable r);
+    public void setClickRunnable(Runnable r);
     
 }

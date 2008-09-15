@@ -19,7 +19,7 @@ import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.menu.Loader;
-import ca.couchware.wezzle2d.menu.MainMenu;
+import ca.couchware.wezzle2d.menu.MainMenuGroup;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.transition.CircularTransition;
 import ca.couchware.wezzle2d.transition.ITransition;
@@ -239,7 +239,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * The main menu.
      */
-    public MainMenu mainMenu;
+    public MainMenuGroup mainMenu;
     
     /**
      * The main menu transition.  This is the transition animation that is used
@@ -1270,7 +1270,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 //return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
                 
                 // Create the main menu.
-                mainMenu = new MainMenu(animationMan);
+                mainMenu = new MainMenuGroup(propertyMan, animationMan, musicMan);
             }   
             else
             {      
@@ -1289,7 +1289,7 @@ public class Game extends Canvas implements IGameWindowCallback
             // Update the main menu logic.
             mainMenu.updateLogic(this);
             
-            if (mainMenu.getState() == MainMenu.State.FINISHED)
+            if (mainMenu.getState() == MainMenuGroup.State.FINISHED)
             {                                
                 // Empty the mouse events.
                 window.clearMouseEvents();   
@@ -1302,13 +1302,16 @@ public class Game extends Canvas implements IGameWindowCallback
                         .minRadius(10).v(0.4).end();
                 
                 // When the transition is done, enable the game controls.
-                this.mainMenuTransition.setFinishAction(new Runnable()
+                this.mainMenuTransition.setFinishRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.setDisabled(false); }
                 });
                 
                 this.animationMan.add(mainMenuTransition);                
+                
+                // Start the music.
+                musicMan.play();
             }   
             else
             {      
@@ -1504,29 +1507,7 @@ public class Game extends Canvas implements IGameWindowCallback
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
 		{
 			System.exit(0);
-		}
-        
-        // If up or down have been pressed
-        if (window.isKeyPressed(KeyEvent.VK_UP))
-		{
-			musicMan.increaseVolume();
-		}
-        
-        if (window.isKeyPressed(KeyEvent.VK_DOWN))
-		{
-			musicMan.decreaseVolume();
-		}
-        
-         // If right or left have been pressed
-        if (window.isKeyPressed(KeyEvent.VK_RIGHT))
-		{
-			soundMan.increaseVolume();
-		}
-        
-        if (window.isKeyPressed(KeyEvent.VK_LEFT))
-		{
-			soundMan.decreaseVolume();
-		}
+		}                          
         
         // Check the achievements.
         if (achievementMan.evaluate(this) == true)
@@ -1579,7 +1560,7 @@ public class Game extends Canvas implements IGameWindowCallback
                         tileRemovalSet.add(new Integer(index));
                 }                                        
 
-                soundMan.play(AudioTrack.SOUND_LEVEL_UP);
+                soundMan.play(Sound.LEVEL_UP);
 
                 int x = pieceMan.getPieceGrid().getX() 
                         + boardMan.getCellWidth() / 2;
@@ -1595,13 +1576,13 @@ public class Game extends Canvas implements IGameWindowCallback
                 IAnimation a2 = new MoveAnimation.Builder(label)
                         .duration(1150).theta(0).v(0.03).end();
 
-                a2.setStartAction(new Runnable()
+                a2.setStartRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.add(label, Layer.EFFECT); }
                 });
 
-                a2.setFinishAction(new Runnable()
+                a2.setFinishRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.remove(label, Layer.EFFECT); }
@@ -1801,13 +1782,13 @@ public class Game extends Canvas implements IGameWindowCallback
                 IAnimation a2 = new MoveAnimation.Builder(label)
                         .duration(1150).v(0.03).theta(90).end();
 
-                a2.setStartAction(new Runnable()
+                a2.setStartRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.add(label, Layer.EFFECT); }
                 });
 
-                a2.setFinishAction(new Runnable()
+                a2.setFinishRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.remove(label, Layer.EFFECT); }
@@ -1828,7 +1809,7 @@ public class Game extends Canvas implements IGameWindowCallback
             }
 
             // Play the sound.
-            soundMan.play(AudioTrack.SOUND_LINE);
+            soundMan.play(Sound.LINE);
 
             // Make sure bombs aren't removed (they get removed
             // in a different step).  However, if the no-items
@@ -1963,13 +1944,13 @@ public class Game extends Canvas implements IGameWindowCallback
             a2 = new MoveAnimation.Builder(label)
                         .duration(1150).v(0.03).theta(90).end();
 
-            a2.setStartAction(new Runnable()
+            a2.setStartRunnable(new Runnable()
             {
                 public void run()
                 { layerMan.add(label, Layer.EFFECT); }
             });
 
-            a2.setFinishAction(new Runnable()
+            a2.setFinishRunnable(new Runnable()
             {
                 public void run()
                 { layerMan.remove(label, Layer.EFFECT); }
@@ -1984,7 +1965,7 @@ public class Game extends Canvas implements IGameWindowCallback
             p = null;                             
 
             // Play the sound.
-            soundMan.play(AudioTrack.SOUND_ROCKET);
+            soundMan.play(Sound.ROCKET);
 
             // Find all the new rockets.
             Set<Integer> newRocketRemovalSet = new HashSet<Integer>();
@@ -2110,13 +2091,13 @@ public class Game extends Canvas implements IGameWindowCallback
             a2 = new MoveAnimation.Builder(label)
                     .duration(1150).v(0.03).theta(90).end();
 
-            a2.setStartAction(new Runnable()
+            a2.setStartRunnable(new Runnable()
             {
                 public void run()
                 { layerMan.add(label, Layer.EFFECT); }
             });
 
-            a2.setFinishAction(new Runnable()
+            a2.setFinishRunnable(new Runnable()
             {
                 public void run()
                 { layerMan.remove(label, Layer.EFFECT); }
@@ -2131,7 +2112,7 @@ public class Game extends Canvas implements IGameWindowCallback
             p = null;
 
             // Play the sound.
-            soundMan.play(AudioTrack.SOUND_STAR);
+            soundMan.play(Sound.STAR);
 
             // Start the line removal animations.
             int i = 0;
@@ -2205,13 +2186,13 @@ public class Game extends Canvas implements IGameWindowCallback
             a2 = new MoveAnimation.Builder(label)
                     .duration(1150).v(0.03).theta(90).end();
 
-            a2.setStartAction(new Runnable()
+            a2.setStartRunnable(new Runnable()
             {
                 public void run()
                 { layerMan.add(label, Layer.EFFECT); }
             });
 
-            a2.setFinishAction(new Runnable()
+            a2.setFinishRunnable(new Runnable()
             {
                 public void run()
                 { layerMan.remove(label, Layer.EFFECT); }
@@ -2226,7 +2207,7 @@ public class Game extends Canvas implements IGameWindowCallback
             p = null;                
 
             // Play the sound.
-            soundMan.play(AudioTrack.SOUND_BOMB);
+            soundMan.play(Sound.BOMB);
 
             // Find all the new bombs.
             Set<Integer> newBombRemovalSet = new HashSet<Integer>();

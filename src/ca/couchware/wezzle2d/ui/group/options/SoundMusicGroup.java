@@ -13,6 +13,8 @@ import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.manager.PropertyManager.Key;
+import ca.couchware.wezzle2d.manager.PropertyManager.Value;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -100,23 +102,11 @@ public class SoundMusicGroup extends AbstractGroup
         RadioItem soundItem2 = new RadioItem.Builder().text("Off").end();        
         soundRadio = new RadioGroup.Builder<Sound>(400, 233, Sound.class)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(Sound.ON, soundItem1).add(Sound.OFF, soundItem2)
+                .add(Sound.ON, soundItem1, propertyMan.getBooleanProperty(Key.SOUND))
+                .add(Sound.OFF, soundItem2, !propertyMan.getBooleanProperty(Key.SOUND))
                 .visible(false).end();
         layerMan.add(soundRadio, Layer.UI);
-        entityList.add(soundRadio);
-        
-        // Check the properties.
-        if (propertyMan.getStringProperty(PropertyManager.KEY_SOUND)
-                .equals(PropertyManager.VALUE_ON))  
-        {
-            //soundRadio.setSelectedItem(0);                    
-            soundRadio.setSelectedKey(Sound.ON);
-        }
-        else        
-        {
-            //soundRadio.setSelectedItem(1);
-            soundRadio.setSelectedKey(Sound.OFF);
-        }
+        entityList.add(soundRadio);             
         
         // Clear flag.
         soundRadio.changed();
@@ -124,11 +114,8 @@ public class SoundMusicGroup extends AbstractGroup
         // Create the sound slider bar.
         soundSlider = new SliderBar.Builder(400, 272)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .virtualRange(
-                    propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_MIN),
-                    propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_MAX))
-                .virtualValue(
-                    propertyMan.getFloatProperty(PropertyManager.KEY_SOUND_VOLUME))
+                .virtualRange(0.0, 1.0)                    
+                .virtualValue(propertyMan.getDoubleProperty(Key.SOUND_VOLUME))
                 .visible(false).end();
         layerMan.add(soundSlider, Layer.UI);
         entityList.add(soundSlider);        
@@ -139,23 +126,11 @@ public class SoundMusicGroup extends AbstractGroup
         RadioItem musicItem2 = new RadioItem.Builder().text("Off").end();        
         musicRadio = new RadioGroup.Builder<Music>(400, 321, Music.class)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(Music.ON, musicItem1).add(Music.OFF, musicItem2)
+                .add(Music.ON, musicItem1, propertyMan.getBooleanProperty(Key.MUSIC))
+                .add(Music.OFF, musicItem2, !propertyMan.getBooleanProperty(Key.MUSIC))
                 .visible(false).end();
         layerMan.add(musicRadio, Layer.UI);
-        entityList.add(musicRadio);
-        
-        // Check the properties.
-        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
-                .equals(PropertyManager.VALUE_ON))
-        {
-            //musicRadio.setSelectedItem(0);
-            musicRadio.setSelectedKey(Music.ON);
-        }
-        else        
-        {
-            //musicRadio.setSelectedItem(1);            
-            musicRadio.setSelectedKey(Music.OFF);
-        }
+        entityList.add(musicRadio);            
         
         // Clear flag.
         musicRadio.changed();
@@ -163,11 +138,8 @@ public class SoundMusicGroup extends AbstractGroup
         // Create the music slider bar.
         musicSlider = new SliderBar.Builder(400, 359)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .virtualRange(
-                    propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_MIN),
-                    propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_MAX))
-                .virtualValue(
-                    propertyMan.getFloatProperty(PropertyManager.KEY_MUSIC_VOLUME))
+                .virtualRange(0.0, 1.0)
+                .virtualValue(propertyMan.getDoubleProperty(Key.MUSIC_VOLUME))
                 .visible(false).end();
         layerMan.add(musicSlider, Layer.UI);
         entityList.add(musicSlider);                      
@@ -200,11 +172,7 @@ public class SoundMusicGroup extends AbstractGroup
             boolean soundOn = soundRadio.getSelectedKey() == Sound.ON;
             
             // Set the property.            
-            game.propertyMan.setProperty(PropertyManager.KEY_SOUND,
-                    soundOn == true
-                    ? PropertyManager.VALUE_ON
-                    : PropertyManager.VALUE_OFF);
-            
+            game.propertyMan.setBooleanProperty(Key.SOUND, soundOn);            
          
             // Pause or unpause the sound depending on whether or not
             // the button is activated.
@@ -215,42 +183,28 @@ public class SoundMusicGroup extends AbstractGroup
             boolean musicOn = musicRadio.getSelectedKey() == Music.ON;
             
             // Set the property.            
-            game.propertyMan.setProperty(PropertyManager.KEY_MUSIC,
-                    musicOn == true
-                    ? PropertyManager.VALUE_ON
-                    : PropertyManager.VALUE_OFF);
+            game.propertyMan.setBooleanProperty(Key.MUSIC, musicOn);
             
-            // Unpause or start the music.
-            if (musicOn == true)
-            {
-                game.musicMan.setPaused(false);
-                
-                if (game.musicMan.isPlaying() == false)                    
-                    game.musicMan.playNext();                
-            }
-            // Pause music.
-            else
-            {
-                game.musicMan.setPaused(true);
-            }
+            // Set the pausedness.
+            game.musicMan.setPaused(!musicOn);           
         } 
         else if (soundSlider.changed() == true)
         {
             // The new sound value.
-            double volume = soundSlider.getVirtualLower() 
+            double gain = soundSlider.getVirtualLower() 
                     + soundSlider.getVirtualValue();                      
             
             // Set the volume.
-            game.soundMan.setVolume((float) volume);
+            game.soundMan.setNormalizedGain(gain);
         }
         else if (musicSlider.changed() == true)
         {
             // The new sound value.
-            double volume = musicSlider.getVirtualLower() 
+            double gain = musicSlider.getVirtualLower() 
                     + musicSlider.getVirtualValue();                        
             
             // Set the volume.
-            game.musicMan.setVolume((float) volume);
+            game.musicMan.setNormalizedGain(gain);
         }
     }
 }

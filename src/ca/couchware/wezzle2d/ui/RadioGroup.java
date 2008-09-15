@@ -126,7 +126,10 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         
         // Select a key.
         if (builder.selectedKey != null)
+        {
             this.setSelectedKey(builder.selectedKey);
+            this.changed = false;
+        }
     }
     
     public static class Builder<E extends Enum<E>> implements IBuilder<RadioGroup>
@@ -188,7 +191,7 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         { itemMap.put(key, val); return this; }
         
         public Builder<E> add(E key, RadioItem val, boolean selected)        
-        { itemMap.put(key, val); selectedKey = key; return this; }
+        { itemMap.put(key, val); if (selected) selectedKey = key; return this; }
         
         public RadioGroup<E> end()
         {

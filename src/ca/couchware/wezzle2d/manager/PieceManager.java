@@ -11,7 +11,8 @@ import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.audio.AudioTrack;
+import ca.couchware.wezzle2d.audio.Music;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
@@ -557,7 +558,7 @@ public class PieceManager implements IMouseListener
                 if (tileDropInProgress == true)
                 {        
                     // Start the animation.
-                    game.soundMan.play(AudioTrack.SOUND_BLEEP);
+                    game.soundMan.play(Sound.BLEEP);
                     
                     for (TileEntity tile : tileDropList)
                     {
@@ -707,7 +708,7 @@ public class PieceManager implements IMouseListener
         } // end for
         
         // Play the sound.
-        game.soundMan.play(AudioTrack.SOUND_CLICK);
+        game.soundMan.play(Sound.CLICK);
         
         for (Integer index : indexSet)
             boardMan.getTile(index).onClick();
@@ -732,13 +733,13 @@ public class PieceManager implements IMouseListener
         IAnimation a2 = new MoveAnimation.Builder(label)
                         .duration(1150).v(0.03).theta(90).end();
                     
-        a2.setStartAction(new Runnable()
+        a2.setStartRunnable(new Runnable()
         {
             public void run()
             { game.layerMan.add(label, Layer.EFFECT); }
         });
 
-        a2.setFinishAction(new Runnable()
+        a2.setFinishRunnable(new Runnable()
         {
             public void run()
             { game.layerMan.remove(label, Layer.EFFECT); }

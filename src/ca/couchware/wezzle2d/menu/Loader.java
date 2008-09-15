@@ -17,7 +17,6 @@ import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
-import java.awt.Rectangle;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;

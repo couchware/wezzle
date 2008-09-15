@@ -183,7 +183,7 @@ public class LogManager
 		System.err.println(out.toString());
 		
 		if (USE_LOG == true)
-			LogManager.append(out.toString());				
+			append(out.toString());				
 	}
     
     public static void recordException(Exception e)
@@ -207,7 +207,7 @@ public class LogManager
 		System.err.println(output);
 		
 		if (USE_LOG == true)
-			LogManager.append(output);
+			append(output);
 	}
     
     public static void recordWarning(String message)
@@ -231,7 +231,7 @@ public class LogManager
 		System.out.println(output);	
 		
 		if (USE_LOG == true)
-			LogManager.append(output);
+			append(output);
 	}
     
     public static void recordMessage(String message)

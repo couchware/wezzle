@@ -94,7 +94,7 @@ public class HighScoreGroup extends AbstractGroup
         entityList.add(noHighScoreLabel2);                
         
         // Create the score labels.
-        scoreLabels = new ILabel[highScoreMan.getNumberOfScores()];                
+        scoreLabels = new ILabel[HighScoreManager.NUMBER_OF_SCORES];                
         
         // Create all the labels.
         for (int i = 0; i < scoreLabels.length; i++)

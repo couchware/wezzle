@@ -9,10 +9,16 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.animation.FinishedAnimation;
+import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.MusicManager.Theme;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.audio.Music;
+import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.graphics.IEntity;
+import ca.couchware.wezzle2d.manager.MusicManager;
+import ca.couchware.wezzle2d.manager.PropertyManager;
+import ca.couchware.wezzle2d.manager.PropertyManager.Key;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
@@ -22,7 +28,12 @@ import ca.couchware.wezzle2d.ui.Window;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import java.awt.Color;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
  * The play now group, which holds all the configuration options for playing
@@ -54,9 +65,19 @@ public class PlayNowGroup extends AbstractGroup
     final private static int MAX_LEVEL = 15;
     
     /**
+     * The property manager.  This is needed to access the volume settings.
+     */
+    final private PropertyManager propertyMan;
+    
+    /**
      * The layer manager.
      */
     final private LayerManager layerMan;
+    
+    /**
+     * The music manager.
+     */
+    final private MusicManager musicMan;
     
     /**
      * The name button.
@@ -76,27 +97,17 @@ public class PlayNowGroup extends AbstractGroup
     /**
      * The level label.
      */
-    private ILabel levelNumberLabel;
-    
-//    /**
-//     * The level limit radio items.
-//     */
-//    private enum LevelLimit { LEVEL_20, LEVEL_N }
-//    
-//    /**
-//     * The level limit radio group.
-//     */
-//    final private RadioGroup<LevelLimit> levelLimitRadio;            
-    
-    /**
-     * The music radio items.
-     */
-    private enum Music { A, B, C, All, Random }
+    private ILabel levelNumberLabel;    
     
     /**
      * The music radio group.
      */
-    final private RadioGroup musicRadio;        
+    final private RadioGroup<Theme> themeRadio;        
+    
+    /**
+     * The music player map.
+     */
+    private Map<Theme, MusicPlayer> playerMap;   
     
     /**
      * The start button.
@@ -108,18 +119,27 @@ public class PlayNowGroup extends AbstractGroup
      */
     private Window win;
     
-    public PlayNowGroup(IGroup parent, LayerManager layerMan)
+    public PlayNowGroup(IGroup parent, 
+            final PropertyManager propertyMan,
+            final LayerManager layerMan, 
+            final MusicManager musicMan)
     {
         // Invoke the super.
         super(parent);
         
+        // Set the property manager.
+        this.propertyMan = propertyMan;
+        
         // Set the layer manager.
         this.layerMan = layerMan;
+        
+        // Set the music manager.
+        this.musicMan = musicMan;
         
         // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(MainMenu.WINDOW_OPACITY).visible(false).end();
+                .opacity(MainMenuGroup.WINDOW_OPACITY).visible(false).end();
         layerMan.add(win, Layer.UI);
         
         // The label spacing.
@@ -133,17 +153,6 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(nl);
         
         // Create the temporary test name.
-//        Window w1 = new Window.Builder(355, nl.getY()).width(200).height(50)
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .opacity(80)
-//                .visible(false).end();                        
-//        this.entityList.add(w1); 
-        
-//        ILabel tnl = new LabelBuilder(355, nl.getY())
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .color(OPTIONS_COLOR).text("TEST").size(20f)
-//                .visible(false).end();
-//        this.entityList.add(tnl);
         this.nameButton = new SpriteButton.Builder(355, nl.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.NORMAL).visible(false).offOpacity(90)
@@ -155,12 +164,6 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(ll);
         
         // Create the level number label.
-//        Window w2 = new Window.Builder(tnl.getX(), ll.getY()).width(200).height(50)
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .opacity(80)
-//                .visible(false).end();                        
-//        this.entityList.add(w2); 
-        
         this.levelNumberLabel = new LabelBuilder(nameButton.getX(), ll.getY())                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .size(20f).visible(false).text("1").end();
@@ -179,38 +182,50 @@ public class PlayNowGroup extends AbstractGroup
                 .x(this.levelNumberLabel.getX() + 55).text("+").end();
         this.entityList.add(this.levelUpButton);                       
               
-        // Create the music label.
-        ILabel ml = new LabelBuilder(nl).y(nl.getY() + SPACING * 2).text("Music Theme").end();
-        this.entityList.add(ml);
+        // Create the music theme label.
+        ILabel tl = new LabelBuilder(nl).y(nl.getY() + SPACING * 2).text("Music Theme").end();
+        this.entityList.add(tl);
         
         // Create a window background for this option.
-        Window w = new Window.Builder(268, ml.getY() + SPACING).width(380).height(70)
+        Window w = new Window.Builder(268, tl.getY() + SPACING).width(380).height(70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(80)
-                .visible(false).end();                        
+                .border(Window.Border.MEDIUM).opacity(80).visible(false).end();                    
+        
         this.entityList.add(w);        
         
-        // Creat the level limit radio group.        
-        RadioItem musicItem1 = new RadioItem.Builder().color(OPTIONS_COLOR)
-                .text("A").end();
-        RadioItem musicItem2 = new RadioItem.Builder().color(OPTIONS_COLOR)
-                .text("B").end();
-        RadioItem musicItem3 = new RadioItem.Builder().color(OPTIONS_COLOR)
-                .text("C").end();
-        RadioItem musicItem4 = new RadioItem.Builder().color(OPTIONS_COLOR)
-                .text("All").end();
-        RadioItem musicItem5 = new RadioItem.Builder().color(OPTIONS_COLOR)
-                .text("?").end();
-        this.musicRadio = new RadioGroup.Builder<Music>(268, ml.getY() + SPACING, Music.class)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .add(Music.A, musicItem1, true)
-                .add(Music.B, musicItem2)
-                .add(Music.C, musicItem3)
-                .add(Music.All, musicItem4)
-                .add(Music.Random, musicItem5)
-                .pad(20).visible(false).end();
-        this.entityList.add(musicRadio);       
+        // Create the music players.
+        createPlayers();
         
+        // Creat the level limit radio group.        
+        RadioItem themeItem1 = new RadioItem.Builder().color(OPTIONS_COLOR)
+                .text("A").end();
+        themeItem1.setMouseOnRunnable(createFadeInRunnable(Theme.A));        
+        themeItem1.setMouseOffRunnable(createFadeOutRunnable(Theme.A));
+        
+        RadioItem themeItem2 = new RadioItem.Builder().color(OPTIONS_COLOR)
+                .text("B").end();
+        themeItem2.setMouseOnRunnable(createFadeInRunnable(Theme.B));        
+        themeItem2.setMouseOffRunnable(createFadeOutRunnable(Theme.B));
+        
+        RadioItem themeItem3 = new RadioItem.Builder().color(OPTIONS_COLOR)
+                .text("C").end();
+        themeItem3.setMouseOnRunnable(createFadeInRunnable(Theme.C));        
+        themeItem3.setMouseOffRunnable(createFadeOutRunnable(Theme.C));
+        
+        RadioItem themeItem4 = new RadioItem.Builder().color(OPTIONS_COLOR)
+                .text("All").end();
+        RadioItem themeItem5 = new RadioItem.Builder().color(OPTIONS_COLOR)
+                .text("?").end();
+        this.themeRadio = new RadioGroup.Builder<Theme>(268, tl.getY() + SPACING, Theme.class)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
+                .add(Theme.A, themeItem1, true)
+                .add(Theme.B, themeItem2)
+                .add(Theme.C, themeItem3)
+                .add(Theme.ALL, themeItem4)
+                .add(Theme.RANDOM, themeItem5)
+                .pad(20).visible(false).end();
+        this.entityList.add(themeRadio);    
+               
         // Create the start button.
         this.startButton = new SpriteButton.Builder(266, 435)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -223,6 +238,55 @@ public class PlayNowGroup extends AbstractGroup
             this.layerMan.add(e, Layer.UI);        
     }
     
+    private void createPlayers()
+    {
+        // Create the music player map.
+        this.playerMap = new EnumMap<Theme, MusicPlayer>(Theme.class);
+       
+        // Create three players, 1 for each theme.
+        this.playerMap.put(Theme.A, MusicManager.createPlayer(Music.TRON2));
+        this.playerMap.put(Theme.B, MusicManager.createPlayer(Music.ELECTRONIC1));
+        this.playerMap.put(Theme.C, MusicManager.createPlayer(Music.HIPPOP1));        
+        
+        try 
+        {            
+            for (MusicPlayer p : playerMap.values())
+            {
+                p.setLoop(true);
+                p.play();        
+                p.setNormalizedGain(0.0);
+            }            
+        }
+        catch (BasicPlayerException e)
+        {
+            // TODO Should try to do more than this, but this is OK for now.
+            LogManager.recordException(e);               
+        }             
+    }
+    
+    private Runnable createFadeInRunnable(final Theme theme)
+    {
+        return new Runnable()
+        {
+            public void run()
+            { 
+                playerMap.get(theme).fadeToGain(
+                        propertyMan.getDoubleProperty(Key.MUSIC_VOLUME));
+            }
+        };
+    }
+    
+    private Runnable createFadeOutRunnable(final Theme theme)
+    {
+        return new Runnable()
+        {
+            public void run()
+            { 
+                playerMap.get(theme).fadeToGain(0.0);
+            }
+        };
+    }
+    
     @Override
     public IAnimation animateShow()
     {       
@@ -230,9 +294,9 @@ public class PlayNowGroup extends AbstractGroup
         win.setVisible(true);        
         
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(300).v(MainMenu.WINDOW_SPEED).end();
+                .maxY(300).v(MainMenuGroup.WINDOW_SPEED).end();
         
-        a.setFinishAction(new Runnable()
+        a.setFinishRunnable(new Runnable()
         {
            public void run()
            { setVisible(true); }
@@ -245,9 +309,9 @@ public class PlayNowGroup extends AbstractGroup
     public IAnimation animateHide()
     {        
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300).v(MainMenu.WINDOW_SPEED).end();
+                .maxY(Game.SCREEN_HEIGHT + 300).v(MainMenuGroup.WINDOW_SPEED).end();
         
-        a.setStartAction(new Runnable()
+        a.setStartRunnable(new Runnable()
         {
            public void run()
            { setVisible(false); }
@@ -279,6 +343,9 @@ public class PlayNowGroup extends AbstractGroup
             // Add it.
             this.entityList.add(this.levelNumberLabel);
             this.layerMan.add(this.levelNumberLabel, Layer.UI);
+            
+            // Update the world manager.
+            game.worldMan.setLevel(level);
         }
         // See if the level up button was clicked.
         else if (this.levelUpButton.clicked() == true)
@@ -301,10 +368,22 @@ public class PlayNowGroup extends AbstractGroup
             // Add it.
             this.entityList.add(this.levelNumberLabel);
             this.layerMan.add(this.levelNumberLabel, Layer.UI);
-        }    
+            
+            // Update the world manager.
+            game.worldMan.setLevel(level);
+        }       
         // See if the start button has been pressed.
         else if (this.startButton.clicked() == true)
         {
+            // Set the music.
+            this.musicMan.setTheme(themeRadio.getSelectedKey());
+                                      
+            // Stop all the player.
+            for (MusicPlayer p : playerMap.values())
+            {                
+                p.stopAtGain(0.0);
+            }                           
+            
             // Notify the main menu.
             this.parent.setActivated(false);
         }

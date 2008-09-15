@@ -7,32 +7,58 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.audio.AudioTrack;
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.audio.Music;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
  * A class to handle background music.
- * @author Kevin
+ * 
+ * @author Kevin, Cameron
  */
 
 public class MusicManager 
-{
-    /**
-     * The minimum volume setting.
-     */
-    private final float MUSIC_MIN;
+{            
     
     /**
-     * The maximum volume setting.
+     * Is the music manager paused?
      */
-    private final float MUSIC_MAX;
+    private boolean paused = false;       
     
-    /** 
-     * How much to adjust the volume by.
+    /**
+     * The different possible music themes.
      */
-    private static final float VOLUME_STEP = 0.5f;
+    public enum Theme
+    {
+        /** No theme selected. */
+        NONE,
+        
+        /** TRON */
+        A,
+        
+        /** ELECTRONIC */
+        B,
+        
+        /** HIP POP */
+        C,
+        
+        /** All themes, in a random order. */
+        ALL,
+        
+        /** A random theme. */
+        RANDOM
+    }
+    
+    /**
+     * The current music theme.  Default to A.
+     */
+    private Theme theme = Theme.NONE;
     
     /**
      * A link to the executor that the manager uses to play sounds.
@@ -45,34 +71,25 @@ public class MusicManager
     private PropertyManager propertyMan;
     
     /** 
-     * The list of songs.
+     * The list of the music.
      */
-    private ArrayList<AudioPlayer> musicList;
+    private List<Music> playList;      
     
     /** 
-     * The song number we are one 
+     * The track number we are on.
      */
-    private int trackNum;
-    
-    /** 
-     * A variable to check if the song is paused.
-     */
-    private boolean paused = false;
+    private int index;        
     
     /**
-     * Is the music playing?
+     * The current player for the track we are on.  Set to null if the track
+     * has not been played yet.
      */
-    private volatile boolean playing;
-    
+    private MusicPlayer player;
+        
     /**
-     * Is the music turned on?
+     * The normalized gain.
      */
-    private boolean enabled;
-      
-    /**
-     * The volume level.     
-     */    
-    private float volume;        
+    private double normalizedGain = 0.0; 
     
     /**
      * Creates the song list.
@@ -83,296 +100,316 @@ public class MusicManager
         this.executor = executor;
         
         // The property manager.
-        this.propertyMan = propertyMan;
-        
-        // Grab the minimum and maximum sound value from the property manager.
-        MUSIC_MIN = propertyMan.getFloatProperty(
-                PropertyManager.KEY_MUSIC_MIN);
-        
-        MUSIC_MAX = propertyMan.getFloatProperty(
-                PropertyManager.KEY_MUSIC_MAX);
+        this.propertyMan = propertyMan;                
                         
         // Initiate the array list and song number.
-        this.musicList = new ArrayList<AudioPlayer>();                     
+        this.playList = new ArrayList<Music>();                     
        
-        // Add some music.  This is the order they will play in, but it will
-        // not necessarily start on the first song.
-        this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON1, Game.MUSIC_PATH 
-                + "/IntergalacticTron.ogg", false));
-        this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON2, Game.MUSIC_PATH 
-                + "/IntergalacticTron2.ogg", false));
-        this.musicList.add(new AudioPlayer(AudioTrack.MUSIC_TRON3, Game.MUSIC_PATH 
-                + "/IntergalacticTron3.ogg", false));        
-        
-        // Randomly pick a starting song.
-        //this.songNum = Util.random.nextInt(songList.size());
-        this.trackNum = -1;        
-        
-         // The music is not currently playing.
-        setPlaying(false);
-        
-        // The music starts out paused.
-        setPaused(true);
-        
+        // Set the starting player to be just before the first track.  
+        this.index = 0;    
+                        
         // Get the default volume.
-        this.volume = propertyMan.getFloatProperty(
-                PropertyManager.KEY_MUSIC_VOLUME);
-        
-        // Now see whether or not the music is enabled.
-         // Run the music if it's enabled.
-        if (propertyMan.getStringProperty(PropertyManager.KEY_MUSIC)
-                .equals(PropertyManager.VALUE_ON))
-        {     
-            setPaused(false);
-            playNext();
-        }        
+        setNormalizedGain(propertyMan.getDoubleProperty(PropertyManager.Key.MUSIC_VOLUME));                
     }
-    
-    
-    // Public API.
+        
+    /**
+     * Static constructor.
+     */
     public static MusicManager newInstance(Executor exec, PropertyManager propMan)
     {
         return new MusicManager(exec, propMan);
-    }
+    }           
     
-    /**
-     * A method to add a new song to the player.
-     * 
-     * @param newSong The new song.
-     */
-    public void add(AudioPlayer song)
+    public void setTheme(Theme theme)
     {
-        this.musicList.add(song);
-    }
+        // Remember the theme.
+        this.theme = theme;       
         
-    /**
-     * A method to remove a song by it's key value.
-     * Note: this method does not set the song to null.
-     * 
-     * @param key The key of the associated song.
-     * @return true if the song was removed, false otherwise.
-     */
-    public boolean remove(final AudioTrack type)
-    {
-        // Find and remove the song.
-        for (int i = 0; i < musicList.size(); i++)
+        // Record what it was changed to.
+        LogManager.recordMessage("Theme set to " + theme + ".");               
+        
+        // Stop and discard the player.
+        stop();        
+        this.player = null;
+        
+        // Reset the play list.
+        this.index = 0;
+        this.playList.clear();                
+        
+        // If the theme is the NONE theme then just return.
+        if (theme == Theme.NONE) return;
+        
+        // Create a theme list (used below).
+        List<Theme> themeList = new ArrayList<Theme>(3);
+        themeList.add(Theme.A);
+        themeList.add(Theme.B);
+        themeList.add(Theme.C);
+        Collections.shuffle(themeList);
+        
+        // See which theme it is.
+        switch (theme)
         {
-            if (musicList.get(i).getTrack() == type)
-            {
-                musicList.remove(i); 
-                return true;
-            }           
-        }
-        
-        return false;
+            case A:                                                
+            case B:
+            case C:
+                
+               enqueueTheme(theme);
+               break;
+                
+            case ALL:
+                                                
+                for (Theme t : themeList)
+                    enqueueTheme(t);
+                
+                break;
+                
+            case RANDOM:
+                               
+                enqueueTheme(themeList.get(0));
+                
+                break;
+                
+            default: throw new AssertionError();
+        } // end switch                                           
     }
     
-    /**
-     * Return a reference to the song with the associated key.
-     * Note: This method does not remove the song from the list.
-     * Note: Returns null if the key was not found.
-     * 
-     * @param key The associated key.
-     * @return The song or null if the key was not found.
-     */
-    public AudioPlayer get(final AudioTrack type)
+    public Theme getTheme()
     {
-         // find and return the song.
-        for (int i = 0; i < musicList.size(); i++)
+        return theme;
+    }     
+    
+    private void enqueueTheme(Theme theme)
+    {
+        // See which theme it is.
+        switch (theme)
         {
-            if (musicList.get(i).getTrack() == type)
-            {
-                return musicList.get(i); 
-            }
-        }
-        
-        return null;
-    }
-    
-    /**
-     * A method to play a specific song identified by it's key.
-     * 
-     * @param key The key of the associated song.
-     */
-    public void playSong(final AudioTrack type)
-    {
-        // Flag music playing.        
-        setPlaying(true);
-        
-        // Play the song in the background.
-        executor.execute(new Runnable()
-        {            
-            public void run() 
-            {
-                try 
-                { 
-                    // Play the song.
-                    for (int i = 0; i < musicList.size(); i++)
-                    {
-                        if (musicList.get(i).getTrack() == type)
-                        {
-                            // Adjust the track number.
-                            trackNum = i;
-                            
-                            // Set the volume.
-                            musicList.get(trackNum).setVolume(volume);
-                            
-                            // Play the song.
-                            musicList.get(trackNum).play(); 
-                            break;
-                        }
-                        
-                    }
-                    // Signal song is done.
-                    setPlaying(false);
-                }
-                catch (Exception e) 
-                { 
-                    LogManager.recordException(e); 
-                }
-            }
-        });
+            case A:
+                
+                this.playList.add(Music.TRON1);
+                this.playList.add(Music.TRON2);
+                this.playList.add(Music.TRON3);
+                   
+                break;
+                
+            case B:
+                
+                this.playList.add(Music.ELECTRONIC1);
+                this.playList.add(Music.ELECTRONIC2);
+                this.playList.add(Music.ELECTRONIC3);
+                
+                break;
+                
+            case C:
+                
+                this.playList.add(Music.HIPPOP1);
+                this.playList.add(Music.HIPPOP2);
+                this.playList.add(Music.HIPPOP3);
+                
+                break;
+                
+            case ALL:
+            case RANDOM:
+                
+                throw new IllegalArgumentException("Only A, B, C are valid for this method.");                                                                            
+                
+            default: throw new AssertionError();
+        }  
     }
    
     /**
-     * A method to cycle through the list of songs. One at a time.
+     * Plays the currently selected track index.     
      */
-    public void playNext() 
+    public void play()
     {
-        // Flag music playing in game.
-        setPlaying(true);
+        // Make sure the play list has items, if not, ignore the play command.
+        if (this.playList.isEmpty() == true)
+            return;
         
-        // Determine the next song to play.
-        this.trackNum = (this.trackNum + 1) % this.musicList.size();
-        
-        // Grab that song.
-        final AudioPlayer player = musicList.get(trackNum);
-        
-        // Run in new thread to play in background.
-        new Thread() 
+        // Grab the player for the current track if it hasn't been grabbed
+        // already.
+        if (this.player == null)
         {
-            @Override
-            public void run() 
-            {
-                try 
-                {                     
-                    // Set the volume.
-                    player.setVolume(getVolume());
-                    
-                    // Play the current song.
-                    player.play(); 
-                    
-                    // Signal song is done.
-                    setPlaying(false);
-                }
-                catch (Exception e) 
-                { 
-                    LogManager.recordException(e); 
-                }
-            }
-        }.start();
+            this.player = createPlayer(playList.get(index));
+            this.player.fadeToGain(normalizedGain);
+        }
+        
+        try
+        {            
+            // Play.
+            this.player.play();
+        }
+        catch (BasicPlayerException e)
+        {
+            LogManager.recordException(e);
+        }
     }
-
-    /**
-     * Is the music playing? That is, is a track loaded? It may be paused.
-     * 
-     * @return True if it is, false otherwise.
-     */
-    public synchronized boolean isPlaying()
-    {
-        return playing;
-    }
-
-    /**
-     * Sets whether or not the music is playing.
-     * 
-     * @param playing
-     */
-    private synchronized void setPlaying(boolean playing)
-    {
-        this.playing = playing;
-    }    
     
-    /**
-     * Pause the song.
-     */
-    public void setPaused(boolean paused)
+    public void stop()
     {
-        this.paused = paused;         
-        
-        if (trackNum != -1)
-            this.musicList.get(trackNum).setPaused(paused);                 
+        // If the player is not assigned, then stop has no effect.
+        if (this.player == null)
+            return;
+                
+        try
+        {            
+            // Otherwise, stop the player.
+            this.player.stop();
+        }
+        catch (BasicPlayerException e)
+        {
+            LogManager.recordException(e);
+        }
     }
+    
+    public void next()
+    {
+        // Make sure the play list has items, if not, ignore the command.
+        if (this.playList.isEmpty() == true)
+            return;
         
-    /**
-     * Return whether or not the song is paused.
-     * @return true if paused, false otherwise.
-     */
+        // Stop the current track, advance the index and release the old player.
+        stop();
+        this.player = null;
+        index = (index + 1) % playList.size();               
+    }
+    
+    public void previous()
+    {
+        // Make sure the play list has items, if not, ignore the play command.
+        if (this.playList.isEmpty() == true)
+            return;
+        
+        // Stop the current track, reduce the index and release the old player.
+        stop();
+        this.player = null;
+        index = (index - 1) < 0 ? playList.size() - 1 : index - 1;  
+    }             
+    
     public boolean isPaused()
     {
-        return this.paused;
-    }  
-    
-    /** 
-     * A method to increase the volume of the song.
-     */
-    public synchronized void increaseVolume()
-    {
-        // Adjust the volume.
-        float vol = volume + VOLUME_STEP;
-        
-        // Max volume.
-        if (vol > MUSIC_MAX)
-            vol = MUSIC_MIN;                   
-        
-        // Set it.
-        setVolume(vol);
-    }
+        return paused;
+    }        
     
     /**
-     * A method to decrease the volume of the song
+     * Toggle the paused variable
+     * @param paused whether or not to pause.
      */
-    public synchronized void decreaseVolume()
-    {
-        // Adjust the volume.
-        float vol = volume - VOLUME_STEP;
+    public void setPaused(boolean paused)
+    {        
+        this.paused = paused;
         
-        // Min volume.
-        if (vol < MUSIC_MIN)
-            vol = MUSIC_MIN;
-                
-        // Set it.
-        setVolume(vol);          
-    }
+        // Pause the player if it exists.
+        if (this.player != null)
+        {
+            try
+            {
+                if (paused == true)
+                {
+                    player.pause();
+                }
+                else
+                {
+                    player.resume();
+                }
+            }
+            catch (BasicPlayerException e)
+            {
+                LogManager.recordException(e);
+            }
+        } // end if
+    }   
     
-    public float getVolume()
+    public double getNormalizedGain()
     {
-        return volume;
+        return normalizedGain;
     }
 
-    public void setVolume(float volume)
+    public void setNormalizedGain(double nGain)
     {
-        // Adjust the property;
-        propertyMan.setProperty(PropertyManager.KEY_MUSIC_VOLUME, 
-                Float.toString(volume));
-        
-        // Adjust the current playing song.
-        if (isPlaying() == true)
+        // Make sure it's between 0.0 and 1.0.
+        if (nGain < 0.0)
         {
-            if (trackNum != -1)
-                this.musicList.get(this.trackNum).setVolume(volume);
-            else
-                throw new IllegalStateException(
-                        "Track number is -1 (no track) yet playing flag is set");
-        }   
+            nGain = 0.0;
+        }
+        else if (nGain > 1.0)
+        {
+            nGain = 1.0;
+        }
+        // Adjust the property;
+        propertyMan.setDoubleProperty(PropertyManager.Key.MUSIC_VOLUME, nGain);
+
+        // Rememeber it.
+        this.normalizedGain = nGain;
         
-        this.volume = volume;
+        try
+        {            
+            // Adjust the current player.
+            if (this.player != null)
+            {
+                this.player.setNormalizedGain(nGain);
+            }
+        }
+        catch (BasicPlayerException e)
+        {
+            LogManager.recordException(e);
+        }
     }
     
     public void updateLogic(Game game)
     {
-        if (isPlaying() == false && isPaused() == false)
-            playNext();
+        // See if there's even something playing.  
+        // If there is, then check to see if it's done playing.
+        // If it is, then move to the next track and start playing it.
+        if (this.player != null && this.player.isFinished() == true)
+        {
+            next();
+            play();
+        }
+    }
+    
+    /**
+     * Creates a basic player that immediately opens the passed path.
+     * 
+     * @param String path
+     * @return A new player with that passed path already opened.
+     */
+    private static MusicPlayer createPlayer(String path)
+    {
+        // Create the new basic player.
+        MusicPlayer player = MusicPlayer.newInstance(); 
+
+        // Load the reserouce.
+        URL url = MusicManager.class.getClassLoader().getResource(path);
+
+        // Check the URL.
+        if (url == null)
+        {
+            throw new RuntimeException("Url Error: " + path + " does not exist.");
+        }
+        
+        try
+        {                    
+            // Try top oen the file.
+            player.open(url);            
+        }
+        catch (BasicPlayerException e)
+        {
+            LogManager.recordException(e);
+        }
+        
+        // Return the player.
+        return player;
+    }
+    
+    /**
+     * Creates a player for the passed track.
+     * 
+     * @param track
+     * @return
+     */
+    public static MusicPlayer createPlayer(Music track)
+    {
+        return createPlayer(track.getPath());
     }
     
 }

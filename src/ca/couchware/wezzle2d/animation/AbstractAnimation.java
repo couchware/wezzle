@@ -36,7 +36,7 @@ public abstract class AbstractAnimation implements IAnimation
     /**
      * The finish action.
      */
-    protected Runnable finishAction;       
+    protected Runnable finishRunnable;       
     
     /**
      * Advance the frame.
@@ -95,34 +95,18 @@ public abstract class AbstractAnimation implements IAnimation
     /**
      * Set the start action.
      */
-    public void setStartAction(Runnable startAction)
+    public void setStartRunnable(Runnable startRunnable)
     {
-        this.startAction = startAction;
-    }
-    
-    /**
-     * Get the start action.
-     */
-    public Runnable getStartAction()
-    {
-        return startAction;
-    }
+        this.startAction = startRunnable;
+    }       
     
     /**
      * Set the finish action.
      */
-    public void setFinishAction(Runnable finishAction)
+    public void setFinishRunnable(Runnable finishRunnable)
     {
-        this.finishAction = finishAction;
-    }
-    
-    /**
-     * Get the finish action.
-     */
-    public Runnable getFinishAction()
-    {
-        return finishAction;
-    }
+        this.finishRunnable = finishRunnable;
+    }    
 
     final public void onStart()
     {
@@ -131,7 +115,7 @@ public abstract class AbstractAnimation implements IAnimation
 
     final public void onFinish()
     {
-        if (finishAction != null) finishAction.run();
+        if (finishRunnable != null) finishRunnable.run();
     }        
     
 }

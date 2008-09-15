@@ -1451,7 +1451,7 @@ public class BoardManager implements IManager
                         .wait(0).duration(500).end();
                 
                 // Make the animation remove itself.                
-                a1.setFinishAction(new Runnable()
+                a1.setFinishRunnable(new Runnable()
                 {
                    public void run()
                    {
@@ -1623,7 +1623,7 @@ public class BoardManager implements IManager
                         .duration(500).theta(180 * (row % 2)).v(0.15).end();
                 
                 // Make the animation remove itself.                
-                a1.setFinishAction(new Runnable()
+                a1.setFinishRunnable(new Runnable()
                 {
                    public void run()
                    {

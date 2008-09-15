@@ -159,18 +159,44 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
             }
         }        
     }
-       
+    
+    /**
+     * The mouse on runnable.
+     */
+    protected Runnable mouseOnRunnable = null;
+
+    public void setMouseOnRunnable(Runnable mouseOnRunnable)
+    {
+        this.mouseOnRunnable = mouseOnRunnable;
+    }        
+    
     protected void handleMouseOn()
-    {             
+    {   
+        if (mouseOnRunnable != null)
+            mouseOnRunnable.run();
+        
         //LogManager.recordMessage(this + " on called");
         // Set the cursor appropriately.
         window.setCursor(Cursor.HAND_CURSOR);
                 
         setDirty(true);                        
-    }           
+    }                
     
+    /**
+     * The mouse off runnable.
+     */
+    protected Runnable mouseOffRunnable = null;
+
+    public void setMouseOffRunnable(Runnable mouseOffRunnable)
+    {
+        this.mouseOffRunnable = mouseOffRunnable;
+    }            
+               
     protected void handleMouseOff()
     {   
+        if (mouseOffRunnable != null)
+            mouseOffRunnable.run(); 
+        
         //LogManager.recordMessage(this + " off called");
         // Set the cursor appropriately.
         window.setCursor(Cursor.DEFAULT_CURSOR);
@@ -293,22 +319,22 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     /**
      * The stored click action.
      */
-    Runnable clickAction = null;
+    Runnable clickRunnable = null;
     
     /**
      * Sets the click runnable.
      */
-    public void setClickAction(Runnable clickAction)
+    public void setClickRunnable(Runnable clickRunnable)
     { 
-        this.clickAction = clickAction;
+        this.clickRunnable = clickRunnable;
     }
     
     /**
      * Gets the click runnable.
      */
-    public Runnable getClickAction()
+    public Runnable getClickRunnable()
     {
-        return clickAction;
+        return clickRunnable;
     }
     
     /**
@@ -316,7 +342,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
      */
     public void onClick()
     {
-        if (clickAction != null) clickAction.run();
+        if (clickRunnable != null) clickRunnable.run();
     }
     
     //--------------------------------------------------------------------------

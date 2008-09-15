@@ -116,13 +116,43 @@ public class Util
         return toLower + (((double) toRange) * fromFraction);
     }
     
+    /** 
+     * Compare two doubles within a given epsilon.
+     * 
+     * @param a
+     * @param b
+     * @param eps
+     */
+    public static boolean equals(double a, double b, double eps)
+    {
+        // See if they're exactly equal first.
+        if (a == b) return true;
+        
+        // If the difference is less than epsilon, treat as equal.
+        return Math.abs(a - b) < eps;
+    }
+    
+    /** The default epsilon value. */
+    final static double EPSILON = 0.0000001;
+
+    /** 
+     * Compare two doubles, using default epsilon
+     * 
+     * @param a
+     * @param b
+     */
+    public static boolean equals(double a, double b)
+    {
+        return equals(a, b, EPSILON);
+    }
+    
     /**
      * Counts the number of line breaks (i.e. '\n' characters) in the passed
      * string.  Throws exception on null strings.
      * 
      * @return The number of line breaks.
      */
-    public static int countNewLines(String text)
+    public static int countLineBreaks(String text)
     {
         if (text == null)
             throw new IllegalStateException(

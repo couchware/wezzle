@@ -172,7 +172,7 @@ public class BasicTutorial extends AbstractTutorial
             IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
                     .wait(0).duration(500).end();
             
-            a.setFinishAction(new Runnable()
+            a.setFinishRunnable(new Runnable()
             {
                 public void run()
                 { e.setVisible(false); }
@@ -318,7 +318,7 @@ public class BasicTutorial extends AbstractTutorial
                 TileType.NORMAL, TileColor.RED);
         
         // Set a click action.
-        t.setClickAction(new Runnable()
+        t.setClickRunnable(new Runnable()
         {           
            public void run()
            {               

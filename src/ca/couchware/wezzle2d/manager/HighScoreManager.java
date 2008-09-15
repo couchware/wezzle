@@ -17,6 +17,12 @@ public class HighScoreManager
 {        
     
     /**
+     * The number of high scores to keep track of.
+     */
+    public final static int NUMBER_OF_SCORES = 5;
+
+    
+    /**
      * The symbol indicating an empty name.
      */
     public final static String EMPTY_NAME = "-";        
@@ -24,13 +30,8 @@ public class HighScoreManager
     /**
      * The prefix to use in the properties file.
      */
-    private final static String PREFIX = "wezzle.highScore";       
+    private final static String PREFIX = "highScore";       
     
-    /**
-     * The number of high scores to keep track of.
-     */
-    private final static int NUMBER_OF_SCORES = 5;
-
     /**
      * The property manager.
      */
@@ -62,9 +63,9 @@ public class HighScoreManager
     
     
     // Public API.
-    public static HighScoreManager newInstance(PropertyManager propMan)
+    public static HighScoreManager newInstance(PropertyManager propertyMan)
     {
-        return new HighScoreManager(propMan);
+        return new HighScoreManager(propertyMan);
     }
     
     /**
@@ -131,7 +132,7 @@ public class HighScoreManager
             if (highScoreList[i].getScore() > highScoreList[i - 1].getScore())
             {
                 HighScore temp = highScoreList[i - 1];
-                highScoreList [i - 1] = highScoreList[i];
+                highScoreList[i - 1] = highScoreList[i];
                 highScoreList[i] = temp;
             }
             else
@@ -149,7 +150,7 @@ public class HighScoreManager
     {
         for (int i = 0; i < highScoreList.length; i++)
         {
-            this.propertyMan.setProperty(PREFIX + i, 
+            this.propertyMan.setCustomProperty(PREFIX + i, 
                     highScoreList[i].getName() 
                     + " " + highScoreList[i].getScore()
                     + " " + highScoreList[i].getLevel());
@@ -166,7 +167,7 @@ public class HighScoreManager
     {
         for (int i = 0; i < highScoreList.length; i++)
         {
-            String property = this.propertyMan.getStringProperty(PREFIX + i);
+            String property = this.propertyMan.getCustomProperty(PREFIX + i);
             
             // If the properties aren't set, return false.
             if (property == null)
@@ -189,11 +190,11 @@ public class HighScoreManager
      */
     public void resetScoreList()
     {
-        HighScore dummyScore = HighScore.newInstance("-", 0, 0);
+        HighScore blankScore = HighScore.newInstance("-", 0, 0);
         
         // Load with dummy scores.
         for (int i = 0; i < highScoreList.length; i++)        
-            highScoreList[i] = dummyScore;        
+            highScoreList[i] = blankScore;        
         
         // Save the properties.
         writeProperties();
@@ -205,11 +206,6 @@ public class HighScoreManager
     public HighScore[] getScoreList()
     {
         return highScoreList.clone();
-    }
-
-    public int getNumberOfScores()
-    {
-        return NUMBER_OF_SCORES;
-    }                
+    }         
     
 }

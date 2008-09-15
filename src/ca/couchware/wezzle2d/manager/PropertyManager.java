@@ -24,30 +24,72 @@ public class PropertyManager
      * 
      * Note: This is not yet implemented.
      */
-    public static final String DEFAULT_FILE_NAME = "/settings.txt";
-    public static final String KEY_VERSION = "wezzle.confVersion";
-    public static final String VALUE_VERSION = "2";
+    public enum Key
+    {
+        VERSION("version"),
+        RENDER_TYPE("renderType"),
+        DIFFICULTY("difficulty"),
+        MUSIC("music"),
+        MUSIC_VOLUME("musicVolume"),
+        SOUND("sound"),
+        SOUND_VOLUME("soundVolume"),
+        HIGH_SCORE1("highScore1"),
+        HIGH_SCORE2("highScore2"),
+        HIGH_SCORE3("highScore3"),
+        HIGH_SCORE4("highScore4"),
+        HIGH_SCORE5("highScore5");        
+        
+        /** 
+         * The textual key. 
+         */
+        private String textualKey;
+        
+        Key(String textualKey)
+        { this.textualKey = textualKey; }
+        
+        /**
+         * Get the textual value.
+         * 
+         * @return The textual value that will be put in the settings file.
+         */
+        public String getTextualKey()
+        { return textualKey; }
+    }
     
-    public static final String KEY_RENDER_TYPE = "wezzle.renderType";
-    public static final String VALUE_JAVA2D = "java2d";
-    public static final String VALUE_LWJGL = "lwjgl";
+    public enum Value
+    {
+        /** The version of the settings file. */
+        VERSION("3"),
+        RENDER_JAVA2D("java2d"),
+        RENDER_LWJGL("lwjgl");
+        
+        /** 
+         * The textual value. 
+         */
+        private String textualValue;
+        
+        Value(String textualValue)
+        { this.textualValue = textualValue; }
+        
+        /**
+         * Get the textual value.
+         * 
+         * @return The textual value that will be put in the settings file.
+         */
+        public String getTextualValue()
+        { return textualValue; }        
+    }       
     
-    public static final String KEY_DIFFICULTY = "wezzle.difficulty";
-    public static final String KEY_MUSIC = "wezzle.music";
-    public static final String KEY_MUSIC_MIN = "wezzle.musicMinimum";
-    public static final String KEY_MUSIC_MAX = "wezzle.musicMaximum";    
-    public static final String KEY_MUSIC_VOLUME = "wezzle.musicVolume";
-    public static final String KEY_SOUND = "wezzle.sound";
-    public static final String KEY_SOUND_MIN = "wezzle.soundMinimum";
-    public static final String KEY_SOUND_MAX = "wezzle.soundMaximum";    
-    public static final String KEY_SOUND_VOLUME = "wezzle.soundVolume";
-    
-    public static final String VALUE_ON = "on";
-    public static final String VALUE_OFF = "off";
-    
-	
+	/**
+     * The path to the settings file.
+     */
     public static final String DIR_PATH = 
-            System.getProperty("user.home") + "/Wezzle";
+            System.getProperty("user.home") + "/.Couchware/Wezzle";
+    
+    /**
+     * The default file name for the settings file.
+     */
+    public static final String DEFAULT_FILENAME = "settings.txt";
 	
 //	PersistenceService pService;
 	
@@ -93,16 +135,17 @@ public class PropertyManager
         }
 
         // Store the file name.
-        this.filePath = DIR_PATH + fileName;
+        this.filePath = DIR_PATH + "/" + fileName;
 
-        // Check if the file exists.
+        // Check if the file exists.        
         File f = new File(this.filePath);	
 
         if (f.exists() == false)
         {
             try
-            {
-                // If the file doesn't exist, create one with highscore 0.
+            {                
+                // If the file doesn't exist, create one.
+                f.getParentFile().mkdirs();
                 f.createNewFile();		
             }
             catch(Exception e)
@@ -134,7 +177,7 @@ public class PropertyManager
         // Public API
         public static PropertyManager newInstance()
         {
-            return new PropertyManager(DEFAULT_FILE_NAME);
+            return new PropertyManager(DEFAULT_FILENAME);
         }
         
         public static PropertyManager newInstance(String fName)
@@ -150,17 +193,13 @@ public class PropertyManager
      */
     public void setDefaults()
     {   
-        properties.put(KEY_VERSION, VALUE_VERSION);
-        properties.put(KEY_RENDER_TYPE, VALUE_JAVA2D);
-        properties.put(KEY_DIFFICULTY, "0");
-        properties.put(KEY_SOUND, VALUE_ON);
-        properties.put(KEY_SOUND_MIN, "-40.0f");
-        properties.put(KEY_SOUND_MAX, "6.0206f");
-        properties.put(KEY_SOUND_VOLUME, "-1.5f");
-        properties.put(KEY_MUSIC, VALUE_ON);
-        properties.put(KEY_MUSIC_MIN, "-40.0f");
-        properties.put(KEY_MUSIC_MAX, "6.0206f");
-        properties.put(KEY_MUSIC_VOLUME, "-1.5f");
+        setProperty(Key.VERSION, Value.VERSION);
+        setProperty(Key.RENDER_TYPE, Value.RENDER_JAVA2D);
+        setIntProperty(Key.DIFFICULTY, 0);
+        setBooleanProperty(Key.SOUND, true);
+        setDoubleProperty(Key.SOUND_VOLUME, 0.5);
+        setBooleanProperty(Key.MUSIC, true);        
+        setDoubleProperty(Key.MUSIC_VOLUME, 0.5);
     }
     
 	/**
@@ -192,23 +231,64 @@ public class PropertyManager
 	 * @param key The key to set.
 	 * @param value The value.
 	 */
-	public void setProperty(String key, String value )
+    public void setCustomProperty(String key, String value)
+    {
+        this.properties.put(key, value);
+    }
+    
+	public void setProperty(Key key, Value value)
 	{
-		this.properties.put(key, value);
-	}
-	
-	/**
-	 * Get a property. It is the programmers responsibility to cast the
-	 * returned property to whatever it should be. 
-     * 
-     * Returns null if the property is not set.     
+		setCustomProperty(key.getTextualKey(), value.getTextualValue());
+	}        
+    
+    public void setStringProperty(Key key, String value)
+    {
+        setCustomProperty(key.getTextualKey(), value);
+    }                
+    
+    public void setIntProperty(Key key, int value)
+    {
+        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+    }
+    
+    public void setLongProperty(Key key, long value)
+    {
+        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+    }
+    
+    public void setFloatProperty(Key key, float value)
+    {
+        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+    }
+    
+    public void setDoubleProperty(Key key, double value)
+    {
+        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+    }
+    
+    public void setBooleanProperty(Key key, boolean value)
+    {
+        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+    }
+		
+    public String getCustomProperty(String key)
+    {
+        return this.properties.get(key) == null
+                ? null
+                : this.properties.get(key).toString();
+    }                      	
+    
+    /**
+	 * Get a string property. 
 	 * 
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public Object getProperty(String key)
+	public String getStringProperty(Key key)
 	{		
-		return this.properties.get(key);
+		return getCustomProperty(key.getTextualKey()) == null 
+            ? null 
+            : getCustomProperty(key.getTextualKey());
 	}
 	
 	/**
@@ -219,11 +299,18 @@ public class PropertyManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public Integer getIntegerProperty(String key)
+	public int getIntProperty(Key key)
 	{		
-		return this.properties.get(key) == null 
+		return getStringProperty(key) == null 
             ? null 
-            : Integer.parseInt(this.properties.get(key).toString());
+            : Integer.parseInt(getStringProperty(key));
+	}
+    
+    public long getLongProperty(Key key)
+	{		
+		return getStringProperty(key) == null 
+            ? null 
+            : Long.parseLong(getStringProperty(key));
 	}
     
     /**
@@ -234,25 +321,19 @@ public class PropertyManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public Float getFloatProperty(String key)
+	public float getFloatProperty(Key key)
 	{		        
-		return this.properties.get(key) == null 
+		return getStringProperty(key) == null 
             ? null 
-            : Float.parseFloat(this.properties.get(key).toString());
+            : Float.parseFloat(getStringProperty(key));
 	}
-	
-	/**
-	 * Get a String property. 
-	 * 
-	 * @param key The properties key.
-	 * @return The property
-	 */
-	public String getStringProperty(String key)
-	{		
-		return this.properties.get(key) == null 
+    
+    public double getDoubleProperty(Key key)
+	{		        
+		return getStringProperty(key) == null 
             ? null 
-            : this.properties.get(key).toString();
-	}
+            : Double.parseDouble(getStringProperty(key));
+	}		
 	
 	/**
 	 * Get a boolean property. 
@@ -260,11 +341,11 @@ public class PropertyManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public Boolean getBooleanProperty(String key)
+	public boolean getBooleanProperty(Key key)
 	{		
-		return this.properties.get(key) == null 
+		return getStringProperty(key) == null 
             ? null 
-            : Boolean.getBoolean(this.properties.get(key).toString());
+            : Boolean.valueOf(getStringProperty(key));
 	}
 	
 	public void setWebStart()

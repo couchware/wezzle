@@ -9,41 +9,76 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
+import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.ISprite;
+import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.EnumSet;
 
 /**
  *
  * @author cdmckay
  */
-public class Window extends AbstractEntity
-{
-
+public class Window extends AbstractEntity implements IMouseListener
+{           
+    
+    /**
+     * The border style of the window.
+     */
+    public enum Border
+    {
+        MEDIUM,
+        THICK;
+              
+        @Override
+        public String toString()
+        {
+            String s = super.toString();
+            return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+        }  
+    }
+    
+    /**
+     * The state of the window.
+     */
+    protected enum State
+    {
+        HOVERED
+    }
+    
+    /**
+     * The current state of the window.
+     */
+    protected EnumSet<State> state = EnumSet.noneOf(State.class);
+    
     /**
      * The sprite for a corner of the window frame.
      */
-    final protected String PATH_CORNER = 
-            Game.SPRITES_PATH + "/WindowCorner.png";
+    final protected String pathCorner;
     
     /**
      * The sprite for the horizontal (top or bottom) part of the window frame.
      */
-    final protected String PATH_HORIZONTAL =
-            Game.SPRITES_PATH + "/WindowHorizontal.png";
+    final protected String pathHorizontal;
     
     /**
      * The sprite for the vertical (left or right) part of the window frame.
      */
-    final protected String PATH_VERTICAL =
-            Game.SPRITES_PATH + "/WindowVertical.png";
+    final  protected String pathVertical;
     
     /**
      * The reference to the game window.
      */
-    protected IGameWindow window;
+    protected IGameWindow window;     
+    
+    /**
+     * The shape of the window.
+     */
+    protected ImmutableRectangle shape;
     
     /**
      * The corner sprite.
@@ -59,6 +94,11 @@ public class Window extends AbstractEntity
      * The vertical sprite.
      */
     protected ISprite verticalSprite;
+    
+    /**
+     * The border style of the window.
+     */
+    protected Border border;
     
     /**
      * The color of the window background.
@@ -91,7 +131,7 @@ public class Window extends AbstractEntity
         this.height = builder.height;
         
         this.width_ = width;
-        this.height_ = height;
+        this.height_ = height;                 
         
         // Set the opacity and disabledness.
         this.opacity = builder.opacity;
@@ -103,10 +143,20 @@ public class Window extends AbstractEntity
         this.offsetX = determineOffsetX(alignment, width);
         this.offsetY = determineOffsetY(alignment, height);
         
+        // Set the shape.
+        this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);
+        
+        // Set the border.
+        this.border = builder.border;
+        
         // Create the sprites.
-        cornerSprite = ResourceFactory.get().getSprite(PATH_CORNER);
-        horizontalSprite = ResourceFactory.get().getSprite(PATH_HORIZONTAL);
-        verticalSprite = ResourceFactory.get().getSprite(PATH_VERTICAL);
+        this.pathCorner = Game.SPRITES_PATH + "/Window" + border + "Corner.png";
+        this.pathHorizontal = Game.SPRITES_PATH + "/Window" + border + "Horizontal.png";
+        this.pathVertical = Game.SPRITES_PATH + "/Window" + border + "Vertical.png";
+                
+        cornerSprite = ResourceFactory.get().getSprite(pathCorner);
+        horizontalSprite = ResourceFactory.get().getSprite(pathHorizontal);
+        verticalSprite = ResourceFactory.get().getSprite(pathVertical);
         
         // Create the background colour.  This colour is changed each time
         // the opacity is changed.
@@ -126,6 +176,7 @@ public class Window extends AbstractEntity
         private int opacity = 100;        
         private boolean visible = true;
         private boolean disabled = false;
+        private Border border = Border.THICK;
         
         public Builder(int x, int y)
         {            
@@ -143,6 +194,7 @@ public class Window extends AbstractEntity
             this.visible = window.visible;
             this.opacity = window.opacity;
             this.disabled = window.disabled;
+            this.border = window.border;
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -163,11 +215,33 @@ public class Window extends AbstractEntity
         public Builder disabled(boolean val)
         { disabled = val; return this; }
         
+        public Builder border(Border val)
+        { border = val; return this; }
+        
         public Window end()
         {
-            return new Window(this);
+            Window win = new Window(this);
+            
+            if (visible == true && disabled == false)
+                win.window.addMouseListener(win); 
+            
+            return win;
         }                
     } 
+    
+    @Override
+    public void setX(int x)
+    {
+        super.setX(x);
+        shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);
+    }
+    
+    @Override
+    public void setY(int y)
+    {
+        super.setY(y);
+        shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);     
+    }
 
     @Override
     public void setOpacity(int opacity)
@@ -269,6 +343,168 @@ public class Window extends AbstractEntity
                 Math.toRadians(180), opacity);
         
         return true;
+    }
+    
+    @Override
+    public void setVisible(boolean visible)
+    {
+        // Ignore if visibility not changed.
+        if (this.visible == visible || this.disabled == true)
+        {
+            this.visible = visible;
+            return;
+        }
+        
+        // Invoke super.
+        super.setVisible(visible);
+        
+        // Add or remove listener based on visibility.
+        swapMouseListener(visible);     
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled)
+    {
+        //LogManager.recordMessage("Disabled");
+        
+        // Ignore if disabled or invisible.
+        if (this.disabled == disabled || this.visible == false)            
+        {
+            this.disabled = disabled;
+            return;        
+        }
+        
+        // Invoke super class.
+        super.setDisabled(disabled);
+        
+        // Add or remove listener based on disabledness..
+        swapMouseListener(!disabled);
     }        
+    
+    /**
+     * Adds or removes this instance from the mouse listener list.
+     * 
+     * @param add
+     */
+    private void swapMouseListener(boolean add)
+    {
+        // If we're adding the listener.
+        if (add == true)
+        {
+            // Pretend like we just moved the mouse.
+            handleMoved(window.getMouseImmutablePosition());
+            
+            window.addMouseListener(this);            
+        }
+        // If we're removing it.
+        else
+        {          
+            // Clear the last mouse position.
+            handleMoved(ImmutablePosition.ORIGIN);
+            
+            //window.setCursor(Cursor.DEFAULT_CURSOR);            
+            window.removeMouseListener(this);            
+        }  
+    }
+    
+    /**
+     * Handles the updating the button when the mouse has been moved.  This 
+     * method should rarely have to be overridden.
+     * 
+     * @param pos
+     */
+    protected void handleMoved(ImmutablePosition pos)
+    {        
+        // See if we moved on to the button.
+        if (state.contains(State.HOVERED) == false)
+        {      
+            if (shape.contains(pos.getX(), pos.getY()) == true)
+            {
+                state.add(State.HOVERED);
+                handleMouseOn();                
+            }           
+        }
+        // See if we moved off the button.
+        else if (state.contains(State.HOVERED) == true)                
+        {            
+            if (shape.contains(pos.getX(), pos.getY()) == false)
+            {
+                state.remove(State.HOVERED);
+                handleMouseOff();
+            }
+            else
+            {
+                //LogManager.recordMessage("Hand");
+                //window.setCursor(Cursor.HAND_CURSOR);
+            }
+        }        
+    }
+       
+    /**
+     * The mouse on runnable.
+     */
+    protected Runnable mouseOnRunnable = null;
+
+    public void setMouseOnRunnable(Runnable mouseOnRunnable)
+    {
+        this.mouseOnRunnable = mouseOnRunnable;
+    }        
+    
+    protected void handleMouseOn()
+    {             
+        if (mouseOnRunnable != null)
+            mouseOnRunnable.run();
+    }           
+    
+    /**
+     * The mouse off runnable.
+     */
+    protected Runnable mouseOffRunnable = null;
+
+    public void setMouseOffRunnable(Runnable mouseOffRunnable)
+    {
+        this.mouseOffRunnable = mouseOffRunnable;
+    }        
+    
+    protected void handleMouseOff()
+    {   
+        if (mouseOffRunnable != null)
+            mouseOffRunnable.run();               
+    }
+
+    public void mouseClicked(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseEntered(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseExited(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mousePressed(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseReleased(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseDragged(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseMoved(MouseEvent e)
+    {
+        handleMoved(e.getPosition());
+    }
     
 }

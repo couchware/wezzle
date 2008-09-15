@@ -18,16 +18,14 @@ import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.manager.LogManager;
-import ca.couchware.wezzle2d.transition.ITransition;
+import ca.couchware.wezzle2d.manager.MusicManager;
+import ca.couchware.wezzle2d.manager.PropertyManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.EmptyGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.util.EnumMap;
 import java.util.EnumSet;
 
@@ -35,7 +33,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class MainMenu extends AbstractGroup
+public class MainMenuGroup extends AbstractGroup
 {
     
     /**
@@ -51,7 +49,7 @@ public class MainMenu extends AbstractGroup
     /**
      *  The speed the buttons come in.
      */
-    final private static double SLIDE_SPEED = 0.8;
+    final private static double SLIDE_SPEED = 0.5;
 
     /**
      * The final X position the buttons go to.
@@ -61,7 +59,7 @@ public class MainMenu extends AbstractGroup
     /**
      * The amount of time between each slide in.
      */
-    final private static int SLIDE_WAIT = 100;
+    final private static int SLIDE_WAIT = 200;
     
     /** 
      * The standard menu background path.
@@ -107,7 +105,7 @@ public class MainMenu extends AbstractGroup
     /**
      * An enum containing the main menu buttons.
      */
-    private enum Button
+    private enum Menu
     {
         NONE(-1),
         PLAY_NOW(0),
@@ -120,10 +118,10 @@ public class MainMenu extends AbstractGroup
                 
         private int rank;
         
-        Button(int rank)
+        Menu(int rank)
         { this.rank = rank; }
         
-        public int rank()
+        public int getRank()
         { return rank; }
     }               
     
@@ -145,22 +143,32 @@ public class MainMenu extends AbstractGroup
     /**
      * A map containing all the buttons in the main menu.
      */
-    private EnumMap<Button, IButton> buttonMap;
+    private EnumMap<Menu, IButton> buttonMap;
     
     /**
      * A map containing all the groups in the main menu.
      */
-    private EnumMap<Button, IGroup> groupMap;
+    private EnumMap<Menu, IGroup> groupMap;
     
     /**
      * The current button that is activated.
      */
-    private Button currentButton = Button.NONE;
+    private Menu currentButton = Menu.NONE;
+    
+    /**
+     * The property manager.
+     */
+    private PropertyManager propertyMan;
     
     /**
      * The animation manager.
      */
     private AnimationManager animationMan;
+    
+    /**
+     * The music manager.
+     */
+    private MusicManager musicMan;
     
     /**
      * The layer manager.
@@ -170,10 +178,19 @@ public class MainMenu extends AbstractGroup
     /**
      * Create a new main menu.
      */
-    public MainMenu(AnimationManager animationMan)
-    {
+    public MainMenuGroup(
+            PropertyManager propertyMan, 
+            AnimationManager animationMan, 
+            MusicManager musicMan)
+    {        
+        // Store the property manager reference.
+        this.propertyMan = propertyMan;
+        
         // Store the animation manager reference.
         this.animationMan = animationMan;
+        
+        // Store the music manager reference.
+        this.musicMan = musicMan;
         
         // Create the layer manager.
         this.layerMan = LayerManager.newInstance();
@@ -231,7 +248,7 @@ public class MainMenu extends AbstractGroup
     private void initializeButtons()
     {                
         // Create the button list.
-        this.buttonMap = new EnumMap<Button, IButton>(Button.class);
+        this.buttonMap = new EnumMap<Menu, IButton>(Menu.class);
         
         // The button that will be used as a template for all buttons.
         IButton templateButton = null;
@@ -245,7 +262,7 @@ public class MainMenu extends AbstractGroup
                 .type(SpriteButton.Type.THIN).text("Play Now").textSize(20)
                 .hoverOpacity(70).offOpacity(0).disabled(true).end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.PLAY_NOW, button);                
+        buttonMap.put(Menu.PLAY_NOW, button);                
              
         // Make this button the template.
         templateButton = (SpriteButton) button;
@@ -253,38 +270,38 @@ public class MainMenu extends AbstractGroup
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(202).text("Tutorial").end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.TUTORIAL, button);                        
+        buttonMap.put(Menu.TUTORIAL, button);                        
         
-//        button = new SpriteButton.Builder((SpriteButton) templateButton)
-//                .y(251).text("Options").end();
-//        layerMan.add(button, Layer.UI);
-//        buttonMap.put(Button.OPTIONS, button);
-//        
-//        button = new SpriteButton.Builder((SpriteButton) templateButton)
-//                .y(300).text("Upgrade").end();
-//        layerMan.add(button, Layer.UI);
-//        buttonMap.put(Button.UPGRADE, button);     
-//        
-//        button = new SpriteButton.Builder((SpriteButton) templateButton)
-//                .y(349).text("Achievements").end();
-//        layerMan.add(button, Layer.UI);
-//        buttonMap.put(Button.ACHIEVEMENTS, button);
-//        
-//        button = new SpriteButton.Builder((SpriteButton) templateButton)
-//                .y(398).text("High Scores").end();
-//        layerMan.add(button, Layer.UI);
-//        buttonMap.put(Button.HIGH_SCORES, button);
-//                
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(251).text("Options").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Menu.OPTIONS, button);
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(300).text("Upgrade").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Menu.UPGRADE, button);     
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(349).text("Achievements").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Menu.ACHIEVEMENTS, button);
+        
+        button = new SpriteButton.Builder((SpriteButton) templateButton)
+                .y(398).text("High Scores").end();
+        layerMan.add(button, Layer.UI);
+        buttonMap.put(Menu.HIGH_SCORES, button);
+                
         button = new SpriteButton.Builder((SpriteButton) templateButton)
                 .y(447).text("Exit").end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Button.EXIT, button);                                   
+        buttonMap.put(Menu.EXIT, button);                                   
     };
     
     private void initializeGroups()
     {
         // Create the group map.
-        this.groupMap = new EnumMap<Button, IGroup>(Button.class);
+        this.groupMap = new EnumMap<Menu, IGroup>(Menu.class);
         
         // A temporary group holder.
         IGroup group = null;
@@ -292,19 +309,38 @@ public class MainMenu extends AbstractGroup
         // Create the None group.
         group = new EmptyGroup();
         group.setActivated(true);
-        this.groupMap.put(Button.NONE, group);
+        this.groupMap.put(Menu.NONE, group);
         
         // Create the "Play Now" group.
-        group = new PlayNowGroup(this, this.layerMan);
-        this.groupMap.put(Button.PLAY_NOW, group);
+        group = new PlayNowGroup(this, 
+                this.propertyMan,
+                this.layerMan, 
+                this.musicMan);
+        this.groupMap.put(Menu.PLAY_NOW, group);
         
         // Create the "Tutorial" group.
         group = new TutorialGroup(this.layerMan);
-        this.groupMap.put(Button.TUTORIAL, group);
+        this.groupMap.put(Menu.TUTORIAL, group);
+        
+        // Create the "Options" group.
+        group = new TutorialGroup(this.layerMan);
+        this.groupMap.put(Menu.OPTIONS, group);
+        
+         // Create the "Upgrade" group.
+        group = new TutorialGroup(this.layerMan);
+        this.groupMap.put(Menu.UPGRADE, group);
+        
+         // Create the "Achievements" group.
+        group = new TutorialGroup(this.layerMan);
+        this.groupMap.put(Menu.ACHIEVEMENTS, group);
+        
+         // Create the "High Scores" group.
+        group = new TutorialGroup(this.layerMan);
+        this.groupMap.put(Menu.HIGH_SCORES, group);
         
         // Create the "Exit" group.
         group = new ExitGroup(this.layerMan);
-        this.groupMap.put(Button.EXIT, group);
+        this.groupMap.put(Menu.EXIT, group);
     }
     
     public void updateLogic(Game game)
@@ -337,10 +373,10 @@ public class MainMenu extends AbstractGroup
                 // the others.
                 if (clickedButton != null)
                 {
-                    for (Button b : this.buttonMap.keySet())
+                    for (Menu m : this.buttonMap.keySet())
                     {
                         // Make sure their clicked flag is clear.
-                        IButton btn = buttonMap.get(b);
+                        IButton btn = buttonMap.get(m);
                         
                         // Activate the button if it is the clicked button.
                         if (btn.equals(clickedButton) == true)
@@ -354,15 +390,15 @@ public class MainMenu extends AbstractGroup
                                     .finishRule(MetaAnimation.FinishRule.ALL)
                                     //.runRule(MetaAnimation.RunRule.SEQUENCE)
                                     .add(this.groupMap.get(currentButton).animateHide())
-                                    .add(this.groupMap.get(b).animateShow())
+                                    .add(this.groupMap.get(m).animateShow())
                                     .end();
                             this.animationMan.add(this.animation);
                             
                             // Set the new current button.                            
-                            this.currentButton = b;
+                            this.currentButton = m;
                             
                             // Activate the current group.
-                            this.groupMap.get(b).setActivated(true);
+                            this.groupMap.get(m).setActivated(true);
                         }
                         else
                         {
@@ -370,7 +406,7 @@ public class MainMenu extends AbstractGroup
                             btn.setDisabled(false);
                             
                             // Deactivate the other groups.
-                            this.groupMap.get(b).setActivated(false);
+                            this.groupMap.get(m).setActivated(false);
                         }                        
                     } // end for
                 } // end if
@@ -388,7 +424,7 @@ public class MainMenu extends AbstractGroup
                     this.animation = group.animateHide();
                     this.animationMan.add(this.animation);
                     
-                    this.currentButton = Button.NONE;
+                    this.currentButton = Menu.NONE;
                                        
                     group.resetControls();
                 }
@@ -397,14 +433,15 @@ public class MainMenu extends AbstractGroup
                 {                       
                     group.updateLogic(game);
                     
-                    // See if the group deactivated the main menu.
+                    // See if the group deactivated the main menu.  If the main
+                    // menu is deactivated, then we need to start the game.                    
                     if (this.activated == false)
-                    {
+                    {                      
                         // Create the hide animation.
                         IAnimation a = animateHide();
                         
                         // Attach a runnable setting the state to finished.
-                        a.setFinishAction(new Runnable()
+                        a.setFinishRunnable(new Runnable()
                         {
                             public void run()
                             { state = State.FINISHED; }
@@ -450,19 +487,19 @@ public class MainMenu extends AbstractGroup
                 .wait(500).duration(2100).end());
         
         // Animate the buttons coming in.        
-        for (Button b : this.buttonMap.keySet())
+        for (Menu m : this.buttonMap.keySet())
         {
-            if (this.buttonMap.containsKey(b) == false)
+            if (this.buttonMap.containsKey(m) == false)
                 continue;
             
-            final IButton btn = this.buttonMap.get(b);
+            final IButton btn = this.buttonMap.get(m);
             
             final IAnimation a = new MoveAnimation.Builder(btn).theta(180).v(SLIDE_SPEED)
-                    .minX(SLIDE_MIN_X).wait(SLIDE_WAIT * b.rank()).end();
+                    .minX(SLIDE_MIN_X).wait(SLIDE_WAIT * m.getRank()).end();
             
             builder.add(a);
             
-            a.setFinishAction(new Runnable()
+            a.setFinishRunnable(new Runnable()
             {
                 public void run()
                 { btn.setDisabled(false); }
@@ -487,7 +524,7 @@ public class MainMenu extends AbstractGroup
         IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
                 .wait(0).duration(1000).end();
         
-        f.setFinishAction(new Runnable()
+        f.setFinishRunnable(new Runnable()
         {
             public void run()
             { 
@@ -500,16 +537,16 @@ public class MainMenu extends AbstractGroup
          
         // Slide out the buttons.
          // Animate the buttons coming in.        
-        for (Button b : this.buttonMap.keySet())
+        for (Menu m : this.buttonMap.keySet())
         {                        
-            final IButton btn = this.buttonMap.get(b);
+            final IButton btn = this.buttonMap.get(m);
             
             final IAnimation a = new MoveAnimation.Builder(btn).theta(0).v(SLIDE_SPEED)
-                    .maxX(910).wait(SLIDE_WAIT * b.rank()).end();
+                    .maxX(910).wait(SLIDE_WAIT * m.getRank()).end();
             
             builder.add(a);
             
-            a.setStartAction(new Runnable()
+            a.setStartRunnable(new Runnable()
             {
                 public void run()
                 { btn.setDisabled(true); }
