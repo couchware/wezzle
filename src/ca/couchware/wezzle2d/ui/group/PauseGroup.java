@@ -1,3 +1,4 @@
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -10,13 +11,14 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.event.*;
 import java.util.EnumSet;
 
 /**
  *
  * @author cdmckay
  */
-public class PauseGroup extends AbstractGroup 
+public class PauseGroup extends AbstractGroup implements IMoveListener, ILineListener
 {      
     
     /**
@@ -44,6 +46,18 @@ public class PauseGroup extends AbstractGroup
      * The lines per move label.
      */
     private ILabel linesPerMoveLabel;
+    
+    /**
+     * The running line count.
+     */
+    
+    private int lines;
+    
+    /**
+     * The running move count.
+     */
+    
+    private int moves;
     
     /**
      * The constructor.    
@@ -132,6 +146,27 @@ public class PauseGroup extends AbstractGroup
         layerMan.add(linesPerMoveLabel, Layer.UI);
         entityList.add(linesPerMoveLabel);
     }      
+    
+    
+      @Override
+    public void handleMoveEvent(MoveEvent e, IListenerComponent.GameType gameType)
+    {
+        if (gameType == IListenerComponent.GameType.GAME)
+        {
+            this.moves += e.getMoveCount();
+            this.setMoves(moves);
+        }
+    }
+        
+    @Override
+    public void handleLineEvent(LineEvent e, IListenerComponent.GameType gameType)
+    {
+        if (gameType == IListenerComponent.GameType.GAME)
+        {
+            this.lines += e.getLineCount();
+            this.setLines(lines);
+        }
+    }
     
     @Override
     public void setVisible(final boolean visible)

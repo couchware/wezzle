@@ -12,5 +12,5 @@ package ca.couchware.wezzle2d.event;
  */
 public interface ILineListener 
 {
-    public void handleLineEvent(LineEvent evt);
+    public void handleLineEvent(LineEvent evt, IListenerComponent.GameType gameType);
 }

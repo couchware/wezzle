@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.event.IListenerComponent;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
@@ -518,15 +519,18 @@ public class PieceManager implements IMouseListener
                     game.startGameOver();
                 }
                 else if (totalTileDropInAmount == 1 
-                        && game.boardMan.getNumberOfItems() < game.worldMan.getMaxItems())
+                        && ( game.boardMan.getNumberOfItems() < game.worldMan.getMaxItems() 
+                        || game.boardMan.getNumberOfMults() < game.worldMan.getMaxMults()))
                 {
                     // The tile is an item.
                     tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
-                            dropRow, game.worldMan.getItem().getTileType()));
+                            dropRow, game.worldMan.getItem(game.boardMan.getNumberOfItems(),
+                            game.boardMan.getNumberOfMults()).getTileType()));
                                   
                 }
                 else if (totalTileDropInAmount <= parallelTileDropInAmount
-                       && game.boardMan.getNumberOfItems() < game.worldMan.getMaxItems())
+                       && (game.boardMan.getNumberOfItems() < game.worldMan.getMaxItems()
+                       || game.boardMan.getNumberOfMults() < game.worldMan.getMaxMults()))
                 {
                     // This must be true.
                     assert totalTileDropInAmount <= randomIndexQueue.size();
@@ -540,7 +544,8 @@ public class PieceManager implements IMouseListener
                     
                     // Drop in the item tile.
                     tileDropList.add(boardMan.createTile(randomIndexQueue.remove(),
-                            dropRow, game.worldMan.getItem().getTileType()));                     
+                            dropRow, game.worldMan.getItem(game.boardMan.getNumberOfItems(),
+                            game.boardMan.getNumberOfMults()).getTileType()));                     
                 }
                 else
                 {
@@ -717,8 +722,16 @@ public class PieceManager implements IMouseListener
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);    
         
         // Notify the listener manager.
-        game.listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
-                
+        if (game.tutorialMan.isTutorialInProgress() == true)
+        {
+            game.listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this), 
+                IListenerComponent.GameType.TUTORIAL);
+        }
+        else
+        {
+             game.listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this), 
+                IListenerComponent.GameType.GAME);
+        }
         // Add score SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(indexSet);
         
@@ -761,8 +774,18 @@ public class PieceManager implements IMouseListener
                 game.worldMan.calculateDropNumber(game, this.piece.getSize());
 
         // Increment the moves.
-        game.listenerMan.notifyMoveListener(new MoveEvent(1, this));       
-
+        if (game.tutorialMan.isTutorialInProgress() == true)
+        {
+            game.listenerMan.notifyMoveListener(new MoveEvent(1, this), 
+                    IListenerComponent.GameType.TUTORIAL); 
+        }
+        else
+        {
+             game.listenerMan.notifyMoveListener(new MoveEvent(1, this), 
+                    IListenerComponent.GameType.GAME); 
+        }
+        
+        
         // Start a tile drop.
         if (tileDropOnCommit == true)
             tileDropInProgress = true;

@@ -69,6 +69,11 @@ public class BoardManager implements IManager
     final private AnimationManager animationMan;
     
     /**
+     * The world Manager
+     */
+    final private WorldManager worldMan;
+    
+    /**
      * The layer manager.
      */
     final private LayerManager layerMan;
@@ -136,6 +141,7 @@ public class BoardManager implements IManager
         NUMBER_OF_COLORS,
         NUMBER_OF_TILES,
         NUMBER_OF_ITEMS,
+        NUMBER_OF_MULTS,
         GRAVITY,
         BOARD,
         SCRATCH_BOARD
@@ -174,7 +180,12 @@ public class BoardManager implements IManager
     /**
      * The number of items.
      */
-    private int numberOfItems;		
+    private int numberOfItems;	
+    
+    /**
+     * The number of mults.
+     */
+    private int numberOfMults;
     
     /**
      * The gravity corner.
@@ -201,6 +212,7 @@ public class BoardManager implements IManager
 	private BoardManager(
             final AnimationManager animationMan,
             final LayerManager layerMan,
+            final WorldManager worldMan,
             final int x, final int y, 
             final int columns, final int rows)
 	{
@@ -210,6 +222,7 @@ public class BoardManager implements IManager
         // Keep reference to managers.
         this.animationMan = animationMan;
         this.layerMan = layerMan;
+        this.worldMan = worldMan;
         
 		// Set the cell width and height. Hard-coded to 32x32 for now.
 		this.cellWidth = 32;
@@ -243,6 +256,8 @@ public class BoardManager implements IManager
         // Set the number of items.
         this.numberOfItems = 0;
         
+        this.numberOfMults = 0;
+        
         // Set the gravity to be to the bottom left by default.
         this.gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
 		
@@ -269,10 +284,11 @@ public class BoardManager implements IManager
      */    
     public static BoardManager newInstance(final AnimationManager animationMan,
         final LayerManager layerMan,
+        final WorldManager worldMan,
         final int x, final int y, 
         final int columns, final int rows)
     {
-        return new BoardManager(animationMan, layerMan, x, y, columns, rows);
+        return new BoardManager(animationMan, layerMan, worldMan, x, y, columns, rows);
     }
     
     //--------------------------------------------------------------------------
@@ -301,7 +317,7 @@ public class BoardManager implements IManager
 	public void generateBoard(LinkedList<Item> itemList)
 	{
         // Make sure the board is clean.
-        this.clearBoard();
+        this.clearBoard(); 
         assert(itemList.get(0) instanceof Item);
         
         int count = 0;
@@ -903,11 +919,21 @@ public class BoardManager implements IManager
         t.resetDrawRect();
         
         // If this is an item, increment the count.
-        if (t.getClass() != TileEntity.class)
-        {
-            LogManager.recordMessage("Item added.", "BoardManager#addTile");
-            this.incrementNumberOfItems();                
-        }
+//        if (t.getClass() != TileEntity.class)
+//        {
+//            if (t.getClass() == X2TileEntity.class || t.getClass() == X3TileEntity.class 
+//                    || t.getClass() == X4TileEntity.class)
+//            {
+//                 
+//                 LogManager.recordMessage("Mult added.", "BoardManager#addMult");
+//                this.incrementNumberOfMults();
+//            }
+//            else
+//            {
+//                LogManager.recordMessage("Item added.", "BoardManager#addTile");
+//                this.incrementNumberOfItems();
+//            }    
+//        }
                        
         // If we're overwriting a tile, remove it first.
         if (getTile(index) != null)
@@ -1005,8 +1031,37 @@ public class BoardManager implements IManager
             default: throw new AssertionError("Unknown type.");
         }
         
+        //Increment the item count.
+        if (t.getType() != TileType.NORMAL)
+        {
+            for (Item item : worldMan.getItemList())
+            {
+                if(item.getTileType() == t.getType())
+                {
+                    item.incrementCurrentAmount();
+                    System.out.println( item.getTileType() + ": " +item.getCurrentAmount());
+                    break;
+                }
+            }
+        }
+        
         // Add the tile.
         addTile(index, t);
+        if (t.getClass() != TileEntity.class)
+        {
+          if (t.getClass() == X2TileEntity.class || t.getClass() == X3TileEntity.class 
+                    || t.getClass() == X4TileEntity.class)
+            {
+                 
+                 LogManager.recordMessage("Mult added.", "BoardManager#addMult");
+                this.incrementNumberOfMults();
+            }
+            else
+            {
+                LogManager.recordMessage("Item added.", "BoardManager#addTile");
+                this.incrementNumberOfItems();
+            }    
+        }
         
         // Return the tile.
         return t;
@@ -1038,13 +1093,37 @@ public class BoardManager implements IManager
         // Get the tile.
         TileEntity t = getTile(index);
         
+      
         // If the tile does not exist, throw an exception.
         if (t == null)
             throw new NullPointerException("No tile at that index.");        
         
+        // Decrement the item count.
+        if (t.getType() != TileType.NORMAL)
+        {
+            for (Item item : worldMan.getItemList())
+            {
+                if(item.getTileType() == t.getType())
+                {
+                    item.decrementCurrentAmount();
+                    System.out.println( item.getTileType() + ": " +item.getCurrentAmount());
+                    break;
+                }
+            }
+        }
+        
         // If this is an item, decrement the item count.
         if (t.getClass() != TileEntity.class)
-            this.decrementNumberOfItems();
+        {
+            //check the class
+            if (t.getClass() == X2TileEntity.class || t.getClass() == X3TileEntity.class 
+                    || t.getClass() == X4TileEntity.class)
+            {
+                this.decrementNumberOfMults();
+            }
+            else
+                this.decrementNumberOfItems();
+        }
         
         // Remove from layer manager.
         if (layerMan.exists(t, Layer.TILE))
@@ -1800,6 +1879,7 @@ public class BoardManager implements IManager
         return this.numberOfItems;
     }
     
+    
     public void setNumberOfItems(final int numberOfItems)
     {
         this.numberOfItems = numberOfItems;
@@ -1815,6 +1895,27 @@ public class BoardManager implements IManager
         this.numberOfItems++;
     }    
 
+    public int getNumberOfMults()
+    {
+        return this.numberOfMults;
+    }
+    
+    public void setNumberOfMults(final int numberOfmults)
+    {
+        this.numberOfMults = numberOfmults;
+    }
+    
+    public void decrementNumberOfMults()
+    {
+        this.numberOfMults--;
+    }
+    
+    public void incrementNumberOfMults()
+    {
+        this.numberOfMults++;
+    }    
+    
+    
     public int getNumberOfTiles()
     {
         int counter = 0;
@@ -1883,6 +1984,7 @@ public class BoardManager implements IManager
     {
         managerState.put(Keys.NUMBER_OF_COLORS, numberOfColors);
         managerState.put(Keys.NUMBER_OF_ITEMS, numberOfItems);
+        managerState.put(Keys.NUMBER_OF_MULTS, numberOfMults);
         managerState.put(Keys.NUMBER_OF_TILES, numberOfTiles);
         managerState.put(Keys.GRAVITY, gravity);
         managerState.put(Keys.BOARD, board.clone());
@@ -1890,6 +1992,7 @@ public class BoardManager implements IManager
         
         LogManager.recordMessage("Saved " + numberOfTiles + " tiles.");  
         LogManager.recordMessage("Saved " + numberOfItems + " items.");
+        LogManager.recordMessage("Saved " + numberOfMults + " mults.");
     }
 
     @SuppressWarnings("unchecked") 
@@ -1900,7 +2003,8 @@ public class BoardManager implements IManager
                 
         numberOfColors = (Integer) managerState.get(Keys.NUMBER_OF_COLORS);
         numberOfItems = (Integer) managerState.get(Keys.NUMBER_OF_ITEMS);
-        numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);        
+        numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);  
+        numberOfMults = (Integer) managerState.get(Keys.NUMBER_OF_MULTS);
         gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
         scratchBoard = (TileEntity[]) managerState.get(Keys.SCRATCH_BOARD);   
         board = (TileEntity[]) managerState.get(Keys.BOARD);        
@@ -1910,6 +2014,7 @@ public class BoardManager implements IManager
         
         LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
         LogManager.recordMessage("Loaded " + numberOfItems + " items.");
+        LogManager.recordMessage("Loaded " + numberOfMults + " mults.");
     }
 
 }

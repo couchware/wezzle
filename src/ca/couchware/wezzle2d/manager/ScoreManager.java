@@ -439,9 +439,10 @@ import java.util.Set;
         highScore = (Integer) managerState.get(Keys.HIGH_SCORE);
     }
         
-    public void handleScoreEvent(ScoreEvent evt)
+    public void handleScoreEvent(ScoreEvent evt, IListenerComponent.GameType gameType)
     {
-       updateScore(evt.getScore());
+        if (gameType == IListenerComponent.GameType.GAME)
+            updateScore(evt.getScore());
     }
     
 }

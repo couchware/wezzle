@@ -25,7 +25,7 @@ public class LevelEvent extends EventObject
         this.deltaLevel = deltaLevel;
     }
     
-    public int getLevelChange() { return this.deltaLevel; };
-    public Game getGame(){ return this.game; };
+    public int getLevelChange() { return this.deltaLevel; }
+    public Game getGame(){ return this.game; }
 }
 

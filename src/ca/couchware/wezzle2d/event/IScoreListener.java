@@ -11,5 +11,5 @@ package ca.couchware.wezzle2d.event;
  */
 public interface IScoreListener 
 {
-    public void handleScoreEvent(ScoreEvent evt);
+    public void handleScoreEvent(ScoreEvent evt, IListenerComponent.GameType gameType);
 }

@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.manager.PropertyManager.Key;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.Util;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -36,6 +37,12 @@ public class WorldManager implements ILevelListener
 	 * The item list.
 	 */
 	private LinkedList<Item> itemList;
+        
+        /**
+         * The multiplier list
+         */
+        private ArrayList<Item> multList;
+        
     
     /**
      * The master rule list.  Contains all the rules that should exist
@@ -48,7 +55,7 @@ public class WorldManager implements ILevelListener
      * been realized for the current game.
      */
     private LinkedList<Rule> currentRuleList;
-		
+    
     /**
      * Is a game in progress?
      */
@@ -60,9 +67,14 @@ public class WorldManager implements ILevelListener
 	private int difficulty;	
     
     /**
-     * The maximum items available for the level.
+     * The maximum items on the screen at once.
      */
     private int maxItems;
+    
+    /**
+     * The maximum multipliers on the screen at once.
+     */
+    private int maxMults;
     
     /**
      * The percentage of tiles to maintain.
@@ -124,18 +136,21 @@ public class WorldManager implements ILevelListener
 		// Set the starting level.
 		setLevel(1);
         
-        // Set the max items.
-        this.maxItems = 5;
+        // Set the max items and mults.
+        this.maxItems = 3;
+        this.maxMults = 3;
         
         // Set the items.
-		itemList = new LinkedList<Item>();
-		itemList.add(new Item(TileType.NORMAL, 28, 20));
-//        itemList.add(new Item(TileType.BOMB, 10, 20));
-//        itemList.add(new Item(TileType.STAR, 0, 5));
-//        itemList.add(new Item(TileType.ROCKET, 15, 50));
-		itemList.add(new Item(TileType.X2, 2, 50));
-        itemList.add(new Item(TileType.X3, 0, 20));
-        itemList.add(new Item(TileType.X4, 0, 10));
+	itemList = new LinkedList<Item>();
+	itemList.add(new Item(TileType.NORMAL, 28, 5, 100));
+        
+        // Set the multipliers.
+        multList = new ArrayList<Item>();
+        
+	multList.add(new Item(TileType.X2, 2, 50, 3));
+        multList.add(new Item(TileType.X3, 0, 20, 1));
+        multList.add(new Item(TileType.X4, 0, 10, 1));
+        multList.add(new Item(TileType.NORMAL, 0, 5, 100));
         
         // Set the rules.
         masterRuleList = new LinkedList<Rule>();
@@ -147,7 +162,7 @@ public class WorldManager implements ILevelListener
             public void onMatch()
             {
                 // Increase the number of colours.
-                itemList.add(new Item(TileType.ROCKET, 1, 50));
+                itemList.add(new Item(TileType.ROCKET, 1, 55, 3));
             }            
         });  
         
@@ -158,7 +173,7 @@ public class WorldManager implements ILevelListener
             public void onMatch()
             {
                 // Increase the number of colours.
-                itemList.add(new Item(TileType.BOMB, 1, 20));
+                itemList.add(new Item(TileType.BOMB, 1, 10, 1));
             }            
         });   
         
@@ -169,7 +184,7 @@ public class WorldManager implements ILevelListener
             public void onMatch()
             {
                 // Increase the number of colours.
-                itemList.add(new Item(TileType.STAR, 0, 5));
+                itemList.add(new Item(TileType.STAR, 0, 5, 1));
             }            
         });   
         
@@ -396,6 +411,24 @@ public class WorldManager implements ILevelListener
         this.maxItems = maxItems;
     }    
     
+    
+     /**
+     * @return the maximum number of mults.
+     */
+    public int getMaxMults()
+    {
+        return maxMults;
+    }
+    
+    /**
+     * set the maximum number of mults.
+     */
+    public void setMaxMults(int maxMults)
+    {
+        this.maxMults = maxMults;
+    }    
+    
+    
     /**
      * Get the initial timer value.
      * @return The initial timer.
@@ -460,15 +493,34 @@ public class WorldManager implements ILevelListener
      * 
      * @return 
      */
-    public Item getItem()
+    public Item getItem( int numItems, int numMults)
 	{	
+        
+            ArrayList<Item> items = new ArrayList<Item>();
+            
+                if (numItems < maxItems)
+                {
+                    for (Item item : itemList)
+                    {
+                        if (item.getProbability() > 0)
+                            items.add(item);
+                    }
+                }
+                if (numMults < maxMults)
+                {  
+                    for (Item item : multList)
+                    {
+                        if (item.getProbability() > 0)
+                            items.add(item);
+                    }
+                }
 		// Create an array representing the item distribution.
-		int dist[] = new int[itemList.size() + 1];
+		int dist[] = new int[items.size() + 1];
 		dist[0] = 0;
 		
 		// Determine the distribution.
 		int i = 1;
-		for (Item item : itemList)
+		for (Item item : items)
 		{            
 			if (item.getProbability() == -1)
 				dist[i] = dist[i - 1];
@@ -484,7 +536,9 @@ public class WorldManager implements ILevelListener
 		for (int j = 1; j < dist.length; j++)
 		{
 			if (randomNumber < dist[j])
-				return itemList.get(j - 1);
+                        {
+				return items.get(j - 1);
+                        }
 		}
 		
 		// We should never get here.
@@ -492,15 +546,22 @@ public class WorldManager implements ILevelListener
                 "Random number out of range! (" + randomNumber + ").", 
                 "WorldManager#getItem");
         
-		return itemList.get(0);
+		return items.get(0);
 	}
     
     /**
-	 * @return The items.
+	 * @return The items and mults
 	 */
 	public LinkedList<Item> getItemList()
 	{
-		return itemList;
+            LinkedList<Item> items = new LinkedList<Item>();
+            
+            for (Item item : itemList)
+                items.add(item);
+            for(Item item: multList)
+                items.add(item);
+                    
+		return items;
 	}               	
                 
     public void handleLevelEvent(LevelEvent e)

@@ -12,5 +12,5 @@ package ca.couchware.wezzle2d.event;
  */
 public interface IMoveListener 
 {
-    public void handleMoveEvent(MoveEvent evt);
+    public void handleMoveEvent(MoveEvent evt, IListenerComponent.GameType gameType);
 }

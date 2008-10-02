@@ -206,16 +206,17 @@ public class StatManager implements IManager, IMoveListener, ILineListener
      * handle a line event.
      * @param e The line event.
      */    
-    public void handleLineEvent(LineEvent e)
+    public void handleLineEvent(LineEvent e, IListenerComponent.GameType gameType)
     {
-        this.incrementLineCount(e.getLineCount());
+        if (gameType == IListenerComponent.GameType.GAME)
+            this.incrementLineCount(e.getLineCount());
     }
     
     /**
      * Handle a move event.
      * @param e The move event.
      */    
-    public void handleMoveEvent(MoveEvent e)
+    public void handleMoveEvent(MoveEvent e, IListenerComponent.GameType gt)
     {
         this.setMoveCount(this.getMoveCount() + e.getMoveCount());
     }

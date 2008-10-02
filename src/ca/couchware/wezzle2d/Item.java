@@ -32,6 +32,11 @@ public class Item
 	 * The probability this item will be created.
 	 */
 	private int probability;
+        
+        /**
+         * The maximum number of these items on the screen at once.
+         */
+        private int maxOnScreen;
 	
 	// ---------------------------------------------------------------------------
 	// Constructors
@@ -41,12 +46,13 @@ public class Item
 	 * A constructor to construct an item descriptor for the passed in class.
 	 * @param itemClass The class we are describing.
 	 */
-	public Item(TileType tileType, int initialAmount, int probability)
+	public Item(TileType tileType, int initialAmount, int probability, int maxOnScreen)
 	{
 		this.tileType = tileType;
 		this.initialAmount = initialAmount;
-		this.currentAmount = 0;
+		this.currentAmount = initialAmount;
 		this.probability = probability;
+                this.maxOnScreen = maxOnScreen;
 	}
 	
 	/**
@@ -137,9 +143,14 @@ public class Item
 	/**
 	 * @return The maxAmount.
 	 */
-	public int getMaxAmount(int currentLevel)
+	public int getMaxAmount()
 	{
-		return this.initialAmount + (currentLevel / 4);
+		return this.maxOnScreen;
+	}
+        
+        public void setMaxAmount(int maxOnScreen)
+	{
+		this.maxOnScreen = maxOnScreen;
 	}
 
 	/**
@@ -147,7 +158,10 @@ public class Item
 	 */
 	public int getProbability()
 	{
+            if (this.currentAmount < this.maxOnScreen)
 		return probability;
+            else
+                return 0;
 	}
 
 	/**

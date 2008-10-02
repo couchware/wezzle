@@ -12,14 +12,21 @@ package ca.couchware.wezzle2d.event;
  */
 public interface IListenerComponent 
 {
+       // Game type
+    public static enum GameType
+    {
+        GAME,        
+        TUTORIAL
+    }  
+    
     public void registerScoreListener(IScoreListener listener);
     public void registerLevelListener(ILevelListener listener);
     public void registerLineListener(ILineListener listener);
     public void registerMoveListener(IMoveListener listener);
     
-    public void notifyScoreListener(ScoreEvent e);
+    public void notifyScoreListener(ScoreEvent e, GameType gameType);
     public void notifyLevelListener(LevelEvent e);
-    public void notifyMoveListener(MoveEvent e);
-    public void notifyLineListener(LineEvent e);
+    public void notifyMoveListener(MoveEvent e, GameType gameType);
+    public void notifyLineListener(LineEvent e, GameType gameType);
     
 }

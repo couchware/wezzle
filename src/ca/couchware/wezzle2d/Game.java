@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.*;
+import ca.couchware.wezzle2d.event.IListenerComponent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.event.LevelEvent;
@@ -733,7 +734,8 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.BOARD))
         {
             // Create the board manager.
-            boardMan = BoardManager.newInstance(animationMan, layerMan, 272, 139, 8, 10);    
+            boardMan = BoardManager.newInstance(animationMan, layerMan, worldMan,
+                    272, 139, 8, 10);    
             boardMan.setVisible(false);
             boardMan.generateBoard(worldMan.getItemList());          
             startBoardShowAnimation(AnimationType.ROW_FADE);  
@@ -834,6 +836,8 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             listenerMan.registerLevelListener(worldMan);
         }
+        
+        
     }
     
     /**
@@ -956,6 +960,9 @@ public class Game extends Canvas implements IGameWindowCallback
         // Initialize pause group.                
         pauseGroup = new PauseGroup(layerMan);
         groupMan.register(pauseGroup);
+        
+         listenerMan.registerMoveListener(pauseGroup);
+         listenerMan.registerLineListener(pauseGroup);
              
         // Initialize game over group.
         gameOverGroup = new GameOverGroup(layerMan);    
@@ -1053,8 +1060,8 @@ public class Game extends Canvas implements IGameWindowCallback
     private void updatePauseGroup()
     {               
         // Update the pause screen date.
-        pauseGroup.setMoves(statMan.getMoveCount());
-        pauseGroup.setLines(statMan.getLineCount());
+        //pauseGroup.setMoves(statMan.getMoveCount());
+       // pauseGroup.setLines(statMan.getLineCount());
         pauseGroup.setLinesPerMove(statMan.getLinesPerMove());         
     }
     
@@ -1766,7 +1773,16 @@ public class Game extends Canvas implements IGameWindowCallback
 
 
                 // Fire a score event.
-                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
+                if (tutorialMan.isTutorialInProgress() == true)
+                {
+                    listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                            IListenerComponent.GameType.TUTORIAL);
+                }
+                else
+                {
+                    listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                            IListenerComponent.GameType.GAME);
+                }
 
                 // Show the SCT.
                 ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
@@ -1926,7 +1942,16 @@ public class Game extends Canvas implements IGameWindowCallback
                     statMan.getChainCount());
 
               // Fire a score event.
-              listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
+            if (tutorialMan.isTutorialInProgress() == true)
+            {
+                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                            IListenerComponent.GameType.TUTORIAL);
+            }
+            else
+            {
+                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                            IListenerComponent.GameType.GAME);
+            }
 
 
             // Show the SCT.
@@ -2074,7 +2099,16 @@ public class Game extends Canvas implements IGameWindowCallback
                     statMan.getChainCount());
 
               // Fire a score event.
-              listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
+            if (tutorialMan.isTutorialInProgress() == true)
+            {
+                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                            IListenerComponent.GameType.TUTORIAL);
+            }
+            else
+            {
+                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                            IListenerComponent.GameType.GAME);
+            }
 
 
             // Show the SCT.
@@ -2170,7 +2204,16 @@ public class Game extends Canvas implements IGameWindowCallback
                     statMan.getChainCount());
 
               // Fire a score event.
-              listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this));
+              if (tutorialMan.isTutorialInProgress() == true)
+              {
+                  listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                            IListenerComponent.GameType.TUTORIAL);
+              }
+              else
+              {
+                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                            IListenerComponent.GameType.GAME);
+              }
 
 
             // Show the SCT.
@@ -2396,7 +2439,16 @@ public class Game extends Canvas implements IGameWindowCallback
 
         // Reset the line count.
         //statMan.incrementLineCount(statMan.getCycleLineCount());
-        listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), this));
+        if (tutorialMan.isTutorialInProgress() == true)
+        {
+            listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), this),
+                    IListenerComponent.GameType.TUTORIAL);
+        }
+        else
+        {
+            listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), 
+                    this), IListenerComponent.GameType.GAME);
+        }
         statMan.resetCycleLineCount();
     }
     

@@ -31,6 +31,8 @@ public class ListenerManager implements IListenerComponent
     private WeakHashMap<IMoveListener, String> moveListenerList;
     private WeakHashMap<ILineListener, String> lineListenerList;
     
+    
+    
     /**
      * private constructor to ensure only a single entity ever exists.
      */
@@ -109,11 +111,11 @@ public class ListenerManager implements IListenerComponent
      * Notify all score listeners.
      * @param e The event.
      */    
-    public void notifyScoreListener(ScoreEvent e)
+    public void notifyScoreListener(ScoreEvent e, IListenerComponent.GameType gameType)
     {
         for (IScoreListener listener : scoreListenerList.keySet())
         {
-            listener.handleScoreEvent(e);
+            listener.handleScoreEvent(e, gameType);
         }
     }
     
@@ -133,11 +135,11 @@ public class ListenerManager implements IListenerComponent
      * Notify all move listeners.
      * @param e The event.
      */    
-    public void notifyMoveListener(MoveEvent e)
+    public void notifyMoveListener(MoveEvent e, IListenerComponent.GameType gameType)
     {
         for (IMoveListener listener : moveListenerList.keySet())
         {
-            listener.handleMoveEvent(e);
+            listener.handleMoveEvent(e, gameType);
         }
     }
     
@@ -145,11 +147,11 @@ public class ListenerManager implements IListenerComponent
      * Notify all line listeners.
      * @param e The event.
      */    
-    public void notifyLineListener(LineEvent e)
+    public void notifyLineListener(LineEvent e, IListenerComponent.GameType gameType)
     {
         for (ILineListener listener : lineListenerList.keySet())
         {
-            listener.handleLineEvent(e);
+            listener.handleLineEvent(e, gameType);
         }
     }
 
