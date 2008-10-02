@@ -367,6 +367,10 @@ public class BoardManager implements IManager
             if (this.getTile(i) != null)
                 this.removeTile(i);
         }
+        
+        // Ensure the item counts are set to 0
+        for (Item item : worldMan.getItemList())
+            item.setCurrentAmount(0);
     }       
         
 	/**
@@ -2007,10 +2011,31 @@ public class BoardManager implements IManager
         numberOfMults = (Integer) managerState.get(Keys.NUMBER_OF_MULTS);
         gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
         scratchBoard = (TileEntity[]) managerState.get(Keys.SCRATCH_BOARD);   
-        board = (TileEntity[]) managerState.get(Keys.BOARD);        
+        board = (TileEntity[]) managerState.get(Keys.BOARD);     
+        
+       
         
         // Make sure that this board is in the layer manager.
         layerize();
+        
+         // readd the item counts.
+        for (TileEntity t : board)
+        {
+            if (t==null)
+                continue;
+            if (t.getType() != TileType.NORMAL)
+            {
+                for (Item item : worldMan.getItemList())
+                {
+                    if(item.getTileType() == t.getType())
+                    {
+                        item.incrementCurrentAmount();
+                        System.out.println( item.getTileType() + ": " +item.getCurrentAmount());
+                        break;
+                    }
+                }
+            }
+        }
         
         LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
         LogManager.recordMessage("Loaded " + numberOfItems + " items.");

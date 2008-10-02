@@ -50,7 +50,7 @@ public class Item
 	{
 		this.tileType = tileType;
 		this.initialAmount = initialAmount;
-		this.currentAmount = initialAmount;
+		this.currentAmount = 0;
 		this.probability = probability;
                 this.maxOnScreen = maxOnScreen;
 	}
