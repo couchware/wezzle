@@ -303,12 +303,6 @@ public class LWJGLGameWindow implements IGameWindow
     //--------------------------------------------------------------------------
     // Color & clip code from GTGE.
     //--------------------------------------------------------------------------
-
-	/** OpenGL matrix. */
-	private static FloatBuffer glMatrix = BufferUtils.createFloatBuffer(16);
-
-	/** Display dimension. */
-	private static IntBuffer display = BufferUtils.createIntBuffer(16);
     
     /** A null rectangle. **/
     final private static Rectangle NULL_RECTANGLE = new Rectangle();
@@ -392,12 +386,10 @@ public class LWJGLGameWindow implements IGameWindow
     }
     
     private void scissorClip(Rectangle rect)
-    {
-        GL11.glGetInteger(GL11.GL_VIEWPORT, display);
-
+    {       
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor(
-                rect.x, display.get(3) - rect.y - rect.height, 
+                rect.x, this.height - rect.y - rect.height, 
                 rect.width, rect.height);
     }
     
