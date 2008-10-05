@@ -312,20 +312,7 @@ public class LayerManager
                 // Clear dirtiness.
                 d.setDirty(false);
                 
-                Rectangle r = d.getDrawRect();                
-                
-//                if (r != null && (r.getMinX() < 0 || r.getMinY() < 0))
-//                {
-//                    LogManager.recordWarning("Offending class is " 
-//                            + d.getClass().getSimpleName(), 
-//                            "LayerManager#drawRegion");
-//                    
-//                    LogManager.recordWarning("Rectangle is " + r,
-//                            "LayerManager#drawRegion");
-//                    
-//                    if (d instanceof ILabel)
-//                        LogManager.recordWarning(((ILabel) d).getText());
-//                }
+                Rectangle r = d.getDrawRect();                                
                                
                 if (r != null && region.intersects(r) == true)
                 {                                          

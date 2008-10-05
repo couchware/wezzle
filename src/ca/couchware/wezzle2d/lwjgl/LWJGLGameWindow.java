@@ -249,15 +249,16 @@ public class LWJGLGameWindow implements IGameWindow
 	private void loop() 
     {       
         final int TICKS_PER_SECOND = 60;
-        final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-                
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT 
-                | GL11.GL_DEPTH_BUFFER_BIT 
-                | GL11.GL_STENCIL_BUFFER_BIT);
+        final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;                        
+        
+        // Clear the stencil buffer.
+        GL11.glClearStencil(0);
+        
+        // Clear screen.
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
         
 		while (gameRunning == true)
-        {
-            // Clear screen.            
+        {            
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
             GL11.glLoadIdentity();
 
@@ -391,6 +392,7 @@ public class LWJGLGameWindow implements IGameWindow
 		GL11.glScissor(
                 rect.x, this.height - rect.y - rect.height, 
                 rect.width, rect.height);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
     }
     
     private void stencilClip(Shape shape)
@@ -400,10 +402,7 @@ public class LWJGLGameWindow implements IGameWindow
         
         // Disable colour modification.
         GL11.glColorMask(false, false, false, false);
-        
-        // Clear the stencil buffer.
-        GL11.glClearStencil(0);
-        
+                
         // Enable the stencil buffer.
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         
