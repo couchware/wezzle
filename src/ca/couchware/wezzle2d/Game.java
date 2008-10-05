@@ -85,6 +85,11 @@ public class Game extends Canvas implements IGameWindowCallback
     }
     
     /**
+     * The frame-rate of the game.
+     */
+    final public static int FRAME_RATE = 45;
+    
+    /**
      * The default refactor speed.
      */
     final public static int DEFAULT_REFACTOR_SPEED = 180;
@@ -181,37 +186,17 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * The bomb score color.
      */ 
-    final public static Color SCORE_BOMB_COLOR = new Color(255, 127, 0);
-  
-//    /**
-//     * The background layer.
-//     */
-//    final public static int Layer.BACKGROUND = 0;
-//    
-//    /**
-//     * The board layer.
-//     */
-//    final public static int Layer.TILE = 1;
-//    
-//    /**
-//     * The effects layer.
-//     */
-//    final public static int Layer.EFFECT = 2;
-//    
-//    /**
-//     * The UI layer.
-//     */
-//    final public static int Layer.UI = 3;     
+    final public static Color SCORE_BOMB_COLOR = new Color(255, 127, 0);     
     
     /**
      * The name of the application.
      */
-    final private static String APPLICATION_NAME = "Wezzle";
+    final public static String APPLICATION_NAME = "Wezzle";
     
     /**
      * The version of the application.
      */
-    final private static String APPLICATION_VERSION = "Test 6";     
+    final public static String APPLICATION_VERSION = "Test 6";     
     
     /**
      * The full title of the game.
@@ -500,28 +485,12 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * If true, the game will end next loop.
      */
-    private boolean activateGameOver = false;                        
-        
-    /**
-     * The time at which the last rendering looped started from the point of
-     * view of the game logic.
-     */
-    private long lastLoopTime;
+    private boolean activateGameOver = false;                               
 	
 	/** 
      * The window that is being used to render the game. 
      */
     private IGameWindow window;
-
-	/** 
-     * The time since the last record of FPS. 
-     */
-    private long lastFramesPerSecondTime = 0;
-	
-	/** 
-     * The recorded FPS. 
-     */
-    private int framesPerSecond;   
     
     /**
      * The background sprite.
@@ -557,7 +526,6 @@ public class Game extends Canvas implements IGameWindowCallback
      * The high score header button.
      */
     private IButton highScoreButton;
-
     
     /**
      * The level header graphic.
@@ -652,35 +620,16 @@ public class Game extends Canvas implements IGameWindowCallback
         
 		// Create a window based on a chosen rendering method.
 		ResourceFactory.get().setRenderingType(renderType);		        
-        
-		final Runnable r = new Runnable()
-		{
-			public void run()
-			{                             
-				window = ResourceFactory.get().getGameWindow();
-				window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
-				window.setGameWindowCallback(Game.this);
-				window.setTitle(windowTitle);
-			}		
-		};
-		
-		try
-		{
-			javax.swing.SwingUtilities.invokeAndWait(r);
-		}
-		catch (InterruptedException e)
-		{
-			LogManager.recordException(e);
-		}
-		catch (InvocationTargetException e)
-		{
-			LogManager.recordException(e);
-		}		
+        		                      
+        window = ResourceFactory.get().getGameWindow();
+        window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+        window.setGameWindowCallback(Game.this);
+        window.setTitle(windowTitle);
 	}
 
-	public void startRendering()
+	public void start()
 	{
-		window.startRendering();
+		window.start();
 	}
     
     /**
@@ -961,8 +910,8 @@ public class Game extends Canvas implements IGameWindowCallback
         pauseGroup = new PauseGroup(layerMan);
         groupMan.register(pauseGroup);
         
-         listenerMan.registerMoveListener(pauseGroup);
-         listenerMan.registerLineListener(pauseGroup);
+        listenerMan.registerMoveListener(pauseGroup);
+        listenerMan.registerLineListener(pauseGroup);
              
         // Initialize game over group.
         gameOverGroup = new GameOverGroup(layerMan);    
@@ -1048,216 +997,12 @@ public class Game extends Canvas implements IGameWindowCallback
         loader.addRunnable(new Runnable()
         {
            public void run() { initializeGroups(); }
-        });                                        
-                
-        // Start the loop counter.
-		lastLoopTime = SystemTimer.getTime();
+        });                                                      
 	}        
-        
-    /**
-     * This method is used to update the values shown on the pause screen.
-     */
-    private void updatePauseGroup()
-    {               
-        // Update the pause screen date.
-        //pauseGroup.setMoves(statMan.getMoveCount());
-       // pauseGroup.setLines(statMan.getLineCount());
-        pauseGroup.setLinesPerMove(statMan.getLinesPerMove());         
-    }
-    
-    /**
-     * Start a refactor with the given speed.
-     * 
-     * @param speed
-     */
-    public void startRefactor(RefactorType type)
+       
+    public void update(long delta)
     {
-        // Set the refactor flag.
-        this.activateRefactor = true;   
-        
-        // Set the type.
-        this.refactorType = type;
-        
-        //Util.handleWarning("Refactor speed is " + refactorSpeed + ".");
-    }
-    
-    /**
-     * Clear the refactor flag.
-     */
-    public void clearRefactor()
-    {
-       // Set the refactor flag.
-       this.activateRefactor = false;
-    }
-
-    /**
-     * Get the refactor speed, in pixels per second.
-     * 
-     * @return
-     */
-    public int getRefactorSpeed()
-    {
-        return refactorSpeed;
-    }
-
-    /**
-     * Set the refactor speed, in pixels per second.
-     * 
-     * @param refactorSpeed
-     */
-    public void setRefactorSpeed(int refactorSpeed)
-    {
-        this.refactorSpeed = refactorSpeed;
-    }        
-    
-    /**
-     * Resets the refactor speed to it's default value.
-     */
-    public void resetRefactorSpeed()
-    {
-        this.refactorSpeed = DEFAULT_REFACTOR_SPEED;
-    }
-
-    public int getDropSpeed()
-    {
-        return dropSpeed;
-    }
-
-    public void setDropSpeed(int dropSpeed)
-    {
-        this.dropSpeed = dropSpeed;
-    }
-    
-    public void resetDropSpeed()
-    {
-        this.dropSpeed = DEFAULT_DROP_SPEED;
-    }
-   
-    /**
-     * A method to check whether the board is busy.
-     * 
-     * @return True if it is, false otherwise.
-     */
-    public boolean isBusy()
-    {
-       return (isRefactoring()               
-               || isTileRemoving()
-               || gameOverGroup.isActivated() == true
-               || activateBoardShowAnimation == true
-               || activateBoardHideAnimation == true
-               || this.boardAnimation != null);
-    }
-    
-    /**
-     * Checks whether a refactor is, or is about to be, in progress.
-     */
-    public boolean isRefactoring()
-    {
-        return this.activateRefactor 
-                || this.refactorVerticalInProgress 
-                || this.refactorHorizontalInProgress;
-    }
-    
-    /**
-     * Checks whether tiles are, or are about to be, removed.
-     */
-    public boolean isTileRemoving()
-    {
-        return this.activateLineRemoval               
-               || this.activateBombRemoval
-               || this.activateStarRemoval
-               || this.activateRocketRemoval
-               || this.tileRemovalInProgress;
-    }
-    
-    public void startBoardShowAnimation(AnimationType type)
-    {
-        // Set the flag.
-        if (activateBoardHideAnimation == true)
-            throw new IllegalStateException(
-                    "Attempted to show board while it is being hidden.");
-        
-        if (activateBoardShowAnimation == true)
-            throw new IllegalStateException(
-                    "Attempted to show board while it is already being shown.");
-        
-        activateBoardShowAnimation = true;
-        boardAnimationType = type;
-    }
-    
-    public void clearBoardShowAnimation()
-    {
-        // Clear the flag.
-        activateBoardShowAnimation = false;        
-    }
-    
-    public void startBoardHideAnimation(AnimationType type)
-    {
-        // Set the flag.
-        if (activateBoardShowAnimation == true)
-            throw new IllegalStateException(
-                    "Attempted to hide board while it is being shown.");
-        
-        if (activateBoardHideAnimation == true)
-            throw new IllegalStateException(
-                    "Attempted to hide board while it is already being hidden.");
-        
-        activateBoardHideAnimation = true;
-        boardAnimationType = type;
-    }
-    
-    public void clearBoardHideAnimation()
-    {
-        // Clear the flag.
-        activateBoardHideAnimation = false;
-    }
-    
-    public void startGameOver()
-    {
-        LogManager.recordMessage("Game over!", "Game#frameRendering");
-
-        // Add the new score.
-        highScoreMan.addScore("TEST", scoreMan.getTotalScore(), 
-                worldMan.getLevel());
-        highScoreGroup.updateLabels();
-        
-        // Activate the game over process.
-        activateGameOver = true;
-    }
-    
-    public void clearGameOver()
-    {
-        activateGameOver = false;
-    }  
-
-	/**
-	 * Notification that a frame is being rendered. Responsible for running game
-	 * logic and rendering the scene.
-     * 
-     * @return True if the frame has been updated, false if nothing has been
-     * updated.
-	 */
-	public boolean frameRendering()
-	{
-		SystemTimer.sleep(lastLoopTime + 10 - SystemTimer.getTime());
-
-		// Work out how long its been since the last update, this
-		// will be used to calculate how far the entities should
-		// move this loop.
-		long delta = SystemTimer.getTime() - lastLoopTime;
-		lastLoopTime = SystemTimer.getTime();
-		lastFramesPerSecondTime += delta;
-		framesPerSecond++;
-
-		// Update our FPS counter if a second has passed.
-		if (lastFramesPerSecondTime >= 1000)
-		{
-			window.setTitle(windowTitle + " (FPS: " + framesPerSecond + ")");
-			lastFramesPerSecondTime = 0;
-			framesPerSecond = 0;
-		}
-        
-        // If the loader is running, bypass all the rendering to show it.        
+         // If the loader is running, bypass all the rendering to show it.        
         if (loader != null)
         {   
             // Animate all animations.
@@ -1282,7 +1027,7 @@ public class Game extends Canvas implements IGameWindowCallback
             else
             {      
                 // Draw using the loader.
-                return loader.draw();
+                return;
             }                       
         }
         
@@ -1326,7 +1071,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 window.fireMouseEvents();
                 
                 // Draw using the loader.
-                return mainMenu.draw();
+                return;
             }
         }
         
@@ -1339,7 +1084,7 @@ public class Game extends Canvas implements IGameWindowCallback
             
             if (mainMenuTransition.isFinished() == false)
             {
-                return mainMenuTransition.draw();                
+                return;              
             }
             else
             {
@@ -1488,27 +1233,9 @@ public class Game extends Canvas implements IGameWindowCallback
         // normal game loop.
         if (groupMan.isActivated() == false)
             updateBoard(delta);
-                
-        // Whether or not the frame was updated.
-        boolean updated = false;
-        
+                        
         // Fire all the queued mouse events.
-        window.fireMouseEvents();
-        
-        // If the background is dirty, then redraw everything.
-        if (background.isDirty() == true)
-        {            
-            layerMan.drawAll();
-            background.setDirty(false);
-            updated = true;
-        }
-        // Otherwise, only draw what needs to be redrawn.
-        else
-        {                       
-            updated = layerMan.draw();         
-        }        
-        
-        //Util.handleMessage(layerMan.toString());
+        window.fireMouseEvents();        
 		
 		// if escape has been pressed, stop the game
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
@@ -1519,8 +1246,41 @@ public class Game extends Canvas implements IGameWindowCallback
         // Check the achievements.
         if (achievementMan.evaluate(this) == true)
             achievementMan.reportCompleted();
-        
-        return updated;
+    }
+    
+	/**
+	 * Notification that a frame is being rendered. Responsible for running game
+	 * logic and rendering the scene.
+     * 
+     * @return True if the frame has been updated, false if nothing has been
+     * updated.
+	 */
+	public boolean render()
+	{		      
+        // If the background is dirty, then redraw everything.
+        if (loader != null)
+        {
+            return loader.draw();
+        }
+        else if (mainMenu != null)
+        {
+            return mainMenu.draw();
+        }
+        else if (mainMenuTransition != null)
+        {
+            return mainMenuTransition.draw();
+        }
+        else if (background != null && background.isDirty() == true)
+        {            
+            layerMan.drawAll();
+            background.setDirty(false);
+            return true;
+        }
+        // Otherwise, only draw what needs to be redrawn.
+        else
+        {                       
+            return layerMan.draw();         
+        }        
 	}  
     
     /**
@@ -2446,11 +2206,187 @@ public class Game extends Canvas implements IGameWindowCallback
         }
         else
         {
-            listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), 
-                    this), IListenerComponent.GameType.GAME);
+            listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), this), 
+                    IListenerComponent.GameType.GAME);
         }
         statMan.resetCycleLineCount();
     }
+    
+     /**
+     * This method is used to update the values shown on the pause screen.
+     */
+    private void updatePauseGroup()
+    {               
+        // Update the pause screen date.
+        //pauseGroup.setMoves(statMan.getMoveCount());
+        //pauseGroup.setLines(statMan.getLineCount());
+        pauseGroup.setLinesPerMove(statMan.getLinesPerMove());         
+    }
+    
+    /**
+     * Start a refactor with the given speed.
+     * 
+     * @param speed
+     */
+    public void startRefactor(RefactorType type)
+    {
+        // Set the refactor flag.
+        this.activateRefactor = true;   
+        
+        // Set the type.
+        this.refactorType = type;
+        
+        //Util.handleWarning("Refactor speed is " + refactorSpeed + ".");
+    }
+    
+    /**
+     * Clear the refactor flag.
+     */
+    public void clearRefactor()
+    {
+       // Set the refactor flag.
+       this.activateRefactor = false;
+    }
+
+    /**
+     * Get the refactor speed, in pixels per second.
+     * 
+     * @return
+     */
+    public int getRefactorSpeed()
+    {
+        return refactorSpeed;
+    }
+
+    /**
+     * Set the refactor speed, in pixels per second.
+     * 
+     * @param refactorSpeed
+     */
+    public void setRefactorSpeed(int refactorSpeed)
+    {
+        this.refactorSpeed = refactorSpeed;
+    }        
+    
+    /**
+     * Resets the refactor speed to it's default value.
+     */
+    public void resetRefactorSpeed()
+    {
+        this.refactorSpeed = DEFAULT_REFACTOR_SPEED;
+    }
+
+    public int getDropSpeed()
+    {
+        return dropSpeed;
+    }
+
+    public void setDropSpeed(int dropSpeed)
+    {
+        this.dropSpeed = dropSpeed;
+    }
+    
+    public void resetDropSpeed()
+    {
+        this.dropSpeed = DEFAULT_DROP_SPEED;
+    }
+   
+    /**
+     * A method to check whether the board is busy.
+     * 
+     * @return True if it is, false otherwise.
+     */
+    public boolean isBusy()
+    {
+       return (isRefactoring()               
+               || isTileRemoving()
+               || gameOverGroup.isActivated() == true
+               || activateBoardShowAnimation == true
+               || activateBoardHideAnimation == true
+               || this.boardAnimation != null);
+    }
+    
+    /**
+     * Checks whether a refactor is, or is about to be, in progress.
+     */
+    public boolean isRefactoring()
+    {
+        return this.activateRefactor 
+                || this.refactorVerticalInProgress 
+                || this.refactorHorizontalInProgress;
+    }
+    
+    /**
+     * Checks whether tiles are, or are about to be, removed.
+     */
+    public boolean isTileRemoving()
+    {
+        return this.activateLineRemoval               
+               || this.activateBombRemoval
+               || this.activateStarRemoval
+               || this.activateRocketRemoval
+               || this.tileRemovalInProgress;
+    }
+    
+    public void startBoardShowAnimation(AnimationType type)
+    {
+        // Set the flag.
+        if (activateBoardHideAnimation == true)
+            throw new IllegalStateException(
+                    "Attempted to show board while it is being hidden.");
+        
+        if (activateBoardShowAnimation == true)
+            throw new IllegalStateException(
+                    "Attempted to show board while it is already being shown.");
+        
+        activateBoardShowAnimation = true;
+        boardAnimationType = type;
+    }
+    
+    public void clearBoardShowAnimation()
+    {
+        // Clear the flag.
+        activateBoardShowAnimation = false;        
+    }
+    
+    public void startBoardHideAnimation(AnimationType type)
+    {
+        // Set the flag.
+        if (activateBoardShowAnimation == true)
+            throw new IllegalStateException(
+                    "Attempted to hide board while it is being shown.");
+        
+        if (activateBoardHideAnimation == true)
+            throw new IllegalStateException(
+                    "Attempted to hide board while it is already being hidden.");
+        
+        activateBoardHideAnimation = true;
+        boardAnimationType = type;
+    }
+    
+    public void clearBoardHideAnimation()
+    {
+        // Clear the flag.
+        activateBoardHideAnimation = false;
+    }
+    
+    public void startGameOver()
+    {
+        LogManager.recordMessage("Game over!", "Game#frameRendering");
+
+        // Add the new score.
+        highScoreMan.addScore("TEST", scoreMan.getTotalScore(), 
+                worldMan.getLevel());
+        highScoreGroup.updateLabels();
+        
+        // Activate the game over process.
+        activateGameOver = true;
+    }
+    
+    public void clearGameOver()
+    {
+        activateGameOver = false;
+    }  
     
     //--------------------------------------------------------------------------
     // Getters and Setters
@@ -2548,13 +2484,14 @@ public class Game extends Canvas implements IGameWindowCallback
         
         try
         {
-            Game g = new Game(ResourceFactory.RenderType.JAVA2D);
-            g.startRendering();		
+            Game game = new Game(ResourceFactory.RenderType.JAVA2D);
+            //Game game = new Game(ResourceFactory.RenderType.LWJGL);
+            game.start();		
         }
         catch (Exception e)
         {
             LogManager.recordException(e);
         }
-	}    
+	}
   
 }

@@ -3,8 +3,11 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
-import ca.couchware.wezzle2d.java2d.Java2DSpriteStore;
 import ca.couchware.wezzle2d.java2d.Java2DLabel;
+import ca.couchware.wezzle2d.java2d.SpriteStore;
+import ca.couchware.wezzle2d.lwjgl.LWJGLGameWindow;
+import ca.couchware.wezzle2d.lwjgl.LWJGLLabel;
+import ca.couchware.wezzle2d.lwjgl.LWJGLSprite;
 import ca.couchware.wezzle2d.ui.ILabel;
 import java.awt.Color;
 import java.util.EnumSet;
@@ -28,7 +31,11 @@ public class ResourceFactory
 	 */
     public static enum RenderType
     {
-        JAVA2D, LWJGL
+        /** Use the Java2D rendering engine. */
+        JAVA2D, 
+        
+        /** Use the LWJGL OpenGL engine. */
+        LWJGL
     }    	
 
 	/** 
@@ -69,25 +76,14 @@ public class ResourceFactory
 	 *            The type of rendering to use
 	 */
 	public void setRenderingType(RenderType renderType)
-	{
-		// If the rendering type is unrecognized tell the caller.
-		if (renderType != RenderType.JAVA2D)
-		{
-			// Note, we could create our own exception to be thrown here but it
-			// seems a little bit over the top for a simple message. In general
-			// RuntimeException should be sub-classed and thrown, not thrown
-			// directly.
-			throw new RuntimeException("Unknown rendering type specified: "
-					+ renderType);
-		}
-
+	{		
 		// If the window has already been created then we have already created
 		// resources in
 		// the current rendering method, we are not allowed to change rendering
 		// types
 		if (window != null)
 		{
-			throw new RuntimeException("Attempt to change rendering method at game runtime");
+			throw new RuntimeException("You may not change the rendering type during runtime.");
 		}
 
 		this.renderType = renderType;
@@ -106,11 +102,13 @@ public class ResourceFactory
 		{
 			switch (renderType)
 			{
-				case JAVA2D:
-				{
+				case JAVA2D:				
 					window = new Java2DGameWindow();
 					break;
-				}
+				
+                case LWJGL:
+                    window = new LWJGLGameWindow();
+                    break;
 			}
 		}
 
@@ -135,11 +133,11 @@ public class ResourceFactory
 
 		switch (renderType)
 		{
-			case JAVA2D:
-			{
-				return Java2DSpriteStore.get().getSprite(
-                        (Java2DGameWindow) window, path);
-			}		
+			case JAVA2D:			
+				return SpriteStore.get().getSprite((Java2DGameWindow) window, path);                
+                
+            case LWJGL:
+                return new LWJGLSprite((LWJGLGameWindow) window, path);					
 		}
 
 		throw new RuntimeException("Unknown rendering type: " + renderType);
@@ -160,8 +158,7 @@ public class ResourceFactory
 
 		switch (renderType)
 		{
-			case JAVA2D:
-			{
+			case JAVA2D:			
 				return new Java2DLabel((Java2DGameWindow) window,
                         builder.x,
                         builder.y,
@@ -172,7 +169,17 @@ public class ResourceFactory
                         builder.text,
                         builder.visible,
                         builder.cached);
-			}		
+			
+            case LWJGL:
+                return new LWJGLLabel(
+                        builder.x,
+                        builder.y,
+                        builder.alignment,                       
+                        builder.color,
+                        builder.opacity,
+                        builder.size,
+                        builder.text,
+                        builder.visible);
 		}
 
 		throw new RuntimeException("Unknown rendering type: " + renderType);

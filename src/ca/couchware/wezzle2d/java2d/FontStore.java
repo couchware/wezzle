@@ -11,7 +11,7 @@ import java.util.HashMap;
  *
  * @author cdmckay
  */
-public class Java2DFontStore 
+public class FontStore 
 {
     /**
      * The font url.
@@ -21,14 +21,14 @@ public class Java2DFontStore
     /**
 	 * The single instance of this class
 	 */
-	final private static Java2DFontStore single = new Java2DFontStore();
+	final private static FontStore single = new FontStore();
 
 	/**
 	 * Get the single instance of this class .
 	 * 
 	 * @return The single instance of this class
 	 */
-	public static Java2DFontStore get()
+	public static FontStore get()
 	{
 		return single;
 	}

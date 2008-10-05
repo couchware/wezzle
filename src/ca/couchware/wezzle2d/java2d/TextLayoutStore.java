@@ -12,20 +12,20 @@ import java.util.HashMap;
  *
  * @author cdmckay
  */
-public class Java2DTextLayoutStore 
+public class TextLayoutStore 
 {   
     
     /**
 	 * The single instance of this class
 	 */
-	final private static Java2DTextLayoutStore single = new Java2DTextLayoutStore();
+	final private static TextLayoutStore single = new TextLayoutStore();
 
 	/**
 	 * Get the single instance of this class .
 	 * 
 	 * @return The single instance of this class
 	 */
-	public static Java2DTextLayoutStore get()
+	public static TextLayoutStore get()
 	{
 		return single;
 	}
@@ -86,17 +86,17 @@ public class Java2DTextLayoutStore
      * Updates the text layout instance.
      * @param frctx The current font render context.
      */
-    private TextLayout createTextLayout(Graphics2D g, String text, Font font)
+    private TextLayout createTextLayout(Graphics2D gfx, String text, Font font)
     {             
         // Set the font.
-        g.setFont(font);  
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+        gfx.setFont(font);  
+        gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+		gfx.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);        
         
         // Get the render context.
-        FontRenderContext frctx = g.getFontRenderContext();
+        FontRenderContext frctx = gfx.getFontRenderContext();
         
         // Create new text layout.        
         return new TextLayout(text, font, frctx);                     

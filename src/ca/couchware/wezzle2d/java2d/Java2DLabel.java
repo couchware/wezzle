@@ -107,12 +107,12 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         if (text.length() != 0)
         {
             // Get the font.
-            this.font = Java2DFontStore.get().getFont((int) size);
+            this.font = FontStore.get().getFont((int) size);
 
             // Create the text layout object.
-            this.baselineLayout = Java2DTextLayoutStore.get()
+            this.baselineLayout = TextLayoutStore.get()
                     .getTextLayout(window.getDrawGraphics(), baselineText, font, true);
-            this.textLayout = Java2DTextLayoutStore.get()
+            this.textLayout = TextLayoutStore.get()
                     .getTextLayout(window.getDrawGraphics(), text, font, cached);            
 
             // Setup the alignment.  This should be replaced, alignment should

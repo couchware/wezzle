@@ -294,7 +294,9 @@ public class SpriteButton extends AbstractSpriteButton
         
     private void drawNormal()
     {                
-        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacity);        
+        sprite.draw(x + offsetX, y + offsetY, width, height, 
+                //0, 0, width / 2, height,
+                0.0, opacity);        
         normalLabel.draw();
     }
     

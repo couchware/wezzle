@@ -146,9 +146,7 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
         layerMan.add(linesPerMoveLabel, Layer.UI);
         entityList.add(linesPerMoveLabel);
     }      
-    
-    
-      @Override
+            
     public void handleMoveEvent(MoveEvent e, IListenerComponent.GameType gameType)
     {
         if (gameType == IListenerComponent.GameType.GAME)
@@ -157,8 +155,7 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
             this.setMoves(moves);
         }
     }
-        
-    @Override
+       
     public void handleLineEvent(LineEvent e, IListenerComponent.GameType gameType)
     {
         if (gameType == IListenerComponent.GameType.GAME)

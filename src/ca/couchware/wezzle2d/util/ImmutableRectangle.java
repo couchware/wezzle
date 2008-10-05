@@ -19,7 +19,10 @@ import java.awt.geom.Rectangle2D;
  */
 public class ImmutableRectangle implements Shape
 {
-    
+
+    /**
+     * The normal rectangle object that the immutable rectangle wraps.
+     */
     final Rectangle rect;
     
     public ImmutableRectangle()

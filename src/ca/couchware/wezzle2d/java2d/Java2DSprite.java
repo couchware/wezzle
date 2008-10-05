@@ -133,7 +133,8 @@ public class Java2DSprite implements ISprite
 		g.drawImage(image, x, y, null);
 	}
 
-    public void draw(final int x, final int y, int width, int height, 
+    public void draw(
+            final int x, final int y, int width, int height, 
             double theta, int opacity)
     {
         // Don't draw if opacity is 0.
@@ -200,10 +201,9 @@ public class Java2DSprite implements ISprite
      * @param theta
      * @param opacity
      */
-    public void drawRegion(int x, int y, 
-            int width, int height,
-            int rx, int ry, 
-            int rwidth, int rheight, 
+    public void drawRegion(
+            int x, int y, int width, int height,
+            int regionX, int regionY, int regionWidth, int regionHeight, 
             double theta, int opacity)
     {
         // Don't draw if opacity is 0.
@@ -235,7 +235,7 @@ public class Java2DSprite implements ISprite
         
         // Set the clip.
         Rectangle r = g.getClipBounds();
-        g.setClip(x, y, rwidth, rheight);
+        g.setClip(x, y, regionWidth, regionHeight);
         
         // Opacity.
         Composite c = null;
@@ -250,7 +250,7 @@ public class Java2DSprite implements ISprite
             g.rotate(theta, x + width / 2, y + height / 2);    
         
         // Draw the sprite.
-		g.drawImage(vimage, x - rx, y - ry, width, height, null);                                     
+		g.drawImage(vimage, x - regionX, y - regionY, width, height, null);                                     
         
         // Rotate back.
         if (theta != 0.0)

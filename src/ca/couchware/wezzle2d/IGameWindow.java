@@ -39,7 +39,7 @@ public interface IGameWindow
 	/**
 	 * Start the game window rendering the display
 	 */
-	public void startRendering();
+	public void start();
 
 	/**
 	 * Set the callback that should be notified of the window events.
@@ -70,6 +70,13 @@ public interface IGameWindow
     public void setColor(Color c);
     
     /**
+     * Get the drawing color.
+     * 
+     * @return The current color.
+     */
+    public Color getColor();
+    
+    /**
      * Draws the outline of the specified rectangle.
      * 
      * @param x
@@ -91,15 +98,7 @@ public interface IGameWindow
     
     //--------------------------------------------------------------------------
     // Clip
-    //--------------------------------------------------------------------------
-	
-    /**
-     * Outlines the passed shape with the color white.  Principally used
-     * for debugging the clip algorithm.
-     * 
-     * @param s
-     */
-    public void drawClip(Shape s);
+    //--------------------------------------------------------------------------	   
     
     /**
      * Sets the current clip rectangle.  Only drawables within the clip area are
@@ -115,11 +114,6 @@ public interface IGameWindow
      * @return
      */
     public Shape getClip();
-    
-    /**
-     * Clears the clip rectangle, meaning the whole screen will be drawn.
-     */        
-    public void clearClip();
     
     //--------------------------------------------------------------------------
     // Mouse

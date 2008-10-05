@@ -14,11 +14,16 @@ public interface IGameWindowCallback
 	 */
 	public void initialize();
 
+    /**
+     * Notification that it is time to update the scene.
+     */
+    public void update(long delta);    
+    
 	/**
 	 * Notification that the display is being rendered. The implementor should
 	 * render the scene and update any game logic
 	 */
-	public boolean frameRendering();
+	public boolean render();
 
 	/**
 	 * Notification that game window has been closed.

@@ -349,10 +349,9 @@ public class LayerManager
         {
             //Util.handleMessage(clip.toString(), Thread.currentThread());
                         
-            window.setClip(exact == true ? region : clip);
-                
+            window.setClip(exact == true ? region : clip);                
             drawAll();            
-            window.clearClip();
+            window.setClip(null);
             
             // Uncomment the next line if you want boxes to be drawn around
             // each region being drawn.

@@ -1,20 +1,12 @@
 package ca.couchware.wezzle2d.java2d;
 
+import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.LogManager;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-
 import javax.imageio.ImageIO;
-
-import ca.couchware.wezzle2d.graphics.ISprite;
-import ca.couchware.wezzle2d.util.Util;
-import java.awt.image.VolatileImage;
 
 /**
  * A resource manager for sprites in the game. Its often quite important how and
@@ -27,19 +19,19 @@ import java.awt.image.VolatileImage;
  * 
  * @author Kevin Glass
  */
-public class Java2DSpriteStore
+public class SpriteStore
 {
 	/**
 	 * The single instance of this class
 	 */
-	private static Java2DSpriteStore single = new Java2DSpriteStore();
+	private static SpriteStore single = new SpriteStore();
 
 	/**
 	 * Get the single instance of this class .
 	 * 
 	 * @return The single instance of this class
 	 */
-	public static Java2DSpriteStore get()
+	public static SpriteStore get()
 	{
 		return single;
 	}

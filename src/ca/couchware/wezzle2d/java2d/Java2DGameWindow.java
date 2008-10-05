@@ -1,7 +1,9 @@
 package ca.couchware.wezzle2d.java2d;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IGameWindowCallback;
+import ca.couchware.wezzle2d.SystemTimer;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
@@ -56,7 +58,7 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
 	private IGameWindowCallback callback;
 	
 	/** The current accelerated graphics context */
-	private Graphics2D g;
+	private Graphics2D gfx;
 
 	/**
 	 * Create a new window to render using Java 2D. Note this will *not*
@@ -108,7 +110,7 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
 	/**
 	 * Start the rendering process. This method will not return.
 	 */
-	public void startRendering()
+	public void start()
 	{			
 		final Runnable r = new Runnable()
 		{
@@ -241,18 +243,18 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
 		{
             // Get hold of a graphics context for the accelerated
 			// surface and black it out.
-			g = (Graphics2D) strategy.getDrawGraphics();  
+			gfx = (Graphics2D) strategy.getDrawGraphics();  
             
 			callback.initialize();
-            
+                        
             // Finally, we've completed drawing so clear up the graphics
 			// and flip the buffer over.
-            g.dispose();
-            g = null;
+            gfx.dispose();
+            gfx = null;
 		}
 
 		// Start the game loop.
-		gameLoop();
+		loop();
 	}
 
 	/**
@@ -287,35 +289,50 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
 	 */
 	Graphics2D getDrawGraphics()
 	{
-		return g;
-	}
-
+		return gfx;
+	}  
+    
 	/**
 	 * Run the main game loop. This method keeps rendering the scene and
 	 * requesting that the callback update its screen.
 	 */
-	private void gameLoop()
-	{
-        LogManager.recordMessage("Game loop started.", "Java2DGameWindow#gameLoop");
-        
+	private void loop()
+	{                
         // Did the screen get updated?
         boolean updated = false;
         
-		while (gameRunning)
-		{						
-			// Get hold of a graphics context for the accelerated
+        // Implementation of the "Constant Game Speed Independent of
+        // Variable FPS" from:
+        //   http://dewitters.koonsolo.com/gameloop.html
+        
+        final int TICKS_PER_SECOND = 50;
+        final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+        final int MAX_FRAME_SKIP = 10;
+        
+        long nextGameTick = SystemTimer.getTime();
+        int loopCounter;
+        
+		while (gameRunning == true)
+		{				                       
+            // Get hold of a graphics context for the accelerated
 			// surface and black it out.
-			g = (Graphics2D) strategy.getDrawGraphics();            						
+			gfx = (Graphics2D) strategy.getDrawGraphics();
             
-			if (callback != null)
-			{
-				updated = callback.frameRendering();
-			}
-
+            loopCounter = 0;
+            
+            while (SystemTimer.getTime() > nextGameTick && loopCounter < MAX_FRAME_SKIP)
+            {
+                callback.update(SKIP_TICKS);
+                nextGameTick += SKIP_TICKS;
+                loopCounter++;
+            }                       
+            			
+            updated = callback.render();
+			
 			// Finally, we've completed drawing so clear up the graphics
 			// and flip the buffer over.
-            g.dispose();
-            g = null;
+            gfx.dispose();
+            gfx = null;
             
             if (updated == true)                                                     
                 strategy.show();            
@@ -329,10 +346,18 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
      */
     public void setColor(Color c)
     {
-        if (g == null)
+        if (gfx == null)
             throw new IllegalStateException("Graphics not yet initialized.");
         
-        g.setColor(c);
+        gfx.setColor(c);
+    }
+    
+    public Color getColor()
+    {
+        if (gfx == null)
+            throw new IllegalStateException("Graphics not yet initialized.");
+        
+        return gfx.getColor();
     }
     
     /**
@@ -345,10 +370,10 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
      */
     public void drawRect(int x, int y, int width, int height)
     {
-        if (g == null)
+        if (gfx == null)
             throw new IllegalStateException("Graphics not yet initialized.");
         
-        g.drawRect(x, y, width, height);
+        gfx.drawRect(x, y, width, height);
     }
     
     /**
@@ -361,31 +386,11 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
      */
     public void fillRect(int x, int y, int width, int height)
     {
-        if (g == null)
+        if (gfx == null)
             throw new IllegalStateException("Graphics not yet initialized.");
         
-        g.fillRect(x, y, width, height);
+        gfx.fillRect(x, y, width, height);
     }            
-    
-    /**
-     * Outlines the passed shape with the color white.  Principally used
-     * for debugging the clip algorithm.
-     * 
-     * @param s
-     */
-    public void drawClip(Shape s)
-    {
-        // Make sure setClip was called corectly.
-        if (g == null)
-            throw new RuntimeException(
-                    "setClip must be called during frameRendering().");
-                        
-        if (s != null)        
-        {
-            g.setColor(Color.WHITE);                       
-            g.draw(s);
-        }
-    }    
     
     /**
      * Sets the current clip rectangle.  Only drawables within the clip area are
@@ -396,11 +401,11 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
     public void setClip(Shape s)
     {
         // Make sure setClip was called corectly.
-        if (g == null)
+        if (gfx == null)
             throw new RuntimeException(
                     "setClip must be called during frameRendering().");
                         
-        g.setClip(s);        
+        gfx.setClip(s);        
     }
     
     /**
@@ -411,25 +416,12 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
     public Shape getClip()
     {
         // Make sure getClip was called corectly.
-        if (g == null)
+        if (gfx == null)
             throw new RuntimeException(
                     "getClip must be called during frameRendering().");
         
-        return g.getClip();
-    }
-    
-    /**
-     * Clears the clip rectangle, meaning the whole screen will be drawn.
-     */
-    public void clearClip()
-    {
-         // Make sure getClip was called corectly.
-        if (g == null)
-            throw new RuntimeException(
-                    "clearClip must be called during frameRendering().");
-        
-        g.setClip(null);
-    }
+        return gfx.getClip();
+    }   
 
     /**
      * Sets the cursor.
