@@ -155,7 +155,7 @@ public class LWJGLSprite implements ISprite
     {
         window.setClip(new Rectangle(x, y, regionWidth, regionHeight));
         
-        draw(x, y);
+        draw(x - regionX, y - regionY, width, height, theta, opacity);
         
         window.setClip(null);
     }
