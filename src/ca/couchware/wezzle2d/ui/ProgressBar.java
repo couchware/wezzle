@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
 import java.util.EnumSet;
@@ -53,7 +54,7 @@ public class ProgressBar extends AbstractEntity
      * The path to the middle sprite.
      */
     final private static String PATH_SPRITE_MIDDLE =
-            Game.SPRITES_PATH + "/ProgressBar_Middle.png";
+            Game.SPRITES_PATH + "/ProgressBar_Middle2.png";
      
     /**
      * The type of progress bar.
@@ -310,12 +311,12 @@ public class ProgressBar extends AbstractEntity
                     leftSprite.getWidth(), leftSprite.getHeight(),
                     0.0, opacity);
             
-            for (int i = 4; i < progressWidth - 4; i++)
+            for (int i = 4; i < progressWidth - 4; i += 2)
             {
                 middleSprite.draw(alignedX + i, alignedY,
                         middleSprite.getWidth(), middleSprite.getHeight(),
-                        0.0, opacity);
-            }
+                        0.0, opacity);                
+            }            
             
             rightSprite.draw(alignedX + progressWidth - 4, alignedY,
                     rightSprite.getWidth(), rightSprite.getHeight(),

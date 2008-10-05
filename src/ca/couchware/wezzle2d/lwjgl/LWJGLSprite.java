@@ -104,13 +104,7 @@ public class LWJGLSprite implements ISprite
             double theta, int opacity)
     {
         // Store the current model matrix.
-        GL11.glPushMatrix();
-
-        // Bind to the appropriate texture for this sprite.
-        texture.bind();
-
-        // Translate to the right location and prepare to draw.
-        GL11.glTranslatef(x, y, 0);
+        GL11.glPushMatrix();        
         
         switch (opacity)
         {
@@ -120,16 +114,22 @@ public class LWJGLSprite implements ISprite
                 return;
                 
             case 100:
-                GL11.glColor3f(1f, 1f, 1f);
+                GL11.glColor4f(1f, 1f, 1f, 1f);
                 break;
                 
             default:
                 GL11.glColor4f(1f, 1f, 1f, (float) opacity / 100f);
         }
         
+        // Bind to the appropriate texture for this sprite.
+        texture.bind();
+        
+        // Translate to the right location and prepare to draw.
+        GL11.glTranslatef(x, y, 0);        
+        
         // Draw a quad textured to match the sprite.
         GL11.glBegin(GL11.GL_QUADS);
-        {
+        {            
             GL11.glTexCoord2f(0, 0);
             GL11.glVertex2f(0, 0);
             GL11.glTexCoord2f(0, texture.getHeight());
@@ -142,7 +142,7 @@ public class LWJGLSprite implements ISprite
         GL11.glEnd();
         
         // Turn off transparency again.
-        GL11.glColor3f(1f, 1f, 1f);
+        GL11.glColor4f(1f, 1f, 1f, 1f);
 
         // Restore the model view matrix to prevent contamination.
         GL11.glPopMatrix();
