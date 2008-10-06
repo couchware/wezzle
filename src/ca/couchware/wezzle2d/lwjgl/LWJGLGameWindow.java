@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -451,11 +452,7 @@ public class LWJGLGameWindow implements IGameWindow
     }
     
     private void stencilClip(Shape shape)
-    {
-        
-        // Convert the shape to rectangle.
-        Rectangle rect = shape.getBounds();
-        
+    {               
         // Disable colour modification.
         GL11.glColorMask(false, false, false, false);
                 
@@ -468,12 +465,16 @@ public class LWJGLGameWindow implements IGameWindow
         GL11.glStencilOp(GL11.GL_REPLACE, GL11.GL_REPLACE, GL11.GL_REPLACE);        
         
         // Carve a rectangle into the stencil buffer.
-        GL11.glBegin(GL11.GL_QUADS);
-            GL11.glVertex2f(rect.x, rect.y);
-            GL11.glVertex2f(rect.x + rect.width, rect.y);
-            GL11.glVertex2f(rect.x + rect.width, rect.y + rect.height);
-            GL11.glVertex2f(rect.x, rect.y + rect.height);
-        GL11.glEnd();
+        if (shape instanceof Ellipse2D)
+        {
+            Ellipse2D e = (Ellipse2D) shape;
+            drawEllipse(e.getX(), e.getY(), e.getWidth(), e.getHeight(), true);
+        }
+        else
+        {
+            Rectangle rect = shape.getBounds();
+            drawRectangle(rect.x, rect.y, rect.width, rect.height, true);
+        }
         
         // Re-enable colours.
         GL11.glColorMask(true, true, true, true);
@@ -486,7 +487,42 @@ public class LWJGLGameWindow implements IGameWindow
     public Shape getClip()
     {
        return null;
+    }       
+    
+    private void drawRectangle(int x, int y, int width, int height, boolean filled)
+    {
+        int mode = filled ? GL11.GL_POLYGON : GL11.GL_LINE_LOOP;
+        
+        GL11.glBegin(mode);
+            GL11.glVertex2f(x, y);
+            GL11.glVertex2f(x + width, y);
+            GL11.glVertex2f(x + width, y + height);
+            GL11.glVertex2f(x, y + height);
+        GL11.glEnd();        
     }
+    
+    /** The value of two times PI. */
+    final private static double TWO_PI = 2.0 * Math.PI;
+    
+    /** The number of points in an ellipse. */
+    final private static double ELLIPSE_POINTS = 50;
+    
+    private void drawEllipse(double x, double y, double width, double height, boolean filled)
+    {        
+        float xf = (float) (x + width  / 2);
+        float yf = (float) (y + height / 2);
+        float wf = (float) width;
+        float hf = (float) height;                
+        
+        int mode = filled ? GL11.GL_POLYGON : GL11.GL_LINE_LOOP;
+                
+        GL11.glBegin(mode);
+            for (double t = 0; t <= TWO_PI; t += TWO_PI / ELLIPSE_POINTS)
+                GL11.glVertex2f(
+                        wf * (float) Math.cos(t) + xf, 
+                        hf * (float) Math.sin(t) + yf);
+        GL11.glEnd();        
+    }        
 
     public void setCursor(int type)
     {
