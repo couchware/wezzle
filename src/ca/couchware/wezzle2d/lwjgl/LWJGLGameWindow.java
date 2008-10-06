@@ -254,19 +254,19 @@ public class LWJGLGameWindow implements IGameWindow
         final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;                        
         
         // Clear the stencil buffer.
-        GL11.glClearStencil(0);
+        GL11.glClearStencil(0);                       		
         
         // Clear screen.
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
         
-		while (gameRunning == true)
-        {            
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            GL11.glLoadIdentity();
-
+        while (gameRunning == true)
+        {                       
             // Always call Window.update(), all the time - it does some behind the
             // scenes work, and also displays the rendered output
             Display.update();
+                        
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
 
             if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
             {
@@ -366,89 +366,85 @@ public class LWJGLGameWindow implements IGameWindow
         // See if the shape is null, if it is, then disable the clip.
         if (shape == null)
         {            
-            GL11.glDisable(GL11.GL_SCISSOR_TEST);
+            //GL11.glDisable(GL11.GL_SCISSOR_TEST);
             GL11.glDisable(GL11.GL_STENCIL_TEST);            
             return;
         }
         
-        // If the shape is a rectangle, use glScissor.
-        if (shape instanceof Rectangle)
-        {
-            Rectangle rect = (Rectangle) shape;
-            //stencilClip(rect);
-            scissorClip(rect);
-        }
-        // For any other shape, use the stencil buffer.
-        else
-        {
-            // TODO Currently, the stencil isn't fully implemented, so we'll use
-            // a box for now.
-            Rectangle rect = shape.getBounds();
-            //scissorClip(rect);            
-            stencilClip(shape);
-        }                
+        // Stencil out the shape.
+//        if (shape instanceof Rectangle)
+//            scissorClip((Rectangle) shape);
+//        else
+//            scissorClip(shape.getBounds());
+        stencilClip(shape);                        
     }       
     
-    private static IntBuffer viewport = BufferUtils.createIntBuffer(16);
-    private static FloatBuffer rasterPosition = BufferUtils.createFloatBuffer(16);     
-    
-    private void copyBuffer()
-    {
-        /* Get the viewport. */
-        GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
-        
-        /* Set source buffer. */
-        GL11.glReadBuffer(GL11.GL_FRONT);
-
-        /* Set projection matrix. */
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glPushMatrix();
-        GL11.glLoadIdentity() ;
-        GL11.glOrtho(0, viewport.get(2), viewport.get(3), 0, -1, 1);
-
-        /* Set modelview matrix. */
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        GL11.glLoadIdentity();
-
-        /* Save old raster position. */
-        GL11.glGetFloat(GL11.GL_CURRENT_RASTER_POSITION, rasterPosition);
-
-        /* Set raster position. */
-        GL11.glRasterPos4f(0f, 0f, 0f, 1f);
-
-        /* Copy buffer. */
-        GL11.glCopyPixels(0, 0, viewport.get(2), viewport.get(3), GL11.GL_COLOR);
-
-        /* Restore old raster position. */        
-        GL11.glRasterPos4f(
-                rasterPosition.get(0), 
-                rasterPosition.get(1),
-                rasterPosition.get(2),
-                rasterPosition.get(3));
-
-        /* Restore old matrices. */
-        GL11.glPopMatrix();
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glPopMatrix();
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
-        /* Restore source buffer. */
-        GL11.glReadBuffer(GL11.GL_BACK); 
-    }
+//    private static IntBuffer viewport = BufferUtils.createIntBuffer(16);
+//    private static FloatBuffer rasterPosition = BufferUtils.createFloatBuffer(16);     
+//    
+//    /**
+//     * Copies front buffer to the back buffer.
+//     * Taken from:
+//     *   http://anirudhs.chaosnet.org/blog/2006.03.04.html
+//     */
+//    private void copyBuffer()
+//    {
+//        /* Get the viewport. */
+//        GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
+//        
+//        /* Set source buffer. */
+//        GL11.glReadBuffer(GL11.GL_FRONT);
+//
+//        /* Set projection matrix. */
+//        GL11.glMatrixMode(GL11.GL_PROJECTION);
+//        GL11.glPushMatrix();
+//        GL11.glLoadIdentity() ;
+//        GL11.glOrtho(0, viewport.get(2), viewport.get(3), 0, -1, 1);
+//
+//        /* Set modelview matrix. */
+//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//        GL11.glPushMatrix();
+//        GL11.glLoadIdentity();
+//
+//        /* Save old raster position. */
+//        GL11.glGetFloat(GL11.GL_CURRENT_RASTER_POSITION, rasterPosition);
+//
+//        /* Set raster position. */
+//        GL11.glRasterPos4f(0f, 0f, 0f, 1f);
+//
+//        /* Copy buffer. */
+//        GL11.glCopyPixels(0, 0, viewport.get(2), viewport.get(3), GL11.GL_COLOR);
+//
+//        /* Restore old raster position. */        
+//        GL11.glRasterPos4f(
+//                rasterPosition.get(0), 
+//                rasterPosition.get(1),
+//                rasterPosition.get(2),
+//                rasterPosition.get(3));
+//
+//        /* Restore old matrices. */
+//        GL11.glPopMatrix();
+//        GL11.glMatrixMode(GL11.GL_PROJECTION);
+//        GL11.glPopMatrix();
+//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//
+//        /* Restore source buffer. */
+//        GL11.glReadBuffer(GL11.GL_BACK); 
+//    }
     
     private void scissorClip(Rectangle rect)
     {       
-        copyBuffer();
+        //copyBuffer();
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor(
                 rect.x, this.height - rect.y - rect.height, 
                 rect.width, rect.height);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+        //GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
     }
     
     private void stencilClip(Shape shape)
     {
+        
         // Convert the shape to rectangle.
         Rectangle rect = shape.getBounds();
         

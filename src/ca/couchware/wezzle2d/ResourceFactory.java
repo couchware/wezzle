@@ -29,7 +29,7 @@ public class ResourceFactory
 	/** 
 	 * The choice of rendering engines. 
 	 */
-    public static enum RenderType
+    public static enum Renderer
     {
         /** Use the Java2D rendering engine. */
         JAVA2D, 
@@ -41,7 +41,7 @@ public class ResourceFactory
 	/** 
 	 * The type of rendering that we are currently using. 
 	 */
-	private RenderType renderType = RenderType.JAVA2D;
+	private Renderer renderer = Renderer.JAVA2D;
 	
 	/** 
      * The window the game should use to render.
@@ -72,10 +72,10 @@ public class ResourceFactory
 	 * Set the rendering method that should be used. Note: This can only be done
 	 * before the first resource is accessed.
 	 * 
-	 * @param renderingType
-	 *            The type of rendering to use
+	 * @param renderer
+	 *            The type of render to use.
 	 */
-	public void setRenderingType(RenderType renderType)
+	public void setRenderer(Renderer renderer)
 	{		
 		// If the window has already been created then we have already created
 		// resources in
@@ -86,8 +86,13 @@ public class ResourceFactory
 			throw new RuntimeException("You may not change the rendering type during runtime.");
 		}
 
-		this.renderType = renderType;
+		this.renderer = renderer;
 	}
+    
+    public Renderer getRenderer()
+    {
+        return renderer;
+    }
 
 	/**
 	 * Retrieve the game window that should be used to render the game
@@ -100,7 +105,7 @@ public class ResourceFactory
 		// now
 		if (window == null)
 		{
-			switch (renderType)
+			switch (renderer)
 			{
 				case JAVA2D:				
 					window = new Java2DGameWindow();
@@ -131,7 +136,7 @@ public class ResourceFactory
 					"Attempt to retrieve sprite before game window was created.");
 		}
 
-		switch (renderType)
+		switch (renderer)
 		{
 			case JAVA2D:			
 				return SpriteStore.get().getSprite((Java2DGameWindow) window, path);                
@@ -140,7 +145,7 @@ public class ResourceFactory
                 return new LWJGLSprite((LWJGLGameWindow) window, path);					
 		}
 
-		throw new RuntimeException("Unknown rendering type: " + renderType);
+		throw new RuntimeException("Unknown rendering type: " + renderer);
 	}
 
 	/**
@@ -156,7 +161,7 @@ public class ResourceFactory
 					"Attempted to retrieve text before game window was created");
 		}
 
-		switch (renderType)
+		switch (renderer)
 		{
 			case JAVA2D:			
 				return new Java2DLabel((Java2DGameWindow) window,
@@ -182,7 +187,7 @@ public class ResourceFactory
                         builder.visible);
 		}
 
-		throw new RuntimeException("Unknown rendering type: " + renderType);
+		throw new RuntimeException("Unknown rendering type: " + renderer);
 	}      
     
     public static class LabelBuilder implements IBuilder<ILabel>

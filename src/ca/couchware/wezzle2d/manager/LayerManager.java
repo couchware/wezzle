@@ -295,6 +295,43 @@ public class LayerManager
      */
     public boolean draw(Shape region, boolean exact)
     {        
+        // Draw the screen differently, depending on the renderer.
+        switch(ResourceFactory.get().getRenderer())
+        {
+            case JAVA2D:
+                return drawMinimal(region, exact);
+                
+            case LWJGL:
+               
+                // If we want the exact region, then we must clip.
+                if (exact == true) 
+                {
+                    window.setClip(region);
+                    drawAll();
+                    window.setClip(null);
+                    return true;
+                }
+                
+                // Draw everything.
+                drawAll();
+                return true;
+                
+            default: throw new AssertionError();
+        }
+    }               
+    
+    public boolean draw(Shape region)
+    {
+        return draw(region, false);
+    }
+    
+    public boolean draw()
+    {
+        return draw(Game.SCREEN_RECTANGLE, false);
+    }
+    
+    private boolean drawMinimal(Shape region, boolean exact)
+    {
         Rectangle clip = null;
         
         // Cycle through all the layers, drawing them.
@@ -319,7 +356,7 @@ public class LayerManager
                     if (clip == null) clip = new Rectangle(r);
                     else clip.add(r);
                 }
-            }                            
+            } // end for                       
         }     
         
         // If the remove clip is not empty.
@@ -338,12 +375,7 @@ public class LayerManager
                         
             window.setClip(exact == true ? region : clip);                
             drawAll();            
-            window.setClip(null);
-            
-            // Uncomment the next line if you want boxes to be drawn around
-            // each region being drawn.
-            //window.drawClip(clip);
-            //Util.handleMessage("clip = " + clip);
+            window.setClip(null);          
                
             // Reset the remove clip.
             resetRemoveRect();
@@ -352,19 +384,10 @@ public class LayerManager
         }        
         else
         {
+            // Nothing changed, so don't bother rendering this frame.
             return false;
         }
-    }               
-    
-    public boolean draw(Shape region)
-    {
-        return draw(region, false);
-    }
-    
-    public boolean draw()
-    {
-        return draw(Game.SCREEN_RECTANGLE, false);
-    }
+    }        
     
     private void addRemoveRect(Rectangle r)
     {

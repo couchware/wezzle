@@ -578,7 +578,7 @@ public class Game extends Canvas implements IGameWindowCallback
 	 *            The type of rendering to use (should be one of the contansts
 	 *            from ResourceFactory)
 	 */
-	public Game(ResourceFactory.RenderType renderType) 
+	public Game(ResourceFactory.Renderer renderer) 
 	{
         // Get the build number.
         Properties buildProperties = new Properties();            
@@ -619,7 +619,7 @@ public class Game extends Canvas implements IGameWindowCallback
         LogManager.recordMessage("OS Version: " + System.getProperty("os.version"));
         
 		// Create a window based on a chosen rendering method.
-		ResourceFactory.get().setRenderingType(renderType);		        
+		ResourceFactory.get().setRenderer(renderer);		        
         		                      
         window = ResourceFactory.get().getGameWindow();
         window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -2484,8 +2484,8 @@ public class Game extends Canvas implements IGameWindowCallback
         
         try
         {
-            //Game game = new Game(ResourceFactory.RenderType.JAVA2D);
-            Game game = new Game(ResourceFactory.RenderType.LWJGL);
+            //Game game = new Game(ResourceFactory.Renderer.JAVA2D);
+            Game game = new Game(ResourceFactory.Renderer.LWJGL);
             game.start();		
         }
         catch (Exception e)
