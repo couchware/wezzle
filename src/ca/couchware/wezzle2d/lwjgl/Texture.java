@@ -137,9 +137,9 @@ public class Texture
      *
      * @param texHeight The height of the texture.
      */
-    public void setTextureHeight(int texHeight)
+    public void setTextureHeight(int textureHeight)
     {
-        this.textureHeight = texHeight;
+        this.textureHeight = textureHeight;
         setHeight();
     }
 
@@ -148,9 +148,9 @@ public class Texture
      *
      * @param texWidth The width of the texture.
      */
-    public void setTextureWidth(int texWidth)
+    public void setTextureWidth(int textureWidth)
     {
-        this.textureWidth = texWidth;
+        this.textureWidth = textureWidth;
         setWidth();
     }
 

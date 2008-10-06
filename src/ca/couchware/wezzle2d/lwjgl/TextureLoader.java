@@ -118,9 +118,27 @@ public class TextureLoader
 
         return texture;
     }
+    
+    public Texture getTexture(String resourceName, BufferedImage image) throws IOException
+    {
+        Texture texture = table.get(resourceName);
+        
+        if (texture != null)        
+            return texture;        
+
+        texture = getTexture(image,
+                GL11.GL_TEXTURE_2D, // Target
+                GL11.GL_RGBA,       // DST pixel format.
+                GL11.GL_LINEAR,     // Min. filter (unused).
+                GL11.GL_LINEAR);
+
+        table.put(resourceName, texture);
+
+        return texture;
+    }
 
     /**
-     * Load a texture into OpenGL from a image reference on
+     * Load a texture from a PNG file into OpenGL from a image reference on
      * disk.
      *
      * @param resourceName The location of the resource to load.
@@ -187,6 +205,61 @@ public class TextureLoader
                 dstPixelFormat,
                 get2Fold(imageData.getWidth()),
                 get2Fold(imageData.getHeight()),
+                0,
+                srcPixelFormat,
+                GL11.GL_UNSIGNED_BYTE,
+                textureBuffer);
+
+        return texture;
+    }
+    
+    /**
+     * Load a texture from a buffered image into OpenGL from a image reference on
+     * disk.
+     *
+     * @param image The image to create a texture from.
+     * @param target The GL target to load the texture against.
+     * @param dstPixelFormat The pixel format of the screen.
+     * @param minFilter The minimising filter.
+     * @param magFilter The magnification filter.
+     * @return The loaded texture.
+     * @throws IOException Indicates a failure to access the resource.
+     */
+    public Texture getTexture(BufferedImage image,
+            int target,
+            int dstPixelFormat,
+            int minFilter,
+            int magFilter) throws IOException
+    {
+        int srcPixelFormat = 0;
+
+        // Create the texture ID for this texture.
+        int textureID = createTextureID();
+        Texture texture = new Texture(target, textureID);
+
+        // Bind this texture.
+        GL11.glBindTexture(target, textureID);       
+                
+        texture.setWidth(image.getWidth());
+        texture.setHeight(image.getHeight());
+        
+        boolean hasAlpha = image.getColorModel().hasAlpha();
+        srcPixelFormat = hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
+        
+        ByteBuffer textureBuffer = convertImageData(image, texture);        
+
+        if (target == GL11.GL_TEXTURE_2D)
+        {
+            GL11.glTexParameteri(target, GL11.GL_TEXTURE_MIN_FILTER, minFilter);
+            GL11.glTexParameteri(target, GL11.GL_TEXTURE_MAG_FILTER, magFilter);
+        }
+
+        // Produce a texture from the byte buffer.
+        GL11.glTexImage2D(target,
+                0,
+                dstPixelFormat,
+                get2Fold(image.getWidth()),
+                get2Fold(image.getHeight()),
                 0,
                 srcPixelFormat,
                 GL11.GL_UNSIGNED_BYTE,
