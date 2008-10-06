@@ -5,26 +5,18 @@
 
 package ca.couchware.wezzle2d.lwjgl;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IGameWindowCallback;
-import ca.couchware.wezzle2d.SystemTimer;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
-import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -140,7 +132,7 @@ public class LWJGLGameWindow implements IGameWindow
             org.lwjgl.util.Display.setDisplayMode(dm, new String[]
             {
                 "width=" + width, "height=" + height,
-                "freq=" + 60,
+                "freq=" + Display.getDisplayMode().getFrequency(),
                 "bpp=" + Display.getDisplayMode().getBitsPerPixel()
             });
             
@@ -167,6 +159,7 @@ public class LWJGLGameWindow implements IGameWindow
             Display.setVSyncEnabled(true);            
             Display.create(new PixelFormat(0, 16, 1));
             Display.setTitle(this.title);
+            //Display.setFullscreen(true);
 
             // Enable textures since we're going to use these for our sprites.
             GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -249,14 +242,16 @@ public class LWJGLGameWindow implements IGameWindow
 	 * and requesting that the callback update its screen.
 	 */
 	private void loop() 
-    {       
+    {               
         final int TICKS_PER_SECOND = 60;
-        final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;                        
+//        final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;   
+//        final int MAX_FRAME_SKIP = 10;
         
-        // Clear the stencil buffer.
-        GL11.glClearStencil(0);                       		
+//        long nextGameTick = getTime();
+//        int loopCounter;
         
-        // Clear screen.
+        // Clear the stencil buffer.        
+        GL11.glClearStencil(0);     
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
         
         while (gameRunning == true)
@@ -265,9 +260,11 @@ public class LWJGLGameWindow implements IGameWindow
             // scenes work, and also displays the rendered output
             Display.update();
                         
+            // Clear screen.
+            GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            GL11.glLoadIdentity();
-
+            GL11.glLoadIdentity();             			                                                      
+                        
             if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
             {
                 gameRunning = false;
@@ -277,7 +274,18 @@ public class LWJGLGameWindow implements IGameWindow
             // The window is in the foreground, so we should play the game
             else if (Display.isActive())
             {
-                callback.update(SKIP_TICKS);
+//                loopCounter = 0;
+//
+//                while (getTime() > nextGameTick && loopCounter < MAX_FRAME_SKIP)
+//                {
+//                    callback.update(this.speed);
+//                    nextGameTick += SKIP_TICKS;
+//                    loopCounter++;
+//                }                       
+//
+//                callback.render();  
+                
+                callback.update(this.speed);
                 callback.render();
                 Display.sync(TICKS_PER_SECOND);
             }
@@ -292,7 +300,7 @@ public class LWJGLGameWindow implements IGameWindow
                 catch (InterruptedException e)
                 { }
                 
-                callback.update(SKIP_TICKS);
+                callback.update(speed);
 
                 // Only bother rendering if the window is visible or dirty
                 if (Display.isVisible() || Display.isDirty())
@@ -489,9 +497,29 @@ public class LWJGLGameWindow implements IGameWindow
     {
         return new ImmutablePosition(Mouse.getX(), height - Mouse.getY());
     }
+    
+     //--------------------------------------------------------------------------
+    // Game Speed Methods
+    //--------------------------------------------------------------------------
+    
+    /** The default game speed. */
+    final private int DEFAULT_GAME_SPEED = 14;
+    
+    /** The current game speed. */
+    private int speed = DEFAULT_GAME_SPEED;
+    
+    public void setSpeed(int speed)
+    {
+        this.speed = speed;
+    }
+
+    public int getSpeed(int speed)
+    {
+        return speed;
+    }
 
     //--------------------------------------------------------------------------
-    // IMouseListener Fields
+    // IMouseListener Attributes
     //--------------------------------------------------------------------------
     
     List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();      

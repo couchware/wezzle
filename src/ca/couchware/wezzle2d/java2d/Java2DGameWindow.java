@@ -302,10 +302,10 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
         boolean updated = false;
         
         // Implementation of the "Constant Game Speed Independent of
-        // Variable FPS" from:
+        // Constant FPS" from:
         //   http://dewitters.koonsolo.com/gameloop.html
         
-        final int TICKS_PER_SECOND = 50;
+        final int TICKS_PER_SECOND = 60;
         final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
         final int MAX_FRAME_SKIP = 10;
         
@@ -322,7 +322,7 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
             
             while (SystemTimer.getTime() > nextGameTick && loopCounter < MAX_FRAME_SKIP)
             {
-                callback.update(SKIP_TICKS);
+                callback.update(this.speed);
                 nextGameTick += SKIP_TICKS;
                 loopCounter++;
             }                       
@@ -455,7 +455,27 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
     }
     
     //--------------------------------------------------------------------------
-    // IMouseListener Fields
+    // Game Speed Methods
+    //--------------------------------------------------------------------------
+    
+    /** The default game speed. */
+    final private int DEFAULT_GAME_SPEED = 14;
+    
+    /** The current game speed. */
+    private int speed = DEFAULT_GAME_SPEED;
+    
+    public void setSpeed(int speed)
+    {
+        this.speed = speed;
+    }
+
+    public int getSpeed(int speed)
+    {
+        return speed;
+    }
+    
+    //--------------------------------------------------------------------------
+    // IMouseListener Attributes
     //--------------------------------------------------------------------------
     
     List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();    
@@ -581,6 +601,6 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
     public void mouseMoved(java.awt.event.MouseEvent e)
     {
         mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_MOVED));
-    }
+    } 
              
 }
