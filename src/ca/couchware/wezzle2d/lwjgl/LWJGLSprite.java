@@ -123,9 +123,12 @@ public class LWJGLSprite implements ISprite
         
         // Bind to the appropriate texture for this sprite.
         texture.bind();
+                        
+        // Rotate.
+        rotate(-theta, x + width / 2, y + height / 2);
         
         // Translate to the right location and prepare to draw.
-        GL11.glTranslatef(x, y, 0);        
+        GL11.glTranslatef(x, y, 0);  
         
         // Draw a quad textured to match the sprite.
         GL11.glBegin(GL11.GL_QUADS);
@@ -140,6 +143,9 @@ public class LWJGLSprite implements ISprite
             GL11.glVertex2f(width, 0);
         }
         GL11.glEnd();
+        
+        // Rotate back.
+        rotate(-theta, x + width / 2, y + height / 2);
         
         // Turn off transparency again.
         GL11.glColor4f(1f, 1f, 1f, 1f);
@@ -159,4 +165,22 @@ public class LWJGLSprite implements ISprite
         
         window.setClip(null);
     }
+    
+    /**
+	 * Apply a rotation to everything drawn.
+     * Adapted from Slick (http://slick.cokeandcode.com).
+	 *
+     * @param theta
+	 *            The angle (in radians) to rotate by.
+	 * @param rx
+	 *            The x coordinate of the center of rotation.
+	 * @param ry
+	 *            The y coordinate of the center of rotation.	 
+	 */
+	private void rotate(double theta, float rx, float ry) 
+    {
+        GL11.glTranslatef(rx, ry, 0);		
+		GL11.glRotatef((float) -Math.toDegrees(theta), 0, 0, 1);
+		GL11.glTranslatef(-rx, -ry, 0);				        
+	}
 }
