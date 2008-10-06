@@ -17,6 +17,8 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -373,6 +375,7 @@ public class LWJGLGameWindow implements IGameWindow
         if (shape instanceof Rectangle)
         {
             Rectangle rect = (Rectangle) shape;
+            //stencilClip(rect);
             scissorClip(rect);
         }
         // For any other shape, use the stencil buffer.
@@ -381,13 +384,62 @@ public class LWJGLGameWindow implements IGameWindow
             // TODO Currently, the stencil isn't fully implemented, so we'll use
             // a box for now.
             Rectangle rect = shape.getBounds();
-            scissorClip(rect);            
-            //stencilClip(shape);
+            //scissorClip(rect);            
+            stencilClip(shape);
         }                
+    }       
+    
+    private static IntBuffer viewport = BufferUtils.createIntBuffer(16);
+    private static FloatBuffer rasterPosition = BufferUtils.createFloatBuffer(16);     
+    
+    private void copyBuffer()
+    {
+        /* Get the viewport. */
+        GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
+        
+        /* Set source buffer. */
+        GL11.glReadBuffer(GL11.GL_FRONT);
+
+        /* Set projection matrix. */
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity() ;
+        GL11.glOrtho(0, viewport.get(2), viewport.get(3), 0, -1, 1);
+
+        /* Set modelview matrix. */
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+
+        /* Save old raster position. */
+        GL11.glGetFloat(GL11.GL_CURRENT_RASTER_POSITION, rasterPosition);
+
+        /* Set raster position. */
+        GL11.glRasterPos4f(0f, 0f, 0f, 1f);
+
+        /* Copy buffer. */
+        GL11.glCopyPixels(0, 0, viewport.get(2), viewport.get(3), GL11.GL_COLOR);
+
+        /* Restore old raster position. */        
+        GL11.glRasterPos4f(
+                rasterPosition.get(0), 
+                rasterPosition.get(1),
+                rasterPosition.get(2),
+                rasterPosition.get(3));
+
+        /* Restore old matrices. */
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+
+        /* Restore source buffer. */
+        GL11.glReadBuffer(GL11.GL_BACK); 
     }
     
     private void scissorClip(Rectangle rect)
     {       
+        copyBuffer();
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor(
                 rect.x, this.height - rect.y - rect.height, 
