@@ -150,7 +150,7 @@ public class WorldManager implements ILevelListener
 	multList.add(new Item(TileType.X2, 2, 50, 3));
         multList.add(new Item(TileType.X3, 0, 20, 1));
         multList.add(new Item(TileType.X4, 0, 10, 1));
-        multList.add(new Item(TileType.NORMAL, 0, 5, 100));
+        //multList.add(new Item(TileType.NORMAL, 0, 5, 100));
         
         // Set the rules.
         masterRuleList = new LinkedList<Rule>();
@@ -496,13 +496,19 @@ public class WorldManager implements ILevelListener
     public Item getItem( int numItems, int numMults)
 	{	
         
+            //check if we miss.
+            int test = Util.random.nextInt(100);
+            if( test <= 5)
+            {
+                return new Item(TileType.NORMAL, 0, 0, 0);
+            }
             ArrayList<Item> items = new ArrayList<Item>();
             
                 if (numItems < maxItems)
                 {
                     for (Item item : itemList)
                     {
-                        if (item.getProbability() > 0)
+                        if (item.getProbability() > 0 && item.getTileType() != TileType.NORMAL)
                             items.add(item);
                     }
                 }

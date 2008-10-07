@@ -376,7 +376,8 @@ public class LWJGLGameWindow implements IGameWindow
         if (shape == null)
         {            
             //GL11.glDisable(GL11.GL_SCISSOR_TEST);
-            GL11.glDisable(GL11.GL_STENCIL_TEST);            
+            GL11.glDisable(GL11.GL_STENCIL_TEST); 
+//            copyBuffer();
             return;
         }
         
@@ -449,6 +450,7 @@ public class LWJGLGameWindow implements IGameWindow
                 rect.x, this.height - rect.y - rect.height, 
                 rect.width, rect.height);
         //GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+        
     }
     
     private void stencilClip(Shape shape)
