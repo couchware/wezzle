@@ -142,6 +142,7 @@ public class WorldManager implements ILevelListener
         
         // Set the items.
 	itemList = new LinkedList<Item>();
+        // Ensure that the first item is a normal tile. *** important.
 	itemList.add(new Item(TileType.NORMAL, 28, 5, 100));
         
         // Set the multipliers.
@@ -500,7 +501,7 @@ public class WorldManager implements ILevelListener
             int test = Util.random.nextInt(100);
             if( test <= 5)
             {
-                return new Item(TileType.NORMAL, 0, 0, 0);
+                return itemList.getFirst();
             }
             ArrayList<Item> items = new ArrayList<Item>();
             
@@ -508,7 +509,11 @@ public class WorldManager implements ILevelListener
                 {
                     for (Item item : itemList)
                     {
-                        if (item.getProbability() > 0 && item.getTileType() != TileType.NORMAL)
+                        // Skip the normal tile.
+                        if (item.getTileType() == TileType.NORMAL)
+                            continue;
+                        
+                        if (item.getProbability() > 0)
                             items.add(item);
                     }
                 }
@@ -520,7 +525,16 @@ public class WorldManager implements ILevelListener
                             items.add(item);
                     }
                 }
-		// Create an array representing the item distribution.
+            
+             // If the list is empty.
+                if(items.size() <= 0)
+                {
+                   return itemList.getFirst();
+                }
+            
+            
+		// Create an array representing the item distribution 
+            
 		int dist[] = new int[items.size() + 1];
 		dist[0] = 0;
 		
@@ -536,6 +550,7 @@ public class WorldManager implements ILevelListener
 			i++;
 		}
 		
+               
 		// Pick a random number between 0 and dist[dist.length - 1].
 		int randomNumber = Util.random.nextInt(dist[dist.length - 1]);
 		
