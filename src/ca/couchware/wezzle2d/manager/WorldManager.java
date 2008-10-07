@@ -143,6 +143,8 @@ public class WorldManager implements ILevelListener
         // Set the items.
 	itemList = new LinkedList<Item>();
         // Ensure that the first item is a normal tile. *** important.
+        // This is so that we can use the first item when returning a
+        // normal tile whenever we want.
 	itemList.add(new Item(TileType.NORMAL, 28, 5, 100));
         
         // Set the multipliers.
@@ -497,12 +499,17 @@ public class WorldManager implements ILevelListener
     public Item getItem( int numItems, int numMults)
 	{	
         
-            //check if we miss.
+            // Check if we do not return a normal tile. There is
+            // A flat 5% chance of this.
             int test = Util.random.nextInt(100);
             if( test <= 5)
             {
                 return itemList.getFirst();
             }
+            
+            // Build the list of items. This does not include items 
+            // with probability 0 (if the max number exist) and includes
+            // Mults as well.
             ArrayList<Item> items = new ArrayList<Item>();
             
                 if (numItems < maxItems)
@@ -526,7 +533,7 @@ public class WorldManager implements ILevelListener
                     }
                 }
             
-             // If the list is empty.
+             // If the list is empty, return a normal tile.
                 if(items.size() <= 0)
                 {
                    return itemList.getFirst();
