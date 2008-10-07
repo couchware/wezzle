@@ -287,7 +287,7 @@ public class LWJGLGameWindow implements IGameWindow
 //                callback.render();  
                 
                 callback.update(this.speed);
-                callback.render();
+                callback.render();                
                 Display.sync(TICKS_PER_SECOND);
             }
             // The window is not in the foreground, so we can allow other stuff to run and
@@ -539,7 +539,7 @@ public class LWJGLGameWindow implements IGameWindow
     //--------------------------------------------------------------------------
     
     /** The default game speed. */
-    final private int DEFAULT_GAME_SPEED = 14;
+    final private int DEFAULT_GAME_SPEED = 16;
     
     /** The current game speed. */
     private int speed = DEFAULT_GAME_SPEED;

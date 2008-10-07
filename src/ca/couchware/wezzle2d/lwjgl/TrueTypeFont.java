@@ -32,6 +32,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import org.lwjgl.opengl.GL11;
@@ -61,19 +63,28 @@ public class TrueTypeFont
     private Texture fontTexture;
     
     /** Default font texture width. */
-    private float textureWidth = 512.0f;
+    private float fontTextureWidth = 512.0f;
     
     /** Default font texture height. */
-    private float textureHeight = 512.0f;
+    private float fontTextureHeight = 512.0f;
     
     /** The texture loader. */
     private TextureLoader textureLoader;
     
     /** A reference to Java's AWT Font that we create our font texture from */
-    private Font font;
+    private Font font;    
     
-    /** The font metrics for our Java AWT font */
-    private FontMetrics fontMetrics;    
+    /** 
+     * A text layout with the two characters that have the lowest descent 
+     * and highest ascent.
+     */
+    private TextLayout heightLayout;
+    
+    /**
+     * A text layout with the character having the highest ascent, giving the
+     * baseline information.
+     */
+    private TextLayout ascentLayout;    
 
     /**
      * This is a special internal class that holds our necessary information for
@@ -82,17 +93,26 @@ public class TrueTypeFont
      */
     private class CharacterInfo
     {
-        /** Character's width */
+        /** Character width. */
         public int width;
         
-        /** Character's height */
+        /** Character height. */
         public int height;
         
-        /** Character's stored x position */
-        public int storedX;
+        /** The width of the character on the line. */
+        public int lineWidth;
         
-        /** Character's stored y position */
-        public int storedY;        
+        /** The height of the character starting at the baseline. */
+        public int ascent;
+        
+        /** The descent of the character. */
+        public int descent;
+        
+        /** Character's stored x position. */
+        public int x;
+        
+        /** Character's stored y position. */
+        public int y;        
     }
 
     /**
@@ -111,8 +131,9 @@ public class TrueTypeFont
             
         this.font = font;
         this.fontSize = font.getSize();
+        this.textureLoader = textureLoader;                
 
-        createPlainSet();
+        createFont();
     }
 
     /**
@@ -123,7 +144,7 @@ public class TrueTypeFont
      * 
      * @return A BufferedImage containing the character
      */
-    private BufferedImage getCharImage(char ch)
+    private BufferedImage getCharImage(char ch, CharacterInfo charInfo)
     {
         // Create a temporary image to extract the character size.
         BufferedImage i = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
@@ -134,13 +155,25 @@ public class TrueTypeFont
                 RenderingHints.VALUE_ANTIALIAS_ON);
         gfx1.setFont(font);
         
-        fontMetrics = gfx1.getFontMetrics();
+        // Get a text layout for this.        
+        TextLayout widthLayout = createTextLayout(gfx1, String.valueOf(ch), font);
         
-        int charWidth = fontMetrics.charWidth(ch);
+        //fontMetrics = gfx1.getFontMetrics();
+        
+        int charWidth = (int) (widthLayout.getBounds().getMaxX() * 1.5);
         if (charWidth <= 0) charWidth = 1;
+        charInfo.width = charWidth;
         
-        int charHeight = fontMetrics.getHeight();
+        int charHeight = (int) (heightLayout.getBounds().getHeight() * 1.5);
         if (charHeight <= 0) charHeight = fontSize;        
+        charInfo.height = charHeight;
+        
+        int charAscent = (int) (ascentLayout.getBounds().getHeight() * 1.5);
+        charInfo.ascent = charAscent;
+        charInfo.descent = charHeight - charAscent;        
+        
+        FontMetrics fm = gfx1.getFontMetrics(font);
+        charInfo.lineWidth = fm.stringWidth(String.valueOf(ch));
 
         // Create another image holding the character we are creating.
         BufferedImage fontImage;
@@ -155,7 +188,7 @@ public class TrueTypeFont
         int charX = 0;
         int charY = 0;
         
-        gfx2.drawString(String.valueOf(ch), (charX), (charY) + fontMetrics.getAscent());
+        gfx2.drawString(String.valueOf(ch), charX, charY + charAscent);
 
         return fontImage;
     }
@@ -163,12 +196,18 @@ public class TrueTypeFont
     /**
      * Create and store the font.
      */
-    private void createPlainSet()
-    {
+    private void createFont()
+    {                
         try
         {
             BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D gfx = (Graphics2D) image.getGraphics();
+            Graphics2D gfx = (Graphics2D) image.getGraphics();            
+            
+            // Create the text layout instances for measuring.
+            this.heightLayout = createTextLayout(gfx, "Yg", font);        
+            this.ascentLayout = createTextLayout(gfx, "Y", font);
+            
+            this.fontHeight = (int) ascentLayout.getBounds().getHeight();
 
             int rowHeight = 0;
             int positionX = 0;
@@ -177,39 +216,31 @@ public class TrueTypeFont
             for (int i = 0; i < 256; i++)
             {
                 char ch = (char) i;
-                BufferedImage charImage = getCharImage(ch);
-
-                CharacterInfo newIntObject = new CharacterInfo();
-
-                newIntObject.width = charImage.getWidth();
-                newIntObject.height = charImage.getHeight();
-
-                if (positionX + newIntObject.width >= 512)
+                
+                CharacterInfo charInfo = new CharacterInfo();
+                BufferedImage charImage = getCharImage(ch, charInfo);                
+               
+                if (positionX + charInfo.width >= 512)
                 {
                     positionX = 0;
                     positionY += rowHeight;
                     rowHeight = 0;
                 }
 
-                newIntObject.storedX = positionX;
-                newIntObject.storedY = positionY;
-
-                if (newIntObject.height > fontHeight)
+                charInfo.x = positionX;
+                charInfo.y = positionY;
+               
+                if (charInfo.height > rowHeight)
                 {
-                    fontHeight = newIntObject.height;
-                }
-
-                if (newIntObject.height > rowHeight)
-                {
-                    rowHeight = newIntObject.height;
+                    rowHeight = charInfo.height;
                 }
 
                 // Draw it here
                 gfx.drawImage(charImage, positionX, positionY, null);
 
-                positionX += newIntObject.width;
+                positionX += charInfo.width;
 
-                charArray[i] = newIntObject;
+                charArray[i] = charInfo;
 
                 charImage = null;
             }
@@ -247,23 +278,23 @@ public class TrueTypeFont
     private void drawQuad(float drawX, float drawY, float drawX2, float drawY2,
             float srcX, float srcY, float srcX2, float srcY2)
     {
-        float DrawWidth = drawX2 - drawX;
-        float DrawHeight = drawY2 - drawY;
-        float TextureSrcX = srcX / textureWidth;
-        float TextureSrcY = srcY / textureHeight;
-        float SrcWidth = srcX2 - srcX;
-        float SrcHeight = srcY2 - srcY;
-        float RenderWidth = (SrcWidth / textureWidth);
-        float RenderHeight = (SrcHeight / textureHeight);
+        float drawWidth = drawX2 - drawX;
+        float drawHeight = drawY2 - drawY;
+        float textureSrcX = srcX / fontTextureWidth;
+        float textureSrcY = srcY / fontTextureHeight;
+        float srcWidth = srcX2 - srcX;
+        float srcHeight = srcY2 - srcY;
+        float renderWidth = (srcWidth / fontTextureWidth);
+        float renderHeight = (srcHeight / fontTextureHeight);
 
-        GL11.glTexCoord2f(TextureSrcX, TextureSrcY);
+        GL11.glTexCoord2f(textureSrcX, textureSrcY);
         GL11.glVertex2f(drawX, drawY);
-        GL11.glTexCoord2f(TextureSrcX, TextureSrcY + RenderHeight);
-        GL11.glVertex2f(drawX, drawY + DrawHeight);
-        GL11.glTexCoord2f(TextureSrcX + RenderWidth, TextureSrcY + RenderHeight);
-        GL11.glVertex2f(drawX + DrawWidth, drawY + DrawHeight);
-        GL11.glTexCoord2f(TextureSrcX + RenderWidth, TextureSrcY);
-        GL11.glVertex2f(drawX + DrawWidth, drawY);
+        GL11.glTexCoord2f(textureSrcX, textureSrcY + renderHeight);
+        GL11.glVertex2f(drawX, drawY + drawHeight);
+        GL11.glTexCoord2f(textureSrcX + renderWidth, textureSrcY + renderHeight);
+        GL11.glVertex2f(drawX + drawWidth, drawY + drawHeight);
+        GL11.glTexCoord2f(textureSrcX + renderWidth, textureSrcY);
+        GL11.glVertex2f(drawX + drawWidth, drawY);
     }
 
     /**
@@ -287,7 +318,7 @@ public class TrueTypeFont
             if (currentChar < 256)
             {
                 charInfo = charArray[currentChar];
-                totalWidth += charInfo.width;
+                totalWidth += charInfo.lineWidth;
             }
         }
         
@@ -303,6 +334,26 @@ public class TrueTypeFont
     {
         return fontHeight;
     }       
+    
+     /**
+     * Updates the text layout instance.
+     * @param frctx The current font render context.
+     */
+    private TextLayout createTextLayout(Graphics2D gfx, String text, Font font)
+    {             
+        // Set the font.
+        gfx.setFont(font);  
+        gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		gfx.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+                RenderingHints.VALUE_FRACTIONALMETRICS_ON);        
+        
+        // Get the render context.
+        FontRenderContext frctx = gfx.getFontRenderContext();
+        
+        // Create new text layout.        
+        return new TextLayout(text, font, frctx);                     
+    }   
 
     /**
      * ...
@@ -335,14 +386,17 @@ public class TrueTypeFont
                 if ((i >= startIndex) || (i <= endIndex))
                 {
                     drawQuad(
-                            x + totalWidth, y,
-                            x + totalWidth + charInfo.width, y + charInfo.height, 
-                            charInfo.storedX, charInfo.storedY, 
-                            charInfo.storedX + charInfo.width,
-                            charInfo.storedY + charInfo.height);
+                            x + totalWidth, 
+                            y - charInfo.ascent,
+                            x + totalWidth + charInfo.width, 
+                            y - charInfo.ascent + charInfo.height, 
+                            charInfo.x, 
+                            charInfo.y, 
+                            charInfo.x + charInfo.width,
+                            charInfo.y + charInfo.height);
                 }
                 
-                totalWidth += charInfo.width;
+                totalWidth += charInfo.lineWidth;
                 
             } // end if
         } // end for

@@ -384,10 +384,10 @@ import java.util.Set;
      * @param deltaScore The score to use.
      * @return The font size appropriate for the passed score.
      */
-    public float determineFontSize(final int deltaScore)
+    public int determineFontSize(final int deltaScore)
     {
         // Determine font size.
-        float fontSize = 0;
+        double fontSize = 0.0;
 
         if (deltaScore < FLOAT_TEXT_SCORE_MIN)
             fontSize = FLOAT_TEXT_FONT_SIZE_MIN;
@@ -400,12 +400,11 @@ import java.util.Set;
                     / (double) (FLOAT_TEXT_SCORE_MAX - FLOAT_TEXT_SCORE_MIN);
             
             fontSize = FLOAT_TEXT_FONT_SIZE_MIN 
-                    + (float) 
-                    ((FLOAT_TEXT_FONT_SIZE_MAX - FLOAT_TEXT_FONT_SIZE_MIN) 
-                    * scorePercent);
+                    + (double) ((FLOAT_TEXT_FONT_SIZE_MAX - FLOAT_TEXT_FONT_SIZE_MIN) 
+                        * scorePercent);
         }
         
-        return fontSize;
+        return (int) fontSize;
     }          
     
     /**

@@ -23,7 +23,7 @@ public interface ILabel extends IEntity
     /**
      * Get the size of the label.
      */
-    public float getSize();
+    public int getSize();
     
     /**
      * Get the text contained in the label.

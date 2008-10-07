@@ -49,7 +49,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     /**
      * The size of the label.
      */
-    final private float size;
+    final private int size;
     
     /**
      * The text of the label.
@@ -84,7 +84,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
             EnumSet<Alignment> alignment,
             Color color,
             int opacity,
-            float size,
+            int size,
             String text,
             boolean visible,
             boolean cached)
@@ -107,7 +107,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         if (text.length() != 0)
         {
             // Get the font.
-            this.font = FontStore.get().getFont((int) size);
+            this.font = FontStore.get().getFont(size);
 
             // Create the text layout object.
             this.baselineLayout = TextLayoutStore.get()
@@ -323,7 +323,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         return color;
     }
 
-    public float getSize()
+    public int getSize()
     {
         return size;
     }

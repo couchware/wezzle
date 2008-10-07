@@ -21,28 +21,28 @@ public class SpriteButton extends AbstractSpriteButton
     public enum Type
     {
         /** A small circular button suitable for use in +/- clickers. */
-        SMALL_CIRCULAR("Button_SmallCircular.png", 18f), 
+        SMALL_CIRCULAR("Button_SmallCircular.png", 18), 
         
         /** A thinner, longer button used in the main menu. */
-        THIN("Button_Thin.png", 20f),        
+        THIN("Button_Thin.png", 20),        
         
         /** The "normal" sized button used in the in-game UI. */
-        NORMAL("Button_Normal.png", 18f), 
+        NORMAL("Button_Normal.png", 18), 
         
         /** A larger, squarish button used in the main menu. */
-        LARGE("Button_Large.png", 24f), 
+        LARGE("Button_Large.png", 24), 
         
         /** A huge, squarish button used in the in-game button as the high-score button. */
-        HUGE("Button_Huge.png", 26f);       
+        HUGE("Button_Huge.png", 26);       
                 
         /** The file name of the sprite that represents the button. */
         private String filename;
         
         /** The text size of the text that will be written on the button */
-        private float textSize;
+        private int textSize;
         
         /** Constructor that stores the filename. */
-        Type(String filename, float textSize)
+        Type(String filename, int textSize)
         { this.filename = filename; this.textSize = textSize; }
         
         /** An accessor for getting the sprite's filename. */
@@ -50,7 +50,7 @@ public class SpriteButton extends AbstractSpriteButton
         { return filename; }
         
         /** An accessor for getting the sprite's text size. */
-        public float getTextSize()
+        public int getTextSize()
         { return textSize; }
     }        
            
@@ -82,7 +82,7 @@ public class SpriteButton extends AbstractSpriteButton
     /**
      * The size of the text on the button.
      */
-    final private float textSize;
+    final private int textSize;
     
     /*
      * The normal opacity.
@@ -204,7 +204,7 @@ public class SpriteButton extends AbstractSpriteButton
         private String normalText = "Default";
         private String hoverText = null;
         private String activeText = null;
-        private float textSize = 0;
+        private int textSize = 0;
         private int offOpacity = 80;
         private int hoverOpacity = 100;
         private int pressedOpacity = 100;
@@ -257,7 +257,7 @@ public class SpriteButton extends AbstractSpriteButton
         public Builder activeText(String val)                 
         { activeText = val; return this; }
         
-        public Builder textSize(float val)
+        public Builder textSize(int val)
         { textSize = val; return this; }
         
         public Builder offOpacity(int val)                 

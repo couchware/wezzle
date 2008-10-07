@@ -65,7 +65,7 @@ public class ExitGroup extends AbstractGroup
         // Line 1.
         ILabel l1 = new LabelBuilder(266, 155)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(22f).visible(false)
+                .color(Game.TEXT_COLOR1).size(22).visible(false)
                 .text("Are you sure").end();           
         this.entityList.add(l1);
         

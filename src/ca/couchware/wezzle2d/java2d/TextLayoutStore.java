@@ -82,7 +82,7 @@ public class TextLayoutStore
         }                    
     }
     
-     /**
+    /**
      * Updates the text layout instance.
      * @param frctx The current font render context.
      */

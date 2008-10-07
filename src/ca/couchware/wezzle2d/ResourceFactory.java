@@ -176,7 +176,7 @@ public class ResourceFactory
                         builder.cached);
 			
             case LWJGL:
-                return new LWJGLLabel(
+                return new LWJGLLabel((LWJGLGameWindow) window,
                         builder.x,
                         builder.y,
                         builder.alignment,                       
@@ -199,7 +199,7 @@ public class ResourceFactory
                 EnumSet.of(Alignment.TOP, Alignment.LEFT);
         private Color color = Color.WHITE;
         private int opacity = 100;
-        private float size = 14.0f;
+        private int size = 14;
         private String text = ""; 
         private boolean visible = true;
         private boolean cached = true;
@@ -237,7 +237,7 @@ public class ResourceFactory
         public LabelBuilder opacity(int val)
         { opacity = val; return this; }         
         
-        public LabelBuilder size(float val)
+        public LabelBuilder size(int val)
         { size = val; return this; }
         
         public LabelBuilder text(String val)

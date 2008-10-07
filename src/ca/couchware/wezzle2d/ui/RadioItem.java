@@ -82,7 +82,7 @@ public class RadioItem extends AbstractSpriteButton
     /**
      * The text size.
      */
-    private float textSize;
+    private int textSize;
     
     /**
      * The amount of space between the radio sprite and the label.
@@ -178,7 +178,7 @@ public class RadioItem extends AbstractSpriteButton
         private boolean visible = true;
         private EnumSet<State> state = EnumSet.noneOf(State.class);
         private String text = "";
-        private float textSize = 20f;
+        private int textSize = 20;
         private int pad = 10;        
         
         public Builder()
@@ -219,7 +219,7 @@ public class RadioItem extends AbstractSpriteButton
         public Builder text(String val)
         { text = val; return this; } 
         
-        public Builder textSize(float val)
+        public Builder textSize(int val)
         { textSize = val; return this; } 
         
         public Builder pad(int val)

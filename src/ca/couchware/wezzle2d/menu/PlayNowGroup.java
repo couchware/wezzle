@@ -148,7 +148,7 @@ public class PlayNowGroup extends AbstractGroup
         // Create the name label.
         ILabel nl = new LabelBuilder(85, 125)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(LABELS_COLOR).text("Name").size(20f)
+                .color(LABELS_COLOR).text("Name").size(20)
                 .visible(false).end();
         this.entityList.add(nl);
         
@@ -166,7 +166,7 @@ public class PlayNowGroup extends AbstractGroup
         // Create the level number label.
         this.levelNumberLabel = new LabelBuilder(nameButton.getX(), ll.getY())                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .size(20f).visible(false).text("1").end();
+                .size(20).visible(false).text("1").end();
         this.entityList.add(this.levelNumberLabel);
         
         // Create the level down button.
