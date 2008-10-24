@@ -52,6 +52,19 @@ public interface ISprite
             double theta, int opacity);
     
     /**
+	 * Draw the sprite, scaled to the width and height provided, rotated by
+     * theta, with the given opacity percentage (as an integer).
+	 * 
+	 * @param x
+	 *            The x location at which to draw the sprite.
+	 * @param y
+	 *            The y location at which to draw the sprite.    
+     * @param theta The amount of rotation, in radians.
+     * @param opacity The integer opacity, from 0 to 100.
+	 */
+    public void draw(int x, int y, double theta, int opacity);
+    
+    /**
      * Draw the the region of the sprite to the the coordinate provided with
      * the given opacity.
      * 

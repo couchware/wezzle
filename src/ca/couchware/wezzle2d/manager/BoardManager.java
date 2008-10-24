@@ -1043,7 +1043,7 @@ public class BoardManager implements IManager
                 if(item.getTileType() == t.getType())
                 {
                     item.incrementCurrentAmount();
-                    System.out.println( item.getTileType() + ": " +item.getCurrentAmount());
+                    LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
                     break;
                 }
             }
@@ -1110,7 +1110,7 @@ public class BoardManager implements IManager
                 if(item.getTileType() == t.getType())
                 {
                     item.decrementCurrentAmount();
-                    System.out.println( item.getTileType() + ": " +item.getCurrentAmount());
+                    LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
                     break;
                 }
             }
@@ -2021,8 +2021,9 @@ public class BoardManager implements IManager
          // readd the item counts.
         for (TileEntity t : board)
         {
-            if (t==null)
+            if (t == null)
                 continue;
+            
             if (t.getType() != TileType.NORMAL)
             {
                 for (Item item : worldMan.getItemList())
@@ -2030,11 +2031,11 @@ public class BoardManager implements IManager
                     if(item.getTileType() == t.getType())
                     {
                         item.incrementCurrentAmount();
-                        System.out.println( item.getTileType() + ": " +item.getCurrentAmount());
+                        LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
                         break;
                     }
-                }
-            }
+                } // end for
+            } // end if
         }
         
         LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");

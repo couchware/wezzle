@@ -98,6 +98,11 @@ public class LWJGLSprite implements ISprite
     {
         draw(x, y, this.width, this.height, 0, 100);
     }
+    
+    public void draw(int x, int y, double theta, int opacity)
+    {
+        draw(x, y, this.width, this.height, theta, opacity);
+    }
 
     public void draw(
             int x, int y, int width, int height, 
@@ -182,5 +187,5 @@ public class LWJGLSprite implements ISprite
         GL11.glTranslatef(rx, ry, 0);		
 		GL11.glRotatef((float) -Math.toDegrees(theta), 0, 0, 1);
 		GL11.glTranslatef(-rx, -ry, 0);				        
-	}
+	}   
 }

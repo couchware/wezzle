@@ -255,12 +255,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /** 
      * The manager in charge of the moves. 
      */
-    public StatManager statMan;	
-    
-    /**
-     * The menu manager.
-     */
-    //public MenuManager menuMan;
+    public StatManager statMan;	    
     
     /**
      * The manager in charge of music.
@@ -1066,7 +1061,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {            
             if (pauseButton.isActivated() == true)            
             {
-                updatePauseGroup();                
+                pauseGroup.setLinesPerMove(statMan.getLinesPerMove());           
                 groupMan.showGroup(pauseButton, pauseGroup, 
                         GroupManager.CLASS_PAUSE,
                         GroupManager.LAYER_MIDDLE);            
@@ -2069,18 +2064,8 @@ public class Game extends Canvas implements IGameWindowCallback
             listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), this), 
                     IListenerComponent.GameType.GAME);
         }
+        
         statMan.resetCycleLineCount();
-    }
-    
-     /**
-     * This method is used to update the values shown on the pause screen.
-     */
-    private void updatePauseGroup()
-    {               
-        // Update the pause screen date.
-        //pauseGroup.setMoves(statMan.getMoveCount());
-        //pauseGroup.setLines(statMan.getLineCount());
-        pauseGroup.setLinesPerMove(statMan.getLinesPerMove());         
     }       
       
     /**
@@ -2218,7 +2203,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // Don't pause game if we're showing the game over screen.
         if (groupMan != null && groupMan.isActivated() == false)
         {
-            updatePauseGroup();
+            pauseGroup.setLinesPerMove(statMan.getLinesPerMove());
             groupMan.showGroup(pauseButton, pauseGroup, 
                     GroupManager.CLASS_PAUSE,
                     GroupManager.LAYER_MIDDLE);

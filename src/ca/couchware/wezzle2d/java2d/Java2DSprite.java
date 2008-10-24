@@ -132,6 +132,11 @@ public class Java2DSprite implements ISprite
 		
 		g.drawImage(image, x, y, null);
 	}
+    
+    public void draw(int x, int y, double theta, int opacity)
+    {
+        draw(x, y, image.getWidth(null), image.getHeight(null), theta, opacity);
+    }
 
     public void draw(
             final int x, final int y, int width, int height, 

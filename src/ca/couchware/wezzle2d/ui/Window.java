@@ -307,15 +307,44 @@ public class Window extends AbstractEntity implements IMouseListener
                 Math.toRadians(180), opacity);  
         
         // Draw the horizontal sides.
-        
-        // Top.
         horizontalSprite.draw(
                 x + offsetX + cornerSprite.getWidth(), 
                 y + offsetY,
                 width - cornerSprite.getWidth() * 2, 
                 horizontalSprite.getHeight(),
-                0, opacity);
+                0, opacity);        
         
+        // Top.
+//        final int topLimit = (int) Math.ceil((double) width / (double) horizontalSprite.getWidth());              
+//        for (int i = 0; i < topLimit; i++)
+//        {
+//            // See if we're the last part, and if we are, chop it a bit.
+//            if (i == topLimit - 1)
+//            {   
+//                int finalWidth = width 
+//                        - cornerSprite.getWidth() * 2 
+//                        - (topLimit - 1) * horizontalSprite.getWidth();
+//                
+//                horizontalSprite.drawRegion(
+//                    x + offsetX + cornerSprite.getWidth() + horizontalSprite.getWidth() * i, 
+//                    y + offsetY,        
+//                    horizontalSprite.getWidth(),
+//                    horizontalSprite.getHeight(),
+//                    0, 0,
+//                    finalWidth, horizontalSprite.getHeight(),
+//                    0, opacity);
+//            }
+//            else
+//            {                   
+//                horizontalSprite.draw(
+//                    x + offsetX + cornerSprite.getWidth() + horizontalSprite.getWidth() * i, 
+//                    y + offsetY,        
+//                    horizontalSprite.getWidth(),
+//                    horizontalSprite.getHeight(),                    
+//                    0, opacity);   
+//            }                               
+//        }
+                   
         // Bottom.
         horizontalSprite.draw(
                 x + offsetX + cornerSprite.getWidth(), 
@@ -343,7 +372,7 @@ public class Window extends AbstractEntity implements IMouseListener
                 Math.toRadians(180), opacity);
         
         return true;
-    }
+    }        
     
     @Override
     public void setVisible(boolean visible)

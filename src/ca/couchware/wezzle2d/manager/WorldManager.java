@@ -141,16 +141,16 @@ public class WorldManager implements ILevelListener
         this.maxMults = 3;
         
         // Set the items.
-	itemList = new LinkedList<Item>();
+        itemList = new LinkedList<Item>();
         // Ensure that the first item is a normal tile. *** important.
         // This is so that we can use the first item when returning a
         // normal tile whenever we want.
-	itemList.add(new Item(TileType.NORMAL, 28, 5, 100));
+        itemList.add(new Item(TileType.NORMAL, 28, 5, 100));
         
         // Set the multipliers.
         multList = new ArrayList<Item>();
         
-	multList.add(new Item(TileType.X2, 2, 50, 3));
+        multList.add(new Item(TileType.X2, 2, 50, 3));
         multList.add(new Item(TileType.X3, 0, 20, 1));
         multList.add(new Item(TileType.X4, 0, 10, 1));
         //multList.add(new Item(TileType.NORMAL, 0, 5, 100));
