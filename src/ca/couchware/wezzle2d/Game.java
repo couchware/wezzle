@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.Refactorer.RefactorType;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.*;
@@ -30,11 +31,8 @@ import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Date;
 import java.util.EnumSet;
@@ -65,39 +63,35 @@ public class Game extends Canvas implements IGameWindowCallback
 {	  
     //--------------------------------------------------------------------------
     // Static Members
-    //--------------------------------------------------------------------------        
-                
-    /**
-     * The refator types.
-     */
-    public static enum RefactorType
-    {
-        NORMAL, DROP
-    }
+    //--------------------------------------------------------------------------                            
     
     /**
      * The Manager Types.
      */
     public static enum ManagerType
     {
-        ACHIEVEMENT, BOARD, GROUP, HIGHSCORE, LAYER, LISTENER, PIECE, PROPERTY,
-        SCORE, STAT, TIMER, WORLD, ANIMATION, TUTORIAL, MUSIC, SOUND
+        ACHIEVEMENT, 
+        BOARD, 
+        GROUP, 
+        HIGHSCORE, 
+        LAYER, 
+        LISTENER, 
+        PIECE, 
+        PROPERTY,
+        SCORE, 
+        STAT, 
+        TIMER, 
+        WORLD, 
+        ANIMATION, 
+        TUTORIAL, 
+        MUSIC, 
+        SOUND
     }
     
     /**
      * The frame-rate of the game.
      */
-    final public static int FRAME_RATE = 45;
-    
-    /**
-     * The default refactor speed.
-     */
-    final public static int DEFAULT_REFACTOR_SPEED = 180;
-    
-    /**
-     * The default drop speed.
-     */
-    final public static int DEFAULT_DROP_SPEED = 250;
+    final public static int FRAME_RATE = 45;       
     
     /**
      * The width of the screen.
@@ -357,42 +351,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * The executor used by certain managers.
      */
-    private Executor executor;            
-    
-    /**
-     * If true, refactor will be activated next loop.
-     */
-    private boolean activateRefactor = false;
-    
-    /**
-     * If true, the board is currently being refactored downwards.
-     */
-    private boolean refactorVerticalInProgress = false;
-    
-    /**
-     * If true, the board is currently being refactored leftward.
-     */
-    private boolean refactorHorizontalInProgress = false;
-    
-    /**
-     * The current refactor animations.
-     */
-    private List<IAnimation> refactorAnimationList;
-    
-    /**
-     * The refactor type.
-     */
-    private RefactorType refactorType;
-    
-    /**
-     * The speed of the upcoming refactor.
-     */
-    private int refactorSpeed;
-    
-    /**
-     * The speed of the upcoming drop.
-     */
-    private int dropSpeed;
+    private Executor executor;                   
     
     /**
      * If true, a line removal will be activated next loop.
@@ -956,11 +915,7 @@ public class Game extends Canvas implements IGameWindowCallback
         executor = Executors.newCachedThreadPool();
                 
         // Initialize various members.
-        initializeMembers();            
-        
-        // Set the refactor speeds.
-        resetRefactorSpeed();
-        resetDropSpeed();                                               
+        initializeMembers();                                                               
         
         // Create the loader.        
         loader = new Loader();               
@@ -1375,143 +1330,48 @@ public class Game extends Canvas implements IGameWindowCallback
             startBoardHideAnimation(AnimationType.ROW_FADE);                
         }                                                                  
 
-        // See if we need to activate the refactor.
-        if (activateRefactor == true)
-        {            
-            // Hide piece.
-            pieceMan.getPieceGrid().setVisible(false);
+        // Run the refactorer.
+        Refactorer.get().updateLogic(this);
+        
+        // See if it just finished.
+        if (Refactorer.get().isFinished() == true)
+        {
+            // Look for matches.
+            tileRemovalSet.clear();
 
-            // Start down refactor.                
-            switch (refactorType)
+            statMan.incrementCycleLineCount(
+                    boardMan.findXMatch(tileRemovalSet));
+
+            statMan.incrementCycleLineCount(
+                    boardMan.findYMatch(tileRemovalSet));
+
+            // Copy the match into the last line match holder.
+            lastMatchSet.clear();
+            lastMatchSet.addAll(tileRemovalSet);
+
+            // If there are matches, score them, remove 
+            // them and then refactor again.
+            if (tileRemovalSet.size() > 0)
             {
-                case NORMAL:
-                    refactorAnimationList = 
-                            boardMan.startVerticalShift(refactorSpeed);
-                    break;
-
-                case DROP:
-                    refactorAnimationList =
-                            boardMan.startVerticalShift(dropSpeed);
-                    break;                    
-
-                default: throw new AssertionError();
+                // Activate the line removal.
+                activateLineRemoval = true;
             }
-
-            // Add to the animation manager.
-            // No need to worry about removing them, that'll happen
-            // automatically when they are done.
-            animationMan.addAll(refactorAnimationList);
-
-            refactorVerticalInProgress = true;
-
-            // Clear flag.
-            clearRefactor();
-        }
-
-        // See if we're down refactoring.
-        if (refactorVerticalInProgress == true)
-        {
-            boolean done = true;
-            for (IAnimation a : refactorAnimationList)
-                if (a.isFinished() == false)
-                    done = false;
-
-            if (done == true)
-            {		
-                // Clear the animation list.
-                refactorAnimationList = null;
-
-                // Clear down flag.
-                refactorVerticalInProgress = false;
-
-                // Synchronize board.
-                boardMan.synchronize();							
-
-                // Start left refactor.
-
-                switch (refactorType)
+            else
+            {
+                // Make sure the tiles are not still dropping.
+                if (pieceMan.isTileDropInProgress() == false)
                 {
-                    case NORMAL:
-                        refactorAnimationList = 
-                                boardMan.startHorizontalShift(refactorSpeed);
-                        break;
+                    pieceMan.loadPiece();
+                    pieceMan.getPieceGrid().setVisible(true);
 
-                    case DROP:
-                        refactorAnimationList = 
-                                boardMan.startHorizontalShift(dropSpeed);
-                        break; 
+                    // Unpause the timer.
+                    timerMan.resetTimer();
+                    timerMan.setPaused(false);
 
-                    default: throw new AssertionError();
+                    // Reset the mouse.
+                    pieceMan.clearMouseButtonSet();
                 }
-
-                // Add to the animation manager.
-                // No need to worry about removing them, that'll happen
-                // automatically when they are done.
-                animationMan.addAll(refactorAnimationList);
-
-                refactorHorizontalInProgress = true;								
             }
-        } // end if
-
-        // See if we're left refactoring.
-        if (refactorHorizontalInProgress == true)
-        {
-            boolean done = true;
-            for (IAnimation a : refactorAnimationList)
-                if (a.isFinished() == false)
-                    done = false;
-
-            if (done == true)
-            {		
-                // Clear the animation list.
-                refactorAnimationList = null;
-
-                // Clear left flag.
-                refactorHorizontalInProgress = false;
-
-                // Synchronize board.
-                boardMan.synchronize();		
-
-                // Look for matches.
-                tileRemovalSet.clear();
-
-                statMan.incrementCycleLineCount(
-                        boardMan.findXMatch(tileRemovalSet));
-
-                statMan.incrementCycleLineCount(
-                        boardMan.findYMatch(tileRemovalSet));
-
-                // Copy the match into the last line match holder.
-                lastMatchSet.clear();
-                lastMatchSet.addAll(tileRemovalSet);
-
-                // If there are matches, score them, remove 
-                // them and then refactor again.
-                if (tileRemovalSet.size() > 0)
-                {                                       
-                    // Activate the line removal.
-                    activateLineRemoval = true;                 
-                }
-                else
-                {
-                   // Make sure the tiles are not still dropping.
-                    if (pieceMan.isTileDropInProgress() == false)
-                    {                            
-                        pieceMan.loadPiece();   
-                        pieceMan.getPieceGrid().setVisible(true);
-
-                        // Unpause the timer.
-                        timerMan.resetTimer();
-                        timerMan.setPaused(false);
-
-                        // Reset the mouse.
-                        pieceMan.clearMouseButtonSet();
-                    }
-                }
-            } // end if
-
-            // Notify piece manager.
-            pieceMan.notifyRefactored();
         } // end if
 
         // If a line removal was activated.
@@ -2097,12 +1957,12 @@ public class Game extends Canvas implements IGameWindowCallback
                     activateBombRemoval = true;
                 // Otherwise, start a new refactor.
                 else                
-                    startRefactor(RefactorType.NORMAL);
+                    Refactorer.get().startRefactor(RefactorType.NORMAL);
             }  
         }
 
         // See if we should clear the cascade count.
-        if (isRefactoring() == false 
+        if (Refactorer.get().isRefactoring() == false 
                 && isTileRemoving() == false
                 && pieceMan.isTileDropInProgress() == false)
             statMan.resetChainCount(); 
@@ -2221,76 +2081,8 @@ public class Game extends Canvas implements IGameWindowCallback
         //pauseGroup.setMoves(statMan.getMoveCount());
         //pauseGroup.setLines(statMan.getLineCount());
         pauseGroup.setLinesPerMove(statMan.getLinesPerMove());         
-    }
-    
-    /**
-     * Start a refactor with the given speed.
-     * 
-     * @param speed
-     */
-    public void startRefactor(RefactorType type)
-    {
-        // Set the refactor flag.
-        this.activateRefactor = true;   
-        
-        // Set the type.
-        this.refactorType = type;
-        
-        //Util.handleWarning("Refactor speed is " + refactorSpeed + ".");
-    }
-    
-    /**
-     * Clear the refactor flag.
-     */
-    public void clearRefactor()
-    {
-       // Set the refactor flag.
-       this.activateRefactor = false;
-    }
-
-    /**
-     * Get the refactor speed, in pixels per second.
-     * 
-     * @return
-     */
-    public int getRefactorSpeed()
-    {
-        return refactorSpeed;
-    }
-
-    /**
-     * Set the refactor speed, in pixels per second.
-     * 
-     * @param refactorSpeed
-     */
-    public void setRefactorSpeed(int refactorSpeed)
-    {
-        this.refactorSpeed = refactorSpeed;
-    }        
-    
-    /**
-     * Resets the refactor speed to it's default value.
-     */
-    public void resetRefactorSpeed()
-    {
-        this.refactorSpeed = DEFAULT_REFACTOR_SPEED;
-    }
-
-    public int getDropSpeed()
-    {
-        return dropSpeed;
-    }
-
-    public void setDropSpeed(int dropSpeed)
-    {
-        this.dropSpeed = dropSpeed;
-    }
-    
-    public void resetDropSpeed()
-    {
-        this.dropSpeed = DEFAULT_DROP_SPEED;
-    }
-   
+    }       
+      
     /**
      * A method to check whether the board is busy.
      * 
@@ -2298,23 +2090,13 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     public boolean isBusy()
     {
-       return (isRefactoring()               
+       return (Refactorer.get().isRefactoring()               
                || isTileRemoving()
                || gameOverGroup.isActivated() == true
                || activateBoardShowAnimation == true
                || activateBoardHideAnimation == true
                || this.boardAnimation != null);
-    }
-    
-    /**
-     * Checks whether a refactor is, or is about to be, in progress.
-     */
-    public boolean isRefactoring()
-    {
-        return this.activateRefactor 
-                || this.refactorVerticalInProgress 
-                || this.refactorHorizontalInProgress;
-    }
+    }       
     
     /**
      * Checks whether tiles are, or are about to be, removed.

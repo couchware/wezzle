@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.Rule;
@@ -86,7 +87,7 @@ public class RocketTutorial extends AbstractTutorial
         game.worldMan.setGameInProgress(false);
         
         // Slow down refactor so the user can see more clearly what happens.
-        game.setRefactorSpeed(100);
+        Refactorer.get().setRefactorSpeed(100);
         
         // Set restriction board so that only the bottom left corner is
         // clickable.
@@ -253,7 +254,7 @@ public class RocketTutorial extends AbstractTutorial
         game.timerMan.setStopped(false);  
         
         // Reset the refactor speed.
-        game.resetRefactorSpeed();
+        Refactorer.get().resetRefactorSpeed();
     }
     
     @Override

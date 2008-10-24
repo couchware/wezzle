@@ -23,7 +23,7 @@ import java.util.EnumSet;
  */
 public class ResourceFactory
 {
-	/** The single instance of this class to ever exist <singleton> */
+	/** The single instance of this class to ever exist. */
 	private static final ResourceFactory single = new ResourceFactory();
 
 	/** 
