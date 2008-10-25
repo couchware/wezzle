@@ -226,7 +226,7 @@ public class MainMenuGroup extends AbstractGroup
         
         IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(e2, Layer.BACKGROUND);              
+        layerMan.add(e2, Layer.BACKGROUND);                         
         
         logoEntity = new EntityGroup(e1, e2);
                

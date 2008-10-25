@@ -42,7 +42,7 @@ import org.lwjgl.opengl.GL11;
  * A TrueType font implementation for Slick.
  * Adapted for use with Wezzle2D.
  * 
- * @author Cameorn McKay
+ * @author Cameron McKay
  * @author James Chambers (Jimmy)
  * @author Jeremy Adams (elias4444)
  * @author Kevin Glass (kevglass)
@@ -92,7 +92,7 @@ public class TrueTypeFont
      * is stored on the font texture.
      */
     private class CharacterInfo
-    {
+    {                
         /** Character width. */
         public int width;
         
@@ -113,6 +113,12 @@ public class TrueTypeFont
         
         /** Character's stored y position. */
         public int y;        
+        
+        /** 
+         * The amount of space before the letter.  This is used to remove
+         * the space before a line so it is exactly aligned on the x-side.
+         */
+        public int space;
     }
 
     /**
@@ -159,6 +165,9 @@ public class TrueTypeFont
         TextLayout widthLayout = createTextLayout(gfx1, String.valueOf(ch), font);
         
         //fontMetrics = gfx1.getFontMetrics();
+        
+        // Record the space before the character.
+        charInfo.space = (int) widthLayout.getBounds().getMinX();
         
         int charWidth = (int) (widthLayout.getBounds().getMaxX() * 1.5);
         if (charWidth <= 0) charWidth = 1;
@@ -309,8 +318,12 @@ public class TrueTypeFont
     {
         CharacterInfo charInfo = null;
         
-        int totalWidth = 0;        
+        int totalWidth = 0;                
         int currentChar = 0;
+        int space = 0;
+        
+        if (str.length() > 0)
+            space = charArray[str.charAt(0)].space;
         
         for (int i = 0; i < str.length(); i++)
         {
@@ -322,7 +335,7 @@ public class TrueTypeFont
             }
         }
         
-        return totalWidth;
+        return totalWidth - space;
     }
 
     /**
@@ -373,6 +386,9 @@ public class TrueTypeFont
         CharacterInfo charInfo = null;
         int currentChar;
         int totalWidth = 0;
+        
+        if (str.length() > 0)
+            totalWidth = -charArray[str.charAt(0)].space;
 
         GL11.glBegin(GL11.GL_QUADS);
                 

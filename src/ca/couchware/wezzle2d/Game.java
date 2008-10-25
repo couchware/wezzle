@@ -921,7 +921,7 @@ public class Game extends Canvas implements IGameWindowCallback
            public void run() 
            { 
                initializeManagers(EnumSet.allOf(ManagerType.class)); 
-               layerMan.setDisabled(true);
+               layerMan.setDisabled(true);              
            }
         });
                                
@@ -947,12 +947,14 @@ public class Game extends Canvas implements IGameWindowCallback
         loader.addRunnable(new Runnable()
         {
            public void run() { initializeGroups(); }
-        });                                                      
-	}        
-       
+        });                     
+	}                   
+    
     public void update(long delta)
     {
-         // If the loader is running, bypass all the rendering to show it.        
+        
+        
+        // If the loader is running, bypass all the rendering to show it.        
         if (loader != null)
         {   
             // Animate all animations.
