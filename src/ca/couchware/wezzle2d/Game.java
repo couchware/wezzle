@@ -1179,14 +1179,14 @@ public class Game extends Canvas implements IGameWindowCallback
                 //worldMan.levelUp(this);
 
                 listenerMan.notifyLevelListener(new LevelEvent(1, this, this));
-                
-                TileRemover.get().setActivateLineRemoval(true);
-                TileRemover.get().setTileRemovalUseJumpAnimation(true);
-                TileRemover.get().setTileRemovalNoScore(true);
-                TileRemover.get().setTileRemovalNoItems(true);
-                TileRemover.get().clearTileRemovalSet();
+                TileRemover.get().setLevelUp(true);
+//                TileRemover.get().setActivateLineRemoval(true);
+//                TileRemover.get().setTileRemovalUseJumpAnimation(true);
+//                TileRemover.get().setTileRemovalNoScore(true);
+//                TileRemover.get().setTileRemovalNoItems(true);
+//                TileRemover.get().clearTileRemovalSet();
 
-                TileRemover.get().levelUp(this);
+                //TileRemover.get().levelUp(this);
                                                 
 
                 soundMan.play(Sound.LEVEL_UP);

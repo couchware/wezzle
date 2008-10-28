@@ -53,6 +53,11 @@ public class TileRemover
     private Set<Integer> lastMatchSet;
     
     /**
+     * If true, level up.
+     */
+    private boolean levelUpFlag = false;
+    
+    /**
      * If true, a line removal is in progress.
      */
     private boolean tileRemovalInProgress = false;
@@ -230,6 +235,12 @@ public class TileRemover
      */
     public void updateLogic(final Game game)
     {
+         if (levelUpFlag == true)
+         {
+             levelUpFlag = false;
+             TileRemover.get().levelUp(game);
+         }
+        
          // See if it just finished.
         if (Refactorer.get().isFinished() == true)
         {
@@ -305,6 +316,12 @@ public class TileRemover
 
     void levelUp(final Game game) 
     {
+        setActivateLineRemoval(true);
+        setTileRemovalUseJumpAnimation(true);
+        setTileRemovalNoScore(true);
+        setTileRemovalNoItems(true);
+        clearTileRemovalSet();
+        
         BoardManager boardMan = game.boardMan;
         
         int j;
@@ -975,6 +992,11 @@ public class TileRemover
 
             // Set the flag.
             tileRemovalInProgress = true;
+    }
+
+    void setLevelUp(boolean b) 
+    {
+        this.levelUpFlag = b;
     }
     
   
