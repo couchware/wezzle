@@ -228,9 +228,45 @@ public class TileRemover
      * The main chunk of the remover. This is where the logic occurs.
      * @param game The game.
      */
-    public void updateLogic(Game game)
+    public void updateLogic(final Game game)
     {
-       
+         // See if it just finished.
+        if (Refactorer.get().isFinished() == true)
+        {
+            TileRemover.get().refactorFinished(game);
+          
+        } // end if
+
+        // If a line removal was activated.
+        if (TileRemover.get().isActivateLineRemoval() == true)
+        {                
+           TileRemover.get().removeLines(game);
+        }
+        
+        // If the star removal is in progress.
+        if (TileRemover.get().isActivateRocketRemoval() == true)
+        {
+           TileRemover.get().removeRockets(game);
+        }
+
+        // If the star removal is in progress.
+        if (TileRemover.get().isActivateStarRemoval() == true)
+        {
+            TileRemover.get().removeStars(game);
+        }
+
+        // If a bomb removal is in progress.
+        if (TileRemover.get().isActivateBombRemoval() == true)
+        {
+            TileRemover.get().removeBombs(game);
+        }
+        
+        // If a line removal is in progress.
+        if (TileRemover.get().isTileRemovalInProgress() == true)
+        {
+            TileRemover.get().removalInProgress(game);
+        }
+
     }
 
     

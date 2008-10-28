@@ -1239,44 +1239,9 @@ public class Game extends Canvas implements IGameWindowCallback
 
         // Run the refactorer.
         Refactorer.get().updateLogic(this);
-        
-        // See if it just finished.
-        if (Refactorer.get().isFinished() == true)
-        {
-            TileRemover.get().refactorFinished(this);
-          
-        } // end if
-
-        // If a line removal was activated.
-        if (TileRemover.get().isActivateLineRemoval() == true)
-        {                
-           TileRemover.get().removeLines(this);
-        }
-        
-        // If the star removal is in progress.
-        if (TileRemover.get().isActivateRocketRemoval() == true)
-        {
-           TileRemover.get().removeRockets(this);
-        }
-
-        // If the star removal is in progress.
-        if (TileRemover.get().isActivateStarRemoval() == true)
-        {
-            TileRemover.get().removeStars(this);
-        }
-
-        // If a bomb removal is in progress.
-        if (TileRemover.get().isActivateBombRemoval() == true)
-        {
-            TileRemover.get().removeBombs(this);
-        }
-        
-        // If a line removal is in progress.
-        if (TileRemover.get().isTileRemovalInProgress() == true)
-        {
-            TileRemover.get().removalInProgress(this);
-        }
-
+      
+        TileRemover.get().updateLogic(this);
+      
         // See if we should clear the cascade count.
         if (Refactorer.get().isRefactoring() == false 
                 && TileRemover.get().isTileRemoving() == false
