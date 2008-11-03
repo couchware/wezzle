@@ -1032,6 +1032,10 @@ public class BoardManager implements IManager
                 t = new StarTileEntity(this, color, tx, ty);
                 break;
                 
+            case GRAVITY:
+                t = new GravityTileEntity(this, color, tx, ty);
+                break;
+                
             default: throw new AssertionError("Unknown type.");
         }
         

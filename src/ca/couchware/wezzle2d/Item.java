@@ -4,8 +4,9 @@ import ca.couchware.wezzle2d.tile.TileType;
 
 /**
  * A class to describe an item on the board.
+ * 
+ * @author Cameron
  * @author Kevin
- *
  */
 public class Item 
 {
@@ -29,14 +30,14 @@ public class Item
 	private int currentAmount;
 	
 	/**
-	 * The probability this item will be created.
+	 * The chance weight that this item will be created.
 	 */
-	private int probability;
+	private int weight;
         
-        /**
-         * The maximum number of these items on the screen at once.
-         */
-        private int maxOnScreen;
+    /**
+     * The maximum number of these items on the screen at once.
+     */
+    private int maxOnScreen;
 	
 	// ---------------------------------------------------------------------------
 	// Constructors
@@ -46,23 +47,44 @@ public class Item
 	 * A constructor to construct an item descriptor for the passed in class.
 	 * @param itemClass The class we are describing.
 	 */
-	public Item(TileType tileType, int initialAmount, int probability, int maxOnScreen)
+	private Item(TileType tileType, int initialAmount, int probability, int maxOnScreen)
 	{
 		this.tileType = tileType;
 		this.initialAmount = initialAmount;
 		this.currentAmount = 0;
-		this.probability = probability;
+		this.weight = probability;
                 this.maxOnScreen = maxOnScreen;
 	}
-	
-	/**
-	 * The overloaded constructor. Parses the data from an XML file.
-	 * @param file The file to parse
-	 */
-	public Item(String path)
-	{
-		
-	}
+    
+    public static class Builder implements IBuilder<Item>
+    {
+        // Required values.       
+        final private TileType tileType;        
+        
+        // Optional values.
+        private int initialAmount = 0;        
+        private int weight = 10;
+        private int maxOnScreen = 1;
+        
+        public Builder(TileType tileType)
+        {            
+            this.tileType = tileType;
+        }                             
+        
+        public Builder initialAmount(int val) 
+        { initialAmount = val; return this; }
+                
+        public Builder weight(int val) 
+        { weight = val; return this; }
+        
+        public Builder maxOnBoard(int val) 
+        { maxOnScreen = val; return this; }
+        
+        public Item end()
+        {            
+            return new Item(tileType, initialAmount, weight, maxOnScreen);
+        }                
+    } 
 	
 	// ---------------------------------------------------------------------------
 	// Getters and Setters
@@ -143,33 +165,37 @@ public class Item
 	/**
 	 * @return The maxAmount.
 	 */
-	public int getMaxAmount()
+	public int getMaxOnScreen()
 	{
 		return this.maxOnScreen;
 	}
         
-        public void setMaxAmount(int maxOnScreen)
+        public void setMaxOnScreen(int maxOnScreen)
 	{
 		this.maxOnScreen = maxOnScreen;
 	}
 
 	/**
 	 * @return The probability.
-	 */
-	public int getProbability()
-	{
-            if (this.currentAmount < this.maxOnScreen)
-		return probability;
-            else
-                return 0;
-	}
+     */
+    public int getWeight()
+    {
+        if (this.currentAmount < this.maxOnScreen)
+        {
+            return weight;
+        }
+        else
+        {
+            return 0;
+        }
+    }
 
 	/**
 	 * @param probability The probability to set.
 	 */
-	public void setProbability(int probability)
+	public void setWeight(int weight)
 	{
-		this.probability = probability;
+		this.weight = weight;
 	}	
 }
 

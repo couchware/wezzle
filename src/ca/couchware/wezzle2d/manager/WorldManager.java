@@ -41,7 +41,7 @@ public class WorldManager implements ILevelListener
         /**
          * The multiplier list
          */
-        private ArrayList<Item> multList;
+        private ArrayList<Item> multiplierList;
         
     
     /**
@@ -74,7 +74,7 @@ public class WorldManager implements ILevelListener
     /**
      * The maximum multipliers on the screen at once.
      */
-    private int maxMults;
+    private int maxMultipliers;
     
     /**
      * The percentage of tiles to maintain.
@@ -138,22 +138,27 @@ public class WorldManager implements ILevelListener
         
         // Set the max items and mults.
         this.maxItems = 3;
-        this.maxMults = 3;
+        this.maxMultipliers = 3;
         
         // Set the items.
         itemList = new LinkedList<Item>();
-        // Ensure that the first item is a normal tile. *** important.
+        
+        // !IMPORTANT! Ensure that the first item is a normal tile. 
         // This is so that we can use the first item when returning a
         // normal tile whenever we want.
-        itemList.add(new Item(TileType.NORMAL, 28, 5, 100));
+        itemList.add(new Item.Builder(TileType.NORMAL)
+                .initialAmount(28).weight(5).maxOnBoard(100).end());
+        itemList.add(new Item.Builder(TileType.GRAVITY)
+                .initialAmount(5).weight(5).maxOnBoard(100).end());
         
         // Set the multipliers.
-        multList = new ArrayList<Item>();
-        
-        multList.add(new Item(TileType.X2, 2, 50, 3));
-        multList.add(new Item(TileType.X3, 0, 20, 1));
-        multList.add(new Item(TileType.X4, 0, 10, 1));
-        //multList.add(new Item(TileType.NORMAL, 0, 5, 100));
+        multiplierList = new ArrayList<Item>();        
+        multiplierList.add(new Item.Builder(TileType.X2)
+                .initialAmount(2).weight(50).maxOnBoard(3).end());
+        multiplierList.add(new Item.Builder(TileType.X3)
+                .initialAmount(0).weight(20).maxOnBoard(1).end());
+        multiplierList.add(new Item.Builder(TileType.X4)
+                .initialAmount(0).weight(10).maxOnBoard(1).end());                
         
         // Set the rules.
         masterRuleList = new LinkedList<Rule>();
@@ -164,8 +169,9 @@ public class WorldManager implements ILevelListener
             @Override
             public void onMatch()
             {
-                // Increase the number of colours.
-                itemList.add(new Item(TileType.ROCKET, 1, 55, 3));
+                // Add the rocket.
+                itemList.add(new Item.Builder(TileType.ROCKET)
+                        .initialAmount(1).weight(55).maxOnBoard(3).end());                
             }            
         });  
         
@@ -175,8 +181,9 @@ public class WorldManager implements ILevelListener
             @Override
             public void onMatch()
             {
-                // Increase the number of colours.
-                itemList.add(new Item(TileType.BOMB, 1, 10, 1));
+                // Add the bomb.
+                itemList.add(new Item.Builder(TileType.BOMB)
+                        .initialAmount(1).weight(10).maxOnBoard(1).end());                
             }            
         });   
         
@@ -186,8 +193,9 @@ public class WorldManager implements ILevelListener
             @Override
             public void onMatch()
             {
-                // Increase the number of colours.
-                itemList.add(new Item(TileType.STAR, 0, 5, 1));
+                // Add the star.
+                itemList.add(new Item.Builder(TileType.STAR)
+                        .initialAmount(0).weight(5).maxOnBoard(1).end());                
             }            
         });   
         
@@ -201,9 +209,7 @@ public class WorldManager implements ILevelListener
 //                game.boardMan.setNumberOfColors(6);
 //            }            
 //        });
-        
-        
-        
+                        
         currentRuleList = new LinkedList<Rule>();
         currentRuleList.addAll(masterRuleList);
 	}
@@ -420,7 +426,7 @@ public class WorldManager implements ILevelListener
      */
     public int getMaxMults()
     {
-        return maxMults;
+        return maxMultipliers;
     }
     
     /**
@@ -428,7 +434,7 @@ public class WorldManager implements ILevelListener
      */
     public void setMaxMults(int maxMults)
     {
-        this.maxMults = maxMults;
+        this.maxMultipliers = maxMults;
     }    
     
     
@@ -520,15 +526,15 @@ public class WorldManager implements ILevelListener
                         if (item.getTileType() == TileType.NORMAL)
                             continue;
                         
-                        if (item.getProbability() > 0)
+                        if (item.getWeight() > 0)
                             items.add(item);
                     }
                 }
-                if (numMults < maxMults)
+                if (numMults < maxMultipliers)
                 {  
-                    for (Item item : multList)
+                    for (Item item : multiplierList)
                     {
-                        if (item.getProbability() > 0)
+                        if (item.getWeight() > 0)
                             items.add(item);
                     }
                 }
@@ -549,10 +555,10 @@ public class WorldManager implements ILevelListener
 		int i = 1;
 		for (Item item : items)
 		{            
-			if (item.getProbability() == -1)
+			if (item.getWeight() == -1)
 				dist[i] = dist[i - 1];
 			else			
-				dist[i] = dist[i - 1] + item.getProbability();
+				dist[i] = dist[i - 1] + item.getWeight();
 			
 			i++;
 		}
@@ -586,7 +592,7 @@ public class WorldManager implements ILevelListener
             
             for (Item item : itemList)
                 items.add(item);
-            for(Item item: multList)
+            for(Item item: multiplierList)
                 items.add(item);
                     
 		return items;
