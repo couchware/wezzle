@@ -18,5 +18,6 @@ public enum TileType
     X4,
     ROCKET,
     BOMB,
-    STAR
+    STAR,
+    GRAVITY
 }

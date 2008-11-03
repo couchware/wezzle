@@ -871,9 +871,7 @@ public class Game extends Canvas implements IGameWindowCallback
 	}                   
     
     public void update(long delta)
-    {
-        
-        
+    {                
         // If the loader is running, bypass all the rendering to show it.        
         if (loader != null)
         {   
@@ -1179,15 +1177,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 //worldMan.levelUp(this);
 
                 listenerMan.notifyLevelListener(new LevelEvent(1, this, this));
-                TileRemover.get().setLevelUp(true);
-//                TileRemover.get().setActivateLineRemoval(true);
-//                TileRemover.get().setTileRemovalUseJumpAnimation(true);
-//                TileRemover.get().setTileRemovalNoScore(true);
-//                TileRemover.get().setTileRemovalNoItems(true);
-//                TileRemover.get().clearTileRemovalSet();
-
-                //TileRemover.get().levelUp(this);
-                                                
+                TileRemover.get().setLevelUp(true);                                                
 
                 soundMan.play(Sound.LEVEL_UP);
 

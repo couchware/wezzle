@@ -4,18 +4,18 @@ import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.*;
 
 /**
- * A 2x tile.
+ * The gravity tile.
  * 
  * @author cdmckay
  */
 
-public class X2TileEntity extends ItemTileEntity
+public class GravityTileEntity extends ItemTileEntity
 {
     
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Game.SPRITES_PATH + "/ItemGravity.png";       
+    final private static String PATH = Game.SPRITES_PATH + "/ItemGravity.png";
     
     /**
      * The constructor.
@@ -25,14 +25,14 @@ public class X2TileEntity extends ItemTileEntity
      * @param x
      * @param y
      */    
-    public X2TileEntity(final BoardManager boardMan, final TileColor color, 
+    public GravityTileEntity(final BoardManager boardMan, final TileColor color, 
             final int x, final int y)
     {
         // Invoke super.
         super(PATH, boardMan, color, x, y);
         
         // Set the type.
-        this.type = TileType.X2;
+        this.type = TileType.GRAVITY;
     }
-      
+       
 }
