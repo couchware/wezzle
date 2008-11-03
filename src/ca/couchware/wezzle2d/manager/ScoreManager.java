@@ -135,82 +135,41 @@ import java.util.Set;
     }
     
     /**
-     * Requires documentation.
+     * An enum map used to track the amounts of each tile type in a line.
+     */
+    EnumMap<TileType, Integer> countMap = new EnumMap<TileType, Integer>(TileType.class);
+    
+    /**
+     * Calculates the score of the line, given the tiles in the line, the type
+     * of score, and the length of the chain.
      * 
-     * @param set
+     * @param indexSet
      * @param lineType
      * @param cascadeCount
      * @return The change in score.
      */
-    public int calculateLineScore(Set set, ScoreType type, int chainCount)
+    public int calculateLineScore(Set<Integer> indexSet, ScoreType type, int chainCount)
     {
-        // Initialize tile counts.
-        int numNormal = 0;
-        int numBomb = 0;
-        int numStar = 0;
-        int numRocket = 0;
-        int numMultiply4x = 0;
-        int numMultiply3x = 0;
-        int numMultiply2x = 0;		
+        // Reset the count map.
+        for (TileType tt : TileType.values())
+            countMap.put(tt, 0);               
 		
         // Cycle through the set counting the pieces.
-        for (Iterator it = set.iterator(); it.hasNext();)
+        for (Iterator<Integer> it = indexSet.iterator(); it.hasNext();)
         {
             // Grab the tile.
-            TileEntity t = boardMan.getTile((Integer) it.next());
+            TileEntity t = boardMan.getTile(it.next());
             
-            // See what kinda tile it is.
-            if (t != null)
-            {
-                if (t.getClass() == TileEntity.class)
-                {
-                    numNormal++;
-                }
-                else if (t.getClass() == X2TileEntity.class)                    
-                {
-                    numMultiply2x++;
-                }
-                else if (t.getClass() == X3TileEntity.class)                    
-                {
-                    numMultiply3x++;
-                }
-                else if (t.getClass() == X4TileEntity.class)                    
-                {
-                    numMultiply4x++;
-                }
-                else if (t.getClass() == BombTileEntity.class)
-                {
-                    numBomb++;
-                }
-                else if (t.getClass() == StarTileEntity.class)                    
-                {
-                    numStar++;
-                }
-                else if (t.getClass() == RocketTileEntity.class)
-                {
-                    numRocket++;
-                }
-                else
-                {
-                    throw new RuntimeException(
-                            "Tile type is not accounted for.");
-                }
-            } // end if
+            // Count it.
+            countMap.put(t.getType(), countMap.get(t.getType()) + 1);
         } // end for
 
         // Change this when we add bombs and multipliers.
-        int deltaScore = (int) (calculateLineTilePoints(
-                numNormal 
-                + numBomb 
-                + numStar
-                + numRocket
-                + numMultiply2x 
-                + numMultiply3x 
-                + numMultiply4x, 
-                type)              
-                * Math.pow(2, numMultiply2x)
-                * Math.pow(3, numMultiply3x)
-                * Math.pow(4, numMultiply4x)
+        int deltaScore = 
+                (int) (calculateLineTilePoints(indexSet.size(), type)              
+                * Math.pow(2, countMap.get(TileType.X2))
+                * Math.pow(3, countMap.get(TileType.X3))
+                * Math.pow(4, countMap.get(TileType.X4))
                 * chainCount);
 
         LogManager.recordMessage("chainCount = " + chainCount, 
