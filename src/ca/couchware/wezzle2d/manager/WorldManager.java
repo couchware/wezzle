@@ -523,7 +523,7 @@ public class WorldManager implements ILevelListener
     public Item getItem( int numItems, int numMults)
 	{	
         
-            // Check if we do not return a normal tile. There is
+            // Check if we do not return  a normal tile. There is
             // A flat 5% chance of this.
             int test = Util.random.nextInt(100);
             if( test <= 5)
@@ -534,9 +534,48 @@ public class WorldManager implements ILevelListener
             // Build the list of items. This does not include items 
             // with probability 0 (if the max number exist) and includes
             // Mults as well.
+            
+            boolean useItems = false;
+            boolean useMults = false;
+            int constant = 15;
+            
+            // calculate the probability of an item. The probability of a mult
+            // is 1 - probability of item.
+            int probItems = (numMults-numItems) * constant + 50;
+            //int probMults = (numItems-numMults) * constant + 50;
+            
+            // If there are no items in the game yet.
+            if(itemList.size() == 1)
+                probItems = 0;
+            
+            // Select a number from 1 - 100.
+            int pick = Util.random.nextInt(100);
+            
+
+            if(numMults < maxMultipliers && numItems < maxItems)
+            {
+                if(pick < probItems)
+                {
+                    useItems = true;
+                }
+                else
+                {
+                    useMults = true;
+                }
+            }
+            else if (numMults < maxMultipliers)
+            {
+                useMults = true;
+            }
+            else if (numItems < maxItems)
+            {
+                useItems = true;
+            }
+
+            
             ArrayList<Item> items = new ArrayList<Item>();
             
-                if (numItems < maxItems)
+                if (useItems == true)
                 {
                     for (Item item : itemList)
                     {
@@ -548,7 +587,7 @@ public class WorldManager implements ILevelListener
                             items.add(item);
                     }
                 }
-                if (numMults < maxMultipliers)
+                if (useMults == true)
                 {  
                     for (Item item : multiplierList)
                     {
