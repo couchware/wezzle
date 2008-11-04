@@ -39,8 +39,7 @@ public class TextLayoutStore
      * The number of cache misses.
      */
     int misses = 0;
-    
-    
+        
     /**
      * The font map.
      */
