@@ -189,7 +189,7 @@ public class WorldManager implements ILevelListener
             {
                 // Add the bomb.
                 itemList.add(new Item.Builder(TileType.GRAVITY)
-                        .initialAmount(1).weight(20).maxOnBoard(2).end());                
+                        .initialAmount(1).weight(35).maxOnBoard(2).end());                
             }            
         });  
         
