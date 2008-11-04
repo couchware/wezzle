@@ -1413,21 +1413,34 @@ public class BoardManager implements IManager
 	}
                     
     /**
-     * Scans the tile set for specified item and places them in a passed item 
+     * Scans the tile set for specified tile and places them in a passed item 
      * set.
      * 
-     * @param itemClass
-     * @param tileSet
-     * @param itemSet
+     * @param tileType The type of tile to scan for.
+     * @param tileSet  The tile set to scan in.
+     * @param foundSet The set to store the found tiles in (may be null).
+     * @return The number of tiles of that type found.
      */
-    public void scanFor(Class itemClass, 
-            Set<Integer> tileSet, Set<Integer> itemSet)
+    public int scanFor(TileType tileType, 
+            Set<Integer> tileSet, 
+            Set<Integer> foundSet)
     {        
+        assert tileType != null;
+        assert tileSet  != null;        
+        
+        // The number of items found.
+        int count = 0;
+        
         for (Integer index : tileSet)
         {            
-            if (getTile(index).getClass() == itemClass)            
-                itemSet.add(index);                            
+            if (getTile(index).getType() == tileType)            
+            {
+                count++;                
+                if (foundSet != null) foundSet.add(index);                            
+            }
         } // end for
+        
+        return count;
     }           
     
     /**

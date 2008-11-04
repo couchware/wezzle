@@ -26,6 +26,7 @@ import ca.couchware.wezzle2d.tile.BombTileEntity;
 import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.StarTileEntity;
 import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.TileType;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +34,7 @@ import java.util.Set;
 
 /**
  * A class for handling tile removing from the board.  This is a singleton class.
+ * 
  * @author kgrad
  */
 public class TileRemover
@@ -59,6 +61,11 @@ public class TileRemover
      * If true, a line removal is in progress.
      */
     private boolean tileRemovalInProgress = false;
+    
+    /**
+     * If true, a tile effect is in progress.
+     */
+    private boolean tileEffectInProgress = false;
     
     /**
      * The set of tile indices that will be removed.
@@ -110,6 +117,16 @@ public class TileRemover
      */
     private Set<Integer> rocketRemovalSet;
     
+    /**
+     * If true, the gravity effect will be activated next loop.
+     */
+    private boolean activateGravityEffect = false;   
+    
+    /**
+     * The number of gravity tiles found.
+     */
+    private Set<Integer> gravityRemovalSet;
+    
     /** 
      * The single instance of this class to ever exist. 
      */
@@ -138,7 +155,8 @@ public class TileRemover
 
     /**
      * The main chunk of the remover. This is where the logic occurs.
-     * @param game The game.
+     * 
+     * @param game The game instance.
      */
     public void updateLogic(final Game game)
     {
@@ -151,7 +169,7 @@ public class TileRemover
         // See if it just finished.
         if (Refactorer.get().isFinished() == true)
         {
-            refactorFinished(game);
+            findMatches(game);
 
         } // end if
 
@@ -159,6 +177,28 @@ public class TileRemover
         if (this.activateLineRemoval == true)
         {
             removeLines(game);
+        }   
+        
+        // If the gravity effect has been activated.
+        if (this.activateGravityEffect == true)
+        {
+            // Determine the new gravity.
+            EnumSet<Direction> gravity = null;
+            if (game.boardMan.getGravity().contains(Direction.LEFT))
+            {
+                gravity = EnumSet.of(Direction.DOWN, Direction.RIGHT);
+            }
+            else
+            {
+                gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
+            }
+                        
+            // Set the new gravity.
+            game.boardMan.setGravity(gravity);
+            
+            // Clear the flag and start the refactorer.
+            this.activateGravityEffect = false;            
+            this.tileEffectInProgress = true;
         }
 
         // If the star removal is in progress.
@@ -178,51 +218,65 @@ public class TileRemover
         {
             removeBombs(game);
         }
-
-        // If a line removal is in progress.
-        if (this.tileRemovalInProgress == true)
+                
+        // If a tile effect is in progress.
+        if (this.tileEffectInProgress == true)
         {
-            removalInProgress(game);
+            Refactorer.get().startRefactor(RefactorType.NORMAL);
+            this.tileEffectInProgress = false;
+        }
+        // If a line removal is in progress.        
+        else if (this.tileRemovalInProgress == true)
+        {
+            processRemoval(game);
         }
 
     }
-
-    void clearTileRemovalSet()
-    {
-        tileRemovalSet.clear();
-    }
-
+   
     void initialize()
     {
         // Initialize the last line match.
-        lastMatchSet = new HashSet<Integer>();
+        this.lastMatchSet = new HashSet<Integer>();
 
         // Initialize line index set.
-        tileRemovalSet = new HashSet<Integer>();
+        this.tileRemovalSet = new HashSet<Integer>();
 
         // Initialize bomb index set.
-        bombRemovalSet = new HashSet<Integer>();
+        this.bombRemovalSet = new HashSet<Integer>();
 
         // Initialize star index set.
-        starRemovalSet = new HashSet<Integer>();
+        this.starRemovalSet = new HashSet<Integer>();
 
         // Initialize rocket index set.
-        rocketRemovalSet = new HashSet<Integer>();
+        this.rocketRemovalSet = new HashSet<Integer>();
+        
+        // Initialize gravity index set.
+        this.gravityRemovalSet = new HashSet<Integer>();
     }
 
     boolean isTileRemoving()
     {
-        return this.activateLineRemoval || this.activateBombRemoval || this.activateStarRemoval || this.activateRocketRemoval || this.tileRemovalInProgress;
+        return this.activateLineRemoval 
+                || this.activateBombRemoval 
+                || this.activateStarRemoval 
+                || this.activateRocketRemoval 
+                || this.activateGravityEffect
+                || this.tileEffectInProgress
+                || this.tileRemovalInProgress;
     }
 
     void levelUp(final Game game)
     {
+        // Set some flags for the level up.
         this.activateLineRemoval = true;
         this.tileRemovalUseJumpAnimation = true;
         this.tileRemovalNoScore = true;
         this.tileRemovalNoItems = true;
-        clearTileRemovalSet();
+        
+        // Clear the tile removal set.        
+        this.tileRemovalSet.clear();
 
+        // Make a shortcut to the board manager.
         BoardManager boardMan = game.boardMan;
 
         int j;
@@ -245,12 +299,14 @@ public class TileRemover
         }
     }
 
-    void refactorFinished(final Game game)
+    void findMatches(final Game game)
     {
+        // Shortcuts to the managers.
         StatManager statMan = game.statMan;
         BoardManager boardMan = game.boardMan;
         PieceManager pieceMan = game.pieceMan;
         TimerManager timerMan = game.timerMan;
+        
         // Look for matches.
         tileRemovalSet.clear();
 
@@ -289,9 +345,11 @@ public class TileRemover
         }
     }
 
-    void removalInProgress(final Game game)
+    void processRemoval(final Game game)
     {
+        // Shortcut to board manager.
         BoardManager boardMan = game.boardMan;
+        
         // Animation completed flag.
         boolean animationInProgress = false;
 
@@ -310,21 +368,26 @@ public class TileRemover
             boardMan.removeTiles(tileRemovalSet);
 
             // Bomb removal is completed.
-            tileRemovalInProgress = false;
+            this.tileRemovalInProgress = false;
 
             // See if there are any bombs in the bomb set.
-            // If there are, activate the bomb removal.
-            if (rocketRemovalSet.size() > 0)
+            // If there are, activate the bomb removal.  
+            if (this.gravityRemovalSet.size() > 0)
             {
-                activateRocketRemoval = true;
+                LogManager.recordMessage("Gravity changed.");
+                this.activateGravityEffect = true;
             }
-            else if (starRemovalSet.size() > 0)
+            else if (this.rocketRemovalSet.size() > 0)
             {
-                activateStarRemoval = true;
+                this.activateRocketRemoval = true;
             }
-            else if (bombRemovalSet.size() > 0)
+            else if (this.starRemovalSet.size() > 0)
             {
-                activateBombRemoval = true;
+                this.activateStarRemoval = true;
+            }
+            else if (this.bombRemovalSet.size() > 0)
+            {
+                this.activateBombRemoval = true;
             }
             // Otherwise, start a new refactor.
             else
@@ -379,28 +442,29 @@ public class TileRemover
         // Show the SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
-        final ILabel label = new LabelBuilder(p.getX(), p.getY()).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).color(game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore)).text(String.valueOf(deltaScore)).end();
+        final ILabel label = new LabelBuilder(p.getX(), p.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(Game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore))
+                .text(String.valueOf(deltaScore)).end();
 
         a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
         a2 = new MoveAnimation.Builder(label).duration(1150).v(0.03).theta(90).end();
 
         a2.setStartRunnable(new Runnable()
         {
-
             public void run()
             {
                 game.layerMan.add(label, Layer.EFFECT);
             }
-            });
+        });
 
         a2.setFinishRunnable(new Runnable()
         {
-
             public void run()
             {
                 game.layerMan.remove(label, Layer.EFFECT);
             }
-            });
+        });
 
         animationMan.add(a1);
         animationMan.add(a2);
@@ -415,7 +479,7 @@ public class TileRemover
 
         // Find all the new bombs.
         Set<Integer> newBombRemovalSet = new HashSet<Integer>();
-        boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
+        boardMan.scanFor(TileType.BOMB, tileRemovalSet,
                 newBombRemovalSet);
         newBombRemovalSet.removeAll(bombRemovalSet);
 
@@ -424,7 +488,7 @@ public class TileRemover
         tileRemovalSet.removeAll(newBombRemovalSet);
 
         // Find all rockets.                
-        boardMan.scanFor(RocketTileEntity.class, tileRemovalSet,
+        boardMan.scanFor(TileType.ROCKET, tileRemovalSet,
                 rocketRemovalSet);
 
         // Remove all rockets from the tile removal set.
@@ -465,6 +529,7 @@ public class TileRemover
 
     void removeLines(final Game game)
     {
+        // Shortcuts to managers.
         StatManager statMan = game.statMan;
         BoardManager boardMan = game.boardMan;
         AnimationManager animationMan = game.animationMan;
@@ -476,7 +541,7 @@ public class TileRemover
         // Clear flag.
         activateLineRemoval = false;
 
-        // Increment cascade.
+        // Increment chain count.
         statMan.incrementChainCount();
 
         // Calculate score, unless no-score flag is set.
@@ -502,15 +567,17 @@ public class TileRemover
             // Show the SCT.
             ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
-            final ILabel label = new LabelBuilder(p.getX(), p.getY()).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).color(game.SCORE_LINE_COLOR).size(scoreMan.determineFontSize(deltaScore)).text(String.valueOf(deltaScore)).end();
-
+            final ILabel label = new LabelBuilder(p.getX(), p.getY())
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .color(Game.SCORE_LINE_COLOR).size(scoreMan.determineFontSize(deltaScore))
+                    .text(String.valueOf(deltaScore)).end();
+            
             IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
             //IAnimation a2 = new FloatAnimation(0, -1, layerMan, label);                    
             IAnimation a2 = new MoveAnimation.Builder(label).duration(1150).v(0.03).theta(90).end();
 
             a2.setStartRunnable(new Runnable()
             {
-
                 public void run()
                 {
                     game.layerMan.add(label, Layer.EFFECT);
@@ -519,7 +586,6 @@ public class TileRemover
 
             a2.setFinishRunnable(new Runnable()
             {
-
                 public void run()
                 {
                     game.layerMan.remove(label, Layer.EFFECT);
@@ -551,16 +617,22 @@ public class TileRemover
             //Set<Integer> allSet = new HashSet<Integer>();
 
             bombRemovalSet.clear();
-            boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
+            boardMan.scanFor(TileType.BOMB, tileRemovalSet,
                     bombRemovalSet);
 
             starRemovalSet.clear();
-            boardMan.scanFor(StarTileEntity.class, tileRemovalSet,
+            boardMan.scanFor(TileType.STAR, tileRemovalSet,
                     starRemovalSet);
 
             rocketRemovalSet.clear();
-            boardMan.scanFor(RocketTileEntity.class, tileRemovalSet,
+            boardMan.scanFor(TileType.ROCKET, tileRemovalSet,
                     rocketRemovalSet);
+            
+            // Scan for gravity tiles.  If they're found, activate the gravity
+            // effect.
+            gravityRemovalSet.clear();
+            boardMan.scanFor(TileType.GRAVITY, tileRemovalSet, 
+                    gravityRemovalSet);            
 
             tileRemovalSet.removeAll(bombRemovalSet);
             tileRemovalSet.removeAll(starRemovalSet);
@@ -610,7 +682,7 @@ public class TileRemover
             // Set the flag.
             tileRemovalInProgress = true;
         }
-        // Otherwise, start the bomb processing.
+        // Otherwise, start the star processing.
         else
         {
             //activateBombRemoval = true;
@@ -678,7 +750,10 @@ public class TileRemover
         // Show the SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
-        final ILabel label = new LabelBuilder(p.getX(), p.getY()).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).color(game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore)).text(String.valueOf(deltaScore)).end();
+        final ILabel label = new LabelBuilder(p.getX(), p.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(Game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore))
+                .text(String.valueOf(deltaScore)).end();
 
         //a1 = new FadeAnimation(FadeType.OUT, label);
         a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
@@ -687,21 +762,19 @@ public class TileRemover
 
         a2.setStartRunnable(new Runnable()
         {
-
             public void run()
             {
                 game.layerMan.add(label, Layer.EFFECT);
             }
-            });
+        });
 
         a2.setFinishRunnable(new Runnable()
         {
-
             public void run()
             {
                 game.layerMan.remove(label, Layer.EFFECT);
             }
-            });
+        });
 
         animationMan.add(a1);
         animationMan.add(a2);
@@ -716,7 +789,7 @@ public class TileRemover
 
         // Find all the new rockets.
         Set<Integer> newRocketRemovalSet = new HashSet<Integer>();
-        boardMan.scanFor(RocketTileEntity.class, tileRemovalSet,
+        boardMan.scanFor(TileType.ROCKET, tileRemovalSet,
                 newRocketRemovalSet);
         newRocketRemovalSet.removeAll(rocketRemovalSet);
 
@@ -725,7 +798,7 @@ public class TileRemover
         tileRemovalSet.removeAll(newRocketRemovalSet);
 
         // Find all the bombs.
-        boardMan.scanFor(BombTileEntity.class, tileRemovalSet,
+        boardMan.scanFor(TileType.BOMB, tileRemovalSet,
                 bombRemovalSet);
 
         // Remove all bombs from the tile removal set.
@@ -782,6 +855,7 @@ public class TileRemover
 
     void removeStars(final Game game)
     {
+        // Shortcut to managers.
         StatManager statMan = game.statMan;
         BoardManager boardMan = game.boardMan;
         AnimationManager animationMan = game.animationMan;
@@ -789,6 +863,7 @@ public class TileRemover
         TutorialManager tutorialMan = game.tutorialMan;
         ListenerManager listenerMan = game.listenerMan;
         SoundManager soundMan = game.soundMan;
+        
         // Clear the flag.
         activateStarRemoval = false;
 
@@ -838,7 +913,10 @@ public class TileRemover
         // Show the SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
-        final ILabel label = new LabelBuilder(p.getX(), p.getY()).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).color(game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore)).text(String.valueOf(deltaScore)).end();
+        final ILabel label = new LabelBuilder(p.getX(), p.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(Game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore))
+                .text(String.valueOf(deltaScore)).end();
 
         a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
         //a2 = new FloatAnimation(0, -1, layerMan, label);                    
@@ -846,21 +924,19 @@ public class TileRemover
 
         a2.setStartRunnable(new Runnable()
         {
-
             public void run()
             {
                 game.layerMan.add(label, Layer.EFFECT);
             }
-            });
+        });
 
         a2.setFinishRunnable(new Runnable()
         {
-
             public void run()
             {
                 game.layerMan.remove(label, Layer.EFFECT);
             }
-            });
+        });
 
         animationMan.add(a1);
         animationMan.add(a2);

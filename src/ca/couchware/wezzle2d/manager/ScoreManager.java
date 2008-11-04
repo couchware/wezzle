@@ -110,9 +110,14 @@ import java.util.Set;
      * The constructor.
      * @param properties A property manager to load properties from.
      */
-    private ScoreManager(BoardManager boardMan, PropertyManager propertyMan,
+    private ScoreManager(BoardManager boardMan, 
+            PropertyManager propertyMan,
             HighScoreManager highScoreMan)
     {
+        assert boardMan != null;
+        assert propertyMan != null;
+        assert highScoreMan != null;
+        
         // Create the save state.
         managerState = new EnumMap<Keys, Object>(Keys.class);
         
@@ -150,6 +155,10 @@ import java.util.Set;
      */
     public int calculateLineScore(Set<Integer> indexSet, ScoreType type, int chainCount)
     {
+        assert indexSet != null;
+        assert type != null;
+        assert chainCount >= 0;
+        
         // Reset the count map.
         for (TileType tt : TileType.values())
             countMap.put(tt, 0);               
@@ -181,23 +190,28 @@ import java.util.Set;
 
     /**
      * Requires documenation.
+     * 
      * @param numTotal
      * @param lineType
      * @return
      */
     private int calculateLineTilePoints(int numTotal, ScoreType type)
-    {
+    {        
+        assert numTotal > 0;
+        assert type != null;
+        
+        // If we have a line with a star tile, then the line is worth half.
+        if (type == ScoreType.STAR)
+        {
+            return (numTotal * POINTS_PER_LINE_TILE) / 2;
+        }
         // If we have a minimal line, it's just 4 times the points/tile.
-        if (numTotal <= 4  
+        else if (numTotal <= 4  
                 || type == ScoreType.BOMB
                 || type == ScoreType.ROCKET)
         {
             return numTotal * POINTS_PER_LINE_TILE;
-        }
-        else if (type == ScoreType.STAR)
-        {
-            return (numTotal * POINTS_PER_LINE_TILE) / 2;
-        }
+        }        
 
         // If we have more, 4 times the points/tile + 100 + 150 + 200 + ...
         int score = 4 * POINTS_PER_LINE_TILE;
@@ -215,9 +229,9 @@ import java.util.Set;
      * @param set A set of tile indices.
      */
     public int calculatePieceScore(Set indexSet)
-    {
+    {                
         // Sanity check.
-        assert(indexSet != null);
+        assert indexSet != null;
         
         // Initilize deltaScore variable.
         int deltaScore = 0;
@@ -230,8 +244,7 @@ import java.util.Set;
                 deltaScore += POINTS_PER_PIECE_TILE;
             }
         }
-           
-        
+                   
         // Return the score.
         return deltaScore;
     }
@@ -277,6 +290,7 @@ import java.util.Set;
 
     public void setTotalScore(int totalScore)
     {
+        assert totalScore >= 0;
         this.totalScore = totalScore;
     }
     
@@ -317,6 +331,7 @@ import java.util.Set;
      */
     public void setTargetTotalScore(int targetTotalScore)
     {
+        assert targetTotalScore >= 0;
         this.targetTotalScore = targetTotalScore;
     }  
     
@@ -326,14 +341,14 @@ import java.util.Set;
      */
     private void updateScore(int deltaScore)	
     {	
-            // Update the level score.
-            levelScore += deltaScore;
+        // Update the level score.
+        levelScore += deltaScore;
 
-            // Update the target score.
-            totalScore += deltaScore;
+        // Update the target score.
+        totalScore += deltaScore;
 
-            if(totalScore > highScore)
-                    setHighScore(totalScore);
+        if(totalScore > highScore)
+                setHighScore(totalScore);
     }
     
     /**
@@ -397,10 +412,10 @@ import java.util.Set;
         highScore = (Integer) managerState.get(Keys.HIGH_SCORE);
     }
         
-    public void handleScoreEvent(ScoreEvent evt, IListenerComponent.GameType gameType)
+    public void handleScoreEvent(ScoreEvent event, IListenerComponent.GameType gameType)
     {
         if (gameType == IListenerComponent.GameType.GAME)
-            updateScore(evt.getScore());
+            updateScore(event.getScore());
     }
     
 }
