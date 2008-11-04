@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.Refactorer.RefactorType;
+import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
@@ -595,7 +595,9 @@ public class PieceManager implements IMouseListener
                 tileDropAnimationInProgress = false;
                                
                 // Run refactor.
-                Refactorer.get().startRefactor(RefactorType.DROP);                                
+                Refactorer.get()
+                        .setRefactorSpeed(RefactorSpeed.DROP)
+                        .startRefactor();
                 
                 // Remove the amount just removed from the total.
                 totalTileDropInAmount -= tileDropList.size();
@@ -795,7 +797,7 @@ public class PieceManager implements IMouseListener
         pieceGrid.setVisible(false);        
         
         // Run a refactor.       
-        Refactorer.get().startRefactor(RefactorType.NORMAL);
+        Refactorer.get().startRefactor();
 
         // Reset mouse buttons.
         mouseButtonSet = EnumSet.noneOf(MouseButton.class);

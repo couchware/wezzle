@@ -47,8 +47,12 @@ public class TextLayoutStore
     private static final HashMap<String, HashMap<Font, TextLayout>> textLayoutMap = 
             new HashMap<String, HashMap<Font, TextLayout>>();
     
-    public TextLayout getTextLayout(Graphics2D g, String text, Font font, boolean cached)
-    {         
+    public TextLayout getTextLayout(Graphics2D gfx, String text, Font font, boolean cached)
+    {       
+        assert gfx  != null;
+        assert text != null;
+        assert font != null;        
+        
 //        LogManager.recordMessage("Hits: " + hits + ", Misses: " + misses + ".",
 //                    "Java2DTextLayoutStore#getTextLayout");
         
@@ -68,7 +72,7 @@ public class TextLayoutStore
 //            LogManager.recordMessage("There are now " + textLayoutMap.size() + " cached layouts.",
 //                    "Java2DTextLayoutStore#getTextLayout");
                         
-            TextLayout textLayout = createTextLayout(g, text, font);
+            TextLayout textLayout = createTextLayout(gfx, text, font);
             
             if (cached == true)
             {
@@ -88,6 +92,10 @@ public class TextLayoutStore
      */
     private TextLayout createTextLayout(Graphics2D gfx, String text, Font font)
     {             
+        assert gfx  != null;
+        assert text != null;
+        assert font != null;
+        
         // Set the font.
         gfx.setFont(font);  
         gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,

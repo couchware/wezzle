@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.Refactorer.RefactorType;
+import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.*;
@@ -1177,7 +1177,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 //worldMan.levelUp(this);
 
                 listenerMan.notifyLevelListener(new LevelEvent(1, this, this));
-                TileRemover.get().setLevelUp(true);                                                
+                TileRemover.get().notifyLevelUp();                                                
 
                 soundMan.play(Sound.LEVEL_UP);
 

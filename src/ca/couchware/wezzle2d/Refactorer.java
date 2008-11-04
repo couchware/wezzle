@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.IAnimation;
+import java.util.EnumMap;
 import java.util.List;
 
 /**
@@ -21,23 +22,41 @@ public class Refactorer
 	private static final Refactorer single = new Refactorer();
     
     /**
-     * The refator types.
+     * The refator speeds.
      */
-    public static enum RefactorType
+    public static enum RefactorSpeed
     {
+        SLOWER,
+        SLOW,
         NORMAL, 
-        DROP
+        DROP,
+        SHIFT    
     }
     
     /**
-     * The default refactor speed.
+     * The default slow speed.
      */
-    final public static int DEFAULT_REFACTOR_SPEED = 180;
+    final public static int DEFAULT_SLOWER_SPEED = 50;
+    
+    /**
+     * The default slow speed.
+     */
+    final public static int DEFAULT_SLOW_SPEED = 100;
+    
+    /**
+     * The default normal speed.
+     */
+    final public static int DEFAULT_NORMAL_SPEED = 180;
     
     /**
      * The default drop speed.
      */
     final public static int DEFAULT_DROP_SPEED = 250;
+    
+    /**
+     * The default shift speed.
+     */
+    final public static int DEFAULT_SHIFT_SPEED = 200;
     
      /**
      * If true, refactor will be activated next loop.
@@ -67,23 +86,23 @@ public class Refactorer
     /**
      * The refactor type.
      */
-    private RefactorType refactorType;
+    private RefactorSpeed speed;
     
     /**
-     * The speed of the upcoming refactor.
+     * The speed map.
      */
-    private int refactorSpeed;
-    
-    /**
-     * The speed of the upcoming drop.
-     */
-    private int dropSpeed;
+    private EnumMap<RefactorSpeed, Integer> speedMap = 
+            new EnumMap<RefactorSpeed, Integer>(RefactorSpeed.class);
     
     private Refactorer()
     {
         // Set the refactor speeds to their defaults.
-        this.dropSpeed = DEFAULT_DROP_SPEED;
-        this.refactorSpeed = DEFAULT_REFACTOR_SPEED;
+        speedMap.put(RefactorSpeed.SLOWER, DEFAULT_SLOWER_SPEED);
+        speedMap.put(RefactorSpeed.SLOW, DEFAULT_SLOW_SPEED);
+        speedMap.put(RefactorSpeed.NORMAL, DEFAULT_NORMAL_SPEED);
+        speedMap.put(RefactorSpeed.DROP, DEFAULT_DROP_SPEED);
+        speedMap.put(RefactorSpeed.SHIFT, DEFAULT_SHIFT_SPEED);       
+        this.speed = RefactorSpeed.NORMAL;
     }
     
     /**
@@ -94,49 +113,18 @@ public class Refactorer
 	public static Refactorer get()
 	{
 		return single;
-	}
+	}   
     
-    public int getDropSpeed()
+    public RefactorSpeed getRefactorSpeed()
     {
-        return dropSpeed;
+        return speed;
     }
 
-    public void setDropSpeed(int dropSpeed)
+    public Refactorer setRefactorSpeed(RefactorSpeed speed)
     {
-        this.dropSpeed = dropSpeed;
-    }
-    
-    public void resetDropSpeed()
-    {
-        this.dropSpeed = DEFAULT_DROP_SPEED;
-    }
-
-    public int getRefactorSpeed()
-    {
-        return refactorSpeed;
-    }
-
-    public void setRefactorSpeed(int refactorSpeed)
-    {
-        this.refactorSpeed = refactorSpeed;
-    }
-    
-    /**
-     * Resets the refactor speed to it's default value.
-     */
-    public void resetRefactorSpeed()
-    {
-        this.refactorSpeed = DEFAULT_REFACTOR_SPEED;
-    }
-
-    public RefactorType getRefactorType()
-    {
-        return refactorType;
-    }
-
-    public void setRefactorType(RefactorType refactorType)
-    {
-        this.refactorType = refactorType;
+        assert speed != null;        
+        this.speed = speed;
+        return this;
     }        
     
      /**
@@ -144,13 +132,11 @@ public class Refactorer
      * 
      * @param speed
      */
-    public void startRefactor(RefactorType type)
-    {
+    public Refactorer startRefactor()
+    {        
         // Set the refactor flag.
-        this.activateRefactor = true;   
-        
-        // Set the type.
-        this.refactorType = type;
+        this.activateRefactor = true;                   
+        return this;
     }
     
     /**
@@ -183,6 +169,8 @@ public class Refactorer
     
     public void updateLogic(Game game)
     {
+        assert game != null;
+        
         // Reset the finished flag.
         this.finishedRefactor = false;
         
@@ -192,41 +180,29 @@ public class Refactorer
             // Hide piece.
             game.pieceMan.getPieceGrid().setVisible(false);
 
-            // Start down refactor.                
-            switch (refactorType)
-            {
-                case NORMAL:
-                    refactorAnimationList = 
-                            game.boardMan.startVerticalShift(refactorSpeed);
-                    break;
-
-                case DROP:
-                    refactorAnimationList =
-                            game.boardMan.startVerticalShift(dropSpeed);
-                    break;                    
-
-                default: throw new AssertionError();
-            }
+            // Start down refactor.                           
+            this.refactorAnimationList = game.boardMan.startVerticalShift(speedMap.get(speed));              
 
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
             // automatically when they are done.
             game.animationMan.addAll(refactorAnimationList);
 
-            refactorVerticalInProgress = true;
+            // Set the refactor in progress flag.
+            this.refactorVerticalInProgress = true;
 
             // Clear flag.
             clearRefactor();
         }
         
         // See if we're down refactoring.
-        if (refactorVerticalInProgress == true)
+        if (this.refactorVerticalInProgress == true)
         {
             handleVerticalRefactor(game);
         } 
         
         // See if we're left refactoring.
-        if (refactorHorizontalInProgress == true)
+        if (this.refactorHorizontalInProgress == true)
         {
             handleHorizontalRefactor(game);
         }
@@ -240,6 +216,8 @@ public class Refactorer
      */
     private void handleVerticalRefactor(Game game)
     {
+        assert game != null;
+        
         boolean done = true;
         for (IAnimation a : refactorAnimationList)
         {
@@ -261,28 +239,16 @@ public class Refactorer
             game.boardMan.synchronize();							
 
             // Start left refactor.
-
-            switch (refactorType)
-            {
-                case NORMAL:
-                    refactorAnimationList = 
-                            game.boardMan.startHorizontalShift(refactorSpeed);
-                    break;
-
-                case DROP:
-                    refactorAnimationList = 
-                            game.boardMan.startHorizontalShift(dropSpeed);
-                    break; 
-
-                default: throw new AssertionError();
-            }
-
+            refactorAnimationList = game.boardMan.startHorizontalShift(speedMap.get(speed));
+            
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
             // automatically when they are done.
             game.animationMan.addAll(refactorAnimationList);
 
-            refactorHorizontalInProgress = true;								
+            // Set the refactor in progress flag.
+            refactorHorizontalInProgress = true;
+            
         } // end if
     }
     
@@ -293,6 +259,8 @@ public class Refactorer
      */
     private void handleHorizontalRefactor(Game game)
     {        
+        assert game != null;
+        
         boolean done = true;
         for (IAnimation a : refactorAnimationList)
         {
@@ -318,7 +286,10 @@ public class Refactorer
         }
 
         // Notify piece manager.
-        game.pieceMan.notifyRefactored();                    
+        game.pieceMan.notifyRefactored();     
+        
+        // Reset speed to normal.
+        setRefactorSpeed(RefactorSpeed.NORMAL);
     }
     
 }

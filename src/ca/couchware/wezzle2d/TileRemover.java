@@ -4,7 +4,7 @@
  */
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.Refactorer.RefactorType;
+import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.ExplosionAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
@@ -117,11 +117,11 @@ public class TileRemover
      */
     private Set<Integer> rocketRemovalSet;
     
-    /**
-     * If true, the gravity effect will be activated next loop.
-     */
-    private boolean activateGravityEffect = false;   
-    
+//    /**
+//     * If true, the gravity effect will be activated next loop.
+//     */
+//    private boolean activateGravityEffect = false;   
+  
     /**
      * The number of gravity tiles found.
      */
@@ -167,39 +167,19 @@ public class TileRemover
         }
 
         // See if it just finished.
-        if (Refactorer.get().isFinished() == true)
+        if (Refactorer.get().isFinished() == true
+                && rocketRemovalSet.isEmpty()
+                && bombRemovalSet.isEmpty()
+                && starRemovalSet.isEmpty())
         {
             findMatches(game);
-
-        } // end if
+        } // end if       
 
         // If a line removal was activated.
         if (this.activateLineRemoval == true)
         {
             removeLines(game);
-        }   
-        
-        // If the gravity effect has been activated.
-        if (this.activateGravityEffect == true)
-        {
-            // Determine the new gravity.
-            EnumSet<Direction> gravity = null;
-            if (game.boardMan.getGravity().contains(Direction.LEFT))
-            {
-                gravity = EnumSet.of(Direction.DOWN, Direction.RIGHT);
-            }
-            else
-            {
-                gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
-            }
-                        
-            // Set the new gravity.
-            game.boardMan.setGravity(gravity);
-            
-            // Clear the flag and start the refactorer.
-            this.activateGravityEffect = false;            
-            this.tileEffectInProgress = true;
-        }
+        }                 
 
         // If the star removal is in progress.
         if (this.activateRocketRemoval == true)
@@ -218,15 +198,9 @@ public class TileRemover
         {
             removeBombs(game);
         }
-                
-        // If a tile effect is in progress.
-        if (this.tileEffectInProgress == true)
-        {
-            Refactorer.get().startRefactor(RefactorType.NORMAL);
-            this.tileEffectInProgress = false;
-        }
+                       
         // If a line removal is in progress.        
-        else if (this.tileRemovalInProgress == true)
+        if (this.tileRemovalInProgress == true)
         {
             processRemoval(game);
         }
@@ -259,9 +233,7 @@ public class TileRemover
         return this.activateLineRemoval 
                 || this.activateBombRemoval 
                 || this.activateStarRemoval 
-                || this.activateRocketRemoval 
-                || this.activateGravityEffect
-                || this.tileEffectInProgress
+                || this.activateRocketRemoval                
                 || this.tileRemovalInProgress;
     }
 
@@ -372,12 +344,8 @@ public class TileRemover
 
             // See if there are any bombs in the bomb set.
             // If there are, activate the bomb removal.  
-            if (this.gravityRemovalSet.size() > 0)
-            {
-                LogManager.recordMessage("Gravity changed.");
-                this.activateGravityEffect = true;
-            }
-            else if (this.rocketRemovalSet.size() > 0)
+            
+            if (this.rocketRemovalSet.size() > 0)
             {
                 this.activateRocketRemoval = true;
             }
@@ -389,10 +357,19 @@ public class TileRemover
             {
                 this.activateBombRemoval = true;
             }
+            else if (this.gravityRemovalSet.size() > 0)
+            {
+                shiftGravity(game); 
+                Refactorer.get()
+                        .setRefactorSpeed(RefactorSpeed.SHIFT)
+                        .startRefactor();
+            }
             // Otherwise, start a new refactor.
             else
             {
-                Refactorer.get().startRefactor(RefactorType.NORMAL);
+                Refactorer.get()
+                        .setRefactorSpeed(RefactorSpeed.NORMAL)
+                        .startRefactor();
             }
         }
     }
@@ -979,9 +956,32 @@ public class TileRemover
         // Set the flag.
         tileRemovalInProgress = true;
     }
-
-    void setLevelUp(boolean val)
+    
+    private void shiftGravity(Game game)
     {
-        this.levelUpFlag = val;
+        // Determine the new gravity.
+        EnumSet<Direction> gravity = null;
+        if (game.boardMan.getGravity().contains(Direction.LEFT))
+        {
+            gravity = EnumSet.of(Direction.DOWN, Direction.RIGHT);
+        }
+        else
+        {
+            gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
+        }
+
+        // Set the new gravity.
+        game.boardMan.setGravity(gravity);
+        
+        // Clear the gravity tiles.
+        gravityRemovalSet.clear();
+    }
+
+    /**
+     * Notify the tile remover of a level-up.
+     */
+    public void notifyLevelUp()
+    {
+        this.levelUpFlag = true;
     }
 }
