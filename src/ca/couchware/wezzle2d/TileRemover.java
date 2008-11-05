@@ -287,11 +287,10 @@ public class TileRemover
         int cycleY =  boardMan.findYMatch(tileRemovalSet);
         
         statMan.incrementCycleLineCount(cycleX);
-
-       statMan.incrementCycleLineCount(cycleY);
+        statMan.incrementCycleLineCount(cycleY);
         
         //  Handle any lines we may have had.
-        if(cycleX+cycleY > 0)
+        if (cycleX + cycleY > 0)
         {
             if (game.tutorialMan.isTutorialInProgress() == true)
             {
@@ -300,10 +299,11 @@ public class TileRemover
             }
             else
             {
-                game.listenerMan.notifyLineListener(new LineEvent(game.statMan.getCycleLineCount(), this), 
+                game.listenerMan.notifyLineListener(new LineEvent(game.statMan.getCycleLineCount(), this),
                         IListenerComponent.GameType.GAME);
             }
         }
+
         // Copy the match into the last line match holder.
         lastMatchSet.clear();
         lastMatchSet.addAll(tileRemovalSet);
@@ -442,8 +442,17 @@ public class TileRemover
                 .color(Game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore)).end();
 
-        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
-        a2 = new MoveAnimation.Builder(label).duration(1150).v(0.03).theta(90).end();
+        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                .wait(Conf.SCT_SCORE_FADE_WAIT)
+                .duration(Conf.SCT_SCORE_FADE_DURATION)
+                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
+                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .end();
+        
+        a2 = new MoveAnimation.Builder(label)
+                .duration(Conf.SCT_SCORE_MOVE_DURATION)
+                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
+                .theta(Conf.SCT_SCORE_MOVE_THETA).end();
 
         a2.setStartRunnable(new Runnable()
         {
@@ -502,9 +511,10 @@ public class TileRemover
             }
             else
             {
-                a1 = new JiggleAnimation(600, 50, t);
-                //a2 = new FadeAnimation(FadeType.OUT, 0, 600, t);                                        
-                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t).wait(0).duration(600).end();
+                a1 = new JiggleAnimation(600, 50, t);               
+                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                        .wait(Conf.BOMB_FADE_WAIT)
+                        .duration(Conf.BOMB_FADE_DURATION).end();
 
                 t.setAnimation(a1);
                 animationMan.add(a1);
@@ -567,9 +577,17 @@ public class TileRemover
                     .color(Game.SCORE_LINE_COLOR).size(scoreMan.determineFontSize(deltaScore))
                     .text(String.valueOf(deltaScore)).end();
             
-            IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
-            //IAnimation a2 = new FloatAnimation(0, -1, layerMan, label);                    
-            IAnimation a2 = new MoveAnimation.Builder(label).duration(1150).v(0.03).theta(90).end();
+            IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                .wait(Conf.SCT_SCORE_FADE_WAIT)
+                .duration(Conf.SCT_SCORE_FADE_DURATION)
+                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
+                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .end();
+            
+            IAnimation a2 = new MoveAnimation.Builder(label)
+                .duration(Conf.SCT_SCORE_MOVE_DURATION)
+                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
+                .theta(Conf.SCT_SCORE_MOVE_THETA).end();
 
             a2.setStartRunnable(new Runnable()
             {
@@ -656,17 +674,27 @@ public class TileRemover
                     // Bring this tile to the top.
                     game.layerMan.toFront(t, Layer.TILE);
 
-                    IAnimation a1 = new MoveAnimation.Builder(t).duration(750).theta(angle).v(0.3).g(0.001).end();
-                    IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t).wait(0).duration(750).end();
+                    IAnimation a1 = new MoveAnimation.Builder(t)
+                            .duration(Conf.ANIMATION_JUMP_MOVE_DURATION).theta(angle)
+                            .speed(Conf.ANIMATION_JUMP_MOVE_SPEED)
+                            .gravity(Conf.ANIMATION_JUMP_MOVE_GRAVITY).end();
+                    
+                    IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                            .wait(Conf.ANIMATION_JUMP_FADE_WAIT)
+                            .duration(Conf.ANIMATION_JUMP_FADE_DURATION).end();
+                    
                     t.setAnimation(a1);
+                    
                     animationMan.add(a1);
                     animationMan.add(a2);
+                    
                     a1 = null;
                     a2 = null;
                 }
                 else
                 {
-                    t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t).v(0.05).end());
+                    t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
+                            .v(0.05).end());
                     animationMan.add(t.getAnimation());
                 }
             }
@@ -749,11 +777,18 @@ public class TileRemover
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(Game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore)).end();
-
-        //a1 = new FadeAnimation(FadeType.OUT, label);
-        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
-        //a2 = new FloatAnimation(0, -1, layerMan, label);    
-        a2 = new MoveAnimation.Builder(label).duration(1150).v(0.03).theta(90).end();
+        
+        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                .wait(Conf.SCT_SCORE_FADE_WAIT)
+                .duration(Conf.SCT_SCORE_FADE_DURATION)
+                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
+                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .end();
+        
+        a2 = new MoveAnimation.Builder(label)
+                .duration(Conf.SCT_SCORE_MOVE_DURATION)
+                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
+                .theta(Conf.SCT_SCORE_MOVE_THETA).end();
 
         a2.setStartRunnable(new Runnable()
         {
@@ -813,28 +848,43 @@ public class TileRemover
             {
                 // Cast it.
                 RocketTileEntity r = (RocketTileEntity) t;
-
-                //a1 = new JumpAnimation(0.3, r.getDirection() + 90, 0, 750, r);
-                //a2 = new FadeAnimation(FadeType.OUT, 0, 750, t); 
-                a1 = new MoveAnimation.Builder(r).duration(750).theta(r.getDirection().toDegrees()).v(0.3).g(0).end();
-                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t).wait(0).duration(750).end();
+                
+                a1 = new MoveAnimation.Builder(r).duration(54)
+                        .theta(r.getDirection().toDegrees())
+                        .speed(Conf.ROCKET_MOVE_SPEED)
+                        .gravity(Conf.ROCKET_MOVE_GRAVITY).end();
+                
+                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                        .wait(Conf.ROCKET_FADE_WAIT)
+                        .duration(Conf.ROCKET_FADE_DURATION).end();
+                
                 t.setAnimation(a1);
+                
                 animationMan.add(a1);
                 animationMan.add(a2);
+                
                 a1 = null;
                 a2 = null;
             }
             else
             {
                 i++;
-                int angle = i % 2 == 0 ? 70 : 180 - 70;
-                //int angle = 360 - 180 + 70;
-                a1 = new MoveAnimation.Builder(t).duration(750).theta(angle).v(0.3).g(0.001).end();
-                //a2 = new FadeAnimation(FadeType.OUT, 0, 750, t);                                        
-                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t).wait(0).duration(750).end();
+                int angle = i % 2 == 0 ? 70 : 180 - 70;                
+               
+                a1 = new MoveAnimation.Builder(t)
+                        .duration(Conf.ANIMATION_JUMP_MOVE_DURATION).theta(angle)
+                        .speed(Conf.ANIMATION_JUMP_MOVE_SPEED)
+                        .gravity(Conf.ANIMATION_JUMP_MOVE_GRAVITY).end();
+                    
+                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                        .wait(Conf.ANIMATION_JUMP_FADE_WAIT)
+                        .duration(Conf.ANIMATION_JUMP_FADE_DURATION).end();
+                
                 t.setAnimation(a1);
+                
                 animationMan.add(a1);
                 animationMan.add(a2);
+                
                 a1 = null;
                 a2 = null;
             }
@@ -910,12 +960,22 @@ public class TileRemover
 
         final ILabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore))
-                .text(String.valueOf(deltaScore)).end();
+                .color(Game.SCORE_BOMB_COLOR)
+                .size(scoreMan.determineFontSize(deltaScore))
+                .text(String.valueOf(deltaScore))
+                .end();
 
-        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();
-        //a2 = new FloatAnimation(0, -1, layerMan, label);                    
-        a2 = new MoveAnimation.Builder(label).duration(1150).v(0.03).theta(90).end();
+        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                .wait(Conf.SCT_SCORE_FADE_WAIT)
+                .duration(Conf.SCT_SCORE_FADE_DURATION)
+                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
+                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .end();
+        
+        a2 = new MoveAnimation.Builder(label)
+                .duration(Conf.SCT_SCORE_MOVE_DURATION)
+                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
+                .theta(Conf.SCT_SCORE_MOVE_THETA).end();
 
         a2.setStartRunnable(new Runnable()
         {
@@ -957,13 +1017,22 @@ public class TileRemover
             i++;
 
             int angle = i % 2 == 0 ? 70 : 180 - 70;
-            //a1 = new JumpAnimation(0.3, angle, 0.001, 750, t);
-            //a2 = new FadeAnimation(FadeType.OUT, 0, 750, t);                                        
-            a1 = new MoveAnimation.Builder(t).duration(750).theta(angle).v(0.3).g(0.001).end();
-            a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t).wait(0).duration(750).end();
+                                          
+            a1 = new MoveAnimation.Builder(t)
+                    .duration(Conf.ANIMATION_JUMP_MOVE_DURATION)
+                    .theta(angle)
+                    .speed(Conf.ANIMATION_JUMP_MOVE_SPEED)
+                    .gravity(Conf.ANIMATION_JUMP_MOVE_GRAVITY)
+                    .end();
+            a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                    .wait(Conf.ANIMATION_JUMP_FADE_WAIT)
+                    .duration(Conf.ANIMATION_JUMP_MOVE_DURATION)
+                    .end();
+            
             t.setAnimation(a1);
             animationMan.add(a1);
             animationMan.add(a2);
+            
             a1 = null;
             a2 = null;
         }

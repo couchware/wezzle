@@ -16,7 +16,7 @@ public class FadeAnimation extends AbstractAnimation
     /**
      * The counter.
      */
-    private long counter;
+    private long ticks = 0;
     
     /**
      * The minimum opacity the fade should go to.
@@ -50,12 +50,12 @@ public class FadeAnimation extends AbstractAnimation
     private Type type;
     
     /**
-     * The amount of time, in ms, to wait before fading out.
+     * The amount of time, in ticks, to wait before fading out.
      */
     private int wait;
     
     /**
-     * The max time for the animation to run for, in ms.
+     * The max time for the animation to run for, in ticks.
      */
     private int duration;
     
@@ -86,8 +86,8 @@ public class FadeAnimation extends AbstractAnimation
         private final Type type;
         private final IEntity entity;
         
-        private int wait = 400;
-        private int duration = 750;
+        private int wait = 0;
+        private int duration = 500;
         private int minOpacity = 0;
         private int maxOpacity = 100;
         
@@ -108,8 +108,8 @@ public class FadeAnimation extends AbstractAnimation
         }                
     }
 
-    public void nextFrame(long delta)
-    {
+    public void nextFrame()
+    {        
         // Make sure we've set the started flag.
         if (this.started == false)
         {
@@ -134,10 +134,10 @@ public class FadeAnimation extends AbstractAnimation
         }
         
         // Add to counter.
-        counter += delta;
+        ticks++;
         
         // Adjust opacity.
-        if (counter > wait)
+        if (ticks > wait)
         {
             switch (type)
             {
@@ -145,7 +145,7 @@ public class FadeAnimation extends AbstractAnimation
                 case LOOP_IN:
                    
                     int i = Util.scaleInt(0, duration, 
-                            minOpacity, maxOpacity, (int) counter - wait);
+                            minOpacity, maxOpacity, (int) ticks - wait);
                     entity.setOpacity(i);
                             
                     break;
@@ -154,7 +154,7 @@ public class FadeAnimation extends AbstractAnimation
                 case LOOP_OUT:
                     
                     int o = Util.scaleInt(0, duration, 
-                            minOpacity, maxOpacity, (int) counter - wait);
+                            minOpacity, maxOpacity, (int) ticks - wait);
                     entity.setOpacity(maxOpacity - o + minOpacity);                        
                     
                     break;
@@ -164,7 +164,7 @@ public class FadeAnimation extends AbstractAnimation
             }   
             
             // See if we're done.
-            if (counter > wait + duration)   
+            if (ticks > wait + duration)   
             {
                 switch (type)
                 {                     
@@ -176,13 +176,13 @@ public class FadeAnimation extends AbstractAnimation
 
                     case LOOP_IN:
 
-                        counter -= duration;
+                        ticks -= duration;
                         type = Type.LOOP_OUT;
                         break;
 
                     case LOOP_OUT:
 
-                        counter -= duration;
+                        ticks -= duration;
                         type = Type.LOOP_IN;
                         break;
 

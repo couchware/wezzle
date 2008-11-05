@@ -286,7 +286,7 @@ public class LWJGLGameWindow implements IGameWindow
 //
 //                callback.render();  
                 
-                callback.update(this.speed);
+                callback.update();
                 callback.render();                
                 Display.sync(TICKS_PER_SECOND);
             }
@@ -301,7 +301,7 @@ public class LWJGLGameWindow implements IGameWindow
                 catch (InterruptedException e)
                 { }
                 
-                callback.update(speed);
+                callback.update();
 
                 // Only bother rendering if the window is visible or dirty
                 if (Display.isVisible() || Display.isDirty())
@@ -535,27 +535,7 @@ public class LWJGLGameWindow implements IGameWindow
     {
         return new ImmutablePosition(Mouse.getX(), height - Mouse.getY());
     }
-    
-     //--------------------------------------------------------------------------
-    // Game Speed Methods
-    //--------------------------------------------------------------------------
-    
-    /** The default game speed. */
-    final private int DEFAULT_GAME_SPEED = 16;
-    
-    /** The current game speed. */
-    private int speed = DEFAULT_GAME_SPEED;
-    
-    public void setSpeed(int speed)
-    {
-        this.speed = speed;
-    }
-
-    public int getSpeed(int speed)
-    {
-        return speed;
-    }
-
+       
     //--------------------------------------------------------------------------
     // IMouseListener Attributes
     //--------------------------------------------------------------------------

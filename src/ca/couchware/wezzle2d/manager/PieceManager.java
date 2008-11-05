@@ -746,9 +746,18 @@ public class PieceManager implements IMouseListener
                 .text(String.valueOf(deltaScore))
                 .end();
         
-        IAnimation a1 = new FadeAnimation.Builder(Type.OUT, label).end();
+        IAnimation a1 = new FadeAnimation.Builder(Type.OUT, label)
+                .wait(Conf.SCT_SCORE_FADE_WAIT)
+                .duration(Conf.SCT_SCORE_FADE_DURATION)
+                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
+                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .end();
+        
         IAnimation a2 = new MoveAnimation.Builder(label)
-                        .duration(1150).v(0.03).theta(90).end();
+                .duration(Conf.SCT_SCORE_MOVE_DURATION)
+                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
+                .theta(Conf.SCT_SCORE_MOVE_THETA)
+                .end();
                     
         a2.setStartRunnable(new Runnable()
         {

@@ -247,6 +247,13 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         
         return false;
     }
+    
+    @Override
+    public void setDirty(boolean dirty)
+    {
+         for (RadioItem item : itemMap.values())
+             item.setDirty(dirty);
+    }
 
     public T getSelectedKey()
     {
@@ -347,5 +354,6 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
     {
 //        if (shape.contains(e.getPosition()))
 //            LogManager.recordMessage("I'm over the area!");
-    }
+    }        
+    
 }

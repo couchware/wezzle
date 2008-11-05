@@ -17,7 +17,7 @@ public interface IGameWindowCallback
     /**
      * Notification that it is time to update the scene.
      */
-    public void update(long delta);    
+    public void update();    
     
 	/**
 	 * Notification that the display is being rendered. The implementor should

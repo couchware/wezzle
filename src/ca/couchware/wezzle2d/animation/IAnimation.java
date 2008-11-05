@@ -14,7 +14,7 @@ public interface IAnimation
      * Determines how the entity should be changed based on how much time
      * has passed since last update.
      */
-    public void nextFrame(long delta);       
+    public void nextFrame();       
     
     /**
      * Performs cleanup to the animation so that it may remain in a consistent

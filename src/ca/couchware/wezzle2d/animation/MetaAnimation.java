@@ -91,8 +91,10 @@ public class MetaAnimation extends AbstractAnimation
     }
     
     @Override
-    public void nextFrame(long delta)
+    public void nextFrame()
     {
+        long delta = 14;
+        
         // Make sure we've set the started flag.
         setStarted();
         
@@ -136,7 +138,7 @@ public class MetaAnimation extends AbstractAnimation
                     // one animation is done, then the meta animation is done.
                     for (IAnimation a : animationList)
                     {
-                        a.nextFrame(delta);
+                        a.nextFrame();
                         if (a.isFinished() == true)
                             f = true;              
                     }
@@ -152,7 +154,7 @@ public class MetaAnimation extends AbstractAnimation
                     // one animation that is not done, then we keep going.
                     for (IAnimation a : animationList)
                     {
-                        a.nextFrame(delta);
+                        a.nextFrame();
                         if (a.isFinished() == false)
                             f = false;
                     }                                        
@@ -180,7 +182,7 @@ public class MetaAnimation extends AbstractAnimation
         // If there are animations left, then we run the first one until it is
         // done, then remove it and do the next one and so on.
         IAnimation a = animationList.get(0);
-        a.nextFrame(delta);
+        a.nextFrame();
         if (a.isFinished() == true) animationList.remove(0);
         
          // If there are no animations left, then we are done.

@@ -351,4 +351,10 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         return cached;
     }        
     
+    @Override
+    public String toString()
+    {
+        return "LWJGLLabel with text '" + this.text + "'";
+    }
+    
 }

@@ -35,7 +35,7 @@ public class SystemTimer
 	 */
 	public static long getTime()
 	{
-		// we get the "timer ticks" from the high resolution timer
+		// We get the "timer ticks" from the high resolution timer
 		// multiply by 1000 so our end result is in milliseconds
 		// then divide by the number of ticks in a second giving
 		// us a nice clear time in milliseconds

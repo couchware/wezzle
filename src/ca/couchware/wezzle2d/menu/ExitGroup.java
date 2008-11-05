@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.menu;
 
+import ca.couchware.wezzle2d.Conf;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.LayerManager;
@@ -59,7 +60,7 @@ public class ExitGroup extends AbstractGroup
         // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(MainMenuGroup.WINDOW_OPACITY).visible(false).end();
+                .opacity(Conf.MAIN_MENU_WINDOW_OPACITY).visible(false).end();
         this.layerMan.add(win, Layer.UI);               
                
         // Line 1.
@@ -109,7 +110,7 @@ public class ExitGroup extends AbstractGroup
         win.setVisible(true);        
         
         IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
-                .v(MainMenuGroup.WINDOW_SPEED).end();        
+                .speed(Conf.MAIN_MENU_WINDOW_SPEED).end();        
         
         a.setFinishRunnable(new Runnable()
         {
@@ -124,7 +125,8 @@ public class ExitGroup extends AbstractGroup
     public IAnimation animateHide()
     {        
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300).v(MainMenuGroup.WINDOW_SPEED).end();
+                .maxY(Game.SCREEN_HEIGHT + 300)
+                .speed(Conf.MAIN_MENU_WINDOW_SPEED).end();
         
         a.setStartRunnable(new Runnable()
         {

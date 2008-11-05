@@ -653,7 +653,7 @@ public class BoardManager implements IManager
         int bound;
         
         // The v.
-        double v = (double) speed / 1000.0;
+        int v = speed;
         
         switch (direction)
         {
@@ -669,7 +669,7 @@ public class BoardManager implements IManager
                         bound = calculateBound(direction,
                                 countTilesInDirection(direction, i));
                         
-                        a = new MoveAnimation.Builder(board[i]).v(v)
+                        a = new MoveAnimation.Builder(board[i]).speed(v)
                                 .minY(bound).theta(90).end();                        
                         animationList.add(a);
                     }
@@ -689,7 +689,7 @@ public class BoardManager implements IManager
                         bound = calculateBound(direction,
                                 countTilesInDirection(direction, i));
                         
-                        a = new MoveAnimation.Builder(board[i]).v(v)
+                        a = new MoveAnimation.Builder(board[i]).speed(v)
                                 .maxY(bound).theta(-90).end();                        
                         animationList.add(a);
                     }
@@ -710,7 +710,7 @@ public class BoardManager implements IManager
                         bound = calculateBound(direction,
                                 countTilesInDirection(direction, i));
                         
-                        a = new MoveAnimation.Builder(board[i]).v(v)
+                        a = new MoveAnimation.Builder(board[i]).speed(v)
                                 .minX(bound).theta(180).end();                        
                         animationList.add(a);
                     }
@@ -731,7 +731,7 @@ public class BoardManager implements IManager
                         bound = calculateBound(direction,
                                 countTilesInDirection(direction, i));
                         
-                        a = new MoveAnimation.Builder(board[i]).v(v)
+                        a = new MoveAnimation.Builder(board[i]).speed(v)
                                 .maxX(bound).theta(0).end();                        
                         animationList.add(a);
                     }
@@ -1469,7 +1469,7 @@ public class BoardManager implements IManager
     {
         // The amount of delay between each row.
         int delay = 0;
-        int deltaDelay = 200;
+        int deltaDelay = 14;
         
         // True if a tile was found this row.
         boolean tileFound = false;
@@ -1485,7 +1485,8 @@ public class BoardManager implements IManager
 			if (t != null)		
 			{	                
                 IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, t)
-                        .wait(delay).duration(700).end();                
+                        .wait(delay).duration(50).end();  
+                
                 t.setAnimation(a);
                 animationMan.add(a);
                 
@@ -1548,7 +1549,7 @@ public class BoardManager implements IManager
                 
                 // Create the animation.
                 a1 = new FadeAnimation.Builder(FadeAnimation.Type.IN, t)
-                        .wait(0).duration(500).end();
+                        .wait(0).duration(36).end();
                 
                 // Make the animation remove itself.                
                 a1.setFinishRunnable(new Runnable()
@@ -1582,7 +1583,7 @@ public class BoardManager implements IManager
                     throw new AssertionError("Angle should only be 0 or 180.");
                 
                 a2 = new MoveAnimation.Builder(t).minX(minX).maxX(maxX)
-                        .wait(0).duration(500).theta(theta).v(0.15).end();                                
+                        .wait(0).duration(36).theta(theta).speed(150).end();                                
                 
                 // Add them to the animation manager.
                 t.setAnimation(a1);
@@ -1649,7 +1650,7 @@ public class BoardManager implements IManager
 			if (t != null)		
 			{	                
                 IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(wait).duration(700).end();                 
+                        .wait(wait).duration(50).end();                 
                 t.setAnimation(a);
                 animationMan.add(a);
                 
@@ -1717,10 +1718,10 @@ public class BoardManager implements IManager
                 
                 // Create the animation.
                 a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(0).duration(500).end();
+                        .wait(0).duration(36).end();
 
                 a2 = new MoveAnimation.Builder(t).wait(0)
-                        .duration(500).theta(180 * (row % 2)).v(0.15).end();
+                        .duration(36).theta(180 * (row % 2)).speed(150).end();
                 
                 // Make the animation remove itself.                
                 a1.setFinishRunnable(new Runnable()

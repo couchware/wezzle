@@ -13,8 +13,11 @@ import ca.couchware.wezzle2d.util.Util;
  */
 public class TimerManager 
 {
-
+    /**
+     * The default time.
+     */
     private static final int DEFAULT_TIME = 20;
+    
 	/** 
      * The current time on the timer. 
      */
@@ -144,15 +147,13 @@ public class TimerManager
 	 * 
 	 * @param offset The elapsed time.
 	 */
-	public void incrementInternalTime(long offset)
+	public void incrementInternalTime()
 	{                
         // If the timer is paused, don't do anything.
         if (paused == true || stopped == true)
-            return;                
-        
-		assert (offset >= 0);
+            return;                        		
 		
-		this.internalTime += offset;
+		this.internalTime += 14;
 		
 		// Check to see if it has been a second.
 		if (this.internalTime >= 1000)

@@ -870,14 +870,14 @@ public class Game extends Canvas implements IGameWindowCallback
         });                     
 	}                   
     
-    public void update(long delta)
+    public void update()
     {                
         // If the loader is running, bypass all the rendering to show it.        
         if (loader != null)
         {   
             // Animate all animations.
             if (animationMan != null)
-                animationMan.animate(delta);
+                animationMan.animate();
             
             if (loader.updateLogic(this) == Loader.State.FINISHED)
             {
@@ -906,7 +906,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Animate all animations.
             if (animationMan != null)
-                animationMan.animate(delta);
+                animationMan.animate();
             
             // Update the main menu logic.
             mainMenu.updateLogic(this);
@@ -950,7 +950,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Animate all animations.
             if (animationMan != null)
-                animationMan.animate(delta);
+                animationMan.animate();
             
             if (mainMenuTransition.isFinished() == false)
             {
@@ -1102,7 +1102,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // If the pause button is not on, then we proceed with the
         // normal game loop.
         if (groupMan.isActivated() == false)
-            updateBoard(delta);
+            updateBoard();
                         
         // Fire all the queued mouse events.
         window.fireMouseEvents();        
@@ -1159,7 +1159,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * @param delta The amount of time that has passed since the last
      * board update.
      */
-    private void updateBoard(long delta)
+    private void updateBoard()
     {
         // See if it's time to level-up.
         if (pieceMan.isTileDropInProgress() == false
@@ -1189,11 +1189,22 @@ public class Game extends Canvas implements IGameWindowCallback
 
                 final ILabel label = new LabelBuilder(x, y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                        .color(TEXT_COLOR1).size(26).text("Level Up!").end();
+                        .color(TEXT_COLOR1)
+                        .size(Conf.SCT_LEVELUP_TEXT_SIZE)
+                        .text(Conf.SCT_LEVELUP_TEXT).end();
 
-                IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label).end();                 
+                IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                        .wait(Conf.SCT_SCORE_FADE_WAIT)
+                        .duration(Conf.SCT_SCORE_FADE_DURATION)
+                        .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
+                        .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                        .end();                 
+                
                 IAnimation a2 = new MoveAnimation.Builder(label)
-                        .duration(1150).theta(0).v(0.03).end();
+                        .duration(Conf.SCT_LEVELUP_MOVE_DURATION)
+                        .speed(Conf.SCT_LEVELUP_MOVE_SPEED_P, Conf.SCT_LEVELUP_MOVE_SPEED_Q)
+                        .theta(Conf.SCT_LEVELUP_MOVE_THETA)                        
+                        .end(); 
 
                 a2.setStartRunnable(new Runnable()
                 {
@@ -1239,11 +1250,11 @@ public class Game extends Canvas implements IGameWindowCallback
             statMan.resetChainCount(); 
 
         // Animation all animations.
-        animationMan.animate(delta);
+        animationMan.animate();
 
         // Handle the timer.
         if (boardMan.isVisible() == true)
-            timerMan.incrementInternalTime(delta);
+            timerMan.incrementInternalTime();
 
         // Check to see if we should force a piece commit.
         if (timerMan.getTime() < 0)

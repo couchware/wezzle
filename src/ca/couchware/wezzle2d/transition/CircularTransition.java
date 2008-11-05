@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.manager.LayerManager;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.geom.Ellipse2D;
 
@@ -110,8 +111,10 @@ public class CircularTransition extends AbstractTransition
     }
     
     @Override
-    public void nextFrame(long delta)
+    public void nextFrame()
     {
+        long delta = 14;
+        
         // Indicate that the transition has started.
         setStarted();
         
@@ -138,6 +141,7 @@ public class CircularTransition extends AbstractTransition
 
     public boolean draw()
     {
+        LogManager.recordMessage("currentRadius = " + currentRadius);
         this.layerMan.draw(new Ellipse2D.Double(
                 Game.SCREEN_RECTANGLE.getCenterX() - currentRadius,
                 Game.SCREEN_RECTANGLE.getCenterY() - currentRadius,

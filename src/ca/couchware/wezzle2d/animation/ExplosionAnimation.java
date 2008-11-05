@@ -99,8 +99,10 @@ public class ExplosionAnimation extends AbstractAnimation
         layerMan.add(explosion, Layer.EFFECT);
     }
 
-    public void nextFrame(long delta)
+    public void nextFrame()
     {
+        long delta = 14;
+        
         // Make sure we've set the started flag.
         setStarted();
         

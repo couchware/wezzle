@@ -37,12 +37,12 @@ public class MoveAnimation extends AbstractAnimation
     private boolean skip = false;
     
     /**
-     * The counter.
+     * Counts the number of ticks.
      */
-    private long counter;
+    private int ticks;
     
     /**
-     * The entity.
+     * The entity that is being moved.
      */
     final IEntity entity;
     
@@ -52,14 +52,29 @@ public class MoveAnimation extends AbstractAnimation
     private ImmutablePosition initialPosition;
     
     /**
-     * The x-component of the launch speed.
+     * The x-component of the launch speed, in pixels / tick.
      */
-    private double vX;
+    private int vX;
     
     /**
-     * The y-component of the launch speed.
+     * The y-component of the launch speed, in pixels / tick.
      */
-    private double vY;
+    private int vY;
+    
+    /**
+     * The speed, p-part of a rational number.
+     */
+    private int vp;
+    
+    /**
+     * The number of pixels to skip each tick, q-part of a rational number.
+     */
+    private int vq;
+    
+    /**
+     * The number of frames left to skip.
+     */
+    private int Q;
     
     /**
      * The minimum x that the animation may move to.
@@ -68,8 +83,7 @@ public class MoveAnimation extends AbstractAnimation
     
     /**
      * The minimum y that the animation may move to.
-     */
-    
+     */    
     private int minY;
     
     /**
@@ -83,19 +97,19 @@ public class MoveAnimation extends AbstractAnimation
     private int maxY;
     
     /**
-     * The launch angle, in degrees.
+     * The launch angle, in degrees / tick.
      */
     private int theta;
     
     /**
-     * The anglar velocity, in rad/ms.
+     * The anglar velocity, in degrees / tick.
      */
-    private double omega;
+    private int omega;
     
     /**
-     * The gravity.
+     * The gravity, in pixels / tick / tick.
      */
-    private double g;
+    private int g;
     
     /**
      * The amount of time to wait before starting.
@@ -108,7 +122,7 @@ public class MoveAnimation extends AbstractAnimation
     private boolean waitFinished = false;
     
     /**
-     * The max time for the animation to run for, in ms.
+     * The max time for the animation to run for, in ticks.
      */
     private int duration;
     
@@ -140,8 +154,12 @@ public class MoveAnimation extends AbstractAnimation
         this.finishRule = builder.finishRule;
         
         // Determine the components of the launch velocity.
-        vX = builder.v * Math.cos(Math.toRadians(theta));
-        vY = builder.v * Math.sin(Math.toRadians(theta));                                       
+        this.vX = (int) ((double) builder.vp * Math.cos(Math.toRadians(theta)));
+        this.vY = (int) ((double) builder.vp * Math.sin(Math.toRadians(theta)));
+        
+        // Set the number of frames to skip.
+        this.vq = builder.vq;
+        this.Q = this.vq - 1;
     }    
     
     public static class Builder implements IBuilder<MoveAnimation>
@@ -151,9 +169,10 @@ public class MoveAnimation extends AbstractAnimation
         private int wait = 0;
         private int duration = -1;
         private int theta = 0;
-        private double g = 0;   
-        private double v = 0;
-        private double omega = 0;
+        private int g = 0;   
+        private int vp = 0; // p/q
+        private int vq = 0;
+        private int omega = 0;
         private int minX = Integer.MIN_VALUE;
         private int minY = Integer.MIN_VALUE;
         private int maxX = Integer.MAX_VALUE;
@@ -168,9 +187,10 @@ public class MoveAnimation extends AbstractAnimation
         public Builder wait(int val) { wait = val; return this; }
         public Builder duration(int val) { duration = val; return this; }
         public Builder theta(int val) { theta = val; return this; }
-        public Builder v(double val) { v = val; return this; }
-        public Builder g(double val) { g = val; return this; }     
-        public Builder omega(double val) { omega = val; return this; }
+        public Builder speed(int p) { vp = p; vq = 1; return this; } 
+        public Builder speed(int p, int q) { vp = p; vq = q; return this; }        
+        public Builder gravity(int val) { g = val; return this; }     
+        public Builder omega(int val) { omega = val; return this; }
         public Builder minX(int val) { minX = val; return this; }
         public Builder minY(int val) { minY = val; return this; }
         public Builder maxX(int val) { maxX = val; return this; }
@@ -183,14 +203,31 @@ public class MoveAnimation extends AbstractAnimation
         }                
     }
 
-    public void nextFrame(long delta)
+    public void nextFrame()
     {
+        // If q is 1, then we don't need to skip any frames.
+        if (this.vq != 1)
+        {
+            // If there are still frames to skip, skip 'em.
+            if (this.Q > 0)
+            {
+                LogManager.recordMessage("Frame skipped.");
+                this.Q--;                
+                return;
+            }
+            // If we finished skipping frames, then reset the
+            // frame skipping count.
+            else if (this.Q == 0)
+            {
+                this.Q = this.vq - 1;
+            }
+        }        
+        
         // Make sure we've set the started flag.
         if (this.started == false)
         {
             // Record the initial position.
-            initialPosition = entity.getXYPosition();
-            
+            initialPosition = entity.getXYPosition();            
             setStarted();
         }
         
@@ -201,34 +238,33 @@ public class MoveAnimation extends AbstractAnimation
             return;
         }
               
-        // Add delta to counter.  This serves as the time variable.
-        counter += delta;                               
+        // Increment counter.  This serves as the time variable.
+        ticks++;
         
         // Skip if necessary.
         if (skip == true)
         {
-            if (counter > wait + duration)
+            if (ticks > wait + duration)
                 setFinished();
             
             return;
         }
         
-        if (waitFinished == false && counter > wait)
+        if (waitFinished == false && ticks > wait)
         {
             waitFinished = true;
-            counter -= wait;
+            ticks = 1;
         }                
        
         if (waitFinished == true)
         {
-            // Determine the current x and y.
-            double t = (double) counter;
-            double x = vX * t;
-            double y = vY * t - 0.5 * g * t * t;
+            // Determine the current x and y.            
+            int x = vX * ticks;
+            int y = vY * ticks - (g * Util.sq(ticks)) / 20;
 
             // Move the entity.
-            int newX = initialPosition.getX() + (int) x;
-            int newY = initialPosition.getY() - (int) y;
+            int newX = initialPosition.getX() + x;
+            int newY = initialPosition.getY() - y;
             
             boolean doneX = false;
             boolean doneY = false;
@@ -253,7 +289,7 @@ public class MoveAnimation extends AbstractAnimation
             
             entity.setX(newX);                        
             entity.setY(newY);                        
-            entity.setRotation(t * omega);
+            entity.setRotation(ticks * omega);
                     
             if ((finishRule == FinishRule.FIRST && (doneX == true || doneY == true))
                 || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))
@@ -263,7 +299,7 @@ public class MoveAnimation extends AbstractAnimation
                 else skip = true;
             }
             
-            if (duration != -1 && counter > wait + duration)   
+            if (duration != -1 && ticks > wait + duration)   
                 setFinished();                                                        
         }        
     }

@@ -290,7 +290,7 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
 	Graphics2D getDrawGraphics()
 	{
 		return gfx;
-	}  
+	}         
     
 	/**
 	 * Run the main game loop. This method keeps rendering the scene and
@@ -305,11 +305,11 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
         // Constant FPS" from:
         //   http://dewitters.koonsolo.com/gameloop.html
         
-        final int TICKS_PER_SECOND = 60;
+        final int TICKS_PER_SECOND = 50;
         final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
         final int MAX_FRAME_SKIP = 10;
         
-        long nextGameTick = SystemTimer.getTime();
+        long nextGameTick = System.nanoTime() / 1000000;
         int loopCounter;
         
 		while (gameRunning == true)
@@ -320,23 +320,25 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
             
             loopCounter = 0;
             
-            while (SystemTimer.getTime() > nextGameTick && loopCounter < MAX_FRAME_SKIP)
+            while ((System.nanoTime() / 1000000) > nextGameTick && loopCounter < MAX_FRAME_SKIP)
             {
-                callback.update(this.speed);
+                callback.update();
                 nextGameTick += SKIP_TICKS;
                 loopCounter++;
             }                       
             			
-            updated = callback.render();
+            updated = callback.render();            
 			
 			// Finally, we've completed drawing so clear up the graphics
 			// and flip the buffer over.
             gfx.dispose();
             gfx = null;
             
-            if (updated == true)                                                     
+            if (updated == true)     
+            {
                 strategy.show();            
-		}
+            } // end if            
+		} // end while
 	}
     
     /**
@@ -452,27 +454,7 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
             lastPosition = new ImmutablePosition(getMousePosition());                    
         
         return lastPosition;
-    }
-    
-    //--------------------------------------------------------------------------
-    // Game Speed Methods
-    //--------------------------------------------------------------------------
-    
-    /** The default game speed. */
-    final private int DEFAULT_GAME_SPEED = 14;
-    
-    /** The current game speed. */
-    private int speed = DEFAULT_GAME_SPEED;
-    
-    public void setSpeed(int speed)
-    {
-        this.speed = speed;
-    }
-
-    public int getSpeed(int speed)
-    {
-        return speed;
-    }
+    }        
     
     //--------------------------------------------------------------------------
     // IMouseListener Attributes
@@ -601,6 +583,6 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
     public void mouseMoved(java.awt.event.MouseEvent e)
     {
         mouseEventQueue.add(new MouseEvent(e, MouseEvent.Type.MOUSE_MOVED));
-    } 
-             
+    }
+
 }

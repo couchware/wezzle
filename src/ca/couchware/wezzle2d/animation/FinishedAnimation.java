@@ -27,7 +27,7 @@ public class FinishedAnimation extends AbstractAnimation
     { return single; }
     
     @Override
-    public void nextFrame(long delta)
+    public void nextFrame()
     {
         // Do nothing.
     }

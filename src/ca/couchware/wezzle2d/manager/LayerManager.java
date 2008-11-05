@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.RadioGroup;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
@@ -346,7 +347,8 @@ public class LayerManager
                 if (d.isDirty() == false)
                     continue;                                
                 
-                // Clear dirtiness.
+                // Clear dirtiness.                
+                //LogManager.recordMessage(d + " is dirty.");
                 d.setDirty(false);
                 
                 Rectangle r = d.getDrawRect();                                
@@ -369,12 +371,22 @@ public class LayerManager
                 clip.add(getRemoveRect());
         }
              
-        if (clip != null)
+        // Check to see if we're doing an exact area or a minimal clip.
+        if (exact == true || clip != null)
         {
             //Util.handleMessage(clip.toString(), Thread.currentThread());
                         
             window.setClip(exact == true ? region : clip);                
-            drawAll();            
+            drawAll();
+
+            // Show the clip rect if required.
+            if (Conf.DEBUG_SHOW_CLIP_RECT == true)
+            {
+                Rectangle r = window.getClip().getBounds();
+                LogManager.recordMessage("Bounds are " + r);
+                window.drawRect(r.x, r.y, r.width - 1, r.height - 1);
+            }
+                        
             window.setClip(null);          
                
             // Reset the remove clip.

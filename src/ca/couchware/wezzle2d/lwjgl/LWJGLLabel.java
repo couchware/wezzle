@@ -177,4 +177,10 @@ public class LWJGLLabel extends AbstractEntity implements ILabel
         return EMPTY_RECTANGLE;
     }
     
+    @Override
+    public String toString()
+    {
+        return "LWJGLLabel with text '" + this.text + "'";
+    }
+    
 }

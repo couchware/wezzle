@@ -43,7 +43,7 @@ public abstract class AbstractAnimation implements IAnimation
      * 
      * @param delta
      */
-    public abstract void nextFrame(long delta);
+    public abstract void nextFrame();
 
     public void cleanUp()
     {

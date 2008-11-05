@@ -160,4 +160,10 @@ public class GraphicEntity extends AbstractEntity
         setDirty(true);
     }    
     
+    @Override
+    public String toString()
+    {
+        return "GraphicEntity with path '" + this.path + "'";
+    }
+    
 }

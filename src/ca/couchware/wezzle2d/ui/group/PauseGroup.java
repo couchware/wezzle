@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.event.*;
 import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.Util;
 import java.util.EnumSet;
 
 /**
@@ -52,13 +53,17 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
      * The running line count.
      */
     
-    private int lines;
+    private int lines = 0;
     
     /**
      * The running move count.
-     */
+     */    
+    private int moves = 0;
     
-    private int moves;
+    /**
+     * The running lpm.
+     */
+    private double lpm = 0.0;
     
     /**
      * The constructor.    
@@ -100,6 +105,11 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
     
     public void setMoves(int moves)
     {
+        if (this.moves == moves) return;
+        
+        // Record the current number of moves.
+        this.moves = moves;
+        
         // Set the moves label.
         layerMan.remove(movesLabel, Layer.UI);
         entityList.remove(movesLabel);
@@ -119,6 +129,11 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
     
     public void setLines(int lines)
     {
+        if (this.lines == lines) return;
+        
+        // Record the current number of moves.
+        this.lines = lines;
+        
         // Set the lines label.
         layerMan.remove(linesLabel, Layer.UI);
         entityList.remove(linesLabel);
@@ -138,6 +153,11 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
     
     public void setLinesPerMove(double lpm)
     {
+        if (Util.equals(this.lpm, lpm)) return;
+        
+        // Record the current lpm.
+        this.lpm = lpm;
+        
         // Set the lines per move label.
         //linesPerMoveLabel.setText(lpm + " lines per move");
         layerMan.remove(linesPerMoveLabel, Layer.UI);
@@ -159,6 +179,8 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
        
     public void handleLineEvent(LineEvent e, IListenerComponent.GameType gameType)
     {
+        LogManager.recordMessage("Line event");
+        
         if (gameType == IListenerComponent.GameType.GAME)
         {
             this.lines += e.getLineCount();

@@ -148,14 +148,14 @@ public class WorldManager implements ILevelListener
         // normal tile whenever we want.
         itemList.add(new Item.Builder(TileType.NORMAL)
                 .initialAmount(28).weight(5).maxOnBoard(100).end());
-//        itemList.add(new Item.Builder(TileType.ROCKET)
-//                .initialAmount(1).weight(55).maxOnBoard(3).end());
-//        itemList.add(new Item.Builder(TileType.BOMB)
-//                .initialAmount(1).weight(10).maxOnBoard(1).end());   
-//        itemList.add(new Item.Builder(TileType.STAR)
-//                .initialAmount(0).weight(5).maxOnBoard(1).end());
-//        itemList.add(new Item.Builder(TileType.GRAVITY)
-//                .initialAmount(5).weight(20).maxOnBoard(2).end());
+        itemList.add(new Item.Builder(TileType.ROCKET)
+                .initialAmount(1).weight(55).maxOnBoard(3).end());
+        itemList.add(new Item.Builder(TileType.BOMB)
+                .initialAmount(1).weight(10).maxOnBoard(1).end());   
+        itemList.add(new Item.Builder(TileType.STAR)
+                .initialAmount(0).weight(5).maxOnBoard(1).end());
+        itemList.add(new Item.Builder(TileType.GRAVITY)
+                .initialAmount(5).weight(20).maxOnBoard(2).end());
         
         // Set the multipliers.
         multiplierList = new ArrayList<Item>();        
@@ -181,17 +181,17 @@ public class WorldManager implements ILevelListener
             }            
         });  
         
-        // Make it so the bomb block is added on level 8.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 6)
-        {
-            @Override
-            public void onMatch()
-            {
-                // Add the bomb.
-                itemList.add(new Item.Builder(TileType.GRAVITY)
-                        .initialAmount(1).weight(35).maxOnBoard(2).end());                
-            }            
-        });  
+//        // Make it so the bomb block is added on level 8.
+//        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 6)
+//        {
+//            @Override
+//            public void onMatch()
+//            {
+//                // Add the bomb.
+//                itemList.add(new Item.Builder(TileType.GRAVITY)
+//                        .initialAmount(1).weight(35).maxOnBoard(2).end());                
+//            }            
+//        });  
         
         // Make it so the bomb block is added on level 8.
         masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 9)

@@ -351,7 +351,7 @@ public class ProgressBar extends AbstractEntity
 		this.progressMax = progressMax;
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
 	}
     
     /**
@@ -385,7 +385,7 @@ public class ProgressBar extends AbstractEntity
 		this.progressWidth = progressWidth > progressMaxWidth ? progressMaxWidth : progressWidth; 
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
 	}
 	
 	public void increaseProgress(int deltaProgress)
@@ -410,7 +410,7 @@ public class ProgressBar extends AbstractEntity
         this.progressWidth = progressWidth;
         
         // Set dirty so it will be drawn.        
-        setDirty(true);
+        this.dirty = true;
     }    
 
     @Override

@@ -54,7 +54,7 @@ public class AnimationManager
         return animationList.contains(a);
     }      
     
-    public void animate(final long delta)
+    public void animate()
     {
         for (Iterator it = animationList.iterator(); it.hasNext(); ) 
         {
@@ -65,7 +65,7 @@ public class AnimationManager
                 it.remove();
             }
             else            
-                a.nextFrame(delta);            
+                a.nextFrame();            
         }
         
         //Util.handleMessage(animationList.size() + "", "AnimationManager#animate");

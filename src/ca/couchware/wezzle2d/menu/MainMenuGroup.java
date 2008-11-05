@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.menu;
 
+import ca.couchware.wezzle2d.Conf;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -34,32 +35,7 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class MainMenuGroup extends AbstractGroup
-{
-    
-    /**
-     * The opacity of the menu windows.
-     */
-    final static int WINDOW_OPACITY = 60;
-    
-    /**
-     * The speed at which the menu windows move.
-     */
-    final static double WINDOW_SPEED = 0.5;
-    
-    /**
-     *  The speed the buttons come in.
-     */
-    final private static double SLIDE_SPEED = 0.5;
-
-    /**
-     * The final X position the buttons go to.
-     */    
-    final private static int SLIDE_MIN_X = 630;
-
-    /**
-     * The amount of time between each slide in.
-     */
-    final private static int SLIDE_WAIT = 200;
+{       
     
     /** 
      * The standard menu background path.
@@ -221,7 +197,7 @@ public class MainMenuGroup extends AbstractGroup
         IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
         layerMan.add(e1, Layer.BACKGROUND);      
-        spinAnimation = new MoveAnimation.Builder(e1).g(0).v(0).omega(0.0001).end();
+        spinAnimation = new MoveAnimation.Builder(e1).gravity(0).speed(0).omega(0).end();
         animationMan.add(spinAnimation);
         
         IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
@@ -484,7 +460,8 @@ public class MainMenuGroup extends AbstractGroup
         
         // Add the wezzle logo fade in.
         builder.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, logoEntity)
-                .wait(500).duration(2100).end());
+                .wait(Conf.MAIN_MENU_LOGO_FADE_IN_WAIT)
+                .duration(Conf.MAIN_MENU_LOGO_FADE_IN_DURATION).end());
         
         // Animate the buttons coming in.        
         for (Menu m : this.buttonMap.keySet())
@@ -494,8 +471,11 @@ public class MainMenuGroup extends AbstractGroup
             
             final IButton btn = this.buttonMap.get(m);
             
-            final IAnimation a = new MoveAnimation.Builder(btn).theta(180).v(SLIDE_SPEED)
-                    .minX(SLIDE_MIN_X).wait(SLIDE_WAIT * m.getRank()).end();
+            final IAnimation a = new MoveAnimation.Builder(btn).theta(180)
+                    .speed(Conf.MAIN_MENU_SLIDE_SPEED)
+                    .minX(Conf.MAIN_MENU_SLIDE_MIN_X)
+                    .wait(Conf.MAIN_MENU_SLIDE_WAIT * m.getRank())
+                    .end();
             
             builder.add(a);
             
@@ -522,7 +502,9 @@ public class MainMenuGroup extends AbstractGroup
         
         // Fade out the logo.
         IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
-                .wait(0).duration(1000).end();
+                .wait(Conf.MAIN_MENU_LOGO_FADE_OUT_WAIT)
+                .duration(Conf.MAIN_MENU_LOGO_FADE_OUT_DURATION)
+                .end();
         
         f.setFinishRunnable(new Runnable()
         {
@@ -536,13 +518,16 @@ public class MainMenuGroup extends AbstractGroup
         builder.add(f);
          
         // Slide out the buttons.
-         // Animate the buttons coming in.        
+        // Animate the buttons coming in.        
         for (Menu m : this.buttonMap.keySet())
         {                        
             final IButton btn = this.buttonMap.get(m);
             
-            final IAnimation a = new MoveAnimation.Builder(btn).theta(0).v(SLIDE_SPEED)
-                    .maxX(910).wait(SLIDE_WAIT * m.getRank()).end();
+            final IAnimation a = new MoveAnimation.Builder(btn).theta(0)
+                    .speed(Conf.MAIN_MENU_SLIDE_SPEED)
+                    .maxX(910)
+                    .wait(Conf.MAIN_MENU_SLIDE_WAIT * m.getRank())
+                    .end();
             
             builder.add(a);
             

@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.menu;
 
+import ca.couchware.wezzle2d.Conf;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -38,11 +39,11 @@ public class TutorialGroup extends AbstractGroup
         // Set the layer manager.
         this.layerMan = layerMan;
         
-        // Create the window.
+         // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(MainMenuGroup.WINDOW_OPACITY).visible(false).end();
-        layerMan.add(win, Layer.UI);
+                .opacity(Conf.MAIN_MENU_WINDOW_OPACITY).visible(false).end();
+        this.layerMan.add(win, Layer.UI);         
     }
     
     @Override
@@ -51,8 +52,8 @@ public class TutorialGroup extends AbstractGroup
         win.setXYPosition(268, -300);
         win.setVisible(true);        
         
-        IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(300).v(MainMenuGroup.WINDOW_SPEED).end();
+        IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
+                .speed(Conf.MAIN_MENU_WINDOW_SPEED).end();   
                 
         return a;
     }
@@ -61,7 +62,8 @@ public class TutorialGroup extends AbstractGroup
     public IAnimation animateHide()
     {        
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300).v(MainMenuGroup.WINDOW_SPEED).end();
+                .maxY(Game.SCREEN_HEIGHT + 300)
+                .speed(Conf.MAIN_MENU_WINDOW_SPEED).end();
         
         return a;
     }

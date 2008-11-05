@@ -38,27 +38,27 @@ public class Refactorer
     /**
      * The default slow speed.
      */
-    final public static int DEFAULT_SLOWER_SPEED = 50;
+    final public static int DEFAULT_SLOWER_SPEED = 1;
     
     /**
      * The default slow speed.
      */
-    final public static int DEFAULT_SLOW_SPEED = 100;
+    final public static int DEFAULT_SLOW_SPEED = 2;
     
     /**
      * The default normal speed.
      */
-    final public static int DEFAULT_NORMAL_SPEED = 180;
+    final public static int DEFAULT_NORMAL_SPEED = 3;
     
     /**
      * The default drop speed.
      */
-    final public static int DEFAULT_DROP_SPEED = 250;
+    final public static int DEFAULT_DROP_SPEED = 4;
     
     /**
      * The default shift speed.
      */
-    final public static int DEFAULT_SHIFT_SPEED = 200;
+    final public static int DEFAULT_SHIFT_SPEED = 4;
     
      /**
      * If true, refactor will be activated next loop.
@@ -254,7 +254,7 @@ public class Refactorer
         } // end if
     }
     
-     /**
+    /**
      * Handle the horizontal refactoring of the board.
      * 
      * @param game

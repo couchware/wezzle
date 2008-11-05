@@ -94,14 +94,7 @@ public interface IGameWindow
      * @param width
      * @param height
      */
-    public void fillRect(int x, int y, int width, int height);
-    
-    //--------------------------------------------------------------------------
-    // Game Speed
-    //--------------------------------------------------------------------------
-        
-    public void setSpeed(int speed);    
-    public int getSpeed(int speed);
+    public void fillRect(int x, int y, int width, int height);       
     
     //--------------------------------------------------------------------------
     // Clip
