@@ -1330,16 +1330,7 @@ public class Game extends Canvas implements IGameWindowCallback
 
         // Reset the line count.
         //statMan.incrementLineCount(statMan.getCycleLineCount());
-        if (tutorialMan.isTutorialInProgress() == true)
-        {
-            listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), this),
-                    IListenerComponent.GameType.TUTORIAL);
-        }
-        else
-        {
-            listenerMan.notifyLineListener(new LineEvent(statMan.getCycleLineCount(), this), 
-                    IListenerComponent.GameType.GAME);
-        }
+       
         
         statMan.resetCycleLineCount();
     }       

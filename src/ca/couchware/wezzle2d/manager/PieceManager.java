@@ -354,6 +354,7 @@ public class PieceManager implements IMouseListener
     public void notifyRefactored()
     {
         refactored = true;
+        
     }      
     
     private int convertXToColumn(final int x)

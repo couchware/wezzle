@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.IListenerComponent;
+import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.*;
@@ -282,12 +283,27 @@ public class TileRemover
         // Look for matches.
         tileRemovalSet.clear();
 
-        statMan.incrementCycleLineCount(
-                boardMan.findXMatch(tileRemovalSet));
+        int cycleX =  boardMan.findXMatch(tileRemovalSet);
+        int cycleY =  boardMan.findYMatch(tileRemovalSet);
+        
+        statMan.incrementCycleLineCount(cycleX);
 
-        statMan.incrementCycleLineCount(
-                boardMan.findYMatch(tileRemovalSet));
-
+       statMan.incrementCycleLineCount(cycleY);
+        
+        //  Handle any lines we may have had.
+        if(cycleX+cycleY > 0)
+        {
+            if (game.tutorialMan.isTutorialInProgress() == true)
+            {
+                game.listenerMan.notifyLineListener(new LineEvent(game.statMan.getCycleLineCount(), this),
+                        IListenerComponent.GameType.TUTORIAL);
+            }
+            else
+            {
+                game.listenerMan.notifyLineListener(new LineEvent(game.statMan.getCycleLineCount(), this), 
+                        IListenerComponent.GameType.GAME);
+            }
+        }
         // Copy the match into the last line match holder.
         lastMatchSet.clear();
         lastMatchSet.addAll(tileRemovalSet);
@@ -314,6 +330,8 @@ public class TileRemover
                 // Reset the mouse.
                 pieceMan.clearMouseButtonSet();
             }
+            
+     
         }
     }
 

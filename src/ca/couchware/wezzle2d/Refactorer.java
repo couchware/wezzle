@@ -6,6 +6,8 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.event.IListenerComponent;
+import ca.couchware.wezzle2d.event.LineEvent;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -290,6 +292,7 @@ public class Refactorer
         
         // Reset speed to normal.
         setRefactorSpeed(RefactorSpeed.NORMAL);
+        
     }
     
 }

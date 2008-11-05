@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.event.*;
+import ca.couchware.wezzle2d.manager.LogManager;
 import java.util.EnumSet;
 
 /**
@@ -162,6 +163,8 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
         {
             this.lines += e.getLineCount();
             this.setLines(lines);
+            LogManager.recordMessage("Line event");
+
         }
     }
     
