@@ -1522,8 +1522,8 @@ public class Game extends Canvas implements IGameWindowCallback
         
         try
         {
-            Game game = new Game(ResourceFactory.Renderer.JAVA2D);
-            //Game game = new Game(ResourceFactory.Renderer.LWJGL);
+            //Game game = new Game(ResourceFactory.Renderer.JAVA2D);
+            Game game = new Game(ResourceFactory.Renderer.LWJGL);
             game.start();		
         }
         catch (Exception e)

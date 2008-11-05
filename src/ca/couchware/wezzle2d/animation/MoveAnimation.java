@@ -158,8 +158,7 @@ public class MoveAnimation extends AbstractAnimation
         this.vY = (int) ((double) builder.vp * Math.sin(Math.toRadians(theta)));
         
         // Set the number of frames to skip.
-        this.vq = builder.vq;
-        this.Q = this.vq - 1;
+        this.vq = builder.vq;       
     }    
     
     public static class Builder implements IBuilder<MoveAnimation>
@@ -204,25 +203,7 @@ public class MoveAnimation extends AbstractAnimation
     }
 
     public void nextFrame()
-    {
-        // If q is 1, then we don't need to skip any frames.
-        if (this.vq != 1)
-        {
-            // If there are still frames to skip, skip 'em.
-            if (this.Q > 0)
-            {
-                LogManager.recordMessage("Frame skipped.");
-                this.Q--;                
-                return;
-            }
-            // If we finished skipping frames, then reset the
-            // frame skipping count.
-            else if (this.Q == 0)
-            {
-                this.Q = this.vq - 1;
-            }
-        }        
-        
+    {                   
         // Make sure we've set the started flag.
         if (this.started == false)
         {
@@ -259,8 +240,8 @@ public class MoveAnimation extends AbstractAnimation
         if (waitFinished == true)
         {
             // Determine the current x and y.            
-            int x = vX * ticks;
-            int y = vY * ticks - (g * Util.sq(ticks)) / 20;
+            int x = (vX * ticks) / vq;
+            int y = (vY * ticks) / vq - (g * Util.sq(ticks)) / 20;
 
             // Move the entity.
             int newX = initialPosition.getX() + x;
