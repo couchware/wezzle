@@ -197,7 +197,9 @@ public class MainMenuGroup extends AbstractGroup
         IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
         layerMan.add(e1, Layer.BACKGROUND);      
-        spinAnimation = new MoveAnimation.Builder(e1).gravity(0).speed(0).omega(0).end();
+        spinAnimation = new MoveAnimation.Builder(e1)
+                .gravity(0).speed(0)
+                .omega(Conf.MAIN_MENU_STARBURST_OMEGA).end();
         animationMan.add(spinAnimation);
         
         IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)

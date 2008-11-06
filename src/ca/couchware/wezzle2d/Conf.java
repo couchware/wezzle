@@ -98,7 +98,10 @@ public final class Conf
     public static final int LOADER_BAR_FADE_WAIT = 36;
     public static final int LOADER_BAR_FADE_DURATION = 80;
     
-     /** The opacity of the menu windows. */
+    /** The rotation velocity of the menu starburst. */
+    public final static double MAIN_MENU_STARBURST_OMEGA = 0.002;
+    
+    /** The opacity of the menu windows. */
     public final static int MAIN_MENU_WINDOW_OPACITY = 60;
     
     /** The speed at which the menu windows move. */

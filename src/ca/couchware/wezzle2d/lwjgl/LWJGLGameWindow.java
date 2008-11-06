@@ -158,7 +158,8 @@ public class LWJGLGameWindow implements IGameWindow
 	protected DisplayMode targetDisplayMode;
     
     /**
-	 * Set the display mode to be used 
+	 * Set the display mode to be used.
+     * [Code taken from Slick2D.]
 	 * 
 	 * @param width The width of the display required
 	 * @param height The height of the display required

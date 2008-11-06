@@ -104,7 +104,7 @@ public class MoveAnimation extends AbstractAnimation
     /**
      * The anglar velocity, in degrees / tick.
      */
-    private int omega;
+    private double omega;
     
     /**
      * The gravity, in pixels / tick / tick.
@@ -171,7 +171,7 @@ public class MoveAnimation extends AbstractAnimation
         private int g = 0;   
         private int vp = 0; // p/q
         private int vq = 0;
-        private int omega = 0;
+        private double omega = 0;
         private int minX = Integer.MIN_VALUE;
         private int minY = Integer.MIN_VALUE;
         private int maxX = Integer.MAX_VALUE;
@@ -189,7 +189,7 @@ public class MoveAnimation extends AbstractAnimation
         public Builder speed(int p) { vp = p; vq = 1; return this; } 
         public Builder speed(int p, int q) { vp = p; vq = q; return this; }        
         public Builder gravity(int val) { g = val; return this; }     
-        public Builder omega(int val) { omega = val; return this; }
+        public Builder omega(double val) { omega = val; return this; }
         public Builder minX(int val) { minX = val; return this; }
         public Builder minY(int val) { minY = val; return this; }
         public Builder maxX(int val) { maxX = val; return this; }
