@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IGameWindowCallback;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -128,7 +129,9 @@ public class LWJGLGameWindow implements IGameWindow
             // Get display modes.
             DisplayMode[] dm = org.lwjgl.util.Display.getAvailableDisplayModes(
                     width, height, 
-                    -1, -1, -1, -1, 60, 60);
+                    -1, -1, -1, -1,
+                    Display.getDisplayMode().getFrequency(),
+                    Display.getDisplayMode().getFrequency());
             
             org.lwjgl.util.Display.setDisplayMode(dm, new String[]
             {
@@ -147,6 +150,91 @@ public class LWJGLGameWindow implements IGameWindow
 
         return false;
 	}
+    
+    /** The original display mode before we tampered with things. */
+	protected DisplayMode originalDisplayMode;
+
+    /** The display mode we're going to try and use. */
+	protected DisplayMode targetDisplayMode;
+    
+    /**
+	 * Set the display mode to be used 
+	 * 
+	 * @param width The width of the display required
+	 * @param height The height of the display required
+	 * @param fullscreen True if we want fullscreen mode
+	 * @throws SlickException Indicates a failure to initialise the display
+	 */
+	public void setDisplayMode(int width, int height, boolean fullscreen)
+    {        
+		try
+        {
+            this.targetDisplayMode = null;
+            if (fullscreen)
+            {
+                DisplayMode[] modes = Display.getAvailableDisplayModes();
+                int freq = 0;
+
+                for (int i = 0; i < modes.length; i++)
+                {
+                    DisplayMode current = modes[i];
+
+                    if ((current.getWidth() == width) && (current.getHeight() == height))
+                    {
+                        if ((targetDisplayMode == null) || (current.getFrequency() >= freq))
+                        {
+                            if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel()))
+                            {
+                                targetDisplayMode = current;
+                                freq = targetDisplayMode.getFrequency();
+                            }
+                        }
+
+                        // if we've found a match for bpp and frequence against the 
+                        // original display mode then it's probably best to go for this one
+                        // since it's most likely compatible with the monitor
+                        if ((current.getBitsPerPixel() == originalDisplayMode.getBitsPerPixel()) &&
+                                (current.getFrequency() == originalDisplayMode.getFrequency()))
+                        {
+                            targetDisplayMode = current;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                targetDisplayMode = new DisplayMode(width, height);
+            }
+
+            if (targetDisplayMode == null)
+            {
+                throw new RuntimeException("Failed to find value mode: " + width + "x" + height + " fullscreen=" + fullscreen + ".");
+            }
+
+//            this.width = width;
+//            this.height = height;
+
+            Display.setDisplayMode(targetDisplayMode);
+            Display.setFullscreen(fullscreen);
+
+//            if (Display.isCreated())
+//            {
+//                initGL();
+//                enterOrtho();
+//            }
+//
+//            if (targetDisplayMode.getBitsPerPixel() == 16)
+//            {
+//                InternalTextureLoader.get().set16BitMode();
+//            }
+        }
+        catch (LWJGLException e)
+        {
+            throw new RuntimeException("Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + ".", e);
+        }				
+	}
+
 
 	/**
 	 * Start the rendering process. This method will cause the 
@@ -156,11 +244,12 @@ public class LWJGLGameWindow implements IGameWindow
     {
 		try
         {
-            setDisplayMode();
+            this.originalDisplayMode = Display.getDisplayMode();
+            setDisplayMode(width, height, true);
+//            Display.setFullscreen(true);
             Display.setVSyncEnabled(true);            
             Display.create(new PixelFormat(0, 16, 1));
-            Display.setTitle(this.title);
-            //Display.setFullscreen(true);
+            Display.setTitle(this.title);            
 
             // Enable textures since we're going to use these for our sprites.
             GL11.glEnable(GL11.GL_TEXTURE_2D);
