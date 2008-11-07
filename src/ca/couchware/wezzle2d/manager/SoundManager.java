@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.audio.*;
-import ca.couchware.wezzle2d.manager.PropertyManager.Key;
+import ca.couchware.wezzle2d.properties.UserSettings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -39,7 +39,7 @@ public class SoundManager
     /** 
      * A link to the property manager. 
      */
-    private PropertyManager propertyMan;
+    private PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
     
     /** 
      * The list of effects.
@@ -67,13 +67,14 @@ public class SoundManager
      * @param executor
      * @param propertyMan
      */
-    private SoundManager(Executor executor, PropertyManager propertyMan) 
+    private SoundManager(Executor executor, 
+            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties) 
     {        
         // The executor.
         this.executor = executor;
         
         // The property manager.
-        this.propertyMan = propertyMan;               
+        this.userProperties = userProperties;               
         
         // Initiate the array list.
         this.soundList = new ArrayList<List<SoundPlayer>>(); 
@@ -103,11 +104,11 @@ public class SoundManager
                 Game.SOUNDS_PATH + "/SoundRocket.wav");
              
         // Get the default volume.
-        setNormalizedGain(propertyMan.getDoubleProperty(
-                PropertyManager.Key.SOUND_VOLUME));
+        setNormalizedGain(userProperties.getDoubleProperty(
+                UserSettings.Key.SOUND_VOLUME));
         
         // Check if paused or not.
-        if (propertyMan.getBooleanProperty(Key.SOUND) == true)
+        if (userProperties.getBooleanProperty(UserSettings.Key.SOUND) == true)
         {
             setPaused(false);
         }
@@ -120,13 +121,15 @@ public class SoundManager
     /**
      * Static constructor.
      * 
-     * @param exec
-     * @param propMan
+     * @param executor
+     * @param userProperties
      * @return
      */
-    public static SoundManager newInstance(Executor executor, PropertyManager propertyMan)
+    public static SoundManager newInstance(
+            Executor executor, 
+            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
     {
-        return new SoundManager(executor, propertyMan);
+        return new SoundManager(executor, userProperties);
     }
     
     /**
@@ -226,7 +229,7 @@ public class SoundManager
         else if (nGain > 1.0) nGain = 1.0;
         
         // Adjust the property;
-        propertyMan.setDoubleProperty(PropertyManager.Key.SOUND_VOLUME, nGain);
+        userProperties.setDoubleProperty(UserSettings.Key.SOUND_VOLUME, nGain);
         
         // Remember it.
         this.normalizedGain = nGain;                

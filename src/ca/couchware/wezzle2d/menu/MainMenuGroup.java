@@ -21,6 +21,7 @@ import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.PropertyManager;
+import ca.couchware.wezzle2d.properties.UserSettings;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpriteButton;
@@ -134,7 +135,7 @@ public class MainMenuGroup extends AbstractGroup
     /**
      * The property manager.
      */
-    private PropertyManager propertyMan;
+    private PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
     
     /**
      * The animation manager.
@@ -155,12 +156,12 @@ public class MainMenuGroup extends AbstractGroup
      * Create a new main menu.
      */
     public MainMenuGroup(
-            PropertyManager propertyMan, 
+            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties, 
             AnimationManager animationMan, 
             MusicManager musicMan)
     {        
         // Store the property manager reference.
-        this.propertyMan = propertyMan;
+        this.userProperties = userProperties;
         
         // Store the animation manager reference.
         this.animationMan = animationMan;
@@ -291,7 +292,7 @@ public class MainMenuGroup extends AbstractGroup
         
         // Create the "Play Now" group.
         group = new PlayNowGroup(this, 
-                this.propertyMan,
+                this.userProperties,
                 this.layerMan, 
                 this.musicMan);
         this.groupMap.put(Menu.PLAY_NOW, group);

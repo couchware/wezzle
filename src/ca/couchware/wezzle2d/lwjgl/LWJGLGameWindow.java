@@ -246,7 +246,7 @@ public class LWJGLGameWindow implements IGameWindow
 		try
         {
             this.originalDisplayMode = Display.getDisplayMode();
-            setDisplayMode(width, height, true);
+            setDisplayMode(width, height, false);
 //            Display.setFullscreen(true);
             Display.setVSyncEnabled(true);            
             Display.create(new PixelFormat(0, 16, 1));

@@ -3,7 +3,7 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
-import ca.couchware.wezzle2d.manager.PropertyManager.Key;
+import ca.couchware.wezzle2d.properties.UserSettings;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class WorldManager implements ILevelListener
     /**
 	 * The property manager.
 	 */
-	private final PropertyManager propertyMan;
+	private final PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
     
 	/**
 	 * The current level
@@ -38,11 +38,10 @@ public class WorldManager implements ILevelListener
 	 */
 	private LinkedList<Item> itemList;
         
-        /**
-         * The multiplier list
-         */
-        private ArrayList<Item> multiplierList;
-        
+    /**
+     * The multiplier list
+     */
+    private ArrayList<Item> multiplierList;        
     
     /**
      * The master rule list.  Contains all the rules that should exist
@@ -59,12 +58,7 @@ public class WorldManager implements ILevelListener
     /**
      * Is a game in progress?
      */
-    private boolean gameInProgress = false;
-    
-	/**
-	 * The difficulty level.
-	 */
-	private int difficulty;	
+    private boolean gameInProgress = false;   
     
     /**
      * The maximum items on the screen at once.
@@ -121,17 +115,10 @@ public class WorldManager implements ILevelListener
 	 * @param board
 	 * @param scoreManager
 	 */
-	private WorldManager(final PropertyManager propertyMan)
+	private WorldManager(PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
 	{						
 		// Store a reference to the property manager.
-		this.propertyMan = propertyMan;
-		
-		// Load the properties;
-		this.difficulty = propertyMan.getIntProperty(Key.DIFFICULTY);
-		
-		// Ensure that we are at least level 1.
-		if (this.difficulty < 1)
-			this.difficulty = 1;
+		this.userProperties = userProperties;					
 				
 		// Set the starting level.
 		setLevel(1);
@@ -231,14 +218,14 @@ public class WorldManager implements ILevelListener
         currentRuleList = new LinkedList<Rule>();
         currentRuleList.addAll(masterRuleList);
 	}
-	
-        
-        // Public API
-        
-        public static WorldManager newInstance(final PropertyManager propMan)
-        {
-            return new WorldManager(propMan);
-        }
+	        
+    // Public API.        
+    public static WorldManager newInstance(
+            final PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
+    {
+        return new WorldManager(userProperties);
+    }
+    
     //--------------------------------------------------------------------------
 	// Instance Methods
 	//--------------------------------------------------------------------------

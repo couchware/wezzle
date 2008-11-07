@@ -1,141 +1,59 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.properties.ISettings;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Map;
 import java.util.Properties;
-
-//import javax.jnlp.PersistenceService;
-//import javax.jnlp.ServiceManager;
-//import javax.jnlp.UnavailableServiceException;
 
 /**
  * A wrapper class for writing out and reading in properties from files.
  * 
  * @author Kevin
  */
-public class PropertyManager
-{
-    /**
-     * The key for the version of the configuration file.  If the config
-     * file versions do not match, then the config file will be overwritten
-     * with the defaults for the current version.
-     * 
-     * Note: This is not yet implemented.
-     */
-    public enum Key
-    {
-        VERSION("version"),
-        RENDER_TYPE("renderType"),
-        DIFFICULTY("difficulty"),
-        MUSIC("music"),
-        MUSIC_VOLUME("musicVolume"),
-        SOUND("sound"),
-        SOUND_VOLUME("soundVolume"),
-        HIGH_SCORE1("highScore1"),
-        HIGH_SCORE2("highScore2"),
-        HIGH_SCORE3("highScore3"),
-        HIGH_SCORE4("highScore4"),
-        HIGH_SCORE5("highScore5");        
-        
-        /** 
-         * The textual key. 
-         */
-        private String textualKey;
-        
-        Key(String textualKey)
-        { this.textualKey = textualKey; }
-        
-        /**
-         * Get the textual value.
-         * 
-         * @return The textual value that will be put in the settings file.
-         */
-        public String getTextualKey()
-        { return textualKey; }
-    }
+public class PropertyManager<K, V>
+{   	   
     
-    public enum Value
-    {
-        /** The version of the settings file. */
-        VERSION("3"),
-        RENDER_JAVA2D("java2d"),
-        RENDER_LWJGL("lwjgl");
-        
-        /** 
-         * The textual value. 
-         */
-        private String textualValue;
-        
-        Value(String textualValue)
-        { this.textualValue = textualValue; }
-        
-        /**
-         * Get the textual value.
-         * 
-         * @return The textual value that will be put in the settings file.
-         */
-        public String getTextualValue()
-        { return textualValue; }        
-    }       
+    /** The settings instance. */
+    private ISettings settings;
     
-	/**
-     * The path to the settings file.
-     */
-    public static final String DIR_PATH = 
-            System.getProperty("user.home") + "/.Couchware/Wezzle";
-    
-    /**
-     * The default file name for the settings file.
-     */
-    public static final String DEFAULT_FILENAME = "settings.txt";
-	
-//	PersistenceService pService;
-	
+	/** The path to the properties file. */    
 	private String filePath;
-	private Properties properties;
-	
-	private boolean webStart;
+    
+    /** The properties instance. */
+	private Properties properties;		
 		
 	/**
 	 * The constructor.
 	 */
-	private PropertyManager(String fileName) 
-	{		
+	private PropertyManager(ISettings settings) 
+	{		       
 		// Create new properties.
 		this.properties = new Properties();
+        this.settings = settings;        
 
         // Load defaults.
-        setDefaults();
+        setDefaults();        		
+		
+        // Figure out the path and filename.
+        String path = settings.getPath();
+        String filename = settings.getFilename();
         
-		// WebStart.
-		this.webStart = true;
-		
-		//Check WebStart.
-//		try
-//		{
-//			// Only create a property manager if this isn't the WebStart version.
-//			this.checkWebStart();
-//		}
-//		catch(UnavailableServiceException e)
-//		{
-//			// Web start is not running.
-//			this.setWebStart();
-//            //Util.handleException(e);
-//		}		        
-		
         // Check if the directory exists.
-        File dir = new File(DIR_PATH);
+        File dir = new File(path);
 
         // If the directory doesn't exist. Create it.
-        if(dir.isDirectory() == false)
+        if (dir.isDirectory() == false)
         {
             dir.mkdir();
         }
 
         // Store the file name.
-        this.filePath = DIR_PATH + "/" + fileName;
+        this.filePath = path + "/" + filename;
 
         // Check if the file exists.        
         File f = new File(this.filePath);	
@@ -157,60 +75,106 @@ public class PropertyManager
         }
         else
         {
-            // Get the url.
-            try
+            // Try loading from XML, then from non-XML.
+            LogManager.recordMessage("Attempting to load config from XML.");
+            if (loadFromXML(filePath) == false)
             {
-                FileInputStream in = new FileInputStream(filePath);
-                this.properties.load(in);
-                in.close();
-            }
-            catch(Exception e)
-            {
-                LogManager.recordWarning("Url is " + f.getAbsolutePath(), 
-                        "PropertyManager#this");
-                LogManager.recordException(e);
-            }
+                LogManager.recordMessage("Attempting to load config from flat file.");
+                // Try loading from a flat file format.
+                loadFromFlatFile(filePath);
+            }   
+           
         } // end if
 		
 	}
         
-        // Public API
-        public static PropertyManager newInstance()
+    // Public API
+    public static PropertyManager newInstance(ISettings settings)
+    {
+        return new PropertyManager(settings);
+    }    
+    
+    private boolean loadFromFlatFile(String filePath)       
+    {
+         // Get the url.
+        FileInputStream in = null;
+        try
         {
-            return new PropertyManager(DEFAULT_FILENAME);
-        }
-        
-        public static PropertyManager newInstance(String fName)
+            in = new FileInputStream(filePath);
+            this.properties.load(in);
+            in.close();
+        }       
+        catch (IOException ex)
         {
-            return new PropertyManager(fName);
+            LogManager.recordException(ex);
+            return false;
+        }          
+        finally
+        {
+            try
+            {
+                in.close();
+            }
+            catch (IOException ex)
+            {
+                LogManager.recordException(ex);
+                return false;
+            }
+        } // end try
+        
+        return true;
+    }
+    
+    private boolean loadFromXML(String filePath)
+    {
+        // Get the url.
+        FileInputStream in = null;
+        try
+        {
+            in = new FileInputStream(filePath);
+            this.properties.loadFromXML(in);
+            in.close();
         }
-		
+        catch (InvalidPropertiesFormatException ex)
+        {                        
+            return false;
+        }            
+        catch (FileNotFoundException ex)
+        {
+            LogManager.recordException(ex);
+            return false;
+        }
+        catch (IOException ex)
+        {
+            LogManager.recordException(ex);
+            return false;
+        }          
+        finally
+        {
+            try
+            {
+                in.close();
+            }
+            catch (IOException ex)
+            {
+                LogManager.recordException(ex);
+                return false;
+            }
+        } // end try
         
-        
-        
+        return true;
+    }
+    
     /**
      * Loads default values for all keys that need defaults.
      */
     public void setDefaults()
     {   
-        setProperty(Key.VERSION, Value.VERSION);
-        setProperty(Key.RENDER_TYPE, Value.RENDER_JAVA2D);
-        setIntProperty(Key.DIFFICULTY, 0);
-        setBooleanProperty(Key.SOUND, true);
-        setDoubleProperty(Key.SOUND_VOLUME, 0.5);
-        setBooleanProperty(Key.MUSIC, true);        
-        setDoubleProperty(Key.MUSIC_VOLUME, 0.5);
+        Map<String, String> map = settings.getDefaults();        
+        for (String key : map.keySet())
+            this.setCustomProperty(key, map.get(key));         
     }
-    
-	/**
-	 * Checks if webstart is running.
-	 */
-//	public void checkWebStart() throws UnavailableServiceException
-//	{
-//		this.pService = (PersistenceService) ServiceManager
-//                .lookup("javax.jnlp.PersistenceService"); 		
-//	}
-	
+   
 	// ---------------------------------------------------------------------------
 	// Instance Methods
 	// ---------------------------------------------------------------------------
@@ -222,7 +186,7 @@ public class PropertyManager
 	public void saveProperties() throws IOException
 	{
         FileOutputStream out = new FileOutputStream(this.filePath);
-		this.properties.store(out, "Wezzle Settings File");
+		this.properties.storeToXML(out, settings.getComment());
         out.close();		
 	}
 	
@@ -236,39 +200,39 @@ public class PropertyManager
         this.properties.put(key, value);
     }
     
-	public void setProperty(Key key, Value value)
+	public void setProperty(K key, V value)
 	{
-		setCustomProperty(key.getTextualKey(), value.getTextualValue());
+		setCustomProperty(key.toString(), value.toString());
 	}        
     
-    public void setStringProperty(Key key, String value)
+    public void setStringProperty(K key, String value)
     {
-        setCustomProperty(key.getTextualKey(), value);
+        setCustomProperty(key.toString(), value);
     }                
     
-    public void setIntProperty(Key key, int value)
+    public void setIntProperty(K key, int value)
     {
-        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+        setCustomProperty(key.toString(), String.valueOf(value));
     }
     
-    public void setLongProperty(Key key, long value)
+    public void setLongProperty(K key, long value)
     {
-        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+        setCustomProperty(key.toString(), String.valueOf(value));
     }
     
-    public void setFloatProperty(Key key, float value)
+    public void setFloatProperty(K key, float value)
     {
-        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+        setCustomProperty(key.toString(), String.valueOf(value));
     }
     
-    public void setDoubleProperty(Key key, double value)
+    public void setDoubleProperty(K key, double value)
     {
-        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+        setCustomProperty(key.toString(), String.valueOf(value));
     }
     
-    public void setBooleanProperty(Key key, boolean value)
+    public void setBooleanProperty(K key, boolean value)
     {
-        setCustomProperty(key.getTextualKey(), String.valueOf(value));
+        setCustomProperty(key.toString(), String.valueOf(value));
     }
 		
     public String getCustomProperty(String key)
@@ -284,11 +248,11 @@ public class PropertyManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public String getStringProperty(Key key)
+	public String getStringProperty(K key)
 	{		
-		return getCustomProperty(key.getTextualKey()) == null 
+		return getCustomProperty(key.toString()) == null 
             ? null 
-            : getCustomProperty(key.getTextualKey());
+            : getCustomProperty(key.toString());
 	}
 	
 	/**
@@ -299,14 +263,14 @@ public class PropertyManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public int getIntProperty(Key key)
+	public int getIntProperty(K key)
 	{		
 		return getStringProperty(key) == null 
             ? null 
             : Integer.parseInt(getStringProperty(key));
 	}
     
-    public long getLongProperty(Key key)
+    public long getLongProperty(K key)
 	{		
 		return getStringProperty(key) == null 
             ? null 
@@ -321,14 +285,14 @@ public class PropertyManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public float getFloatProperty(Key key)
+	public float getFloatProperty(K key)
 	{		        
 		return getStringProperty(key) == null 
             ? null 
             : Float.parseFloat(getStringProperty(key));
 	}
     
-    public double getDoubleProperty(Key key)
+    public double getDoubleProperty(K key)
 	{		        
 		return getStringProperty(key) == null 
             ? null 
@@ -341,20 +305,11 @@ public class PropertyManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public boolean getBooleanProperty(Key key)
+	public boolean getBooleanProperty(K key)
 	{		
 		return getStringProperty(key) == null 
             ? null 
             : Boolean.valueOf(getStringProperty(key));
 	}
-	
-	public void setWebStart()
-	{
-		this.webStart = false;
-	}
-	
-	public boolean isWebStart()
-	{
-		return this.webStart;
-	}
+    
 }

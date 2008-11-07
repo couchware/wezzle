@@ -5,7 +5,10 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.properties.UserSettings;
 import ca.couchware.wezzle2d.util.Util;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -20,40 +23,64 @@ public class HighScoreManager
      * The number of high scores to keep track of.
      */
     public final static int NUMBER_OF_SCORES = 5;
-
     
     /**
      * The symbol indicating an empty name.
      */
-    public final static String EMPTY_NAME = "-";        
-    
-    /**
-     * The prefix to use in the properties file.
-     */
-    private final static String PREFIX = "highScore";       
+    public final static String EMPTY_NAME = "-";       
     
     /**
      * The property manager.
      */
-    private PropertyManager propertyMan;
+    private PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
     
     /**
      * The list of high scores.
      */
     private HighScore[] highScoreList;
     
+    final private static List<UserSettings.Key> nameKeyList;
+    final private static List<UserSettings.Key> scoreKeyList;
+    final private static List<UserSettings.Key> levelKeyList;
+    
+    static
+    {
+        nameKeyList  = new ArrayList<UserSettings.Key>();
+        scoreKeyList = new ArrayList<UserSettings.Key>();
+        levelKeyList = new ArrayList<UserSettings.Key>();
+        
+        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME1);
+        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME2);
+        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME3);
+        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME4);
+        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME5);
+        
+        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE1);
+        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE2);
+        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE3);
+        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE4);
+        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE5);
+        
+        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL1);
+        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL2);
+        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL3);
+        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL4);
+        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL5);
+    }
+    
     /**
      * Create a high score manager and fill it with 0's.
      * 
      * @param properytMan
      */
-    private HighScoreManager(PropertyManager propertyMan)
+    private HighScoreManager(
+            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
     {
         // Initialize 
         this.highScoreList = new HighScore[NUMBER_OF_SCORES];
         
         // Set the property manager reference.
-        this.propertyMan = propertyMan;
+        this.userProperties = userProperties;
         
         // If this is the first time running the game, we have no built list.
         // Every other time it will load the list from file.
@@ -63,7 +90,8 @@ public class HighScoreManager
     
     
     // Public API.
-    public static HighScoreManager newInstance(PropertyManager propertyMan)
+    public static HighScoreManager newInstance(
+            PropertyManager<UserSettings.Key, UserSettings.Value> propertyMan)
     {
         return new HighScoreManager(propertyMan);
     }
@@ -150,14 +178,12 @@ public class HighScoreManager
     {
         for (int i = 0; i < highScoreList.length; i++)
         {
-            this.propertyMan.setCustomProperty(PREFIX + i, 
-                    highScoreList[i].getName() 
-                    + " " + highScoreList[i].getScore()
-                    + " " + highScoreList[i].getLevel());
+            this.userProperties.setStringProperty(nameKeyList.get(i), highScoreList[i].getName());
+            this.userProperties.setIntProperty(nameKeyList.get(i),    highScoreList[i].getScore());
+            this.userProperties.setIntProperty(levelKeyList.get(i),   highScoreList[i].getLevel());                   
         }
     }
-    
-    
+        
     /**
      * Read the list from properties.
      * 
@@ -167,19 +193,16 @@ public class HighScoreManager
     {
         for (int i = 0; i < highScoreList.length; i++)
         {
-            String property = this.propertyMan.getCustomProperty(PREFIX + i);
+            String name = this.userProperties.getStringProperty(nameKeyList.get(i));
             
             // If the properties aren't set, return false.
-            if (property == null)
-                return false;
+            if (name == null) return false;
             
             // Otherwise, add to the high score list.
-            StringTokenizer tokenizer = new StringTokenizer(property); 
-            String key = tokenizer.nextToken();
-            int score = Integer.parseInt(tokenizer.nextToken());
-            int level = Integer.parseInt(tokenizer.nextToken());
+            int score = this.userProperties.getIntProperty(scoreKeyList.get(i));
+            int level = this.userProperties.getIntProperty(levelKeyList.get(i));
             
-            highScoreList[i] = HighScore.newInstance(key, score, level);           
+            highScoreList[i] = HighScore.newInstance(name, score, level);           
         }
         
         return true;
@@ -190,7 +213,7 @@ public class HighScoreManager
      */
     public void resetScoreList()
     {
-        HighScore blankScore = HighScore.newInstance("-", 0, 0);
+        HighScore blankScore = HighScore.newInstance("-", -1, -1);
         
         // Load with dummy scores.
         for (int i = 0; i < highScoreList.length; i++)        

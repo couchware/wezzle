@@ -3,18 +3,17 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d.ui.group.options;
+package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.manager.PropertyManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.manager.LayerManager;
-import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.manager.PropertyManager.Key;
-import ca.couchware.wezzle2d.manager.PropertyManager.Value;
+import ca.couchware.wezzle2d.properties.UserSettings;
+import ca.couchware.wezzle2d.properties.UserSettings.Key;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -83,7 +82,7 @@ public class SoundMusicGroup extends AbstractGroup
      */    
     public SoundMusicGroup(
             final LayerManager layerMan,
-            final PropertyManager propertyMan)
+            final PropertyManager<UserSettings.Key, UserSettings.Value> propertyMan)
     {
         // Set the layer manager.
         this.layerMan = layerMan;
@@ -172,7 +171,7 @@ public class SoundMusicGroup extends AbstractGroup
             boolean soundOn = soundRadio.getSelectedKey() == Sound.ON;
             
             // Set the property.            
-            game.propertyMan.setBooleanProperty(Key.SOUND, soundOn);            
+            game.userProperties.setBooleanProperty(Key.SOUND, soundOn);            
          
             // Pause or unpause the sound depending on whether or not
             // the button is activated.
@@ -183,7 +182,7 @@ public class SoundMusicGroup extends AbstractGroup
             boolean musicOn = musicRadio.getSelectedKey() == Music.ON;
             
             // Set the property.            
-            game.propertyMan.setBooleanProperty(Key.MUSIC, musicOn);
+            game.userProperties.setBooleanProperty(Key.MUSIC, musicOn);
             
             // Set the pausedness.
             game.musicMan.setPaused(!musicOn);           

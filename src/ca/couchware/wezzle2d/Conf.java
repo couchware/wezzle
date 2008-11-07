@@ -15,6 +15,14 @@ public final class Conf
     private Conf()
     { }
     
+    // Mechanics parameters.
+    
+    /** The number of ticks per second (same as FPS). */
+    public static final int TICKS_PER_SECOND = 60;
+    
+    /** The number of milliseconds in a tick. */            
+    public static final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
+    
     // The debug parameters.
     
     /** Should the clip rectangle be shown?  This only makes sense for Java2D. */

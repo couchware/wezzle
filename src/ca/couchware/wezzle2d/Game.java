@@ -22,6 +22,7 @@ import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.menu.MainMenuGroup;
+import ca.couchware.wezzle2d.properties.UserSettings;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.transition.CircularTransition;
 import ca.couchware.wezzle2d.transition.ITransition;
@@ -269,9 +270,9 @@ public class Game extends Canvas implements IGameWindowCallback
     public PieceManager pieceMan;
 	
     /** 
-     * The manager in charge of loading and saving properties.
+     * The manager in charge of loading and saving user properties.
      */
-    public PropertyManager propertyMan;
+    public PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
     
     /** 
      * The manager in charge of score.
@@ -522,6 +523,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * Initializes all the managers (except for the layer manager).
      */
+    @SuppressWarnings("unchecked")
     private void initializeManagers(EnumSet<ManagerType> managerSet)
     {        
         if (managerSet.contains(ManagerType.LAYER))
@@ -550,20 +552,20 @@ public class Game extends Canvas implements IGameWindowCallback
     
         if (managerSet.contains(ManagerType.PROPERTY))
         {
-            // Create the property manager. Must be done before Score manager.
-            propertyMan = PropertyManager.newInstance();
+            // Create the property manager. Must be done before Score manager.            
+            userProperties = PropertyManager.newInstance(UserSettings.get());
         }
         
         if (managerSet.contains(ManagerType.HIGHSCORE))
         {
             // Create the high score manager.
-            highScoreMan = HighScoreManager.newInstance(propertyMan);  
+            highScoreMan = HighScoreManager.newInstance(userProperties);  
         }
         
         if (managerSet.contains(ManagerType.WORLD))
         {
             // Create the world manager.
-            worldMan = WorldManager.newInstance(propertyMan);  
+            worldMan = WorldManager.newInstance(userProperties);  
             worldMan.setGameInProgress(true);
         }
         
@@ -594,20 +596,20 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.SCORE))
         {
             // Create the score manager.
-            scoreMan = ScoreManager.newInstance(boardMan, propertyMan, highScoreMan);
+            scoreMan = ScoreManager.newInstance(boardMan, userProperties, highScoreMan);
             scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
         }
         
         if (managerSet.contains(ManagerType.SOUND))
         {
             // Create the sound manager.
-            soundMan = SoundManager.newInstance(executor, propertyMan);
+            soundMan = SoundManager.newInstance(executor, userProperties);
         }
         
         if (managerSet.contains(ManagerType.MUSIC))
         {
             // Create the music manager.            
-            musicMan = MusicManager.newInstance(executor, propertyMan);  
+            musicMan = MusicManager.newInstance(executor, userProperties);  
         }
         
         if (managerSet.contains(ManagerType.STAT))
@@ -805,7 +807,7 @@ public class Game extends Canvas implements IGameWindowCallback
         groupMan.register(gameOverGroup);
         
         // Initialize options group.
-        optionsGroup = new OptionsGroup(layerMan, groupMan, propertyMan);
+        optionsGroup = new OptionsGroup(layerMan, groupMan, userProperties);
         groupMan.register(optionsGroup);
         
         // Initialize high score group.
@@ -892,7 +894,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 //return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
                 
                 // Create the main menu.
-                mainMenu = new MainMenuGroup(propertyMan, animationMan, musicMan);
+                mainMenu = new MainMenuGroup(userProperties, animationMan, musicMan);
             }   
             else
             {      
@@ -1452,8 +1454,8 @@ public class Game extends Canvas implements IGameWindowCallback
         try
         {
             // Save the properites.
-            if (propertyMan != null)        
-                propertyMan.saveProperties();
+            if (userProperties != null)        
+                userProperties.saveProperties();
 
             // Save the log data.            
             LogManager.write();
