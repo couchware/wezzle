@@ -19,12 +19,7 @@ public class LogManager
 	// ---------------------------------------------------------------------------
 	// Static Attributes
 	// ---------------------------------------------------------------------------
-	      
-    /**
-     * The platform specific newline character.
-     */
-    private static String NL = System.getProperty("line.separator");
-    
+	         
     /**
 	 * Write out to the log. If this is set to true, all messages and
 	 * errors will be written out to the log file.
@@ -84,7 +79,7 @@ public class LogManager
 	 */
 	private static void append(String text)
 	{	
-        buffer.append(text + NL);		
+        buffer.append(text + Settings.getLineSeparator());		
 	}
     
     /**
@@ -123,14 +118,14 @@ public class LogManager
         opened = true;
         
         // Check if the directory exists.
-		File dir = new File(Settings.LOG_PATH);
+		File dir = new File(Settings.getLogPath());
 		
 		// If the directory doesn't exist. Create it.
 		if (dir.isDirectory() == false)		
 			dir.mkdir();		
 		
 		// Create the file.
-		logFile = new File(Settings.LOG_FILEPATH);								
+		logFile = new File(Settings.getLogFilePath());								
 		
 		try
 		{
@@ -177,7 +172,9 @@ public class LogManager
         StringWriter out = new StringWriter();
         
 		out.write("E. (" + getTimeStamp() + ") " 
-                + method + " - \"" + e.getMessage() + "\"" + NL);                
+                + method + " - \"" + e.getMessage() + "\"" 
+                + Settings.getLineSeparator());                
+        
 		e.printStackTrace(new PrintWriter(out, true));
         
 		System.err.println(out.toString());

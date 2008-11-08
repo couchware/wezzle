@@ -88,7 +88,7 @@ public class SpeechBubble extends AbstractEntity
         this.type = builder.type;
         
         // The sprite path.
-        String path = Settings.SPRITE_RESOURCES_PATH + "/" + "SpeechBubble" + type + ".png";
+        String path = Settings.getSpriteResourcesPath() + "/" + "SpeechBubble" + type + ".png";
         
         // Create the sprite.
         sprite = ResourceFactory.get().getSprite(path);

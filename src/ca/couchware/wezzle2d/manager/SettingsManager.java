@@ -31,6 +31,9 @@ import org.jdom.output.XMLOutputter;
 public class SettingsManager
 {   	               
     
+    /** The singleton instance of the manager. */
+    final private static SettingsManager single = new SettingsManager();
+    
     /** The high performance enum map of the settings. */
     private Map<Key, String> map;
     		
@@ -47,18 +50,19 @@ public class SettingsManager
 
         // Load user-made settings on top of that.
         loadUserSettings();
+        
+        // Calculate all the dynamic settings.
+        Settings.calculate(this);
 	}
         
     /**
-     * Returns a new property manager instance.
-     * 
-     * @param settings
-     * @param keyType
+     * Returns a the settings manager.
+     *     
      * @return
      */
-    public static SettingsManager newInstance()
+    public static SettingsManager get()
     {
-        return new SettingsManager();
+        return single;
     }            
                    
 	// ---------------------------------------------------------------------------
@@ -104,12 +108,12 @@ public class SettingsManager
         // from the appropriate place, this helps with deploying the game
         // with things like webstart. You could equally do a file look
         // up here.
-        URL url = this.getClass().getClassLoader().getResource(Settings.DEFAULT_SETTINGS_FILEPATH);
+        URL url = this.getClass().getClassLoader().getResource(Settings.getDefaultSettingsFilePath());
 
         if (url == null)
         {
             LogManager.recordWarning(
-                    "Can't find required resource: " + Settings.DEFAULT_SETTINGS_FILEPATH, 
+                    "Can't find required resource: " + Settings.getDefaultSettingsFilePath(), 
                     "SettingsManager#loadDefaultSettings");
             System.exit(0);
         }
@@ -121,7 +125,7 @@ public class SettingsManager
     private void loadUserSettings()
     {
         // Check if the directory exists.
-        File dir = new File(Settings.USER_SETTINGS_PATH);
+        File dir = new File(Settings.getUserSettingsPath());
 
         // If the directory doesn't exist. Create it.
         if (dir.isDirectory() == false)
@@ -129,12 +133,12 @@ public class SettingsManager
             dir.mkdir();
         }
        
-        if (fileExists(Settings.USER_SETTINGS_FILEPATH) == true)               
+        if (fileExists(Settings.getUserSettingsFilePath()) == true)               
         {
             try
             {
                 // Load from XML.
-                loadFromXML(new File(Settings.USER_SETTINGS_FILEPATH).toURL());
+                loadFromXML(new File(Settings.getUserSettingsFilePath()).toURL());
             }
             catch (MalformedURLException ex)
             {
@@ -160,6 +164,7 @@ public class SettingsManager
             for (Object o : doc.getRootElement().getChildren("entry"))
             {
                 Element e = (Element) o;
+                
                 String name = e.getAttributeValue("name");
                 String value = e.getTextTrim();
                 map.put(Key.valueOf(name), value);
@@ -202,48 +207,50 @@ public class SettingsManager
         } // end for
         
         // Write the document to file.
-        if (fileExists(Settings.USER_SETTINGS_FILEPATH))
+        if (fileExists(Settings.getUserSettingsFilePath()))
         {
-            XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-            OutputStream out = new FileOutputStream(Settings.USER_SETTINGS_FILEPATH);
+            Format format = Format.getPrettyFormat();
+            format.setExpandEmptyElements(true);            
+            XMLOutputter outputter = new XMLOutputter(format);                                                        
+            OutputStream out = new FileOutputStream(Settings.getUserSettingsFilePath());
             outputter.output(doc, out);
             out.close();
         }
     }		    	       
     
-    public void setStringProperty(Key key, String value)
+    public void setString(Key key, String value)
     {
         map.put(key, value);
     }       
     
-    public void setProperty(Key key, Value value)
+    public void setValue(Key key, Value value)
 	{
-		setStringProperty(key, value.toString());
+		setString(key, value.toString());
 	} 
     
-    public void setIntProperty(Key key, int value)
+    public void setInt(Key key, int value)
     {
-        setStringProperty(key, String.valueOf(value));
+        setString(key, String.valueOf(value));
     }
     
-    public void setLongProperty(Key key, long value)
+    public void setLong(Key key, long value)
     {
-        setStringProperty(key, String.valueOf(value));
+        setString(key, String.valueOf(value));
     }
     
-    public void setFloatProperty(Key key, float value)
+    public void setFloat(Key key, float value)
     {
-        setStringProperty(key, String.valueOf(value));
+        setString(key, String.valueOf(value));
     }
     
-    public void setDoubleProperty(Key key, double value)
+    public void setDouble(Key key, double value)
     {
-        setStringProperty(key, String.valueOf(value));
+        setString(key, String.valueOf(value));
     }
     
-    public void setBooleanProperty(Key key, boolean value)
+    public void setBoolean(Key key, boolean value)
     {
-        setStringProperty(key, String.valueOf(value));
+        setString(key, String.valueOf(value));
     }		                   	
     
     /**
@@ -252,7 +259,7 @@ public class SettingsManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public String getStringProperty(Key key)
+	public String getString(Key key)
 	{		
 		return map.get(key);
 	}
@@ -265,18 +272,18 @@ public class SettingsManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public int getIntProperty(Key key)
+	public int getInt(Key key)
 	{		
-		return getStringProperty(key) == null 
+		return getString(key) == null 
             ? null 
-            : Integer.parseInt(getStringProperty(key));
+            : Integer.parseInt(getString(key));
 	}
     
-    public long getLongProperty(Key key)
+    public long getLong(Key key)
 	{		
-		return getStringProperty(key) == null 
+		return getString(key) == null 
             ? null 
-            : Long.parseLong(getStringProperty(key));
+            : Long.parseLong(getString(key));
 	}
     
     /**
@@ -287,18 +294,18 @@ public class SettingsManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public float getFloatProperty(Key key)
+	public float getFloat(Key key)
 	{		        
-		return getStringProperty(key) == null 
+		return getString(key) == null 
             ? null 
-            : Float.parseFloat(getStringProperty(key));
+            : Float.parseFloat(getString(key));
 	}
     
-    public double getDoubleProperty(Key key)
+    public double getDouble(Key key)
 	{		        
-		return getStringProperty(key) == null 
+		return getString(key) == null 
             ? null 
-            : Double.parseDouble(getStringProperty(key));
+            : Double.parseDouble(getString(key));
 	}		
 	
 	/**
@@ -307,11 +314,11 @@ public class SettingsManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public boolean getBooleanProperty(Key key)
+	public boolean getBoolean(Key key)
 	{		
-		return getStringProperty(key) == null 
+		return getString(key) == null 
             ? null 
-            : Boolean.valueOf(getStringProperty(key));
-	}
+            : Boolean.valueOf(getString(key));
+	}        
     
 }

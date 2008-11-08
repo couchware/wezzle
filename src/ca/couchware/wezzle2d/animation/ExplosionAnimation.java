@@ -25,7 +25,7 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * Path to the explosion sprite.
      */
-    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/Explosion.png";             
+    final private static String PATH = Settings.getSpriteResourcesPath() + "/Explosion.png";             
     
     /**
      * The entity being animated.

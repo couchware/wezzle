@@ -151,9 +151,9 @@ public class Window extends AbstractEntity implements IMouseListener
         this.border = builder.border;
         
         // Create the sprites.
-        this.pathCorner = Settings.SPRITE_RESOURCES_PATH + "/Window" + border + "Corner.png";
-        this.pathHorizontal = Settings.SPRITE_RESOURCES_PATH + "/Window" + border + "Horizontal.png";
-        this.pathVertical = Settings.SPRITE_RESOURCES_PATH + "/Window" + border + "Vertical.png";
+        this.pathCorner = Settings.getSpriteResourcesPath() + "/Window" + border + "Corner.png";
+        this.pathHorizontal = Settings.getSpriteResourcesPath() + "/Window" + border + "Horizontal.png";
+        this.pathVertical = Settings.getSpriteResourcesPath() + "/Window" + border + "Vertical.png";
                 
         cornerSprite = ResourceFactory.get().getSprite(pathCorner);
         horizontalSprite = ResourceFactory.get().getSprite(pathHorizontal);

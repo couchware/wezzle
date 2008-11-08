@@ -15,7 +15,8 @@ public class X3TileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/Item3x.png";
+    final private static String PATH = 
+            Settings.getSpriteResourcesPath() + "/Item3x.png";
     
     
     /**

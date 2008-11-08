@@ -41,7 +41,8 @@ public class RocketTileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/ItemRocket.png";          
+    final private static String PATH = 
+            Settings.getSpriteResourcesPath() + "/ItemRocket.png";          
     
     /**
      * The direction of the rocket.

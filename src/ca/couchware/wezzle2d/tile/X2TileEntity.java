@@ -15,7 +15,8 @@ public class X2TileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/Item2x.png";       
+    final private static String PATH = 
+            Settings.getSpriteResourcesPath() + "/Item2x.png";       
     
     /**
      * The constructor.

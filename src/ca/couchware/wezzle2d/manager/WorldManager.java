@@ -20,12 +20,7 @@ public class WorldManager implements ILevelListener
 {       
 	//--------------------------------------------------------------------------
 	// Instance Members
-	//--------------------------------------------------------------------------
-	
-    /**
-	 * The property manager.
-	 */
-	private final SettingsManager settingsMan;
+	//--------------------------------------------------------------------------	   
     
 	/**
 	 * The current level
@@ -114,11 +109,8 @@ public class WorldManager implements ILevelListener
 	 * @param board
 	 * @param scoreManager
 	 */
-	private WorldManager(SettingsManager settingsMan)
-	{						
-		// Store a reference to the property manager.
-		this.settingsMan = settingsMan;					
-				
+	private WorldManager()
+	{								
 		// Set the starting level.
 		setLevel(1);
         
@@ -224,9 +216,9 @@ public class WorldManager implements ILevelListener
      * @param settingsMan
      * @return
      */       
-    public static WorldManager newInstance(SettingsManager settingsMan)
+    public static WorldManager newInstance()
     {
-        return new WorldManager(settingsMan);
+        return new WorldManager();
     }
     
     //--------------------------------------------------------------------------

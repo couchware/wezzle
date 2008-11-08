@@ -63,12 +63,7 @@ public class PlayNowGroup extends AbstractGroup
     /*
      * The maximum level the user can select.
      */
-    final private static int MAX_LEVEL = 15;
-    
-    /**
-     * The property manager.  This is needed to access the volume settings.
-     */
-    final private SettingsManager settingsMan;
+    final private static int MAX_LEVEL = 15;      
     
     /**
      * The layer manager.
@@ -120,17 +115,13 @@ public class PlayNowGroup extends AbstractGroup
      */
     private Window win;
     
-    public PlayNowGroup(IGroup parent, 
-            final SettingsManager settingsMan,
+    public PlayNowGroup(IGroup parent,            
             final LayerManager layerMan, 
             final MusicManager musicMan)
     {
         // Invoke the super.
         super(parent);
-        
-        // Set the property manager.
-        this.settingsMan = settingsMan;
-        
+               
         // Set the layer manager.
         this.layerMan = layerMan;
         
@@ -272,7 +263,7 @@ public class PlayNowGroup extends AbstractGroup
             public void run()
             { 
                 playerMap.get(theme).fadeToGain(
-                        settingsMan.getDoubleProperty(Settings.Key.GAME_MUSIC_VOLUME));
+                        SettingsManager.get().getDouble(Settings.Key.GAME_MUSIC_VOLUME));
             }
         };
     }

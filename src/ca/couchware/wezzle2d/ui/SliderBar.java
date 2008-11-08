@@ -155,10 +155,10 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         
         // Load in the sprites.
         this.spriteRail = ResourceFactory.get()
-                .getSprite(Settings.SPRITE_RESOURCES_PATH + "/SliderBarRailThick.png");
+                .getSprite(Settings.getSpriteResourcesPath() + "/SliderBarRailThick.png");
         
         this.spriteHandle = ResourceFactory.get()
-                .getSprite(Settings.SPRITE_RESOURCES_PATH + "/SliderBarHandleRounded.png");
+                .getSprite(Settings.getSpriteResourcesPath() + "/SliderBarHandleRounded.png");
         
         // Start in normal state.
         this.state = State.NORMAL;

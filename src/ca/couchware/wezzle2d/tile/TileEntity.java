@@ -40,7 +40,8 @@ public class TileEntity extends GraphicEntity implements IClickable
 	public TileEntity(BoardManager boardMan, TileColor color, int x, int y) 
 	{
 		// Invoke super.		
-		super(new Builder(x, y, Settings.SPRITE_RESOURCES_PATH + "/Tile" + color + ".png"));                
+		super(new Builder(x, y, 
+                Settings.getSpriteResourcesPath() + "/Tile" + color + ".png"));                
         
         // Set the position.
         this.x = x;

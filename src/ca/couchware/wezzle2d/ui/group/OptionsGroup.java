@@ -61,8 +61,7 @@ public class OptionsGroup extends AbstractGroup
      */    
     public OptionsGroup(
             final LayerManager layerMan,     
-            final GroupManager groupMan,
-            final SettingsManager settingsMan)
+            final GroupManager groupMan)
     {
         // Invoke super.
         this.layerMan = layerMan;
@@ -90,7 +89,7 @@ public class OptionsGroup extends AbstractGroup
         entityList.add(audioButton);
         
         // Create the audio group.
-        audioGroup = new SoundMusicGroup(layerMan, settingsMan);        
+        audioGroup = new SoundMusicGroup(layerMan);
         groupMan.register(audioGroup);
         
         // Create main menu button.

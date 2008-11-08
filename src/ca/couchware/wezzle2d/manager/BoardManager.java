@@ -55,7 +55,7 @@ public class BoardManager implements IManager
     /**
      * The path to the board background graphic.
      */
-    final private String PATH = Settings.SPRITE_RESOURCES_PATH + "/Board.png";        
+    final private String PATH = Settings.getSpriteResourcesPath() + "/Board.png";        
         
     /**
      * The default number of colours.

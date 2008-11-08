@@ -26,19 +26,19 @@ public class RadioItem extends AbstractSpriteButton
     
     /** The path to the on sprite. */
     final public static String PATH_ON = 
-            Settings.SPRITE_RESOURCES_PATH + "/" + "RadioOn.png";
+            Settings.getSpriteResourcesPath() + "/" + "RadioOn.png";
     
     /** The path to the off sprite. */
     final public static String PATH_OFF = 
-            Settings.SPRITE_RESOURCES_PATH + "/" + "RadioOff.png";  
+            Settings.getSpriteResourcesPath() + "/" + "RadioOff.png";  
     
     /** The path to the on sprite (hover). */
     final public static String PATH_HOVER_ON = 
-            Settings.SPRITE_RESOURCES_PATH + "/" + "RadioHoverOn.png";
+            Settings.getSpriteResourcesPath() + "/" + "RadioHoverOn.png";
     
     /** The path to the off sprite (hover). */
     final public static String PATH_HOVER_OFF = 
-            Settings.SPRITE_RESOURCES_PATH + "/" + "RadioHoverOff.png";  
+            Settings.getSpriteResourcesPath() + "/" + "RadioHoverOff.png";  
     
     /**
      * An entity group holding all the radio graphics.

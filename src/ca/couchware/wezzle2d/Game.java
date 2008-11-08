@@ -57,7 +57,7 @@ public class Game extends Canvas implements IGameWindowCallback
     //--------------------------------------------------------------------------                            
     
     /**
-     * The Manager Types.
+     * The different manager types.
      */
     public static enum ManagerType
     {
@@ -66,9 +66,9 @@ public class Game extends Canvas implements IGameWindowCallback
         GROUP, 
         HIGHSCORE, 
         LAYER, 
-        LISTENER, 
+        LISTENER,
         PIECE, 
-        SETTINGS,
+        //SETTINGS,
         SCORE, 
         STAT, 
         TIMER, 
@@ -76,8 +76,7 @@ public class Game extends Canvas implements IGameWindowCallback
         ANIMATION, 
         TUTORIAL, 
         MUSIC, 
-        SOUND
-    
+        SOUND    
     }
     
     /**
@@ -105,19 +104,19 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * The level header path.
      */
-    final private static String LEVEL_HEADER_PATH = Settings.SPRITE_RESOURCES_PATH 
+    final private static String LEVEL_HEADER_PATH = Settings.getSpriteResourcesPath()
             + "/Header_Level.png";
     
     /**
      * The score header path.
      */
-    final private static String SCORE_HEADER_PATH = Settings.SPRITE_RESOURCES_PATH 
+    final private static String SCORE_HEADER_PATH = Settings.getSpriteResourcesPath()
             + "/Header_Score.png";
     
     /**
      * The high score header path.
      */
-    final private static String HIGH_SCORE_HEADER_PATH = Settings.SPRITE_RESOURCES_PATH 
+    final private static String HIGH_SCORE_HEADER_PATH = Settings.getSpriteResourcesPath()
             + "/Header_HighScore.png";       
     
     /**
@@ -234,12 +233,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * The manager in charge of moving the piece around with the
      * pointer and drawing the piece to the board.
      */
-    public PieceManager pieceMan;
-	
-    /** 
-     * The manager in charge of loading and saving user properties.
-     */
-    public SettingsManager settingsMan;
+    public PieceManager pieceMan;	   
     
     /** 
      * The manager in charge of score.
@@ -304,7 +298,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * The build nunber path.
      */
     final private static String BUILD_NUMBER_PATH = 
-            Settings.RESOURCES_PATH + "/build.number";                             
+            Settings.getResourcesPath() + "/build.number";                             
     
     /** 
      * The normal title of the window. 
@@ -489,8 +483,7 @@ public class Game extends Canvas implements IGameWindowCallback
     
     /**
      * Initializes all the managers (except for the layer manager).
-     */
-    @SuppressWarnings("unchecked")
+     */    
     private void initializeManagers(EnumSet<ManagerType> managerSet)
     {        
         if (managerSet.contains(ManagerType.LAYER))
@@ -515,24 +508,18 @@ public class Game extends Canvas implements IGameWindowCallback
 //            tutorialMan.add(new RocketTutorial());
 //            tutorialMan.add(new BombTutorial());
 //            tutorialMan.add(new StarTutorial());
-        }
-    
-        if (managerSet.contains(ManagerType.SETTINGS))
-        {
-            // Create the property manager. Must be done before Score manager.            
-            settingsMan = SettingsManager.newInstance();
-        }
+        }           
         
         if (managerSet.contains(ManagerType.HIGHSCORE))
         {
             // Create the high score manager.
-            highScoreMan = HighScoreManager.newInstance(settingsMan);  
+            highScoreMan = HighScoreManager.newInstance();  
         }
         
         if (managerSet.contains(ManagerType.WORLD))
         {
             // Create the world manager.
-            worldMan = WorldManager.newInstance(settingsMan);  
+            worldMan = WorldManager.newInstance();  
             worldMan.setGameInProgress(true);
         }
         
@@ -563,20 +550,20 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.SCORE))
         {
             // Create the score manager.
-            scoreMan = ScoreManager.newInstance(boardMan, settingsMan, highScoreMan);
+            scoreMan = ScoreManager.newInstance(boardMan, highScoreMan);
             scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
         }
         
         if (managerSet.contains(ManagerType.SOUND))
         {
             // Create the sound manager.
-            soundMan = SoundManager.newInstance(executor, settingsMan);
+            soundMan = SoundManager.newInstance(executor);
         }
         
         if (managerSet.contains(ManagerType.MUSIC))
         {
             // Create the music manager.            
-            musicMan = MusicManager.newInstance(executor, settingsMan);  
+            musicMan = MusicManager.newInstance(executor);  
         }
         
         if (managerSet.contains(ManagerType.STAT))
@@ -746,7 +733,9 @@ public class Game extends Canvas implements IGameWindowCallback
     {
         // Create the background.
 		background = new GraphicEntity
-                .Builder(0, 0, Settings.SPRITE_RESOURCES_PATH + "/Background2.png").end();
+                .Builder(0, 0, Settings.getSpriteResourcesPath() + "/Background2.png")
+                .end();
+        
         layerMan.add(background, Layer.BACKGROUND);   
         layerMan.toBack(background, Layer.BACKGROUND);
         
@@ -774,7 +763,7 @@ public class Game extends Canvas implements IGameWindowCallback
         groupMan.register(gameOverGroup);
         
         // Initialize options group.
-        optionsGroup = new OptionsGroup(layerMan, groupMan, settingsMan);
+        optionsGroup = new OptionsGroup(layerMan, groupMan);
         groupMan.register(optionsGroup);
         
         // Initialize high score group.
@@ -861,7 +850,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 //return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
                 
                 // Create the main menu.
-                mainMenu = new MainMenuGroup(settingsMan, animationMan, musicMan);
+                mainMenu = new MainMenuGroup(animationMan, musicMan);
             }   
             else
             {      
@@ -1421,8 +1410,8 @@ public class Game extends Canvas implements IGameWindowCallback
         try
         {
             // Save the properites.
-            if (settingsMan != null)        
-                settingsMan.saveSettings();
+            if (SettingsManager.get() != null)        
+                SettingsManager.get().saveSettings();
 
             // Save the log data.            
             LogManager.write();

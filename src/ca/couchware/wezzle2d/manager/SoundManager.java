@@ -34,12 +34,7 @@ public class SoundManager
     /**
      * A link to the executor that the manager uses to play sounds.
      */
-    private Executor executor;
-    
-    /** 
-     * A link to the property manager. 
-     */
-    private SettingsManager settingsMan;
+    private Executor executor;      
     
     /** 
      * The list of effects.
@@ -67,13 +62,10 @@ public class SoundManager
      * @param executor
      * @param propertyMan
      */
-    private SoundManager(Executor executor, SettingsManager settingsMan) 
+    private SoundManager(Executor executor) 
     {        
         // The executor.
-        this.executor = executor;
-        
-        // The property manager.
-        this.settingsMan = settingsMan;               
+        this.executor = executor;             
         
         // Initiate the array list.
         this.soundList = new ArrayList<List<SoundPlayer>>(); 
@@ -81,7 +73,7 @@ public class SoundManager
         
         // Add some Sound effects. MUST USE addsound effect as it 
         // handles buffering.
-        String path = Settings.SOUND_RESOURCES_PATH;
+        String path = Settings.getSoundResourcesPath();
         
         this.create(Sound.LINE,
                 path + "/SoundLine.wav");
@@ -105,10 +97,10 @@ public class SoundManager
                 path + "/SoundRocket.wav");
              
         // Get the default volume.
-        setNormalizedGain(settingsMan.getDoubleProperty(Key.GAME_SOUND_VOLUME));
+        setNormalizedGain(SettingsManager.get().getDouble(Key.GAME_SOUND_VOLUME));
         
-        // Check if paused or not.
-        if (settingsMan.getBooleanProperty(Key.GAME_SOUND) == true)
+        // Check if on or off.
+        if (SettingsManager.get().getBoolean(Key.GAME_SOUND) == true)
         {
             setPaused(false);
         }
@@ -125,10 +117,9 @@ public class SoundManager
      * @param userProperties
      * @return
      */
-    public static SoundManager newInstance(
-            Executor executor, SettingsManager settingsMan)
+    public static SoundManager newInstance(Executor executor)
     {
-        return new SoundManager(executor, settingsMan);
+        return new SoundManager(executor);
     }
     
     /**
@@ -228,7 +219,7 @@ public class SoundManager
         else if (nGain > 1.0) nGain = 1.0;
         
         // Adjust the property;
-        settingsMan.setDoubleProperty(Key.GAME_SOUND_VOLUME, nGain);
+        SettingsManager.get().setDouble(Key.GAME_SOUND_VOLUME, nGain);
         
         // Remember it.
         this.normalizedGain = nGain;                

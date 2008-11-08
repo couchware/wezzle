@@ -22,7 +22,7 @@ public class PieceGrid extends AbstractEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = Settings.SPRITE_RESOURCES_PATH + "/Selector.png";        
+    final private String PATH = Settings.getSpriteResourcesPath() + "/Selector.png";        
     
 	/**
 	 * The current structure of the piece, representing by a 2D 

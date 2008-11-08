@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.*;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
 import java.awt.Rectangle;
@@ -18,12 +19,7 @@ import java.util.List;
  * @author cdmckay
  */
 public class LayerManager
-{
-       
-    /**
-     * The platform specific newline character.
-     */
-    private static String NL = System.getProperty("line.separator");
+{           
     
     /**
      * The different layers supported by the layer manager.
@@ -54,7 +50,7 @@ public class LayerManager
     /**
      * The game window.  Used when drawing regions of the screen.
      */
-    private IGameWindow window;
+    private IGameWindow window;   
     
     /**
      * The remove clip.  This clip is used to make sure that things that are
@@ -68,7 +64,7 @@ public class LayerManager
     private LayerManager()
     {
         // Set the window reference.
-        this.window = ResourceFactory.get().getGameWindow();                                
+        this.window = ResourceFactory.get().getGameWindow();          
         
         // Initialize layer arraylist.
         layerList = new ArrayList<ArrayList<IDrawable>>(Layer.values().length);
@@ -380,7 +376,7 @@ public class LayerManager
             drawAll();
 
             // Show the clip rect if required.
-            if (Conf.DEBUG_SHOW_CLIP_RECT == true)
+            if (SettingsManager.get().getBoolean(Key.DEBUG_SHOW_CLIP_RECT) == true)
             {
                 Rectangle r = window.getClip().getBounds();
                 LogManager.recordMessage("Bounds are " + r);
@@ -435,7 +431,7 @@ public class LayerManager
         for (List<IDrawable> layer : layerList)
         {            
             buffer.append("Layer " + i + ": " 
-                    + layer.size() + " drawables." + NL);
+                    + layer.size() + " drawables." + Settings.getLineSeparator());
             i++;
         }       
         

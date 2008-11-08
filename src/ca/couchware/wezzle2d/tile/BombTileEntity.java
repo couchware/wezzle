@@ -16,7 +16,8 @@ public class BombTileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/ItemBomb.png";
+    final private static String PATH = 
+            Settings.getSpriteResourcesPath() + "/ItemBomb.png";
     
     /**
      * The constructor.

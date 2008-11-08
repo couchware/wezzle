@@ -14,14 +14,13 @@ import java.util.Set;
  public class ScoreManager implements IManager, IScoreListener
  {    
      
-    /**
-     * The different types of scores.
-     * 
-     * @author cdmckay
-     */
+    /** The different types of scores. */
     public enum ScoreType
     {
-        LINE, BOMB, STAR, ROCKET
+        LINE,
+        BOMB, 
+        STAR, 
+        ROCKET
     }           
      
     /**
@@ -74,12 +73,7 @@ import java.util.Set;
     /**
      * The board manager.
      */
-    final private BoardManager boardMan;
-    
-    /**
-     * The Property Manager.
-     */
-    final private SettingsManager propertyMan;
+    final private BoardManager boardMan;        
     
     /**
      * The score this level.
@@ -110,20 +104,18 @@ import java.util.Set;
      * The constructor.
      * @param properties A property manager to load properties from.
      */
-    private ScoreManager(BoardManager boardMan, 
-            SettingsManager propertyMan,
+    private ScoreManager(
+            BoardManager boardMan,          
             HighScoreManager highScoreMan)
     {
-        assert boardMan != null;
-        assert propertyMan != null;
+        assert boardMan != null;        
         assert highScoreMan != null;
         
         // Create the save state.
         managerState = new EnumMap<Keys, Object>(Keys.class);
         
         // Store reference to board manager.
-        this.boardMan = boardMan;
-        this.propertyMan = propertyMan;
+        this.boardMan = boardMan;        
         
         // Initialize the scores.
         this.totalScore = 0;
@@ -133,10 +125,11 @@ import java.util.Set;
 
     
     // Public API.
-    public static ScoreManager newInstance(BoardManager boardMan, SettingsManager propertyMan,
+    public static ScoreManager newInstance(
+            BoardManager boardMan,
             HighScoreManager highScoreMan)
     {
-        return new ScoreManager(boardMan, propertyMan, highScoreMan);
+        return new ScoreManager(boardMan, highScoreMan);
     }
     
     /**

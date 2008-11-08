@@ -16,7 +16,8 @@ public class GravityTileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/ItemGravity.png";
+    final private static String PATH = 
+            Settings.getSpriteResourcesPath() + "/ItemGravity.png";
     
     /**
      * The constructor.

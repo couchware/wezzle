@@ -24,12 +24,7 @@ public class HighScoreManager
     /**
      * The symbol indicating an empty name.
      */
-    public final static String EMPTY_NAME = "-";       
-    
-    /**
-     * The property manager.
-     */
-    private SettingsManager settingsMan;
+    public final static String EMPTY_NAME = "-";             
     
     /**
      * The list of high scores.
@@ -70,14 +65,11 @@ public class HighScoreManager
      * 
      * @param properytMan
      */
-    private HighScoreManager(SettingsManager settingsMan)
+    private HighScoreManager()
     {
         // Initialize 
         this.highScoreList = new HighScore[NUMBER_OF_SCORES];
-        
-        // Set the property manager reference.
-        this.settingsMan = settingsMan;
-        
+               
         // If this is the first time running the game, we have no built list.
         // Every other time it will load the list from file.
         if (readSettings() == false)
@@ -91,9 +83,9 @@ public class HighScoreManager
      * @param propertyMan
      * @return
      */
-    public static HighScoreManager newInstance(SettingsManager settingsMan)
+    public static HighScoreManager newInstance()
     {
-        return new HighScoreManager(settingsMan);
+        return new HighScoreManager();
     }
     
     /**
@@ -176,15 +168,17 @@ public class HighScoreManager
      */
     private void writeProperties()
     {
+        SettingsManager settingsMan = SettingsManager.get();
+        
         for (int i = 0; i < highScoreList.length; i++)
         {
-            this.settingsMan.setStringProperty(nameKeyList.get(i), 
+            settingsMan.setString(nameKeyList.get(i), 
                     highScoreList[i].getName());
             
-            this.settingsMan.setIntProperty(nameKeyList.get(i),    
+            settingsMan.setInt(nameKeyList.get(i),    
                     highScoreList[i].getScore());
             
-            this.settingsMan.setIntProperty(levelKeyList.get(i),   
+            settingsMan.setInt(levelKeyList.get(i),   
                     highScoreList[i].getLevel());                   
         }
     }
@@ -196,16 +190,18 @@ public class HighScoreManager
      */
     private boolean readSettings()
     {
+        SettingsManager settingsMan = SettingsManager.get();
+        
         for (int i = 0; i < highScoreList.length; i++)
         {
-            String name = this.settingsMan.getStringProperty(nameKeyList.get(i));
+            String name = settingsMan.getString(nameKeyList.get(i));
             
             // If the properties aren't set, return false.
             if (name == null) return false;
             
             // Otherwise, add to the high score list.
-            int score = this.settingsMan.getIntProperty(scoreKeyList.get(i));
-            int level = this.settingsMan.getIntProperty(levelKeyList.get(i));
+            int score = settingsMan.getInt(scoreKeyList.get(i));
+            int level = settingsMan.getInt(levelKeyList.get(i));
             
             highScoreList[i] = HighScore.newInstance(name, score, level);           
         }

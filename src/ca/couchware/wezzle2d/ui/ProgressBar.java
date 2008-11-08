@@ -32,32 +32,32 @@ public class ProgressBar extends AbstractEntity
     /**
      * The path to the progress bar container for 200 pixel bar.
      */    
-    final private static String PATH_CONTAINER_200 =
-            Settings.SPRITE_RESOURCES_PATH + "/ProgressBarContainer_200.png";
+    final private static String PATH_CONTAINER_200 =            
+            Settings.getSpriteResourcesPath() + "/ProgressBarContainer_200.png";
     
     /**
      * The path to the progress bar container for 400 pixel bar.
      */    
     final private static String PATH_CONTAINER_400 =
-            Settings.SPRITE_RESOURCES_PATH + "/ProgressBarContainer_400.png";        
+            Settings.getSpriteResourcesPath() + "/ProgressBarContainer_400.png";        
     
     /**
      * The path to the left sprite.
      */
     final private static String PATH_SPRITE_LEFT = 
-            Settings.SPRITE_RESOURCES_PATH + "/ProgressBar_LeftEnd.png";
+            Settings.getSpriteResourcesPath() + "/ProgressBar_LeftEnd.png";
     
     /**
      * The path to the right sprite.
      */
     final private static String PATH_SPRITE_RIGHT =
-            Settings.SPRITE_RESOURCES_PATH + "/ProgressBar_RightEnd.png";
+            Settings.getSpriteResourcesPath() + "/ProgressBar_RightEnd.png";
     
     /**
      * The path to the middle sprite.
      */
     final private static String PATH_SPRITE_MIDDLE =
-            Settings.SPRITE_RESOURCES_PATH + "/ProgressBar_Middle2.png";
+            Settings.getSpriteResourcesPath() + "/ProgressBar_Middle2.png";
      
     /**
      * The type of progress bar.

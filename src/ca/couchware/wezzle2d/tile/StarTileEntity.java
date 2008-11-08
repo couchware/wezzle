@@ -15,7 +15,8 @@ public class StarTileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/ItemStar.png";
+    final private static String PATH = 
+            Settings.getSpriteResourcesPath() + "/ItemStar.png";
     
     /**
      * The constructor.

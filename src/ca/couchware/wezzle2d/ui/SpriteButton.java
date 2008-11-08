@@ -155,7 +155,7 @@ public class SpriteButton extends AbstractSpriteButton
                                                                    
         // Load the normal sprite.
         sprite = ResourceFactory.get()
-                .getSprite(Settings.SPRITE_RESOURCES_PATH + "/" + this.type.getFilename());      
+                .getSprite(Settings.getSpriteResourcesPath() + "/" + this.type.getFilename());      
         
         // Assign values based on the values from builder.        
         this.width = sprite.getWidth();

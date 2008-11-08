@@ -15,47 +15,7 @@ public final class Conf
     private Conf()
     { }
     
-    // Mechanics parameters.
-    
-    /** The number of ticks per second (same as FPS). */
-    public static final int TICKS_PER_SECOND = 60;
-    
-    /** The number of milliseconds in a tick. */            
-    public static final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
-    
-    // The debug parameters.
-    
-    /** Should the clip rectangle be shown?  This only makes sense for Java2D. */
-    public static final boolean DEBUG_SHOW_CLIP_RECT = false;
-    
-    // The bounce animation parameters.
-    
-    /** The initial speed of the bounce animation. */
-    public static final int ANIMATION_JUMP_MOVE_SPEED = 7;    
-    
-    /** The duration of the bounce animation. */
-    public static final int ANIMATION_JUMP_MOVE_DURATION = 55;
-    
-    /** The gravity acting on the bounce animation. */
-    public static final int ANIMATION_JUMP_MOVE_GRAVITY = 3;        
-    
-    /** The amount of ticks to wait before fading. */
-    public static final int ANIMATION_JUMP_FADE_WAIT = 0;       
-    
-    /** The amount of time to fade for. */
-    public static final int ANIMATION_JUMP_FADE_DURATION = 55;
-    
-    // The rocket animation parameters.
-    
-    public static final int ROCKET_MOVE_SPEED = 6;
-    public static final int ROCKET_MOVE_GRAVITY = 0;
-    public static final int ROCKET_FADE_WAIT = 0;
-    public static final int ROCKET_FADE_DURATION = 55;
-    
-    // The bomb animation paramters.
-    
-    public static final int BOMB_FADE_WAIT = 0;
-    public static final int BOMB_FADE_DURATION = 55;
+    // Mechanics parameters.       
     
     // The SCT parameters.
     

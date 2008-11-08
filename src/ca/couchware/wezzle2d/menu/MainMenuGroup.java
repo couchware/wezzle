@@ -41,19 +41,19 @@ public class MainMenuGroup extends AbstractGroup
     /** 
      * The standard menu background path.
      */
-    final private static String BACKGROUND_PATH = Settings.SPRITE_RESOURCES_PATH 
+    final private static String BACKGROUND_PATH = Settings.getSpriteResourcesPath()
             + "/MenuBackground.png"; 
     
     /** 
      * The wezzle logo path.
      */
-    final private static String WEZZLE_LOGO_PATH = Settings.SPRITE_RESOURCES_PATH 
+    final private static String WEZZLE_LOGO_PATH = Settings.getSpriteResourcesPath()
             + "/WezzleLogo.png"; 
     
     /**
      * The wezzle logo starburst path.
      */
-    final private static String WEZZLE_LOGO_STARBURST_PATH = Settings.SPRITE_RESOURCES_PATH
+    final private static String WEZZLE_LOGO_STARBURST_PATH = Settings.getSpriteResourcesPath()
             + "/WezzleLogoStarburst.png";
     
     /**
@@ -130,12 +130,7 @@ public class MainMenuGroup extends AbstractGroup
     /**
      * The current button that is activated.
      */
-    private Menu currentButton = Menu.NONE;
-    
-    /**
-     * The property manager.
-     */
-    private SettingsManager settingsMan;
+    private Menu currentButton = Menu.NONE;    
     
     /**
      * The animation manager.
@@ -155,14 +150,10 @@ public class MainMenuGroup extends AbstractGroup
     /**
      * Create a new main menu.
      */
-    public MainMenuGroup(
-            SettingsManager settingsMan, 
+    public MainMenuGroup(            
             AnimationManager animationMan, 
             MusicManager musicMan)
-    {        
-        // Store the property manager reference.
-        this.settingsMan = settingsMan;
-        
+    {                
         // Store the animation manager reference.
         this.animationMan = animationMan;
         
@@ -291,8 +282,7 @@ public class MainMenuGroup extends AbstractGroup
         this.groupMap.put(Menu.NONE, group);
         
         // Create the "Play Now" group.
-        group = new PlayNowGroup(this, 
-                this.settingsMan,
+        group = new PlayNowGroup(this,                 
                 this.layerMan, 
                 this.musicMan);
         this.groupMap.put(Menu.PLAY_NOW, group);

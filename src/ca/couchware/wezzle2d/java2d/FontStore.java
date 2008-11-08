@@ -16,7 +16,7 @@ public class FontStore
     /**
      * The font url.
      */
-    final private static String PATH = Settings.FONT_RESOURCES_PATH + "/bubbleboy2.ttf";
+    final private static String PATH = Settings.getFontResourcesPath() + "/bubbleboy2.ttf";
     
     /**
 	 * The single instance of this class

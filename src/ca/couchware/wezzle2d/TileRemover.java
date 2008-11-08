@@ -21,6 +21,7 @@ import ca.couchware.wezzle2d.manager.*;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.tile.BombTileEntity;
@@ -394,13 +395,14 @@ public class TileRemover
 
     void removeBombs(final Game game)
     {
-        StatManager statMan = game.statMan;
-        BoardManager boardMan = game.boardMan;
         AnimationManager animationMan = game.animationMan;
-        ScoreManager scoreMan = game.scoreMan;
-        TutorialManager tutorialMan = game.tutorialMan;
+        BoardManager boardMan = game.boardMan;
         ListenerManager listenerMan = game.listenerMan;
+        ScoreManager scoreMan = game.scoreMan;
+        SettingsManager settingsMan = SettingsManager.get();
         SoundManager soundMan = game.soundMan;
+        StatManager statMan = game.statMan;                        
+        TutorialManager tutorialMan = game.tutorialMan;                
 
         // Clear the flag.
         activateBombRemoval = false;
@@ -513,8 +515,9 @@ public class TileRemover
             {
                 a1 = new JiggleAnimation(600, 50, t);               
                 a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(Conf.BOMB_FADE_WAIT)
-                        .duration(Conf.BOMB_FADE_DURATION).end();
+                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_FADE_DURATION))
+                        .end();
 
                 t.setAnimation(a1);
                 animationMan.add(a1);
@@ -535,13 +538,14 @@ public class TileRemover
     void removeLines(final Game game)
     {
         // Shortcuts to managers.
-        StatManager statMan = game.statMan;
-        BoardManager boardMan = game.boardMan;
         AnimationManager animationMan = game.animationMan;
-        ScoreManager scoreMan = game.scoreMan;
-        TutorialManager tutorialMan = game.tutorialMan;
+        BoardManager boardMan = game.boardMan;
         ListenerManager listenerMan = game.listenerMan;
+        ScoreManager scoreMan = game.scoreMan;
+        SettingsManager settingsMan = SettingsManager.get();
         SoundManager soundMan = game.soundMan;
+        StatManager statMan = game.statMan;                        
+        TutorialManager tutorialMan = game.tutorialMan;                
 
         // Clear flag.
         activateLineRemoval = false;
@@ -675,13 +679,16 @@ public class TileRemover
                     game.layerMan.toFront(t, Layer.TILE);
 
                     IAnimation a1 = new MoveAnimation.Builder(t)
-                            .duration(Conf.ANIMATION_JUMP_MOVE_DURATION).theta(angle)
-                            .speed(Conf.ANIMATION_JUMP_MOVE_SPEED)
-                            .gravity(Conf.ANIMATION_JUMP_MOVE_GRAVITY).end();
+                            .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
+                            .theta(angle)
+                            .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
+                            .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
+                            .end();
                     
                     IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                            .wait(Conf.ANIMATION_JUMP_FADE_WAIT)
-                            .duration(Conf.ANIMATION_JUMP_FADE_DURATION).end();
+                            .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
+                            .duration(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_DURATION))
+                            .end();
                     
                     t.setAnimation(a1);
                     
@@ -714,15 +721,16 @@ public class TileRemover
     }
 
     void removeRockets(final Game game)
-    {
-        // Make shortcuts.
-        StatManager statMan = game.statMan;
-        BoardManager boardMan = game.boardMan;
+    {        
+        // Shortcuts to managers.
         AnimationManager animationMan = game.animationMan;
-        ScoreManager scoreMan = game.scoreMan;
-        TutorialManager tutorialMan = game.tutorialMan;
+        BoardManager boardMan = game.boardMan;
         ListenerManager listenerMan = game.listenerMan;
+        ScoreManager scoreMan = game.scoreMan;
+        SettingsManager settingsMan = SettingsManager.get();
         SoundManager soundMan = game.soundMan;
+        StatManager statMan = game.statMan;                        
+        TutorialManager tutorialMan = game.tutorialMan;  
 
         // Clear the flag.
         activateRocketRemoval = false;
@@ -851,12 +859,14 @@ public class TileRemover
                 
                 a1 = new MoveAnimation.Builder(r).duration(54)
                         .theta(r.getDirection().toDegrees())
-                        .speed(Conf.ROCKET_MOVE_SPEED)
-                        .gravity(Conf.ROCKET_MOVE_GRAVITY).end();
+                        .speed(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_SPEED))
+                        .gravity(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_GRAVITY))
+                        .end();
                 
                 a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(Conf.ROCKET_FADE_WAIT)
-                        .duration(Conf.ROCKET_FADE_DURATION).end();
+                        .wait(settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_DURATION))
+                        .end();
                 
                 t.setAnimation(a1);
                 
@@ -872,13 +882,14 @@ public class TileRemover
                 int angle = i % 2 == 0 ? 70 : 180 - 70;                
                
                 a1 = new MoveAnimation.Builder(t)
-                        .duration(Conf.ANIMATION_JUMP_MOVE_DURATION).theta(angle)
-                        .speed(Conf.ANIMATION_JUMP_MOVE_SPEED)
-                        .gravity(Conf.ANIMATION_JUMP_MOVE_GRAVITY).end();
+                        .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
+                        .theta(angle)
+                        .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
+                        .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY)).end();
                     
                 a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(Conf.ANIMATION_JUMP_FADE_WAIT)
-                        .duration(Conf.ANIMATION_JUMP_FADE_DURATION).end();
+                        .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_DURATION)).end();
                 
                 t.setAnimation(a1);
                 
@@ -900,14 +911,15 @@ public class TileRemover
 
     void removeStars(final Game game)
     {
-        // Shortcut to managers.
-        StatManager statMan = game.statMan;
-        BoardManager boardMan = game.boardMan;
+        // Shortcuts to managers.
         AnimationManager animationMan = game.animationMan;
-        ScoreManager scoreMan = game.scoreMan;
-        TutorialManager tutorialMan = game.tutorialMan;
+        BoardManager boardMan = game.boardMan;
         ListenerManager listenerMan = game.listenerMan;
+        ScoreManager scoreMan = game.scoreMan;
+        SettingsManager settingsMan = SettingsManager.get();
         SoundManager soundMan = game.soundMan;
+        StatManager statMan = game.statMan;                        
+        TutorialManager tutorialMan = game.tutorialMan;  
         
         // Clear the flag.
         activateStarRemoval = false;
@@ -1019,14 +1031,14 @@ public class TileRemover
             int angle = i % 2 == 0 ? 70 : 180 - 70;
                                           
             a1 = new MoveAnimation.Builder(t)
-                    .duration(Conf.ANIMATION_JUMP_MOVE_DURATION)
+                    .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
                     .theta(angle)
-                    .speed(Conf.ANIMATION_JUMP_MOVE_SPEED)
-                    .gravity(Conf.ANIMATION_JUMP_MOVE_GRAVITY)
+                    .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
+                    .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
                     .end();
             a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                    .wait(Conf.ANIMATION_JUMP_FADE_WAIT)
-                    .duration(Conf.ANIMATION_JUMP_MOVE_DURATION)
+                    .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
+                    .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
                     .end();
             
             t.setAnimation(a1);
