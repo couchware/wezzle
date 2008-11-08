@@ -5,15 +5,14 @@
 
 package ca.couchware.wezzle2d.ui.group;
 
-import ca.couchware.wezzle2d.manager.PropertyManager;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.properties.UserSettings;
-import ca.couchware.wezzle2d.properties.UserSettings.Key;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -82,7 +81,7 @@ public class SoundMusicGroup extends AbstractGroup
      */    
     public SoundMusicGroup(
             final LayerManager layerMan,
-            final PropertyManager<UserSettings.Key, UserSettings.Value> propertyMan)
+            final SettingsManager settingsMan)
     {
         // Set the layer manager.
         this.layerMan = layerMan;
@@ -101,8 +100,8 @@ public class SoundMusicGroup extends AbstractGroup
         RadioItem soundItem2 = new RadioItem.Builder().text("Off").end();        
         soundRadio = new RadioGroup.Builder<Sound>(400, 233, Sound.class)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(Sound.ON, soundItem1, propertyMan.getBooleanProperty(Key.SOUND))
-                .add(Sound.OFF, soundItem2, !propertyMan.getBooleanProperty(Key.SOUND))
+                .add(Sound.ON, soundItem1, settingsMan.getBooleanProperty(Key.GAME_SOUND))
+                .add(Sound.OFF, soundItem2, !settingsMan.getBooleanProperty(Key.GAME_SOUND))
                 .visible(false).end();
         layerMan.add(soundRadio, Layer.UI);
         entityList.add(soundRadio);             
@@ -114,7 +113,7 @@ public class SoundMusicGroup extends AbstractGroup
         soundSlider = new SliderBar.Builder(400, 272)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0.0, 1.0)                    
-                .virtualValue(propertyMan.getDoubleProperty(Key.SOUND_VOLUME))
+                .virtualValue(settingsMan.getDoubleProperty(Key.GAME_SOUND_VOLUME))
                 .visible(false).end();
         layerMan.add(soundSlider, Layer.UI);
         entityList.add(soundSlider);        
@@ -125,8 +124,8 @@ public class SoundMusicGroup extends AbstractGroup
         RadioItem musicItem2 = new RadioItem.Builder().text("Off").end();        
         musicRadio = new RadioGroup.Builder<Music>(400, 321, Music.class)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(Music.ON, musicItem1, propertyMan.getBooleanProperty(Key.MUSIC))
-                .add(Music.OFF, musicItem2, !propertyMan.getBooleanProperty(Key.MUSIC))
+                .add(Music.ON, musicItem1, settingsMan.getBooleanProperty(Key.GAME_MUSIC))
+                .add(Music.OFF, musicItem2, !settingsMan.getBooleanProperty(Key.GAME_MUSIC))
                 .visible(false).end();
         layerMan.add(musicRadio, Layer.UI);
         entityList.add(musicRadio);            
@@ -138,7 +137,7 @@ public class SoundMusicGroup extends AbstractGroup
         musicSlider = new SliderBar.Builder(400, 359)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0.0, 1.0)
-                .virtualValue(propertyMan.getDoubleProperty(Key.MUSIC_VOLUME))
+                .virtualValue(settingsMan.getDoubleProperty(Key.GAME_MUSIC_VOLUME))
                 .visible(false).end();
         layerMan.add(musicSlider, Layer.UI);
         entityList.add(musicSlider);                      
@@ -171,7 +170,7 @@ public class SoundMusicGroup extends AbstractGroup
             boolean soundOn = soundRadio.getSelectedKey() == Sound.ON;
             
             // Set the property.            
-            game.userProperties.setBooleanProperty(Key.SOUND, soundOn);            
+            game.settingsMan.setBooleanProperty(Key.GAME_SOUND, soundOn);            
          
             // Pause or unpause the sound depending on whether or not
             // the button is activated.
@@ -182,7 +181,7 @@ public class SoundMusicGroup extends AbstractGroup
             boolean musicOn = musicRadio.getSelectedKey() == Music.ON;
             
             // Set the property.            
-            game.userProperties.setBooleanProperty(Key.MUSIC, musicOn);
+            game.settingsMan.setBooleanProperty(Key.GAME_MUSIC, musicOn);
             
             // Set the pausedness.
             game.musicMan.setPaused(!musicOn);           

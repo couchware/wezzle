@@ -5,6 +5,7 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.ImmutableDimension;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 
@@ -24,7 +25,7 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * Path to the explosion sprite.
      */
-    final private static String PATH = Game.SPRITES_PATH + "/Explosion.png";             
+    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/Explosion.png";             
     
     /**
      * The entity being animated.

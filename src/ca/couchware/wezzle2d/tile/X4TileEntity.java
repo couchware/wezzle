@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.tile;
 
 import ca.couchware.wezzle2d.manager.BoardManager;
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.manager.Settings;
 
 /**
  * A 4x tile.
@@ -15,7 +15,7 @@ public class X4TileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Game.SPRITES_PATH + "/Item4x.png";
+    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/Item4x.png";
         
     /**
      * The constructor.

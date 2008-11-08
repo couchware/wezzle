@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.ui.IClickable;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.manager.Settings;
 
 /**
  * A class representing a game tile.
@@ -39,7 +40,7 @@ public class TileEntity extends GraphicEntity implements IClickable
 	public TileEntity(BoardManager boardMan, TileColor color, int x, int y) 
 	{
 		// Invoke super.		
-		super(new Builder(x, y, Game.SPRITES_PATH + "/Tile" + color + ".png"));                
+		super(new Builder(x, y, Settings.SPRITE_RESOURCES_PATH + "/Tile" + color + ".png"));                
         
         // Set the position.
         this.x = x;

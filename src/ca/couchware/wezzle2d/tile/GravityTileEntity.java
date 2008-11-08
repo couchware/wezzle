@@ -1,7 +1,8 @@
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.manager.BoardManager;
+import ca.couchware.wezzle2d.manager.Settings;
 
 /**
  * The gravity tile.
@@ -15,7 +16,7 @@ public class GravityTileEntity extends ItemTileEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private static String PATH = Game.SPRITES_PATH + "/ItemGravity.png";
+    final private static String PATH = Settings.SPRITE_RESOURCES_PATH + "/ItemGravity.png";
     
     /**
      * The constructor.

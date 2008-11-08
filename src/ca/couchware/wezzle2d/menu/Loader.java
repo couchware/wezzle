@@ -15,6 +15,7 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import java.io.File;
@@ -36,7 +37,7 @@ public class Loader
     /** 
      * The standard menu background.
      */
-    final private static String BACKGROUND_PATH = Game.SPRITES_PATH 
+    final private static String BACKGROUND_PATH = Settings.SPRITE_RESOURCES_PATH 
             + "/MenuBackground.png"; 
     
     /**
@@ -166,7 +167,7 @@ public class Loader
     private void loadSprites()
     {
         // Get a list of all the sprites in the sprites directory.
-        URL url = this.getClass().getClassLoader().getResource(Game.SPRITES_PATH);
+        URL url = this.getClass().getClassLoader().getResource(Settings.SPRITE_RESOURCES_PATH);
         
         // The directory of sprites.
         File dir = null;
@@ -185,7 +186,7 @@ public class Loader
         for (String spriteName : dir.list())
         {
             LogManager.recordMessage("Preloading " + spriteName + "...");
-            ResourceFactory.get().getSprite(Game.SPRITES_PATH + "/" + spriteName);         
+            ResourceFactory.get().getSprite(Settings.SPRITE_RESOURCES_PATH + "/" + spriteName);         
         }   
     }
     

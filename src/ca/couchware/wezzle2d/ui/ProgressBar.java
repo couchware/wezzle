@@ -1,10 +1,13 @@
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.*;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Rectangle;
 import java.util.EnumSet;
@@ -30,31 +33,31 @@ public class ProgressBar extends AbstractEntity
      * The path to the progress bar container for 200 pixel bar.
      */    
     final private static String PATH_CONTAINER_200 =
-            Game.SPRITES_PATH + "/ProgressBarContainer_200.png";
+            Settings.SPRITE_RESOURCES_PATH + "/ProgressBarContainer_200.png";
     
     /**
      * The path to the progress bar container for 400 pixel bar.
      */    
     final private static String PATH_CONTAINER_400 =
-            Game.SPRITES_PATH + "/ProgressBarContainer_400.png";        
+            Settings.SPRITE_RESOURCES_PATH + "/ProgressBarContainer_400.png";        
     
     /**
      * The path to the left sprite.
      */
     final private static String PATH_SPRITE_LEFT = 
-            Game.SPRITES_PATH + "/ProgressBar_LeftEnd.png";
+            Settings.SPRITE_RESOURCES_PATH + "/ProgressBar_LeftEnd.png";
     
     /**
      * The path to the right sprite.
      */
     final private static String PATH_SPRITE_RIGHT =
-            Game.SPRITES_PATH + "/ProgressBar_RightEnd.png";
+            Settings.SPRITE_RESOURCES_PATH + "/ProgressBar_RightEnd.png";
     
     /**
      * The path to the middle sprite.
      */
     final private static String PATH_SPRITE_MIDDLE =
-            Game.SPRITES_PATH + "/ProgressBar_Middle2.png";
+            Settings.SPRITE_RESOURCES_PATH + "/ProgressBar_Middle2.png";
      
     /**
      * The type of progress bar.

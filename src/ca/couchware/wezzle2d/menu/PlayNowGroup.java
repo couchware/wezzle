@@ -18,9 +18,8 @@ import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.MusicManager;
-import ca.couchware.wezzle2d.manager.PropertyManager;
-import ca.couchware.wezzle2d.properties.UserSettings;
-import ca.couchware.wezzle2d.properties.UserSettings.Key;
+import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
@@ -69,7 +68,7 @@ public class PlayNowGroup extends AbstractGroup
     /**
      * The property manager.  This is needed to access the volume settings.
      */
-    final private PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
+    final private SettingsManager settingsMan;
     
     /**
      * The layer manager.
@@ -122,7 +121,7 @@ public class PlayNowGroup extends AbstractGroup
     private Window win;
     
     public PlayNowGroup(IGroup parent, 
-            final PropertyManager<UserSettings.Key, UserSettings.Value> userProperties,
+            final SettingsManager settingsMan,
             final LayerManager layerMan, 
             final MusicManager musicMan)
     {
@@ -130,7 +129,7 @@ public class PlayNowGroup extends AbstractGroup
         super(parent);
         
         // Set the property manager.
-        this.userProperties = userProperties;
+        this.settingsMan = settingsMan;
         
         // Set the layer manager.
         this.layerMan = layerMan;
@@ -273,7 +272,7 @@ public class PlayNowGroup extends AbstractGroup
             public void run()
             { 
                 playerMap.get(theme).fadeToGain(
-                        userProperties.getDoubleProperty(Key.MUSIC_VOLUME));
+                        settingsMan.getDoubleProperty(Settings.Key.GAME_MUSIC_VOLUME));
             }
         };
     }

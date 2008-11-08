@@ -8,14 +8,12 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.audio.Music;
-import ca.couchware.wezzle2d.properties.UserSettings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
@@ -69,7 +67,7 @@ public class MusicManager
     /** 
      * A link to the property manager. 
      */
-    private PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
+    private SettingsManager settingsMan;
     
     /** 
      * The list of the music.
@@ -95,14 +93,13 @@ public class MusicManager
     /**
      * Creates the song list.
      */
-    private MusicManager(Executor executor, 
-            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties) 
+    private MusicManager(Executor executor, SettingsManager settingsMan) 
     {        
         // The executor.
         this.executor = executor;
         
         // The property manager.
-        this.userProperties = userProperties;                
+        this.settingsMan = settingsMan;                
                         
         // Initiate the array list and song number.
         this.playList = new ArrayList<Music>();                     
@@ -112,17 +109,16 @@ public class MusicManager
                         
         // Get the default volume.
         setNormalizedGain(
-                userProperties.getDoubleProperty(UserSettings.Key.MUSIC_VOLUME));                
+                settingsMan.getDoubleProperty(Key.GAME_MUSIC_VOLUME));                
     }
         
     /**
      * Static constructor.
      */
     public static MusicManager newInstance(
-            Executor executor, 
-            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
+            Executor executor, SettingsManager settingsMan)
     {
-        return new MusicManager(executor, userProperties);
+        return new MusicManager(executor, settingsMan);
     }           
     
     public void setTheme(Theme theme)
@@ -341,7 +337,7 @@ public class MusicManager
             nGain = 1.0;
         }
         // Adjust the property;
-        userProperties.setDoubleProperty(UserSettings.Key.MUSIC_VOLUME, nGain);
+        settingsMan.setDoubleProperty(Key.GAME_MUSIC_VOLUME, nGain);
 
         // Rememeber it.
         this.normalizedGain = nGain;

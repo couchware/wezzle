@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
@@ -56,7 +55,7 @@ public class BoardManager implements IManager
     /**
      * The path to the board background graphic.
      */
-    final private String PATH = Game.SPRITES_PATH + "/Board.png";        
+    final private String PATH = Settings.SPRITE_RESOURCES_PATH + "/Board.png";        
         
     /**
      * The default number of colours.

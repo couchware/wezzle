@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.java2d;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.Settings;
 import java.awt.Font;
 import java.io.InputStream;
 import java.net.URL;
@@ -16,7 +16,7 @@ public class FontStore
     /**
      * The font url.
      */
-    final private static String PATH = Game.FONTS_PATH + "/bubbleboy2.ttf";
+    final private static String PATH = Settings.FONT_RESOURCES_PATH + "/bubbleboy2.ttf";
     
     /**
 	 * The single instance of this class

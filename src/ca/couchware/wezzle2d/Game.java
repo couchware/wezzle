@@ -5,24 +5,17 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.*;
-import ca.couchware.wezzle2d.event.IListenerComponent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.event.LevelEvent;
-import ca.couchware.wezzle2d.event.LineEvent;
-import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.manager.*;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
-import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.menu.MainMenuGroup;
-import ca.couchware.wezzle2d.properties.UserSettings;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.transition.CircularTransition;
 import ca.couchware.wezzle2d.transition.ITransition;
@@ -37,12 +30,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -78,7 +68,7 @@ public class Game extends Canvas implements IGameWindowCallback
         LAYER, 
         LISTENER, 
         PIECE, 
-        PROPERTY,
+        SETTINGS,
         SCORE, 
         STAT, 
         TIMER, 
@@ -87,6 +77,7 @@ public class Game extends Canvas implements IGameWindowCallback
         TUTORIAL, 
         MUSIC, 
         SOUND
+    
     }
     
     /**
@@ -110,47 +101,23 @@ public class Game extends Canvas implements IGameWindowCallback
     final public static ImmutableRectangle SCREEN_RECTANGLE = 
             new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     
-    /**
-     * The path to the resources.
-     */
-    final public static String RESOURCES_PATH = "resources";        
-
-    /**
-     * The path to the fonts.
-     */
-    final public static String FONTS_PATH = RESOURCES_PATH + "/fonts";
-    
-    /**
-     * The path to the sprites.
-     */
-    final public static String SPRITES_PATH = RESOURCES_PATH + "/sprites";
-    
-    /**
-     * The path to the sounds.
-     */
-    final public static String SOUNDS_PATH = RESOURCES_PATH + "/sounds";
-    
-    /**
-     * The path to the music.
-     */
-    final public static String MUSIC_PATH = RESOURCES_PATH + "/music";
     
     /**
      * The level header path.
      */
-    final private static String LEVEL_HEADER_PATH = Game.SPRITES_PATH 
+    final private static String LEVEL_HEADER_PATH = Settings.SPRITE_RESOURCES_PATH 
             + "/Header_Level.png";
     
     /**
      * The score header path.
      */
-    final private static String SCORE_HEADER_PATH = Game.SPRITES_PATH 
+    final private static String SCORE_HEADER_PATH = Settings.SPRITE_RESOURCES_PATH 
             + "/Header_Score.png";
     
     /**
      * The high score header path.
      */
-    final private static String HIGH_SCORE_HEADER_PATH = Game.SPRITES_PATH 
+    final private static String HIGH_SCORE_HEADER_PATH = Settings.SPRITE_RESOURCES_PATH 
             + "/Header_HighScore.png";       
     
     /**
@@ -272,7 +239,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /** 
      * The manager in charge of loading and saving user properties.
      */
-    public PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
+    public SettingsManager settingsMan;
     
     /** 
      * The manager in charge of score.
@@ -337,7 +304,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * The build nunber path.
      */
     final private static String BUILD_NUMBER_PATH = 
-            RESOURCES_PATH + "/build.number";                             
+            Settings.RESOURCES_PATH + "/build.number";                             
     
     /** 
      * The normal title of the window. 
@@ -550,22 +517,22 @@ public class Game extends Canvas implements IGameWindowCallback
 //            tutorialMan.add(new StarTutorial());
         }
     
-        if (managerSet.contains(ManagerType.PROPERTY))
+        if (managerSet.contains(ManagerType.SETTINGS))
         {
             // Create the property manager. Must be done before Score manager.            
-            userProperties = PropertyManager.newInstance(UserSettings.get());
+            settingsMan = SettingsManager.newInstance();
         }
         
         if (managerSet.contains(ManagerType.HIGHSCORE))
         {
             // Create the high score manager.
-            highScoreMan = HighScoreManager.newInstance(userProperties);  
+            highScoreMan = HighScoreManager.newInstance(settingsMan);  
         }
         
         if (managerSet.contains(ManagerType.WORLD))
         {
             // Create the world manager.
-            worldMan = WorldManager.newInstance(userProperties);  
+            worldMan = WorldManager.newInstance(settingsMan);  
             worldMan.setGameInProgress(true);
         }
         
@@ -596,20 +563,20 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.SCORE))
         {
             // Create the score manager.
-            scoreMan = ScoreManager.newInstance(boardMan, userProperties, highScoreMan);
+            scoreMan = ScoreManager.newInstance(boardMan, settingsMan, highScoreMan);
             scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
         }
         
         if (managerSet.contains(ManagerType.SOUND))
         {
             // Create the sound manager.
-            soundMan = SoundManager.newInstance(executor, userProperties);
+            soundMan = SoundManager.newInstance(executor, settingsMan);
         }
         
         if (managerSet.contains(ManagerType.MUSIC))
         {
             // Create the music manager.            
-            musicMan = MusicManager.newInstance(executor, userProperties);  
+            musicMan = MusicManager.newInstance(executor, settingsMan);  
         }
         
         if (managerSet.contains(ManagerType.STAT))
@@ -779,7 +746,7 @@ public class Game extends Canvas implements IGameWindowCallback
     {
         // Create the background.
 		background = new GraphicEntity
-                .Builder(0, 0, SPRITES_PATH + "/Background2.png").end();
+                .Builder(0, 0, Settings.SPRITE_RESOURCES_PATH + "/Background2.png").end();
         layerMan.add(background, Layer.BACKGROUND);   
         layerMan.toBack(background, Layer.BACKGROUND);
         
@@ -807,7 +774,7 @@ public class Game extends Canvas implements IGameWindowCallback
         groupMan.register(gameOverGroup);
         
         // Initialize options group.
-        optionsGroup = new OptionsGroup(layerMan, groupMan, userProperties);
+        optionsGroup = new OptionsGroup(layerMan, groupMan, settingsMan);
         groupMan.register(optionsGroup);
         
         // Initialize high score group.
@@ -894,7 +861,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 //return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
                 
                 // Create the main menu.
-                mainMenu = new MainMenuGroup(userProperties, animationMan, musicMan);
+                mainMenu = new MainMenuGroup(settingsMan, animationMan, musicMan);
             }   
             else
             {      
@@ -1454,8 +1421,8 @@ public class Game extends Canvas implements IGameWindowCallback
         try
         {
             // Save the properites.
-            if (userProperties != null)        
-                userProperties.saveProperties();
+            if (settingsMan != null)        
+                settingsMan.saveSettings();
 
             // Save the log data.            
             LogManager.write();

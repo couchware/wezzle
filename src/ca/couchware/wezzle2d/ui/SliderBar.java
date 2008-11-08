@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Cursor;
 import java.awt.Rectangle;
@@ -154,10 +155,10 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         
         // Load in the sprites.
         this.spriteRail = ResourceFactory.get()
-                .getSprite(Game.SPRITES_PATH + "/SliderBarRailThick.png");
+                .getSprite(Settings.SPRITE_RESOURCES_PATH + "/SliderBarRailThick.png");
         
         this.spriteHandle = ResourceFactory.get()
-                .getSprite(Game.SPRITES_PATH + "/SliderBarHandleRounded.png");
+                .getSprite(Settings.SPRITE_RESOURCES_PATH + "/SliderBarHandleRounded.png");
         
         // Start in normal state.
         this.state = State.NORMAL;

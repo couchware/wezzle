@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Color;
 import java.util.EnumSet;
@@ -25,19 +26,19 @@ public class RadioItem extends AbstractSpriteButton
     
     /** The path to the on sprite. */
     final public static String PATH_ON = 
-            Game.SPRITES_PATH + "/" + "RadioOn.png";
+            Settings.SPRITE_RESOURCES_PATH + "/" + "RadioOn.png";
     
     /** The path to the off sprite. */
     final public static String PATH_OFF = 
-            Game.SPRITES_PATH + "/" + "RadioOff.png";  
+            Settings.SPRITE_RESOURCES_PATH + "/" + "RadioOff.png";  
     
     /** The path to the on sprite (hover). */
     final public static String PATH_HOVER_ON = 
-            Game.SPRITES_PATH + "/" + "RadioHoverOn.png";
+            Settings.SPRITE_RESOURCES_PATH + "/" + "RadioHoverOn.png";
     
     /** The path to the off sprite (hover). */
     final public static String PATH_HOVER_OFF = 
-            Game.SPRITES_PATH + "/" + "RadioHoverOff.png";  
+            Settings.SPRITE_RESOURCES_PATH + "/" + "RadioHoverOff.png";  
     
     /**
      * An entity group holding all the radio graphics.

@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.ISprite;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.*;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -87,7 +88,7 @@ public class SpeechBubble extends AbstractEntity
         this.type = builder.type;
         
         // The sprite path.
-        String path = Game.SPRITES_PATH + "/" + "SpeechBubble" + type + ".png";
+        String path = Settings.SPRITE_RESOURCES_PATH + "/" + "SpeechBubble" + type + ".png";
         
         // Create the sprite.
         sprite = ResourceFactory.get().getSprite(path);

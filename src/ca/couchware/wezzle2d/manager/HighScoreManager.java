@@ -5,11 +5,8 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.properties.UserSettings;
-import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * TODO Describe how class works.
@@ -32,40 +29,40 @@ public class HighScoreManager
     /**
      * The property manager.
      */
-    private PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
+    private SettingsManager settingsMan;
     
     /**
      * The list of high scores.
      */
     private HighScore[] highScoreList;
     
-    final private static List<UserSettings.Key> nameKeyList;
-    final private static List<UserSettings.Key> scoreKeyList;
-    final private static List<UserSettings.Key> levelKeyList;
+    final private static List<Settings.Key> nameKeyList;
+    final private static List<Settings.Key> scoreKeyList;
+    final private static List<Settings.Key> levelKeyList;
     
     static
     {
-        nameKeyList  = new ArrayList<UserSettings.Key>();
-        scoreKeyList = new ArrayList<UserSettings.Key>();
-        levelKeyList = new ArrayList<UserSettings.Key>();
+        nameKeyList  = new ArrayList<Settings.Key>();
+        scoreKeyList = new ArrayList<Settings.Key>();
+        levelKeyList = new ArrayList<Settings.Key>();
         
-        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME1);
-        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME2);
-        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME3);
-        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME4);
-        nameKeyList.add(UserSettings.Key.HIGH_SCORE_NAME5);
+        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_1);
+        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_2);
+        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_3);
+        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_4);
+        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_5);
         
-        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE1);
-        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE2);
-        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE3);
-        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE4);
-        scoreKeyList.add(UserSettings.Key.HIGH_SCORE_SCORE5);
+        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_1);
+        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_2);
+        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_3);
+        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_4);
+        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_5);
         
-        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL1);
-        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL2);
-        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL3);
-        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL4);
-        levelKeyList.add(UserSettings.Key.HIGH_SCORE_LEVEL5);
+        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_1);
+        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_2);
+        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_3);
+        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_4);
+        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_5);
     }
     
     /**
@@ -73,27 +70,30 @@ public class HighScoreManager
      * 
      * @param properytMan
      */
-    private HighScoreManager(
-            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
+    private HighScoreManager(SettingsManager settingsMan)
     {
         // Initialize 
         this.highScoreList = new HighScore[NUMBER_OF_SCORES];
         
         // Set the property manager reference.
-        this.userProperties = userProperties;
+        this.settingsMan = settingsMan;
         
         // If this is the first time running the game, we have no built list.
         // Every other time it will load the list from file.
-        if (readProperties() == false)
+        if (readSettings() == false)
             resetScoreList();
     }
     
     
-    // Public API.
-    public static HighScoreManager newInstance(
-            PropertyManager<UserSettings.Key, UserSettings.Value> propertyMan)
+    /**
+     * Returns a new instance of the high score manager.
+     * 
+     * @param propertyMan
+     * @return
+     */
+    public static HighScoreManager newInstance(SettingsManager settingsMan)
     {
-        return new HighScoreManager(propertyMan);
+        return new HighScoreManager(settingsMan);
     }
     
     /**
@@ -178,9 +178,14 @@ public class HighScoreManager
     {
         for (int i = 0; i < highScoreList.length; i++)
         {
-            this.userProperties.setStringProperty(nameKeyList.get(i), highScoreList[i].getName());
-            this.userProperties.setIntProperty(nameKeyList.get(i),    highScoreList[i].getScore());
-            this.userProperties.setIntProperty(levelKeyList.get(i),   highScoreList[i].getLevel());                   
+            this.settingsMan.setStringProperty(nameKeyList.get(i), 
+                    highScoreList[i].getName());
+            
+            this.settingsMan.setIntProperty(nameKeyList.get(i),    
+                    highScoreList[i].getScore());
+            
+            this.settingsMan.setIntProperty(levelKeyList.get(i),   
+                    highScoreList[i].getLevel());                   
         }
     }
         
@@ -189,18 +194,18 @@ public class HighScoreManager
      * 
      * @return Whether the list was read or not.
      */
-    private boolean readProperties()
+    private boolean readSettings()
     {
         for (int i = 0; i < highScoreList.length; i++)
         {
-            String name = this.userProperties.getStringProperty(nameKeyList.get(i));
+            String name = this.settingsMan.getStringProperty(nameKeyList.get(i));
             
             // If the properties aren't set, return false.
             if (name == null) return false;
             
             // Otherwise, add to the high score list.
-            int score = this.userProperties.getIntProperty(scoreKeyList.get(i));
-            int level = this.userProperties.getIntProperty(levelKeyList.get(i));
+            int score = this.settingsMan.getIntProperty(scoreKeyList.get(i));
+            int level = this.settingsMan.getIntProperty(levelKeyList.get(i));
             
             highScoreList[i] = HighScore.newInstance(name, score, level);           
         }

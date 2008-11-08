@@ -1,14 +1,13 @@
 package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.manager.GroupManager;
-import ca.couchware.wezzle2d.manager.PropertyManager;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.properties.UserSettings;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -63,7 +62,7 @@ public class OptionsGroup extends AbstractGroup
     public OptionsGroup(
             final LayerManager layerMan,     
             final GroupManager groupMan,
-            final PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
+            final SettingsManager settingsMan)
     {
         // Invoke super.
         this.layerMan = layerMan;
@@ -91,7 +90,7 @@ public class OptionsGroup extends AbstractGroup
         entityList.add(audioButton);
         
         // Create the audio group.
-        audioGroup = new SoundMusicGroup(layerMan, userProperties);        
+        audioGroup = new SoundMusicGroup(layerMan, settingsMan);        
         groupMan.register(audioGroup);
         
         // Create main menu button.

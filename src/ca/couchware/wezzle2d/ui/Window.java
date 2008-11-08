@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Color;
@@ -150,9 +151,9 @@ public class Window extends AbstractEntity implements IMouseListener
         this.border = builder.border;
         
         // Create the sprites.
-        this.pathCorner = Game.SPRITES_PATH + "/Window" + border + "Corner.png";
-        this.pathHorizontal = Game.SPRITES_PATH + "/Window" + border + "Horizontal.png";
-        this.pathVertical = Game.SPRITES_PATH + "/Window" + border + "Vertical.png";
+        this.pathCorner = Settings.SPRITE_RESOURCES_PATH + "/Window" + border + "Corner.png";
+        this.pathHorizontal = Settings.SPRITE_RESOURCES_PATH + "/Window" + border + "Horizontal.png";
+        this.pathVertical = Settings.SPRITE_RESOURCES_PATH + "/Window" + border + "Vertical.png";
                 
         cornerSprite = ResourceFactory.get().getSprite(pathCorner);
         horizontalSprite = ResourceFactory.get().getSprite(pathHorizontal);

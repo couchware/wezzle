@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.*;
 import java.util.EnumSet;
 
@@ -154,7 +155,7 @@ public class SpriteButton extends AbstractSpriteButton
                                                                    
         // Load the normal sprite.
         sprite = ResourceFactory.get()
-                .getSprite(Game.SPRITES_PATH + "/" + this.type.getFilename());      
+                .getSprite(Settings.SPRITE_RESOURCES_PATH + "/" + this.type.getFilename());      
         
         // Assign values based on the values from builder.        
         this.width = sprite.getWidth();

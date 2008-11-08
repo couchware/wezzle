@@ -141,7 +141,7 @@ public class CircularTransition extends AbstractTransition
 
     public boolean draw()
     {
-        LogManager.recordMessage("currentRadius = " + currentRadius);
+        //LogManager.recordMessage("currentRadius = " + currentRadius);
         this.layerMan.draw(new Ellipse2D.Double(
                 Game.SCREEN_RECTANGLE.getCenterX() - currentRadius,
                 Game.SCREEN_RECTANGLE.getCenterY() - currentRadius,

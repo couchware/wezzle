@@ -185,4 +185,23 @@ public class Util
         return ext;
     }       
     
+    public static String toDotFormat(String str)
+    {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < str.length(); i++)
+        {
+            char ch = str.charAt(i);
+            
+            if (i == 0) 
+                buffer.append(Character.toUpperCase(ch));
+            else if (ch == '_') 
+            {
+                buffer.setCharAt(i - 1, Character.toUpperCase(buffer.charAt(i - 1)));
+                buffer.append('.');
+            }                            
+        }
+        
+        return buffer.toString();
+    }
+    
 }

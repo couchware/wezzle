@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.audio;
 
-import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.manager.Settings;
 
 /**
  * Contains all possible music tracks.
@@ -14,15 +14,15 @@ import ca.couchware.wezzle2d.Game;
  */
 public enum Music 
 {             
-    TRON1(Game.MUSIC_PATH + "/Tron1.ogg"),
-    TRON2(Game.MUSIC_PATH + "/Tron2.ogg"),
-    TRON3(Game.MUSIC_PATH + "/Tron3.ogg"),
-    ELECTRONIC1(Game.MUSIC_PATH + "/Electronic1.ogg"),
-    ELECTRONIC2(Game.MUSIC_PATH + "/Electronic2.ogg"),
-    ELECTRONIC3(Game.MUSIC_PATH + "/Electronic3.ogg"),
-    HIPPOP1(Game.MUSIC_PATH + "/HipPop1.ogg"),
-    HIPPOP2(Game.MUSIC_PATH + "/HipPop2.ogg"),
-    HIPPOP3(Game.MUSIC_PATH + "/HipPop3.ogg");
+    TRON1(Settings.MUSIC_PATH + "/Tron1.ogg"),
+    TRON2(Settings.MUSIC_PATH + "/Tron2.ogg"),
+    TRON3(Settings.MUSIC_PATH + "/Tron3.ogg"),
+    ELECTRONIC1(Settings.MUSIC_PATH + "/Electronic1.ogg"),
+    ELECTRONIC2(Settings.MUSIC_PATH + "/Electronic2.ogg"),
+    ELECTRONIC3(Settings.MUSIC_PATH + "/Electronic3.ogg"),
+    HIPPOP1(Settings.MUSIC_PATH + "/HipPop1.ogg"),
+    HIPPOP2(Settings.MUSIC_PATH + "/HipPop2.ogg"),
+    HIPPOP3(Settings.MUSIC_PATH + "/HipPop3.ogg");
     
     private String path;
     

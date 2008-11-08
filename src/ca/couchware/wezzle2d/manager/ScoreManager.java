@@ -79,7 +79,7 @@ import java.util.Set;
     /**
      * The Property Manager.
      */
-    final private PropertyManager propertyMan;
+    final private SettingsManager propertyMan;
     
     /**
      * The score this level.
@@ -111,7 +111,7 @@ import java.util.Set;
      * @param properties A property manager to load properties from.
      */
     private ScoreManager(BoardManager boardMan, 
-            PropertyManager propertyMan,
+            SettingsManager propertyMan,
             HighScoreManager highScoreMan)
     {
         assert boardMan != null;
@@ -133,7 +133,7 @@ import java.util.Set;
 
     
     // Public API.
-    public static ScoreManager newInstance(BoardManager boardMan, PropertyManager propertyMan,
+    public static ScoreManager newInstance(BoardManager boardMan, SettingsManager propertyMan,
             HighScoreManager highScoreMan)
     {
         return new ScoreManager(boardMan, propertyMan, highScoreMan);

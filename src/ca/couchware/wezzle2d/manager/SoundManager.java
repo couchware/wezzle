@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.audio.*;
-import ca.couchware.wezzle2d.properties.UserSettings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -39,7 +39,7 @@ public class SoundManager
     /** 
      * A link to the property manager. 
      */
-    private PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
+    private SettingsManager settingsMan;
     
     /** 
      * The list of effects.
@@ -67,14 +67,13 @@ public class SoundManager
      * @param executor
      * @param propertyMan
      */
-    private SoundManager(Executor executor, 
-            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties) 
+    private SoundManager(Executor executor, SettingsManager settingsMan) 
     {        
         // The executor.
         this.executor = executor;
         
         // The property manager.
-        this.userProperties = userProperties;               
+        this.settingsMan = settingsMan;               
         
         // Initiate the array list.
         this.soundList = new ArrayList<List<SoundPlayer>>(); 
@@ -82,33 +81,34 @@ public class SoundManager
         
         // Add some Sound effects. MUST USE addsound effect as it 
         // handles buffering.
+        String path = Settings.SOUND_RESOURCES_PATH;
+        
         this.create(Sound.LINE,
-                Game.SOUNDS_PATH + "/SoundLine.wav");
+                path + "/SoundLine.wav");
         
         this.create(Sound.BOMB,
-                Game.SOUNDS_PATH + "/SoundExplosion.wav");
+                path + "/SoundExplosion.wav");
         
         this.create(Sound.BLEEP,
-                Game.SOUNDS_PATH + "/SoundBleep.wav");
+                path + "/SoundBleep.wav");
         
         this.create(Sound.CLICK,
-                Game.SOUNDS_PATH + "/SoundClick.wav");
+                path + "/SoundClick.wav");
         
         this.create(Sound.LEVEL_UP,
-                Game.SOUNDS_PATH + "/SoundLevelUp.wav");
+                path + "/SoundLevelUp.wav");
         
         this.create(Sound.STAR,
-                Game.SOUNDS_PATH + "/SoundDing.wav");
+                path + "/SoundDing.wav");
         
         this.create(Sound.ROCKET,
-                Game.SOUNDS_PATH + "/SoundRocket.wav");
+                path + "/SoundRocket.wav");
              
         // Get the default volume.
-        setNormalizedGain(userProperties.getDoubleProperty(
-                UserSettings.Key.SOUND_VOLUME));
+        setNormalizedGain(settingsMan.getDoubleProperty(Key.GAME_SOUND_VOLUME));
         
         // Check if paused or not.
-        if (userProperties.getBooleanProperty(UserSettings.Key.SOUND) == true)
+        if (settingsMan.getBooleanProperty(Key.GAME_SOUND) == true)
         {
             setPaused(false);
         }
@@ -126,10 +126,9 @@ public class SoundManager
      * @return
      */
     public static SoundManager newInstance(
-            Executor executor, 
-            PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
+            Executor executor, SettingsManager settingsMan)
     {
-        return new SoundManager(executor, userProperties);
+        return new SoundManager(executor, settingsMan);
     }
     
     /**
@@ -229,7 +228,7 @@ public class SoundManager
         else if (nGain > 1.0) nGain = 1.0;
         
         // Adjust the property;
-        userProperties.setDoubleProperty(UserSettings.Key.SOUND_VOLUME, nGain);
+        settingsMan.setDoubleProperty(Key.GAME_SOUND_VOLUME, nGain);
         
         // Remember it.
         this.normalizedGain = nGain;                

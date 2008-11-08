@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.properties.ISettings;
 import ca.couchware.wezzle2d.util.Util;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -124,14 +123,14 @@ public class LogManager
         opened = true;
         
         // Check if the directory exists.
-		File dir = new File(ISettings.PATH);
+		File dir = new File(Settings.LOG_PATH);
 		
 		// If the directory doesn't exist. Create it.
 		if (dir.isDirectory() == false)		
 			dir.mkdir();		
 		
 		// Create the file.
-		logFile = new File(ISettings.PATH + "/log.txt");								
+		logFile = new File(Settings.LOG_FILEPATH);								
 		
 		try
 		{

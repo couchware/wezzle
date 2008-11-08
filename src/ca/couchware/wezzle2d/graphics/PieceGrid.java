@@ -1,7 +1,8 @@
 package ca.couchware.wezzle2d.graphics;
 
-import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.manager.BoardManager;
+import ca.couchware.wezzle2d.manager.Settings;
 import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -21,7 +22,7 @@ public class PieceGrid extends AbstractEntity
     /**
      * Path to the piece selector sprite.
      */
-    final private String PATH = Game.SPRITES_PATH + "/Selector.png";        
+    final private String PATH = Settings.SPRITE_RESOURCES_PATH + "/Selector.png";        
     
 	/**
 	 * The current structure of the piece, representing by a 2D 

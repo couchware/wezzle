@@ -3,7 +3,6 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
-import ca.couchware.wezzle2d.properties.UserSettings;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class WorldManager implements ILevelListener
     /**
 	 * The property manager.
 	 */
-	private final PropertyManager<UserSettings.Key, UserSettings.Value> userProperties;
+	private final SettingsManager settingsMan;
     
 	/**
 	 * The current level
@@ -115,10 +114,10 @@ public class WorldManager implements ILevelListener
 	 * @param board
 	 * @param scoreManager
 	 */
-	private WorldManager(PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
+	private WorldManager(SettingsManager settingsMan)
 	{						
 		// Store a reference to the property manager.
-		this.userProperties = userProperties;					
+		this.settingsMan = settingsMan;					
 				
 		// Set the starting level.
 		setLevel(1);
@@ -219,11 +218,15 @@ public class WorldManager implements ILevelListener
         currentRuleList.addAll(masterRuleList);
 	}
 	        
-    // Public API.        
-    public static WorldManager newInstance(
-            final PropertyManager<UserSettings.Key, UserSettings.Value> userProperties)
+    /**
+     * Returns a new world manager instance.
+     * 
+     * @param settingsMan
+     * @return
+     */       
+    public static WorldManager newInstance(SettingsManager settingsMan)
     {
-        return new WorldManager(userProperties);
+        return new WorldManager(settingsMan);
     }
     
     //--------------------------------------------------------------------------
