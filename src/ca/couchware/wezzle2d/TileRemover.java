@@ -445,16 +445,16 @@ public class TileRemover
                 .text(String.valueOf(deltaScore)).end();
 
         a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(Conf.SCT_SCORE_FADE_WAIT)
-                .duration(Conf.SCT_SCORE_FADE_DURATION)
-                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
-                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
                 .end();
         
         a2 = new MoveAnimation.Builder(label)
-                .duration(Conf.SCT_SCORE_MOVE_DURATION)
-                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
-                .theta(Conf.SCT_SCORE_MOVE_THETA).end();
+                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
         a2.setStartRunnable(new Runnable()
         {
@@ -582,16 +582,16 @@ public class TileRemover
                     .text(String.valueOf(deltaScore)).end();
             
             IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(Conf.SCT_SCORE_FADE_WAIT)
-                .duration(Conf.SCT_SCORE_FADE_DURATION)
-                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
-                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
                 .end();
             
             IAnimation a2 = new MoveAnimation.Builder(label)
-                .duration(Conf.SCT_SCORE_MOVE_DURATION)
-                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
-                .theta(Conf.SCT_SCORE_MOVE_THETA).end();
+                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
             a2.setStartRunnable(new Runnable()
             {
@@ -787,16 +787,16 @@ public class TileRemover
                 .text(String.valueOf(deltaScore)).end();
         
         a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(Conf.SCT_SCORE_FADE_WAIT)
-                .duration(Conf.SCT_SCORE_FADE_DURATION)
-                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
-                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
                 .end();
         
         a2 = new MoveAnimation.Builder(label)
-                .duration(Conf.SCT_SCORE_MOVE_DURATION)
-                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
-                .theta(Conf.SCT_SCORE_MOVE_THETA).end();
+                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
         a2.setStartRunnable(new Runnable()
         {
@@ -978,16 +978,16 @@ public class TileRemover
                 .end();
 
         a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(Conf.SCT_SCORE_FADE_WAIT)
-                .duration(Conf.SCT_SCORE_FADE_DURATION)
-                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
-                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
                 .end();
         
         a2 = new MoveAnimation.Builder(label)
-                .duration(Conf.SCT_SCORE_MOVE_DURATION)
-                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
-                .theta(Conf.SCT_SCORE_MOVE_THETA).end();
+                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
         a2.setStartRunnable(new Runnable()
         {

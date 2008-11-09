@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.menu;
 
-import ca.couchware.wezzle2d.Conf;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.LayerManager;
@@ -19,6 +18,7 @@ import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
@@ -131,7 +131,8 @@ public class PlayNowGroup extends AbstractGroup
         // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(Conf.MAIN_MENU_WINDOW_OPACITY).visible(false).end();
+                .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
+                .visible(false).end();
         this.layerMan.add(win, Layer.UI);         
         
         // The label spacing.
@@ -286,7 +287,8 @@ public class PlayNowGroup extends AbstractGroup
         win.setVisible(true);        
         
         IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
-                .speed(Conf.MAIN_MENU_WINDOW_SPEED).end();   
+                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
+                .end();   
         
         a.setFinishRunnable(new Runnable()
         {
@@ -302,7 +304,8 @@ public class PlayNowGroup extends AbstractGroup
     {        
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
-                .speed(Conf.MAIN_MENU_WINDOW_SPEED).end();
+                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
+                .end();
         
         a.setStartRunnable(new Runnable()
         {

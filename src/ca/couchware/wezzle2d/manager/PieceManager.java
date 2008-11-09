@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
-import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -12,13 +11,13 @@ import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.IListenerComponent;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.piece.*;
 import ca.couchware.wezzle2d.ui.ILabel;
 import java.util.ArrayList;
@@ -746,17 +745,19 @@ public class PieceManager implements IMouseListener
                 .text(String.valueOf(deltaScore))
                 .end();
         
+        SettingsManager settingsMan = SettingsManager.get();
+        
         IAnimation a1 = new FadeAnimation.Builder(Type.OUT, label)
-                .wait(Conf.SCT_SCORE_FADE_WAIT)
-                .duration(Conf.SCT_SCORE_FADE_DURATION)
-                .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
-                .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
                 .end();
         
         IAnimation a2 = new MoveAnimation.Builder(label)
-                .duration(Conf.SCT_SCORE_MOVE_DURATION)
-                .speed(Conf.SCT_SCORE_MOVE_SPEED_P, Conf.SCT_SCORE_MOVE_SPEED_Q)
-                .theta(Conf.SCT_SCORE_MOVE_THETA)
+                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
                 .end();
                     
         a2.setStartRunnable(new Runnable()

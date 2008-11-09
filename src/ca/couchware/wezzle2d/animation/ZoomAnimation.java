@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.util.ImmutableDimension;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
-import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 

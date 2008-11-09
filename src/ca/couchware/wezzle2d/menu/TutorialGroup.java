@@ -5,18 +5,19 @@
 
 package ca.couchware.wezzle2d.menu;
 
-import ca.couchware.wezzle2d.Conf;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.Window;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import java.util.EnumSet;
 
 /**
- * The play now group, which holds all the configuration options for playing
+ * The play now group, which holds all the options for playing
  * a Wezzle game.
  * 
  * @author cdmckay
@@ -42,7 +43,7 @@ public class TutorialGroup extends AbstractGroup
          // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(Conf.MAIN_MENU_WINDOW_OPACITY).visible(false).end();
+                .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY)).visible(false).end();
         this.layerMan.add(win, Layer.UI);         
     }
     
@@ -53,7 +54,7 @@ public class TutorialGroup extends AbstractGroup
         win.setVisible(true);        
         
         IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
-                .speed(Conf.MAIN_MENU_WINDOW_SPEED).end();   
+                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED)).end();   
                 
         return a;
     }
@@ -63,7 +64,7 @@ public class TutorialGroup extends AbstractGroup
     {        
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
-                .speed(Conf.MAIN_MENU_WINDOW_SPEED).end();
+                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED)).end();
         
         return a;
     }

@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
@@ -140,9 +141,10 @@ public class Loader
         
         // Create the animation that will be used to transition the
         // loader to the menu screen.
+        SettingsManager settingsMan = SettingsManager.get();
         this.animation = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
-                .wait(Conf.LOADER_BAR_FADE_WAIT)
-                .duration(Conf.LOADER_BAR_FADE_DURATION)
+                .wait(settingsMan.getInt(Key.LOADER_BAR_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.LOADER_BAR_FADE_DURATION))
                 .end();
         
         // Initialize the loader list.

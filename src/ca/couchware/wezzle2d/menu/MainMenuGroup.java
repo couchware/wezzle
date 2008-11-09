@@ -5,13 +5,13 @@
 
 package ca.couchware.wezzle2d.menu;
 
-import ca.couchware.wezzle2d.Conf;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
@@ -21,6 +21,7 @@ import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
@@ -100,12 +101,7 @@ public class MainMenuGroup extends AbstractGroup
         
         public int getRank()
         { return rank; }
-    }               
-    
-    /**
-     * The animation that the main menu is showing.
-     */
-    private IAnimation animation;
+    }                       
     
     /**
      * The wezzle logo.
@@ -115,7 +111,7 @@ public class MainMenuGroup extends AbstractGroup
     /**
      * The logo spinner animation.
      */
-    final private IAnimation spinAnimation;
+    final private IAnimation rotateAnimation;
     
     /**
      * A map containing all the buttons in the main menu.
@@ -136,6 +132,12 @@ public class MainMenuGroup extends AbstractGroup
      * The animation manager.
      */
     private AnimationManager animationMan;
+        
+    /** The animation that slides in the options when the menu is first shown. */        
+    private IAnimation slideAnimation = FinishedAnimation.get();    
+    
+    /** The animation that is currently being run. */        
+    private IAnimation currentAnimation = FinishedAnimation.get();    
     
     /**
      * The music manager.
@@ -189,10 +191,11 @@ public class MainMenuGroup extends AbstractGroup
         IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
         layerMan.add(e1, Layer.BACKGROUND);      
-        spinAnimation = new MoveAnimation.Builder(e1)
+        this.rotateAnimation = new MoveAnimation.Builder(e1)
                 .gravity(0).speed(0)
-                .omega(Conf.MAIN_MENU_STARBURST_OMEGA).end();
-        animationMan.add(spinAnimation);
+                .omega(SettingsManager.get().getDouble(Key.MAIN_MENU_STARBURST_OMEGA))
+                .end();
+        animationMan.add(this.rotateAnimation);
         
         IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
@@ -206,13 +209,14 @@ public class MainMenuGroup extends AbstractGroup
         // Create the groups.
         initializeGroups();
                 
-        // Add it to the manager.
-        //this.animationMan.add(animateShow());                
-        this.animationMan.add(new MetaAnimation.Builder()
+        // Create the slide animation.
+        this.slideAnimation = new MetaAnimation.Builder()
                 .runRule(MetaAnimation.RunRule.SEQUENCE)
-                .add(animateShow())
-                //.add(animateHide())
-                .end());
+                .add(animateShow())                
+                .end();
+        
+        // Add it to the manager.
+        this.animationMan.add(this.slideAnimation);
     };
     
     private void initializeButtons()
@@ -319,9 +323,9 @@ public class MainMenuGroup extends AbstractGroup
             case READY:                                                                                             
                 
                 // Check for a new animation to load.
-                if (this.animation != null)
+                if (this.currentAnimation.isFinished() == false)
                 {
-                    this.animationMan.add(this.animation);
+                    this.animationMan.add(this.currentAnimation);
                     this.state = State.ANIMATING;
                     break;
                 }
@@ -355,13 +359,13 @@ public class MainMenuGroup extends AbstractGroup
                             btn.setDisabled(true);
                             
                             // Animate the change.
-                            this.animation = new MetaAnimation.Builder()
+                            this.currentAnimation = new MetaAnimation.Builder()
                                     .finishRule(MetaAnimation.FinishRule.ALL)
                                     //.runRule(MetaAnimation.RunRule.SEQUENCE)
                                     .add(this.groupMap.get(currentButton).animateHide())
                                     .add(this.groupMap.get(m).animateShow())
                                     .end();
-                            this.animationMan.add(this.animation);
+                            //this.animationMan.add(this.animation);
                             
                             // Set the new current button.                            
                             this.currentButton = m;
@@ -390,8 +394,8 @@ public class MainMenuGroup extends AbstractGroup
                     this.buttonMap.get(currentButton).setActivated(false);
                     this.buttonMap.get(currentButton).setDisabled(false);
                     
-                    this.animation = group.animateHide();
-                    this.animationMan.add(this.animation);
+                    this.currentAnimation = group.animateHide();
+                    //this.animationMan.add(this.animation);
                     
                     this.currentButton = Menu.NONE;
                                        
@@ -407,7 +411,7 @@ public class MainMenuGroup extends AbstractGroup
                     if (this.activated == false)
                     {                      
                         // Create the hide animation.
-                        IAnimation a = animateHide();
+                        final IAnimation a = animateHide();
                         
                         // Attach a runnable setting the state to finished.
                         a.setFinishRunnable(new Runnable()
@@ -420,17 +424,17 @@ public class MainMenuGroup extends AbstractGroup
                         this.layerMan.setDisabled(true);
                         
                         // Set the animation.
-                        this.animation = a;
-                    }
-                }
+                        this.currentAnimation = a;
+                        
+                    } // end if
+                } // end if
                 
                 break;         
                 
             case ANIMATING:
                 
-                if (this.animation.isFinished() == true)
-                {
-                    this.animation = null;
+                if (this.currentAnimation.isFinished() == true)
+                {                    
                     this.state = State.READY;
                 }
                 
@@ -447,14 +451,17 @@ public class MainMenuGroup extends AbstractGroup
     @Override
     public IAnimation animateShow()
     {               
+        // The settings manager.
+        SettingsManager settingsMan = SettingsManager.get();
+        
         // The meta animation builder.
         MetaAnimation.Builder builder = new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL);
         
         // Add the wezzle logo fade in.
         builder.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, logoEntity)
-                .wait(Conf.MAIN_MENU_LOGO_FADE_IN_WAIT)
-                .duration(Conf.MAIN_MENU_LOGO_FADE_IN_DURATION).end());
+                .wait(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_WAIT))
+                .duration(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_DURATION)).end());
         
         // Animate the buttons coming in.        
         for (Menu m : this.buttonMap.keySet())
@@ -465,9 +472,9 @@ public class MainMenuGroup extends AbstractGroup
             final IButton btn = this.buttonMap.get(m);
             
             final IAnimation a = new MoveAnimation.Builder(btn).theta(180)
-                    .speed(Conf.MAIN_MENU_SLIDE_SPEED)
-                    .minX(Conf.MAIN_MENU_SLIDE_MIN_X)
-                    .wait(Conf.MAIN_MENU_SLIDE_WAIT * m.getRank())
+                    .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
+                    .minX(settingsMan.getInt(Key.MAIN_MENU_SLIDE_MIN_X))
+                    .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
                     .end();
             
             builder.add(a);
@@ -486,6 +493,9 @@ public class MainMenuGroup extends AbstractGroup
     @Override
     public IAnimation animateHide()
     {
+        // The settings manager.
+        SettingsManager settingsMan = SettingsManager.get();
+        
         // Create a new meta animation.
         MetaAnimation.Builder builder = new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL);
@@ -495,8 +505,8 @@ public class MainMenuGroup extends AbstractGroup
         
         // Fade out the logo.
         IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
-                .wait(Conf.MAIN_MENU_LOGO_FADE_OUT_WAIT)
-                .duration(Conf.MAIN_MENU_LOGO_FADE_OUT_DURATION)
+                .wait(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_WAIT))
+                .duration(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_DURATION))
                 .end();
         
         f.setFinishRunnable(new Runnable()
@@ -504,7 +514,7 @@ public class MainMenuGroup extends AbstractGroup
             public void run()
             { 
                 logoEntity.setVisible(false);
-                spinAnimation.setFinished();
+                rotateAnimation.setFinished();
             }
         });
         
@@ -517,9 +527,9 @@ public class MainMenuGroup extends AbstractGroup
             final IButton btn = this.buttonMap.get(m);
             
             final IAnimation a = new MoveAnimation.Builder(btn).theta(0)
-                    .speed(Conf.MAIN_MENU_SLIDE_SPEED)
+                    .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
                     .maxX(910)
-                    .wait(Conf.MAIN_MENU_SLIDE_WAIT * m.getRank())
+                    .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
                     .end();
             
             builder.add(a);

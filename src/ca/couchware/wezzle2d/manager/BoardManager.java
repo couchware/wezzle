@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
@@ -1467,8 +1468,9 @@ public class BoardManager implements IManager
     private IAnimation animateRowFadeIn()
     {
         // The amount of delay between each row.
-        int delay = 0;
-        int deltaDelay = 14;
+        int wait = 0;
+        int deltaWait = SettingsManager.get().getInt(Key.ANIMATION_ROWFADE_WAIT);
+        int duration  = SettingsManager.get().getInt(Key.ANIMATION_ROWFADE_DURATION);
         
         // True if a tile was found this row.
         boolean tileFound = false;
@@ -1484,7 +1486,7 @@ public class BoardManager implements IManager
 			if (t != null)		
 			{	                
                 IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, t)
-                        .wait(delay).duration(50).end();  
+                        .wait(wait).duration(duration).end();  
                 
                 t.setAnimation(a);
                 animationMan.add(a);
@@ -1496,7 +1498,7 @@ public class BoardManager implements IManager
 			if (tileFound == true && (i + 1) % columns == 0)
             {
                 tileFound = false;
-				delay += deltaDelay;
+				wait += deltaWait;
             }
         }
         

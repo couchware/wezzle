@@ -6,9 +6,8 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.IAnimation;
-import ca.couchware.wezzle2d.event.IListenerComponent;
-import ca.couchware.wezzle2d.event.LineEvent;
-import java.util.EnumMap;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import java.util.List;
 
 /**
@@ -18,48 +17,28 @@ import java.util.List;
 public class Refactorer 
 {
     
-    /** 
-     * The single instance of this class to ever exist. 
-     */
+    /** The single instance of this class to ever exist. */
 	private static final Refactorer single = new Refactorer();
     
-    /**
-     * The refator speeds.
-     */
+    /** The refator speeds. */
     public static enum RefactorSpeed
     {
-        SLOWER,
-        SLOW,
-        NORMAL, 
-        DROP,
-        SHIFT    
-    }
-    
-    /**
-     * The default slow speed.
-     */
-    final public static int DEFAULT_SLOWER_SPEED = 1;
-    
-    /**
-     * The default slow speed.
-     */
-    final public static int DEFAULT_SLOW_SPEED = 2;
-    
-    /**
-     * The default normal speed.
-     */
-    final public static int DEFAULT_NORMAL_SPEED = 3;
-    
-    /**
-     * The default drop speed.
-     */
-    final public static int DEFAULT_DROP_SPEED = 4;
-    
-    /**
-     * The default shift speed.
-     */
-    final public static int DEFAULT_SHIFT_SPEED = 4;
-    
+        SLOWER(SettingsManager.get().getInt(Key.REFACTOR_SPEED_SLOWER)),
+        SLOW(SettingsManager.get().getInt(Key.REFACTOR_SPEED_SLOW)),
+        NORMAL(SettingsManager.get().getInt(Key.REFACTOR_SPEED_NORMAL)), 
+        DROP(SettingsManager.get().getInt(Key.REFACTOR_SPEED_DROP)),
+        SHIFT(SettingsManager.get().getInt(Key.REFACTOR_SPEED_SHIFT));    
+                
+        /** The speed associated with the key. */
+        private int speed;
+                
+        RefactorSpeed(int val)
+        { this.speed = val; }
+        
+        public int getValue()
+        { return speed; }
+    }       
+        
      /**
      * If true, refactor will be activated next loop.
      */
@@ -88,22 +67,11 @@ public class Refactorer
     /**
      * The refactor type.
      */
-    private RefactorSpeed speed;
-    
-    /**
-     * The speed map.
-     */
-    private EnumMap<RefactorSpeed, Integer> speedMap = 
-            new EnumMap<RefactorSpeed, Integer>(RefactorSpeed.class);
+    private RefactorSpeed speed;        
     
     private Refactorer()
     {
-        // Set the refactor speeds to their defaults.
-        speedMap.put(RefactorSpeed.SLOWER, DEFAULT_SLOWER_SPEED);
-        speedMap.put(RefactorSpeed.SLOW, DEFAULT_SLOW_SPEED);
-        speedMap.put(RefactorSpeed.NORMAL, DEFAULT_NORMAL_SPEED);
-        speedMap.put(RefactorSpeed.DROP, DEFAULT_DROP_SPEED);
-        speedMap.put(RefactorSpeed.SHIFT, DEFAULT_SHIFT_SPEED);       
+        // Set the refactor speeds to their defaults.           
         this.speed = RefactorSpeed.NORMAL;
     }
     
@@ -183,7 +151,7 @@ public class Refactorer
             game.pieceMan.getPieceGrid().setVisible(false);
 
             // Start down refactor.                           
-            this.refactorAnimationList = game.boardMan.startVerticalShift(speedMap.get(speed));              
+            this.refactorAnimationList = game.boardMan.startVerticalShift(speed.getValue());              
 
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
@@ -241,7 +209,7 @@ public class Refactorer
             game.boardMan.synchronize();							
 
             // Start left refactor.
-            refactorAnimationList = game.boardMan.startHorizontalShift(speedMap.get(speed));
+            refactorAnimationList = game.boardMan.startHorizontalShift(speed.getValue());
             
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen

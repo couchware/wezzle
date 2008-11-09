@@ -15,11 +15,13 @@ public class Settings
     
     /** All the keys that may be used. */
     public enum Key
-    {
+    {                
         // Meta values.
-        CONF_VERSION, 
+        
+        CONF_VERSION,                                               
         
         // Game values.
+        
         GAME_RENDER_TYPE,        
         GAME_MUSIC,
         GAME_MUSIC_VOLUME,
@@ -27,6 +29,7 @@ public class Settings
         GAME_SOUND_VOLUME,
         
         // User values.
+        
         USER_HIGHSCORE_NAME_1,
         USER_HIGHSCORE_NAME_2,
         USER_HIGHSCORE_NAME_3,
@@ -53,6 +56,14 @@ public class Settings
         /** Whether or not to show the clip rectangle.  Only works in JAVA2D mode. */
         DEBUG_SHOW_CLIP_RECT,
         
+        // Refactor values.
+        
+        REFACTOR_SPEED_SLOWER,
+        REFACTOR_SPEED_SLOW,
+        REFACTOR_SPEED_NORMAL,
+        REFACTOR_SPEED_DROP,
+        REFACTOR_SPEED_SHIFT,
+        
         // Animation values.
                 
         ANIMATION_JUMP_MOVE_SPEED,
@@ -67,7 +78,40 @@ public class Settings
         ANIMATION_ROCKET_FADE_DURATION,
         
         ANIMATION_BOMB_FADE_WAIT,
-        ANIMATION_BOMB_FADE_DURATION                
+        ANIMATION_BOMB_FADE_DURATION,
+        
+        ANIMATION_ROWFADE_WAIT,
+        ANIMATION_ROWFADE_DURATION,
+                
+        // SCT values.
+        
+        SCT_SCORE_MOVE_DURATION,
+        SCT_SCORE_MOVE_SPEED,
+        SCT_SCORE_MOVE_THETA,
+        SCT_SCORE_FADE_WAIT,
+        SCT_SCORE_FADE_DURATION,
+        SCT_SCORE_FADE_MIN_OPACITY,
+        SCT_SCORE_FADE_MAX_OPACITY,
+        SCT_LEVELUP_TEXT,
+        SCT_LEVELUP_TEXT_SIZE,
+        SCT_LEVELUP_MOVE_DURATION,
+        SCT_LEVELUP_MOVE_SPEED,
+        SCT_LEVELUP_MOVE_THETA,                
+                
+        // Menu values.
+        
+        LOADER_BAR_FADE_WAIT,
+        LOADER_BAR_FADE_DURATION,        
+        MAIN_MENU_STARBURST_OMEGA,
+        MAIN_MENU_WINDOW_OPACITY,
+        MAIN_MENU_WINDOW_SPEED,
+        MAIN_MENU_SLIDE_SPEED,
+        MAIN_MENU_SLIDE_MIN_X,
+        MAIN_MENU_SLIDE_WAIT,
+        MAIN_MENU_LOGO_FADE_IN_WAIT,
+        MAIN_MENU_LOGO_FADE_IN_DURATION,
+        MAIN_MENU_LOGO_FADE_OUT_WAIT,
+        MAIN_MENU_LOGO_FADE_OUT_DURATION
     }
     
     public enum Value
@@ -89,22 +133,22 @@ public class Settings
     final private static String fontResourcesPath = resourcesPath + "/fonts";
     
     /** The path to the sprites. */
-    final private static String spirteResourcesPath = resourcesPath + "/sprites";
+    final private static String spriteResourcesPath = resourcesPath + "/sprites";
     
     /** The path to the sounds. */
     final private static String soundResourcesPath = resourcesPath + "/sounds";
     
     /** The path to the music. */
     final private static String musicResourcesPath = resourcesPath + "/music";
+    
+     /** The path to the XML data. */
+    final private static String xmlResourcesPath = resourcesPath + "/xml";
         
     /** The name of the settings file. */
-    final private static String settingsFilename = "settings.xml";
-    
-    /** The path to the default settings file. */
-    final private static String settingsPath = resourcesPath + "/settings";
+    final private static String settingsFilename = "settings.xml";       
     
      /** The file path of default settings file. */
-    final private static String defaultSettingsFilePath = settingsPath 
+    final private static String defaultSettingsFilePath = xmlResourcesPath 
             + "/" + settingsFilename;
     
     /** The path to the user settings file. */
@@ -161,10 +205,10 @@ public class Settings
         return settingsFilename;
     }
 
-    public static String getSettingsPath()
+    public static String getXmlResourcesPath()
     {
-        return settingsPath;
-    }
+        return xmlResourcesPath;
+    }   
 
     public static String getSoundResourcesPath()
     {
@@ -173,7 +217,7 @@ public class Settings
 
     public static String getSpriteResourcesPath()
     {
-        return spirteResourcesPath;
+        return spriteResourcesPath;
     }
 
     public static String getUserSettingsFilePath()
@@ -189,26 +233,33 @@ public class Settings
     // Dynamic non-text file settings.
     
     /** Cached milliseconds per tick. */
+    private static boolean millisecondsPerTickInitialized = false;
     private static int millisecondsPerTick;        
     
     /**
      * Calculates all the special settings.
      * @param settingsMan
      */
-    public static void calculate(SettingsManager settingsMan)
+    public static void calculate()
     {
-        calculateMillisecondsPerTick(settingsMan);
+        calculateMillisecondsPerTick();
     }       
     
     /** Recalculates milliseconds per tick. */
-    private static void calculateMillisecondsPerTick(SettingsManager settingsMan)
-    {
-         millisecondsPerTick = settingsMan.getInt(Key.TICKS_PER_SECOND);
+    private static void calculateMillisecondsPerTick()
+    {         
+        millisecondsPerTick = 1000 / SettingsManager.get().getInt(Key.TICKS_PER_SECOND);                 
     }
     
     /** Returns the number of milliseconds per tick. */
     public static int getMillisecondsPerTick()
     {
+        if (millisecondsPerTickInitialized == false)
+        {
+            millisecondsPerTickInitialized = true;
+            calculateMillisecondsPerTick();
+        }
+        
         return millisecondsPerTick;
     }
 }

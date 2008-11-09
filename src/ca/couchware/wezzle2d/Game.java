@@ -11,9 +11,28 @@ import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.event.LevelEvent;
-import ca.couchware.wezzle2d.manager.*;
+import ca.couchware.wezzle2d.manager.Achievement;
+import ca.couchware.wezzle2d.manager.AchievementManager;
+import ca.couchware.wezzle2d.manager.AnimationManager;
+import ca.couchware.wezzle2d.manager.BoardManager;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
+import ca.couchware.wezzle2d.manager.GroupManager;
+import ca.couchware.wezzle2d.manager.HighScoreManager;
+import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.ListenerManager;
+import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.MusicManager;
+import ca.couchware.wezzle2d.manager.PieceManager;
+import ca.couchware.wezzle2d.manager.ScoreManager;
+import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SoundManager;
+import ca.couchware.wezzle2d.manager.StatManager;
+import ca.couchware.wezzle2d.manager.TimerManager;
+import ca.couchware.wezzle2d.manager.TutorialManager;
+import ca.couchware.wezzle2d.manager.WorldManager;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.menu.MainMenuGroup;
 import ca.couchware.wezzle2d.tile.*;
@@ -1144,24 +1163,28 @@ public class Game extends Canvas implements IGameWindowCallback
 
                 int y = pieceMan.getPieceGrid().getY() 
                         + boardMan.getCellHeight() / 2;
+                
+                
+                // The settings manager.
+                SettingsManager settingsMan = SettingsManager.get();
 
                 final ILabel label = new LabelBuilder(x, y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                         .color(TEXT_COLOR1)
-                        .size(Conf.SCT_LEVELUP_TEXT_SIZE)
-                        .text(Conf.SCT_LEVELUP_TEXT).end();
+                        .size(settingsMan.getInt(Key.SCT_LEVELUP_TEXT_SIZE))
+                        .text(settingsMan.getString(Key.SCT_LEVELUP_TEXT)).end();
 
                 IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                        .wait(Conf.SCT_SCORE_FADE_WAIT)
-                        .duration(Conf.SCT_SCORE_FADE_DURATION)
-                        .minOpacity(Conf.SCT_SCORE_FADE_MIN_OPACITY)
-                        .maxOpacity(Conf.SCT_SCORE_FADE_MAX_OPACITY)
+                        .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                        .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                        .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
                         .end();                 
                 
                 IAnimation a2 = new MoveAnimation.Builder(label)
-                        .duration(Conf.SCT_LEVELUP_MOVE_DURATION)
-                        .speed(Conf.SCT_LEVELUP_MOVE_SPEED_P, Conf.SCT_LEVELUP_MOVE_SPEED_Q)
-                        .theta(Conf.SCT_LEVELUP_MOVE_THETA)                        
+                        .duration(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_DURATION))
+                        .speed(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_SPEED))
+                        .theta(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_THETA))                       
                         .end(); 
 
                 a2.setStartRunnable(new Runnable()
@@ -1477,6 +1500,9 @@ public class Game extends Canvas implements IGameWindowCallback
         // Enable OpenGL.
         // Can cause the JVM to crash.
         //System.setProperty("sun.java2d.opengl", "True");
+        
+        // Make sure the setting manager is loaded.       
+        SettingsManager.get();                
         
         try
         {

@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.animation;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 
@@ -44,7 +45,7 @@ public class MoveAnimation extends AbstractAnimation
     /**
      * The entity that is being moved.
      */
-    final IEntity entity;
+    final private IEntity entity;
     
     /**
      * The initial position.
@@ -54,27 +55,12 @@ public class MoveAnimation extends AbstractAnimation
     /**
      * The x-component of the launch speed, in pixels / tick.
      */
-    private int vX;
+    private int speedX;
     
     /**
      * The y-component of the launch speed, in pixels / tick.
      */
-    private int vY;
-    
-    /**
-     * The speed, p-part of a rational number.
-     */
-    private int vp;
-    
-    /**
-     * The number of pixels to skip each tick, q-part of a rational number.
-     */
-    private int vq;
-    
-    /**
-     * The number of frames left to skip.
-     */
-    private int Q;
+    private int speedY;              
     
     /**
      * The minimum x that the animation may move to.
@@ -97,19 +83,19 @@ public class MoveAnimation extends AbstractAnimation
     private int maxY;
     
     /**
-     * The launch angle, in degrees / tick.
+     * The launch angle, in degrees.
      */
     private int theta;
     
     /**
-     * The anglar velocity, in degrees / tick.
+     * The anglar velocity, in degrees / sec.
      */
     private double omega;
     
     /**
-     * The gravity, in pixels / tick / tick.
+     * The gravity, in pixels / sec^2.
      */
-    private int g;
+    private int gravity;
     
     /**
      * The amount of time to wait before starting.
@@ -136,29 +122,43 @@ public class MoveAnimation extends AbstractAnimation
     * rotation speed.        
     */
     private MoveAnimation(Builder builder)
-    {                
+    {                                
         // Set a reference to the entity.
-        this.entity = builder.entity;                           
+        this.entity     = builder.entity;             
+        this.finishRule = builder.finishRule;
+        
+        // If the duration is 0, warn and end now.
+        if (builder.duration == 0)
+        {
+            LogManager.recordWarning("Animation had a zero duration!");
+            setFinished();
+            return;
+        }
         
         // Record other values.
-        this.theta = builder.theta;
-        this.g = builder.g;        
-        this.omega = builder.omega;
-        this.wait = builder.wait;
-        this.duration = builder.duration;  
+        this.theta   = builder.theta;
+        this.gravity = builder.gravity;        
+        this.omega   = builder.omega;                
+        
+        // Convert to ticks.
+        this.wait = builder.wait / Settings.getMillisecondsPerTick();         
+        this.duration = builder.duration;
+        
+        // If we have a positive duration, then convert it to ticks.
+        if (this.duration > 0)
+             this.duration /= Settings.getMillisecondsPerTick();  
         
         this.minX = builder.minX;
         this.minY = builder.minY;
         this.maxX = builder.maxX;
-        this.maxY = builder.maxY;
-        this.finishRule = builder.finishRule;
+        this.maxY = builder.maxY;        
         
         // Determine the components of the launch velocity.
-        this.vX = (int) ((double) builder.vp * Math.cos(Math.toRadians(theta)));
-        this.vY = (int) ((double) builder.vp * Math.sin(Math.toRadians(theta)));
+        this.speedX = (int) ((double) builder.speed * Math.cos(Math.toRadians(theta)));
+        this.speedY = (int) ((double) builder.speed * Math.sin(Math.toRadians(theta)));
         
         // Set the number of frames to skip.
-        this.vq = builder.vq;       
+//        this.vq = builder.vq;       
     }    
     
     public static class Builder implements IBuilder<MoveAnimation>
@@ -168,9 +168,8 @@ public class MoveAnimation extends AbstractAnimation
         private int wait = 0;
         private int duration = -1;
         private int theta = 0;
-        private int g = 0;   
-        private int vp = 0; // p/q
-        private int vq = 0;
+        private int gravity = 0;   
+        private int speed = 0;
         private double omega = 0;
         private int minX = Integer.MIN_VALUE;
         private int minY = Integer.MIN_VALUE;
@@ -186,9 +185,8 @@ public class MoveAnimation extends AbstractAnimation
         public Builder wait(int val) { wait = val; return this; }
         public Builder duration(int val) { duration = val; return this; }
         public Builder theta(int val) { theta = val; return this; }
-        public Builder speed(int p) { vp = p; vq = 1; return this; } 
-        public Builder speed(int p, int q) { vp = p; vq = q; return this; }        
-        public Builder gravity(int val) { g = val; return this; }     
+        public Builder speed(int val) { speed = val; return this; }         
+        public Builder gravity(int val) { gravity = val; return this; }     
         public Builder omega(double val) { omega = val; return this; }
         public Builder minX(int val) { minX = val; return this; }
         public Builder minY(int val) { minY = val; return this; }
@@ -207,8 +205,7 @@ public class MoveAnimation extends AbstractAnimation
         // Make sure we've set the started flag.
         if (this.started == false)
         {
-            // Record the initial position.
-            initialPosition = entity.getXYPosition();            
+            // Record the initial position.                
             setStarted();
         }
         
@@ -233,15 +230,23 @@ public class MoveAnimation extends AbstractAnimation
         
         if (waitFinished == false && ticks > wait)
         {
+            // Record initial position now.
+            initialPosition = entity.getXYPosition();   
+            
+            // And start!
             waitFinished = true;
             ticks = 1;
         }                
        
         if (waitFinished == true)
         {
-            // Determine the current x and y.            
-            int x = (vX * ticks) / vq;
-            int y = (vY * ticks) / vq - (g * Util.sq(ticks)) / 20;
+            // Determine the current x and y.   
+            // d = speed * ticks
+            //   = pixels/sec * ticks * ms/tick * sec/ms
+            //   = pixels
+            int g = (gravity * Util.sq(ticks * Settings.getMillisecondsPerTick())) / (2 * Util.sq(1000));
+            int x = ((speedX * ticks * Settings.getMillisecondsPerTick())) / 1000;
+            int y = ((speedY * ticks * Settings.getMillisecondsPerTick())) / 1000 - g;
 
             // Move the entity.
             int newX = initialPosition.getX() + x;
@@ -276,11 +281,11 @@ public class MoveAnimation extends AbstractAnimation
                 || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))
                 
             {
-                if (duration == -1) setFinished();
+                if (duration < 0) setFinished();
                 else skip = true;
             }
             
-            if (duration != -1 && ticks > wait + duration)   
+            if (duration > 0 && ticks > wait + duration)   
                 setFinished();                                                        
         }        
     }

@@ -49,10 +49,14 @@ public interface IAnimation
      */
     public void setStartRunnable(Runnable startRunnable);        
     
+    public Runnable getStartRunnable();    
+    
     /**
      * Set the finish action.
      */
     public void setFinishRunnable(Runnable finishRunnable);      
+    
+    public Runnable getFinishRunnable();    
     
     /**
      * This method is run when the animation is first loaded by the

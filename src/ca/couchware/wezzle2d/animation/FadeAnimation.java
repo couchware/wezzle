@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.animation;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.Util;
 
 /**
@@ -16,7 +17,7 @@ public class FadeAnimation extends AbstractAnimation
     /**
      * The counter.
      */
-    private long ticks = 0;
+    private int ticks = 0;
     
     /**
      * The minimum opacity the fade should go to.
@@ -71,10 +72,8 @@ public class FadeAnimation extends AbstractAnimation
         this.entity = builder.entity;
         
         // Save the wait.
-        this.wait = builder.wait;
-        
-        // Save the duration.
-        this.duration = builder.duration;        
+        this.wait     = builder.wait     / Settings.getMillisecondsPerTick();        
+        this.duration = builder.duration / Settings.getMillisecondsPerTick();        
         
         // Set the opacities.
         this.minOpacity = builder.minOpacity;
@@ -145,7 +144,7 @@ public class FadeAnimation extends AbstractAnimation
                 case LOOP_IN:
                    
                     int i = Util.scaleInt(0, duration, 
-                            minOpacity, maxOpacity, (int) ticks - wait);
+                            minOpacity, maxOpacity, ticks - wait);
                     entity.setOpacity(i);
                             
                     break;
@@ -154,7 +153,7 @@ public class FadeAnimation extends AbstractAnimation
                 case LOOP_OUT:
                     
                     int o = Util.scaleInt(0, duration, 
-                            minOpacity, maxOpacity, (int) ticks - wait);
+                            minOpacity, maxOpacity, ticks - wait);
                     entity.setOpacity(maxOpacity - o + minOpacity);                        
                     
                     break;

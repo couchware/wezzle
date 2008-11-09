@@ -1,20 +1,15 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.Settings.Value;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -35,7 +30,7 @@ public class SettingsManager
     final private static SettingsManager single = new SettingsManager();
     
     /** The high performance enum map of the settings. */
-    private Map<Key, String> map;
+    final private Map<Key, String> map;
     		
 	/**
 	 * The constructor.
@@ -49,10 +44,7 @@ public class SettingsManager
         loadDefaultSettings();        		
 
         // Load user-made settings on top of that.
-        loadUserSettings();
-        
-        // Calculate all the dynamic settings.
-        Settings.calculate(this);
+        loadUserSettings();                
 	}
         
     /**
@@ -90,7 +82,7 @@ public class SettingsManager
             catch(Exception e)
             {
                 LogManager.recordWarning("URL is " + f.getAbsolutePath(), 
-                        "PropertyManager#this");
+                        "SettingsManager");
                 LogManager.recordException(e);
                 return false;
             }
@@ -178,7 +170,7 @@ public class SettingsManager
         catch (IOException ex)
         {
             LogManager.recordException(ex);
-        }
+        }               
     }
     
 	/**
