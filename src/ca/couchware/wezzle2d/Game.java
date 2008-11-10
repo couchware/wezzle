@@ -1088,7 +1088,12 @@ public class Game extends Canvas implements IGameWindowCallback
 		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
 		{
 			System.exit(0);
-		}                          
+		}   
+                if(window.isKeyPressed(KeyEvent.VK_B))
+                {
+                    System.out.println("BBBBBBBBB");
+                    boardMan.insertItemRandomly(TileType.BOMB);
+                }
         
         // Check the achievements.
         if (achievementMan.evaluate(this) == true)

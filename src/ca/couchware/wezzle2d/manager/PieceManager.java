@@ -356,6 +356,8 @@ public class PieceManager implements IMouseListener
         
     }      
     
+  
+    
     private int convertXToColumn(final int x)
     {
         return (x - boardMan.getX()) / boardMan.getCellWidth();
@@ -998,6 +1000,11 @@ public class PieceManager implements IMouseListener
             // Right mouse clicked.
             case RIGHT:
                 mouseButtonSet.add(MouseButton.RIGHT);
+                break;
+                
+            //temp.
+            case MIDDLE:
+                boardMan.insertItemRandomly(TileType.BOMB);
                 break;
                 
             default:

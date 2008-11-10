@@ -1919,6 +1919,21 @@ public class BoardManager implements IManager
     {
         return cells;
     }
+    
+    public void insertItemRandomly(TileType type)
+    {
+        // Get a random tile location.
+        int [] locations = this.getTileLocations();
+        int random = Util.random.nextInt(locations.length);
+        
+        int index = locations[random];
+        // Remove the old, insert the new.
+        TileColor color = getTile(index).getColor();
+        this.removeTile(index);
+        this.createTile(index, type, color);
+        
+    }
+    
             
     public int getNumberOfItems()
     {
@@ -1974,6 +1989,24 @@ public class BoardManager implements IManager
         return counter;
     }
 
+    private int[] getTileLocations()
+    {
+        int[] locations = new int[this.getNumberOfTiles()-this.getNumberOfItems()
+                -this.getNumberOfMults()];  
+        TileEntity temp;
+        int count = 0;
+        
+        for(int i = 0; i < this.cells; i++)
+        {
+            temp = this.getTile(i);
+            if (temp != null && temp.getType() == TileType.NORMAL)
+            {
+                locations[count++] = i;
+            }
+        }
+        
+        return locations;
+    }
     public int getNumberOfColors()
     {
         return numberOfColors;
