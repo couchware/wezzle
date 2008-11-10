@@ -175,7 +175,7 @@ public class HighScoreManager
             settingsMan.setString(nameKeyList.get(i), 
                     highScoreList[i].getName());
             
-            settingsMan.setInt(nameKeyList.get(i),    
+            settingsMan.setInt(scoreKeyList.get(i),    
                     highScoreList[i].getScore());
             
             settingsMan.setInt(levelKeyList.get(i),   
