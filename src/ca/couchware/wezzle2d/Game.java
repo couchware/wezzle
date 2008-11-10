@@ -433,7 +433,7 @@ public class Game extends Canvas implements IGameWindowCallback
      /**
      * The high score group.
      */
-    private HighScoreGroup highScoreGroup;
+    private HighScoreGroup highScoreGroup;        
     
     //--------------------------------------------------------------------------
     // Constructor
@@ -509,7 +509,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Create the layer manager.   
             layerMan = LayerManager.newInstance();  
-        }
+        }                
         
         if (managerSet.contains(ManagerType.ANIMATION))
         {

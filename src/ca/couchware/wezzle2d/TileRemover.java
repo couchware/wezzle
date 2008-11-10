@@ -42,6 +42,10 @@ import java.util.Set;
 public class TileRemover
 {
 
+    /** The only instance of this class to ever exist. */
+    private static final TileRemover single = new TileRemover();
+
+    
     /**
      * If true, a line removal will be activated next loop.
      */    
@@ -62,12 +66,7 @@ public class TileRemover
     /**
      * If true, a line removal is in progress.
      */
-    private boolean tileRemovalInProgress = false;
-    
-    /**
-     * If true, a tile effect is in progress.
-     */
-    private boolean tileEffectInProgress = false;
+    private boolean tileRemovalInProgress = false;     
     
     /**
      * The set of tile indices that will be removed.
@@ -77,17 +76,17 @@ public class TileRemover
     /**
      * If true, uses jump animation instead of zoom.
      */
-    private boolean tileRemovalUseJumpAnimation = false;
+    private boolean useJumpAnimation = false;
     
     /**
      * If true, award no points for this tile removal.
      */
-    private boolean tileRemovalNoScore = false;
+    private boolean noScore = false;
     
     /**
      * If true, do not activate items on this removal.
      */
-    private boolean tileRemovalNoItems = false;
+    private boolean noItems = false;
     
     /**
      * If true, a bomb removal will be activated next loop.
@@ -119,21 +118,11 @@ public class TileRemover
      */
     private Set<Integer> rocketRemovalSet;
     
-//    /**
-//     * If true, the gravity effect will be activated next loop.
-//     */
-//    private boolean activateGravityEffect = false;   
-  
     /**
      * The number of gravity tiles found.
      */
     private Set<Integer> gravityRemovalSet;
-    
-    /** 
-     * The single instance of this class to ever exist. 
-     */
-    private static final TileRemover single = new TileRemover();
-
+      
     /**
      * The private constructor.
      */
@@ -211,22 +200,12 @@ public class TileRemover
    
     void initialize()
     {
-        // Initialize the last line match.
-        this.lastMatchSet = new HashSet<Integer>();
-
-        // Initialize line index set.
-        this.tileRemovalSet = new HashSet<Integer>();
-
-        // Initialize bomb index set.
-        this.bombRemovalSet = new HashSet<Integer>();
-
-        // Initialize star index set.
-        this.starRemovalSet = new HashSet<Integer>();
-
-        // Initialize rocket index set.
-        this.rocketRemovalSet = new HashSet<Integer>();
-        
-        // Initialize gravity index set.
+        // Initialize the sets.
+        this.lastMatchSet      = new HashSet<Integer>();
+        this.tileRemovalSet    = new HashSet<Integer>();
+        this.rocketRemovalSet  = new HashSet<Integer>();        
+        this.bombRemovalSet    = new HashSet<Integer>();
+        this.starRemovalSet    = new HashSet<Integer>();              
         this.gravityRemovalSet = new HashSet<Integer>();
     }
 
@@ -243,9 +222,9 @@ public class TileRemover
     {
         // Set some flags for the level up.
         this.activateLineRemoval = true;
-        this.tileRemovalUseJumpAnimation = true;
-        this.tileRemovalNoScore = true;
-        this.tileRemovalNoItems = true;
+        this.useJumpAnimation = true;
+        this.noScore = true;
+        this.noItems = true;
         
         // Clear the tile removal set.        
         this.tileRemovalSet.clear();
@@ -276,16 +255,16 @@ public class TileRemover
     void findMatches(final Game game)
     {
         // Shortcuts to the managers.
-        StatManager statMan = game.statMan;
         BoardManager boardMan = game.boardMan;
         PieceManager pieceMan = game.pieceMan;
+        StatManager  statMan  = game.statMan;                
         TimerManager timerMan = game.timerMan;
         
         // Look for matches.
         tileRemovalSet.clear();
 
-        int cycleX =  boardMan.findXMatch(tileRemovalSet);
-        int cycleY =  boardMan.findYMatch(tileRemovalSet);
+        int cycleX = boardMan.findXMatch(tileRemovalSet);
+        int cycleY = boardMan.findYMatch(tileRemovalSet);
         
         statMan.incrementCycleLineCount(cycleX);
         statMan.incrementCycleLineCount(cycleY);
@@ -330,10 +309,8 @@ public class TileRemover
 
                 // Reset the mouse.
                 pieceMan.clearMouseButtonSet();
-            }
-            
-     
-        }
+            }                 
+        } // end if
     }
 
     void processRemoval(final Game game)
@@ -351,7 +328,7 @@ public class TileRemover
             {
                 animationInProgress = true;
             }
-        }
+        } // end for
 
         if (animationInProgress == false)
         {
@@ -390,11 +367,404 @@ public class TileRemover
                         .setRefactorSpeed(RefactorSpeed.NORMAL)
                         .startRefactor();
             }
+        } // end if
+    }
+    
+    private void scanFor(
+            BoardManager boardMan, 
+            EnumSet<TileType> tileTypeSet, 
+            boolean clear)    
+    {
+        if (tileTypeSet.contains(TileType.ROCKET))
+        {
+            if (clear == true) this.rocketRemovalSet.clear();
+            boardMan.scanFor(TileType.ROCKET, this.tileRemovalSet, this.rocketRemovalSet);
+            this.tileRemovalSet.removeAll(this.rocketRemovalSet);    
+        }        
+        
+        if (tileTypeSet.contains(TileType.BOMB))
+        {
+            if (clear == true) this.bombRemovalSet.clear();
+            boardMan.scanFor(TileType.BOMB, this.tileRemovalSet, this.bombRemovalSet);
+            this.tileRemovalSet.removeAll(this.bombRemovalSet);
+        }        
+        
+        if (tileTypeSet.contains(TileType.STAR))
+        {
+            if (clear == true) this.starRemovalSet.clear();
+            boardMan.scanFor(TileType.STAR, this.tileRemovalSet, this.starRemovalSet);
+            this.tileRemovalSet.removeAll(this.starRemovalSet);
         }
+                 
+        if (tileTypeSet.contains(TileType.GRAVITY))
+        {
+            if (clear == true) this.gravityRemovalSet.clear();
+            boardMan.scanFor(TileType.GRAVITY, this.tileRemovalSet,  this.gravityRemovalSet);       
+        }                                    
+    }
+    
+    private void scanFor(
+        BoardManager boardMan, 
+        EnumSet<TileType> tileTypeSet)
+    {
+        scanFor(boardMan, tileTypeSet, false);
     }
 
+    private void removeLines(final Game game)
+    {
+        // Shortcuts to managers.
+        AnimationManager animationMan = game.animationMan;
+        BoardManager boardMan = game.boardMan;
+        ListenerManager listenerMan = game.listenerMan;
+        ScoreManager scoreMan = game.scoreMan;
+        SettingsManager settingsMan = SettingsManager.get();
+        SoundManager soundMan = game.soundMan;
+        StatManager statMan = game.statMan;                        
+        TutorialManager tutorialMan = game.tutorialMan;                
+
+        // Clear flag.
+        activateLineRemoval = false;
+
+        // Increment chain count.
+        statMan.incrementChainCount();
+
+        // Calculate score, unless no-score flag is set.
+        if (noScore == false)
+        {
+            final int deltaScore = scoreMan.calculateLineScore(
+                    tileRemovalSet,
+                    ScoreType.LINE,
+                    statMan.getChainCount());
+
+            // Fire a score event.
+            if (tutorialMan.isTutorialInProgress() == true)
+            {
+                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                        IListenerComponent.GameType.TUTORIAL);
+            }
+            else
+            {
+                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                        IListenerComponent.GameType.GAME);
+            }
+
+            // Show the SCT.
+            ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
+
+            final ILabel label = new LabelBuilder(p.getX(), p.getY())
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .color(Game.SCORE_LINE_COLOR).size(scoreMan.determineFontSize(deltaScore))
+                    .text(String.valueOf(deltaScore)).end();
+            
+            IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
+                .end();
+            
+            IAnimation a2 = new MoveAnimation.Builder(label)
+                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
+
+            a2.setStartRunnable(new Runnable()
+            {
+                public void run()
+                {
+                    game.layerMan.add(label, Layer.EFFECT);
+                }
+            });
+
+            a2.setFinishRunnable(new Runnable()
+            {
+                public void run()
+                {
+                    game.layerMan.remove(label, Layer.EFFECT);
+                }
+            });
+
+            animationMan.add(a1);
+            animationMan.add(a2);
+            a1 = null;
+            a2 = null;
+
+            // Release references.
+            p = null;
+        }
+        else
+        {
+            // Turn off the flag now that it has been used.
+            noScore = false;
+        }
+
+        // Play the sound.
+        soundMan.play(Sound.LINE);
+
+        // Make sure bombs aren't removed (they get removed
+        // in a different step).  However, if the no-items
+        // flag is set, then ignore bombs.
+        if (this.noItems == false)
+        {
+            scanFor(boardMan, EnumSet.allOf(TileType.class), true);
+        }
+        else
+        {
+            // Turn off the flag now that it has been used.
+            this.noItems = false;
+        }
+
+        // Start the line removal animations if there are any
+        // non-bomb tiles.
+        if (tileRemovalSet.size() > 0)
+        {
+            int i = 0;
+            for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
+            {
+                TileEntity t = boardMan.getTile((Integer) it.next());
+
+                if (useJumpAnimation == true)
+                {
+                    i++;
+                    int angle = i % 2 == 0 ? 70 : 180 - 70;
+
+                    // Bring this tile to the top.
+                    game.layerMan.toFront(t, Layer.TILE);
+
+                    IAnimation a1 = new MoveAnimation.Builder(t)
+                            .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
+                            .theta(angle)
+                            .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
+                            .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
+                            .end();
+                    
+                    IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                            .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
+                            .duration(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_DURATION))
+                            .end();
+                    
+                    t.setAnimation(a1);
+                    
+                    animationMan.add(a1);
+                    animationMan.add(a2);
+                    
+                    a1 = null;
+                    a2 = null;
+                }
+                else
+                {
+                    t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
+                            .v(0.05).end());
+                    animationMan.add(t.getAnimation());
+                }
+            }
+
+            // Clear the animation flag.
+            useJumpAnimation = false;
+
+            // Set the flag.
+            tileRemovalInProgress = true;
+        }
+        // Otherwise, start the star processing.
+        else
+        {
+            //activateBombRemoval = true;
+            activateStarRemoval = true;
+        }
+    }        
+
+    void removeRockets(final Game game)
+    {        
+        // Shortcuts to managers.
+        AnimationManager animationMan = game.animationMan;
+        BoardManager boardMan = game.boardMan;
+        ListenerManager listenerMan = game.listenerMan;
+        ScoreManager scoreMan = game.scoreMan;
+        SettingsManager settingsMan = SettingsManager.get();
+        SoundManager soundMan = game.soundMan;
+        StatManager statMan = game.statMan;                        
+        TutorialManager tutorialMan = game.tutorialMan;  
+
+        // Clear the flag.
+        activateRocketRemoval = false;
+
+        // Increment cascade.
+        statMan.incrementChainCount();
+
+        // Used below.
+        int deltaScore = 0;
+
+        // Also used below.
+        IAnimation a1, a2;
+
+        // Get the tiles the bombs would affect.
+        boardMan.processRockets(rocketRemovalSet, tileRemovalSet);
+
+        for (Integer index : lastMatchSet)
+        {
+            if (boardMan.getTile(index) == null)
+            {
+                continue;
+            }
+
+            if (boardMan.getTile(index).getClass() != RocketTileEntity.class)
+            {
+                tileRemovalSet.remove(index);
+            }
+        } // end for
+
+        deltaScore = scoreMan.calculateLineScore(
+                tileRemovalSet,
+                ScoreType.STAR,
+                statMan.getChainCount());
+
+        // Fire a score event.
+        if (tutorialMan.isTutorialInProgress() == true)
+        {
+            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                    IListenerComponent.GameType.TUTORIAL);
+        }
+        else
+        {
+            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
+                    IListenerComponent.GameType.GAME);
+        }
+
+
+        // Show the SCT.
+        ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
+
+        final ILabel label = new LabelBuilder(p.getX(), p.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(Game.SCORE_BOMB_COLOR)
+                .size(scoreMan.determineFontSize(deltaScore))
+                .text(String.valueOf(deltaScore))
+                .end();
+        
+        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
+                .end();
+        
+        a2 = new MoveAnimation.Builder(label)
+                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
+                .end();
+
+        a2.setStartRunnable(new Runnable()
+        {
+            public void run()
+            {
+                game.layerMan.add(label, Layer.EFFECT);
+            }
+        });
+
+        a2.setFinishRunnable(new Runnable()
+        {
+            public void run()
+            {
+                game.layerMan.remove(label, Layer.EFFECT);
+            }
+        });
+
+        animationMan.add(a1);
+        animationMan.add(a2);
+        a1 = null;
+        a2 = null;
+
+        // Release references.
+        p = null;
+
+        // Play the sound.
+        soundMan.play(Sound.ROCKET);
+
+        // Find all the new rockets.
+        Set<Integer> nextRocketRemovalSet = new HashSet<Integer>();
+        boardMan.scanFor(TileType.ROCKET, tileRemovalSet, nextRocketRemovalSet);
+        nextRocketRemovalSet.removeAll(rocketRemovalSet);
+
+        // Remove all new rockets from the tile removal set.
+        // They will be processed separately.
+        tileRemovalSet.removeAll(nextRocketRemovalSet);
+
+        // Find the rest of the pieces.
+        EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);
+        tileTypeSet.remove(TileType.ROCKET);        
+        scanFor(boardMan, tileTypeSet);                  
+
+        // Start the line removal animations.
+        int i = 0;
+        for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
+        {
+            TileEntity t = boardMan.getTile((Integer) it.next());
+
+            // Bring the tile to the front.
+            game.layerMan.toFront(t, Layer.TILE);
+
+            if (t.getClass() == RocketTileEntity.class)
+            {
+                // Cast it.
+                RocketTileEntity r = (RocketTileEntity) t;
+                
+                a1 = new MoveAnimation.Builder(r)
+                        .duration(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_DURATION))
+                        .theta(r.getDirection().toDegrees())
+                        .speed(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_SPEED))
+                        .gravity(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_GRAVITY))
+                        .end();
+                
+                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                        .wait(settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_DURATION))
+                        .end();
+                
+                t.setAnimation(a1);
+                
+                animationMan.add(a1);
+                animationMan.add(a2);
+                
+                a1 = null;
+                a2 = null;
+            }
+            else
+            {
+                i++;
+                int angle = i % 2 == 0 ? 70 : 180 - 70;                
+               
+                a1 = new MoveAnimation.Builder(t)
+                        .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
+                        .theta(angle)
+                        .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
+                        .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY)).end();
+                    
+                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                        .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_DURATION)).end();
+                
+                t.setAnimation(a1);
+                
+                animationMan.add(a1);
+                animationMan.add(a2);
+                
+                a1 = null;
+                a2 = null;
+            }
+        }
+
+        // If other bombs were hit, they will be dealt with in another
+        // bomb removal cycle.
+        rocketRemovalSet = nextRocketRemovalSet;
+
+        // Set the flag.
+        tileRemovalInProgress = true;
+    }
+    
     void removeBombs(final Game game)
     {
+        // Create shortcuts to all the managers.
         AnimationManager animationMan = game.animationMan;
         BoardManager boardMan = game.boardMan;
         ListenerManager listenerMan = game.listenerMan;
@@ -484,22 +854,18 @@ public class TileRemover
         soundMan.play(Sound.BOMB);
 
         // Find all the new bombs.
-        Set<Integer> newBombRemovalSet = new HashSet<Integer>();
-        boardMan.scanFor(TileType.BOMB, tileRemovalSet,
-                newBombRemovalSet);
-        newBombRemovalSet.removeAll(bombRemovalSet);
+        Set<Integer> nextBombRemovalSet = new HashSet<Integer>();
+        boardMan.scanFor(TileType.BOMB, tileRemovalSet, nextBombRemovalSet);
+        nextBombRemovalSet.removeAll(bombRemovalSet);
 
         // Remove all new bombs from the tile removal set.
         // They will be processed separately.
-        tileRemovalSet.removeAll(newBombRemovalSet);
+        tileRemovalSet.removeAll(nextBombRemovalSet);
 
-        // Find all rockets.                
-        boardMan.scanFor(TileType.ROCKET, tileRemovalSet,
-                rocketRemovalSet);
-
-        // Remove all rockets from the tile removal set.
-        // They will be processed separately.
-        tileRemovalSet.removeAll(rocketRemovalSet);
+        // Find the rest of the item tiles.
+        EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);
+        tileTypeSet.remove(TileType.BOMB);        
+        scanFor(boardMan, tileTypeSet);  
 
         // Start the line removal animations.
         for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
@@ -529,385 +895,11 @@ public class TileRemover
 
         // If other bombs were hit, they will be dealt with in another
         // bomb removal cycle.
-        bombRemovalSet = newBombRemovalSet;
+        bombRemovalSet = nextBombRemovalSet;
 
         // Set the flag.
         tileRemovalInProgress = true;
-    }
-
-    void removeLines(final Game game)
-    {
-        // Shortcuts to managers.
-        AnimationManager animationMan = game.animationMan;
-        BoardManager boardMan = game.boardMan;
-        ListenerManager listenerMan = game.listenerMan;
-        ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = SettingsManager.get();
-        SoundManager soundMan = game.soundMan;
-        StatManager statMan = game.statMan;                        
-        TutorialManager tutorialMan = game.tutorialMan;                
-
-        // Clear flag.
-        activateLineRemoval = false;
-
-        // Increment chain count.
-        statMan.incrementChainCount();
-
-        // Calculate score, unless no-score flag is set.
-        if (tileRemovalNoScore == false)
-        {
-            final int deltaScore = scoreMan.calculateLineScore(
-                    tileRemovalSet,
-                    ScoreType.LINE,
-                    statMan.getChainCount());
-
-            // Fire a score event.
-            if (tutorialMan.isTutorialInProgress() == true)
-            {
-                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                        IListenerComponent.GameType.TUTORIAL);
-            }
-            else
-            {
-                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                        IListenerComponent.GameType.GAME);
-            }
-
-            // Show the SCT.
-            ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
-
-            final ILabel label = new LabelBuilder(p.getX(), p.getY())
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(Game.SCORE_LINE_COLOR).size(scoreMan.determineFontSize(deltaScore))
-                    .text(String.valueOf(deltaScore)).end();
-            
-            IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
-                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
-                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
-                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                .end();
-            
-            IAnimation a2 = new MoveAnimation.Builder(label)
-                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
-                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
-                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
-
-            a2.setStartRunnable(new Runnable()
-            {
-                public void run()
-                {
-                    game.layerMan.add(label, Layer.EFFECT);
-                }
-            });
-
-            a2.setFinishRunnable(new Runnable()
-            {
-                public void run()
-                {
-                    game.layerMan.remove(label, Layer.EFFECT);
-                }
-            });
-
-            animationMan.add(a1);
-            animationMan.add(a2);
-            a1 = null;
-            a2 = null;
-
-            // Release references.
-            p = null;
-        }
-        else
-        {
-            // Turn off the flag now that it has been used.
-            tileRemovalNoScore = false;
-        }
-
-        // Play the sound.
-        soundMan.play(Sound.LINE);
-
-        // Make sure bombs aren't removed (they get removed
-        // in a different step).  However, if the no-items
-        // flag is set, then ignore bombs.
-        if (tileRemovalNoItems == false)
-        {
-            //Set<Integer> allSet = new HashSet<Integer>();
-
-            bombRemovalSet.clear();
-            boardMan.scanFor(TileType.BOMB, tileRemovalSet,
-                    bombRemovalSet);
-
-            starRemovalSet.clear();
-            boardMan.scanFor(TileType.STAR, tileRemovalSet,
-                    starRemovalSet);
-
-            rocketRemovalSet.clear();
-            boardMan.scanFor(TileType.ROCKET, tileRemovalSet,
-                    rocketRemovalSet);
-            
-            // Scan for gravity tiles.  If they're found, activate the gravity
-            // effect.
-            gravityRemovalSet.clear();
-            boardMan.scanFor(TileType.GRAVITY, tileRemovalSet, 
-                    gravityRemovalSet);            
-
-            tileRemovalSet.removeAll(bombRemovalSet);
-            tileRemovalSet.removeAll(starRemovalSet);
-            tileRemovalSet.removeAll(rocketRemovalSet);
-        }
-        else
-        {
-            // Turn off the flag now that it has been used.
-            tileRemovalNoItems = false;
-        }
-
-        // Start the line removal animations if there are any
-        // non-bomb tiles.
-        if (tileRemovalSet.size() > 0)
-        {
-            int i = 0;
-            for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
-            {
-                TileEntity t = boardMan.getTile((Integer) it.next());
-
-                if (tileRemovalUseJumpAnimation == true)
-                {
-                    i++;
-                    int angle = i % 2 == 0 ? 70 : 180 - 70;
-
-                    // Bring this tile to the top.
-                    game.layerMan.toFront(t, Layer.TILE);
-
-                    IAnimation a1 = new MoveAnimation.Builder(t)
-                            .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
-                            .theta(angle)
-                            .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
-                            .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
-                            .end();
-                    
-                    IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                            .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
-                            .duration(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_DURATION))
-                            .end();
-                    
-                    t.setAnimation(a1);
-                    
-                    animationMan.add(a1);
-                    animationMan.add(a2);
-                    
-                    a1 = null;
-                    a2 = null;
-                }
-                else
-                {
-                    t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
-                            .v(0.05).end());
-                    animationMan.add(t.getAnimation());
-                }
-            }
-
-            // Clear the animation flag.
-            tileRemovalUseJumpAnimation = false;
-
-            // Set the flag.
-            tileRemovalInProgress = true;
-        }
-        // Otherwise, start the star processing.
-        else
-        {
-            //activateBombRemoval = true;
-            activateStarRemoval = true;
-        }
-    }
-
-    void removeRockets(final Game game)
-    {        
-        // Shortcuts to managers.
-        AnimationManager animationMan = game.animationMan;
-        BoardManager boardMan = game.boardMan;
-        ListenerManager listenerMan = game.listenerMan;
-        ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = SettingsManager.get();
-        SoundManager soundMan = game.soundMan;
-        StatManager statMan = game.statMan;                        
-        TutorialManager tutorialMan = game.tutorialMan;  
-
-        // Clear the flag.
-        activateRocketRemoval = false;
-
-        // Increment cascade.
-        statMan.incrementChainCount();
-
-        // Used below.
-        int deltaScore = 0;
-
-        // Also used below.
-        IAnimation a1, a2;
-
-        // Get the tiles the bombs would affect.
-        boardMan.processRockets(rocketRemovalSet, tileRemovalSet);
-
-        for (Integer index : lastMatchSet)
-        {
-            if (boardMan.getTile(index) == null)
-            {
-                continue;
-            }
-
-            if (boardMan.getTile(index).getClass() != RocketTileEntity.class)
-            {
-                tileRemovalSet.remove(index);
-            }
-        }
-
-        deltaScore = scoreMan.calculateLineScore(
-                tileRemovalSet,
-                ScoreType.STAR,
-                statMan.getChainCount());
-
-        // Fire a score event.
-        if (tutorialMan.isTutorialInProgress() == true)
-        {
-            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                    IListenerComponent.GameType.TUTORIAL);
-        }
-        else
-        {
-            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                    IListenerComponent.GameType.GAME);
-        }
-
-
-        // Show the SCT.
-        ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
-
-        final ILabel label = new LabelBuilder(p.getX(), p.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore))
-                .text(String.valueOf(deltaScore)).end();
-        
-        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
-                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
-                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
-                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                .end();
-        
-        a2 = new MoveAnimation.Builder(label)
-                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
-                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
-                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
-
-        a2.setStartRunnable(new Runnable()
-        {
-            public void run()
-            {
-                game.layerMan.add(label, Layer.EFFECT);
-            }
-        });
-
-        a2.setFinishRunnable(new Runnable()
-        {
-            public void run()
-            {
-                game.layerMan.remove(label, Layer.EFFECT);
-            }
-        });
-
-        animationMan.add(a1);
-        animationMan.add(a2);
-        a1 = null;
-        a2 = null;
-
-        // Release references.
-        p = null;
-
-        // Play the sound.
-        soundMan.play(Sound.ROCKET);
-
-        // Find all the new rockets.
-        Set<Integer> newRocketRemovalSet = new HashSet<Integer>();
-        boardMan.scanFor(TileType.ROCKET, tileRemovalSet,
-                newRocketRemovalSet);
-        newRocketRemovalSet.removeAll(rocketRemovalSet);
-
-        // Remove all new rockets from the tile removal set.
-        // They will be processed separately.
-        tileRemovalSet.removeAll(newRocketRemovalSet);
-
-        // Find all the bombs.
-        boardMan.scanFor(TileType.BOMB, tileRemovalSet,
-                bombRemovalSet);
-
-        // Remove all bombs from the tile removal set.
-        // They will be processed separately.
-        tileRemovalSet.removeAll(bombRemovalSet);
-
-        // Start the line removal animations.
-        int i = 0;
-        for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
-        {
-            TileEntity t = boardMan.getTile((Integer) it.next());
-
-            // Bring the tile to the front.
-            game.layerMan.toFront(t, Layer.TILE);
-
-            if (t.getClass() == RocketTileEntity.class)
-            {
-                // Cast it.
-                RocketTileEntity r = (RocketTileEntity) t;
-                
-                a1 = new MoveAnimation.Builder(r).duration(54)
-                        .theta(r.getDirection().toDegrees())
-                        .speed(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_SPEED))
-                        .gravity(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_GRAVITY))
-                        .end();
-                
-                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_DURATION))
-                        .end();
-                
-                t.setAnimation(a1);
-                
-                animationMan.add(a1);
-                animationMan.add(a2);
-                
-                a1 = null;
-                a2 = null;
-            }
-            else
-            {
-                i++;
-                int angle = i % 2 == 0 ? 70 : 180 - 70;                
-               
-                a1 = new MoveAnimation.Builder(t)
-                        .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
-                        .theta(angle)
-                        .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
-                        .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY)).end();
-                    
-                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_DURATION)).end();
-                
-                t.setAnimation(a1);
-                
-                animationMan.add(a1);
-                animationMan.add(a2);
-                
-                a1 = null;
-                a2 = null;
-            }
-        }
-
-        // If other bombs were hit, they will be dealt with in another
-        // bomb removal cycle.
-        rocketRemovalSet = newRocketRemovalSet;
-
-        // Set the flag.
-        tileRemovalInProgress = true;
-    }
+    }   
 
     void removeStars(final Game game)
     {
@@ -1015,6 +1007,11 @@ public class TileRemover
 
         // Play the sound.
         soundMan.play(Sound.STAR);
+        
+        // Find any additional item tiles.
+        EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);
+        tileTypeSet.remove(TileType.STAR);        
+        scanFor(boardMan, tileTypeSet);  
 
         // Start the line removal animations.
         int i = 0;

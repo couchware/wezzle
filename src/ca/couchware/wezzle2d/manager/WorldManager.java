@@ -131,7 +131,7 @@ public class WorldManager implements ILevelListener
         itemList.add(new Item.Builder(TileType.BOMB)
                 .initialAmount(1).weight(10).maxOnBoard(1).end());   
         itemList.add(new Item.Builder(TileType.STAR)
-                .initialAmount(0).weight(5).maxOnBoard(1).end());
+                .initialAmount(1).weight(5).maxOnBoard(1).end());
         itemList.add(new Item.Builder(TileType.GRAVITY)
                 .initialAmount(5).weight(50).maxOnBoard(2).end());
         

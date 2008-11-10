@@ -33,6 +33,7 @@
   <entry name="ANIMATION_JUMP_MOVE_GRAVITY">800</entry>
   <entry name="ANIMATION_JUMP_FADE_WAIT">0</entry>
   <entry name="ANIMATION_JUMP_FADE_DURATION">880</entry>
+  <entry name="ANIMATION_ROCKET_MOVE_DURATION">880</entry>
   <entry name="ANIMATION_ROCKET_MOVE_SPEED">375</entry>
   <entry name="ANIMATION_ROCKET_MOVE_GRAVITY">0</entry>
   <entry name="ANIMATION_ROCKET_FADE_WAIT">0</entry>
