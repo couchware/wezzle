@@ -42,6 +42,11 @@
   <entry name="ANIMATION_BOMB_FADE_DURATION">880</entry>
   <entry name="ANIMATION_ROWFADE_WAIT">220</entry>
   <entry name="ANIMATION_ROWFADE_DURATION">960</entry>
+  <entry name="ANIMATION_SLIDEFADE_FADE_WAIT">0</entry>
+  <entry name="ANIMATION_SLIDEFADE_FADE_DURATION">580</entry>
+  <entry name="ANIMATION_SLIDEFADE_MOVE_WAIT">0</entry>
+  <entry name="ANIMATION_SLIDEFADE_MOVE_DURATION">580</entry>
+  <entry name="ANIMATION_SLIDEFADE_MOVE_SPEED">150</entry>
   <entry name="SCT_SCORE_MOVE_DURATION">1300</entry>
   <entry name="SCT_SCORE_MOVE_SPEED">30</entry>
   <entry name="SCT_SCORE_MOVE_THETA">90</entry>

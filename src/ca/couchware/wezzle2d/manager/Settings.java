@@ -83,6 +83,12 @@ public class Settings
         
         ANIMATION_ROWFADE_WAIT,
         ANIMATION_ROWFADE_DURATION,
+        
+        ANIMATION_SLIDEFADE_FADE_WAIT,
+        ANIMATION_SLIDEFADE_FADE_DURATION,
+        ANIMATION_SLIDEFADE_MOVE_WAIT,
+        ANIMATION_SLIDEFADE_MOVE_DURATION,
+        ANIMATION_SLIDEFADE_MOVE_SPEED,
                 
         // SCT values.
         

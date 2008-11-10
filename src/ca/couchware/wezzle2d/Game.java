@@ -523,10 +523,10 @@ public class Game extends Canvas implements IGameWindowCallback
             tutorialMan = TutorialManager.newInstance();
 
             // Add the tutorials to it.
-//            tutorialMan.add(new BasicTutorial());
-//            tutorialMan.add(new RocketTutorial());
-//            tutorialMan.add(new BombTutorial());
-//            tutorialMan.add(new StarTutorial());
+            tutorialMan.add(new BasicTutorial());
+            tutorialMan.add(new RocketTutorial());
+            tutorialMan.add(new BombTutorial());
+            tutorialMan.add(new StarTutorial());
         }           
         
         if (managerSet.contains(ManagerType.HIGHSCORE))

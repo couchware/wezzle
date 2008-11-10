@@ -1522,6 +1522,9 @@ public class BoardManager implements IManager
      */
     private IAnimation animateSlideFadeIn()
     {
+        // The settings manager.
+        SettingsManager settingsMan = SettingsManager.get();
+        
         // Count the number of tiles.
         int tileCount = 0;
         
@@ -1548,9 +1551,12 @@ public class BoardManager implements IManager
                 // Count it.
                 tileCount++;
                 
+                int fadeWait     = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_FADE_WAIT);
+                int fadeDuration = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_FADE_DURATION);
+                
                 // Create the animation.
                 a1 = new FadeAnimation.Builder(FadeAnimation.Type.IN, t)
-                        .wait(0).duration(36).end();
+                        .wait(fadeWait).duration(fadeDuration).end();
                 
                 // Make the animation remove itself.                
                 a1.setFinishRunnable(new Runnable()
@@ -1573,18 +1579,23 @@ public class BoardManager implements IManager
                 if (theta == 0)
                 {
                     t.translate(-(int) (500.0 * 0.15), 0);
-                    maxX = x + width;
+                    maxX = tile.getX();
                 }
                 else if (theta == 180)
                 {
                     t.translate((int) (500.0 * 0.15), 0);
-                    minX = x;
+                    minX = tile.getX();
                 }
                 else
                     throw new AssertionError("Angle should only be 0 or 180.");
                 
-                a2 = new MoveAnimation.Builder(t).minX(minX).maxX(maxX)
-                        .wait(0).duration(36).theta(theta).speed(150).end();                                
+                int moveWait     = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_MOVE_WAIT);                
+                int moveSpeed    = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_MOVE_SPEED);
+                
+                a2 = new MoveAnimation.Builder(t)
+                        .minX(minX).maxX(maxX)
+                        .wait(moveWait)
+                        .theta(theta).speed(moveSpeed).end();                                
                 
                 // Add them to the animation manager.
                 t.setAnimation(a1);
@@ -1635,7 +1646,8 @@ public class BoardManager implements IManager
     {
         // The amount of delay between each row.
         int wait = 0;
-        int deltaWait = 200;
+        int deltaWait = SettingsManager.get().getInt(Key.ANIMATION_ROWFADE_WAIT);
+        int duration  = SettingsManager.get().getInt(Key.ANIMATION_ROWFADE_DURATION);
         
         // True if a tile was found this row.
         boolean tileFound = false;
@@ -1651,7 +1663,7 @@ public class BoardManager implements IManager
 			if (t != null)		
 			{	                
                 IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(wait).duration(50).end();                 
+                        .wait(wait).duration(duration).end();                 
                 t.setAnimation(a);
                 animationMan.add(a);
                 
@@ -1717,12 +1729,23 @@ public class BoardManager implements IManager
                 // Count it.
                 tileCount++;
                 
+                // The settings manager.
+                SettingsManager settingsMan = SettingsManager.get();
+                
+                int fadeWait     = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_FADE_WAIT);
+                int fadeDuration = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_FADE_DURATION);
+                int moveWait     = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_MOVE_WAIT);    
+                int moveDuration = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_MOVE_DURATION);    
+                int moveSpeed    = settingsMan.getInt(Key.ANIMATION_SLIDEFADE_MOVE_SPEED);
+                
                 // Create the animation.
                 a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(0).duration(36).end();
-
-                a2 = new MoveAnimation.Builder(t).wait(0)
-                        .duration(36).theta(180 * (row % 2)).speed(150).end();
+                        .wait(fadeWait).duration(fadeDuration).end();               
+                                
+                a2 = new MoveAnimation.Builder(t).wait(moveWait)
+                        .duration(moveDuration)
+                        .theta(180 * (row % 2))
+                        .speed(moveSpeed).end();
                 
                 // Make the animation remove itself.                
                 a1.setFinishRunnable(new Runnable()
