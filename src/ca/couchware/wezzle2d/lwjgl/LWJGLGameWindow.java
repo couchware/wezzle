@@ -18,6 +18,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -44,6 +45,10 @@ public class LWJGLGameWindow implements IGameWindow
      */
 	private IGameWindowCallback callback;
   
+        /**
+         * The key presses.
+         */
+        private HashSet<Character> keyPresses;
 	/** 
      * True if the game is currently "running", i.e. the game loop is looping .
      */
@@ -75,7 +80,8 @@ public class LWJGLGameWindow implements IGameWindow
 	 * render our game.
 	 */
 	public LWJGLGameWindow() 
-    { }
+    {
+        this.keyPresses = new HashSet<Character>();}
 	
 	/**
 	 * Retrieve access to the texture loader that converts images
@@ -294,28 +300,28 @@ public class LWJGLGameWindow implements IGameWindow
 		this.callback = callback;
 	}
 	
+        public void updateKeyPresses()
+        { 
+            // if non-empty, clear.
+            if(this.keyPresses.isEmpty() == false)
+                this.keyPresses.clear();
+            
+            while(org.lwjgl.input.Keyboard.next())
+            {
+                this.keyPresses.add(org.lwjgl.input.Keyboard.getEventCharacter());
+            }
+          
+        }
 	/**
 	 * Check if a particular key is current pressed.
 	 *
 	 * @param keyCode The code associated with the key to check 
 	 * @return True if the specified key is pressed
 	 */
-	public boolean isKeyPressed(int keyCode) 
-    {		
-		switch(keyCode) 
-        {
-            case KeyEvent.VK_SPACE:
-                keyCode = Keyboard.KEY_SPACE;
-                break;
-            case KeyEvent.VK_LEFT:
-                keyCode = Keyboard.KEY_LEFT;
-                break;
-            case KeyEvent.VK_RIGHT:
-                keyCode = Keyboard.KEY_RIGHT;
-                break;
-		}    
-		
-		return org.lwjgl.input.Keyboard.isKeyDown(keyCode);
+	public boolean isKeyPressed(int key) 
+        {		
+	
+            return this.keyPresses.contains((char)key);
 	}
        
     /**

@@ -41,6 +41,12 @@ public interface IGameWindow
 	 */
 	public void start();
 
+        
+         /**
+         * update the keypresses.
+         */
+        public void updateKeyPresses();
+        
 	/**
 	 * Set the callback that should be notified of the window events.
 	 * 

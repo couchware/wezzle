@@ -270,7 +270,7 @@ public class SettingsManager
             ? null 
             : Integer.parseInt(getString(key));
 	}
-    
+        
     public long getLong(Key key)
 	{		
 		return getString(key) == null 

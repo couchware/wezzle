@@ -1924,6 +1924,10 @@ public class BoardManager implements IManager
     {
         // Get a random tile location.
         int [] locations = this.getTileLocations();
+        
+        if(locations == null)
+            return;
+        
         int random = Util.random.nextInt(locations.length);
         
         int index = locations[random];
@@ -1991,8 +1995,13 @@ public class BoardManager implements IManager
 
     private int[] getTileLocations()
     {
-        int[] locations = new int[this.getNumberOfTiles()-this.getNumberOfItems()
-                -this.getNumberOfMults()];  
+        int size = this.getNumberOfTiles()-this.getNumberOfItems()
+                -this.getNumberOfMults();
+        
+        if(size <= 0)
+            return null;
+        
+        int[] locations = new int[size];  
         TileEntity temp;
         int count = 0;
         

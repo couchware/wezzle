@@ -280,6 +280,11 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
 		return Keyboard.isPressed(keyCode);
 	}
 
+        
+        public void updateKeyPresses()
+        {
+            
+        }
 	/**
 	 * Retrieve the current accelerated graphics context. Note this method has
 	 * been made package scope since only the other members of the "java2D"

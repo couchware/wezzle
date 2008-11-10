@@ -98,6 +98,10 @@ public class Game extends Canvas implements IGameWindowCallback
         SOUND    
     }
     
+    
+    // booleans for keypresses
+    boolean bPressed = false;
+    
     /**
      * The frame-rate of the game.
      */
@@ -359,6 +363,8 @@ public class Game extends Canvas implements IGameWindowCallback
      * The window that is being used to render the game. 
      */
     private IGameWindow window;
+    
+   
     
     /**
      * The background sprite.
@@ -1083,17 +1089,33 @@ public class Game extends Canvas implements IGameWindowCallback
                         
         // Fire all the queued mouse events.
         window.fireMouseEvents();        
-		
-		// if escape has been pressed, stop the game
-		if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
-		{
-			System.exit(0);
-		}   
-                if(window.isKeyPressed(KeyEvent.VK_B))
-                {
-                    System.out.println("BBBBBBBBB");
-                    boardMan.insertItemRandomly(TileType.BOMB);
-                }
+        
+       window.updateKeyPresses();
+        
+        // if escape has been pressed, stop the game
+//        if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
+//        {
+//                System.exit(0);
+//        }   
+                
+        // The keys.
+        if(window.isKeyPressed('b'))
+        {
+           boardMan.insertItemRandomly(TileType.BOMB);
+        }
+        if(window.isKeyPressed('r'))
+        {
+           boardMan.insertItemRandomly(TileType.ROCKET);
+        }
+        if(window.isKeyPressed('s'))
+        {
+           boardMan.insertItemRandomly(TileType.STAR);
+        }
+        if(window.isKeyPressed('g'))
+        {
+           boardMan.insertItemRandomly(TileType.GRAVITY);
+        }
+       
         
         // Check the achievements.
         if (achievementMan.evaluate(this) == true)
@@ -1157,7 +1179,7 @@ public class Game extends Canvas implements IGameWindowCallback
 
                 LogManager.recordMessage("Level up!", "Game#frameRendering");
                 //worldMan.levelUp(this);
-
+               
                 listenerMan.notifyLevelListener(new LevelEvent(1, this, this));
                 TileRemover.get().notifyLevelUp();                                                
 
