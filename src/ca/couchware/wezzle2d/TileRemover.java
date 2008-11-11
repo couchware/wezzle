@@ -556,21 +556,15 @@ public class TileRemover
                     t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
                             .v(0.05).end());
                     animationMan.add(t.getAnimation());
-                }
-            }
+                }                                
+            }           
+        } // end if    
+        
+        // Clear the animation flag.
+        useJumpAnimation = false;          
 
-            // Clear the animation flag.
-            useJumpAnimation = false;
-
-            // Set the flag.
-            tileRemovalInProgress = true;
-        }
-        // Otherwise, start the star processing.
-        else
-        {
-            //activateBombRemoval = true;
-            activateStarRemoval = true;
-        }
+        // Set the flag.
+        tileRemovalInProgress = true;
     }        
 
     void removeRockets(final Game game)
