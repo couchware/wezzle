@@ -10,7 +10,7 @@
     <import file="nbproject/profiler-build-impl.xml"/>
 	<buildnumber file="build.number" />
 	<target name="-pre-compile">
-		<copy file="${basedir}/build.number" todir="${src.dir}/resources"/>
+		<copy file="${basedir}/build.number" todir="${src.dir}/resources/text"/>
     </target>
     <!--
 

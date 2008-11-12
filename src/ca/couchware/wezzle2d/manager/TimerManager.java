@@ -153,7 +153,7 @@ public class TimerManager
         if (paused == true || stopped == true)
             return;                        		
 		
-		this.internalTime += 14;
+		this.internalTime += Settings.getMillisecondsPerTick();
 		
 		// Check to see if it has been a second.
 		if (this.internalTime >= 1000)

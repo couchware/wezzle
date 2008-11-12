@@ -44,7 +44,6 @@ import ca.couchware.wezzle2d.ui.group.*;
 import ca.couchware.wezzle2d.util.*;
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
@@ -321,7 +320,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * The build nunber path.
      */
     final private static String BUILD_NUMBER_PATH = 
-            Settings.getResourcesPath() + "/build.number";                             
+            Settings.getTextResourcesPath() + "/build.number";                             
     
     /** 
      * The normal title of the window. 
@@ -530,6 +529,7 @@ public class Game extends Canvas implements IGameWindowCallback
 
             // Add the tutorials to it.
             tutorialMan.add(new BasicTutorial());
+            tutorialMan.add(new GravityTutorial());
             tutorialMan.add(new RocketTutorial());
             tutorialMan.add(new BombTutorial());
             tutorialMan.add(new StarTutorial());

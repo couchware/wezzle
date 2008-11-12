@@ -357,7 +357,7 @@ public class TileRemover
                 this.activateBombRemoval = true;
             }
             else if (this.gravityRemovalSet.size() > 0)
-            {
+            {                
                 shiftGravity(game); 
                 Refactorer.get()
                         .setRefactorSpeed(RefactorSpeed.SHIFT)
@@ -1052,6 +1052,8 @@ public class TileRemover
     
     private void shiftGravity(Game game)
     {
+        LogManager.recordMessage("Shift the gravity.");
+        
         // Determine the new gravity.
         EnumSet<Direction> gravity = null;
         if (game.boardMan.getGravity().contains(Direction.LEFT))
