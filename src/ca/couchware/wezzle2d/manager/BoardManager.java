@@ -754,6 +754,8 @@ public class BoardManager implements IManager
      */
     public List<IAnimation> startVerticalShift(final int speed)
     {
+        assert speed != 0;
+        
         if (gravity.contains(Direction.DOWN))
             return startShift(Direction.DOWN, speed);
         else
@@ -768,6 +770,8 @@ public class BoardManager implements IManager
      */
     public List<IAnimation> startHorizontalShift(final int speed)
     {
+        assert speed != 0;
+        
         if (gravity.contains(Direction.LEFT))
             return startShift(Direction.LEFT, speed);
         else

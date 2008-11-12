@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import java.util.List;
@@ -17,29 +18,53 @@ import java.util.List;
 public class Refactorer 
 {
     
+    /** A shortcut to the settings manager to simplify some code. */
+    private static final SettingsManager settingsMan = SettingsManager.get();
+    
     /** The single instance of this class to ever exist. */
-	private static final Refactorer single = new Refactorer();
+	private static final Refactorer single = new Refactorer();        
     
     /** The refator speeds. */
     public static enum RefactorSpeed
     {
-        SLOWER(SettingsManager.get().getInt(Key.REFACTOR_SPEED_SLOWER)),
-        SLOW(SettingsManager.get().getInt(Key.REFACTOR_SPEED_SLOW)),
-        NORMAL(SettingsManager.get().getInt(Key.REFACTOR_SPEED_NORMAL)), 
-        DROP(SettingsManager.get().getInt(Key.REFACTOR_SPEED_DROP)),
-        SHIFT(SettingsManager.get().getInt(Key.REFACTOR_SPEED_SHIFT));    
-                
-        /** The speed associated with the key. */
-        private int speed;
-                
-        RefactorSpeed(int val)
-        { this.speed = val; }
+        /** The slower refactor speed, used in tutorials. */
+        SLOWER(settingsMan.getInt(Key.REFACTOR_SPEED_X_SLOWER),
+            settingsMan.getInt(Key.REFACTOR_SPEED_Y_SLOWER)),
+            
+        /** The slow refactor speed, used in tutorials. */
+        SLOW(settingsMan.getInt(Key.REFACTOR_SPEED_X_SLOW),
+            settingsMan.getInt(Key.REFACTOR_SPEED_Y_SLOW)),
         
-        public int getValue()
-        { return speed; }
+        /** The normal refactor speed, used during normal operation. */
+        NORMAL(settingsMan.getInt(Key.REFACTOR_SPEED_X_NORMAL),
+            settingsMan.getInt(Key.REFACTOR_SPEED_Y_NORMAL)), 
+        
+        /** The shift refactor speed, used during gravity shifts. */
+        SHIFT(settingsMan.getInt(Key.REFACTOR_SPEED_X_SHIFT),
+            settingsMan.getInt(Key.REFACTOR_SPEED_Y_SHIFT));    
+        
+        /** The slide speed associated with the key. */
+        private int horizontal;
+        
+        /** The drop speed associated with the key. */
+        private int vertical;
+                                
+        RefactorSpeed(int horizontal, int vertical)
+        { 
+            assert horizontal != 0;
+            assert vertical   != 0;
+            this.horizontal = horizontal; 
+            this.vertical   = vertical; 
+        }
+        
+        public int getHorizontalSpeed()
+        { return horizontal; }
+        
+        public int getVerticalSpeed()
+        { return vertical; }
     }       
         
-     /**
+    /**
      * If true, refactor will be activated next loop.
      */
     private boolean activateRefactor = false;
@@ -91,8 +116,11 @@ public class Refactorer
     }
 
     public Refactorer setRefactorSpeed(RefactorSpeed speed)
-    {
+    {        
         assert speed != null;        
+        
+        LogManager.recordMessage("Speed set to " + speed.toString());
+        
         this.speed = speed;
         return this;
     }        
@@ -151,7 +179,8 @@ public class Refactorer
             game.pieceMan.getPieceGrid().setVisible(false);
 
             // Start down refactor.                           
-            this.refactorAnimationList = game.boardMan.startVerticalShift(speed.getValue());              
+            this.refactorAnimationList = 
+                    game.boardMan.startVerticalShift(speed.getVerticalSpeed());              
 
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
@@ -209,7 +238,8 @@ public class Refactorer
             game.boardMan.synchronize();							
 
             // Start left refactor.
-            refactorAnimationList = game.boardMan.startHorizontalShift(speed.getValue());
+            refactorAnimationList = 
+                    game.boardMan.startHorizontalShift(speed.getHorizontalSpeed());
             
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
@@ -256,11 +286,7 @@ public class Refactorer
         }
 
         // Notify piece manager.
-        game.pieceMan.notifyRefactored();     
-        
-        // Reset speed to normal.
-        setRefactorSpeed(RefactorSpeed.NORMAL);
-        
+        game.pieceMan.notifyRefactored();                            
     }
     
 }

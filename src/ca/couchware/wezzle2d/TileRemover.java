@@ -46,9 +46,7 @@ public class TileRemover
     private static final TileRemover single = new TileRemover();
 
     
-    /**
-     * If true, a line removal will be activated next loop.
-     */    
+    /** If true, a line removal will be activated next loop. */    
     private boolean activateLineRemoval = false;
     
     /**
@@ -58,10 +56,11 @@ public class TileRemover
      */
     private Set<Integer> lastMatchSet;
     
-    /**
-     * If true, level up.
-     */
-    private boolean levelUpFlag = false;
+    /** The last refactor speed used. */
+    private RefactorSpeed refactorSpeed = Refactorer.get().getRefactorSpeed();
+    
+    /** If true, level up. */
+    private boolean activateLevelUp = false;
     
     /**
      * If true, a line removal is in progress.
@@ -151,9 +150,9 @@ public class TileRemover
      */
     public void updateLogic(final Game game)
     {
-        if (levelUpFlag == true)
+        if (activateLevelUp == true)
         {
-            levelUpFlag = false;
+            activateLevelUp = false;
             levelUp(game);
         }
 
@@ -168,7 +167,7 @@ public class TileRemover
 
         // If a line removal was activated.
         if (this.activateLineRemoval == true)
-        {
+        {            
             removeLines(game);
         }                 
 
@@ -193,6 +192,7 @@ public class TileRemover
         // If a line removal is in progress.        
         if (this.tileRemovalInProgress == true)
         {
+            
             processRemoval(game);
         }
 
@@ -293,7 +293,10 @@ public class TileRemover
         if (tileRemovalSet.size() > 0)
         {
             // Activate the line removal.
-            activateLineRemoval = true;
+            this.activateLineRemoval = true;
+            
+            // Record the refactor speed.
+            this.refactorSpeed = Refactorer.get().getRefactorSpeed();
         }
         else
         {
@@ -364,7 +367,7 @@ public class TileRemover
             else
             {
                 Refactorer.get()
-                        .setRefactorSpeed(RefactorSpeed.NORMAL)
+                        .setRefactorSpeed(refactorSpeed)
                         .startRefactor();
             }
         } // end if
@@ -1072,6 +1075,6 @@ public class TileRemover
      */
     public void notifyLevelUp()
     {
-        this.levelUpFlag = true;
+        this.activateLevelUp = true;
     }
 }

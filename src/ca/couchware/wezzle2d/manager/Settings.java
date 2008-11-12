@@ -58,11 +58,14 @@ public class Settings
         
         // Refactor values.
         
-        REFACTOR_SPEED_SLOWER,
-        REFACTOR_SPEED_SLOW,
-        REFACTOR_SPEED_NORMAL,
-        REFACTOR_SPEED_DROP,
-        REFACTOR_SPEED_SHIFT,
+        REFACTOR_SPEED_X_SLOWER,
+        REFACTOR_SPEED_Y_SLOWER,
+        REFACTOR_SPEED_X_SLOW,
+        REFACTOR_SPEED_Y_SLOW,
+        REFACTOR_SPEED_X_NORMAL,
+        REFACTOR_SPEED_Y_NORMAL,
+        REFACTOR_SPEED_X_SHIFT,
+        REFACTOR_SPEED_Y_SHIFT,
         
         // Animation values.
                 
@@ -119,6 +122,37 @@ public class Settings
         MAIN_MENU_LOGO_FADE_IN_DURATION,
         MAIN_MENU_LOGO_FADE_OUT_WAIT,
         MAIN_MENU_LOGO_FADE_OUT_DURATION
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     }
     
     public enum Value
@@ -149,13 +183,13 @@ public class Settings
     final private static String musicResourcesPath = resourcesPath + "/music";
     
      /** The path to the XML data. */
-    final private static String xmlResourcesPath = resourcesPath + "/xml";
+    final private static String textResourcesPath = resourcesPath + "/text";
         
     /** The name of the settings file. */
     final private static String settingsFilename = "settings.xml";       
     
      /** The file path of default settings file. */
-    final private static String defaultSettingsFilePath = xmlResourcesPath 
+    final private static String defaultSettingsFilePath = textResourcesPath 
             + "/" + settingsFilename;
     
     /** The path to the user settings file. */
@@ -212,9 +246,9 @@ public class Settings
         return settingsFilename;
     }
 
-    public static String getXmlResourcesPath()
+    public static String getTextResourcesPath()
     {
-        return xmlResourcesPath;
+        return textResourcesPath;
     }   
 
     public static String getSoundResourcesPath()

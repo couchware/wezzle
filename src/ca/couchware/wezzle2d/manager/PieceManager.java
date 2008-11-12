@@ -597,9 +597,7 @@ public class PieceManager implements IMouseListener
                 tileDropAnimationInProgress = false;
                                
                 // Run refactor.
-                Refactorer.get()
-                        .setRefactorSpeed(RefactorSpeed.DROP)
-                        .startRefactor();
+                Refactorer.get().startRefactor();
                 
                 // Remove the amount just removed from the total.
                 totalTileDropInAmount -= tileDropList.size();

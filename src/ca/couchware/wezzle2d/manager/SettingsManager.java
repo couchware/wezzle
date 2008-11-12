@@ -59,36 +59,22 @@ public class SettingsManager
                    
 	// ---------------------------------------------------------------------------
 	// Instance Methods
-	// ---------------------------------------------------------------------------	    
+	// ---------------------------------------------------------------------------	            
     
-    /**
-     * Checks if a file exists, and if it doesn't, tries to create it.
-     * @param filePath
-     * @return True if the file existed or was successfully created.  False otherwise.
-     */
-    private boolean fileExists(String filePath)
-    {
-        // Check if the file exists.        
-        File f = new File(filePath);	
-        
-        if (f.exists() == false)
+    private void createFile(File f)
+    {               
+        try
+        {                
+            // If the file doesn't exist, create one.
+            f.getParentFile().mkdirs();
+            f.createNewFile();		
+        }
+        catch(Exception e)
         {
-            try
-            {                
-                // If the file doesn't exist, create one.
-                f.getParentFile().mkdirs();
-                f.createNewFile();		
-            }
-            catch(Exception e)
-            {
-                LogManager.recordWarning("URL is " + f.getAbsolutePath(), 
-                        "SettingsManager");
-                LogManager.recordException(e);
-                return false;
-            }
-        } // end if
-        
-        return true;
+            LogManager.recordWarning("Could not create file with path: " + f.getAbsolutePath(), 
+                    "SettingsManager");
+            LogManager.recordException(e);            
+        }
     }
     
     /**
@@ -125,8 +111,10 @@ public class SettingsManager
             dir.mkdir();
         }
        
-        if (fileExists(Settings.getUserSettingsFilePath()) == true)               
-        {
+        File f = new File(Settings.getUserSettingsFilePath());
+        
+        if (f.exists() == true && f.length() > 0)               
+        {            
             try
             {
                 // Load from XML.
@@ -135,12 +123,11 @@ public class SettingsManager
             catch (MalformedURLException ex)
             {
                 LogManager.recordException(ex);
-            }
-           
+            }           
         } // end if  
         else
         {
-            LogManager.recordWarning("Error loading user settings.");
+            LogManager.recordWarning("Could not load user settings.");
         }
     }
     
@@ -198,16 +185,20 @@ public class SettingsManager
             root.addContent(entry);
         } // end for
         
-        // Write the document to file.
-        if (fileExists(Settings.getUserSettingsFilePath()))
+        // Make sure the file exists.
+        File f = new File(Settings.getUserSettingsFilePath());
+        if (f.exists() == false)
         {
-            Format format = Format.getPrettyFormat();
-            format.setExpandEmptyElements(true);            
-            XMLOutputter outputter = new XMLOutputter(format);                                                        
-            OutputStream out = new FileOutputStream(Settings.getUserSettingsFilePath());
-            outputter.output(doc, out);
-            out.close();
+            createFile(f);
         }
+        
+        // Write to it.
+        Format format = Format.getPrettyFormat();
+        format.setExpandEmptyElements(true);            
+        XMLOutputter outputter = new XMLOutputter(format);                                                        
+        OutputStream out = new FileOutputStream(Settings.getUserSettingsFilePath());
+        outputter.output(doc, out);
+        out.close();        
     }		    	       
     
     public void setString(Key key, String value)
