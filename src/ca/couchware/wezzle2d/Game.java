@@ -1066,9 +1066,8 @@ public class Game extends Canvas implements IGameWindowCallback
             updateBoard();
                         
         // Fire all the queued mouse events.
-        window.fireMouseEvents();        
-        
-       window.updateKeyPresses();
+        window.fireMouseEvents();                
+        window.updateKeyPresses();
         
         // if escape has been pressed, stop the game
 //        if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
@@ -1077,23 +1076,22 @@ public class Game extends Canvas implements IGameWindowCallback
 //        }   
                 
         // The keys.
-        if(window.isKeyPressed('b'))
+        if (window.isKeyPressed('b'))
         {
            boardMan.insertItemRandomly(TileType.BOMB);
         }
-        if(window.isKeyPressed('r'))
+        if (window.isKeyPressed('r'))
         {
            boardMan.insertItemRandomly(TileType.ROCKET);
         }
-        if(window.isKeyPressed('s'))
+        if (window.isKeyPressed('s'))
         {
            boardMan.insertItemRandomly(TileType.STAR);
         }
-        if(window.isKeyPressed('g'))
+        if (window.isKeyPressed('g'))
         {
            boardMan.insertItemRandomly(TileType.GRAVITY);
-        }
-       
+        }       
         
         // Check the achievements.
         if (achievementMan.evaluate(this) == true)
@@ -1127,8 +1125,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 && isBusy() == false)
         {
             // Handle Level up.
-            if (scoreMan.getLevelScore() 
-                    >= scoreMan.getTargetLevelScore())
+            if (scoreMan.getLevelScore() >= scoreMan.getTargetLevelScore())
             {    
                 // Hide piece.                    
                 pieceMan.getPieceGrid().setVisible(false);
@@ -1147,8 +1144,7 @@ public class Game extends Canvas implements IGameWindowCallback
 
                 int y = pieceMan.getPieceGrid().getY() 
                         + boardMan.getCellHeight() / 2;
-                
-                
+                                
                 // The settings manager.
                 SettingsManager settingsMan = SettingsManager.get();
 

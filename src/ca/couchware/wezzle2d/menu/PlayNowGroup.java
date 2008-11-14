@@ -90,10 +90,11 @@ public class PlayNowGroup extends AbstractGroup
      */
     final private IButton levelUpButton;
     
-    /**
-     * The level label.
-     */
+    /** The level label. */
     private ILabel levelNumberLabel;    
+    
+    /** The level. */
+    private int levelNumber = 1;
     
     /**
      * The music radio group.
@@ -159,7 +160,7 @@ public class PlayNowGroup extends AbstractGroup
         // Create the level number label.
         this.levelNumberLabel = new LabelBuilder(nameButton.getX(), ll.getY())                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .size(20).visible(false).text("1").end();
+                .size(20).visible(false).text(String.valueOf(levelNumber)).end();
         this.entityList.add(this.levelNumberLabel);
         
         // Create the level down button.
@@ -324,9 +325,10 @@ public class PlayNowGroup extends AbstractGroup
             // Reset the level down button.
             this.levelDownButton.setActivated(false);
             
-            // Extract the current setting.
-            int level = Integer.valueOf(this.levelNumberLabel.getText()) - 1;
-            level = level < MIN_LEVEL ? MIN_LEVEL : level;
+            // Extract the current setting.            
+            levelNumber = levelNumber - 1 < MIN_LEVEL 
+                    ? MIN_LEVEL 
+                    : levelNumber - 1;
             
             // Remove old label.
             this.entityList.remove(this.levelNumberLabel);
@@ -334,14 +336,11 @@ public class PlayNowGroup extends AbstractGroup
             
             // Add new label.
             this.levelNumberLabel = new LabelBuilder(this.levelNumberLabel)
-                    .text(String.valueOf(level)).end();
+                    .text(String.valueOf(levelNumber)).end();
             
             // Add it.
             this.entityList.add(this.levelNumberLabel);
-            this.layerMan.add(this.levelNumberLabel, Layer.UI);
-            
-            // Update the world manager.
-            game.worldMan.setLevel(level);
+            this.layerMan.add(this.levelNumberLabel, Layer.UI);                       
         }
         // See if the level up button was clicked.
         else if (this.levelUpButton.clicked() == true)
@@ -349,9 +348,10 @@ public class PlayNowGroup extends AbstractGroup
             // Reset the level up button.
             this.levelUpButton.setActivated(false);
             
-            // Extract the current setting.
-            int level = Integer.valueOf(this.levelNumberLabel.getText()) + 1;
-            level = level > MAX_LEVEL ? MAX_LEVEL : level;
+            // Determine new setting.
+            levelNumber = levelNumber + 1 > MAX_LEVEL 
+                    ? MAX_LEVEL 
+                    : levelNumber + 1;
             
             // Remove old label.
             this.entityList.remove(this.levelNumberLabel);
@@ -359,20 +359,23 @@ public class PlayNowGroup extends AbstractGroup
             
             // Add new label.
             this.levelNumberLabel = new LabelBuilder(this.levelNumberLabel)
-                    .text(String.valueOf(level)).end();
+                    .text(String.valueOf(levelNumber)).end();
             
             // Add it.
             this.entityList.add(this.levelNumberLabel);
-            this.layerMan.add(this.levelNumberLabel, Layer.UI);
-            
-            // Update the world manager.
-            game.worldMan.setLevel(level);
+            this.layerMan.add(this.levelNumberLabel, Layer.UI);           
         }       
         // See if the start button has been pressed.
         else if (this.startButton.clicked() == true)
         {
             // Set the music.
             this.musicMan.setTheme(themeRadio.getSelectedKey());
+            
+            // Set the target score.
+            game.worldMan.setLevel(levelNumber);
+            game.scoreMan.setTargetLevelScore(game.worldMan.generateTargetLevelScore());
+            game.scoreMan.setTargetTotalScore(game.worldMan.generateTargetLevelScore());
+            game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
                                       
             // Stop all the player.
             for (MusicPlayer p : playerMap.values())

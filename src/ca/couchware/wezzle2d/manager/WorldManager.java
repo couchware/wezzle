@@ -268,7 +268,7 @@ public class WorldManager implements ILevelListener
     
     public void levelUp(final Game game)
     {        
-        this.incrementCurrentLevel();
+        this.incrementLevel();
         
         int currentLevelScore = game.scoreMan.getLevelScore() - 
                 game.scoreMan.getTargetLevelScore();
@@ -462,7 +462,7 @@ public class WorldManager implements ILevelListener
 	/**
 	 * Increment the level.
 	 */
-	public void incrementCurrentLevel()
+	public void incrementLevel()
 	{
 		// Increment initial amount of normal tiles.		
 		getItem(0).incrementInitialAmount();
