@@ -23,7 +23,7 @@ public interface IGameWindowCallback
 	 * Notification that the display is being rendered. The implementor should
 	 * render the scene and update any game logic
 	 */
-	public boolean render();
+	public boolean draw();
 
 	/**
 	 * Notification that game window has been closed.

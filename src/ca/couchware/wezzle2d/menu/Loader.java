@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -33,7 +34,7 @@ import java.util.Queue;
  * 
  * @author cdmckay
  */
-public class Loader
+public class Loader implements IDrawer        
 {    
     
     /** 
@@ -221,7 +222,7 @@ public class Loader
         progressBar.setProgressMax(loaderQueue.size());
     }        
         
-    public State updateLogic(Game game)
+    public void updateLogic(Game game)
     {       
         switch (state)
         {
@@ -255,11 +256,13 @@ public class Loader
                 break;
                 
             default: throw new AssertionError();
-        }               
-        
-        // Return the state.
+        } // end switch                               
+    }
+
+    public State getState()
+    {
         return state;
-    }   
+    }        
     
     public boolean draw()
     {

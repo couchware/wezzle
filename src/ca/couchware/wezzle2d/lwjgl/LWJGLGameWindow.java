@@ -383,7 +383,7 @@ public class LWJGLGameWindow implements IGameWindow
 //                callback.render();  
                 
                 callback.update();
-                callback.render();                
+                callback.draw();                
                 Display.sync(TICKS_PER_SECOND);
             }
             // The window is not in the foreground, so we can allow other stuff to run and
@@ -402,7 +402,7 @@ public class LWJGLGameWindow implements IGameWindow
                 // Only bother rendering if the window is visible or dirty
                 if (Display.isVisible() || Display.isDirty())
                 {
-                    callback.render();
+                    callback.draw();
                 }
             } // end if               
         } // end while

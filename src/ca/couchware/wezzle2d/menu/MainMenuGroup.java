@@ -17,6 +17,7 @@ import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.MusicManager;
@@ -36,7 +37,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class MainMenuGroup extends AbstractGroup
+public class MainMenuGroup extends AbstractGroup implements IDrawer
 {       
     
     /** 

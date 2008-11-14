@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.transition;
 
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.graphics.IDrawer;
 
 /**
  * A special type of animation that controls a layer manager, usually to 
@@ -13,7 +14,7 @@ import ca.couchware.wezzle2d.animation.*;
  * 
  * @author cdmckay
  */
-public interface ITransition extends IAnimation
+public interface ITransition extends IAnimation, IDrawer
 {
     /**
      * Draws something to the screen.  Use in the same situation you'd use
@@ -21,5 +22,5 @@ public interface ITransition extends IAnimation
      * 
      * @return True if something on the screen changed.
      */
-    boolean draw();    
+    public boolean draw();    
 }

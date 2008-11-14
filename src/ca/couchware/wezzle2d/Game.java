@@ -96,16 +96,7 @@ public class Game extends Canvas implements IGameWindowCallback
         MUSIC, 
         SOUND    
     }
-    
-    
-    // booleans for keypresses
-    boolean bPressed = false;
-    
-    /**
-     * The frame-rate of the game.
-     */
-    final public static int FRAME_RATE = 45;       
-    
+          
     /**
      * The width of the screen.
      */
@@ -193,12 +184,7 @@ public class Game extends Canvas implements IGameWindowCallback
     
     //--------------------------------------------------------------------------
     // Public Members
-    //--------------------------------------------------------------------------
-    
-    /**
-     * The current build number.
-     */
-    public String buildNumber;        
+    //--------------------------------------------------------------------------                  
     
     /**
      * The loader.
@@ -214,7 +200,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * The main menu transition.  This is the transition animation that is used
      * to transition from the menu to the game.
      */
-    public ITransition mainMenuTransition;
+    public ITransition menuTransition;
         
     /**
      * The animation manager in charge of animations.
@@ -315,12 +301,22 @@ public class Game extends Canvas implements IGameWindowCallback
     //--------------------------------------------------------------------------
     // Private Members
     //--------------------------------------------------------------------------
-    
+            
     /**
      * The build nunber path.
      */
     final private static String BUILD_NUMBER_PATH = 
             Settings.getTextResourcesPath() + "/build.number";                             
+    
+    /**
+     * The current build number.
+     */
+    private String buildNumber;        
+    
+    /**
+     * The current drawer.
+     */
+    private IDrawer drawer;
     
     /** 
      * The normal title of the window. 
@@ -520,7 +516,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Create the animation manager.
             animationMan = AnimationManager.newInstance();                
-         }
+        }
         
         if (managerSet.contains(ManagerType.TUTORIAL))
         {
@@ -816,7 +812,8 @@ public class Game extends Canvas implements IGameWindowCallback
         initializeMembers();                                                               
         
         // Create the loader.        
-        loader = new Loader();               
+        loader = new Loader();        
+        setDrawer(loader);
                 
         // Initialize managers.
         loader.addRunnable(new Runnable()
@@ -856,40 +853,34 @@ public class Game extends Canvas implements IGameWindowCallback
     public void update()
     {                
         // If the loader is running, bypass all the rendering to show it.        
-        if (loader != null)
+        if (this.getDrawer() == loader)
         {   
             // Animate all animations.
-            if (animationMan != null)
-                animationMan.animate();
+            if (animationMan != null) animationMan.animate();            
             
-            if (loader.updateLogic(this) == Loader.State.FINISHED)
+            // Update the logic.
+            loader.updateLogic(this);
+            
+            if (loader.getState() == Loader.State.FINISHED)
             {
                 // Remove the loader.
                 loader = null;
                 
                 // Empty the mouse events.
                 window.clearMouseEvents();
-                
-                // Draw normally.
-                //layerMan.setDisabled(false);
-                //return layerMan.draw(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);                
-                
+                               
                 // Create the main menu.
                 mainMenu = new MainMenuGroup(animationMan, musicMan);
+                setDrawer(mainMenu);
             }   
-            else
-            {      
-                // Draw using the loader.
-                return;
-            }                       
+            else return;                        
         }
         
         // If the main menu is running, bypass all rendering to show it.
-        if (mainMenu != null)
+        if (this.getDrawer() == mainMenu)
         {
             // Animate all animations.
-            if (animationMan != null)
-                animationMan.animate();
+            if (animationMan != null) animationMan.animate();
             
             // Update the main menu logic.
             mainMenu.updateLogic(this);
@@ -903,17 +894,19 @@ public class Game extends Canvas implements IGameWindowCallback
                 mainMenu = null;   
                 
                 // Create the layer manager transition animation.
-                this.mainMenuTransition = new CircularTransition.Builder(layerMan)
-                        .minRadius(10).v(0.4).end();
+                this.menuTransition = new CircularTransition.Builder(layerMan)
+                        .minRadius(10).speed(0.4).end();
+                setDrawer(menuTransition);
                 
                 // When the transition is done, enable the game controls.
-                this.mainMenuTransition.setFinishRunnable(new Runnable()
+                this.menuTransition.setFinishRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.setDisabled(false); }
                 });
                 
-                this.animationMan.add(mainMenuTransition);                
+                // Queue in the animation manager.
+                this.animationMan.add(menuTransition);                
                 
                 // Start the music.
                 musicMan.play();
@@ -926,24 +919,22 @@ public class Game extends Canvas implements IGameWindowCallback
                 // Draw using the loader.
                 return;
             }
-        }
+        } // end if
         
         // See if the main menu transition is in progress
-        if (mainMenuTransition != null)
+        if (this.getDrawer() == menuTransition)
         {
             // Animate all animations.
-            if (animationMan != null)
-                animationMan.animate();
+            if (animationMan != null) animationMan.animate();
             
-            if (mainMenuTransition.isFinished() == false)
+            // Otherwise see if the transition is over.
+            if (menuTransition.isFinished() == false) return;           
+            else 
             {
-                return;              
-            }
-            else
-            {
-                mainMenuTransition = null;
-            }
-        }
+                setDrawer(this.layerMan);
+                menuTransition = null;
+            }            
+        } // end if
                                
         // If the high score button was just clicked.
         if (highScoreButton.clicked() == true)
@@ -1129,32 +1120,11 @@ public class Game extends Canvas implements IGameWindowCallback
      * @return True if the frame has been updated, false if nothing has been
      * updated.
 	 */
-	public boolean render()
+	public boolean draw()
 	{		      
         // If the background is dirty, then redraw everything.
-        if (loader != null)
-        {
-            return loader.draw();
-        }
-        else if (mainMenu != null)
-        {
-            return mainMenu.draw();
-        }
-        else if (mainMenuTransition != null)
-        {
-            return mainMenuTransition.draw();
-        }
-        else if (background != null && background.isDirty() == true)
-        {            
-            layerMan.drawAll();
-            background.setDirty(false);
-            return true;
-        }
-        // Otherwise, only draw what needs to be redrawn.
-        else
-        {                       
-            return layerMan.draw();         
-        }        
+        if (getDrawer() != null) return getDrawer().draw();
+        else return false;
 	}  
     
     /**
@@ -1438,14 +1408,14 @@ public class Game extends Canvas implements IGameWindowCallback
     // Getters and Setters
     //--------------------------------------------------------------------------       
 
-    /**
-     * Get a reference to the game window.
-     * 
-     * @return A reference to the current game window.
-     */
-    public IGameWindow getGameWindow()
+    public IDrawer getDrawer()
     {
-        return window;
+        return drawer;
+    }
+
+    public void setDrawer(IDrawer drawer)
+    {
+        this.drawer = drawer;
     }
     
     //--------------------------------------------------------------------------

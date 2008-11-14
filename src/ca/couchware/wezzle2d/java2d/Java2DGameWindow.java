@@ -332,7 +332,7 @@ public class Java2DGameWindow extends Canvas implements IGameWindow,
                 loopCounter++;
             }                       
             			
-            updated = callback.render();            
+            updated = callback.draw();            
 			
 			// Finally, we've completed drawing so clear up the graphics
 			// and flip the buffer over.

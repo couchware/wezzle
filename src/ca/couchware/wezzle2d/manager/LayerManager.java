@@ -3,8 +3,6 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.ui.ILabel;
-import ca.couchware.wezzle2d.ui.RadioGroup;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class LayerManager
+public class LayerManager implements IDrawer
 {           
     
     /**
@@ -449,18 +447,7 @@ public class LayerManager
                changed = true;
         
         return changed;
-    }
-    
-    public boolean addAll(UnmodifiableLayerManager layerMan)
-    {
-        boolean changed = false; 
-        
-        for (Layer l : Layer.values())
-            if (layerList.get(l.ordinal()).addAll(layerMan.getLayer(l)) == true)
-                changed = true;
-        
-        return changed;
-    }
+    }       
 
     public boolean retainAll(LayerManager layerMan)
     {
@@ -473,18 +460,7 @@ public class LayerManager
                changed = true;
         
         return changed;  
-    }
-    
-    public boolean retainAll(UnmodifiableLayerManager layerMan)
-    {
-        boolean changed = false; 
-        
-        for (Layer l : Layer.values())
-            if (layerList.get(l.ordinal()).retainAll(layerMan.getLayer(l)) == true)
-                changed = true;
-        
-        return changed;
-    }
+    }      
 
     public boolean removeAll(LayerManager layerMan)
     {
@@ -497,18 +473,7 @@ public class LayerManager
                changed = true;
         
         return changed;
-    }
-    
-    public boolean removeAll(UnmodifiableLayerManager layerMan)
-    {
-        boolean changed = false; 
-        
-        for (Layer l : Layer.values())
-            if (layerList.get(l.ordinal()).removeAll(layerMan.getLayer(l)) == true)
-                changed = true;
-        
-        return changed;
-    }
+    }    
 
     public boolean isDisabled()
     {
