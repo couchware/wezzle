@@ -6,8 +6,10 @@ import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Manages the world.
@@ -30,24 +32,24 @@ public class WorldManager implements ILevelListener
 	/**
 	 * The item list.
 	 */
-	private LinkedList<Item> itemList;
+	private ArrayList<Item> itemList;
         
     /**
      * The multiplier list
      */
-    private ArrayList<Item> multiplierList;        
+    private List<Item> multiplierList;        
     
     /**
      * The master rule list.  Contains all the rules that should exist
      * at the start of a new game.
      */
-    private LinkedList<Rule> masterRuleList;
+    private List<Rule> masterRuleList;
     
     /**
      * The current rule list.  Contains all the rules that have not yet 
      * been realized for the current game.
      */
-    private LinkedList<Rule> currentRuleList;
+    private List<Rule> currentRuleList;
     
     /**
      * Is a game in progress?
@@ -110,30 +112,13 @@ public class WorldManager implements ILevelListener
 	 * @param scoreManager
 	 */
 	private WorldManager()
-	{								
-		// Set the starting level.
-		setLevel(1);
-        
+	{										
         // Set the max items and mults.
-        this.maxItems = 3;
+        this.maxItems       = 3;
         this.maxMultipliers = 3;
         
-        // Set the items.
-        itemList = new LinkedList<Item>();
-        
-        // !IMPORTANT! Ensure that the first item is a normal tile. 
-        // This is so that we can use the first item when returning a
-        // normal tile whenever we want.
-        itemList.add(new Item.Builder(TileType.NORMAL)
-                .initialAmount(28).weight(5).maxOnBoard(100).end());
-//        itemList.add(new Item.Builder(TileType.ROCKET)
-//                .initialAmount(1).weight(55).maxOnBoard(3).end());
-//        itemList.add(new Item.Builder(TileType.BOMB)
-//                .initialAmount(1).weight(10).maxOnBoard(1).end());   
-//        itemList.add(new Item.Builder(TileType.STAR)
-//                .initialAmount(1).weight(5).maxOnBoard(1).end());
-//        itemList.add(new Item.Builder(TileType.GRAVITY)
-//                .initialAmount(5).weight(50).maxOnBoard(1).end());
+        // Create the item list.
+        itemList = new ArrayList<Item>();                
         
         // Set the multipliers.
         multiplierList = new ArrayList<Item>();        
@@ -143,71 +128,15 @@ public class WorldManager implements ILevelListener
                 .initialAmount(0).weight(20).maxOnBoard(1).end());
         multiplierList.add(new Item.Builder(TileType.X4)
                 .initialAmount(0).weight(10).maxOnBoard(1).end());                
-        
-        // Set the rules.
-        masterRuleList = new LinkedList<Rule>();
-        
-        // Make it so the rocket block is added.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 3)
-        {
-            @Override
-            public void onMatch()
-            {
-                // Add the rocket.
-                itemList.add(new Item.Builder(TileType.ROCKET)
-                        .initialAmount(1).weight(55).maxOnBoard(3).end());                
-            }            
-        });  
-        
-        // Make it so the bomb block is added.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 6)
-        {
-            @Override
-            public void onMatch()
-            {
-                // Add the bomb.
-                itemList.add(new Item.Builder(TileType.GRAVITY)
-                        .initialAmount(1).weight(50).maxOnBoard(1).end());                
-            }            
-        });  
-        
-        // Make it so the bomb block is added.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 9)
-        {
-            @Override
-            public void onMatch()
-            {
-                // Add the bomb.
-                itemList.add(new Item.Builder(TileType.BOMB)
-                        .initialAmount(1).weight(10).maxOnBoard(1).end());                
-            }            
-        }); 
-        
-        // Make it so the star block is added.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 12)
-        {
-            @Override
-            public void onMatch()
-            {
-                // Add the star.
-                itemList.add(new Item.Builder(TileType.STAR)
-                        .initialAmount(0).weight(5).maxOnBoard(1).end());                
-            }            
-        });   
-        
-        // Make it so a new block color is added on level 5.
-//        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 5)
-//        {            
-//            @Override
-//            public void performAction(Game game)
-//            {
-//                // Increase the number of colours.
-//                game.boardMan.setNumberOfColors(6);
-//            }            
-//        });
+                          
+        // Make the mutable list the master list.
+        masterRuleList = createMasterRuleList();
                         
-        currentRuleList = new LinkedList<Rule>();
-        currentRuleList.addAll(masterRuleList);
+        // Create the rule list.
+        currentRuleList = new LinkedList<Rule>();        
+        
+        // Restart the manager to finish the initalization.
+        restart();
 	}
 	        
     /**
@@ -221,9 +150,105 @@ public class WorldManager implements ILevelListener
         return new WorldManager();
     }
     
+    /**
+     * Restarts the board manager to appropriate settings for the first level.
+     */
+    public void restart()
+    {
+        // Reset to level 1.
+        this.setLevel(1);
+        
+        // !IMPORTANT! Ensure that the first item is a normal tile. 
+        // This is so that we can use the first item when returning a
+        // normal tile whenever we want.
+        itemList.clear();
+        itemList.add(new Item.Builder(TileType.NORMAL)
+                .initialAmount(28).weight(5).maxOnBoard(100).end());
+//        itemList.add(new Item.Builder(TileType.ROCKET)
+//                .initialAmount(1).weight(55).maxOnBoard(3).end());
+//        itemList.add(new Item.Builder(TileType.BOMB)
+//                .initialAmount(1).weight(10).maxOnBoard(1).end());   
+//        itemList.add(new Item.Builder(TileType.STAR)
+//                .initialAmount(1).weight(5).maxOnBoard(1).end());
+//        itemList.add(new Item.Builder(TileType.GRAVITY)
+//                .initialAmount(5).weight(50).maxOnBoard(1).end());
+        
+        // Reset the rules.
+        currentRuleList.clear();
+        currentRuleList.addAll(masterRuleList);
+    }
+    
     //--------------------------------------------------------------------------
 	// Instance Methods
-	//--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------   
+    
+    private List<Rule> createMasterRuleList()
+    {
+        // Set the rules.
+        List<Rule> mutableList = new ArrayList<Rule>();
+        
+        
+        // Make it so the rocket block is added.
+        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 3)
+        {
+            @Override
+            public void onMatch()
+            {
+                // Add the rocket.
+                itemList.add(new Item.Builder(TileType.ROCKET)
+                        .initialAmount(1).weight(55).maxOnBoard(3).end());                
+            }            
+        });  
+        
+        // Make it so the bomb block is added.
+        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 6)
+        {
+            @Override
+            public void onMatch()
+            {
+                // Add the bomb.
+                itemList.add(new Item.Builder(TileType.GRAVITY)
+                        .initialAmount(1).weight(50).maxOnBoard(1).end());                
+            }            
+        });  
+        
+        // Make it so the bomb block is added.
+        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 9)
+        {
+            @Override
+            public void onMatch()
+            {
+                // Add the bomb.
+                itemList.add(new Item.Builder(TileType.BOMB)
+                        .initialAmount(1).weight(10).maxOnBoard(1).end());                
+            }            
+        }); 
+        
+        // Make it so the star block is added.
+        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 12)
+        {
+            @Override
+            public void onMatch()
+            {
+                // Add the star.
+                itemList.add(new Item.Builder(TileType.STAR)
+                        .initialAmount(0).weight(5).maxOnBoard(1).end());                
+            }            
+        });   
+        
+        // Make it so a new block color is added on level 5.
+//        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 5)
+//        {            
+//            @Override
+//            public void performAction(Game game)
+//            {
+//                // Increase the number of colours.
+//                game.boardMan.setNumberOfColors(6);
+//            }            
+//        }); 
+        
+        return Collections.unmodifiableList(mutableList);
+    }
     
     /**
 	 * A method to generate a target score given the level. 
@@ -317,20 +342,7 @@ public class WorldManager implements ILevelListener
             else
                 return pieceSize + levelDrop + this.minimumDrop;
         }
-    }  
-    
-    /**
-     * Restarts the board manager to appropriate settings for the first level.
-     */
-    public void restart()
-    {
-        // Reset to level 1.
-        this.setLevel(1);
-        
-        // Reset the rules.
-        currentRuleList.clear();
-        currentRuleList.addAll(masterRuleList);
-    }
+    }          
     
     //--------------------------------------------------------------------------
     // Logic
@@ -424,7 +436,7 @@ public class WorldManager implements ILevelListener
      /**
      * @return the maximum number of mults.
      */
-    public int getMaxMults()
+    public int getMaxMultipliers()
     {
         return maxMultipliers;
     }
@@ -432,7 +444,7 @@ public class WorldManager implements ILevelListener
     /**
      * set the maximum number of mults.
      */
-    public void setMaxMults(int maxMults)
+    public void setMaxMultipliers(int maxMults)
     {
         this.maxMultipliers = maxMults;
     }    
@@ -502,89 +514,89 @@ public class WorldManager implements ILevelListener
      * 
      * @return 
      */
-    public Item getItem( int numItems, int numMults)
+    public Item getItem(int numItems, int numMultipliers)
 	{	
         
-            // Check if we do not return  a normal tile. There is
-            // A flat 5% chance of this.
-            int test = Util.random.nextInt(100);
-            if( test <= 5)
-            {
-                return itemList.getFirst();
-            }
-            
-            // Build the list of items. This does not include items 
-            // with probability 0 (if the max number exist) and includes
-            // Mults as well.
-            
-            boolean useItems = false;
-            boolean useMults = false;
-            int constant = 15;
-            
-            // calculate the probability of an item. The probability of a mult
-            // is 1 - probability of item.
-            int probItems = (numMults-numItems) * constant + 50;
-            //int probMults = (numItems-numMults) * constant + 50;
-            
-            // If there are no items in the game yet.
-            if(itemList.size() == 1)
-                probItems = 0;
-            
-            // Select a number from 1 - 100.
-            int pick = Util.random.nextInt(100);
-            
+        // Check if we do not return  a normal tile. There is
+        // A flat 5% chance of this.
+        int test = Util.random.nextInt(100);
+        if( test <= 5)
+        {
+            return itemList.get(0);
+        }
 
-            if(numMults < maxMultipliers && numItems < maxItems)
-            {
-                if(pick < probItems)
-                {
-                    useItems = true;
-                }
-                else
-                {
-                    useMults = true;
-                }
-            }
-            else if (numMults < maxMultipliers)
-            {
-                useMults = true;
-            }
-            else if (numItems < maxItems)
+        // Build the list of items. This does not include items 
+        // with probability 0 (if the max number exist) and includes
+        // Mults as well.
+
+        boolean useItems = false;
+        boolean useMultipliers = false;
+        int constant = 15;
+
+        // calculate the probability of an item. The probability of a mult
+        // is 1 - probability of item.
+        int probItems = (numMultipliers-numItems) * constant + 50;
+        //int probMults = (numItems-numMults) * constant + 50;
+
+        // If there are no items in the game yet.
+        if(itemList.size() == 1)
+            probItems = 0;
+
+        // Select a number from 1 - 100.
+        int pick = Util.random.nextInt(100);
+
+
+        if(numMultipliers < maxMultipliers && numItems < maxItems)
+        {
+            if(pick < probItems)
             {
                 useItems = true;
             }
+            else
+            {
+                useMultipliers = true;
+            }
+        }
+        else if (numMultipliers < maxMultipliers)
+        {
+            useMultipliers = true;
+        }
+        else if (numItems < maxItems)
+        {
+            useItems = true;
+        }
 
-            
-            ArrayList<Item> items = new ArrayList<Item>();
-            
-                if (useItems == true)
-                {
-                    for (Item item : itemList)
-                    {
-                        // Skip the normal tile.
-                        if (item.getTileType() == TileType.NORMAL)
-                            continue;
+
+        ArrayList<Item> items = new ArrayList<Item>();
+
+        if (useItems == true)
+        {
+            for (Item item : itemList)
+            {
+                // Skip the normal tile.
+                if (item.getTileType() == TileType.NORMAL)
+                    continue;
+
+                if (item.getWeight() > 0)
+                    items.add(item);
+            }
+        }
+
+        if (useMultipliers == true)
+        {  
+            for (Item item : multiplierList)
+            {
+                if (item.getWeight() > 0)
+                    items.add(item);
+            }
+        }
+
+        // If the list is empty, return a normal tile.
+        if(items.size() <= 0)
+        {
+           return itemList.get(0);
+        }
                         
-                        if (item.getWeight() > 0)
-                            items.add(item);
-                    }
-                }
-                if (useMults == true)
-                {  
-                    for (Item item : multiplierList)
-                    {
-                        if (item.getWeight() > 0)
-                            items.add(item);
-                    }
-                }
-            
-             // If the list is empty, return a normal tile.
-                if(items.size() <= 0)
-                {
-                   return itemList.getFirst();
-                }
-            
-            
 		// Create an array representing the item distribution 
             
 		int dist[] = new int[items.size() + 1];
@@ -609,9 +621,9 @@ public class WorldManager implements ILevelListener
 		for (int j = 1; j < dist.length; j++)
 		{
 			if (randomNumber < dist[j])
-                        {
+            {
 				return items.get(j - 1);
-                        }
+            }
 		}
 		
 		// We should never get here.

@@ -523,7 +523,7 @@ public class PieceManager implements IMouseListener
                 }
                 else if (totalTileDropInAmount == 1 
                         && ( game.boardMan.getNumberOfItems() < game.worldMan.getMaxItems() 
-                        || game.boardMan.getNumberOfMults() < game.worldMan.getMaxMults()))
+                        || game.boardMan.getNumberOfMults() < game.worldMan.getMaxMultipliers()))
                 {
                     // The tile is an item.
                     tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
@@ -533,7 +533,7 @@ public class PieceManager implements IMouseListener
                 }
                 else if (totalTileDropInAmount <= parallelTileDropInAmount
                        && (game.boardMan.getNumberOfItems() < game.worldMan.getMaxItems()
-                       || game.boardMan.getNumberOfMults() < game.worldMan.getMaxMults()))
+                       || game.boardMan.getNumberOfMults() < game.worldMan.getMaxMultipliers()))
                 {
                     // This must be true.
                     assert totalTileDropInAmount <= randomIndexQueue.size();
