@@ -518,6 +518,14 @@ public class Game extends Canvas implements IGameWindowCallback
             animationMan = AnimationManager.newInstance();                
         }
         
+        if (managerSet.contains(ManagerType.STAT))
+        {
+            // Create the move manager.
+            statMan = StatManager.newInstance();
+            listenerMan.registerMoveListener(statMan);
+            listenerMan.registerLineListener(statMan);
+        }
+        
         if (managerSet.contains(ManagerType.TUTORIAL))
         {
             // Create the tutorial manager.
@@ -542,6 +550,7 @@ public class Game extends Canvas implements IGameWindowCallback
             // Create the world manager.
             worldMan = WorldManager.newInstance();  
             worldMan.setGameInProgress(true);
+            listenerMan.registerLevelListener(worldMan);
         }
         
         if (managerSet.contains(ManagerType.BOARD))
@@ -573,6 +582,7 @@ public class Game extends Canvas implements IGameWindowCallback
             // Create the score manager.
             scoreMan = ScoreManager.newInstance(boardMan, highScoreMan);
             scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
+            listenerMan.registerScoreListener(scoreMan);
         }
         
         if (managerSet.contains(ManagerType.SOUND))
@@ -585,13 +595,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Create the music manager.            
             musicMan = MusicManager.newInstance(executor);  
-        }
-        
-        if (managerSet.contains(ManagerType.STAT))
-        {
-            // Create the move manager.
-            statMan = StatManager.newInstance();
-        }
+        }               
         
         if (managerSet.contains(ManagerType.TIMER))
         {
@@ -632,25 +636,7 @@ public class Game extends Canvas implements IGameWindowCallback
 
             achievementMan.add(new Achievement(rules4, 
                      "Level greater than 2", Achievement.Difficulty.BRONZE));
-        }
-        
-        // Register the listeners. 
-        if (managerSet.contains(ManagerType.SCORE))
-        {
-            listenerMan.registerScoreListener(scoreMan);
-        }
-        
-        if (managerSet.contains(ManagerType.STAT))
-        {
-            listenerMan.registerMoveListener(statMan);
-            listenerMan.registerLineListener(statMan);
-        }
-        if (managerSet.contains(ManagerType.WORLD))
-        {
-            listenerMan.registerLevelListener(worldMan);
-        }
-        
-        
+        }              
     }
     
     /**
@@ -773,7 +759,7 @@ public class Game extends Canvas implements IGameWindowCallback
     private void initializeGroups()
     {        
         // Initialize pause group.                
-        pauseGroup = new PauseGroup(layerMan);
+        pauseGroup = new PauseGroup(layerMan, statMan);
         groupMan.register(pauseGroup);
         
         listenerMan.registerMoveListener(pauseGroup);
@@ -954,15 +940,16 @@ public class Game extends Canvas implements IGameWindowCallback
         if (pauseButton.clicked() == true)
         {            
             if (pauseButton.isActivated() == true)            
-            {
-                pauseGroup.setLinesPerMove(statMan.getLinesPerMove());           
+            {                
                 groupMan.showGroup(pauseButton, pauseGroup, 
                         GroupManager.CLASS_PAUSE,
                         GroupManager.LAYER_MIDDLE);            
             }
             else
+            {
                 groupMan.hideGroup(GroupManager.CLASS_PAUSE,
                         GroupManager.LAYER_MIDDLE);            
+            }
         }
         
         // If the options button was just clicked.
@@ -1452,14 +1439,12 @@ public class Game extends Canvas implements IGameWindowCallback
         // Don't pause game if we're showing the game over screen.
         if (groupMan != null && groupMan.isActivated() == false)
         {
-            pauseGroup.setLinesPerMove(statMan.getLinesPerMove());
             groupMan.showGroup(pauseButton, pauseGroup, 
                     GroupManager.CLASS_PAUSE,
                     GroupManager.LAYER_MIDDLE);
         }
                         
-        if (layerMan != null)
-            layerMan.forceRedraw();                
+        if (layerMan != null) layerMan.forceRedraw();                
     }
     
      /**

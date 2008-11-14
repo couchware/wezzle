@@ -185,17 +185,19 @@ public class StatManager implements IManager, IMoveListener, ILineListener
     public double getLinesPerMove()
     {
          // Calculate lines per move.
-        double lpm;
+        double linesPerMove;
         if (getMoveCount() == 0)
-            lpm = 0.0;
+        {
+            linesPerMove = 0.0;
+        }
         else
         {
-            lpm = (double) getLineCount() / (double) getMoveCount();
-            lpm = lpm * 100;
-            lpm = ((double) (int) lpm) / 100.0;
+            linesPerMove = (double) getLineCount() / (double) getMoveCount();
+            linesPerMove *= 100.0;
+            linesPerMove = ((double) (int) linesPerMove) / 100.0;
         }
         
-        return lpm;
+        return linesPerMove;
     }
     
     /**
@@ -208,15 +210,14 @@ public class StatManager implements IManager, IMoveListener, ILineListener
      */    
     public void handleLineEvent(LineEvent e, IListenerComponent.GameType gameType)
     {
-        if (gameType == IListenerComponent.GameType.GAME)
-            this.incrementLineCount(e.getLineCount());
+        this.setLineCount(this.getLineCount() + e.getLineCount());
     }
     
     /**
      * Handle a move event.
      * @param e The move event.
      */    
-    public void handleMoveEvent(MoveEvent e, IListenerComponent.GameType gt)
+    public void handleMoveEvent(MoveEvent e, IListenerComponent.GameType gameType)
     {
         this.setMoveCount(this.getMoveCount() + e.getMoveCount());
     }

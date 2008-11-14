@@ -6,64 +6,65 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.event.*;
-import java.util.WeakHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class that holds the entire game state. It holds
  * listener lists for each stat in the game. When a stat changes
  * all the listeners in the list are updated.
  * 
- * implements the singleton pattern and the observer pattern.
- * 
- * Uses weakhashmaps to handle potential memory leaks.
+ * Implements the singleton pattern and the observer pattern.
  * 
  * @author kgrad
  */
 public class ListenerManager implements IListenerComponent
 {
-    // The single listener manager.
-    private final static ListenerManager listenerMan = new ListenerManager();
     
+    // The single listener manager.
+    private final static ListenerManager single = new ListenerManager();    
     
     // The listener lists.
-    private WeakHashMap<IScoreListener, String> scoreListenerList;
-    private WeakHashMap<ILevelListener, String> levelListenerList;
-    private WeakHashMap<IMoveListener, String> moveListenerList;
-    private WeakHashMap<ILineListener, String> lineListenerList;
-    
-    
-    
+    private List<IScoreListener> scoreListenerList;
+    private List<ILevelListener> levelListenerList;
+    private List<IMoveListener>  moveListenerList;
+    private List<ILineListener>  lineListenerList;    
+        
     /**
      * private constructor to ensure only a single entity ever exists.
      */
     private ListenerManager()
     {
-        scoreListenerList = new WeakHashMap<IScoreListener, String>();
-        levelListenerList = new WeakHashMap<ILevelListener, String>();
-        moveListenerList = new WeakHashMap<IMoveListener, String>();
-        lineListenerList = new WeakHashMap<ILineListener, String>();
+        scoreListenerList = new ArrayList<IScoreListener>();
+        levelListenerList = new ArrayList<ILevelListener>();
+        moveListenerList  = new ArrayList<IMoveListener>();
+        lineListenerList  = new ArrayList<ILineListener>();
     }
     
     /**
      * Get the one instance of this manager.
-     * @return listenerMan.
+     * 
+     * @return The only instance of the listener manager in the whole wide world.
      */
     public static ListenerManager get()
     {
-        return listenerMan;
+        return single;
     }    
     
     /**
      * Register a score listener.
+     * 
      * @param listener The listener to register.
      */    
     public void registerScoreListener(IScoreListener listener)
     {
         // If we try to add a second listener, blow up.
-        if (scoreListenerList.containsKey(listener))        
+        if (scoreListenerList.contains(listener))
+        {
             throw new IllegalArgumentException("Listener already registered!");        
+        }
         
-        scoreListenerList.put(listener, "Score");
+        scoreListenerList.add(listener);
     }
     
     /**
@@ -72,11 +73,13 @@ public class ListenerManager implements IListenerComponent
      */    
     public void registerLevelListener(ILevelListener listener)
     {
-          // If we try to add a second listener.
-        if (levelListenerList.containsKey(listener))        
+        // If we try to add a second listener.
+        if (levelListenerList.contains(listener))        
+        {
             throw new IllegalStateException("Listener already registered!");        
+        }
         
-        levelListenerList.put(listener, "Level");
+        levelListenerList.add(listener);
     }
     
     /**
@@ -85,11 +88,13 @@ public class ListenerManager implements IListenerComponent
      */    
     public void registerMoveListener(IMoveListener listener)
     {
-          // If we try to add a second listener.
-        if (moveListenerList.containsKey(listener))        
-            throw new IllegalStateException("Listener already registered!");        
+        // If we try to add a second listener.
+        if (moveListenerList.contains(listener))        
+        {
+            throw new IllegalStateException("Listener already registered!");
+        }
         
-        moveListenerList.put(listener, "Move");
+        moveListenerList.add(listener);
     }
     
     /**
@@ -99,12 +104,12 @@ public class ListenerManager implements IListenerComponent
     public void registerLineListener(ILineListener listener)
     {
           // If we try to add a second listener.
-        if (lineListenerList.containsKey(listener))
+        if (lineListenerList.contains(listener))
         {
-            throw new IllegalStateException("Adding a second move listener");
+            throw new IllegalStateException("Listener already registered!");
         }
         
-        lineListenerList.put(listener, "Line");
+        lineListenerList.add(listener);
     }
     
     /**
@@ -113,7 +118,7 @@ public class ListenerManager implements IListenerComponent
      */    
     public void notifyScoreListener(ScoreEvent e, IListenerComponent.GameType gameType)
     {
-        for (IScoreListener listener : scoreListenerList.keySet())
+        for (IScoreListener listener : scoreListenerList)
         {
             listener.handleScoreEvent(e, gameType);
         }
@@ -125,7 +130,7 @@ public class ListenerManager implements IListenerComponent
      */    
     public void notifyLevelListener(LevelEvent e)
     {
-        for (ILevelListener listener : levelListenerList.keySet())
+        for (ILevelListener listener : levelListenerList)
         {
             listener.handleLevelEvent(e);
         }
@@ -137,7 +142,7 @@ public class ListenerManager implements IListenerComponent
      */    
     public void notifyMoveListener(MoveEvent e, IListenerComponent.GameType gameType)
     {
-        for (IMoveListener listener : moveListenerList.keySet())
+        for (IMoveListener listener : moveListenerList)
         {
             listener.handleMoveEvent(e, gameType);
         }
@@ -149,7 +154,7 @@ public class ListenerManager implements IListenerComponent
      */    
     public void notifyLineListener(LineEvent e, IListenerComponent.GameType gameType)
     {
-        for (ILineListener listener : lineListenerList.keySet())
+        for (ILineListener listener : lineListenerList)
         {
             listener.handleLineEvent(e, gameType);
         }

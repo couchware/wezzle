@@ -148,7 +148,7 @@ public class WorldManager implements ILevelListener
         masterRuleList = new LinkedList<Rule>();
         
         // Make it so the rocket block is added.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 3)
+        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 3)
         {
             @Override
             public void onMatch()
@@ -160,7 +160,7 @@ public class WorldManager implements ILevelListener
         });  
         
         // Make it so the bomb block is added.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 6)
+        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 6)
         {
             @Override
             public void onMatch()
@@ -172,7 +172,7 @@ public class WorldManager implements ILevelListener
         });  
         
         // Make it so the bomb block is added.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 9)
+        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 9)
         {
             @Override
             public void onMatch()
@@ -184,7 +184,7 @@ public class WorldManager implements ILevelListener
         }); 
         
         // Make it so the star block is added.
-        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 12)
+        masterRuleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 12)
         {
             @Override
             public void onMatch()

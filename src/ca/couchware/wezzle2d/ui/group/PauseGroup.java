@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.event.*;
 import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.EnumSet;
 
@@ -27,51 +28,35 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
      * A reference to the layer manager.  This is used by groups to add
      * and remove things like buttons and sliders.
      */
-    final protected LayerManager layerMan;       
+    final private LayerManager layerMan;      
     
-    /**
-     * The main label showing the paused text.
-     */
+    /** A reference to the stats manager.  Used to grab the latest stats. */
+    final private StatManager statMan;
+    
+    /** The main label showing the paused text. */
     private ILabel mainLabel;
     
-    /**
-     * The moves label.
-     */
+    /** The moves label. */
     private ILabel movesLabel;
     
-    /**
-     * The lines label.
-     */
+    /** The lines label. */
     private ILabel linesLabel;
     
-    /**
-     * The lines per move label.
-     */
+    /** The lines per move label. */
     private ILabel linesPerMoveLabel;
     
-    /**
-     * The running line count.
-     */
-    
-    private int lines = 0;
-    
-    /**
-     * The running move count.
-     */    
-    private int moves = 0;
-    
-    /**
-     * The running lpm.
-     */
-    private double lpm = 0.0;
-    
+    private int    moves = 0;
+    private int    lines = 0;
+    private double linesPerMove = 0.0;
+       
     /**
      * The constructor.    
      */    
-    public PauseGroup(final LayerManager layerMan)
+    public PauseGroup(LayerManager layerMan, StatManager statMan)
     {
-        // Set the layer manager.
+        // Remember the managers.
         this.layerMan = layerMan;
+        this.statMan  = statMan;
                
         // Create the "Paused" text.
         mainLabel = new LabelBuilder(400, 245)
@@ -102,8 +87,8 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
         layerMan.add(linesPerMoveLabel, Layer.UI);
         entityList.add(linesPerMoveLabel);
     }
-    
-    public void setMoves(int moves)
+        
+    private void setMoves(int moves)
     {
         if (this.moves == moves) return;
         
@@ -125,9 +110,9 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
         }
         layerMan.add(movesLabel, Layer.UI);
         entityList.add(movesLabel);
-    }
+    }       
     
-    public void setLines(int lines)
+    private void setLines(int lines)
     {
         if (this.lines == lines) return;
         
@@ -151,42 +136,38 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
         entityList.add(linesLabel);
     }
     
-    public void setLinesPerMove(double lpm)
+    private void setLinesPerMove(double linesPerMove)
     {
-        if (Util.equals(this.lpm, lpm)) return;
+        if (Util.equals(this.linesPerMove, linesPerMove)) return;
         
         // Record the current lpm.
-        this.lpm = lpm;
+        this.linesPerMove = linesPerMove;
         
         // Set the lines per move label.
         //linesPerMoveLabel.setText(lpm + " lines per move");
         layerMan.remove(linesPerMoveLabel, Layer.UI);
         entityList.remove(linesPerMoveLabel);
         linesPerMoveLabel = new LabelBuilder(linesPerMoveLabel)
-                .text(lpm + " lines per move").end();
+                .text(linesPerMove + " lines per move").end();
         layerMan.add(linesPerMoveLabel, Layer.UI);
         entityList.add(linesPerMoveLabel);
     }      
             
     public void handleMoveEvent(MoveEvent e, IListenerComponent.GameType gameType)
-    {
+    {        
         if (gameType == IListenerComponent.GameType.GAME)
-        {
-            this.moves += e.getMoveCount();
-            this.setMoves(moves);
+        {                     
+            this.setMoves(statMan.getMoveCount());
+            this.setLinesPerMove(statMan.getLinesPerMove());
         }
     }
        
     public void handleLineEvent(LineEvent e, IListenerComponent.GameType gameType)
-    {
-        LogManager.recordMessage("Line event");
-        
+    {                
         if (gameType == IListenerComponent.GameType.GAME)
-        {
-            this.lines += e.getLineCount();
-            this.setLines(lines);
-            LogManager.recordMessage("Line event");
-
+        {            
+            this.setLines(statMan.getLineCount());
+            this.setLinesPerMove(statMan.getLinesPerMove());
         }
     }
     
@@ -196,8 +177,7 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
         // This is more important than you think.  Basically, since we might
         // be adding or removing listeners, we want to make sure we only add
         // a listener once, and that we only remove it once.  This ensures that.
-        if (isVisible() == visible)
-            return;            
+        if (this.visible == visible) return;            
         
         // Invoke super.  This will remove the listener from pause which
         // we will re-add below.
