@@ -10,7 +10,7 @@ package ca.couchware.wezzle2d.event;
  *
  * @author kgrad
  */
-public interface ILineListener 
+public interface ILineListener extends IListener
 {
-    public void handleLineEvent(LineEvent evt, IListenerComponent.GameType gameType);
+    public void lineConsumed(LineEvent event, IListenerManager.GameType gameType);
 }

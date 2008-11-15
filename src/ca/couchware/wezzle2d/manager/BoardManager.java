@@ -1844,15 +1844,6 @@ public class BoardManager implements IManager
 		System.out.println();
 	}
     
-    /**
-     * Restarts the board manager to appropriate settings for the first level.
-     */
-    public void restart()
-    {
-        // Reset the number of colours.
-        setNumberOfColors(DEFAULT_NUMBER_OF_COLORS);
-    }    
-
     //--------------------------------------------------------------------------
     // Getters and Setters
     //--------------------------------------------------------------------------
@@ -2129,6 +2120,12 @@ public class BoardManager implements IManager
         LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
         LogManager.recordMessage("Loaded " + numberOfItems + " items.");
         LogManager.recordMessage("Loaded " + numberOfMults + " mults.");
+    }
+
+    public void resetState()
+    {
+        // Reset the number of colours.
+        setNumberOfColors(DEFAULT_NUMBER_OF_COLORS);
     }
 
 }

@@ -22,4 +22,9 @@ public interface IManager
      * it warns you and does nothing.
      */
     public void loadState();
+    
+    /**
+     * Resets the state of the manager to it's initial state.
+     */   
+    public void resetState();
 }

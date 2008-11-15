@@ -18,7 +18,7 @@ import java.util.List;
  *
  */
 
-public class WorldManager implements ILevelListener
+public class WorldManager implements IManager, ILevelListener
 {       
 	//--------------------------------------------------------------------------
 	// Instance Members
@@ -135,8 +135,8 @@ public class WorldManager implements ILevelListener
         // Create the rule list.
         currentRuleList = new LinkedList<Rule>();        
         
-        // Restart the manager to finish the initalization.
-        restart();
+        // Reset the manager to finish the initalization.
+        resetState();
 	}
 	        
     /**
@@ -148,35 +148,7 @@ public class WorldManager implements ILevelListener
     public static WorldManager newInstance()
     {
         return new WorldManager();
-    }
-    
-    /**
-     * Restarts the board manager to appropriate settings for the first level.
-     */
-    public void restart()
-    {
-        // Reset to level 1.
-        this.setLevel(1);
-        
-        // !IMPORTANT! Ensure that the first item is a normal tile. 
-        // This is so that we can use the first item when returning a
-        // normal tile whenever we want.
-        itemList.clear();
-        itemList.add(new Item.Builder(TileType.NORMAL)
-                .initialAmount(28).weight(5).maxOnBoard(100).end());
-//        itemList.add(new Item.Builder(TileType.ROCKET)
-//                .initialAmount(1).weight(55).maxOnBoard(3).end());
-//        itemList.add(new Item.Builder(TileType.BOMB)
-//                .initialAmount(1).weight(10).maxOnBoard(1).end());   
-//        itemList.add(new Item.Builder(TileType.STAR)
-//                .initialAmount(1).weight(5).maxOnBoard(1).end());
-//        itemList.add(new Item.Builder(TileType.GRAVITY)
-//                .initialAmount(5).weight(50).maxOnBoard(1).end());
-        
-        // Reset the rules.
-        currentRuleList.clear();
-        currentRuleList.addAll(masterRuleList);
-    }
+    }        
     
     //--------------------------------------------------------------------------
 	// Instance Methods
@@ -649,10 +621,48 @@ public class WorldManager implements ILevelListener
 		return items;
 	}               	
                 
-    public void handleLevelEvent(LevelEvent e)
+    public void levelChanged(LevelEvent e)
     {
         for (int i = 0; i < e.getLevelChange(); i++)
             this.levelUp(e.getGame());
     }
+
+    public void saveState()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void loadState()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 	
+    /**
+     * Resets the board manager to appropriate settings for the first level.
+     */
+    public void resetState()
+    {
+        // Reset to level 1.
+        this.setLevel(1);
+        
+        // !IMPORTANT! Ensure that the first item is a normal tile. 
+        // This is so that we can use the first item when returning a
+        // normal tile whenever we want.
+        itemList.clear();
+        itemList.add(new Item.Builder(TileType.NORMAL)
+                .initialAmount(28).weight(5).maxOnBoard(100).end());
+//        itemList.add(new Item.Builder(TileType.ROCKET)
+//                .initialAmount(1).weight(55).maxOnBoard(3).end());
+//        itemList.add(new Item.Builder(TileType.BOMB)
+//                .initialAmount(1).weight(10).maxOnBoard(1).end());   
+//        itemList.add(new Item.Builder(TileType.STAR)
+//                .initialAmount(1).weight(5).maxOnBoard(1).end());
+//        itemList.add(new Item.Builder(TileType.GRAVITY)
+//                .initialAmount(5).weight(50).maxOnBoard(1).end());
+        
+        // Reset the rules.
+        currentRuleList.clear();
+        currentRuleList.addAll(masterRuleList);
+    }
+    
 }

@@ -13,7 +13,7 @@ import ca.couchware.wezzle2d.animation.JiggleAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.event.IListenerComponent;
+import ca.couchware.wezzle2d.event.IListenerManager;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -274,13 +274,13 @@ public class TileRemover
         {
             if (game.tutorialMan.isTutorialInProgress() == true)
             {
-                game.listenerMan.notifyLineListener(new LineEvent(game.statMan.getCycleLineCount(), this),
-                        IListenerComponent.GameType.TUTORIAL);
+                game.listenerMan.notifyLineConsumed(new LineEvent(game.statMan.getCycleLineCount(), this),
+                        IListenerManager.GameType.TUTORIAL);
             }
             else
             {
-                game.listenerMan.notifyLineListener(new LineEvent(game.statMan.getCycleLineCount(), this),
-                        IListenerComponent.GameType.GAME);
+                game.listenerMan.notifyLineConsumed(new LineEvent(game.statMan.getCycleLineCount(), this),
+                        IListenerManager.GameType.GAME);
             }
         }
 
@@ -442,13 +442,13 @@ public class TileRemover
             // Fire a score event.
             if (tutorialMan.isTutorialInProgress() == true)
             {
-                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                        IListenerComponent.GameType.TUTORIAL);
+                listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                        IListenerManager.GameType.TUTORIAL);
             }
             else
             {
-                listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                        IListenerComponent.GameType.GAME);
+                listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                        IListenerManager.GameType.GAME);
             }
 
             // Show the SCT.
@@ -618,13 +618,13 @@ public class TileRemover
         // Fire a score event.
         if (tutorialMan.isTutorialInProgress() == true)
         {
-            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                    IListenerComponent.GameType.TUTORIAL);
+            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                    IListenerManager.GameType.TUTORIAL);
         }
         else
         {
-            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                    IListenerComponent.GameType.GAME);
+            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                    IListenerManager.GameType.GAME);
         }
 
 
@@ -793,13 +793,13 @@ public class TileRemover
         // Fire a score event.
         if (tutorialMan.isTutorialInProgress() == true)
         {
-            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                    IListenerComponent.GameType.TUTORIAL);
+            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                    IListenerManager.GameType.TUTORIAL);
         }
         else
         {
-            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                    IListenerComponent.GameType.GAME);
+            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                    IListenerManager.GameType.GAME);
         }
 
 
@@ -946,13 +946,13 @@ public class TileRemover
         // Fire a score event.
         if (tutorialMan.isTutorialInProgress() == true)
         {
-            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                    IListenerComponent.GameType.TUTORIAL);
+            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                    IListenerManager.GameType.TUTORIAL);
         }
         else
         {
-            listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this),
-                    IListenerComponent.GameType.GAME);
+            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                    IListenerManager.GameType.GAME);
         }
 
 

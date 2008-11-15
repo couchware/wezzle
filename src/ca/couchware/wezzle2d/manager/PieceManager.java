@@ -12,7 +12,7 @@ import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.event.IListenerComponent;
+import ca.couchware.wezzle2d.event.IListenerManager;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
@@ -727,13 +727,13 @@ public class PieceManager implements IMouseListener
         // Notify the listener manager.
         if (game.tutorialMan.isTutorialInProgress() == true)
         {
-            game.listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this), 
-                IListenerComponent.GameType.TUTORIAL);
+            game.listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this), 
+                IListenerManager.GameType.TUTORIAL);
         }
         else
         {
-             game.listenerMan.notifyScoreListener(new ScoreEvent(deltaScore, this), 
-                IListenerComponent.GameType.GAME);
+             game.listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this), 
+                IListenerManager.GameType.GAME);
         }
         // Add score SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(indexSet);
@@ -790,13 +790,13 @@ public class PieceManager implements IMouseListener
         // Increment the moves.
         if (game.tutorialMan.isTutorialInProgress() == true)
         {
-            game.listenerMan.notifyMoveListener(new MoveEvent(1, this), 
-                    IListenerComponent.GameType.TUTORIAL); 
+            game.listenerMan.notifyMoveCommitted(new MoveEvent(1, this), 
+                    IListenerManager.GameType.TUTORIAL); 
         }
         else
         {
-             game.listenerMan.notifyMoveListener(new MoveEvent(1, this), 
-                    IListenerComponent.GameType.GAME); 
+             game.listenerMan.notifyMoveCommitted(new MoveEvent(1, this), 
+                    IListenerManager.GameType.GAME); 
         }
         
         

@@ -21,7 +21,10 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class PauseGroup extends AbstractGroup implements IMoveListener, ILineListener
+public class PauseGroup extends AbstractGroup implements 
+        IGameListener, 
+        IMoveListener, 
+        ILineListener
 {      
     
     /**
@@ -152,26 +155,8 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
         layerMan.add(linesPerMoveLabel, Layer.UI);
         entityList.add(linesPerMoveLabel);
     }      
-            
-    public void handleMoveEvent(MoveEvent e, IListenerComponent.GameType gameType)
-    {        
-        if (gameType == IListenerComponent.GameType.GAME)
-        {                     
-            this.setMoves(statMan.getMoveCount());
-            this.setLinesPerMove(statMan.getLinesPerMove());
-        }
-    }
-       
-    public void handleLineEvent(LineEvent e, IListenerComponent.GameType gameType)
-    {                
-        if (gameType == IListenerComponent.GameType.GAME)
-        {            
-            this.setLines(statMan.getLineCount());
-            this.setLinesPerMove(statMan.getLinesPerMove());
-        }
-    }
     
-    @Override
+     @Override
     public void setVisible(final boolean visible)
     {
         // This is more important than you think.  Basically, since we might
@@ -192,6 +177,41 @@ public class PauseGroup extends AbstractGroup implements IMoveListener, ILineLis
     }
     
     public void updateLogic(Game game)
+    {
+        // Intentionally left blank.
+    }
+            
+    public void moveCommitted(MoveEvent e, IListenerManager.GameType gameType)
+    {        
+        if (gameType == IListenerManager.GameType.GAME)
+        {                     
+            this.setMoves(statMan.getMoveCount());
+            this.setLinesPerMove(statMan.getLinesPerMove());
+        }
+    }
+       
+    public void lineConsumed(LineEvent e, IListenerManager.GameType gameType)
+    {                
+        if (gameType == IListenerManager.GameType.GAME)
+        {            
+            this.setLines(statMan.getLineCount());
+            this.setLinesPerMove(statMan.getLinesPerMove());
+        }
+    }       
+
+    public void gameStarted(GameEvent event)
+    {
+        // Intentionally left blank.
+    }
+
+    public void gameReset(GameEvent event)
+    {
+        setMoves(0);
+        setLines(0);
+        setLinesPerMove(0.0);
+    }
+
+    public void gameCompleted(GameEvent event)
     {
         // Intentionally left blank.
     }

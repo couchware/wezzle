@@ -9,7 +9,7 @@ package ca.couchware.wezzle2d.event;
  *
  * @author cdmckay
  */
-public interface IMouseListener 
+public interface IMouseListener extends IListener
 {
     public void mouseClicked(MouseEvent e);
     public void mouseEntered(MouseEvent e);

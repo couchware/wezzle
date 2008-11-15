@@ -8,6 +8,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -135,14 +136,17 @@ public class GameOverGroup extends AbstractGroup
         game.groupMan.hideGroup(GroupManager.CLASS_GAME_OVER,
                 GroupManager.LAYER_BOTTOM);
 
+        // Reset everything.
+        game.listenerMan.notifyGameReset(new GameEvent(this));
+        
         // Reset a bunch of stuff.
         if (isRestartActivated() == true)
         {
             // Reset the board manager.
-            game.boardMan.restart();
+            game.boardMan.resetState();
             
             // Reset the world manager.
-            game.worldMan.restart();                        
+            game.worldMan.resetState();                        
 
             // Reset the timer to the initial.
             game.timerMan.setInitialTime(game.worldMan.getInitialTimer());

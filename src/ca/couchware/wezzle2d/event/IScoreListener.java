@@ -9,7 +9,7 @@ package ca.couchware.wezzle2d.event;
  *
  * @author kgrad
  */
-public interface IScoreListener 
+public interface IScoreListener extends IListener 
 {
-    public void handleScoreEvent(ScoreEvent evt, IListenerComponent.GameType gameType);
+    public void scoreChanged(ScoreEvent event, IListenerManager.GameType gameType);
 }

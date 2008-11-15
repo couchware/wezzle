@@ -372,7 +372,15 @@ import java.util.Set;
         }
         
         return (int) fontSize;
-    }          
+    }      
+    
+    public void scoreChanged(ScoreEvent event, IListenerManager.GameType gameType)
+    {
+        if (gameType == IListenerManager.GameType.GAME)
+        {
+            updateScore(event.getScore());
+        }
+    }
     
     /**
      * Save the state.
@@ -403,12 +411,14 @@ import java.util.Set;
         targetLevelScore = (Integer) managerState.get(Keys.LEVEL_TARGET);
         targetTotalScore = (Integer) managerState.get(Keys.TOTAL_TARGET);
         highScore = (Integer) managerState.get(Keys.HIGH_SCORE);
-    }
-        
-    public void handleScoreEvent(ScoreEvent event, IListenerComponent.GameType gameType)
+    }            
+
+    public void resetState()
     {
-        if (gameType == IListenerComponent.GameType.GAME)
-            updateScore(event.getScore());
+        levelScore = 0;
+        totalScore = 0;
+        targetLevelScore = 0;
+        targetTotalScore = 0;        
     }
     
 }

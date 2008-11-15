@@ -208,7 +208,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
      * handle a line event.
      * @param e The line event.
      */    
-    public void handleLineEvent(LineEvent e, IListenerComponent.GameType gameType)
+    public void lineConsumed(LineEvent e, IListenerManager.GameType gameType)
     {
         this.setLineCount(this.getLineCount() + e.getLineCount());
     }
@@ -217,7 +217,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
      * Handle a move event.
      * @param e The move event.
      */    
-    public void handleMoveEvent(MoveEvent e, IListenerComponent.GameType gameType)
+    public void moveCommitted(MoveEvent e, IListenerManager.GameType gameType)
     {
         this.setMoveCount(this.getMoveCount() + e.getMoveCount());
     }
@@ -249,6 +249,14 @@ public class StatManager implements IManager, IMoveListener, ILineListener
         lineCount = (Integer) managerState.get(Keys.LINE_COUNT); 
         cycleLineCount = (Integer) managerState.get(Keys.CYCLE_LINE_COUNT); 
         chainCount = (Integer) managerState.get(Keys.CHAIN_COUNT); 
+    }
+
+    public void resetState()
+    {
+        moveCount = 0;
+        lineCount = 0;
+        cycleLineCount = 0;
+        chainCount = 0;
     }
     
 }

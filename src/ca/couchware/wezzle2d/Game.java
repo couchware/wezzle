@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.*;
+import ca.couchware.wezzle2d.event.IListenerManager.Listener;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.event.LevelEvent;
@@ -522,8 +523,8 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Create the move manager.
             statMan = StatManager.newInstance();
-            listenerMan.registerMoveListener(statMan);
-            listenerMan.registerLineListener(statMan);
+            listenerMan.registerListener(Listener.MOVE, statMan);
+            listenerMan.registerListener(Listener.LINE, statMan);
         }
         
         if (managerSet.contains(ManagerType.TUTORIAL))
@@ -550,7 +551,7 @@ public class Game extends Canvas implements IGameWindowCallback
             // Create the world manager.
             worldMan = WorldManager.newInstance();  
             worldMan.setGameInProgress(true);
-            listenerMan.registerLevelListener(worldMan);
+            listenerMan.registerListener(Listener.LEVEL, worldMan);
         }
         
         if (managerSet.contains(ManagerType.BOARD))
@@ -582,7 +583,7 @@ public class Game extends Canvas implements IGameWindowCallback
             // Create the score manager.
             scoreMan = ScoreManager.newInstance(boardMan, highScoreMan);
             scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
-            listenerMan.registerScoreListener(scoreMan);
+            listenerMan.registerListener(Listener.SCORE, scoreMan);
         }
         
         if (managerSet.contains(ManagerType.SOUND))
@@ -762,8 +763,9 @@ public class Game extends Canvas implements IGameWindowCallback
         pauseGroup = new PauseGroup(layerMan, statMan);
         groupMan.register(pauseGroup);
         
-        listenerMan.registerMoveListener(pauseGroup);
-        listenerMan.registerLineListener(pauseGroup);
+        listenerMan.registerListener(Listener.MOVE, pauseGroup);
+        listenerMan.registerListener(Listener.LINE, pauseGroup);
+        listenerMan.registerListener(Listener.GAME, pauseGroup);
              
         // Initialize game over group.
         gameOverGroup = new GameOverGroup(layerMan);    
@@ -1134,7 +1136,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 LogManager.recordMessage("Level up!", "Game#frameRendering");
                 //worldMan.levelUp(this);
                
-                listenerMan.notifyLevelListener(new LevelEvent(1, this, this));
+                listenerMan.notifyLevelChanged(new LevelEvent(1, this, this));
                 TileRemover.get().notifyLevelUp();                                                
 
                 soundMan.play(Sound.LEVEL_UP);

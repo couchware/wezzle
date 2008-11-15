@@ -3,14 +3,14 @@
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-
 package ca.couchware.wezzle2d.event;
 
 /**
- *
- * @author kgrad
+ * An interface for creating listeners.
+ * 
+ * @author cdmckay
  */
-public interface ILevelListener extends IListener
+public interface IListener 
 {
-    public void levelChanged(LevelEvent event);
+    // Intentionall left blank.
 }
