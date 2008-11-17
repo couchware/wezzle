@@ -33,8 +33,8 @@ public class MouseEvent extends EventObject
     {
         NONE,
         LEFT,
-        MIDDLE,
-        RIGHT
+        RIGHT,
+        MIDDLE
     }
     
     public enum Modifier

@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IGameWindowCallback;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
+import ca.couchware.wezzle2d.event.MouseEvent.Button;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Color;
@@ -17,9 +18,12 @@ import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -45,10 +49,16 @@ public class LWJGLGameWindow implements IGameWindow
      */
 	private IGameWindowCallback callback;
   
-        /**
-         * The key presses.
-         */
-        private HashSet<Character> keyPresses;
+    /**
+     * The key presses.
+     */
+    private Set<Character> keyPresses;
+    
+    /**
+     * The mouse states.
+     */
+    private Map<MouseEvent.Button, Boolean> mouseStateMap;
+    
 	/** 
      * True if the game is currently "running", i.e. the game loop is looping .
      */
@@ -81,7 +91,15 @@ public class LWJGLGameWindow implements IGameWindow
 	 */
 	public LWJGLGameWindow() 
     {
-        this.keyPresses = new HashSet<Character>();}
+        this.keyPresses = new HashSet<Character>();
+        
+        this.mouseStateMap = 
+                new EnumMap<Button, Boolean>(Button.class);
+        
+        this.mouseStateMap.put(Button.LEFT, false);
+        this.mouseStateMap.put(Button.RIGHT, false);
+        this.mouseStateMap.put(Button.MIDDLE, false);
+    }
 	
 	/**
 	 * Retrieve access to the texture loader that converts images
@@ -644,11 +662,64 @@ public class LWJGLGameWindow implements IGameWindow
     // IMouseListener Methods
     //--------------------------------------------------------------------------        
     
-    public void fireMouseEvents()
+    /**
+     * Converts the LWJGL button number into a MouseEvent Button enum.
+     * 
+     * @param button
+     * @return
+     */
+    public MouseEvent.Button toButtonEnum(int button)
     {
+        // Left-click.
+        if (button == 0)
+        {
+            return MouseEvent.Button.LEFT;
+        }
+        // Right-click.
+        else if (button == 1)
+        {
+            return MouseEvent.Button.RIGHT;
+        }
+        // Middle-click.
+        else if (button == 2)
+        {
+            return MouseEvent.Button.MIDDLE;
+        }
+        else
+        {
+            return MouseEvent.Button.NONE;
+        }
+    }
+    
+    /**
+     * Checks to see if any mouse button is down and returns the first
+     * one it finds that is down.
+     * 
+     * @return True if any mouse button is down, false otherwise.
+     */
+    public Button findPressedButton()
+    {
+        for (Button buttonEnum : Button.values())
+        {
+            if (buttonEnum == Button.NONE)
+                continue;
+            
+            if (mouseStateMap.get(buttonEnum) == true)                
+                return buttonEnum;
+        }
+        
+        return Button.NONE;
+    }
+    
+    /**
+     * Fires all the queued up mouse events.
+     */
+    public void fireMouseEvents()
+    {                
         // Poll mouse events.
         while (Mouse.next())
-        {           
+        {    
+            boolean mouseMoved = false;                        
             int mouseX = Mouse.getEventX();
             int mouseY = height - Mouse.getEventY();
             
@@ -660,77 +731,100 @@ public class LWJGLGameWindow implements IGameWindow
                 mousePosition = new ImmutablePosition(mouseX, mouseY);
                 
                 // Set an event.
-                for (IMouseListener l : mouseListenerList)
-                    l.mouseMoved(new MouseEvent(this, 
-                            MouseEvent.Button.NONE,
-                            EnumSet.noneOf(MouseEvent.Modifier.class),
-                            mousePosition,
-                            MouseEvent.Type.MOUSE_MOVED));
+                mouseMoved = true;                
             }            
             
             if (Mouse.getEventButton() != -1)
             {
-                int eventButton = Mouse.getEventButton();
-                MouseEvent.Button button = MouseEvent.Button.NONE;                
-                    
-                // Left-click.
-                if (eventButton == 0)
-                {
-                    button = MouseEvent.Button.LEFT;
-                }
-                // Right-click.
-                else if (eventButton == 1)
-                {
-                    button = MouseEvent.Button.RIGHT;
-                }
-                // Middle-click.
-                else if (eventButton == 2)
-                {
-                    button = MouseEvent.Button.MIDDLE;
-                }
+                int button = Mouse.getEventButton();
+                MouseEvent.Button buttonEnum = MouseEvent.Button.NONE;                                                    
+                buttonEnum = toButtonEnum(button);
 
-                MouseEvent.Type type = MouseEvent.Type.MOUSE_RELEASED;
+                MouseEvent.Type type;
                 
                 // Pressed.
                 if (Mouse.getEventButtonState())
                 {
                     type = MouseEvent.Type.MOUSE_PRESSED;
-                }      
-                
-                for (IMouseListener l : mouseListenerList)
+                    mouseStateMap.put(buttonEnum, true);
+                }     
+                // Released.
+                else
                 {
-                    switch (type)
-                    {
-                        case MOUSE_PRESSED:
-                            l.mousePressed(new MouseEvent(this,
-                                    button,
-                                    EnumSet.noneOf(MouseEvent.Modifier.class),
-                                    mousePosition,
-                                    type));
-                            break;
-                            
-                        case MOUSE_RELEASED:
-                            l.mouseReleased(new MouseEvent(this,
-                                    button,
-                                    EnumSet.noneOf(MouseEvent.Modifier.class),
-                                    mousePosition,
-                                    type));
-                            break;
-                            
-                        default: throw new AssertionError();
-                    } // end switch
-                } // end for
+                    type = MouseEvent.Type.MOUSE_RELEASED;
+                    mouseStateMap.put(buttonEnum, false);
+                }
+                    
+                MouseEvent event = new MouseEvent(this,
+                        buttonEnum,
+                        EnumSet.noneOf(MouseEvent.Modifier.class),
+                        mousePosition,
+                        type);
+                
+                switch (type)
+                {
+                    case MOUSE_PRESSED:
+                        
+                        for (IMouseListener l : mouseListenerList)
+                            l.mousePressed(event);
+                        
+                        break;
+
+                    case MOUSE_RELEASED:                                               
+                        
+                        for (IMouseListener l : mouseListenerList)
+                            l.mouseReleased(event);
+                        
+                        break;
+
+                    default: throw new AssertionError();                    
+                } // end switch                
+                
             } // if
+            
+            if (mouseMoved == true)
+            {
+                Button buttonEnum = findPressedButton();
+                if (buttonEnum != Button.NONE)
+                {
+                    MouseEvent event = new MouseEvent(this, 
+                            buttonEnum,
+                            EnumSet.noneOf(MouseEvent.Modifier.class),
+                            mousePosition,
+                            MouseEvent.Type.MOUSE_DRAGGED);
+                
+                    for (IMouseListener l : mouseListenerList)
+                        l.mouseDragged(event);
+                }
+                else
+                {
+                    MouseEvent event = new MouseEvent(this, 
+                            MouseEvent.Button.NONE,
+                            EnumSet.noneOf(MouseEvent.Modifier.class),
+                            mousePosition,
+                            MouseEvent.Type.MOUSE_MOVED);
+                
+                    for (IMouseListener l : mouseListenerList)
+                        l.mouseMoved(event);
+                }                
+            } // end if                       
+            
         } // end while
     }
     
     /**
-     * Clears the mouse events.
+     * Clears the mouse events instead of firing them.
      */
     public void clearMouseEvents()           
     {
         // Empty the mouse events.
         while (Mouse.next());
+        
+        // Update the mouse state map.
+        for (int i = 0; i < 3; i++)
+        {
+            mouseStateMap.put(toButtonEnum(i), Mouse.isButtonDown(i));
+        }
     }
     
     public void addMouseListener(IMouseListener l)

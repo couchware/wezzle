@@ -897,7 +897,11 @@ public class Game extends Canvas implements IGameWindowCallback
                 this.animationMan.add(menuTransition);                
                 
                 // Start the music.
-                musicMan.play();
+                musicMan.play();                
+                
+                // See if the music is off.
+                if (SettingsManager.get().getBoolean(Key.GAME_MUSIC) == false)
+                    musicMan.setPaused(true);
             }   
             else
             {      
