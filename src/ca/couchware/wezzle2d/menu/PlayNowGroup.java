@@ -28,10 +28,15 @@ import ca.couchware.wezzle2d.ui.SpriteButton;
 import ca.couchware.wezzle2d.ui.Window;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
+import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
@@ -206,15 +211,24 @@ public class PlayNowGroup extends AbstractGroup
         themeItem3.setMouseOnRunnable(createFadeInRunnable(Theme.C));        
         themeItem3.setMouseOffRunnable(createFadeOutRunnable(Theme.C));
         
+        Map<Theme, Boolean> themeMap = new EnumMap<Theme, Boolean>(Theme.class);
+        themeMap.put(Theme.A, false);
+        themeMap.put(Theme.B, false);
+        themeMap.put(Theme.C, false);
+        
+        List<Theme> themeList = new ArrayList(themeMap.keySet());
+        Collections.shuffle(themeList);
+        themeMap.put(themeList.get(0), true);
+        
         RadioItem themeItem4 = new RadioItem.Builder().color(OPTIONS_COLOR)
                 .text("All").end();
         RadioItem themeItem5 = new RadioItem.Builder().color(OPTIONS_COLOR)
                 .text("?").end();
         this.themeRadio = new RadioGroup.Builder<Theme>(268, tl.getY() + SPACING, Theme.class)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .add(Theme.A, themeItem1, true)
-                .add(Theme.B, themeItem2)
-                .add(Theme.C, themeItem3)
+                .add(Theme.A, themeItem1, themeMap.get(Theme.A))
+                .add(Theme.B, themeItem2, themeMap.get(Theme.B))
+                .add(Theme.C, themeItem3, themeMap.get(Theme.C))
                 .add(Theme.ALL, themeItem4)
                 .add(Theme.RANDOM, themeItem5)
                 .pad(20).visible(false).end();
