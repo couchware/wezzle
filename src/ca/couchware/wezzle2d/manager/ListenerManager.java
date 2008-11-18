@@ -28,7 +28,8 @@ import java.util.Map;
  * all the listeners in the list are updated.
  * 
  * Implements the singleton pattern and the observer pattern.
- * 
+ *  
+ * @author cmckay
  * @author kgrad
  */
 public class ListenerManager implements IListenerManager

@@ -216,7 +216,7 @@ public class PlayNowGroup extends AbstractGroup
         themeMap.put(Theme.B, false);
         themeMap.put(Theme.C, false);
         
-        List<Theme> themeList = new ArrayList(themeMap.keySet());
+        List<Theme> themeList = new ArrayList<Theme>(themeMap.keySet());
         Collections.shuffle(themeList);
         themeMap.put(themeList.get(0), true);
         

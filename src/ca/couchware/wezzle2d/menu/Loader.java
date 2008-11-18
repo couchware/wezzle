@@ -22,11 +22,19 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class for creating a loader object that pre-loads all the graphical and 
@@ -170,27 +178,73 @@ public class Loader implements IDrawer
      */
     private void loadSprites()
     {
-        // Get a list of all the sprites in the sprites directory.
-        URL url = this.getClass().getClassLoader().getResource(Settings.getSpriteResourcesPath());
+        // The list of the sprites.
+        List<String> spriteList = new ArrayList<String>();
         
-        // The directory of sprites.
-        File dir = null;
-        
-        try
-        {            
-            // Convert to file.
-            dir = new File(url.toURI());                        
+        // Detect whether or not we're using a JAR file.
+        URL jarPathUrl = Loader.class.getProtectionDomain().getCodeSource().getLocation();
+        boolean isJar = jarPathUrl.toString().endsWith(".jar");
+              
+        // If we're running from a JAR, then we need to read the JAR entries to
+        // figure out all the names of the sprites.
+        if (isJar == true)
+        {
+            try
+            {
+                // Open the jar.
+                JarInputStream in = new JarInputStream(jarPathUrl.openStream());
+
+                while (true)
+                {
+                    JarEntry entry = in.getNextJarEntry();
+                   
+                    if (entry == null) 
+                        break;
+                    
+                    if (entry.isDirectory() == true)
+                        continue;                    
+
+                    if (entry.getName().startsWith(Settings.getSpriteResourcesPath()))
+                        spriteList.add(entry.getName());                    
+                }
+            }
+            catch (IOException e)
+            {
+                LogManager.recordException(e);
+            }        
         }
-        catch (URISyntaxException e)
+        // If we're running from the file system, all we need to do is use
+        // the File class to get a list of the sprites.
+        else
         {
-            LogManager.recordException(e);
-        }        
-        
+            // The directory of sprites.
+            File dir = null;
+
+            try
+            {            
+                // Get a list of all the sprites in the sprites directory.
+                URL url = this.getClass().getClassLoader()
+                        .getResource(Settings.getSpriteResourcesPath());                        
+
+                // Convert to file.
+                dir = new File(url.toURI());
+                
+                // Construct the full URL to the sprite.
+                for (String spriteName : dir.list())
+                    spriteList.add(Settings.getSpriteResourcesPath() + "/" + spriteName);
+            }
+            catch (URISyntaxException e)
+            {            
+                LogManager.recordException(e);
+                
+            } // end try 
+        }
+                                           
         // Get the contents of the directory.
-        for (String spriteName : dir.list())
+        for (String spriteFilePath : spriteList)
         {
-            LogManager.recordMessage("Preloading " + spriteName + "...");
-            ResourceFactory.get().getSprite(Settings.getSpriteResourcesPath() + "/" + spriteName);         
+            LogManager.recordMessage("Preloading " + spriteFilePath + "...");
+            ResourceFactory.get().getSprite(spriteFilePath);         
         }   
     }
     

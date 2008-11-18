@@ -1497,6 +1497,7 @@ public class Game extends Canvas implements IGameWindowCallback
         catch (Exception e)
         {
             LogManager.recordException(e);
+            LogManager.write();
         }
 	}
   

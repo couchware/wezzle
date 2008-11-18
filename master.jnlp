@@ -5,7 +5,8 @@
         <vendor>${APPLICATION.VENDOR}</vendor>
         <homepage href="${APPLICATION.HOMEPAGE}"/>
         <description>${APPLICATION.DESC}</description>
-        <description kind="short">${APPLICATION.DESC.SHORT}</description>
+        <description kind="short">${APPLICATION.DESC.SHORT}
+        </description>
 <!--${JNLP.ICONS}-->
 <!--${JNLP.OFFLINE.ALLOWED}-->
     </information>
@@ -13,9 +14,26 @@
     <resources>
 <!--${JNLP.RESOURCES.RUNTIME}-->
 <!--${JNLP.RESOURCES.MAIN.JAR}-->
-<!--${JNLP.RESOURCES.JARS}-->
+<!--${JNLP.RESOURCES.JARS}-->        
+    </resources>
+    <resources os="Windows">
+<!--${JNLP.RESOURCES.RUNTIME}-->        
+        <nativelib href="lib/lwjgl-win32.jar"/>                
+    </resources>    
+    <resources os="Linux">
+<!--${JNLP.RESOURCES.RUNTIME}-->        
+        <nativelib href="lib/lwjgl-linux.jar"/>
+    </resources>
+    <resources os="Mac">
+<!--${JNLP.RESOURCES.RUNTIME}-->       
+        <nativelib href="lib/lwjgl-macosx.jar"/>
     </resources>
     <application-desc main-class="${jnlp.main.class}">
 <!--${JNLP.APPLICATION.ARGS}-->
     </application-desc>
+    <update check="timeout" policy="always"/>
+    <shortcut online="true">
+        <desktop/>
+        <menu submenu="GALC"/>
+    </shortcut>
 </jnlp>

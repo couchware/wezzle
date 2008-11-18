@@ -160,7 +160,9 @@ public class LogManager
 	}
     
     /**
-	 * Prints an error to standard error and dumps the stack.
+	 * Prints an error to standard error, dumps the stack, and then terminates
+     * the program.
+     * 
 	 * @param message The error message.
 	 * @param t The current thread, usually Thread.currentThread().
 	 */
@@ -180,7 +182,13 @@ public class LogManager
 		System.err.println(out.toString());
 		
 		if (USE_LOG == true)
-			append(out.toString());				
+			append(out.toString());			
+        
+        // Write the log.
+        write();
+        
+        // Kill the game.
+        System.exit(0);
 	}
     
     public static void recordException(Exception e)

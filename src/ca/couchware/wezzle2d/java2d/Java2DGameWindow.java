@@ -1,9 +1,7 @@
 package ca.couchware.wezzle2d.java2d;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IGameWindowCallback;
-import ca.couchware.wezzle2d.SystemTimer;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
@@ -15,7 +13,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.Rectangle;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
