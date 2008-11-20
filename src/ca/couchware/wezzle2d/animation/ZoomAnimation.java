@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.util.ImmutableDimension;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
+import ca.couchware.wezzle2d.manager.Settings;
 
 /**
  * An animation that can zoom an entity in, out, or in and out in a loop.
@@ -54,17 +55,24 @@ public class ZoomAnimation extends AbstractAnimation
     /**
      * The counter.
      */
-    private long counter;
+    private int ticks = 0;
+    
+    /**
+     * The total number of ticks.  For non-looping zooms, this is the same
+     * as ticks.  For looping zooms, this is the total number of ticks (as
+     * the ticks variable gets reset each loop).
+     */
+    private int totalTicks = 0;
     
     /**
      * The speed of the zoom in.
      */
-    private double vin;      
+    private int speedIn;      
     
     /**
      * The speed of the zoom in.
      */
-    private double vout;      
+    private int speedOut;      
           
     /**
      * The minimum width the entity may become before switching 
@@ -86,42 +94,46 @@ public class ZoomAnimation extends AbstractAnimation
     /**
      * The initial dimensions of the entity.
      */
-    final private ImmutableDimension d;
+    final private ImmutableDimension dim;
     
     /**
      * The initial position of the entity.
      */
-    final private ImmutablePosition p;
+    final private ImmutablePosition pos;
     
-    /**
-     * The amount of time, in ms, to wait before fading out.
-     * Right now, the wait is buggy.
-     */
-    private int wait;        
+    /** The amount of time, in ms, to wait before starting the zoom. */
+    final private int wait;        
+    
+    /** The maximum duration of the zoom. */
+    final private int duration;
     
     private ZoomAnimation(Builder builder)
     {                        
         // Save a reference to the entity.
         this.type = builder.type;
         this.entity = builder.entity;   
-        this.vin = builder.vin;
-        this.vout = builder.vout;
+        this.speedIn = builder.speedIn;
+        this.speedOut = builder.speedOut;
         this.wait = builder.wait;
-        //this.duration = builder.duration;                
+        this.duration = builder.duration;                
         
         // Round min width to nearest even number.
-        minWidth = builder.minWidth;
+        minWidth = builder.minWidth < 0
+                ? 0 
+                : builder.minWidth;
                 
         // Round max width to nearest even number.
-        maxWidth = builder.maxWidth;
+        maxWidth = builder.maxWidth < 0
+                ? entity.getWidth() 
+                : builder.maxWidth;
                
         // Remember initial dimensions.
-        d = new ImmutableDimension(entity.getWidth(), entity.getHeight());
+        dim = new ImmutableDimension(entity.getWidth(), entity.getHeight());
         
         // Remember initial position.
-        p = new ImmutablePosition(entity.getX(), entity.getY());      
+        pos = new ImmutablePosition(entity.getX(), entity.getY());      
         
-        // Set the entity up based on what type of zoom we're doing.'
+        // Set the entity up based on what type of zoom we're doing.
         int dw = 0;
         switch (type)
         {
@@ -130,9 +142,9 @@ public class ZoomAnimation extends AbstractAnimation
                 
                 entity.setWidth(maxWidth);
                 entity.setHeight(maxWidth);
-                dw = maxWidth - d.getWidth();
-                entity.setX(p.getX() - dw);
-                entity.setY(p.getY() - dw);
+                dw = maxWidth - dim.getWidth();
+                entity.setX(pos.getX() - dw);
+                entity.setY(pos.getY() - dw);
                 
                 break;
 
@@ -141,14 +153,13 @@ public class ZoomAnimation extends AbstractAnimation
                 
                 entity.setWidth(minWidth);
                 entity.setHeight(minWidth);
-                dw = d.getWidth() - minWidth;
-                entity.setX(p.getX() + dw);
-                entity.setY(p.getY() + dw);
+                dw = dim.getWidth() - minWidth;
+                entity.setX(pos.getX() + dw);
+                entity.setY(pos.getY() + dw);
                 
                 break;
 
-            default:
-                throw new AssertionError();
+            default: throw new AssertionError();
         }
     }
       
@@ -158,11 +169,11 @@ public class ZoomAnimation extends AbstractAnimation
         private final IEntity entity;
         
         private int wait = 0;
-        //private int duration = -1;
+        private int duration = -1;
         private int minWidth = -1;
         private int maxWidth = -1;
-        private double vin = 0.008;
-        private double vout = 0.008;
+        private int speedIn = 8;
+        private int speedOut = 8;
         
         public Builder(Type type, IEntity entity)
         {
@@ -176,12 +187,12 @@ public class ZoomAnimation extends AbstractAnimation
         }
         
         public Builder wait(int val) { wait = val; return this; }
-        //public Builder duration(int val) { duration = val; return this; }        
+        public Builder duration(int val) { duration = val; return this; }        
         public Builder minWidth(int val) { minWidth = val; return this; }
         public Builder maxWidth(int val) { maxWidth = val; return this; }
-        public Builder vin(double val) { vin = val; return this; }
-        public Builder vout(double val) { vout = val; return this; }
-        public Builder v(double val) { vin = val; vout = val; return this; }
+        public Builder speedIn(int val) { speedIn = val; return this; }
+        public Builder speedOut(int val) { speedOut = val; return this; }
+        public Builder speed(int val) { speedIn = val; speedOut = val; return this; }
 
         public ZoomAnimation end()
         {
@@ -190,37 +201,52 @@ public class ZoomAnimation extends AbstractAnimation
     }
 
     public void nextFrame()
-    {         
-        long delta = 14;
-        
+    {     
         // Make sure we've set the started flag.
-        setStarted();
+        if (this.started == false)
+        {
+            // Record the initial position.                
+            setStarted();
+        }
         
+        // Check if we're done, if we are, return.
+        if (this.finished == true)
+        {
+            //LogManager.recordMessage("Move finished!");
+            return;
+        }
+       
         // Add to counter.
-        counter += delta;
+        ticks++;
+        totalTicks++;
         
-        // The time.
-        double t = (double) counter;
-        
+        // Convert to ms.
+        int ms      = ticks      * Settings.getMillisecondsPerTick();
+        int totalMs = totalTicks * Settings.getMillisecondsPerTick();
+              
         // See if the wait has expired.
         int dx = 0;
-        int w = 0;
-        //int newHeight = 0;
-        if (counter > wait)
+        int w  = 0;      
+        
+        // See if the duration has expired.
+        if (duration > 0 && totalMs > wait + duration)   
+                setFinished();   
+        
+        if (totalMs > wait)
         {
             switch (type)
             {                
                 case IN:
                 case LOOP_IN:                                                           
                     
-                    dx = (int) (t * vin);                         
+                    dx = (ms * speedIn) / 1000;
                     w = maxWidth - (dx * 2);                    
                     
                     w = (w <= minWidth) ? minWidth : w;
                     entity.setWidth(w);
                     entity.setHeight(w);
-                    entity.setX(p.getX() + dx);
-                    entity.setY(p.getY() + dx);
+                    entity.setX(pos.getX() + dx);
+                    entity.setY(pos.getY() + dx);
                     
                     if (entity.getWidth() == minWidth)                    
                     {                                               
@@ -231,7 +257,7 @@ public class ZoomAnimation extends AbstractAnimation
                                 break;
                                 
                             case LOOP_IN:
-                                counter = 0;
+                                ticks = 0;                                
                                 type = Type.LOOP_OUT;
                                 break;
                                 
@@ -244,20 +270,20 @@ public class ZoomAnimation extends AbstractAnimation
                 case OUT:
                 case LOOP_OUT:                                        
                     
-                    dx = (int) (t * vout);                    
+                    dx = (ms * speedOut) / 1000;                    
                     w = minWidth + (dx * 2);                    
                     
                     w = (w >= maxWidth) ? maxWidth : w;
                     entity.setWidth(w);
                     entity.setHeight(w);
-                    entity.setX(p.getX() + (maxWidth - minWidth) / 2 - dx);
-                    entity.setY(p.getY() + (maxWidth - minWidth) / 2 - dx);
+                    entity.setX(pos.getX() + (dim.getWidth()  - minWidth) / 2 - dx);
+                    entity.setY(pos.getY() + (dim.getHeight() - minWidth) / 2 - dx);
                     
                     if (entity.getWidth() == maxWidth)                    
                     {         
                         // Make sure they're at the right spot.
-                        entity.setX(p.getX());
-                        entity.setY(p.getY());
+                        entity.setX(pos.getX());
+                        entity.setY(pos.getY());
                         
                         switch (type)
                         {
@@ -266,7 +292,7 @@ public class ZoomAnimation extends AbstractAnimation
                                 break;
                                 
                             case LOOP_OUT:
-                                counter = 0;
+                                ticks = 0;
                                 type = Type.LOOP_IN;
                                 break;
                                 
@@ -291,12 +317,12 @@ public class ZoomAnimation extends AbstractAnimation
             case LOOP_OUT:
                 
                 // Resize entity to original dimensions.
-                entity.setWidth(d.getWidth());
-                entity.setHeight(d.getHeight());
+                entity.setWidth(dim.getWidth());
+                entity.setHeight(dim.getHeight());
 
                 // Move back to original position.
-                entity.setX(p.getX());
-                entity.setY(p.getY());
+                entity.setX(pos.getX());
+                entity.setY(pos.getY());
 
                 // Mark the animation as done.
                 setFinished();
@@ -310,32 +336,32 @@ public class ZoomAnimation extends AbstractAnimation
                 
             default: throw new AssertionError();
         }
+    }    
+
+    public int getSpeedIn()
+    {
+        return speedIn;
     }
 
-    public void vin(double val)
+    public void setSpeedIn(int speedIn)
     {
-        vin = val;
-    }   
-    
-    public double vin()
-    {
-        return vin;
+        this.speedIn = speedIn;
     }
-    
-    public void vout(double val)
+
+    public int getSpeedOut()
     {
-        vout = val;
+        return speedOut;
     }
-    
-    public double vout()
+
+    public void setSpeedOut(int speedOut)
     {
-        return vout;
-    }
+        this.speedOut = speedOut;
+    }        
     
-    public void v(double val)
+    public void speed(int val)
     {
-        vin(val);
-        vout(val);
+        setSpeedIn(val);
+        setSpeedOut(val);
     }
 
 }

@@ -122,7 +122,7 @@ public class BlinkAnimation extends AbstractAnimation
     @Override
     public void nextFrame()
     {
-        long delta = 14;
+        long delta = 16;
         
         // Make sure we've set the started flag.
         setStarted();

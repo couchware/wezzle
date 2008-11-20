@@ -290,18 +290,27 @@ made subject to such option by the copyright holder.
     
     <target name="-init-resources-runtime" depends="-init-runtime-props">
         <property name="run.jvmargs.value" value=""/>
+        <property name="download-href.value" value=""/>
         <property name="initial-heap-size.value" value=""/>
         <property name="max-heap-size.value" value=""/>
         <property name="jnlp.resources.runtime.value" 
-            value='        &lt;j2se version="${javac.target}+"${initial-heap-size.value}${max-heap-size.value}${run.jvmargs.value}/&gt;'/>
+            value='        &lt;j2se version="${javac.target}+"${download-href.value}${initial-heap-size.value}${max-heap-size.value}${run.jvmargs.value}/&gt;'/>
     </target>
-    <target name="-init-runtime-props" depends="-runtime-props-check,-init-run-jvmargs-value,-init-initial-heap-size-value,-init-max-heap-size-value"/>
+    <target name="-init-runtime-props" depends="-runtime-props-check,-init-run-jvmargs-value,-init-download-href-value,-init-initial-heap-size-value,-init-max-heap-size-value"/>
     <target name="-runtime-props-check">
         <condition property="run.jvmargs.set">
             <and>
                 <isset property="run.jvmargs"/>
                 <not>
                     <equals arg1="${run.jvmargs}" arg2="" trim="true"/>
+                </not>
+            </and>
+        </condition>
+        <condition property="jnlp.download-href.set">
+            <and>
+                <isset property="jnlp.download-href"/>
+                <not>
+                    <equals arg1="${jnlp.download-href}" arg2="" trim="true"/>
                 </not>
             </and>
         </condition>
@@ -324,6 +333,9 @@ made subject to such option by the copyright holder.
     </target>
     <target name="-init-run-jvmargs-value" if="run.jvmargs.set">
         <property name="run.jvmargs.value" value=' java-vm-args="${run.jvmargs}"'/>
+    </target>
+    <target name="-init-download-href-value" if="jnlp.download-href.set">
+        <property name="download-href.value" value=' href="${jnlp.download-href}"'/>
     </target>
     <target name="-init-initial-heap-size-value" if="jnlp.initial-heap-size.set">
         <property name="initial-heap-size.value" value=' initial-heap-size="${jnlp.initial-heap-size}"'/>

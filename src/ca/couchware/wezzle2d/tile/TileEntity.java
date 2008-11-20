@@ -44,8 +44,8 @@ public class TileEntity extends GraphicEntity implements IClickable
                 Settings.getSpriteResourcesPath() + "/Tile" + color + ".png"));                
         
         // Set the position.
-        this.x = x;
-        this.y = y;
+        this.x  = x;
+        this.y  = y;
         this.x_ = x;
         this.y_ = y;
         

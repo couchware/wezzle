@@ -171,7 +171,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * The version of the application.
      */
-    final public static String APPLICATION_VERSION = "Test 6";     
+    final public static String APPLICATION_VERSION = "Test 7";     
     
     /**
      * The full title of the game.
@@ -1097,7 +1097,12 @@ public class Game extends Canvas implements IGameWindowCallback
         if (window.isKeyPressed('g'))
         {
            boardMan.insertItemRandomly(TileType.GRAVITY);
-        }       
+        }    
+        if (window.isKeyPressed('R'))
+        {
+            SettingsManager.get().loadUserSettings();
+            LogManager.recordMessage("Reloaded user settings from " + Settings.getUserSettingsFilePath());
+        }
         
         // Check the achievements.
         if (achievementMan.evaluate(this) == true)

@@ -72,8 +72,8 @@ public class FadeAnimation extends AbstractAnimation
         this.entity = builder.entity;
         
         // Save the wait.
-        this.wait     = builder.wait     / Settings.getMillisecondsPerTick();        
-        this.duration = builder.duration / Settings.getMillisecondsPerTick();        
+        this.wait     = builder.wait;        
+        this.duration = builder.duration;        
         
         // Set the opacities.
         this.minOpacity = builder.minOpacity;
@@ -134,17 +134,18 @@ public class FadeAnimation extends AbstractAnimation
         
         // Add to counter.
         ticks++;
+        int ms = ticks * Settings.getMillisecondsPerTick();
         
         // Adjust opacity.
-        if (ticks > wait)
-        {
+        if (ms > wait)
+        {                        
             switch (type)
             {
                 case IN:      
                 case LOOP_IN:
                    
                     int i = Util.scaleInt(0, duration, 
-                            minOpacity, maxOpacity, ticks - wait);
+                            minOpacity, maxOpacity, ms - wait);
                     entity.setOpacity(i);
                             
                     break;
@@ -153,7 +154,7 @@ public class FadeAnimation extends AbstractAnimation
                 case LOOP_OUT:
                     
                     int o = Util.scaleInt(0, duration, 
-                            minOpacity, maxOpacity, ticks - wait);
+                            minOpacity, maxOpacity, ms - wait);
                     entity.setOpacity(maxOpacity - o + minOpacity);                        
                     
                     break;
@@ -163,7 +164,7 @@ public class FadeAnimation extends AbstractAnimation
             }   
             
             // See if we're done.
-            if (ticks > wait + duration)   
+            if (ms > wait + duration)   
             {
                 switch (type)
                 {                     
@@ -173,17 +174,17 @@ public class FadeAnimation extends AbstractAnimation
                         setFinished();
                         break;
 
-                    case LOOP_IN:
-
-                        ticks -= duration;
-                        type = Type.LOOP_OUT;
-                        break;
-
-                    case LOOP_OUT:
-
-                        ticks -= duration;
-                        type = Type.LOOP_IN;
-                        break;
+//                    case LOOP_IN:
+//
+//                        ticks -= duration;
+//                        type = Type.LOOP_OUT;
+//                        break;
+//
+//                    case LOOP_OUT:
+//
+//                        ticks -= duration;
+//                        type = Type.LOOP_IN;
+//                        break;
 
                     default:
                         throw new AssertionError();

@@ -183,12 +183,9 @@ public class LogManager
 		
 		if (USE_LOG == true)
 			append(out.toString());			
-        
-        // Write the log.
-        write();
-        
+               
         // Kill the game.
-        System.exit(0);
+        //System.exit(0);
 	}
     
     public static void recordException(Exception e)

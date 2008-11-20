@@ -75,6 +75,13 @@ public class Settings
         ANIMATION_JUMP_FADE_WAIT,
         ANIMATION_JUMP_FADE_DURATION,
         
+        ANIMATION_LINE_REMOVE_ZOOM_SPEED,
+        
+        ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED,
+        ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION,
+        ANIMATION_ITEM_ACTIVATE_FADE_WAIT,
+        ANIMATION_ITEM_ACTIVATE_FADE_DURATION,
+        
         ANIMATION_ROCKET_MOVE_DURATION,
         ANIMATION_ROCKET_MOVE_SPEED,
         ANIMATION_ROCKET_MOVE_GRAVITY,
@@ -83,6 +90,16 @@ public class Settings
         
         ANIMATION_BOMB_FADE_WAIT,
         ANIMATION_BOMB_FADE_DURATION,
+        ANIMATION_BOMB_MOVE_WAIT,
+        ANIMATION_BOMB_MOVE_DURATION,
+        ANIMATION_BOMB_MOVE_SPEED,
+        ANIMATION_BOMB_MOVE_GRAVITY,
+        ANIMATION_BOMB_MOVE_OMEGA,
+                
+        ANIMATION_EXPLOSION_SPEED,        
+        ANIMATION_EXPLOSION_OPACITY,
+        ANIMATION_EXPLOSION_INITIAL_WIDTH,
+        ANIMATION_EXPLOSION_INITIAL_HEIGHT,
         
         ANIMATION_ROWFADE_WAIT,
         ANIMATION_ROWFADE_DURATION,
@@ -92,6 +109,9 @@ public class Settings
         ANIMATION_SLIDEFADE_MOVE_WAIT,
         ANIMATION_SLIDEFADE_MOVE_DURATION,
         ANIMATION_SLIDEFADE_MOVE_SPEED,
+        
+        ANIMATION_PIECE_PULSE_SPEED_SLOW,
+        ANIMATION_PIECE_PULSE_SPEED_FAST,
                 
         // SCT values.
         
@@ -121,38 +141,22 @@ public class Settings
         MAIN_MENU_LOGO_FADE_IN_WAIT,
         MAIN_MENU_LOGO_FADE_IN_DURATION,
         MAIN_MENU_LOGO_FADE_OUT_WAIT,
-        MAIN_MENU_LOGO_FADE_OUT_DURATION
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        MAIN_MENU_LOGO_FADE_OUT_DURATION    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
     
     public enum Value

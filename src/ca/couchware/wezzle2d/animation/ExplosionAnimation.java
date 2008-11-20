@@ -1,11 +1,12 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.ImmutableDimension;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 
@@ -20,7 +21,7 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * The counter.
      */
-    private long counter;
+    private int ticks;
     
     /**
      * Path to the explosion sprite.
@@ -60,7 +61,7 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * The speed of the explosion.
      */
-    final private double v;
+    final private int speed;
     
     /**
      * The constructor.
@@ -71,24 +72,26 @@ public class ExplosionAnimation extends AbstractAnimation
         this.entity = entity;
 
         // Set reference to layer manager.
-        this.layerMan = layerMan;                
+        this.layerMan = layerMan;                                                
         
         // Set the speed.
-        this.v = 0.15;
+        this.speed = SettingsManager.get().getInt(Key.ANIMATION_EXPLOSION_SPEED);
         
         // Load the explosion and centre it over the entity.
-        explosion = new GraphicEntity.Builder(0, 0, PATH).opacity(50).end();        
+        explosion = new GraphicEntity.Builder(0, 0, PATH)
+                .opacity(SettingsManager.get().getInt(Key.ANIMATION_EXPLOSION_OPACITY))
+                .end();        
         
         // Set the explosion durations.
-        duration = (int) ((double) (explosion.getHeight() / 2) / v);        
+        duration = ((explosion.getHeight() / 2) * 1000) / speed;        
         
         // Set the initial dimensions to 2x2.
-        explosion.setWidth(2);
-        explosion.setHeight(2);
+        explosion.setWidth(SettingsManager.get().getInt(Key.ANIMATION_EXPLOSION_INITIAL_WIDTH));
+        explosion.setHeight(SettingsManager.get().getInt(Key.ANIMATION_EXPLOSION_INITIAL_HEIGHT));
         this.initialDimensions = new ImmutableDimension(2, 2);
         
         // Move it to the centre of the entity.
-        explosion.setX(entity.getX() + (entity.getWidth() / 2) - 1);
+        explosion.setX(entity.getX() + (entity.getWidth()  / 2) - 1);
         explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);                                      
         this.initialPosition = explosion.getXYPosition();                                                            
         
@@ -101,9 +104,7 @@ public class ExplosionAnimation extends AbstractAnimation
     }
 
     public void nextFrame()
-    {
-        long delta = 14;
-        
+    {        
         // Make sure we've set the started flag.
         setStarted();
         
@@ -112,30 +113,30 @@ public class ExplosionAnimation extends AbstractAnimation
             return;               
         
         // Add to counter.
-        counter += delta;                    
+        ticks++;
+        int ms = ticks * Settings.getMillisecondsPerTick();
         
         // See if we're exploding out.
-        if (counter < duration)
-        {                        
-            double t = (double) counter;
-            int d = (int) (v * t);
-            explosion.setWidth(initialDimensions.getWidth() + d * 2);
-            explosion.setHeight(initialDimensions.getHeight() + d * 2);
+        if (ms < duration)
+        {                                   
+            int d = (speed * ms) / 1000;
+            explosion.setWidth(  initialDimensions.getWidth()  + d * 2 );
+            explosion.setHeight( initialDimensions.getHeight() + d * 2 );
             explosion.setX(initialPosition.getX() - d);
             explosion.setY(initialPosition.getY() - d);
         }
         // See if we're exploding in.
-        else if (counter >= duration && counter < duration * 2)
+        else if (ms >= duration && ms < duration * 2)
         {
-            double t = (double) (duration * 2 - counter);
-            int d = (int) (v * t);
-            explosion.setWidth(initialDimensions.getWidth() + d * 2);
-            explosion.setHeight(initialDimensions.getHeight() + d * 2);
+            int t = duration * 2 - ms;
+            int d = (speed * t) / 1000;
+            explosion.setWidth(  initialDimensions.getWidth()  + d * 2 );
+            explosion.setHeight( initialDimensions.getHeight() + d * 2 );
             explosion.setX(initialPosition.getX() - d);
             explosion.setY(initialPosition.getY() - d);
         }
         // See if we're done.
-        else if (counter >= duration * 2)
+        else if (ms >= duration * 2)
         {
             setFinished();
             layerMan.remove(explosion, Layer.EFFECT);

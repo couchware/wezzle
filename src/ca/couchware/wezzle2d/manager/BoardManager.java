@@ -41,7 +41,19 @@ public class BoardManager implements IManager
      */
     public static enum Direction 
     {
-        UP, DOWN, LEFT, RIGHT
+        NONE(0), 
+        UP(-1), 
+        DOWN(1), 
+        LEFT(-1), 
+        RIGHT(1);
+                
+        private int dir;
+        
+        Direction(int dir)
+        { this.dir = dir; }
+                
+        public int asInteger()
+        { return dir; }
     }
     
     /**
@@ -314,7 +326,7 @@ public class BoardManager implements IManager
      * 
 	 * @param items A linked list of Item Descriptors.
 	 */
-	public void generateBoard(LinkedList<Item> itemList)
+	public void generateBoard(List<Item> itemList)
 	{
         // Make sure the board is clean.
         this.clearBoard(); 
@@ -967,7 +979,51 @@ public class BoardManager implements IManager
     {
          addTile(row * columns + column, t);
     }
-	        
+	     
+    public TileEntity makeTile(TileType type, TileColor color, int x, int y)
+    {
+        TileEntity t;
+        
+        switch (type)
+        {
+            case NORMAL:
+                t = new TileEntity(this, color, x, y);
+                break;
+                
+            case X2:
+                t = new X2TileEntity(this, color, x, y);
+                break;
+                
+            case X3:
+                t = new X3TileEntity(this, color, x, y);
+                break;
+                
+            case X4:
+                t = new X4TileEntity(this, color, x, y);
+                break;
+
+            case ROCKET:
+                t = new RocketTileEntity(this, color, x, y);
+                break;
+
+            case BOMB:
+                t = new BombTileEntity(this, color, x, y);
+                break;
+
+            case STAR:
+                t = new StarTileEntity(this, color, x, y);
+                break;
+                
+            case GRAVITY:
+                t = new GravityTileEntity(this, color, x, y);
+                break;
+                
+            default: throw new AssertionError("Unknown type.");
+        }
+        
+        return t;
+    }
+    
     /**
      * Create a new a tile at the specified index using the given class and
      * color.  The new tile is also returned.
@@ -985,64 +1041,10 @@ public class BoardManager implements IManager
         assert (type != null);      
         
         // The new tile.
-        TileEntity t = null;
         int tx = x + (index % columns) * cellWidth;
         int ty = y + (index / columns) * cellHeight;
-        
-//        try
-//        {           
-//            // Get the constructor.  All tiles must have the same constructor.
-//            Constructor con = c.getConstructor(new Class[] { BoardManager.class, 
-//                TileColor.class, Integer.TYPE, Integer.TYPE });
-//
-//            t = (TileEntity) con.newInstance(this, color, 
-//				x + (index % columns) * cellWidth,
-//				y + (index / columns) * cellHeight);          
-//            
-//            con = null;
-//        }
-//        catch (Exception ex)
-//        {
-//            LogManager.recordException(ex);
-//            return null;
-//        }        
-        switch (type)
-        {
-            case NORMAL:
-                t = new TileEntity(this, color, tx, ty);
-                break;
-                
-            case X2:
-                t = new X2TileEntity(this, color, tx, ty);
-                break;
-                
-            case X3:
-                t = new X3TileEntity(this, color, tx, ty);
-                break;
-                
-            case X4:
-                t = new X4TileEntity(this, color, tx, ty);
-                break;
-
-            case ROCKET:
-                t = new RocketTileEntity(this, color, tx, ty);
-                break;
-
-            case BOMB:
-                t = new BombTileEntity(this, color, tx, ty);
-                break;
-
-            case STAR:
-                t = new StarTileEntity(this, color, tx, ty);
-                break;
-                
-            case GRAVITY:
-                t = new GravityTileEntity(this, color, tx, ty);
-                break;
-                
-            default: throw new AssertionError("Unknown type.");
-        }
-        
+        TileEntity t = makeTile(type, color, tx, ty);        
+                        
         //Increment the item count.
         if (t.getType() != TileType.NORMAL)
         {
@@ -1089,12 +1091,29 @@ public class BoardManager implements IManager
     {
         return createTile(index, type, 
                 TileColor.getRandomColor(getNumberOfColors()));
-    }
+    }        
     
     public TileEntity createTile(final int column, final int row, 
             final TileType type)
     {
         return createTile(row * columns + column, type);
+    }
+    
+    public TileEntity cloneTile(TileEntity tile)
+    {
+        TileType type = tile.getType();
+        TileEntity t = makeTile(type, tile.getColor(), tile.getX(), tile.getY());
+        
+        switch(type)
+        {
+            case ROCKET:
+                RocketTileEntity rocketTile = (RocketTileEntity) tile;
+                RocketTileEntity rt = (RocketTileEntity) t;                
+                rt.setDirection(rocketTile.getDirection());                
+                break;                                
+        }        
+        
+        return t;
     }
     
     public void removeTile(final int index)
@@ -1266,11 +1285,11 @@ public class BoardManager implements IManager
         {
             // Extract column and row.
             column = rocketIndex % columns;
-            row = rocketIndex / columns;
+            row    = rocketIndex / columns;
             
             // Depending on the direction, collect the appropriate tiles.                                           
             RocketTileEntity.Direction dir = 
-                    ((RocketTileEntity) getTile(rocketIndex.intValue()))
+                    ((RocketTileEntity) getTile(rocketIndex))
                     .getDirection();
             
             int index;
@@ -2126,6 +2145,54 @@ public class BoardManager implements IManager
     {
         // Reset the number of colours.
         setNumberOfColors(DEFAULT_NUMBER_OF_COLORS);
+    }
+    
+    public int asColumn(int index)
+    {
+        return (index % columns);
+    }
+    
+    public int asRow(int index)
+    {
+        return (index / columns);
+    }
+    
+    /**
+     * Returns the relative position of the two tiles, relative to a.
+     * For instance, if Direction.LEFT was returned, then that would mean
+     * that "a is left of b".
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public Direction relativeColumnPosition(int a, int b)
+    {                
+        if (asColumn(a) > asColumn(b))
+            return Direction.RIGHT;
+        else if (asColumn(a) < asColumn(b))
+            return Direction.LEFT;
+        else
+            return Direction.NONE;
+    }
+    
+    /**
+     * Returns the relative position of the two tiles, relative to a.
+     * For instance, if Direction.UP was returned, then that would mean
+     * that "a is above b".
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public Direction relativeRowPosition(int a, int b)
+    {
+        if (asRow(a) > asRow(b))
+            return Direction.DOWN;
+        else if (asRow(a) < asRow(b))
+            return Direction.UP;
+        else
+            return Direction.NONE;
     }
 
 }

@@ -141,13 +141,9 @@ public class MoveAnimation extends AbstractAnimation
         this.omega   = builder.omega;                
         
         // Convert to ticks.
-        this.wait = builder.wait / Settings.getMillisecondsPerTick();         
+        this.wait = builder.wait;         
         this.duration = builder.duration;
-        
-        // If we have a positive duration, then convert it to ticks.
-        if (this.duration > 0)
-             this.duration /= Settings.getMillisecondsPerTick();  
-        
+                
         this.minX = builder.minX;
         this.minY = builder.minY;
         this.maxX = builder.maxX;
@@ -219,16 +215,19 @@ public class MoveAnimation extends AbstractAnimation
         // Increment counter.  This serves as the time variable.
         ticks++;
         
+        // Convert to ms.
+        int ms = ticks * Settings.getMillisecondsPerTick();
+        
         // Skip if necessary.
         if (skip == true)
         {
-            if (ticks > wait + duration)
+            if (ms > wait + duration)
                 setFinished();
             
             return;
         }
         
-        if (waitFinished == false && ticks > wait)
+        if (waitFinished == false && ms > wait)
         {
             // Record initial position now.
             initialPosition = entity.getXYPosition();   
@@ -236,6 +235,7 @@ public class MoveAnimation extends AbstractAnimation
             // And start!
             waitFinished = true;
             ticks = 1;
+            ms = ticks * Settings.getMillisecondsPerTick();
         }                
        
         if (waitFinished == true)
@@ -244,9 +244,9 @@ public class MoveAnimation extends AbstractAnimation
             // d = speed * ticks
             //   = pixels/sec * ticks * ms/tick * sec/ms
             //   = pixels
-            int g = (gravity * Util.sq(ticks * Settings.getMillisecondsPerTick())) / (2 * Util.sq(1000));
-            int x = ((speedX * ticks * Settings.getMillisecondsPerTick())) / 1000;
-            int y = ((speedY * ticks * Settings.getMillisecondsPerTick())) / 1000 - g;
+            int g = (gravity * Util.sq(ms)) / (2 * Util.sq(1000));
+            int x = ((speedX * ms)) / 1000;
+            int y = ((speedY * ms)) / 1000 - g;
 
             // Move the entity.
             int newX = initialPosition.getX() + x;
@@ -275,17 +275,16 @@ public class MoveAnimation extends AbstractAnimation
             
             entity.setX(newX);                        
             entity.setY(newY);                        
-            entity.setRotation(ticks * omega);
+            entity.setRotation((ms * omega) / 1000);
                     
             if ((finishRule == FinishRule.FIRST && (doneX == true || doneY == true))
-                || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))
-                
+                || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))                
             {
                 if (duration < 0) setFinished();
                 else skip = true;
             }
             
-            if (duration > 0 && ticks > wait + duration)   
+            if (duration > 0 && ms > wait + duration)   
                 setFinished();                                                        
         }        
     }

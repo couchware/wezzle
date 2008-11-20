@@ -100,7 +100,7 @@ public class SettingsManager
         loadFromXML(url);
     }
     
-    private void loadUserSettings()
+    public void loadUserSettings()
     {
         // Check if the directory exists.
         File dir = new File(Settings.getUserSettingsPath());
@@ -146,8 +146,15 @@ public class SettingsManager
                 
                 String name = e.getAttributeValue("name");
                 String value = e.getTextTrim();
-                map.put(Key.valueOf(name), value);
-                LogManager.recordMessage(name + " = " + value);
+                try 
+                {
+                    map.put(Key.valueOf(name), value);
+                    LogManager.recordMessage(name + " = " + value);    
+                }
+                catch (IllegalArgumentException ex)
+                {
+                    LogManager.recordMessage("Unknown key: " + name); 
+                }
             }
         }
         catch (JDOMException ex)

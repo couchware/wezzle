@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.animation.ExplosionAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.JiggleAnimation;
+import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
@@ -29,9 +30,11 @@ import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.StarTileEntity;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.TileType;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -56,71 +59,38 @@ public class TileRemover
      */
     private Set<Integer> lastMatchSet;
     
+    /** The item set map.  Contains all the item sets. */
+    private Map<TileType, Set<Integer>> itemMap;
+    
     /** The last refactor speed used. */
     private RefactorSpeed refactorSpeed = Refactorer.get().getRefactorSpeed();
     
     /** If true, level up. */
     private boolean activateLevelUp = false;
     
-    /**
-     * If true, a line removal is in progress.
-     */
+    /** If true, a line removal is in progress. */
     private boolean tileRemovalInProgress = false;     
     
-    /**
-     * The set of tile indices that will be removed.
-     */
+    /** The set of tile indices that will be removed. */
     private Set<Integer> tileRemovalSet;
     
-    /**
-     * If true, uses jump animation instead of zoom.
-     */
+    /** If true, uses jump animation instead of zoom. */
     private boolean useJumpAnimation = false;
     
-    /**
-     * If true, award no points for this tile removal.
-     */
+    /** If true, award no points for this tile removal. */
     private boolean noScore = false;
     
-    /**
-     * If true, do not activate items on this removal.
-     */
+    /** If true, do not activate items on this removal. */
     private boolean noItems = false;
+        
+    /** If true, a bomb removal will be activated next loop. */
+    private boolean activateBombRemoval = false;    
     
-    /**
-     * If true, a bomb removal will be activated next loop.
-     */
-    private boolean activateBombRemoval = false;
+    /** If true, a star removal will be activated next loop. */
+    private boolean activateStarRemoval = false;   
     
-    /**
-     * The set of bomb tile indices that will be removed.
-     */
-    private Set<Integer> bombRemovalSet;
-    
-    /**
-     * If true, a star removal will be activated next loop.
-     */
-    private boolean activateStarRemoval = false;
-    
-    /**
-     * The set of star tile indices that will be removed.
-     */
-    private Set<Integer> starRemovalSet;
-    
-    /**
-     * If true, a rocket removal will be activated next loop.
-     */
-    private boolean activateRocketRemoval = false;
-    
-    /**
-     * The set of star tile indices that will be removed.
-     */
-    private Set<Integer> rocketRemovalSet;
-    
-    /**
-     * The number of gravity tiles found.
-     */
-    private Set<Integer> gravityRemovalSet;
+    /** If true, a rocket removal will be activated next loop. */
+    private boolean activateRocketRemoval = false;    
       
     /**
      * The private constructor.
@@ -157,10 +127,7 @@ public class TileRemover
         }
 
         // See if it just finished.
-        if (Refactorer.get().isFinished() == true
-                && rocketRemovalSet.isEmpty()
-                && bombRemovalSet.isEmpty()
-                && starRemovalSet.isEmpty())
+        if (Refactorer.get().isFinished() == true && areItemSetsEmpty() == true)
         {
             findMatches(game);
         } // end if       
@@ -197,16 +164,45 @@ public class TileRemover
         }
 
     }
+    
+    /**
+     * Checks the emptiness of all the item sets.
+     * 
+     * @return
+     */
+    private boolean areItemSetsEmpty()
+    {
+        for (TileType t : this.itemMap.keySet())
+        {
+            if (this.itemMap.containsKey(t) 
+                    && this.itemMap.get(t).isEmpty() == false)
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
    
     void initialize()
     {
         // Initialize the sets.
-        this.lastMatchSet      = new HashSet<Integer>();
-        this.tileRemovalSet    = new HashSet<Integer>();
-        this.rocketRemovalSet  = new HashSet<Integer>();        
-        this.bombRemovalSet    = new HashSet<Integer>();
-        this.starRemovalSet    = new HashSet<Integer>();              
-        this.gravityRemovalSet = new HashSet<Integer>();
+        this.tileRemovalSet = new HashSet<Integer>();
+        this.lastMatchSet   = new HashSet<Integer>();
+        
+        // Create the item set map.
+        this.itemMap = new EnumMap<TileType, Set<Integer>>(TileType.class);
+        
+        // Create a set for each item tile type.
+        EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);
+        tileTypeSet.remove(TileType.NORMAL);
+        tileTypeSet.remove(TileType.X2);
+        tileTypeSet.remove(TileType.X3);
+        tileTypeSet.remove(TileType.X4);
+        
+        // Now create all the item sets.
+        for (TileType t : tileTypeSet)
+            itemMap.put(t, new HashSet<Integer>());        
     }
 
     boolean isTileRemoving()
@@ -344,19 +340,19 @@ public class TileRemover
             // See if there are any bombs in the bomb set.
             // If there are, activate the bomb removal.  
             
-            if (this.rocketRemovalSet.size() > 0)
+            if (this.itemMap.get(TileType.ROCKET).size() > 0)
             {
                 this.activateRocketRemoval = true;
             }
-            else if (this.starRemovalSet.size() > 0)
+            else if (this.itemMap.get(TileType.STAR).size() > 0)
             {
                 this.activateStarRemoval = true;
             }
-            else if (this.bombRemovalSet.size() > 0)
+            else if (this.itemMap.get(TileType.BOMB).size() > 0)
             {
                 this.activateBombRemoval = true;
             }
-            else if (this.gravityRemovalSet.size() > 0)
+            else if (this.itemMap.get(TileType.GRAVITY).size() > 0)
             {                
                 shiftGravity(game); 
                 Refactorer.get()
@@ -377,34 +373,22 @@ public class TileRemover
             BoardManager boardMan, 
             EnumSet<TileType> tileTypeSet, 
             boolean clear)    
-    {
-        if (tileTypeSet.contains(TileType.ROCKET))
+    {                
+        for (TileType t : tileTypeSet)
         {
-            if (clear == true) this.rocketRemovalSet.clear();
-            boardMan.scanFor(TileType.ROCKET, this.tileRemovalSet, this.rocketRemovalSet);
-            this.tileRemovalSet.removeAll(this.rocketRemovalSet);    
-        }        
-        
-        if (tileTypeSet.contains(TileType.BOMB))
-        {
-            if (clear == true) this.bombRemovalSet.clear();
-            boardMan.scanFor(TileType.BOMB, this.tileRemovalSet, this.bombRemovalSet);
-            this.tileRemovalSet.removeAll(this.bombRemovalSet);
-        }        
-        
-        if (tileTypeSet.contains(TileType.STAR))
-        {
-            if (clear == true) this.starRemovalSet.clear();
-            boardMan.scanFor(TileType.STAR, this.tileRemovalSet, this.starRemovalSet);
-            this.tileRemovalSet.removeAll(this.starRemovalSet);
-        }
-                 
-        if (tileTypeSet.contains(TileType.GRAVITY))
-        {
-            if (clear == true) this.gravityRemovalSet.clear();
-            boardMan.scanFor(TileType.GRAVITY, this.tileRemovalSet,  this.gravityRemovalSet);       
-        }                                    
-    }
+            if (itemMap.containsKey(t) == false)
+                continue;
+            
+            Set<Integer> set = this.itemMap.get(t);
+            
+            if (clear == true) set.clear();
+            boardMan.scanFor(t, this.tileRemovalSet, set);                       
+            
+            if (t != TileType.GRAVITY)
+                this.tileRemovalSet.removeAll(set);                                    
+            
+        } // end for                                
+    }    
     
     private void scanFor(
         BoardManager boardMan, 
@@ -557,11 +541,71 @@ public class TileRemover
                 else
                 {
                     t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
-                            .v(0.05).end());
+                            .speed(settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED))
+                            .end());
                     animationMan.add(t.getAnimation());
+                    
+                    // Get a set of all the items activated.
+                    Set<Integer> allItemSet = new HashSet<Integer>();
+                    for (Set<Integer> itemSet : itemMap.values())
+                    {
+                        allItemSet.addAll(itemSet);
+                    }
+                    
+                    // Animate their activation.
+                    for (Integer index : allItemSet)
+                    {
+                        // Get the tile and make a copy.
+                        final TileEntity tile = boardMan.getTile(index);
+                        final TileEntity clone = boardMan.cloneTile(tile);
+                        
+                        // Add the copy to the layer man.
+                        game.layerMan.add(clone, Layer.EFFECT);
+                        
+                        // Make the animation.
+                        IAnimation anim1 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, clone)
+                                .minWidth(clone.getWidth())                                
+                                .maxWidth(Integer.MAX_VALUE)
+                                .speed(settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED))
+                                .duration(settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION))
+                                .end();
+                        
+                        IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, clone)
+                                .wait(settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_WAIT))
+                                .duration(settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_DURATION))
+                                .end();
+                        
+                        MetaAnimation meta = new MetaAnimation.Builder()
+                                .add(anim1)
+                                .add(anim2)
+                                .end();
+                        
+                        meta.setFinishRunnable(new Runnable()
+                        {
+                           public void run() 
+                           { game.layerMan.remove(clone, Layer.EFFECT); }
+                        });
+                        
+                        clone.setAnimation(meta);
+                        animationMan.add(meta);
+                    }
                 }                                
             }           
         } // end if    
+        
+        Set<Integer> gravityRemovalSet = itemMap.get(TileType.GRAVITY);
+        if (gravityRemovalSet.isEmpty() == false)
+        {
+            for (Integer i : gravityRemovalSet)
+            {
+                TileEntity t = boardMan.getTile(i);
+                IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                        .duration(50)
+                        .end();
+                t.setAnimation(a);
+                animationMan.add(a);
+            }            
+        }
         
         // Clear the animation flag.
         useJumpAnimation = false;          
@@ -582,6 +626,9 @@ public class TileRemover
         StatManager statMan = game.statMan;                        
         TutorialManager tutorialMan = game.tutorialMan;  
 
+        // Shortcut to the set.
+        Set<Integer> rocketRemovalSet = this.itemMap.get(TileType.ROCKET);
+        
         // Clear the flag.
         activateRocketRemoval = false;
 
@@ -753,7 +800,7 @@ public class TileRemover
 
         // If other bombs were hit, they will be dealt with in another
         // bomb removal cycle.
-        rocketRemovalSet = nextRocketRemovalSet;
+        this.itemMap.put(TileType.ROCKET, nextRocketRemovalSet);
 
         // Set the flag.
         tileRemovalInProgress = true;
@@ -764,6 +811,7 @@ public class TileRemover
         // Create shortcuts to all the managers.
         AnimationManager animationMan = game.animationMan;
         BoardManager boardMan = game.boardMan;
+        LayerManager layerMan = game.layerMan;
         ListenerManager listenerMan = game.listenerMan;
         ScoreManager scoreMan = game.scoreMan;
         SettingsManager settingsMan = SettingsManager.get();
@@ -771,6 +819,9 @@ public class TileRemover
         StatManager statMan = game.statMan;                        
         TutorialManager tutorialMan = game.tutorialMan;                
 
+        // Shortcut to the set.
+        Set<Integer> bombRemovalSet = this.itemMap.get(TileType.BOMB);
+        
         // Clear the flag.
         activateBombRemoval = false;
 
@@ -781,7 +832,7 @@ public class TileRemover
         int deltaScore = 0;
 
         // Also used below.
-        IAnimation a1, a2;
+        IAnimation a1, a2, a3;
 
         // Get the tiles the bombs would affect.
         boardMan.processBombs(bombRemovalSet, tileRemovalSet);
@@ -864,24 +915,58 @@ public class TileRemover
         tileTypeSet.remove(TileType.BOMB);        
         scanFor(boardMan, tileTypeSet);  
 
+        // Get the bombs from the set.
+        Integer bombIndex = null;
+        for (Integer i : tileRemovalSet)
+        {                       
+            if (boardMan.getTile(i).getType() == TileType.BOMB)
+            {
+                bombIndex = i;
+                break;
+            }
+        }                
+        
         // Start the line removal animations.
-        for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
+        for (Integer i : tileRemovalSet)
         {
-            TileEntity t = boardMan.getTile((Integer) it.next());
-
-            if (t instanceof BombTileEntity)
+            TileEntity t = boardMan.getTile(i);
+            layerMan.toFront(t, Layer.TILE);
+            
+            if (boardMan.getTile(i).getType() == TileType.BOMB)
             {
                 t.setAnimation(new ExplosionAnimation(t, game.layerMan));
                 animationMan.add(t.getAnimation());
             }
             else
             {
-                a1 = new JiggleAnimation(600, 50, t);               
-                a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+//                a1 = new JiggleAnimation(600, 50, t);               
+                a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                         .wait(settingsMan.getInt(Key.ANIMATION_BOMB_FADE_WAIT))
                         .duration(settingsMan.getInt(Key.ANIMATION_BOMB_FADE_DURATION))
                         .end();
-
+                                       
+                int h = boardMan.relativeColumnPosition(i, bombIndex).asInteger();
+                int v = boardMan.relativeRowPosition(i, bombIndex).asInteger() * -1;                                
+                
+                int theta = 0;
+                
+                if      (h == 0) theta = 90 * v;                    
+                else if (v == 0) theta = h == 1 ? 0 : 180;
+                else
+                {
+                    theta = (int) Math.toDegrees(Math.atan(h / v));
+                    if (h == -1) theta -= 180;                    
+                }                                              
+                                                                    
+                a2 = new MoveAnimation.Builder(t)
+                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_MOVE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_MOVE_DURATION))
+                        .speed(settingsMan.getInt(Key.ANIMATION_BOMB_MOVE_SPEED))
+                        .gravity(settingsMan.getInt(Key.ANIMATION_BOMB_MOVE_GRAVITY))
+                        .theta(theta)                         
+                        .omega(settingsMan.getDouble(Key.ANIMATION_BOMB_MOVE_OMEGA))
+                        .end();                                     
+                
                 t.setAnimation(a1);
                 animationMan.add(a1);
                 animationMan.add(a2);
@@ -892,7 +977,7 @@ public class TileRemover
 
         // If other bombs were hit, they will be dealt with in another
         // bomb removal cycle.
-        bombRemovalSet = nextBombRemovalSet;
+        this.itemMap.put(TileType.BOMB, nextBombRemovalSet);        
 
         // Set the flag.
         tileRemovalInProgress = true;
@@ -909,6 +994,9 @@ public class TileRemover
         SoundManager soundMan = game.soundMan;
         StatManager statMan = game.statMan;                        
         TutorialManager tutorialMan = game.tutorialMan;  
+        
+        // Shortcut to the set.
+        Set<Integer> starRemovalSet = this.itemMap.get(TileType.STAR);
         
         // Clear the flag.
         activateStarRemoval = false;
@@ -1052,7 +1140,8 @@ public class TileRemover
     
     private void shiftGravity(Game game)
     {
-        LogManager.recordMessage("Shift the gravity.");
+        // Shortcut to the set.
+        Set<Integer> gravityRemovalSet = this.itemMap.get(TileType.GRAVITY);
         
         // Determine the new gravity.
         EnumSet<Direction> gravity = null;

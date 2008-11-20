@@ -402,7 +402,7 @@ public class LWJGLGameWindow implements IGameWindow
                 
                 callback.update();
                 callback.draw();                
-                Display.sync(TICKS_PER_SECOND);
+                Display.sync(TICKS_PER_SECOND);                
             }
             // The window is not in the foreground, so we can allow other stuff to run and
             // infrequently update.

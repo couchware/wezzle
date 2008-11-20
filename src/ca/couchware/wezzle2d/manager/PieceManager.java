@@ -42,10 +42,8 @@ import java.util.Set;
 
 public class PieceManager implements IMouseListener
 {	
-    private static int SLOW_SPEED_INVERSE = 125;
-    private static int FAST_SPEED_INVERSE = 20;
-    private static double SLOW_SPEED = 1.0 / (double) SLOW_SPEED_INVERSE;
-    private static double FAST_SPEED = 1.0 / (double) FAST_SPEED_INVERSE;
+    private static int SLOW_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_SLOW);
+    private static int FAST_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_FAST);
     
     // -------------------------------------------------------------------------
     // Private Members
@@ -201,12 +199,12 @@ public class PieceManager implements IMouseListener
         clearRestrictionBoard();
 	}	
         
-        // Public API.
-        public static PieceManager newInstance(AnimationManager animationMan, 
-            BoardManager boardMan)
-        {
-            return new PieceManager(animationMan, boardMan);
-        }
+    // Public API.
+    public static PieceManager newInstance(AnimationManager animationMan, 
+        BoardManager boardMan)
+    {
+        return new PieceManager(animationMan, boardMan);
+    }
     
     //--------------------------------------------------------------------------
     // Instance Methods
@@ -368,7 +366,7 @@ public class PieceManager implements IMouseListener
        return (y - boardMan.getY()) / boardMan.getCellHeight(); 
     }
     
-    private void startAnimationAt(final ImmutablePosition p, double speed)
+    private void startAnimationAt(final ImmutablePosition p, int speed)
     {
         // Add new animations.
         Set<Integer> indexSet = new HashSet<Integer>();
@@ -384,12 +382,12 @@ public class PieceManager implements IMouseListener
 
             // Make sure they have a pulse animation.                   
             t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.LOOP_IN, t)
-                    .minWidth(t.getWidth() - 8).v(speed).end());
+                    .minWidth(t.getWidth() - 8).speed(speed).end());
             animationMan.add(t.getAnimation());
         }
     }
     
-    private void adjustAnimationAt(final ImmutablePosition p, double speed)
+    private void adjustAnimationAt(final ImmutablePosition p, int speed)
     {
         Set<Integer> indexSet = new HashSet<Integer>();
         getSelectedIndexSet(p, indexSet, null);
@@ -407,7 +405,7 @@ public class PieceManager implements IMouseListener
             if (a == null || a instanceof ZoomAnimation == false)
                 continue;
             
-            ((ZoomAnimation) a).v(speed);            
+            ((ZoomAnimation) a).speed(speed);            
         }
     }
     
@@ -579,7 +577,7 @@ public class PieceManager implements IMouseListener
                         {           
                             //IAnimation a = new ZoomInAnimation(tileDropped[i]);
                             IAnimation a = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, tile)
-                                    .v(0.05).end();
+                                    .speed(50).end();
                             tile.setAnimation(a);
                             animationMan.add(a);
                         }
@@ -652,10 +650,10 @@ public class PieceManager implements IMouseListener
                 // Filter the current position.
                 ImmutablePosition pos = limitPosition(p);
 
-                double speed = 1.0 / (double) 
-                        Util.scaleInt(0, game.timerMan.getInitialTime(), 
-                            FAST_SPEED_INVERSE, SLOW_SPEED_INVERSE, 
-                            game.timerMan.getTime());
+                int speed = Util.scaleInt(
+                        0, game.timerMan.getInitialTime(), 
+                        SLOW_SPEED, FAST_SPEED, 
+                        game.timerMan.getInitialTime() - game.timerMan.getTime());                                
                 
                 // If the position changed, or the board was refactored.
                 if (pos.getX() != pieceGrid.getX()
