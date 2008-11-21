@@ -18,6 +18,7 @@ import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.IListenerManager;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.*;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
@@ -853,15 +854,15 @@ public class TileRemover
     private void removeBombs(final Game game)
     {
         // Create shortcuts to all the managers.
-        AnimationManager animationMan = game.animationMan;
-        BoardManager boardMan = game.boardMan;
-        LayerManager layerMan = game.layerMan;
-        ListenerManager listenerMan = game.listenerMan;
-        ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = SettingsManager.get();
-        SoundManager soundMan = game.soundMan;
-        StatManager statMan = game.statMan;                        
-        TutorialManager tutorialMan = game.tutorialMan;                
+        final AnimationManager animationMan = game.animationMan;
+        final BoardManager boardMan = game.boardMan;
+        final LayerManager layerMan = game.layerMan;
+        final ListenerManager listenerMan = game.listenerMan;
+        final ScoreManager scoreMan = game.scoreMan;
+        final SettingsManager settingsMan = SettingsManager.get();
+        final SoundManager soundMan = game.soundMan;
+        final StatManager statMan = game.statMan;                        
+        final TutorialManager tutorialMan = game.tutorialMan;                
 
         // Shortcut to the set.
         Set<Integer> bombRemovalSet = this.itemMap.get(TileType.BOMB);
@@ -995,8 +996,47 @@ public class TileRemover
             
             if (boardMan.getTile(i).getType() == TileType.BOMB)
             {
-                t.setAnimation(new ExplosionAnimation(t, game.layerMan));
-                animationMan.add(t.getAnimation());
+                final GraphicEntity explosion = new GraphicEntity.Builder(
+                        t.getCenterX() - 1,
+                        t.getCenterY() - 1,
+                        Settings.getSpriteResourcesPath() + "/Explosion.png")
+                        .end();
+                
+                explosion.setWidth(2);
+                explosion.setHeight(2);
+                
+                // Add the clone to the layer man.
+                layerMan.add(explosion, Layer.EFFECT);
+
+                // Make the animation.
+                IAnimation anim1 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, explosion)
+                        .minWidth(2)                                
+                        .maxWidth(Integer.MAX_VALUE)
+                        .speed(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_ZOOM_SPEED))
+                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_ZOOM_DURATION))
+                        .end();
+
+                IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, explosion)
+                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_DURATION))
+                        .end();
+
+                MetaAnimation meta = new MetaAnimation.Builder()
+                        .add(anim1)
+                        .add(anim2)
+                        .end();
+
+                meta.setFinishRunnable(new Runnable()
+                {
+                   public void run() 
+                   { layerMan.remove(explosion, Layer.EFFECT); }
+                });
+
+                t.setAnimation(meta);
+                animationMan.add(meta);
+                
+//                t.setAnimation(new ExplosionAnimation(t, game.layerMan));
+//                animationMan.add(t.getAnimation());
             }
             else
             {

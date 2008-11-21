@@ -95,7 +95,12 @@ public class Settings
         ANIMATION_BOMB_MOVE_SPEED,
         ANIMATION_BOMB_MOVE_GRAVITY,
         ANIMATION_BOMB_MOVE_OMEGA,
-                
+               
+        ANIMATION_BOMB_EXPLODE_ZOOM_SPEED,
+        ANIMATION_BOMB_EXPLODE_ZOOM_DURATION,
+        ANIMATION_BOMB_EXPLODE_FADE_WAIT,
+        ANIMATION_BOMB_EXPLODE_FADE_DURATION,
+        
         ANIMATION_EXPLOSION_SPEED,        
         ANIMATION_EXPLOSION_OPACITY,
         ANIMATION_EXPLOSION_INITIAL_WIDTH,
@@ -141,22 +146,10 @@ public class Settings
         MAIN_MENU_LOGO_FADE_IN_WAIT,
         MAIN_MENU_LOGO_FADE_IN_DURATION,
         MAIN_MENU_LOGO_FADE_OUT_WAIT,
-        MAIN_MENU_LOGO_FADE_OUT_DURATION    
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        MAIN_MENU_LOGO_FADE_OUT_DURATION
+    
+    
+    
     }
     
     public enum Value

@@ -40,6 +40,8 @@ public interface IPositionable
      */
     public void setX(final int x);
     
+    public int getCenterX();    
+    
     /**
      * Gets the y-coordinate.
      * 
@@ -53,6 +55,8 @@ public interface IPositionable
      * @param y The y-coordinate.
      */
     public void setY(final int y);
+    
+    public int getCenterY();
     
     /**
      * Gets the x- and y-coordinates.

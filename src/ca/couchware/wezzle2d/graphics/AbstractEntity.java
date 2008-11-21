@@ -149,6 +149,11 @@ public abstract class AbstractEntity implements IEntity
         // Set dirty so it will be drawn.        
         this.dirty = true;
 	}
+    
+    public int getCenterX()
+    {
+        return this.x + this.width / 2;
+    }
 
 	/**
 	 * Get the y location of this entity.
@@ -170,6 +175,12 @@ public abstract class AbstractEntity implements IEntity
         // Set dirty so it will be drawn.        
         this.dirty = true;
 	}
+    
+    public int getCenterY()
+    {
+        return this.y + this.height / 2;
+    }
+
     
     public ImmutablePosition getXYPosition()
     {
