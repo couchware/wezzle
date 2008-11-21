@@ -1020,10 +1020,16 @@ public class TileRemover
                         .wait(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_WAIT))
                         .duration(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_DURATION))
                         .end();
+                
+                IAnimation anim3 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_TILE_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_TILE_FADE_DURATION))
+                        .end();
 
                 MetaAnimation meta = new MetaAnimation.Builder()
                         .add(anim1)
                         .add(anim2)
+                        .add(anim3)
                         .end();
 
                 meta.setFinishRunnable(new Runnable()
@@ -1042,8 +1048,8 @@ public class TileRemover
             {
 //                a1 = new JiggleAnimation(600, 50, t);               
                 a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_FADE_DURATION))
+                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_DURATION))
                         .end();
                                        
                 int h = boardMan.relativeColumnPosition(i, bombIndex).asInteger();
@@ -1060,12 +1066,12 @@ public class TileRemover
                 }                                              
                                                                     
                 a2 = new MoveAnimation.Builder(t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_MOVE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_MOVE_DURATION))
-                        .speed(settingsMan.getInt(Key.ANIMATION_BOMB_MOVE_SPEED))
-                        .gravity(settingsMan.getInt(Key.ANIMATION_BOMB_MOVE_GRAVITY))
+                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_WAIT))
+                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_DURATION))
+                        .speed(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_SPEED))
+                        .gravity(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_GRAVITY))
                         .theta(theta)                         
-                        .omega(settingsMan.getDouble(Key.ANIMATION_BOMB_MOVE_OMEGA))
+                        .omega(settingsMan.getDouble(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_OMEGA))
                         .end();                                     
                 
                 t.setAnimation(a1);
