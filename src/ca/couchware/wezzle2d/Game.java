@@ -404,7 +404,7 @@ public class Game extends Canvas implements IGameWindowCallback
             //scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
             listenerMan.registerListener(Listener.GAME,  scoreMan);
             listenerMan.registerListener(Listener.LEVEL, scoreMan);
-            listenerMan.registerListener(Listener.SCORE, scoreMan);            
+            //listenerMan.registerListener(Listener.SCORE, scoreMan);            
         }
         
         if (managerSet.contains(ManagerType.SOUND))

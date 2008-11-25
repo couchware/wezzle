@@ -94,13 +94,13 @@ public class ListenerManager implements IListenerManager
      * Notify all score listeners.
      * @param e The event.
      */    
-    public void notifyScoreChanged(ScoreEvent e, IListenerManager.GameType gameType)
+    public void notifyScoreChanged(ScoreEvent e)
     {
         List<IListener> list = listenerMap.get(Listener.SCORE);
         
         for (IListener listener : list)
         {
-            ((IScoreListener) listener).scoreChanged(e, gameType);
+            ((IScoreListener) listener).scoreChanged(e);
         }
     }
     

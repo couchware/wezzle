@@ -14,8 +14,8 @@ import java.util.Set;
  public class ScoreManager implements 
          IManager, 
          IGameListener, 
-         ILevelListener, 
-         IScoreListener
+         ILevelListener 
+         //IScoreListener
  {    
      
     /** The different types of scores. */
@@ -302,7 +302,7 @@ import java.util.Set;
     public void setLevelScore(int levelScore)
     {
         this.levelScore = levelScore;		
-    }
+    }      
 
     public int getTotalScore()
     {
@@ -361,10 +361,11 @@ import java.util.Set;
     }  
     
     /**
-     * A method to update all the scores.
-     * @param deltaScore A change in score.
+     * Increases the score by the given amount.
+     * 
+     * @param deltaScore The change in the score.
      */
-    private void updateScore(int deltaScore)	
+    public void incrementScore(int deltaScore)	
     {	
         // Update the level score.
         levelScore += deltaScore;
@@ -372,8 +373,15 @@ import java.util.Set;
         // Update the target score.
         totalScore += deltaScore;
 
-        if(totalScore > highScore)
-                setHighScore(totalScore);
+        // See if we have a new high score.
+        if (totalScore > highScore)
+        {
+            setHighScore(totalScore);        
+        }
+        
+        // Notify all listeners.
+        this.listenerMan.notifyScoreChanged(
+                new ScoreEvent(this, deltaScore, this.targetLevelScore));
     }
     
     /**
@@ -412,23 +420,23 @@ import java.util.Set;
 		setTargetLevelScore(event.getTargetLevelScore());
     }  
     
-    public void scoreReset(ScoreEvent event)
-    {
-        // Ignore it, generated here.
-    }
-    
-    public void scoreChanged(ScoreEvent event, IListenerManager.GameType gameType)
-    {
-        if (gameType == IListenerManager.GameType.GAME)
-        {
-            updateScore(event.getDeltaScore());
-        }
-    }
-    
-    public void targetScoreChanged(ScoreEvent event)
-    {
-        // Ignore it, generated here.
-    }
+//    public void scoreReset(ScoreEvent event)
+//    {
+//        // Ignore it, generated here.
+//    }
+//    
+//    public void scoreChanged(ScoreEvent event, IListenerManager.GameType gameType)
+//    {
+//        if (gameType == IListenerManager.GameType.GAME)
+//        {
+//            updateScore(event.getDeltaScore());
+//        }
+//    }
+//    
+//    public void targetScoreChanged(ScoreEvent event)
+//    {
+//        // Ignore it, generated here.
+//    }
     
     public void gameStarted(GameEvent event)
     {

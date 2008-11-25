@@ -24,7 +24,7 @@ public interface IScoreListener extends IListener
      * @param event The associated event.
      * @param gameType The game type, either a normal GAME or a TUTORIAL.
      */
-    public void scoreChanged(ScoreEvent event, IListenerManager.GameType gameType);
+    public void scoreChanged(ScoreEvent event);
     
     /**
      * Fired every time the target score in the score manager is changed.

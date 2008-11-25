@@ -35,7 +35,7 @@ public interface IListenerManager
     public void registerListener(Listener listenerType, IListener listener);
     
     public void notifyScoreReset(ScoreEvent e);
-    public void notifyScoreChanged(ScoreEvent e, GameType gameType);
+    public void notifyScoreChanged(ScoreEvent e);
     public void notifyTargetScoreChanged(ScoreEvent e);
     public void notifyLevelChanged(LevelEvent e);
     public void notifyMoveCommitted(MoveEvent e, GameType gameType);

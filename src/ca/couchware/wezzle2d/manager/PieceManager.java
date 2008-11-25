@@ -723,16 +723,23 @@ public class PieceManager implements IMouseListener
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);    
         
         // Notify the listener manager.
-        if (game.tutorialMan.isTutorialInProgress() == true)
+//        if (game.tutorialMan.isTutorialInProgress() == true)
+//        {
+//            game.listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1), 
+//                IListenerManager.GameType.TUTORIAL);
+//        }
+//        else
+//        {
+//            game.listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1), 
+//                IListenerManager.GameType.GAME);
+//        }
+        
+        // Increment the score.
+        if (game.tutorialMan.isTutorialInProgress() == false)       
         {
-            game.listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1), 
-                IListenerManager.GameType.TUTORIAL);
+            game.scoreMan.incrementScore(deltaScore);        
         }
-        else
-        {
-            game.listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1), 
-                IListenerManager.GameType.GAME);
-        }
+        
         // Add score SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(indexSet);
         

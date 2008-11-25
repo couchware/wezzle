@@ -468,15 +468,21 @@ public class TileRemover
                     statMan.getChainCount());
 
             // Fire a score event.
-            if (tutorialMan.isTutorialInProgress() == true)
+//            if (tutorialMan.isTutorialInProgress() == true)
+//            {
+//                listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
+//                        IListenerManager.GameType.TUTORIAL);
+//            }
+//            else
+//            {
+//                listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
+//                        IListenerManager.GameType.GAME);
+//            }
+            
+            // Increment the score.
+            if (game.tutorialMan.isTutorialInProgress() == false)       
             {
-                listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-                        IListenerManager.GameType.TUTORIAL);
-            }
-            else
-            {
-                listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-                        IListenerManager.GameType.GAME);
+                game.scoreMan.incrementScore(deltaScore);        
             }
 
             // Show the SCT.
@@ -685,15 +691,21 @@ public class TileRemover
                 statMan.getChainCount());
 
         // Fire a score event.
-        if (tutorialMan.isTutorialInProgress() == true)
+//        if (tutorialMan.isTutorialInProgress() == true)
+//        {
+//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
+//                    IListenerManager.GameType.TUTORIAL);
+//        }
+//        else
+//        {
+//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
+//                    IListenerManager.GameType.GAME);
+//        }
+        
+        // Increment the score.
+        if (game.tutorialMan.isTutorialInProgress() == false)       
         {
-            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-                    IListenerManager.GameType.TUTORIAL);
-        }
-        else
-        {
-            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-                    IListenerManager.GameType.GAME);
+            game.scoreMan.incrementScore(deltaScore);        
         }
 
         // Show the SCT.
@@ -887,17 +899,22 @@ public class TileRemover
                 statMan.getChainCount());
 
         // Fire a score event.
-        if (tutorialMan.isTutorialInProgress() == true)
-        {
-            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-                    IListenerManager.GameType.TUTORIAL);
-        }
-        else
-        {
-            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-                    IListenerManager.GameType.GAME);
-        }
+//        if (tutorialMan.isTutorialInProgress() == true)
+//        {
+//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
+//                    IListenerManager.GameType.TUTORIAL);
+//        }
+//        else
+//        {
+//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
+//                    IListenerManager.GameType.GAME);
+//        }
 
+        // Increment the score.
+        if (game.tutorialMan.isTutorialInProgress() == false)       
+        {
+            game.scoreMan.incrementScore(deltaScore);        
+        }
 
         // Show the SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
@@ -1139,17 +1156,22 @@ public class TileRemover
                 statMan.getChainCount());
 
         // Fire a score event.
-        if (tutorialMan.isTutorialInProgress() == true)
+//        if (tutorialMan.isTutorialInProgress() == true)
+//        {
+//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
+//                    IListenerManager.GameType.TUTORIAL);
+//        }
+//        else
+//        {
+//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
+//                    IListenerManager.GameType.GAME);
+//        }
+        
+        // Increment the score.
+        if (game.tutorialMan.isTutorialInProgress() == false)       
         {
-            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-                    IListenerManager.GameType.TUTORIAL);
+            game.scoreMan.incrementScore(deltaScore);        
         }
-        else
-        {
-            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-                    IListenerManager.GameType.GAME);
-        }
-
 
         // Show the SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);

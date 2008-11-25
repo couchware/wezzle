@@ -496,13 +496,10 @@ public class GameUI implements ILevelListener, IScoreListener
         progressBar.setProgress(0);
     }
     
-    public void scoreChanged(ScoreEvent event, GameType gameType)
-    {
-        if (gameType == IListenerManager.GameType.GAME)
-        {
-            // Update the progress bar.
-            progressBar.setProgress(progressBar.getProgress() + event.getDeltaScore());
-        }
+    public void scoreChanged(ScoreEvent event)
+    {       
+        // Update the progress bar.
+        progressBar.setProgress(progressBar.getProgress() + event.getDeltaScore());       
     }
 
     public void targetScoreChanged(ScoreEvent event)
