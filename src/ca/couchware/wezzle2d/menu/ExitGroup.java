@@ -29,46 +29,45 @@ import java.util.EnumSet;
 public class ExitGroup extends AbstractGroup
 {
 
-    /**
-     * The layer manager.
-     */
+    /** The settings manager. */
+    final private SettingsManager settingsMan;
+    
+    /** The layer manager. */
     final private LayerManager layerMan;
     
-    /**
-     * The background window.
-     */
+    /** The background window. */
     final private Window win;        
     
-    /**
-     * The "Yes" button.
-     */
+    /** The "Yes" button. */
     final private IButton yesButton;
     
-    /**
-     * The "No" button.
-     */
+    /** The "No" button. */
     final private IButton noButton;
     
     /**
      * The constructor.
      * @param layerMan
      */    
-    public ExitGroup(LayerManager layerMan)
+    public ExitGroup(
+            SettingsManager settingsMan,
+            LayerManager layerMan)
     {
         // Set the layer manager.
-        this.layerMan = layerMan;
+        this.settingsMan = settingsMan;
+        this.layerMan    = layerMan;        
                         
         // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
+                .opacity(settingsMan.getInt(Key.MAIN_MENU_WINDOW_OPACITY))
                 .visible(false).end();
         this.layerMan.add(win, Layer.UI);               
                
         // Line 1.
         ILabel l1 = new LabelBuilder(266, 155)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(22).visible(false)
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .size(22).visible(false)
                 .text("Are you sure").end();           
         this.entityList.add(l1);
         
@@ -91,6 +90,7 @@ public class ExitGroup extends AbstractGroup
         
         this.yesButton = new SpriteButton.Builder(266, 400)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .type(SpriteButton.Type.THIN).visible(false).offOpacity(90)
                 .text("Yes").end();
         this.entityList.add(this.yesButton);

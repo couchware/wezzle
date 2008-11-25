@@ -24,6 +24,8 @@ import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ListenerManager;
 import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.manager.TutorialManager;
@@ -37,6 +39,7 @@ import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
 import ca.couchware.wezzle2d.ui.group.OptionsGroup;
 import ca.couchware.wezzle2d.ui.group.PauseGroup;
+import java.awt.Color;
 import java.util.EnumSet;
 import java.util.logging.LogManager;
 
@@ -172,6 +175,7 @@ public class GameUI implements ILevelListener, IScoreListener
         {
            public void run() { 
                initializeGroups(
+                   game.settingsMan,
                    game.layerMan, 
                    game.scoreMan,
                    game.groupMan, 
@@ -220,18 +224,22 @@ public class GameUI implements ILevelListener, IScoreListener
      * Initializes all the labesl that appear on the main game screen.
      */
     private void initializeLabels(LayerManager layerMan)
-    {                     
+    {          
+        // Shortcut to the primary color.
+        final Color PRIMARY_COLOR = 
+                SettingsManager.get().getColor(Key.GAME_COLOR_PRIMARY);
+        
         // Set up the copyright label.
         copyrightLabel = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .cached(false).color(Game.TEXT_COLOR1).size(12)                
+                .cached(false).color(PRIMARY_COLOR).size(12)                
                 .text(Game.COPYRIGHT).end();
         layerMan.add(copyrightLabel, Layer.UI);
         
         // Set up the version label.	
         versionLabel = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .cached(false).color(Game.TEXT_COLOR1).size(12)                
+                .cached(false).color(PRIMARY_COLOR).size(12)                
                 .text(Game.TITLE)
                 .end();                        
         layerMan.add(versionLabel, Layer.UI);
@@ -239,12 +247,12 @@ public class GameUI implements ILevelListener, IScoreListener
 		// Set up the timer text.
         timerLabel = new LabelBuilder(400, 70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(50).text("").end();
+                .color(PRIMARY_COLOR).size(50).text("").end();
         layerMan.add(timerLabel, Layer.UI);
         
         // Set up the Wezzle timer text.
+        // ...
         
-             
         // Set up the level header.
         levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();        
@@ -254,7 +262,7 @@ public class GameUI implements ILevelListener, IScoreListener
         levelLabel = new LabelBuilder(126, 210)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(Game.TEXT_COLOR1).size(20).text("--").end();                
+                .color(PRIMARY_COLOR).size(20).text("--").end();                
         layerMan.add(levelLabel, Layer.UI);        
         
         // Set up the score header.
@@ -267,7 +275,7 @@ public class GameUI implements ILevelListener, IScoreListener
         highScoreLabel = new LabelBuilder(126, 337)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(Game.TEXT_COLOR1).size(20).text("--").end();
+                .color(PRIMARY_COLOR).size(20).text("--").end();
         layerMan.add(highScoreLabel, Layer.UI);
         
         // Set up the score header.
@@ -279,7 +287,7 @@ public class GameUI implements ILevelListener, IScoreListener
         scoreLabel = new LabelBuilder(126, 460)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(Game.TEXT_COLOR1).size(20).text("--").end();
+                .color(PRIMARY_COLOR).size(20).text("--").end();
         layerMan.add(scoreLabel, Layer.UI);
     }
     
@@ -308,6 +316,7 @@ public class GameUI implements ILevelListener, IScoreListener
      * Initialize the various groups.
      */
     private void initializeGroups(
+            SettingsManager  settingsMan,
             LayerManager     layerMan,
             ScoreManager     scoreMan,
             GroupManager     groupMan,
@@ -316,7 +325,7 @@ public class GameUI implements ILevelListener, IScoreListener
             ListenerManager  listenerMan)
     {        
         // Initialize pause group.                
-        this.pauseGroup = new PauseGroup(layerMan, statMan);
+        this.pauseGroup = new PauseGroup(settingsMan, layerMan, statMan);
         groupMan.register(pauseGroup);
         
         listenerMan.registerListener(Listener.MOVE, this.pauseGroup);
@@ -324,17 +333,17 @@ public class GameUI implements ILevelListener, IScoreListener
         listenerMan.registerListener(Listener.GAME, this.pauseGroup);
              
         // Initialize game over group.
-        this.gameOverGroup = new GameOverGroup(layerMan, scoreMan);    
+        this.gameOverGroup = new GameOverGroup(settingsMan, layerMan, scoreMan);    
         groupMan.register(this.gameOverGroup);
         
         listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
         
         // Initialize options group.
-        this.optionsGroup = new OptionsGroup(layerMan, groupMan);
+        this.optionsGroup = new OptionsGroup(settingsMan, layerMan, groupMan);
         groupMan.register(this.optionsGroup);
         
         // Initialize high score group.
-        this.highScoreGroup = new HighScoreGroup(layerMan, highScoreMan); 
+        this.highScoreGroup = new HighScoreGroup(settingsMan, layerMan, highScoreMan); 
         groupMan.register(this.highScoreGroup);
         
         listenerMan.registerListener(Listener.GAME, this.highScoreGroup);                

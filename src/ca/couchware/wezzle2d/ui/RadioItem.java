@@ -24,6 +24,17 @@ import java.util.EnumSet;
 public class RadioItem extends AbstractSpriteButton
 {
     
+    /** The default color. */
+    private static Color defaultColor = Color.RED;
+    
+    /**
+     * Change the default color for all sprite buttons.
+     * 
+     * @param The new color.
+     */
+    public static void setDefaultColor(Color color)
+    { defaultColor = color; }    
+    
     /** The path to the on sprite. */
     final public static String PATH_ON = 
             Settings.getSpriteResourcesPath() + "/" + "RadioOn.png";
@@ -174,7 +185,7 @@ public class RadioItem extends AbstractSpriteButton
         private int x = 0;
         private int y = 0;
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
-        private Color color = Game.TEXT_COLOR1;
+        private Color color = defaultColor;
         private int opacity = 100;
         private boolean visible = true;
         private EnumSet<State> state = EnumSet.noneOf(State.class);

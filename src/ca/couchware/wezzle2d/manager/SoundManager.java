@@ -97,10 +97,10 @@ public class SoundManager
                 path + "/SoundRocket.wav");
              
         // Get the default volume.
-        setNormalizedGain(SettingsManager.get().getDouble(Key.GAME_SOUND_VOLUME));
+        setNormalizedGain(SettingsManager.get().getDouble(Key.USER_SOUND_VOLUME));
         
         // Check if on or off.
-        if (SettingsManager.get().getBoolean(Key.GAME_SOUND) == true)
+        if (SettingsManager.get().getBoolean(Key.USER_SOUND) == true)
         {
             setPaused(false);
         }
@@ -219,7 +219,7 @@ public class SoundManager
         else if (nGain > 1.0) nGain = 1.0;
         
         // Adjust the property;
-        SettingsManager.get().setDouble(Key.GAME_SOUND_VOLUME, nGain);
+        SettingsManager.get().setDouble(Key.USER_SOUND_VOLUME, nGain);
         
         // Remember it.
         this.normalizedGain = nGain;                

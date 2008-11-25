@@ -107,10 +107,10 @@ public class Loader implements IDrawer
      * 
      * @param settingsMan
      */       
-    public Loader()
+    public Loader(SettingsManager settingsMan)
     {                
         // Create the layer manager.
-        this.layerMan = LayerManager.newInstance();
+        this.layerMan = LayerManager.newInstance();                
         
         // Add the background.
         GraphicEntity backgroundGraphic = 
@@ -133,8 +133,7 @@ public class Loader implements IDrawer
         
         // Create the loader label.
         ILabel l3 = new ResourceFactory.LabelBuilder(400, 273)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .cached(false).size(26).text("Loading Wezzle...").end();
         this.layerMan.add(l3, Layer.UI);
         
@@ -149,8 +148,7 @@ public class Loader implements IDrawer
         EntityGroup e = new EntityGroup(l3, progressBar);
         
         // Create the animation that will be used to transition the
-        // loader to the menu screen.
-        SettingsManager settingsMan = SettingsManager.get();
+        // loader to the menu screen.        
         this.animation = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
                 .wait(settingsMan.getInt(Key.LOADER_BAR_FADE_WAIT))
                 .duration(settingsMan.getInt(Key.LOADER_BAR_FADE_DURATION))

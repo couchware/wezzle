@@ -23,6 +23,18 @@ import java.util.EnumSet;
  */
 public class ResourceFactory
 {
+    
+    /** The default label color. */
+    private static Color defaultLabelColor = Color.RED;
+    
+    /**
+     * Change the default color for all sprite buttons.
+     * 
+     * @param The new color.
+     */
+    public static void setDefaultLabelColor(Color color)
+    { defaultLabelColor = color; }    
+    
 	/** The single instance of this class to ever exist. */
 	private static final ResourceFactory single = new ResourceFactory();
 
@@ -197,7 +209,7 @@ public class ResourceFactory
                 
         private EnumSet<Alignment> alignment = 
                 EnumSet.of(Alignment.TOP, Alignment.LEFT);
-        private Color color = Color.WHITE;
+        private Color color = defaultLabelColor;
         private int opacity = 100;
         private int size = 14;
         private String text = ""; 

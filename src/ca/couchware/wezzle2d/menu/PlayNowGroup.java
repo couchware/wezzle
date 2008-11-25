@@ -49,16 +49,6 @@ import javazoom.jlgui.basicplayer.BasicPlayerException;
  */
 public class PlayNowGroup extends AbstractGroup
 {
-
-    /**
-     * The color of the play now options labels.
-     */
-    final private static Color LABELS_COLOR = Game.TEXT_COLOR1;
-    
-    /**
-     * The color of the play now options.
-     */
-    final private static Color OPTIONS_COLOR = Game.TEXT_COLOR2;
     
     /**
      * The minimum level the user can select.
@@ -121,18 +111,21 @@ public class PlayNowGroup extends AbstractGroup
      */
     private Window win;
     
-    public PlayNowGroup(IGroup parent,            
+    public PlayNowGroup(IGroup parent, 
+            final SettingsManager settingsMan,
             final LayerManager layerMan, 
             final MusicManager musicMan)
     {
         // Invoke the super.
         super(parent);
                
-        // Set the layer manager.
+        // Set the managers.
         this.layerMan = layerMan;
-        
-        // Set the music manager.
         this.musicMan = musicMan;
+        
+        // The colors.
+        final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
+        final Color OPTION_COLOR = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
         
         // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
@@ -147,13 +140,14 @@ public class PlayNowGroup extends AbstractGroup
         // Create the name label.
         ILabel nl = new LabelBuilder(85, 125)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(LABELS_COLOR).text("Name").size(20)
+                .color(LABEL_COLOR).text("Name").size(20)
                 .visible(false).end();
         this.entityList.add(nl);
         
         // Create the temporary test name.
         this.nameButton = new SpriteButton.Builder(355, nl.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(OPTION_COLOR)
                 .type(SpriteButton.Type.NORMAL).visible(false).offOpacity(90)
                 .text("TEST").end();
         this.entityList.add(this.nameButton);
@@ -165,19 +159,20 @@ public class PlayNowGroup extends AbstractGroup
         // Create the level number label.
         this.levelNumberLabel = new LabelBuilder(nameButton.getX(), ll.getY())                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
                 .size(20).visible(false).text(String.valueOf(levelNumber)).end();
         this.entityList.add(this.levelNumberLabel);
         
         // Create the level down button.
         this.levelDownButton = new SpriteButton.Builder(this.levelNumberLabel.getX() - 55, ll.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))                
                 .type(SpriteButton.Type.SMALL_CIRCULAR).offOpacity(90)
                 .text("-").visible(false).end();
         this.entityList.add(this.levelDownButton);
         
         // Create the level up button.
         this.levelUpButton = new SpriteButton.Builder((SpriteButton) levelDownButton)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))                
                 .x(this.levelNumberLabel.getX() + 55).text("+").end();
         this.entityList.add(this.levelUpButton);                       
               
@@ -196,17 +191,17 @@ public class PlayNowGroup extends AbstractGroup
         createPlayers();
         
         // Creat the level limit radio group.        
-        RadioItem themeItem1 = new RadioItem.Builder().color(OPTIONS_COLOR)
+        RadioItem themeItem1 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("A").end();
         themeItem1.setMouseOnRunnable(createFadeInRunnable(Theme.A));        
         themeItem1.setMouseOffRunnable(createFadeOutRunnable(Theme.A));
         
-        RadioItem themeItem2 = new RadioItem.Builder().color(OPTIONS_COLOR)
+        RadioItem themeItem2 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("B").end();
         themeItem2.setMouseOnRunnable(createFadeInRunnable(Theme.B));        
         themeItem2.setMouseOffRunnable(createFadeOutRunnable(Theme.B));
         
-        RadioItem themeItem3 = new RadioItem.Builder().color(OPTIONS_COLOR)
+        RadioItem themeItem3 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("C").end();
         themeItem3.setMouseOnRunnable(createFadeInRunnable(Theme.C));        
         themeItem3.setMouseOffRunnable(createFadeOutRunnable(Theme.C));
@@ -220,9 +215,9 @@ public class PlayNowGroup extends AbstractGroup
         Collections.shuffle(themeList);
         themeMap.put(themeList.get(0), true);
         
-        RadioItem themeItem4 = new RadioItem.Builder().color(OPTIONS_COLOR)
+        RadioItem themeItem4 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("All").end();
-        RadioItem themeItem5 = new RadioItem.Builder().color(OPTIONS_COLOR)
+        RadioItem themeItem5 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("?").end();
         this.themeRadio = new RadioGroup.Builder<Theme>(268, tl.getY() + SPACING, Theme.class)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
@@ -237,6 +232,7 @@ public class PlayNowGroup extends AbstractGroup
         // Create the start button.
         this.startButton = new SpriteButton.Builder(266, 435)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .type(SpriteButton.Type.LARGE).visible(false).offOpacity(90)
                 .text("Start").end();
         this.entityList.add(this.startButton);
@@ -279,7 +275,7 @@ public class PlayNowGroup extends AbstractGroup
             public void run()
             { 
                 playerMap.get(theme).fadeToGain(
-                        SettingsManager.get().getDouble(Settings.Key.GAME_MUSIC_VOLUME));
+                        SettingsManager.get().getDouble(Settings.Key.USER_MUSIC_VOLUME));
             }
         };
     }

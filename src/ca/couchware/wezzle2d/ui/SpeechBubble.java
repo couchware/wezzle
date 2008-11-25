@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.*;
+import java.awt.Color;
 import java.util.EnumMap;
 import java.util.EnumSet;
 
@@ -23,9 +24,18 @@ import java.util.EnumSet;
 public class SpeechBubble extends AbstractEntity
 {
     
+    /** The default color. */
+    private static Color defaultColor = Color.RED;
+    
     /**
-     * The two speech bubble types, vertical or horizontal.
+     * Change the default color for all sprite buttons.
+     * 
+     * @param The new color.
      */
+    public static void setDefaultColor(Color color)
+    { defaultColor = color; }    
+    
+    /** The two speech bubble types */
     public static enum BubbleType
     {
         VERTICAL, HORIZONTAL;
@@ -38,29 +48,22 @@ public class SpeechBubble extends AbstractEntity
         } 
     }
     
-    /**
-     * The offset array.
-     */
+    /** The offset array. */
     private static EnumMap<BubbleType, Integer> offsetList;        
     
-    /**
-     * The label type.
-     */
+    /** The color of the bubble text. */
+    private Color color;
+    
+    /** The label type. */
     private BubbleType type;
     
-    /**
-     * The text of the bubble.
-     */
+    /** The text of the bubble. */
     private String text;
     
-    /**
-     * The bubble sprite.
-     */
+    /** The bubble sprite. */
     private ISprite sprite;
     
-    /**
-     * The label representing the text in the speech bubble.
-     */
+    /** The label representing the text in the speech bubble. */
     private ILabel label;
     
     /**
@@ -69,7 +72,7 @@ public class SpeechBubble extends AbstractEntity
     static
     {
         offsetList = new EnumMap<BubbleType, Integer>(BubbleType.class);    
-        offsetList.put(BubbleType.VERTICAL, 40);
+        offsetList.put(BubbleType.VERTICAL,   40);
         offsetList.put(BubbleType.HORIZONTAL, 88);
     }
     
@@ -86,6 +89,9 @@ public class SpeechBubble extends AbstractEntity
     {                 
         // Set the type.
         this.type = builder.type;
+        
+        // Set the color.
+        this.color = builder.color;
         
         // The sprite path.
         String path = Settings.getSpriteResourcesPath() + "/" + "SpeechBubble" + type + ".png";
@@ -123,7 +129,7 @@ public class SpeechBubble extends AbstractEntity
                                 
                 label = new LabelBuilder(x, y - offsetList.get(type))
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .color(Game.TEXT_COLOR1).size(16).text(text)
+                        .color(color).size(16).text(text)
                         .cached(false).end();
                 
                 break;
@@ -134,7 +140,7 @@ public class SpeechBubble extends AbstractEntity
                 
                 label = new LabelBuilder(x - offsetList.get(type), y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .color(Game.TEXT_COLOR1).size(16).text(text).end();
+                        .color(color).size(16).text(text).end();
                 
                 break;
         }             
@@ -151,9 +157,10 @@ public class SpeechBubble extends AbstractEntity
         private int y;     
         
         // Optional values.        
+        private Color color = defaultColor;
         private int opacity = 100;
         private boolean visible = true;
-        private String text = "Default";
+        private String text = "Bubble";
         private BubbleType type = BubbleType.VERTICAL;
         
         public Builder(int x, int y)
@@ -165,7 +172,8 @@ public class SpeechBubble extends AbstractEntity
         public Builder(SpeechBubble bubble)
         {                      
             this.x = bubble.x;
-            this.y = bubble.y;            
+            this.y = bubble.y;         
+            this.color = bubble.color;
             this.opacity = bubble.opacity;                        
             this.visible = bubble.visible;
             this.text = bubble.text;
@@ -175,6 +183,9 @@ public class SpeechBubble extends AbstractEntity
         public Builder x(int val) { x = val; return this; }        
         public Builder y(int val) { y = val; return this; }                       
                         
+        public Builder color(Color val)
+        { color = val; return this; }
+        
         public Builder opacity(int val)
         { opacity = val; return this; }
         

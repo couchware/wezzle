@@ -13,6 +13,8 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.event.*;
 import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.EnumSet;
@@ -55,7 +57,10 @@ public class PauseGroup extends AbstractGroup implements
     /**
      * The constructor.    
      */    
-    public PauseGroup(LayerManager layerMan, StatManager statMan)
+    public PauseGroup(
+            SettingsManager settingsMan,
+            LayerManager layerMan, 
+            StatManager statMan)
     {
         // Remember the managers.
         this.layerMan = layerMan;
@@ -64,28 +69,32 @@ public class PauseGroup extends AbstractGroup implements
         // Create the "Paused" text.
         mainLabel = new LabelBuilder(400, 245)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(30).text("Paused")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(30)
+                .text("Paused")
                 .visible(false).end();
         layerMan.add(mainLabel, Layer.UI);
         entityList.add(mainLabel);
 
         movesLabel = new LabelBuilder(400, 310)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(18).text("0 moves taken")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
+                .text("0 moves taken")
                 .visible(false).end();
         layerMan.add(movesLabel, Layer.UI);
         entityList.add(movesLabel);
 
         linesLabel = new LabelBuilder(400, 340)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(18).text("0 lines cleared")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
+                .text("0 lines cleared")
                 .visible(false).end();
         layerMan.add(linesLabel, Layer.UI);
         entityList.add(linesLabel);
 
         linesPerMoveLabel = new LabelBuilder(400, 370)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .color(Game.TEXT_COLOR1).size(18).text("0.0 lines per move")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
+                .text("0.0 lines per move")
                 .visible(false).end();
         layerMan.add(linesPerMoveLabel, Layer.UI);
         entityList.add(linesPerMoveLabel);

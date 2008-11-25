@@ -20,36 +20,21 @@ public class Settings
         
         CONF_VERSION,                                               
         
-        // Game values.
-        
-        GAME_RENDER_TYPE,        
-        GAME_MUSIC,
-        GAME_MUSIC_VOLUME,
-        GAME_SOUND,
-        GAME_SOUND_VOLUME,
-        
         // User values.
         
-        USER_HIGHSCORE_NAME_1,
-        USER_HIGHSCORE_NAME_2,
-        USER_HIGHSCORE_NAME_3,
-        USER_HIGHSCORE_NAME_4,
-        USER_HIGHSCORE_NAME_5,
-        USER_HIGHSCORE_SCORE_1,
-        USER_HIGHSCORE_SCORE_2,
-        USER_HIGHSCORE_SCORE_3,
-        USER_HIGHSCORE_SCORE_4,
-        USER_HIGHSCORE_SCORE_5,
-        USER_HIGHSCORE_LEVEL_1,
-        USER_HIGHSCORE_LEVEL_2,
-        USER_HIGHSCORE_LEVEL_3,
-        USER_HIGHSCORE_LEVEL_4,
-        USER_HIGHSCORE_LEVEL_5,
+        USER_RENDER_TYPE,        
+        USER_MUSIC,
+        USER_MUSIC_VOLUME,
+        USER_SOUND,
+        USER_SOUND_VOLUME,
+        USER_HIGHSCORE,       
         
         // Game mechanic values.
         
         /** The number of ticks (frames) per second. */
-        TICKS_PER_SECOND,
+        GAME_TICKS_PER_SECOND,
+        GAME_COLOR_PRIMARY,
+        GAME_COLOR_SECONDARY,
         
         // Debug values.
         
@@ -149,21 +134,14 @@ public class Settings
         MAIN_MENU_LOGO_FADE_IN_WAIT,
         MAIN_MENU_LOGO_FADE_IN_DURATION,
         MAIN_MENU_LOGO_FADE_OUT_WAIT,
-        MAIN_MENU_LOGO_FADE_OUT_DURATION
-    
-    
-    
-    
-    
-    
-    
+        MAIN_MENU_LOGO_FADE_OUT_DURATION    
     }
     
     public enum Value
     {
         CONF_VERSION_1,
-        GAME_RENDER_JAVA2D,
-        GAME_RENDER_LWJGL;
+        USER_RENDER_JAVA2D,
+        USER_RENDER_LWJGL;
     }
     
     // Static settings.
@@ -293,7 +271,7 @@ public class Settings
     /** Recalculates milliseconds per tick. */
     private static void calculateMillisecondsPerTick()
     {         
-        millisecondsPerTick = 1000 / SettingsManager.get().getInt(Key.TICKS_PER_SECOND);                 
+        millisecondsPerTick = 1000 / SettingsManager.get().getInt(Key.GAME_TICKS_PER_SECOND);                 
     }
     
     /** Returns the number of milliseconds per tick. */

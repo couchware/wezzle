@@ -15,6 +15,7 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.TileType;
@@ -67,7 +68,7 @@ public class GravityTutorial extends AbstractTutorial
         label = new LabelBuilder(280, 166)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false)
-                .color(Game.TEXT_COLOR1).size(16)
+                .color(game.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(16)
                 .text("Gravity tiles change the").end();
         game.layerMan.add(label, Layer.EFFECT);   
         this.labelList.add(label);

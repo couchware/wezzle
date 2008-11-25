@@ -79,7 +79,9 @@ public class SoundMusicGroup extends AbstractGroup
      * @param groupMan
      * @param propertyMan
      */    
-    public SoundMusicGroup(LayerManager layerMan)
+    public SoundMusicGroup(
+            SettingsManager settingsMan,
+            LayerManager layerMan)
     {
         // Set the layer manager.
         this.layerMan = layerMan;
@@ -87,8 +89,8 @@ public class SoundMusicGroup extends AbstractGroup
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(26).text("Sound/Music")
-                .visible(false).end();
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26)
+                .text("Sound/Music").visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
                
@@ -98,8 +100,8 @@ public class SoundMusicGroup extends AbstractGroup
         RadioItem soundItem2 = new RadioItem.Builder().text("Off").end();        
         soundRadio = new RadioGroup.Builder<Sound>(400, 233, Sound.class)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(Sound.ON, soundItem1, SettingsManager.get().getBoolean(Key.GAME_SOUND))
-                .add(Sound.OFF, soundItem2, !SettingsManager.get().getBoolean(Key.GAME_SOUND))
+                .add(Sound.ON, soundItem1, SettingsManager.get().getBoolean(Key.USER_SOUND))
+                .add(Sound.OFF, soundItem2, !SettingsManager.get().getBoolean(Key.USER_SOUND))
                 .visible(false).end();
         layerMan.add(soundRadio, Layer.UI);
         entityList.add(soundRadio);             
@@ -111,7 +113,7 @@ public class SoundMusicGroup extends AbstractGroup
         soundSlider = new SliderBar.Builder(400, 272)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0.0, 1.0)                    
-                .virtualValue(SettingsManager.get().getDouble(Key.GAME_SOUND_VOLUME))
+                .virtualValue(SettingsManager.get().getDouble(Key.USER_SOUND_VOLUME))
                 .visible(false).end();
         layerMan.add(soundSlider, Layer.UI);
         entityList.add(soundSlider);        
@@ -122,8 +124,8 @@ public class SoundMusicGroup extends AbstractGroup
         RadioItem musicItem2 = new RadioItem.Builder().text("Off").end();        
         musicRadio = new RadioGroup.Builder<Music>(400, 321, Music.class)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(Music.ON, musicItem1, SettingsManager.get().getBoolean(Key.GAME_MUSIC))
-                .add(Music.OFF, musicItem2, !SettingsManager.get().getBoolean(Key.GAME_MUSIC))
+                .add(Music.ON, musicItem1, SettingsManager.get().getBoolean(Key.USER_MUSIC))
+                .add(Music.OFF, musicItem2, !SettingsManager.get().getBoolean(Key.USER_MUSIC))
                 .visible(false).end();
         layerMan.add(musicRadio, Layer.UI);
         entityList.add(musicRadio);            
@@ -135,7 +137,7 @@ public class SoundMusicGroup extends AbstractGroup
         musicSlider = new SliderBar.Builder(400, 359)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0.0, 1.0)
-                .virtualValue(SettingsManager.get().getDouble(Key.GAME_MUSIC_VOLUME))
+                .virtualValue(SettingsManager.get().getDouble(Key.USER_MUSIC_VOLUME))
                 .visible(false).end();
         layerMan.add(musicSlider, Layer.UI);
         entityList.add(musicSlider);                      
@@ -168,7 +170,7 @@ public class SoundMusicGroup extends AbstractGroup
             boolean soundOn = soundRadio.getSelectedKey() == Sound.ON;
             
             // Set the property.            
-            SettingsManager.get().setBoolean(Key.GAME_SOUND, soundOn);            
+            SettingsManager.get().setBoolean(Key.USER_SOUND, soundOn);            
          
             // Pause or unpause the sound depending on whether or not
             // the button is activated.
@@ -179,7 +181,7 @@ public class SoundMusicGroup extends AbstractGroup
             boolean musicOn = musicRadio.getSelectedKey() == Music.ON;
             
             // Set the property.            
-            SettingsManager.get().setBoolean(Key.GAME_MUSIC, musicOn);
+            SettingsManager.get().setBoolean(Key.USER_MUSIC, musicOn);
             
             // Set the pausedness.
             game.musicMan.setPaused(!musicOn);           

@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileEntity;
@@ -70,8 +71,8 @@ public class RocketTutorial extends AbstractTutorial
         label = new LabelBuilder(280, 166)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false)
-                .color(Game.TEXT_COLOR1).size(16)
-                .text("Rockets destroy all tiles").end();
+                .color(game.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .size(16).text("Rockets destroy all tiles").end();
         game.layerMan.add(label, Layer.EFFECT);   
         this.labelList.add(label);
         

@@ -5,7 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,41 +26,12 @@ public class HighScoreManager
     /**
      * The symbol indicating an empty name.
      */
-    public final static String EMPTY_NAME = "-";             
+    public final static String EMPTY_NAME = "";             
     
     /**
      * The list of high scores.
      */
-    private HighScore[] highScoreList;
-    
-    final private static List<Settings.Key> nameKeyList;
-    final private static List<Settings.Key> scoreKeyList;
-    final private static List<Settings.Key> levelKeyList;
-    
-    static
-    {
-        nameKeyList  = new ArrayList<Settings.Key>();
-        scoreKeyList = new ArrayList<Settings.Key>();
-        levelKeyList = new ArrayList<Settings.Key>();
-        
-        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_1);
-        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_2);
-        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_3);
-        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_4);
-        nameKeyList.add(Settings.Key.USER_HIGHSCORE_NAME_5);
-        
-        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_1);
-        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_2);
-        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_3);
-        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_4);
-        scoreKeyList.add(Settings.Key.USER_HIGHSCORE_SCORE_5);
-        
-        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_1);
-        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_2);
-        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_3);
-        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_4);
-        levelKeyList.add(Settings.Key.USER_HIGHSCORE_LEVEL_5);
-    }
+    private List<HighScore> scoreList;       
     
     /**
      * Create a high score manager and fill it with 0's.
@@ -67,13 +40,9 @@ public class HighScoreManager
      */
     private HighScoreManager()
     {
-        // Initialize 
-        this.highScoreList = new HighScore[NUMBER_OF_SCORES];
-               
-        // If this is the first time running the game, we have no built list.
-        // Every other time it will load the list from file.
-        if (readSettings() == false)
-            resetScoreList();
+        // Initialize.
+        this.scoreList = new ArrayList<HighScore>(NUMBER_OF_SCORES);
+        this.importSettings();
     }
     
     
@@ -94,7 +63,7 @@ public class HighScoreManager
      */
     public int getHighestScore()
     {
-        return this.highScoreList[0].getScore();
+        return this.scoreList.get(0).getScore();
     }
     
     /**
@@ -106,7 +75,7 @@ public class HighScoreManager
      */
     public int getLowestScore()
     {
-        return this.highScoreList[highScoreList.length - 1].getScore();
+        return this.scoreList.get(scoreList.size() - 1).getScore();
     }       
     
     /**
@@ -117,10 +86,12 @@ public class HighScoreManager
      * 
      * The insert into the list sorts the list.
      * 
-     * @param key The key associated with the score.
-     * @param score The score associated with the key.
-     */
-    public void addScore(String name, int score, int level)
+     * @param name
+     * @param score
+     * @param level
+     * @param export
+     */    
+    public void offerScore(String name, int score, int level, boolean export)
     {
         // See if the score belongs on the list.
         if (score < getLowestScore())
@@ -129,13 +100,28 @@ public class HighScoreManager
         HighScore newScore = HighScore.newInstance(name, score, level);       
         
         // Add the score.
-        this.highScoreList[this.highScoreList.length - 1] = newScore;
+        this.scoreList.set(NUMBER_OF_SCORES - 1, newScore);
         
         // Sort.
         this.bubbleUp();
         
-        // Write to properties.
-        writeProperties();
+        // Export if requested.
+        if (export == true) this.exportSettings();
+    }
+    
+    public void offerScore(String name, int score, int level)
+    {
+        offerScore(name, score, level, true);
+    }
+    
+    public void offerScore(HighScore score, boolean export)
+    {
+        offerScore(score.getName(), score.getScore(), score.getLevel(), export);                
+    }
+    
+    public void offerScore(HighScore score)
+    {
+        offerScore(score, true);
     }
     
     /**
@@ -146,14 +132,14 @@ public class HighScoreManager
      */
     private void bubbleUp()
     {
-        for (int i = this.highScoreList.length - 1; i > 0; i--)
+        for (int i = scoreList.size() - 1; i > 0; i--)
         {
             // Swap.
-            if (highScoreList[i].getScore() > highScoreList[i - 1].getScore())
+            if (scoreList.get(i).getScore() > scoreList.get(i - 1).getScore())
             {
-                HighScore temp = highScoreList[i - 1];
-                highScoreList[i - 1] = highScoreList[i];
-                highScoreList[i] = temp;
+                HighScore swap = scoreList.get(i - 1);
+                scoreList.set(i - 1, scoreList.get(i));
+                scoreList.set(i, swap);
             }
             else
             {
@@ -166,21 +152,12 @@ public class HighScoreManager
     /**
      * Write the list to properties.
      */
-    private void writeProperties()
+    private void exportSettings()
     {
         SettingsManager settingsMan = SettingsManager.get();
         
-        for (int i = 0; i < highScoreList.length; i++)
-        {
-            settingsMan.setString(nameKeyList.get(i), 
-                    highScoreList[i].getName());
-            
-            settingsMan.setInt(scoreKeyList.get(i),    
-                    highScoreList[i].getScore());
-            
-            settingsMan.setInt(levelKeyList.get(i),   
-                    highScoreList[i].getLevel());                   
-        }
+        settingsMan.setObject(Key.USER_HIGHSCORE, 
+                Collections.unmodifiableList(scoreList));
     }
         
     /**
@@ -188,25 +165,22 @@ public class HighScoreManager
      * 
      * @return Whether the list was read or not.
      */
-    private boolean readSettings()
+    private void importSettings()
     {
         SettingsManager settingsMan = SettingsManager.get();
         
-        for (int i = 0; i < highScoreList.length; i++)
-        {
-            String name = settingsMan.getString(nameKeyList.get(i));
-            
-            // If the properties aren't set, return false.
-            if (name == null) return false;
-            
-            // Otherwise, add to the high score list.
-            int score = settingsMan.getInt(scoreKeyList.get(i));
-            int level = settingsMan.getInt(levelKeyList.get(i));
-            
-            highScoreList[i] = HighScore.newInstance(name, score, level);           
-        }
+        // Reset the score list.
+        resetScoreList();
         
-        return true;
+        // Get the list from the settings manager.
+        //List list = new ArrayList((List) settingsMan.getObject(Key.USER_HIGHSCORE));
+        List list = (List) settingsMan.getObject(Key.USER_HIGHSCORE);
+        
+        for (Object object : list)     
+        {
+            HighScore score = (HighScore) object;            
+            offerScore(score, false);                
+        }
     }
     
     /**
@@ -214,22 +188,20 @@ public class HighScoreManager
      */
     public void resetScoreList()
     {
-        HighScore blankScore = HighScore.newInstance("-", -1, -1);
+        HighScore score = HighScore.newInstance("", 0, 0);
+        scoreList.clear();
         
         // Load with dummy scores.
-        for (int i = 0; i < highScoreList.length; i++)        
-            highScoreList[i] = blankScore;        
-        
-        // Save the properties.
-        writeProperties();
+        for (int i = 0; i < NUMBER_OF_SCORES; i++)        
+            scoreList.add(score);               
     }
     
     /**
      * Returns a copy of the high score list.
      */
-    public HighScore[] getScoreList()
+    public List<HighScore> getScoreList()
     {
-        return highScoreList.clone();
+        return new ArrayList<HighScore>(scoreList);
     }         
     
 }

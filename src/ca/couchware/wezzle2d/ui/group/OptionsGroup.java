@@ -8,6 +8,7 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -60,6 +61,7 @@ public class OptionsGroup extends AbstractGroup
      * @param layerMan
      */    
     public OptionsGroup(
+            final SettingsManager settingsMan,
             final LayerManager layerMan,     
             final GroupManager groupMan)
     {
@@ -69,7 +71,7 @@ public class OptionsGroup extends AbstractGroup
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(26).text("Options")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Options")
                 .visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
@@ -89,7 +91,7 @@ public class OptionsGroup extends AbstractGroup
         entityList.add(audioButton);
         
         // Create the audio group.
-        audioGroup = new SoundMusicGroup(layerMan);
+        audioGroup = new SoundMusicGroup(settingsMan, layerMan);
         groupMan.register(audioGroup);
         
         // Create main menu button.

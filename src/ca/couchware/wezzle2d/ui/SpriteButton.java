@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.*;
+import java.awt.Color;
 import java.util.EnumSet;
 
 /**
@@ -16,25 +17,34 @@ import java.util.EnumSet;
 public class SpriteButton extends AbstractSpriteButton
 {    
     
+    /** The default color. */
+    private static Color defaultColor = Color.RED;
+    
     /**
-     * The different sizes of the buttons.
+     * Change the default color for all sprite buttons.
+     * 
+     * @param The new color.
      */
+    public static void setDefaultColor(Color color)
+    { defaultColor = color; }    
+    
+    /** The different sizes of the buttons. */
     public enum Type
     {
         /** A small circular button suitable for use in +/- clickers. */
         SMALL_CIRCULAR("Button_SmallCircular.png", 18), 
         
         /** A thinner, longer button used in the main menu. */
-        THIN("Button_Thin.png", 20),        
+        THIN          ("Button_Thin.png",          20),        
         
         /** The "normal" sized button used in the in-game UI. */
-        NORMAL("Button_Normal.png", 18), 
+        NORMAL        ("Button_Normal.png",        18), 
         
         /** A larger, squarish button used in the main menu. */
-        LARGE("Button_Large.png", 24), 
+        LARGE         ("Button_Large.png",         24), 
         
         /** A huge, squarish button used in the in-game button as the high-score button. */
-        HUGE("Button_Huge.png", 26);       
+        HUGE          ("Button_Huge.png",          26);       
                 
         /** The file name of the sprite that represents the button. */
         private String filename;
@@ -42,47 +52,51 @@ public class SpriteButton extends AbstractSpriteButton
         /** The text size of the text that will be written on the button */
         private int textSize;
         
-        /** Constructor that stores the filename. */
+        /** 
+         * Constructor that stores the filename. 
+         * 
+         * @param filename The filename of the button's appearance.
+         * @param textSize The text size.
+         */
         Type(String filename, int textSize)
         { this.filename = filename; this.textSize = textSize; }
         
-        /** An accessor for getting the sprite's filename. */
+        /** 
+         * An accessor for getting the sprite's filename. 
+         * 
+         * @return The filename.
+         */
         public String getFilename()
         { return filename; }
         
-        /** An accessor for getting the sprite's text size. */
+        /** 
+         * An accessor for getting the sprite's text size. 
+         * 
+         * @return The text size.
+         */
         public int getTextSize()
         { return textSize; }
     }        
            
-    /**
-     * The type of button.
-     */
+    /** The color of the button. */
+    final private Color color;
+    
+    /** The type of button. */
     final private Type type;
     
-    /**
-     * The normal sprite.
-     */
+    /** The normal sprite. */
     final private ISprite sprite;       
     
-    /**
-     * The normal label.
-     */
+    /** The normal label. */
     final private ILabel normalLabel;   
     
-    /**
-     * The hover label.
-     */
+    /** The hover label. */
     final private ILabel hoverLabel;
     
-    /**
-     * The active label.
-     */
+    /** The active label. */
     final private ILabel activeLabel;       
     
-    /**
-     * The size of the text on the button.
-     */
+    /** The size of the text on the button. */
     final private int textSize;
     
     /*
@@ -90,34 +104,22 @@ public class SpriteButton extends AbstractSpriteButton
      */
     // The inherited "opacity" variable is used.    
     
-    /**
-     * The hover opacity.
-     */
+    /** The hover opacity. */
     private int hoverOpacity;
     
-    /**
-     * The pressed opacity.
-     */
+    /** The pressed opacity. */
     private int pressedOpacity;
     
-    /**
-     * The active opacity.
-     */
+    /** The active opacity. */
     private int onOpacity;
     
-    /**
-     * The normal text.
-     */
+    /** The normal text. */
     private final String normalText;
     
-    /**
-     * The hover text.
-     */
+    /** The hover text. */
     private final String hoverText;
     
-    /**
-     * The active text.
-     */
+    /** The active text. */
     private final String activeText;       
     
     /**
@@ -131,15 +133,16 @@ public class SpriteButton extends AbstractSpriteButton
         // This will set their variables as well.
         super(builder.x, builder.y);
         
-        // Assign values from builder.               
-        this.normalText = builder.normalText;       
-        this.hoverText = builder.hoverText;
-        this.activeText = builder.activeText;        
-        this.opacity = limitOpacity(builder.offOpacity);
-        this.hoverOpacity = limitOpacity(builder.hoverOpacity);
+        // Assign values from builder.      
+        this.color          = builder.color;
+        this.normalText     = builder.normalText;       
+        this.hoverText      = builder.hoverText;
+        this.activeText     = builder.activeText;        
+        this.opacity        = limitOpacity(builder.offOpacity);
+        this.hoverOpacity   = limitOpacity(builder.hoverOpacity);
         this.pressedOpacity = limitOpacity(builder.pressedOpacity);
-        this.onOpacity = limitOpacity(builder.onOpacity);
-        this.type = builder.type;
+        this.onOpacity      = limitOpacity(builder.onOpacity);
+        this.type           = builder.type;
         
         // Determine which text size to use.  If it is 0, then use the 
         // one from the text-size map.  Otherwise, use the one provided 
@@ -172,7 +175,7 @@ public class SpriteButton extends AbstractSpriteButton
         // Create the normal label.
         this.normalLabel = new LabelBuilder(x + offsetX + width / 2, y + offsetY + height / 2)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(textSize).text(normalText).end(); 
+                .color(color).size(textSize).text(normalText).end(); 
         
         // Create the other labels, using the normal label as a template.
         if (this.hoverText != null)   
@@ -202,7 +205,8 @@ public class SpriteButton extends AbstractSpriteButton
         
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
-        private String normalText = "Default";
+        private Color color = defaultColor;
+        private String normalText = "Button";
         private String hoverText = null;
         private String activeText = null;
         private int textSize = 0;
@@ -222,19 +226,20 @@ public class SpriteButton extends AbstractSpriteButton
         
         public Builder(SpriteButton button)
         {            
-            this.x = button.x;
-            this.y = button.y;
-            this.alignment = button.alignment.clone();
-            this.normalText = button.normalText;
-            this.hoverText = button.hoverText;
-            this.textSize = button.textSize;
-            this.offOpacity = button.opacity;           
-            this.hoverOpacity = button.hoverOpacity;
+            this.x              = button.x;
+            this.y              = button.y;
+            this.alignment      = button.alignment.clone();
+            this.color          = button.color;
+            this.normalText     = button.normalText;
+            this.hoverText      = button.hoverText;
+            this.textSize       = button.textSize;
+            this.offOpacity     = button.opacity;           
+            this.hoverOpacity   = button.hoverOpacity;
             this.pressedOpacity = button.pressedOpacity;
-            this.onOpacity = button.onOpacity;
-            this.type = button.type;
-            this.visible = button.visible;
-            this.disabled = button.disabled;
+            this.onOpacity      = button.onOpacity;
+            this.type           = button.type;
+            this.visible        = button.visible;
+            this.disabled       = button.disabled;
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -242,6 +247,9 @@ public class SpriteButton extends AbstractSpriteButton
         
         public Builder alignment(EnumSet<Alignment> val) 
         { alignment = val; return this; }
+        
+        public Builder color(Color val)
+        { color = val; return this; }
         
         public Builder text(String val)
         {

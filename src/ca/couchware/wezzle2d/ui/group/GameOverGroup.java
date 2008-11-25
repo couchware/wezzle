@@ -11,6 +11,8 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.manager.ScoreManager;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -64,6 +66,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
      * @param layerMan
      */    
     public GameOverGroup(
+            final SettingsManager settingsMan,
             final LayerManager layerMan,
             final ScoreManager scoreMan)
     {    
@@ -74,7 +77,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(26).text("Game over :(")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Game over :(")
                 .visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
@@ -82,7 +85,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         // Create the final score header.
         scoreHeaderLabel = new LabelBuilder(400, 234)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(14)
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(14)
                 .text("Your final score was")
                 .visible(false).end();
         layerMan.add(scoreHeaderLabel, Layer.UI); 
@@ -91,7 +94,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         // Create the final score label.
         scoreLabel = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(30)
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(30)
                 .text("0").visible(false).end();
         layerMan.add(scoreLabel, Layer.UI); 
         entityList.add(scoreLabel);

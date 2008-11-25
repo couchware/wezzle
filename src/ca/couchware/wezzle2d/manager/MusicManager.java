@@ -100,7 +100,7 @@ public class MusicManager
         this.index = 0;    
                         
         // Get the default volume.
-        setNormalizedGain(SettingsManager.get().getDouble(Key.GAME_MUSIC_VOLUME));                
+        setNormalizedGain(SettingsManager.get().getDouble(Key.USER_MUSIC_VOLUME));                
     }
         
     /**
@@ -327,7 +327,7 @@ public class MusicManager
             nGain = 1.0;
         }
         // Adjust the property;
-        SettingsManager.get().setDouble(Key.GAME_MUSIC_VOLUME, nGain);
+        SettingsManager.get().setDouble(Key.USER_MUSIC_VOLUME, nGain);
 
         // Rememeber it.
         this.normalizedGain = nGain;

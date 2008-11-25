@@ -25,25 +25,27 @@ import java.util.EnumSet;
 public class TutorialGroup extends AbstractGroup
 {
 
-    /**
-     * The layer manager.
-     */
+    /** The settings manager. */
+    final private SettingsManager settingsMan;
+    
+    /** The layer manager. */
     final private LayerManager layerMan;
     
-    /**
-     * The background window.
-     */
+    /** The background window. */
     Window win;
     
-    public TutorialGroup(LayerManager layerMan)
+    public TutorialGroup(
+            SettingsManager settingsMan,
+            LayerManager layerMan)
     {
         // Set the layer manager.
-        this.layerMan = layerMan;
+        this.settingsMan = settingsMan;
+        this.layerMan    = layerMan;
         
          // Create the window.
         win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY)).visible(false).end();
+                .opacity(settingsMan.getInt(Key.MAIN_MENU_WINDOW_OPACITY)).visible(false).end();
         this.layerMan.add(win, Layer.UI);         
     }
     
@@ -54,7 +56,7 @@ public class TutorialGroup extends AbstractGroup
         win.setVisible(true);        
         
         IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED)).end();   
+                .speed(settingsMan.getInt(Key.MAIN_MENU_WINDOW_SPEED)).end();   
                 
         return a;
     }
@@ -64,7 +66,7 @@ public class TutorialGroup extends AbstractGroup
     {        
         IAnimation a = new MoveAnimation.Builder(win).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED)).end();
+                .speed(settingsMan.getInt(Key.MAIN_MENU_WINDOW_SPEED)).end();
         
         return a;
     }

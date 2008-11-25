@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
   <entry name="CONF_VERSION">CONF_VERSION_1</entry>
-  <entry name="GAME_RENDER_TYPE">GAME_RENDER_LWJGL</entry>
-  <entry name="GAME_MUSIC">true</entry>
-  <entry name="GAME_MUSIC_VOLUME">0.5</entry>
-  <entry name="GAME_SOUND">true</entry>
-  <entry name="GAME_SOUND_VOLUME">0.5</entry>
-  <entry name="USER_HIGHSCORE_NAME_1">-</entry>
-  <entry name="USER_HIGHSCORE_NAME_2">-</entry>
-  <entry name="USER_HIGHSCORE_NAME_3">-</entry>
-  <entry name="USER_HIGHSCORE_NAME_4">-</entry>
-  <entry name="USER_HIGHSCORE_NAME_5">-</entry>
-  <entry name="USER_HIGHSCORE_SCORE_1">0</entry>
-  <entry name="USER_HIGHSCORE_SCORE_2">0</entry>
-  <entry name="USER_HIGHSCORE_SCORE_3">0</entry>
-  <entry name="USER_HIGHSCORE_SCORE_4">0</entry>
-  <entry name="USER_HIGHSCORE_SCORE_5">0</entry>
-  <entry name="USER_HIGHSCORE_LEVEL_1">0</entry>
-  <entry name="USER_HIGHSCORE_LEVEL_2">0</entry>
-  <entry name="USER_HIGHSCORE_LEVEL_3">0</entry>
-  <entry name="USER_HIGHSCORE_LEVEL_4">0</entry>
-  <entry name="USER_HIGHSCORE_LEVEL_5">0</entry>
-  <entry name="TICKS_PER_SECOND">60</entry>
+  <entry name="USER_RENDER_TYPE">USER_RENDER_LWJGL</entry>
+  <entry name="USER_MUSIC">true</entry>
+  <entry name="USER_MUSIC_VOLUME">0.5</entry>
+  <entry name="USER_SOUND">true</entry>
+  <entry name="USER_SOUND_VOLUME">0.5</entry>
+  <entry name="USER_HIGHSCORE">
+    <high-score name="" score="0" level="0"/>      
+    <high-score name="" score="0" level="0"/>  
+    <high-score name="" score="0" level="0"/>
+    <high-score name="" score="0" level="0"/>
+    <high-score name="" score="0" level="0"/>
+  </entry> 
+  <entry name="GAME_TICKS_PER_SECOND">60</entry>
+  <entry name="GAME_COLOR_PRIMARY">
+    <color red="252" green="233" blue="45" alpha="255" />
+  </entry>
+  <entry name="GAME_COLOR_SECONDARY">
+    <color red="255" green="255" blue="255" alpha="255" />
+  </entry>
   <entry name="DEBUG_SHOW_CLIP_RECT">false</entry>
   <entry name="REFACTOR_SPEED_X_SLOWER">70</entry>
   <entry name="REFACTOR_SPEED_Y_SLOWER">70</entry>

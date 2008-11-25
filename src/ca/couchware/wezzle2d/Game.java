@@ -21,7 +21,6 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
-import ca.couchware.wezzle2d.manager.IManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ListenerManager;
@@ -38,13 +37,20 @@ import ca.couchware.wezzle2d.manager.TutorialManager;
 import ca.couchware.wezzle2d.manager.WorldManager;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.menu.MainMenuGroup;
-import ca.couchware.wezzle2d.tile.*;
+import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.transition.CircularTransition;
 import ca.couchware.wezzle2d.transition.ITransition;
-import ca.couchware.wezzle2d.tutorial.*;
-import ca.couchware.wezzle2d.ui.*;
-import ca.couchware.wezzle2d.ui.group.*;
-import ca.couchware.wezzle2d.util.*;
+import ca.couchware.wezzle2d.tutorial.BasicTutorial;
+import ca.couchware.wezzle2d.tutorial.BombTutorial;
+import ca.couchware.wezzle2d.tutorial.GravityTutorial;
+import ca.couchware.wezzle2d.tutorial.RocketTutorial;
+import ca.couchware.wezzle2d.tutorial.StarTutorial;
+import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ProgressBar;
+import ca.couchware.wezzle2d.ui.RadioItem;
+import ca.couchware.wezzle2d.ui.SpeechBubble;
+import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.io.InputStream;
@@ -53,7 +59,6 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -109,13 +114,7 @@ public class Game extends Canvas implements IGameWindowCallback
     
     /** A rectangle the size of the screen. */
     final public static ImmutableRectangle SCREEN_RECTANGLE = 
-            new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);              
-    
-    /** The text color. */
-    final public static Color TEXT_COLOR1 = new Color(252, 233, 45);
-    
-    /** The secondary color. */
-    final public static Color TEXT_COLOR2 = Color.WHITE;
+            new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     
     /** The disabled colour. */
     final public static Color TEXT_COLOR_DISABLED = new Color(178, 178, 178);
@@ -186,6 +185,9 @@ public class Game extends Canvas implements IGameWindowCallback
      * pointer and drawing the piece to the board.
      */
     public PieceManager pieceMan;	   
+    
+    /** The settings manager. */
+    public SettingsManager settingsMan = SettingsManager.get();
     
     /** The manager in charge of score. */
     public ScoreManager scoreMan;        
@@ -482,7 +484,7 @@ public class Game extends Canvas implements IGameWindowCallback
         initializeMembers();                                                               
         
         // Create the loader.        
-        loader = new Loader();        
+        loader = new Loader(settingsMan);        
         setDrawer(loader);
                 
         // Initialize managers.
@@ -519,7 +521,11 @@ public class Game extends Canvas implements IGameWindowCallback
                 window.clearMouseEvents();
                                
                 // Create the main menu.
-                mainMenu = new MainMenuGroup(animationMan, musicMan);
+                mainMenu = new MainMenuGroup(
+                        settingsMan, 
+                        animationMan, 
+                        musicMan);
+                
                 setDrawer(mainMenu);
             }   
             else return;                        
@@ -561,7 +567,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 musicMan.play();                
                 
                 // See if the music is off.
-                if (SettingsManager.get().getBoolean(Key.GAME_MUSIC) == false)
+                if (SettingsManager.get().getBoolean(Key.USER_MUSIC) == false)
                     musicMan.setPaused(true);
             }   
             else
@@ -783,13 +789,10 @@ public class Game extends Canvas implements IGameWindowCallback
 
                 int y = pieceMan.getPieceGrid().getY() 
                         + boardMan.getCellHeight() / 2;
-                                
-                // The settings manager.
-                SettingsManager settingsMan = SettingsManager.get();
-
+                                                
                 final ILabel label = new LabelBuilder(x, y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                        .color(TEXT_COLOR1)
+                        .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                         .size(settingsMan.getInt(Key.SCT_LEVELUP_TEXT_SIZE))
                         .text(settingsMan.getString(Key.SCT_LEVELUP_TEXT)).end();
 
@@ -949,7 +952,7 @@ public class Game extends Canvas implements IGameWindowCallback
         LogManager.recordMessage("Game over!", "Game#frameRendering");
 
         // Add the new score.
-        highScoreMan.addScore("TEST", scoreMan.getTotalScore(), 
+        highScoreMan.offerScore("TEST", scoreMan.getTotalScore(), 
                 worldMan.getLevel());
         listenerMan.notifyGameOver(new GameEvent(this, worldMan.getLevel()));
         //highScoreGroup.updateLabels();
@@ -1049,7 +1052,14 @@ public class Game extends Canvas implements IGameWindowCallback
         //System.setProperty("sun.java2d.opengl", "True");
         
         // Make sure the setting manager is loaded.       
-        SettingsManager.get();                
+        SettingsManager settingsMan = SettingsManager.get();      
+        
+        // Set the default color scheme.
+        ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        SpriteButton.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));           
         
         try
         {

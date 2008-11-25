@@ -10,8 +10,11 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.IGameListener;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  *
@@ -63,6 +66,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
      * @param layerMan
      */    
     public HighScoreGroup(
+            final SettingsManager settingsMan,
             final LayerManager layerMan,             
             final HighScoreManager highScoreMan)
     {
@@ -75,7 +79,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         // Create the high score header.
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(26).text("High Scores")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("High Scores")
                 .visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);     
@@ -83,14 +87,14 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         // Create the no high score label.
         noHighScoreLabel1 = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(20).text("There are no")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(20).text("There are no")
                 .visible(false).end();
         layerMan.add(noHighScoreLabel1, Layer.UI);
         entityList.add(noHighScoreLabel1);
                 
         noHighScoreLabel2 = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.TEXT_COLOR1).size(20).text("high scores yet.")
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(20).text("high scores yet.")
                 .visible(false).end();
         layerMan.add(noHighScoreLabel2, Layer.UI);
         entityList.add(noHighScoreLabel2);                
@@ -103,7 +107,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         {                      
             scoreLabels[i] = new LabelBuilder(400, 225 + (30 * i))
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(Game.TEXT_COLOR1).opacity(0).size(16).text(" ")
+                    .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).opacity(0).size(16).text(" ")
                     .visible(false).end();
             layerMan.add(scoreLabels[i], Layer.UI);
             entityList.add(scoreLabels[i]);
@@ -141,12 +145,12 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         boolean highScoreExists = false;
         
         // Get the high score list.
-        HighScore[] highScoreList = highScoreMan.getScoreList();
+        List<HighScore> highScoreList = highScoreMan.getScoreList();
         
         for (int i = 0; i < scoreLabels.length; i++)
         {                        
             // Skip if empty.
-            if (highScoreList[i].getName().equals(HighScoreManager.EMPTY_NAME))
+            if (highScoreList.get(i).getName().equals(HighScoreManager.EMPTY_NAME))
                 continue;
             
             // A high score must exist then.
@@ -155,7 +159,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
             layerMan.remove(scoreLabels[i], Layer.UI);
             entityList.remove(scoreLabels[i]);
             scoreLabels[i] = new LabelBuilder(scoreLabels[i])
-                .text(createScoreLabel(i, highScoreList[i])).opacity(100).end();
+                .text(createScoreLabel(i, highScoreList.get(i))).opacity(100).end();
             layerMan.add(scoreLabels[i], Layer.UI);
             entityList.add(scoreLabels[i]);            
         }                       

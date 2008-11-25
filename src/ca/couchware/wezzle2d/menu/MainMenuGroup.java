@@ -40,50 +40,34 @@ import java.util.EnumSet;
 public class MainMenuGroup extends AbstractGroup implements IDrawer
 {       
     
-    /** 
-     * The standard menu background path.
-     */
+    /** The standard menu background path. */
     final private static String BACKGROUND_PATH = Settings.getSpriteResourcesPath()
             + "/MenuBackground.png"; 
     
-    /** 
-     * The wezzle logo path.
-     */
+    /** The wezzle logo path. */
     final private static String WEZZLE_LOGO_PATH = Settings.getSpriteResourcesPath()
             + "/WezzleLogo.png"; 
     
-    /**
-     * The wezzle logo starburst path.
-     */
+    /** The wezzle logo starburst path. */
     final private static String WEZZLE_LOGO_STARBURST_PATH = Settings.getSpriteResourcesPath()
             + "/WezzleLogoStarburst.png";
     
-    /**
-     * An enum containing the possible states for the loader to be in.
-     */
+    /** An enum containing the possible states for the loader to be in. */
     public enum State
     {                       
-        /** 
-         * The main menu has been initialized and is ready to go.
-         */
+        /** The main menu has been initialized and is ready to go. */
         READY,                
               
         ANIMATING,
         
-        /**
-         * The main menu is done and is waiting for the game to take control.
-         */
+        /** The main menu is done and is waiting for the game to take control. */
         FINISHED
     }
     
-    /**
-     * The current state of the menu.
-     */
+    /** The current state of the menu. */
     private State state = State.READY;
         
-    /**
-     * An enum containing the main menu buttons.
-     */
+    /** An enum containing the main menu buttons. */
     private enum Menu
     {
         NONE(-1),
@@ -104,34 +88,22 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         { return rank; }
     }                       
     
-    /**
-     * The wezzle logo.
-     */
+    /** The wezzle logo. */
     final private EntityGroup logoEntity;
     
-    /**
-     * The logo spinner animation.
-     */
+    /** The logo spinner animation. */
     final private IAnimation rotateAnimation;
     
-    /**
-     * A map containing all the buttons in the main menu.
-     */
+    /** A map containing all the buttons in the main menu. */
     private EnumMap<Menu, IButton> buttonMap;
     
-    /**
-     * A map containing all the groups in the main menu.
-     */
+    /** A map containing all the groups in the main menu. */
     private EnumMap<Menu, IGroup> groupMap;
     
-    /**
-     * The current button that is activated.
-     */
+    /** The current button that is activated. */
     private Menu currentButton = Menu.NONE;    
     
-    /**
-     * The animation manager.
-     */
+    /** The animation manager. */
     private AnimationManager animationMan;
         
     /** The animation that slides in the options when the menu is first shown. */        
@@ -140,31 +112,28 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     /** The animation that is currently being run. */        
     private IAnimation currentAnimation = FinishedAnimation.get();    
     
-    /**
-     * The music manager.
-     */
+    /** The music manager. */
+    private SettingsManager settingsMan;
+    
+    /** The music manager. */
     private MusicManager musicMan;
     
-    /**
-     * The layer manager.
-     */
+    /** The layer manager. */
     private LayerManager layerMan;              
     
     /**
      * Create a new main menu.
      */
     public MainMenuGroup(            
+            SettingsManager settingsMan,
             AnimationManager animationMan, 
             MusicManager musicMan)
     {                
-        // Store the animation manager reference.
-        this.animationMan = animationMan;
-        
-        // Store the music manager reference.
-        this.musicMan = musicMan;
-        
-        // Create the layer manager.
-        this.layerMan = LayerManager.newInstance();
+        // Store the manager references.
+        this.settingsMan  = settingsMan;
+        this.animationMan = animationMan;                        
+        this.musicMan     = musicMan;
+        this.layerMan     = LayerManager.newInstance();
         
         // Set the main menu as activated.
         this.activated = true;
@@ -233,7 +202,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         
         // Create the buttons.               
         button = new SpriteButton.Builder(910, 153)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))               
                 .type(SpriteButton.Type.THIN).text("Play Now").textSize(20)
                 .hoverOpacity(70).offOpacity(0).disabled(true).end();
         layerMan.add(button, Layer.UI);
@@ -287,33 +256,34 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         this.groupMap.put(Menu.NONE, group);
         
         // Create the "Play Now" group.
-        group = new PlayNowGroup(this,                 
+        group = new PlayNowGroup(this, 
+                this.settingsMan,
                 this.layerMan, 
                 this.musicMan);
         this.groupMap.put(Menu.PLAY_NOW, group);
         
         // Create the "Tutorial" group.
-        group = new TutorialGroup(this.layerMan);
+        group = new TutorialGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.TUTORIAL, group);
         
         // Create the "Options" group.
-        group = new TutorialGroup(this.layerMan);
+        group = new TutorialGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.OPTIONS, group);
         
          // Create the "Upgrade" group.
-        group = new TutorialGroup(this.layerMan);
+        group = new TutorialGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.UPGRADE, group);
         
          // Create the "Achievements" group.
-        group = new TutorialGroup(this.layerMan);
+        group = new TutorialGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.ACHIEVEMENTS, group);
         
          // Create the "High Scores" group.
-        group = new TutorialGroup(this.layerMan);
+        group = new TutorialGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.HIGH_SCORES, group);
         
         // Create the "Exit" group.
-        group = new ExitGroup(this.layerMan);
+        group = new ExitGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.EXIT, group);
     }
     
@@ -451,10 +421,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     
     @Override
     public IAnimation animateShow()
-    {               
-        // The settings manager.
-        SettingsManager settingsMan = SettingsManager.get();
-        
+    {                       
         // The meta animation builder.
         MetaAnimation.Builder builder = new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL);
@@ -494,9 +461,6 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     @Override
     public IAnimation animateHide()
     {
-        // The settings manager.
-        SettingsManager settingsMan = SettingsManager.get();
-        
         // Create a new meta animation.
         MetaAnimation.Builder builder = new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL);
