@@ -11,7 +11,11 @@ import java.util.Set;
  *
  * @author Kevin
  */
- public class ScoreManager implements IManager, IScoreListener
+ public class ScoreManager implements 
+         IManager, 
+         IGameListener, 
+         ILevelListener, 
+         IScoreListener
  {    
      
     /** The different types of scores. */
@@ -73,7 +77,13 @@ import java.util.Set;
     /**
      * The board manager.
      */
-    final private BoardManager boardMan;        
+    final private BoardManager boardMan;   
+    
+    /** 
+     * The listener manager.  This reference is used to fire the target
+     * score chanaged events.
+     */
+    final private ListenerManager listenerMan;
     
     /**
      * The score this level.
@@ -105,31 +115,35 @@ import java.util.Set;
      * @param properties A property manager to load properties from.
      */
     private ScoreManager(
-            BoardManager boardMan,          
-            HighScoreManager highScoreMan)
+            BoardManager     boardMan,          
+            HighScoreManager highScoreMan,
+            ListenerManager  listenerMan)
     {
-        assert boardMan != null;        
+        assert boardMan     != null;        
         assert highScoreMan != null;
+        assert listenerMan  != null;
         
         // Create the save state.
         managerState = new EnumMap<Keys, Object>(Keys.class);
         
         // Store reference to board manager.
-        this.boardMan = boardMan;        
+        this.boardMan    = boardMan;       
+        this.listenerMan = listenerMan;
         
-        // Initialize the scores.
+        // Initialize the scores. 
         this.totalScore = 0;
         this.levelScore = 0;
-        this.highScore = highScoreMan.getHighestScore();
+        this.highScore  = highScoreMan.getHighestScore();
     }
 
     
     // Public API.
     public static ScoreManager newInstance(
-            BoardManager boardMan,
-            HighScoreManager highScoreMan)
+            BoardManager     boardMan,
+            HighScoreManager highScoreMan,
+            ListenerManager  listenerMan)
     {
-        return new ScoreManager(boardMan, highScoreMan);
+        return new ScoreManager(boardMan, highScoreMan, listenerMan);
     }
     
     /**
@@ -243,6 +257,20 @@ import java.util.Set;
     }
 
     /**
+	 * A method to generate a target score given the level. 
+	 * 
+	 * @param currentLevel The level to generate the score for.
+	 * @return The score.
+	 */
+	public int generateTargetLevelScore(int level)
+	{
+        // Level is at least 1.
+        assert level > 0;
+        
+		return level * 1200;
+	}
+           
+    /**
      * Requires documentation.
      * @return
      */
@@ -292,6 +320,7 @@ import java.util.Set;
     {
         setLevelScore(0);
         setTotalScore(0);
+        listenerMan.notifyScoreReset(new ScoreEvent(this, 0, -1));
     }
 
     /**
@@ -309,6 +338,9 @@ import java.util.Set;
     {		
         this.targetLevelScore = targetLevelScore;
         this.targetTotalScore += targetLevelScore;
+        
+        // Fire event.
+        this.listenerMan.notifyTargetScoreChanged(new ScoreEvent(this, 0, targetLevelScore));
     }
 
     /**
@@ -374,12 +406,44 @@ import java.util.Set;
         return (int) fontSize;
     }      
     
+    public void levelChanged(LevelEvent event)
+    {
+        setLevelScore(event.getLevelScore());        
+		setTargetLevelScore(event.getTargetLevelScore());
+    }  
+    
+    public void scoreReset(ScoreEvent event)
+    {
+        // Ignore it, generated here.
+    }
+    
     public void scoreChanged(ScoreEvent event, IListenerManager.GameType gameType)
     {
         if (gameType == IListenerManager.GameType.GAME)
         {
-            updateScore(event.getScore());
+            updateScore(event.getDeltaScore());
         }
+    }
+    
+    public void targetScoreChanged(ScoreEvent event)
+    {
+        // Ignore it, generated here.
+    }
+    
+    public void gameStarted(GameEvent event)
+    {
+        // Ignore it.
+    }
+
+    public void gameReset(GameEvent event)
+    {
+        resetScore();
+        setTargetLevelScore(generateTargetLevelScore(event.getLevel()));
+    }
+
+    public void gameOver(GameEvent event)
+    {
+        // Ignore it.
     }
     
     /**
@@ -419,6 +483,6 @@ import java.util.Set;
         totalScore = 0;
         targetLevelScore = 0;
         targetTotalScore = 0;        
-    }
+    }   
     
 }

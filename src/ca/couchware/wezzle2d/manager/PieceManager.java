@@ -725,12 +725,12 @@ public class PieceManager implements IMouseListener
         // Notify the listener manager.
         if (game.tutorialMan.isTutorialInProgress() == true)
         {
-            game.listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this), 
+            game.listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1), 
                 IListenerManager.GameType.TUTORIAL);
         }
         else
         {
-             game.listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this), 
+            game.listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1), 
                 IListenerManager.GameType.GAME);
         }
         // Add score SCT.

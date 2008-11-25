@@ -5,27 +5,61 @@
 
 package ca.couchware.wezzle2d.event;
 
-import ca.couchware.wezzle2d.Game;
 import java.util.EventObject;
 
 /**
- *  A custom level event.
+ * The level event.
  * 
  * @author kgrad
  */
 public class LevelEvent extends EventObject
 {
-    private int deltaLevel;
-    private Game game;
     
-    public LevelEvent(int deltaLevel, Game g, Object eventSource)
+    /** The old level. */
+    final private int oldLevel;        
+    
+    /** The new level. */
+    final private int newLevel;
+    
+    /** The level score. */
+    final private int levelScore;
+    
+    /** The target level score. */
+    final private int targetLevelScore;
+    
+    public LevelEvent(
+            Object source, 
+            int oldLevel,            
+            int newLevel,
+            int levelScore,
+            int targetLevelScore)
     {
-        super(eventSource);
-        this.game = g;
-        this.deltaLevel = deltaLevel;
+        super(source);
+        this.oldLevel = oldLevel;
+        this.newLevel = newLevel;
+        this.levelScore = levelScore;
+        this.targetLevelScore = targetLevelScore;
+    }   
+
+    public int getOldLevel()
+    {
+        return oldLevel;
     }
     
-    public int getLevelChange() { return this.deltaLevel; }
-    public Game getGame(){ return this.game; }
+    public int getNewLevel()
+    {
+        return newLevel;
+    }  
+    
+    public int getLevelScore()
+    {
+        return levelScore;
+    }
+
+    public int getTargetLevelScore()
+    {
+        return targetLevelScore;
+    }   
+        
 }
 

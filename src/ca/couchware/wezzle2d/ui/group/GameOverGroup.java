@@ -9,6 +9,8 @@ import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.GameEvent;
+import ca.couchware.wezzle2d.event.IGameListener;
+import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -16,14 +18,20 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class GameOverGroup extends AbstractGroup
+public class GameOverGroup extends AbstractGroup implements IGameListener
 {     
     
     /**
      * A reference to the layer manager.  This is used by groups to add
      * and remove things like buttons and sliders.
      */
-    final protected LayerManager layerMan;       
+    final private LayerManager layerMan;     
+    
+    /**
+     * A reference to the score manager.  This is used by the group
+     * to pull down the score when a game over event is fired.
+     */
+    final private ScoreManager scoreMan;
     
     /**
      * The header label.
@@ -55,10 +63,13 @@ public class GameOverGroup extends AbstractGroup
      * 
      * @param layerMan
      */    
-    public GameOverGroup(final LayerManager layerMan)
+    public GameOverGroup(
+            final LayerManager layerMan,
+            final ScoreManager scoreMan)
     {    
-        // Set the layer man.
+        // Set the manager references.
         this.layerMan = layerMan;
+        this.scoreMan = scoreMan;
         
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
@@ -133,11 +144,12 @@ public class GameOverGroup extends AbstractGroup
     public void updateLogic(Game game)
     {
         // Hide the screen.
-        game.groupMan.hideGroup(GroupManager.CLASS_GAME_OVER,
-                GroupManager.LAYER_BOTTOM);
-
-        // Reset everything.
-        game.listenerMan.notifyGameReset(new GameEvent(this));
+        game.groupMan.hideGroup(
+                GroupManager.Class.GAME_OVER,
+                GroupManager.Layer.BOTTOM);
+        
+        // The level we reset to.
+        int level = game.worldMan.getLevel();
         
         // Reset a bunch of stuff.
         if (isRestartActivated() == true)
@@ -146,19 +158,23 @@ public class GameOverGroup extends AbstractGroup
             game.boardMan.resetState();
             
             // Reset the world manager.
-            game.worldMan.resetState();                        
+            game.worldMan.resetState();  
+            level = game.worldMan.getLevel();
 
             // Reset the timer to the initial.
             game.timerMan.setInitialTime(game.worldMan.getInitialTimer());
         }
-
-        game.scoreMan.setLevelScore(0);
-        game.scoreMan.setTotalScore(0); 
-        game.scoreMan.setTargetLevelScore(
-                game.worldMan.generateTargetLevelScore(
-                game.worldMan.getLevel()));    
         
-        game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
+        // Notify all listeners of reset.
+        game.listenerMan.notifyGameReset(new GameEvent(this, level));
+
+//        game.scoreMan.setLevelScore(0);
+//        game.scoreMan.setTotalScore(0); 
+//        game.scoreMan.setTargetLevelScore(
+//                game.worldMan.generateTargetLevelScore(
+//                game.worldMan.getLevel()));    
+        
+        //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
                        
         game.statMan.resetMoveCount();
         game.statMan.resetLineCount();
@@ -179,7 +195,23 @@ public class GameOverGroup extends AbstractGroup
 
         // Start the board show animation.  This will
         // make the board visible when it's done.
-        game.startBoardShowAnimation(AnimationType.ROW_FADE);
+        game.startBoardShowAnimation(AnimationType.ROW_FADE);        
+    }
+
+    public void gameStarted(GameEvent event)
+    {
+        // Intentionally blank.        
+    }
+
+    public void gameReset(GameEvent event)
+    {
+        // Intentionally blank.
+    }
+
+    public void gameOver(GameEvent event)
+    {
+        // Set the score to whatever the score manager has now.
+        this.setScore(this.scoreMan.getTotalScore());
     }
             
 }

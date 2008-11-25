@@ -34,11 +34,13 @@ public interface IListenerManager
     
     public void registerListener(Listener listenerType, IListener listener);
     
+    public void notifyScoreReset(ScoreEvent e);
     public void notifyScoreChanged(ScoreEvent e, GameType gameType);
+    public void notifyTargetScoreChanged(ScoreEvent e);
     public void notifyLevelChanged(LevelEvent e);
     public void notifyMoveCommitted(MoveEvent e, GameType gameType);
     public void notifyLineConsumed(LineEvent e, GameType gameType);
     public void notifyGameStarted(GameEvent e);    
     public void notifyGameReset(GameEvent e);
-    public void notifyGameCompleted(GameEvent e);
+    public void notifyGameOver(GameEvent e);
 }

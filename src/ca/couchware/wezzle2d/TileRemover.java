@@ -470,12 +470,12 @@ public class TileRemover
             // Fire a score event.
             if (tutorialMan.isTutorialInProgress() == true)
             {
-                listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
                         IListenerManager.GameType.TUTORIAL);
             }
             else
             {
-                listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+                listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
                         IListenerManager.GameType.GAME);
             }
 
@@ -687,12 +687,12 @@ public class TileRemover
         // Fire a score event.
         if (tutorialMan.isTutorialInProgress() == true)
         {
-            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
                     IListenerManager.GameType.TUTORIAL);
         }
         else
         {
-            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
                     IListenerManager.GameType.GAME);
         }
 
@@ -889,12 +889,12 @@ public class TileRemover
         // Fire a score event.
         if (tutorialMan.isTutorialInProgress() == true)
         {
-            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
                     IListenerManager.GameType.TUTORIAL);
         }
         else
         {
-            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
                     IListenerManager.GameType.GAME);
         }
 
@@ -1141,12 +1141,12 @@ public class TileRemover
         // Fire a score event.
         if (tutorialMan.isTutorialInProgress() == true)
         {
-            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
                     IListenerManager.GameType.TUTORIAL);
         }
         else
         {
-            listenerMan.notifyScoreChanged(new ScoreEvent(deltaScore, this),
+            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
                     IListenerManager.GameType.GAME);
         }
 

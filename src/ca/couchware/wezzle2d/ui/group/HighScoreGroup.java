@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.ui.group;
 
+import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.HighScore;
 import ca.couchware.wezzle2d.ui.IButton;
@@ -8,6 +9,7 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -15,7 +17,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class HighScoreGroup extends AbstractGroup
+public class HighScoreGroup extends AbstractGroup implements IGameListener
 {
     
     /**
@@ -133,7 +135,7 @@ public class HighScoreGroup extends AbstractGroup
         super.setVisible(visible);
     }
     
-    public void updateLabels()
+    private void updateLabels()
     {
         // This variable is set to true if there is a high score.
         boolean highScoreExists = false;
@@ -191,6 +193,22 @@ public class HighScoreGroup extends AbstractGroup
     {
         return (rank + 1) + ". " + highScore.getName() + "  " 
             + highScore.getScore() + "  L" + highScore.getLevel() + "";
+    }
+
+    public void gameStarted(GameEvent event)
+    {
+        // Intentionally blank.
+    }
+
+    public void gameReset(GameEvent event)
+    {
+        // Intentionally blank.
+    }
+
+    public void gameOver(GameEvent event)
+    {
+        // Update all the labels.
+        updateLabels();
     }
     
 }

@@ -6,13 +6,13 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import ca.couchware.wezzle2d.util.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * The menu manager is used to manage the menues in Wezzle.  In particular, it
@@ -22,52 +22,32 @@ import java.util.LinkedList;
  */
 public class GroupManager 
 {
-    /**
-     * The game over class.
-     */
-    final public static int CLASS_GAME_OVER = 1;          
-        
-    /**
-     * The pause class.
-     */
-    final public static int CLASS_PAUSE = 2;
+    public enum Class
+    {
+        GAME_OVER,
+        PAUSE,
+        OPTIONS,
+        HIGH_SCORE
+    }
     
-    /**
-     * The options class.
-     */
-    final public static int CLASS_OPTIONS = 3;        
-        
-    /**
-     * The high score class.
-     */
-    final public static int CLASS_HIGH_SCORE = 4;
-    
-    /**
-     * The bottom layer.
-     */
-    final public static int LAYER_BOTTOM = 1;
-    
-    /**
-     * The middle layer.
-     */
-    final public static int LAYER_MIDDLE = 2;
-    
-    /**
-     * The top layer.
-     */
-    final public static int LAYER_TOP = 3;
+    public enum Layer
+    {
+        BOTTOM,
+        MIDDLE,
+        TOP
+    }                
     
     /**
      * This  linked list holds all groups that have called the register()
      * method.  This list is useful for performing commands on all the groups,
      * such as running updateLogic().
      */
-    protected ArrayList<IGroup> groupList;       
+    protected List<IGroup> groupList;       
     
-    /*
+    /**
      * The list of groups currently being shown.
      */
-    protected LinkedList<Entry> entryList;
+    protected List<Entry> entryList;    
           
     /**
      * A reference to the layer manager.
@@ -99,7 +79,7 @@ public class GroupManager
     }
     
     public void showGroup(IButton button, IGroup showGroup, 
-            int classNum, int layerNum)
+            Class groupClass, Layer layer)
     {
         // Remove all groups that aren't part of the passed class.
         // Hide all existing members of the passed clas.
@@ -108,9 +88,9 @@ public class GroupManager
             // The entry we are looking at.
             Entry e = it.next();                   
             
-            if (e.getLayerNum() == layerNum)
+            if (e.getLayer() == layer)
             {
-                if (e.getClassNum() == classNum)
+                if (e.getGroupClass() == groupClass)
                     e.getGroup().setVisible(false);
                 else
                 {
@@ -125,7 +105,7 @@ public class GroupManager
         }
        
         // Add the group on top.
-        entryList.addFirst(new Entry(showGroup, button, classNum, layerNum)); 
+        entryList.add(0, new Entry(showGroup, button, groupClass, layer)); 
         
         // Make the group visible.
         showGroup.setVisible(true);
@@ -135,8 +115,8 @@ public class GroupManager
         if (button != null)
             button.setActivated(true);
         
-        layerMan.hide(Layer.TILE);
-        layerMan.hide(Layer.EFFECT);
+        layerMan.hide(LayerManager.Layer.TILE);
+        layerMan.hide(LayerManager.Layer.EFFECT);
         
         LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#showGroup");
@@ -158,7 +138,7 @@ public class GroupManager
             entry.getButton().setActivated(false);
     }
     
-    public void hideGroup(int classNum, int layerNum)
+    public void hideGroup(Class classNum, Layer layerNum)
     {
         // Go through the entry list, removing all entries with the
         // passed class name.
@@ -167,7 +147,7 @@ public class GroupManager
             // The entry we are looking at.
             Entry e = it.next();
             
-            if (e.getLayerNum() == layerNum && e.getClassNum() == classNum)
+            if (e.getLayer() == layerNum && e.getGroupClass() == classNum)
             {
                 // Deactivate the entry.
                 deactivateEntry(e);     
@@ -181,11 +161,11 @@ public class GroupManager
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
-            layerMan.show(Layer.TILE);
-            layerMan.show(Layer.EFFECT);
+            layerMan.show(LayerManager.Layer.TILE);
+            layerMan.show(LayerManager.Layer.EFFECT);
         }
         else
-            entryList.getFirst().getGroup().setVisible(true);
+            entryList.get(0).getGroup().setVisible(true);
         
         LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#hideGroup");
@@ -211,11 +191,11 @@ public class GroupManager
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
-            layerMan.show(Layer.TILE);
-            layerMan.show(Layer.EFFECT);
+            layerMan.show(LayerManager.Layer.TILE);
+            layerMan.show(LayerManager.Layer.EFFECT);
         }
         else
-            entryList.getFirst().getGroup().setVisible(true);
+            entryList.get(0).getGroup().setVisible(true);
         
         LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#hideGroup");
@@ -277,25 +257,25 @@ public class GroupManager
          * The class of the group.  This is used to hide or show many groups
          * at once.
          */        
-        final protected int classNum;
+        final protected Class groupClass;
         
         /**
          * The layer that the group is on.  This is mainly used to keep
          * the game over screen open under a bunch of menues.
          */
-        final protected int layerNum;
+        final protected Layer layer;
         
         /**
          * The constructor.
          */
         public Entry(IGroup group, IButton button, 
-                int classNum, int layerNum)
+                Class groupClass, Layer layer)
         {
             // Set the references.
             this.group = group;
             this.button = button;
-            this.classNum = classNum;
-            this.layerNum = layerNum;
+            this.groupClass = groupClass;
+            this.layer = layer;
         }
 
         public IGroup getGroup()
@@ -308,14 +288,14 @@ public class GroupManager
             return button;
         }
 
-        public int getClassNum()
+        public Class getGroupClass()
         {
-            return classNum;
+            return groupClass;
         }
 
-        public int getLayerNum()
+        public Layer getLayer()
         {
-            return layerNum;
+            return layer;
         }                                   
     }
     

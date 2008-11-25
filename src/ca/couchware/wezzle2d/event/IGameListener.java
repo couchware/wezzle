@@ -11,8 +11,8 @@ package ca.couchware.wezzle2d.event;
  * @author cdmckay
  */
 public interface IGameListener extends IListener
-{
+{    
     public void gameStarted(GameEvent event);
     public void gameReset(GameEvent event);
-    public void gameCompleted(GameEvent event);
+    public void gameOver(GameEvent event);
 }

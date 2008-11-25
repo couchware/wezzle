@@ -14,8 +14,17 @@ import java.util.EventObject;
  */
 public class GameEvent extends EventObject
 {
-    public GameEvent(Object source)    
+    private int level;
+    
+    public GameEvent(Object source, int level)    
     {
         super(source);
+        this.level = level;
     }
+
+    public int getLevel()
+    {
+        return level;
+    }
+        
 }

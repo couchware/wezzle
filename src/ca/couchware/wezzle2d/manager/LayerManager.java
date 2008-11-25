@@ -16,7 +16,7 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class LayerManager implements IDrawer
+public class LayerManager implements IDrawer, IManager
 {           
     
     /**
@@ -491,6 +491,21 @@ public class LayerManager implements IDrawer
             for (IDrawable d : l)
                 if (d instanceof IEntity)
                     ((IEntity) d).setDisabled(disabled);
-    }        
+    }
+
+    public void saveState()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void loadState()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void resetState()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

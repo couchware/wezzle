@@ -211,7 +211,7 @@ public class PauseGroup extends AbstractGroup implements
         setLinesPerMove(0.0);
     }
 
-    public void gameCompleted(GameEvent event)
+    public void gameOver(GameEvent event)
     {
         // Intentionally left blank.
     }

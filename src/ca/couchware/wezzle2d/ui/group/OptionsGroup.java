@@ -148,8 +148,8 @@ public class OptionsGroup extends AbstractGroup
         {                        
             // Show the sound/music group.            
             game.groupMan.showGroup(audioButton, audioGroup, 
-                    GroupManager.CLASS_OPTIONS,
-                    GroupManager.LAYER_MIDDLE);
+                GroupManager.Class.OPTIONS,
+                GroupManager.Layer.MIDDLE);
         }       
     }
     

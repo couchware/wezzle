@@ -387,9 +387,9 @@ public class PlayNowGroup extends AbstractGroup
             
             // Set the target score.
             game.worldMan.setLevel(levelNumber);
-            game.scoreMan.setTargetLevelScore(game.worldMan.generateTargetLevelScore());
-            game.scoreMan.setTargetTotalScore(game.worldMan.generateTargetLevelScore());
-            game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
+            game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
+            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));
+            //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
                                       
             // Stop all the player.
             for (MusicPlayer p : playerMap.values())

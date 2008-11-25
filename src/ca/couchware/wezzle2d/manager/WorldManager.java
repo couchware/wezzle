@@ -220,48 +220,33 @@ public class WorldManager implements IManager, ILevelListener
 //        }); 
         
         return Collections.unmodifiableList(mutableList);
-    }
+    }        
     
-    /**
-	 * A method to generate a target score given the level. 
-	 * 
-	 * @param currentLevel The level to generate the score for.
-	 * @return The score.
-	 */
-	public int generateTargetLevelScore(int currentLevel)
-	{
-		return currentLevel * 1200;
-	}
-        
-    public int generateTargetLevelScore()
-    {
-        return generateTargetLevelScore(level);
-    }     
-    
-    public void levelUp(final Game game)
-    {        
-        this.incrementLevel();
-        
-        int currentLevelScore = game.scoreMan.getLevelScore() - 
-                game.scoreMan.getTargetLevelScore();
-        int targetLevelScore = generateTargetLevelScore(level);
-        
-        if(currentLevelScore > targetLevelScore / 2)
-            currentLevelScore = targetLevelScore / 2;
-        
-        game.scoreMan.setLevelScore(currentLevelScore);        
-		game.scoreMan.setTargetLevelScore(targetLevelScore);
-        
-        game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
-               
-        // Change the timer.
-        int time = game.timerMan.getInitialTime();
-        
-        if(time > this.timerMin)
-            time--;
-        
-        game.timerMan.setInitialTime(time);
-    }
+//    public void levelUp(final Game game)
+//    {        
+//        this.incrementLevel();
+//        
+////        int currentLevelScore = game.scoreMan.getLevelScore() 
+////                - game.scoreMan.getTargetLevelScore();
+////        
+////        int targetLevelScore = generateTargetLevelScore(level);
+////        
+////        if(currentLevelScore > targetLevelScore / 2)
+////            currentLevelScore = targetLevelScore / 2;
+//        
+////        game.scoreMan.setLevelScore(currentLevelScore);        
+////		game.scoreMan.setTargetLevelScore(targetLevelScore);
+//        
+//        //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
+//               
+//        // Change the timer.
+////        int time = game.timerMan.getInitialTime();
+////        
+////        if(time > this.timerMin)
+////            time--;
+////        
+////        game.timerMan.setInitialTime(time);
+//    }
     
     /**
      * Calculates the number of tiles to drop.
@@ -623,8 +608,9 @@ public class WorldManager implements IManager, ILevelListener
                 
     public void levelChanged(LevelEvent e)
     {
-        for (int i = 0; i < e.getLevelChange(); i++)
-            this.levelUp(e.getGame());
+        this.incrementLevel();
+//        for (int i = 0; i < e.getLevel(); i++)
+//            this.levelUp(e.getGame());
     }
 
     public void saveState()

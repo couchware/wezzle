@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.util.Util;
 
 /**
@@ -11,8 +13,13 @@ import ca.couchware.wezzle2d.util.Util;
  * @author Kevin Grad
  *
  */
-public class TimerManager 
+public class TimerManager implements ILevelListener
 {
+    /** 
+     * The minimum time.
+     */
+    private static final int MINIMUM_TIME = 5;
+    
     /**
      * The default time.
      */
@@ -208,6 +215,16 @@ public class TimerManager
         boolean c = changed;
         changed = false;
         return c;
-    }        
+    }
+
+    public void levelChanged(LevelEvent event)
+    {
+        int time = getInitialTime();
+        
+        if (time > MINIMUM_TIME) 
+            time--;
+        
+        setInitialTime(time);
+    }
 		
 }

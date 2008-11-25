@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.*;
+import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.IListenerManager.Listener;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
@@ -20,6 +21,7 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
+import ca.couchware.wezzle2d.manager.IManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ListenerManager;
@@ -51,6 +53,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -67,7 +70,9 @@ import java.util.concurrent.Executors;
  * As a mediator it will be informed when entities within our game detect events
  * (e.g. alien killed, played died) and will take appropriate game actions.
  * 
- * @author Cameron, Kevin Grad (based on code by Kevin Glass)
+ * @author Cameron McKay
+ * @author Kevin Grad 
+ * @author Kevin Glass
  */
 public class Game extends Canvas implements IGameWindowCallback
 {	  
@@ -75,9 +80,7 @@ public class Game extends Canvas implements IGameWindowCallback
     // Static Members
     //--------------------------------------------------------------------------                            
     
-    /**
-     * The different manager types.
-     */
+    /** An enumeration of the manager types. */
     public static enum ManagerType
     {
         ACHIEVEMENT, 
@@ -96,146 +99,86 @@ public class Game extends Canvas implements IGameWindowCallback
         TUTORIAL, 
         MUSIC, 
         SOUND    
-    }
+    }       
           
-    /**
-     * The width of the screen.
-     */
+    /** The width of the screen. */
     final public static int SCREEN_WIDTH = 800;
     
-    /**
-     * The height of the screen .
-     */
+    /** The height of the screen  */
     final public static int SCREEN_HEIGHT = 600;
     
-    /**
-     * A rectangle the size of the screen.
-     */
+    /** A rectangle the size of the screen. */
     final public static ImmutableRectangle SCREEN_RECTANGLE = 
-            new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);              
     
-    
-    /**
-     * The level header path.
-     */
-    final private static String LEVEL_HEADER_PATH = Settings.getSpriteResourcesPath()
-            + "/Header_Level.png";
-    
-    /**
-     * The score header path.
-     */
-    final private static String SCORE_HEADER_PATH = Settings.getSpriteResourcesPath()
-            + "/Header_Score.png";
-    
-    /**
-     * The high score header path.
-     */
-    final private static String HIGH_SCORE_HEADER_PATH = Settings.getSpriteResourcesPath()
-            + "/Header_HighScore.png";       
-    
-    /**
-     * The text color.
-     */
+    /** The text color. */
     final public static Color TEXT_COLOR1 = new Color(252, 233, 45);
     
-    /**
-     * The secondary color.
-     */
+    /** The secondary color. */
     final public static Color TEXT_COLOR2 = Color.WHITE;
     
-    /**
-     * The disabled colour.
-     */
+    /** The disabled colour. */
     final public static Color TEXT_COLOR_DISABLED = new Color(178, 178, 178);
         
-    /**
-     * The line score color.
-     */
+    /** The line score color. */
     final public static Color SCORE_LINE_COLOR = new Color(252, 233, 45);
     
-    /**
-     * The piece score color.
-     */
+    /** The piece score color. */
     final public static Color SCORE_PIECE_COLOR = new Color(240, 240, 240);
     
-    /**
-     * The bomb score color.
-     */ 
+    /** The bomb score color. */ 
     final public static Color SCORE_BOMB_COLOR = new Color(255, 127, 0);     
     
-    /**
-     * The name of the application.
-     */
+    /** The name of the application. */
     final public static String APPLICATION_NAME = "Wezzle";
     
-    /**
-     * The version of the application.
-     */
+    /** The version of the application. */
     final public static String APPLICATION_VERSION = "Test 7";     
     
-    /**
-     * The full title of the game.
-     */
+    /** The full title of the game. */
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
     
-    /**
-     * The copyright.
-     */
+    /** The copyright. */
     final public static String COPYRIGHT = "\u00A9 2008 Couchware Inc.";
     
     //--------------------------------------------------------------------------
     // Public Members
     //--------------------------------------------------------------------------                  
     
-    /**
-     * The loader.
-     */
+    /** The loader. */
     public Loader loader;
     
-    /**
-     * The main menu.
-     */
+    /** The main menu. */
     public MainMenuGroup mainMenu;
+    
+    /** The game UI. */
+    public GameUI ui = GameUI.get();
     
     /**
      * The main menu transition.  This is the transition animation that is used
      * to transition from the menu to the game.
      */
-    public ITransition menuTransition;
-        
-    /**
-     * The animation manager in charge of animations.
-     */
+    public ITransition menuTransition;             
+    
+    /** The animation manager in charge of animations. */
     public AnimationManager animationMan;
     
-    /**
-	 * The manager in charge of maintaining the board.
-	 */
+    /** The manager in charge of maintaining the board. */
     public BoardManager boardMan;
     
-    /**
-     * The menu manager.
-     */
+    /** The menu manager. */
     public GroupManager groupMan;
        
-    /**
-     * The high score manager.
-     */    
+    /** The high score manager. */    
     public HighScoreManager highScoreMan;
     	
-    /**
-     * The game layer manager.
-     */
+    /** The game layer manager. */
     public LayerManager layerMan;
         
-    /** 
-     * The manager in charge of the moves. 
-     */
+    /** The manager in charge of the moves. */
     public StatManager statMan;	    
     
-    /**
-     * The manager in charge of music.
-     */
+    /** The manager in charge of music. */
     public MusicManager musicMan;  
 
     /**
@@ -244,104 +187,54 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     public PieceManager pieceMan;	   
     
-    /** 
-     * The manager in charge of score.
-     */
+    /** The manager in charge of score. */
     public ScoreManager scoreMan;        
     
-    /** 
-     * The manager in charge of sound.
-     */
+    /** The manager in charge of sound. */
     public SoundManager soundMan;             
     
-    /** 
-     * The manager in charge of keeping track of the time. 
-     */
+    /** The manager in charge of keeping track of the time. */
     public TimerManager timerMan;
     
-    /**
-     * The manager in charge of running tutorials.
-     */
+    /** The manager in charge of running tutorials. */
     public TutorialManager tutorialMan;   
     
-    /**
-     * The Manager in charge of the world.
-     */
+    /** The Manager in charge of the world. */
     public WorldManager worldMan;    	
     
-    /**
-     * The Manager in charge of Listeners.
-     */
+    /** The Manager in charge of Listeners. */
     public ListenerManager listenerMan = ListenerManager.get();
     
-    /**
-     * The manager in charge of achievements
-     */
-    public AchievementManager achievementMan;
-	
-    /**
-     * The pause button.
-     */
-    public IButton pauseButton;
-       
-    /**
-     * The options button.
-     */
-    public IButton optionsButton;
-    
-    /**
-     * The help button.
-     */
-    public IButton helpButton;
-    
-    /**
-     * The progress bar.
-     */
-    public ProgressBar progressBar;        
+    /** The manager in charge of achievements */
+    public AchievementManager achievementMan;	
     
     //--------------------------------------------------------------------------
     // Private Members
     //--------------------------------------------------------------------------
             
-    /**
-     * The build nunber path.
-     */
+    /** The build nunber path. */
     final private static String BUILD_NUMBER_PATH = 
             Settings.getTextResourcesPath() + "/build.number";                             
     
-    /**
-     * The current build number.
-     */
+    /** The current build number. */
     private String buildNumber;        
     
-    /**
-     * The current drawer.
-     */
+    /** The current drawer. */
     private IDrawer drawer;
     
-    /** 
-     * The normal title of the window. 
-     */
+    /** The normal title of the window. */
     private String windowTitle = APPLICATION_NAME;	              
     
-    /**
-     * The executor used by certain managers.
-     */
+    /** The executor used by certain managers. */
     private Executor executor;                   
 
-     /**
-     * If true, the board show animation will be activated next loop.
-     */
+    /** If true */
     private boolean activateBoardShowAnimation = false;
     
-    /**
-     * If true, the board hide animation will be activated next loop.
-     */
+    /** If true */
     private boolean activateBoardHideAnimation = false;
    
-    /**
-     * The board animation type to use.
-     */
+    /** The board animation type to use. */
     private AnimationType boardAnimationType;
     
     /**
@@ -350,93 +243,15 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     private IAnimation boardAnimation = null;
     
-    /**
-     * If true, the game will end next loop.
-     */
-    private boolean activateGameOver = false;                               
+    /** If true, the game will end next loop. */
+    private boolean activateGameOver = false;   
+    
+    /** If true, a game over has been activated. */
+    private boolean gameOverInProgress = false;
 	
-	/** 
-     * The window that is being used to render the game. 
-     */
-    private IGameWindow window;
-    
-   
-    
-    /**
-     * The background sprite.
-     */
-    private AbstractEntity background;
-    
-	/** 
-     * The timer text. 
-     */
-    private ILabel timerLabel;
-      
-    /**
-     * The score header graphic.
-     */
-    private GraphicEntity scoreHeaderLabel;
-        
-    /** 
-     * The score text.
-     */
-    private ILabel scoreLabel;
-    
-    /**
-     * The high score header graphic.
-     */
-    private GraphicEntity highScoreHeaderLabel;
-            
-    /** 
-     * The high score text. 
-     */
-    private ILabel highScoreLabel;
-    
-    /**
-     * The high score header button.
-     */
-    private IButton highScoreButton;
-    
-    /**
-     * The level header graphic.
-     */
-    private GraphicEntity levelHeader;
-    
-    /**
-     * The level text.
-     */
-    private ILabel levelLabel;            
-    
-    /**
-     * The version label.
-     */
-    private ILabel versionLabel;     
-    
-    /**
-     * The copyright label.
-     */
-    private ILabel copyrightLabel;
-    
-    /**
-     * The pause group.
-     */
-    private PauseGroup pauseGroup;
-    
-    /**
-     * The game over group.
-     */
-    private GameOverGroup gameOverGroup;    
-    
-    /**
-     * The options group.
-     */
-    private OptionsGroup optionsGroup;
-    
-     /**
-     * The high score group.
-     */
-    private HighScoreGroup highScoreGroup;        
-    
+	/** The window that is being used to render the game. */
+    private IGameWindow window;                  
+                
     //--------------------------------------------------------------------------
     // Constructor
     //--------------------------------------------------------------------------
@@ -581,9 +396,15 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.SCORE))
         {
             // Create the score manager.
-            scoreMan = ScoreManager.newInstance(boardMan, highScoreMan);
-            scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
-            listenerMan.registerListener(Listener.SCORE, scoreMan);
+            scoreMan = ScoreManager.newInstance(
+                    boardMan, 
+                    highScoreMan, 
+                    listenerMan);
+            
+            //scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
+            listenerMan.registerListener(Listener.GAME,  scoreMan);
+            listenerMan.registerListener(Listener.LEVEL, scoreMan);
+            listenerMan.registerListener(Listener.SCORE, scoreMan);            
         }
         
         if (managerSet.contains(ManagerType.SOUND))
@@ -602,6 +423,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Create the time manager.
             timerMan = TimerManager.newInstance(worldMan.getInitialTimer()); 
+            listenerMan.registerListener(Listener.LEVEL, timerMan);
         }
         
         if (managerSet.contains(ManagerType.ACHIEVEMENT))
@@ -638,147 +460,7 @@ public class Game extends Canvas implements IGameWindowCallback
             achievementMan.add(new Achievement(rules4, 
                      "Level greater than 2", Achievement.Difficulty.BRONZE));
         }              
-    }
-    
-    /**
-     * Initializes all the buttons that appear on the main game screen.
-     */
-    private void initializeButtons()
-    {        
-        // The high score button.
-        highScoreButton = new SpriteButton.Builder(128, 299)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.HUGE).text("")
-                .offOpacity(0).hoverOpacity(70).onOpacity(95).end();
-        layerMan.add(highScoreButton, Layer.UI);
-                
-        // Create pause button.        
-        pauseButton = new SpriteButton.Builder(668, 211)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.NORMAL).text("Pause").activeText("Resume")
-                .offOpacity(70).end();
-        layerMan.add(pauseButton, Layer.UI);    
-        
-        // Create the options button, using pause button as a template.
-        optionsButton = new SpriteButton.Builder((SpriteButton) pauseButton)
-                .y(299).text("Options").end();
-        layerMan.add(optionsButton, Layer.UI);                
-        
-        // Create the help buttton, using pause button as a template.
-        helpButton = new SpriteButton.Builder((SpriteButton) optionsButton)
-                .y(387).text("Help").end();               
-        layerMan.add(helpButton, Layer.UI);     
-    }
-    
-    /**
-     * Initializes all the labesl that appear on the main game screen.
-     */
-    private void initializeLabels()
-    {                     
-        // Set up the copyright label.
-        copyrightLabel = new LabelBuilder(10, 600 - 10)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .cached(false).color(TEXT_COLOR1).size(12)                
-                .text(COPYRIGHT).end();
-        layerMan.add(copyrightLabel, Layer.UI);
-        
-        // Set up the version label.	
-        versionLabel = new LabelBuilder(800 - 10, 600 - 10)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .cached(false).color(TEXT_COLOR1).size(12)                
-                .text(TITLE)
-                .end();                        
-        layerMan.add(versionLabel, Layer.UI);
-        
-		// Set up the timer text.
-        timerLabel = new LabelBuilder(400, 70)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(TEXT_COLOR1).size(50).text("").end();
-        layerMan.add(timerLabel, Layer.UI);
-             
-        // Set up the level header.
-        levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();        
-        layerMan.add(levelHeader, Layer.UI);
-        
-        // Set up the level text.
-        levelLabel = new LabelBuilder(126, 210)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
-                .cached(false)
-                .color(TEXT_COLOR1).size(20).text("--").end();                
-        layerMan.add(levelLabel, Layer.UI);        
-        
-        // Set up the score header.
-        highScoreHeaderLabel = 
-                new GraphicEntity.Builder(127, 278, HIGH_SCORE_HEADER_PATH)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(highScoreHeaderLabel, Layer.UI);
-                        
-        // Set up the high score text.
-        highScoreLabel = new LabelBuilder(126, 337)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
-                .cached(false)
-                .color(TEXT_COLOR1).size(20).text("--").end();
-        layerMan.add(highScoreLabel, Layer.UI);
-        
-        // Set up the score header.
-        scoreHeaderLabel = new GraphicEntity.Builder(128, 403, SCORE_HEADER_PATH)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(scoreHeaderLabel, Layer.UI);
-        
-        // Set up the score text.
-        scoreLabel = new LabelBuilder(126, 460)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
-                .cached(false)
-                .color(TEXT_COLOR1).size(20).text("--").end();
-        layerMan.add(scoreLabel, Layer.UI);
-    }
-    
-    /**
-     * Initializes miscellaneous components.
-     */
-    private void initializeComponents()
-    {
-        // Create the background.
-		background = new GraphicEntity
-                .Builder(0, 0, Settings.getSpriteResourcesPath() + "/Background2.png")
-                .end();
-        
-        layerMan.add(background, Layer.BACKGROUND);   
-        layerMan.toBack(background, Layer.BACKGROUND);
-        
-        // Create the progress bar.
-        progressBar = new ProgressBar.Builder(393, 501)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .progressMax(scoreMan.getTargetLevelScore()).end();
-        layerMan.add(progressBar, Layer.UI);
-    }
-    
-    /**
-     * Initialize the various groups.
-     */
-    private void initializeGroups()
-    {        
-        // Initialize pause group.                
-        pauseGroup = new PauseGroup(layerMan, statMan);
-        groupMan.register(pauseGroup);
-        
-        listenerMan.registerListener(Listener.MOVE, pauseGroup);
-        listenerMan.registerListener(Listener.LINE, pauseGroup);
-        listenerMan.registerListener(Listener.GAME, pauseGroup);
-             
-        // Initialize game over group.
-        gameOverGroup = new GameOverGroup(layerMan);    
-        groupMan.register(gameOverGroup);
-        
-        // Initialize options group.
-        optionsGroup = new OptionsGroup(layerMan, groupMan);
-        groupMan.register(optionsGroup);
-        
-        // Initialize high score group.
-        highScoreGroup = new HighScoreGroup(layerMan, highScoreMan); 
-        groupMan.register(highScoreGroup);
-    }
+    }        
     
     /**
      * Initialize various members.
@@ -813,29 +495,8 @@ public class Game extends Canvas implements IGameWindowCallback
            }
         });
                                
-        // Initialize buttons.    
-        loader.addRunnable(new Runnable()
-        {
-           public void run() { initializeButtons(); }
-        });                                 
-                
-        // Initialize labels.  
-        loader.addRunnable(new Runnable()
-        {
-           public void run() { initializeLabels(); }
-        });        
-        
-        // Initialize miscellaneous components.
-        loader.addRunnable(new Runnable()
-        {
-           public void run() { initializeComponents(); }
-        });        
-             
-        // Initialize the groups.   
-        loader.addRunnable(new Runnable()
-        {
-           public void run() { initializeGroups(); }
-        });                     
+        // Initialize UI.       
+        ui.initialize(loader, Game.this);                                            
 	}                   
     
     public void update()
@@ -928,49 +589,7 @@ public class Game extends Canvas implements IGameWindowCallback
             }            
         } // end if
                                
-        // If the high score button was just clicked.
-        if (highScoreButton.clicked() == true)
-        {
-            if (highScoreButton.isActivated() == true)            
-            {                           
-                groupMan.showGroup(highScoreButton, highScoreGroup, 
-                        GroupManager.CLASS_HIGH_SCORE,
-                        GroupManager.LAYER_MIDDLE);            
-            }
-            else
-                groupMan.hideGroup(GroupManager.CLASS_HIGH_SCORE,
-                        GroupManager.LAYER_MIDDLE);
-        }
-        
-        // If the pause button was just clicked.
-        if (pauseButton.clicked() == true)
-        {            
-            if (pauseButton.isActivated() == true)            
-            {                
-                groupMan.showGroup(pauseButton, pauseGroup, 
-                        GroupManager.CLASS_PAUSE,
-                        GroupManager.LAYER_MIDDLE);            
-            }
-            else
-            {
-                groupMan.hideGroup(GroupManager.CLASS_PAUSE,
-                        GroupManager.LAYER_MIDDLE);            
-            }
-        }
-        
-        // If the options button was just clicked.
-        if (optionsButton.clicked() == true)
-        {                           
-            if (optionsButton.isActivated() == true)  
-            {                
-                groupMan.showGroup(optionsButton, optionsGroup,
-                        GroupManager.CLASS_OPTIONS,
-                        GroupManager.LAYER_MIDDLE);            
-            }
-            else            
-                groupMan.hideGroup(GroupManager.CLASS_OPTIONS,
-                        GroupManager.LAYER_MIDDLE);
-        }    
+        ui.updateLogic(this);
         
         // Check on board animation.
         if (boardAnimation != null && boardAnimation.isFinished() == true)
@@ -1015,13 +634,13 @@ public class Game extends Canvas implements IGameWindowCallback
             pieceMan.clearMouseButtonSet();
 
             // If game over is in progress, make a new board and start.
-            if (gameOverGroup.isActivated() == true)
+            if (gameOverInProgress == true)
             {
-                // Draw game over screen.
-                gameOverGroup.setScore(scoreMan.getTotalScore());
-                groupMan.showGroup(null, gameOverGroup, 
-                        GroupManager.CLASS_GAME_OVER,
-                        GroupManager.LAYER_BOTTOM);                  
+                // Show the game over screen.
+                ui.showGameOverGroup(groupMan);      
+                
+                // Clear the flag.
+                gameOverInProgress = false;
             }
         }
         else if (boardAnimation != null && boardAnimation.isFinished() == false)
@@ -1074,13 +693,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // Fire all the queued mouse events.
         window.fireMouseEvents();                
         window.updateKeyPresses();
-        
-        // if escape has been pressed, stop the game
-//        if (window.isKeyPressed(KeyEvent.VK_ESCAPE))
-//        {
-//                System.exit(0);
-//        }   
-                
+                        
         // The keys.
         if (window.isKeyPressed('b'))
         {
@@ -1145,7 +758,22 @@ public class Game extends Canvas implements IGameWindowCallback
                 LogManager.recordMessage("Level up!", "Game#frameRendering");
                 //worldMan.levelUp(this);
                
-                listenerMan.notifyLevelChanged(new LevelEvent(1, this, this));
+                // lots o' shit to add to the level event
+                int level = worldMan.getLevel();
+                int levelScore = scoreMan.getLevelScore() - scoreMan.getTargetLevelScore();       
+                int targetLevelScore  = scoreMan.generateTargetLevelScore(level + 1);
+        
+                if (levelScore > targetLevelScore / 2)
+                {
+                    levelScore = targetLevelScore / 2;
+                }
+                
+                listenerMan.notifyLevelChanged(new LevelEvent(this, 
+                        level, 
+                        level + 1,
+                        levelScore,
+                        targetLevelScore));
+                
                 TileRemover.get().notifyLevelUp();                                                
 
                 soundMan.play(Sound.LEVEL_UP);
@@ -1201,10 +829,10 @@ public class Game extends Canvas implements IGameWindowCallback
         if (activateGameOver == true)
         {
             // Clear flag.
-            clearGameOver();                                
+            activateGameOver = false;                            
 
             // Set in progress flag.
-            gameOverGroup.setActivated(true);
+            gameOverInProgress = true;
 
             // Hide the board.
             startBoardHideAnimation(AnimationType.ROW_FADE);                
@@ -1245,71 +873,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // Update the world manager logic.
         worldMan.updateLogic(this);                       
 
-        // Draw the timer text.
-        if (!timerLabel.getText().equals(String.valueOf(timerMan.getTime())))            
-        {
-            layerMan.remove(timerLabel, Layer.UI);
-            timerLabel = new LabelBuilder(timerLabel)                        
-                    .text(String.valueOf(timerMan.getTime())).end();
-            layerMan.add(timerLabel, Layer.UI);
-            timerLabel.getDrawRect();
-        }
-
-        // Draw the high score text.
-        if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
-        {
-            LogManager.recordMessage("New high score label created.");
-            layerMan.remove(highScoreLabel, Layer.UI);
-            highScoreLabel = new LabelBuilder(highScoreLabel)
-                    .text(String.valueOf(scoreMan.getHighScore())).end();
-            layerMan.add(highScoreLabel, Layer.UI);
-        }                        
-
-        if (tutorialMan.isTutorialInProgress() == false)
-        {
-            // Set the level text.
-            if (!levelLabel.getText().equals(String.valueOf(worldMan.getLevel())))
-            {
-                layerMan.remove(levelLabel, Layer.UI);
-                levelLabel = new LabelBuilder(levelLabel)
-                        .text(String.valueOf(worldMan.getLevel())).end();
-                layerMan.add(levelLabel, Layer.UI);
-            }
-
-            // Set the score text.
-            if (!scoreLabel.getText().equals(String.valueOf(scoreMan.getTotalScore())))
-            {
-                layerMan.remove(scoreLabel, Layer.UI);
-                scoreLabel = new LabelBuilder(scoreLabel)
-                        .text(String.valueOf(scoreMan.getTotalScore()))
-                        .end();
-                layerMan.add(scoreLabel, Layer.UI);
-            }
-        }
-        else
-        {
-            // Set the level text.
-            if (!levelLabel.getText()
-                    .equals(tutorialMan.getTutorialInProgress().getName()))
-            {
-                layerMan.remove(levelLabel, Layer.UI);
-                levelLabel = new LabelBuilder(levelLabel)
-                        .text(tutorialMan.getTutorialInProgress().getName())
-                        .end();
-                layerMan.add(levelLabel, Layer.UI);
-            }
-
-            // Set the score text.
-            if (!scoreLabel.getText().equals("--"))
-            {
-                layerMan.remove(scoreLabel, Layer.UI);
-                scoreLabel = new LabelBuilder(scoreLabel).text("--").end();
-                layerMan.add(scoreLabel, Layer.UI);
-            }
-        }
-
-        // Update the progress bar.
-        progressBar.setProgress(scoreMan.getLevelScore());
+        // --- UI LOGIC STUB --
 
         // Reset the line count.
         //statMan.incrementLineCount(statMan.getCycleLineCount());
@@ -1327,7 +891,7 @@ public class Game extends Canvas implements IGameWindowCallback
     {
        return (Refactorer.get().isRefactoring()               
                || TileRemover.get().isTileRemoving()
-               || gameOverGroup.isActivated() == true
+               || gameOverInProgress == true
                || activateBoardShowAnimation == true
                || activateBoardHideAnimation == true
                || this.boardAnimation != null);
@@ -1387,16 +951,12 @@ public class Game extends Canvas implements IGameWindowCallback
         // Add the new score.
         highScoreMan.addScore("TEST", scoreMan.getTotalScore(), 
                 worldMan.getLevel());
-        highScoreGroup.updateLabels();
+        listenerMan.notifyGameOver(new GameEvent(this, worldMan.getLevel()));
+        //highScoreGroup.updateLabels();
         
         // Activate the game over process.
         activateGameOver = true;
-    }
-    
-    public void clearGameOver()
-    {
-        activateGameOver = false;
-    }  
+    }       
     
     //--------------------------------------------------------------------------
     // Getters and Setters
@@ -1446,9 +1006,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // Don't pause game if we're showing the game over screen.
         if (groupMan != null && groupMan.isActivated() == false)
         {
-            groupMan.showGroup(pauseButton, pauseGroup, 
-                    GroupManager.CLASS_PAUSE,
-                    GroupManager.LAYER_MIDDLE);
+            ui.showPauseGroup(groupMan);
         }
                         
         if (layerMan != null) layerMan.forceRedraw();                

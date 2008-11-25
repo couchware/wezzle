@@ -14,14 +14,26 @@ import java.util.EventObject;
  */
 public class ScoreEvent extends EventObject
 {
-    private int deltaScore;
     
-    public ScoreEvent(int deltaScore, Object eventSource)
+    private int deltaScore;
+    private int targetScore;
+    
+    public ScoreEvent(Object eventSource, int deltaScore, int targetScore)
     {
         super(eventSource);
         
-        this.deltaScore = deltaScore;
+        this.deltaScore  = deltaScore;
+        this.targetScore = targetScore; 
+    }
+
+    public int getDeltaScore()
+    {
+        return deltaScore;
+    }
+
+    public int getTargetScore()
+    {
+        return targetScore;
     }
     
-    public int getScore() { return deltaScore; }
 }

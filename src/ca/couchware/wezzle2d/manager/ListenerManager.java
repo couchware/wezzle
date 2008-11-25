@@ -75,7 +75,21 @@ public class ListenerManager implements IListenerManager
         
         listenerMap.get(listenerType).add(listener);
     }       
-          
+    
+    /**
+     * Notify all score listeners.
+     * @param e The event.
+     */    
+    public void notifyScoreReset(ScoreEvent e)
+    {
+        List<IListener> list = listenerMap.get(Listener.SCORE);
+        
+        for (IListener listener : list)
+        {
+            ((IScoreListener) listener).scoreReset(e);
+        }
+    }
+    
     /**
      * Notify all score listeners.
      * @param e The event.
@@ -87,6 +101,16 @@ public class ListenerManager implements IListenerManager
         for (IListener listener : list)
         {
             ((IScoreListener) listener).scoreChanged(e, gameType);
+        }
+    }
+    
+    public void notifyTargetScoreChanged(ScoreEvent e)
+    {
+        List<IListener> list = listenerMap.get(Listener.SCORE);
+        
+        for (IListener listener : list)
+        {
+            ((IScoreListener) listener).targetScoreChanged(e);
         }
     }
     
@@ -152,13 +176,13 @@ public class ListenerManager implements IListenerManager
         }
     }
 
-    public void notifyGameCompleted(GameEvent e)
+    public void notifyGameOver(GameEvent e)
     {
         List<IListener> list = listenerMap.get(Listener.GAME);
         
         for (IListener listener : list)
         {
-            ((IGameListener) listener).gameCompleted(e);
+            ((IGameListener) listener).gameOver(e);
         }
     }    
 
