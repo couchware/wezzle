@@ -5,7 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.GameEvent;
+import ca.couchware.wezzle2d.event.ICollisionListener;
 import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.ILineListener;
@@ -51,6 +53,7 @@ public class ListenerManager
         LEVEL,
         MOVE,
         LINE,
+        COLLISION,
         GAME
     }
     
@@ -203,6 +206,17 @@ public class ListenerManager
         {
             ((IGameListener) listener).gameOver(e);
         }
-    }    
+    }   
+    
+    public void notifyCollision(CollisionEvent e)
+    {
+         List<IListener> list = listenerMap.get(Listener.COLLISION);
+         
+        for (IListener listener : list)
+        {
+            ((ICollisionListener) listener).Collision(e);
+        }
+         
+    }
 
 }

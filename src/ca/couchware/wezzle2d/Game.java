@@ -152,7 +152,8 @@ public class Game extends Canvas implements IGameWindowCallback
     /** The tile remover. */
     // TODO Replace "null" with "TileRemover.get()" after Kevin's achievement
     // changes.
-    public TileRemover tileRemover = null;
+    public TileRemover tileRemover = TileRemover.get();
+    
     
     /** The animation manager in charge of animations. */
     public AnimationManager animationMan;
@@ -319,6 +320,7 @@ public class Game extends Canvas implements IGameWindowCallback
      */    
     private void initializeManagers(EnumSet<ManagerType> managerSet)
     {        
+        tileRemover.initialize();
         if (managerSet.contains(ManagerType.LAYER))
         {
             // Create the layer manager.   
@@ -427,6 +429,7 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Create the achievement manager.
             achievementMan = AchievementManager.newInstance();
+            listenerMan.registerListener(Listener.COLLISION, achievementMan);
         
             // Load the test achievements.        
             List<Rule> rules1 = new LinkedList<Rule>();

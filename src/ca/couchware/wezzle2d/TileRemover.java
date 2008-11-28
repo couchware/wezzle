@@ -6,28 +6,35 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.ExplosionAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.animation.JiggleAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.event.CollisionEvent;
+import ca.couchware.wezzle2d.event.IListenerManager;
 import ca.couchware.wezzle2d.event.LineEvent;
+import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.*;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
+import ca.couchware.wezzle2d.tile.BombTileEntity;
 import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.StarTileEntity;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.TileType;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -94,17 +101,14 @@ public class TileRemover
      * The private constructor.
      */
     private TileRemover()
-    { 
-        // Initialize thyself.
-        initialize();
-    }
+    { }
 
     /**
      * Retrieve the single instance of this class.
      * 
      * @return The single instance of this class.
      */
-    static TileRemover get()
+    public static TileRemover get()
     {
         return single;
     }
@@ -172,6 +176,9 @@ public class TileRemover
      */
     private boolean areItemSetsEmpty()
     {
+        assert(this.itemMap != null);
+            
+        
         for (TileType t : this.itemMap.keySet())
         {
             if (this.itemMap.containsKey(t) 
@@ -184,7 +191,7 @@ public class TileRemover
         return true;
     }
    
-    private void initialize()
+    public void initialize()
     {
         // Initialize the sets.
         this.tileRemovalSet = new HashSet<Integer>();
@@ -270,14 +277,12 @@ public class TileRemover
         {
             if (game.tutorialMan.isTutorialInProgress() == true)
             {
-                game.listenerMan.notifyLineConsumed(
-                        new LineEvent(game.statMan.getCycleLineCount(), this),
+                game.listenerMan.notifyLineConsumed(new LineEvent(game.statMan.getCycleLineCount(), this),
                         GameType.TUTORIAL);
             }
             else
             {
-                game.listenerMan.notifyLineConsumed(
-                        new LineEvent(game.statMan.getCycleLineCount(), this),
+                game.listenerMan.notifyLineConsumed(new LineEvent(game.statMan.getCycleLineCount(), this),
                         GameType.GAME);
             }
         }
@@ -355,6 +360,64 @@ public class TileRemover
         clone.setAnimation(meta);
         
         return meta;
+    }
+
+
+    private void followThrough(Integer lastItem, ArrayList<TileEntity> itemsSeen, Game game) 
+    {
+        // The set to hold the tiles affected by the item.
+        Set<Integer> tilesAffected = new HashSet<Integer>();
+       
+        //build a set with the current item as its only member.
+        Set<Integer> currentItem = new HashSet<Integer>();
+        currentItem.add(lastItem);
+        
+      
+        
+        
+        // Determine the type and get the affected tiles accordingly.
+        switch(game.boardMan.getTile(lastItem).getType())
+        {
+            case ROCKET:
+                game.boardMan.processRockets(currentItem, tilesAffected);
+                break;
+            
+            case BOMB:
+                game.boardMan.processBombs(currentItem, tilesAffected);
+                break;
+            
+            case STAR:
+                game.boardMan.processStars(currentItem, tilesAffected);
+                break;
+            default:
+                break;
+               
+        }
+        
+
+        // go through the affected tiles set looking for an itemm        
+        for (Iterator it = tilesAffected.iterator(); it.hasNext();)
+        {
+            Integer tileNum = (Integer) it.next();
+            // get the tile entity.
+            TileEntity t = game.boardMan.getTile(tileNum);
+            
+            // If we have found another item. recurse.
+            if(t.getType()!= TileType.NORMAL)
+            {
+                // We've found another item. Add it to the list and recurse.
+                if(itemsSeen.contains(t) == true)
+                    continue;
+                
+                ArrayList<TileEntity> temp = new ArrayList<TileEntity>(itemsSeen);
+                temp.add(t);
+                followThrough(tileNum, temp, game);
+            }
+        }
+        
+        // When we are done.  Return the event.
+        if(itemsSeen.size() > 1)
+            game.listenerMan.notifyCollision(new CollisionEvent(this, itemsSeen));
     }
     
     private void processRemoval(final Game game)
@@ -449,7 +512,7 @@ public class TileRemover
         BoardManager boardMan = game.boardMan;
         ListenerManager listenerMan = game.listenerMan;
         ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = game.settingsMan;
+        SettingsManager settingsMan = SettingsManager.get();
         SoundManager soundMan = game.soundMan;
         StatManager statMan = game.statMan;                        
         TutorialManager tutorialMan = game.tutorialMan;                
@@ -491,8 +554,7 @@ public class TileRemover
 
             final ILabel label = new LabelBuilder(p.getX(), p.getY())
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(settingsMan.getColor(Key.SCT_COLOR_LINE))
-                    .size(scoreMan.determineFontSize(deltaScore))
+                    .color(settingsMan.getColor(Key.SCT_COLOR_LINE)).size(scoreMan.determineFontSize(deltaScore))
                     .text(String.valueOf(deltaScore)).end();
             
             IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
@@ -670,8 +732,25 @@ public class TileRemover
 
         // Also used below.
         IAnimation a1, a2, a3;
+        
+        //simulate all collisions that these rockets would achieve one at a time.
+        for (Iterator it = rocketRemovalSet.iterator(); it.hasNext();)
+        {
+            Integer tileNum = (Integer) it.next();
+            // get the tile entity.
+            TileEntity t = boardMan.getTile(tileNum);
+            
+            // Create a set to hold the current item.
+           ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
+            
+            itemsSeen.add(t);
+            
+            followThrough(tileNum, itemsSeen, game);
 
-        // Get the tiles the bombs would affect.
+            
+        }
+
+        // Get the tiles the rockets would affect.
         boardMan.processRockets(rocketRemovalSet, tileRemovalSet);
 
         for (Integer index : lastMatchSet)
@@ -759,7 +838,7 @@ public class TileRemover
 
         // Play the sound.
         soundMan.play(Sound.ROCKET);
-
+        
         // Find all the new rockets.
         Set<Integer> nextRocketRemovalSet = new HashSet<Integer>();
         boardMan.scanFor(TileType.ROCKET, tileRemovalSet, nextRocketRemovalSet);
@@ -893,6 +972,23 @@ public class TileRemover
         // Also used below.
         IAnimation a1, a2, a3;
 
+          //simulate all collisions that these bombs would achieve one at a time.
+        for (Iterator it = bombRemovalSet.iterator(); it.hasNext();)
+        {
+            Integer tileNum = (Integer) it.next();
+            // get the tile entity.
+            TileEntity t = boardMan.getTile(tileNum);
+            
+            // Create a set to hold the current item.
+           ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
+            
+            itemsSeen.add(t);
+            
+            followThrough(tileNum, itemsSeen, game);
+
+            
+        }
+        
         // Get the tiles the bombs would affect.
         boardMan.processBombs(bombRemovalSet, tileRemovalSet);
         deltaScore = scoreMan.calculateLineScore(
@@ -923,8 +1019,7 @@ public class TileRemover
 
         final ILabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.SCT_COLOR_ITEM))
-                .size(scoreMan.determineFontSize(deltaScore))
+                .color(settingsMan.getColor(Key.SCT_COLOR_ITEM)).size(scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore)).end();
 
         a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
@@ -1136,6 +1231,24 @@ public class TileRemover
 
         // Also used below.
         IAnimation a1, a2;
+        
+          //simulate all collisions that these stars would achieve one at a time.
+        for (Iterator it = starRemovalSet.iterator(); it.hasNext();)
+        {
+            Integer tileNum = (Integer) it.next();
+            // get the tile entity.
+            TileEntity t = boardMan.getTile(tileNum);
+            
+            // Create a set to hold the current item.
+           ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
+            
+            itemsSeen.add(t);
+            
+            followThrough(tileNum, itemsSeen, game);
+
+            
+        }
+        
 
         // Get the tiles the bombs would affect.
         boardMan.processStars(starRemovalSet, tileRemovalSet);

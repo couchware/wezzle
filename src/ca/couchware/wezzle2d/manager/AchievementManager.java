@@ -6,9 +6,16 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.event.CollisionEvent;
+import ca.couchware.wezzle2d.event.ICollisionListener;
+import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.Util;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * A class to manage achievements.
@@ -23,7 +30,7 @@ import java.util.LinkedList;
  *
  * @author Kevin
  */
-public class AchievementManager 
+public class AchievementManager implements ICollisionListener
 {
 
     /** The unachieved achievements. */
@@ -92,5 +99,16 @@ public class AchievementManager
         for (int i = 0; i < completeList.size(); i++)
             LogManager.recordMessage(completeList.get(i).getDescription(),
                     "AcheivementManager#reportCompleted");
-    }        
+    }     
+    
+    public void Collision(CollisionEvent e)
+    {
+      ArrayList<TileEntity> items =  e.getSet();
+       
+       for(int i = 0; i < items.size(); i++)
+       {
+           System.out.print(items.get(i).getType().toString() + "->");
+       }
+       System.out.println("END");
+    }
 }
