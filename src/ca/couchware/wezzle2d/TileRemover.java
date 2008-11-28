@@ -98,14 +98,17 @@ public class TileRemover
      * The private constructor.
      */
     private TileRemover()
-    { }
+    { 
+        // Initialize thyself.
+        initialize();
+    }
 
     /**
      * Retrieve the single instance of this class.
      * 
      * @return The single instance of this class.
      */
-    public static TileRemover get()
+    static TileRemover get()
     {
         return single;
     }
@@ -185,7 +188,7 @@ public class TileRemover
         return true;
     }
    
-    public void initialize()
+    private void initialize()
     {
         // Initialize the sets.
         this.tileRemovalSet = new HashSet<Integer>();
@@ -448,7 +451,7 @@ public class TileRemover
         BoardManager boardMan = game.boardMan;
         ListenerManager listenerMan = game.listenerMan;
         ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = SettingsManager.get();
+        SettingsManager settingsMan = game.settingsMan;
         SoundManager soundMan = game.soundMan;
         StatManager statMan = game.statMan;                        
         TutorialManager tutorialMan = game.tutorialMan;                
@@ -490,7 +493,8 @@ public class TileRemover
 
             final ILabel label = new LabelBuilder(p.getX(), p.getY())
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(Game.SCORE_LINE_COLOR).size(scoreMan.determineFontSize(deltaScore))
+                    .color(settingsMan.getColor(Key.SCT_COLOR_LINE))
+                    .size(scoreMan.determineFontSize(deltaScore))
                     .text(String.valueOf(deltaScore)).end();
             
             IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
@@ -713,7 +717,7 @@ public class TileRemover
 
         final ILabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.SCORE_BOMB_COLOR)
+                .color(settingsMan.getColor(Key.SCT_COLOR_ITEM))
                 .size(scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore))
                 .end();
@@ -921,7 +925,8 @@ public class TileRemover
 
         final ILabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.SCORE_BOMB_COLOR).size(scoreMan.determineFontSize(deltaScore))
+                .color(settingsMan.getColor(Key.SCT_COLOR_ITEM))
+                .size(scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore)).end();
 
         a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
@@ -1178,7 +1183,7 @@ public class TileRemover
 
         final ILabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.SCORE_BOMB_COLOR)
+                .color(settingsMan.getColor(Key.SCT_COLOR_ITEM))
                 .size(scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore))
                 .end();

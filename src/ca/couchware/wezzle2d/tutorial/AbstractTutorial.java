@@ -32,9 +32,11 @@ public abstract class AbstractTutorial implements ITutorial
     /** Has this tutorial been initalized? Initially false. */
     protected boolean initialized = false;
     
-    /** Has the tutorial been completed? Initially false.
-     */
+    /** Has the tutorial been completed? Initially false. */
     protected boolean done = false;
+    
+    /** The refactorer. */
+    protected Refactorer refactorer;
     
     /** The name of the tutorial. */
     protected String name;      
@@ -63,8 +65,11 @@ public abstract class AbstractTutorial implements ITutorial
      * 
      * @param rule
      */    
-    public AbstractTutorial(String name) 
+    public AbstractTutorial(Refactorer refactorer, String name) 
     { 
+        // Set the refactorer.
+        this.refactorer = refactorer;
+        
         // Set the tutorial name.
         this.name = name;
     }
@@ -242,7 +247,7 @@ public abstract class AbstractTutorial implements ITutorial
         game.timerMan.setStopped(false);  
         
         // Reset the refactor speed.
-        Refactorer.get().setRefactorSpeed(RefactorSpeed.NORMAL);
+        refactorer.setRefactorSpeed(RefactorSpeed.NORMAL);
     }
         
     protected void repeat(final Game game)

@@ -49,22 +49,19 @@ public class PieceManager implements IMouseListener
     // Private Members
     // -------------------------------------------------------------------------       
     
-    /**
-     * A reference to the game window.
-     */
+    /** A reference to the game window. */
     private IGameWindow window;
     
-    /**
-     * The possible buttons that may be clicked.
-     */
+    /** A reference to the refactorer. */
+    private Refactorer refactorer;
+    
+    /** The possible buttons that may be clicked. */
     private static enum MouseButton
     {
         LEFT, RIGHT
     }            
     
-    /**
-     * A set of buttons that were clicked.
-     */
+    /** A set of buttons that were clicked. */
     private EnumSet<MouseButton> mouseButtonSet = EnumSet.noneOf(MouseButton.class);
     
     /**
@@ -73,69 +70,37 @@ public class PieceManager implements IMouseListener
      */
     private boolean tileDropOnCommit = true;
     
-    /**
-     * Is the board dropping in a tile?
-     */
+    /** Is the board dropping in a tile. */
     private boolean tileDropInProgress = false;
     
-    /**
-     * Is the board animating the tile dropped?
-     */
+    /** Is the board animating the tile dropped? */
     private boolean tileDropAnimationInProgress = false;        
     
-    /**
-     * The number of tiles to drop this turn.
-     */
+    /** The number of tiles to drop this turn. */
     private int totalTileDropInAmount = 0;
     
-    /**
-     * The index list.
-     */
+    /** The index list. */
     private ArrayList<Integer> openIndexList;
     
-    /**
-     * The tile currently being dropped.
-     */
+    /** The tile currently being dropped. */
     private List<TileEntity> tileDropList = new ArrayList<TileEntity>();
     
-     /**
-     * Was the board recently refactored?
-     */
-    private boolean refactored = false;    	
-	
-    /**
-     * Was the left mouse button clicked?
-     */
-    private volatile boolean mouseLeftReleased;
+     /** Was the board recently refactored? */
+    private boolean refactored = false;	          
     
-    /**
-     * Was the right mouse button clicked?
-     */
-    private volatile boolean mouseRightReleased;        
-    
-    /**
-     * The piece map.
-     */
+    /** The piece map. */
     //private EnumMap<PieceType, Piece> pieceMap;
     
-    /**
-     * The current piece.
-     */
+    /** The current piece. */
     private Piece piece;
     
-	/**
-	 * The piece grid.  The graphical representation of the piece.
-	 */
+	/** The piece grid. */
 	private PieceGrid pieceGrid;       
 	
-    /**
-	 * The animation manager that animations are run with.
-	 */
+    /** The animation manager that animations are run with. */
 	private AnimationManager animationMan;
     
-	/**
-	 * The board manager the piece manager to attached to.
-	 */
+	/** The board manager the piece manager to attached to. */
 	private BoardManager boardMan;
     
     /**
@@ -144,9 +109,7 @@ public class PieceManager implements IMouseListener
      */
     private boolean[] restrictionBoard;
     
-    /**
-     * This is set to true everytime the restriction board is clicked.
-     */
+    /** This is set to true everytime the restriction board is clicked. */
     private volatile boolean restrictionBoardClicked = false;
 
     //--------------------------------------------------------------------------
@@ -159,20 +122,18 @@ public class PieceManager implements IMouseListener
 	 * @param boardMan The board manager.
 	 */
 	private PieceManager(
+            Refactorer refactorer,
             AnimationManager animationMan, 
             BoardManager boardMan)
 	{       
 		// Set the reference.
-        this.window = ResourceFactory.get().getGameWindow();
+        this.window       = ResourceFactory.get().getGameWindow();
+        this.refactorer   = refactorer;
         this.animationMan = animationMan;
-		this.boardMan = boardMan;
+		this.boardMan     = boardMan;
         
         // Add the mouse listener.
-        window.addMouseListener(this);
-        
-        // Default the mouse buttons to not clicked.
-        mouseLeftReleased = false;
-        mouseRightReleased = false;
+        window.addMouseListener(this);               
         
         // Create the piece map.
 //        pieceMap = new EnumMap<PieceType, Piece>(PieceType.class);
@@ -200,10 +161,12 @@ public class PieceManager implements IMouseListener
 	}	
         
     // Public API.
-    public static PieceManager newInstance(AnimationManager animationMan, 
-        BoardManager boardMan)
+    public static PieceManager newInstance(
+            Refactorer refactorer,
+            AnimationManager animationMan, 
+            BoardManager boardMan)
     {
-        return new PieceManager(animationMan, boardMan);
+        return new PieceManager(refactorer, animationMan, boardMan);
     }
     
     //--------------------------------------------------------------------------
@@ -595,7 +558,7 @@ public class PieceManager implements IMouseListener
                 tileDropAnimationInProgress = false;
                                
                 // Run refactor.
-                Refactorer.get().startRefactor();
+                refactorer.startRefactor();
                 
                 // Remove the amount just removed from the total.
                 totalTileDropInAmount -= tileDropList.size();
@@ -745,7 +708,7 @@ public class PieceManager implements IMouseListener
         
         final ILabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(Game.SCORE_PIECE_COLOR)
+                .color(game.settingsMan.getColor(Key.SCT_COLOR_PIECE))
                 .size(game.scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore))
                 .end();
@@ -813,7 +776,7 @@ public class PieceManager implements IMouseListener
         pieceGrid.setVisible(false);        
         
         // Run a refactor.       
-        Refactorer.get().startRefactor();
+        refactorer.startRefactor();
 
         // Reset mouse buttons.
         mouseButtonSet = EnumSet.noneOf(MouseButton.class);

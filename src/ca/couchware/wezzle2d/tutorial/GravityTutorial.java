@@ -36,10 +36,10 @@ public class GravityTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public GravityTutorial()
+    public GravityTutorial(Refactorer refactorer)
     {
         // Set the name.
-        super("Gravity Tutorial");
+        super(refactorer, "Gravity Tutorial");
         
         // Activate the tutorial on a specific level.
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 6));
@@ -52,7 +52,7 @@ public class GravityTutorial extends AbstractTutorial
         super.initialize(game);                            
         
         // Slow down refactor so the user can see more clearly what happens.
-        Refactorer.get().setRefactorSpeed(RefactorSpeed.SLOW);
+        refactorer.setRefactorSpeed(RefactorSpeed.SLOW);
         
          // Set restriction board so that only the bottom left corner is
         // clickable.

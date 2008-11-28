@@ -114,19 +114,7 @@ public class Game extends Canvas implements IGameWindowCallback
     
     /** A rectangle the size of the screen. */
     final public static ImmutableRectangle SCREEN_RECTANGLE = 
-            new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    
-    /** The disabled colour. */
-    final public static Color TEXT_COLOR_DISABLED = new Color(178, 178, 178);
-        
-    /** The line score color. */
-    final public static Color SCORE_LINE_COLOR = new Color(252, 233, 45);
-    
-    /** The piece score color. */
-    final public static Color SCORE_PIECE_COLOR = new Color(240, 240, 240);
-    
-    /** The bomb score color. */ 
-    final public static Color SCORE_BOMB_COLOR = new Color(255, 127, 0);     
+            new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);   
     
     /** The name of the application. */
     final public static String APPLICATION_NAME = "Wezzle";
@@ -158,6 +146,14 @@ public class Game extends Canvas implements IGameWindowCallback
      * to transition from the menu to the game.
      */
     public ITransition menuTransition;             
+    
+    /** The refactorer. */
+    public Refactorer refactorer = Refactorer.get();
+    
+    /** The tile remover. */
+    // TODO Replace "null" with "TileRemover.get()" after Kevin's achievement
+    // changes.
+    public TileRemover tileRemover = null;
     
     /** The animation manager in charge of animations. */
     public AnimationManager animationMan;
@@ -350,11 +346,11 @@ public class Game extends Canvas implements IGameWindowCallback
             tutorialMan = TutorialManager.newInstance();
 
             // Add the tutorials to it.
-            tutorialMan.add(new BasicTutorial());
-            tutorialMan.add(new GravityTutorial());
-            tutorialMan.add(new RocketTutorial());
-            tutorialMan.add(new BombTutorial());
-            tutorialMan.add(new StarTutorial());
+            tutorialMan.add(new BasicTutorial(refactorer));
+            tutorialMan.add(new GravityTutorial(refactorer));
+            tutorialMan.add(new RocketTutorial(refactorer));
+            tutorialMan.add(new BombTutorial(refactorer));
+            tutorialMan.add(new StarTutorial(refactorer));
         }           
         
         if (managerSet.contains(ManagerType.HIGHSCORE))
@@ -384,7 +380,7 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.PIECE))
         {
             // Create the piece manager.
-            pieceMan = PieceManager.newInstance(animationMan, boardMan);        
+            pieceMan = PieceManager.newInstance(refactorer, animationMan, boardMan);        
             pieceMan.getPieceGrid().setVisible(false);
             layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);
         }
@@ -469,7 +465,7 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     private void initializeMembers()
     {
-        TileRemover.get().initialize();        
+        // Nada.
     }
     
 	/**
@@ -498,7 +494,7 @@ public class Game extends Canvas implements IGameWindowCallback
         });
                                
         // Initialize UI.       
-        ui.initialize(loader, Game.this);                                            
+        ui.initialize(loader, this);                                            
 	}                   
     
     public void update()
@@ -842,12 +838,12 @@ public class Game extends Canvas implements IGameWindowCallback
         }                                                                  
 
         // Run the refactorer.
-        Refactorer.get().updateLogic(this);
+        refactorer.updateLogic(this);
       
         TileRemover.get().updateLogic(this);
       
         // See if we should clear the cascade count.
-        if (Refactorer.get().isRefactoring() == false 
+        if (refactorer.isRefactoring() == false 
                 && TileRemover.get().isTileRemoving() == false
                 && pieceMan.isTileDropInProgress() == false)
             statMan.resetChainCount(); 
@@ -879,8 +875,7 @@ public class Game extends Canvas implements IGameWindowCallback
         // --- UI LOGIC STUB --
 
         // Reset the line count.
-        //statMan.incrementLineCount(statMan.getCycleLineCount());
-       
+        //statMan.incrementLineCount(statMan.getCycleLineCount());       
         
         statMan.resetCycleLineCount();
     }       
@@ -892,7 +887,7 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     public boolean isBusy()
     {
-       return (Refactorer.get().isRefactoring()               
+       return (refactorer.isRefactoring()               
                || TileRemover.get().isTileRemoving()
                || gameOverInProgress == true
                || activateBoardShowAnimation == true

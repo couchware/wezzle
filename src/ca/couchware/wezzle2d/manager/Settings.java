@@ -35,6 +35,7 @@ public class Settings
         GAME_TICKS_PER_SECOND,
         GAME_COLOR_PRIMARY,
         GAME_COLOR_SECONDARY,
+        GAME_COLOR_DISABLED,        
         
         // Debug values.
         
@@ -107,7 +108,10 @@ public class Settings
         ANIMATION_PIECE_PULSE_SPEED_FAST,
                 
         // SCT values.
-        
+
+        SCT_COLOR_PIECE,
+        SCT_COLOR_LINE,        
+        SCT_COLOR_ITEM,
         SCT_SCORE_MOVE_DURATION,
         SCT_SCORE_MOVE_SPEED,
         SCT_SCORE_MOVE_THETA,

@@ -105,7 +105,7 @@ public class Refactorer
 	 * 
 	 * @return The single instance of this class.
 	 */
-	public static Refactorer get()
+	static Refactorer get()
 	{
 		return single;
 	}   

@@ -35,10 +35,10 @@ public class BombTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public BombTutorial()
+    public BombTutorial(Refactorer refactorer)
     {
         // Set the name.
-        super("Bomb Tutorial");
+        super(refactorer, "Bomb Tutorial");
         
         // Activate the tutorial on a specific level.      
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 9));
@@ -51,7 +51,7 @@ public class BombTutorial extends AbstractTutorial
         super.initialize(game);   
         
         // Slow down refactor so the user can see more clearly what happens.
-        Refactorer.get().setRefactorSpeed(RefactorSpeed.SLOW);
+        refactorer.setRefactorSpeed(RefactorSpeed.SLOW);
         
          // Set restriction board so that only the bottom left corner is
         // clickable.

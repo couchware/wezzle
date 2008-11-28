@@ -20,6 +20,9 @@
   <entry name="GAME_COLOR_SECONDARY">
     <color red="255" green="255" blue="255" alpha="255" />
   </entry>
+  <entry name="GAME_COLOR_DISABLED">
+    <color red="178" green="178" blue="178" alpha="255" />
+  </entry>
   <entry name="DEBUG_SHOW_CLIP_RECT">false</entry>
   <entry name="REFACTOR_SPEED_X_SLOWER">70</entry>
   <entry name="REFACTOR_SPEED_Y_SLOWER">70</entry>
@@ -70,6 +73,15 @@
   <entry name="ANIMATION_SLIDEFADE_MOVE_SPEED">150</entry>
   <entry name="ANIMATION_PIECE_PULSE_SPEED_SLOW">8</entry>
   <entry name="ANIMATION_PIECE_PULSE_SPEED_FAST">35</entry>
+  <entry name="SCT_COLOR_PIECE">
+    <color red="240" green="240" blue="240" alpha="255" />
+  </entry>
+  <entry name="SCT_COLOR_LINE">
+    <color red="252" green="233" blue="45" alpha="255" />
+  </entry>
+  <entry name="SCT_COLOR_ITEM">
+    <color red="255" green="127" blue="0" alpha="255" />
+  </entry>
   <entry name="SCT_SCORE_MOVE_DURATION">1300</entry>
   <entry name="SCT_SCORE_MOVE_SPEED">30</entry>
   <entry name="SCT_SCORE_MOVE_THETA">90</entry>

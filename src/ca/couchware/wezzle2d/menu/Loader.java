@@ -120,14 +120,14 @@ public class Loader implements IDrawer
         // Set up the copyright label.               
         ILabel l1 = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .color(Game.TEXT_COLOR_DISABLED).size(12)                
+                .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED)).size(12)                
                 .text(Game.COPYRIGHT).end();
         layerMan.add(l1, Layer.UI);
         
         // Set up the version label.	
         ILabel l2 = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .color(Game.TEXT_COLOR_DISABLED).size(12)                
+                .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED)).size(12)                
                 .text(Game.TITLE).end();                        
         layerMan.add(l2, Layer.UI);
         

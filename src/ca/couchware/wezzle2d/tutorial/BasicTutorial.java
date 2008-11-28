@@ -35,10 +35,10 @@ public class BasicTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public BasicTutorial()
+    public BasicTutorial(Refactorer refactorer)
     {
         // Set the name.
-        super("Basic Tutorial");
+        super(refactorer, "Basic Tutorial");
         
         // This tutorial has a single rule.  It activates on level one.        
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));
@@ -51,7 +51,7 @@ public class BasicTutorial extends AbstractTutorial
         super.initialize(game);            
         
         // Slow down refactor so the user can see more clearly what happens.
-        Refactorer.get().setRefactorSpeed(RefactorSpeed.SLOWER);
+        refactorer.setRefactorSpeed(RefactorSpeed.SLOWER);
         
          // Set restriction board so that only the bottom left corner is
         // clickable.

@@ -36,10 +36,10 @@ public class RocketTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public RocketTutorial()
+    public RocketTutorial(Refactorer refactorer)
     {
         // Set the name.
-        super("Rocket Tutorial");
+        super(refactorer, "Rocket Tutorial");
         
         // Activate the tutorial on a specific level.
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 3));
@@ -52,7 +52,7 @@ public class RocketTutorial extends AbstractTutorial
         super.initialize(game);   
         
         // Slow down refactor so the user can see more clearly what happens.
-        Refactorer.get().setRefactorSpeed(RefactorSpeed.SLOW);
+        refactorer.setRefactorSpeed(RefactorSpeed.SLOW);
         
         // Set restriction board so that only the bottom left corner is
         // clickable.
