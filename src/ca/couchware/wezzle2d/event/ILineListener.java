@@ -6,11 +6,13 @@
 
 package ca.couchware.wezzle2d.event;
 
+import ca.couchware.wezzle2d.manager.ListenerManager;
+
 /**
  *
  * @author kgrad
  */
 public interface ILineListener extends IListener
 {
-    public void lineConsumed(LineEvent event, IListenerManager.GameType gameType);
+    public void lineConsumed(LineEvent event, ListenerManager.GameType gameType);
 }

@@ -6,11 +6,13 @@
 
 package ca.couchware.wezzle2d.event;
 
+import ca.couchware.wezzle2d.manager.ListenerManager;
+
 /**
  *
  * @author kgrad
  */
 public interface IMoveListener extends IListener
 {
-    public void moveCommitted(MoveEvent event, IListenerManager.GameType gameType);
+    public void moveCommitted(MoveEvent event, ListenerManager.GameType gameType);
 }

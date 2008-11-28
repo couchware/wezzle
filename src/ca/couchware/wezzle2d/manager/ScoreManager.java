@@ -301,7 +301,8 @@ import java.util.Set;
      */
     public void setLevelScore(int levelScore)
     {
-        this.levelScore = levelScore;		
+        this.levelScore = levelScore;	
+        listenerMan.notifyScoreChanged(new ScoreEvent(this, levelScore));
     }      
 
     public int getTotalScore()
@@ -320,7 +321,7 @@ import java.util.Set;
     {
         setLevelScore(0);
         setTotalScore(0);
-        listenerMan.notifyScoreReset(new ScoreEvent(this, 0, -1));
+        listenerMan.notifyScoreChanged(new ScoreEvent(this, 0));
     }
 
     /**
@@ -340,7 +341,7 @@ import java.util.Set;
         this.targetTotalScore += targetLevelScore;
         
         // Fire event.
-        this.listenerMan.notifyTargetScoreChanged(new ScoreEvent(this, 0, targetLevelScore));
+        this.listenerMan.notifyTargetScoreChanged(new ScoreEvent(this, targetLevelScore));
     }
 
     /**
@@ -380,8 +381,8 @@ import java.util.Set;
         }
         
         // Notify all listeners.
-        this.listenerMan.notifyScoreChanged(
-                new ScoreEvent(this, deltaScore, this.targetLevelScore));
+        this.listenerMan.notifyScoreIncreased(new ScoreEvent(this, deltaScore));
+        this.listenerMan.notifyScoreChanged(new ScoreEvent(this, levelScore));
     }
     
     /**
@@ -478,19 +479,19 @@ import java.util.Set;
             return;
         }
         
-        levelScore = (Integer) managerState.get(Keys.LEVEL_SCORE);
-        totalScore = (Integer) managerState.get(Keys.TOTAL_SCORE);
-        targetLevelScore = (Integer) managerState.get(Keys.LEVEL_TARGET);
-        targetTotalScore = (Integer) managerState.get(Keys.TOTAL_TARGET);
-        highScore = (Integer) managerState.get(Keys.HIGH_SCORE);
+        setLevelScore((Integer) managerState.get(Keys.LEVEL_SCORE));
+        setTotalScore((Integer) managerState.get(Keys.TOTAL_SCORE));
+        setTargetLevelScore((Integer) managerState.get(Keys.LEVEL_TARGET));
+        setTargetTotalScore((Integer) managerState.get(Keys.TOTAL_TARGET));
+        setHighScore((Integer) managerState.get(Keys.HIGH_SCORE));
     }            
 
     public void resetState()
     {
-        levelScore = 0;
-        totalScore = 0;
-        targetLevelScore = 0;
-        targetTotalScore = 0;        
+        setLevelScore(0);
+        setTotalScore(0);
+        setTargetLevelScore(0);
+        setTargetTotalScore(0);        
     }   
     
 }

@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *  Wezzle
+ *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d.event;
@@ -8,32 +8,32 @@ package ca.couchware.wezzle2d.event;
 import java.util.EventObject;
 
 /**
- *  A custom score event.
+ * A custom score event.
  * 
  * @author kgrad
  */
 public class ScoreEvent extends EventObject
 {
+    /** 
+     * The score value changes depending on the event type being called.
+     * The values are as follows:
+     * 
+     * scoreIncreased     - The change in score.
+     * scoreChanged       - The new score.
+     * targetScoreChanged - The new target score.
+     */
+    private int score;    
     
-    private int deltaScore;
-    private int targetScore;
-    
-    public ScoreEvent(Object eventSource, int deltaScore, int targetScore)
+    public ScoreEvent(Object source, int score)
     {
-        super(eventSource);
+        super(source);
         
-        this.deltaScore  = deltaScore;
-        this.targetScore = targetScore; 
+        this.score = score;      
     }
 
-    public int getDeltaScore()
+    public int getScore()
     {
-        return deltaScore;
-    }
-
-    public int getTargetScore()
-    {
-        return targetScore;
-    }
+        return score;
+    }    
     
 }

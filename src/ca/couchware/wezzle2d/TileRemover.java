@@ -6,28 +6,24 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.animation.ExplosionAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
-import ca.couchware.wezzle2d.animation.JiggleAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.event.IListenerManager;
 import ca.couchware.wezzle2d.event.LineEvent;
-import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.*;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
-import ca.couchware.wezzle2d.tile.BombTileEntity;
 import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.StarTileEntity;
 import ca.couchware.wezzle2d.tile.TileEntity;
@@ -274,13 +270,15 @@ public class TileRemover
         {
             if (game.tutorialMan.isTutorialInProgress() == true)
             {
-                game.listenerMan.notifyLineConsumed(new LineEvent(game.statMan.getCycleLineCount(), this),
-                        IListenerManager.GameType.TUTORIAL);
+                game.listenerMan.notifyLineConsumed(
+                        new LineEvent(game.statMan.getCycleLineCount(), this),
+                        GameType.TUTORIAL);
             }
             else
             {
-                game.listenerMan.notifyLineConsumed(new LineEvent(game.statMan.getCycleLineCount(), this),
-                        IListenerManager.GameType.GAME);
+                game.listenerMan.notifyLineConsumed(
+                        new LineEvent(game.statMan.getCycleLineCount(), this),
+                        GameType.GAME);
             }
         }
 

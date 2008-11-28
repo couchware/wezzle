@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.event.*;
+import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
@@ -190,18 +191,18 @@ public class PauseGroup extends AbstractGroup implements
         // Intentionally left blank.
     }
             
-    public void moveCommitted(MoveEvent e, IListenerManager.GameType gameType)
+    public void moveCommitted(MoveEvent e, GameType gameType)
     {        
-        if (gameType == IListenerManager.GameType.GAME)
+        if (gameType == GameType.GAME)
         {                     
             this.setMoves(statMan.getMoveCount());
             this.setLinesPerMove(statMan.getLinesPerMove());
         }
     }
        
-    public void lineConsumed(LineEvent e, IListenerManager.GameType gameType)
+    public void lineConsumed(LineEvent e, GameType gameType)
     {                
-        if (gameType == IListenerManager.GameType.GAME)
+        if (gameType == GameType.GAME)
         {            
             this.setLines(statMan.getLineCount());
             this.setLinesPerMove(statMan.getLinesPerMove());

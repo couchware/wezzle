@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -12,18 +11,15 @@ import ca.couchware.wezzle2d.util.*;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.event.IListenerManager;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
-import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.piece.*;
 import ca.couchware.wezzle2d.ui.ILabel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -759,12 +755,12 @@ public class PieceManager implements IMouseListener
         if (game.tutorialMan.isTutorialInProgress() == true)
         {
             game.listenerMan.notifyMoveCommitted(new MoveEvent(1, this), 
-                    IListenerManager.GameType.TUTORIAL); 
+                    ListenerManager.GameType.TUTORIAL); 
         }
         else
         {
              game.listenerMan.notifyMoveCommitted(new MoveEvent(1, this), 
-                    IListenerManager.GameType.GAME); 
+                    ListenerManager.GameType.GAME); 
         }
         
         

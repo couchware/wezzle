@@ -6,12 +6,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.event.GameEvent;
-import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.event.ILevelListener;
-import ca.couchware.wezzle2d.event.IListenerManager;
-import ca.couchware.wezzle2d.event.IListenerManager.GameType;
-import ca.couchware.wezzle2d.event.IListenerManager.Listener;
 import ca.couchware.wezzle2d.event.IScoreListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
@@ -22,6 +17,7 @@ import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ListenerManager;
+import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
 import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -500,21 +496,21 @@ public class GameUI implements ILevelListener, IScoreListener
         progressBar.setProgressMax(event.getTargetLevelScore());
     }
 
-    public void scoreReset(ScoreEvent event)
+    public void scoreIncreased(ScoreEvent event)
     {
-        progressBar.setProgress(0);
+        // Ignore this, use the scoreChanged event instead.
     }
     
     public void scoreChanged(ScoreEvent event)
     {       
         // Update the progress bar.
-        progressBar.setProgress(progressBar.getProgress() + event.getDeltaScore());       
+        progressBar.setProgress(event.getScore());       
     }
 
     public void targetScoreChanged(ScoreEvent event)
     {
         // Update the progress bar.
-        progressBar.setProgressMax(event.getTargetScore());
-    }    
+        progressBar.setProgressMax(event.getScore());
+    }   
     
 }

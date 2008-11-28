@@ -10,7 +10,6 @@ import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.ILineListener;
 import ca.couchware.wezzle2d.event.IListener;
-import ca.couchware.wezzle2d.event.IListenerManager;
 import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
@@ -32,8 +31,28 @@ import java.util.Map;
  * @author cmckay
  * @author kgrad
  */
-public class ListenerManager implements IListenerManager
+public class ListenerManager
 {
+    
+    /** The different game types. */
+    public enum GameType
+    {
+        /** A normal game. */
+        GAME,        
+        
+        /** A tuorial game. */
+        TUTORIAL
+    }  
+    
+    /** The different classes of listener. */
+    public enum Listener
+    {
+        SCORE,
+        LEVEL,
+        MOVE,
+        LINE,
+        GAME
+    }
     
     /** The single listener manager. */
     private final static ListenerManager single = new ListenerManager();            
@@ -80,13 +99,13 @@ public class ListenerManager implements IListenerManager
      * Notify all score listeners.
      * @param e The event.
      */    
-    public void notifyScoreReset(ScoreEvent e)
+    public void notifyScoreIncreased(ScoreEvent e)
     {
         List<IListener> list = listenerMap.get(Listener.SCORE);
         
         for (IListener listener : list)
         {
-            ((IScoreListener) listener).scoreReset(e);
+            ((IScoreListener) listener).scoreIncreased(e);
         }
     }
     
@@ -132,7 +151,7 @@ public class ListenerManager implements IListenerManager
      * Notify all move listeners.
      * @param e The event.
      */    
-    public void notifyMoveCommitted(MoveEvent e, IListenerManager.GameType gameType)
+    public void notifyMoveCommitted(MoveEvent e, GameType gameType)
     {
         List<IListener> list = listenerMap.get(Listener.MOVE);
         
@@ -146,7 +165,7 @@ public class ListenerManager implements IListenerManager
      * Notify all line listeners.
      * @param e The event.
      */    
-    public void notifyLineConsumed(LineEvent e, IListenerManager.GameType gameType)
+    public void notifyLineConsumed(LineEvent e, GameType gameType)
     {
         List<IListener> list = listenerMap.get(Listener.LINE);
         
