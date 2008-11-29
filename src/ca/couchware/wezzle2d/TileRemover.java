@@ -416,7 +416,7 @@ public class TileRemover
         }
         
         // When we are done.  Return the event.
-        if(itemsSeen.size() > 1)
+        //if(itemsSeen.size() > 1)
             game.listenerMan.notifyCollision(new CollisionEvent(this, itemsSeen));
     }
     
