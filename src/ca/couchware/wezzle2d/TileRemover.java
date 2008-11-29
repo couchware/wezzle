@@ -358,21 +358,21 @@ public class TileRemover
     }
 
 
-    private void followThrough(Integer lastItem, List<TileEntity> itemsSeen
-            , Game game, List<TileEntity> allSeen) 
+    private void followThrough(
+            Integer lastItem, 
+            List<TileEntity> itemsSeen, 
+            Game game, 
+            List<TileEntity> allSeenList) 
     {
         // The set to hold the tiles affected by the item.
         Set<Integer> tilesAffected = new HashSet<Integer>();
        
-        //build a set with the current item as its only member.
+        // Build a set with the current item as its only member.
         Set<Integer> currentItem = new HashSet<Integer>();
-        currentItem.add(lastItem);
-        
-      
-        
+        currentItem.add(lastItem);                      
         
         // Determine the type and get the affected tiles accordingly.
-        switch(game.boardMan.getTile(lastItem).getType())
+        switch (game.boardMan.getTile(lastItem).getType())
         {
             case ROCKET:
                 game.boardMan.processRockets(currentItem, tilesAffected);
@@ -385,38 +385,36 @@ public class TileRemover
             case STAR:
                 game.boardMan.processStars(currentItem, tilesAffected);
                 break;
+            
             default:
-                break;
-               
+                break;               
         }
         
-
-        // go through the affected tiles set looking for an itemm        
-        for (Iterator it = tilesAffected.iterator(); it.hasNext();)
-        {
-            Integer tileNum = (Integer) it.next();
-            // get the tile entity.
-            TileEntity t = game.boardMan.getTile(tileNum);
+        // Go through the affected tiles set looking for an item.
+        for (Integer index : tilesAffected)
+        {           
+            // Get the tile entity.
+            TileEntity t = game.boardMan.getTile(index);
             
-            // If we have found another item. recurse.
-            if(t.getType()!= TileType.NORMAL)
+            // If we have found another item. Recurse.
+            if (t.getType() != TileType.NORMAL)
             {
                 // We've found another item. Add it to the list and recurse.
-                if(allSeen.contains(t) == true)
+                if (allSeenList.contains(t) == true)
                     continue;
                 
-                //add to the list of all things seen.
-                allSeen.add(t);
+                // Add to the list of all things seen.
+                allSeenList.add(t);
                 
-                //Add to the temp list.
-                List<TileEntity> temp = new ArrayList<TileEntity>(itemsSeen);
-                temp.add(t);
-                followThrough(tileNum, temp, game, allSeen);
+                // Add to the temp list.
+                List<TileEntity> list = new ArrayList<TileEntity>(itemsSeen);
+                list.add(t);
+                followThrough(index, list, game, allSeenList);
             }
         }
         
         // When we are done.  Return the event.
-        //if(itemsSeen.size() > 1)
+        if (itemsSeen.isEmpty() == false)
             game.listenerMan.notifyCollision(new CollisionEvent(this, itemsSeen));
     }
     

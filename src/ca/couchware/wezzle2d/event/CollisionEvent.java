@@ -15,16 +15,16 @@ import java.util.List;
  */
 public class CollisionEvent extends EventObject 
 {
-    private List<TileEntity> items;
+    private List<TileEntity> collisionList;
     
-    public CollisionEvent(Object source, List<TileEntity> collisions)    
+    public CollisionEvent(Object source, List<TileEntity> collisionList)    
     {
         super(source);
-        this.items = collisions;
+        this.collisionList = collisionList;
     }
     
-    public List<TileEntity> getSet()
+    public List<TileEntity> getCollisionList()
     {
-        return this.items;
+        return this.collisionList;
     }
 }

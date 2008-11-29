@@ -37,7 +37,6 @@ import ca.couchware.wezzle2d.ui.group.OptionsGroup;
 import ca.couchware.wezzle2d.ui.group.PauseGroup;
 import java.awt.Color;
 import java.util.EnumSet;
-import java.util.logging.LogManager;
 
 /**
  * A class for handling the Wezzle UI.
@@ -247,7 +246,10 @@ public class GameUI implements ILevelListener, IScoreListener
         layerMan.add(timerLabel, Layer.UI);
         
         // Set up the Wezzle timer text.
-        // ...
+        wezzleTimerLabel = new LabelBuilder(470, 70)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(PRIMARY_COLOR).size(25).text("8").end();
+        layerMan.add(wezzleTimerLabel, Layer.UI);
         
         // Set up the level header.
         levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                

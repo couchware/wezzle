@@ -5,7 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.Rule;
+import ca.couchware.wezzle2d.tile.TileEntity;
 import java.util.List;
 
 /**
@@ -33,15 +35,17 @@ import java.util.List;
  */
 public class Achievement
 {
-    /**
-     * The levels of achievement difficulty.
-     */
+    /** The levels of achievement difficulty. */
     public static enum Difficulty
     {
-        BRONZE, SILVER, GOLD, PLATINUM
+        BRONZE, 
+        SILVER, 
+        GOLD, 
+        PLATINUM
     }
        
     private List<Rule> ruleList;
+    private String title;
     private String description;
     private Difficulty difficulty;    
 
@@ -54,12 +58,15 @@ public class Achievement
      * @param description
      * @param difficulty
      */
-    public Achievement(List<Rule> ruleList, String description, 
+    public Achievement(List<Rule> ruleList, 
+            String title,
+            String description, 
             Difficulty difficulty)
     {
-        this.ruleList = ruleList;
+        this.ruleList    = ruleList;
+        this.title       = title;
         this.description = description;
-        this.difficulty = difficulty;
+        this.difficulty  = difficulty;
     }
     
     /**
@@ -81,6 +88,31 @@ public class Achievement
         }
        
         return true;       
+    }
+    
+    public boolean evaluateCollision(List<TileEntity> collisionList)
+    {
+        // Use the private helper method to test if all of the fields
+        // meet the requirements. any null values are automatically
+        // accepted.
+        
+        for (Rule rule : ruleList)
+        {
+           if (rule.evaluateCollision(collisionList) == false)
+               return false;
+        }
+       
+        return true;       
+    }
+
+    public Difficulty getDifficulty()
+    {
+        return difficulty;
+    }   
+    
+    public String getTitle()
+    {
+        return title;
     }        
     
     /**
@@ -91,5 +123,11 @@ public class Achievement
     public String getDescription()
     {
         return this.description;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "[" + this.title + " - " + this.difficulty + "] " + this.description;
     }
 }

@@ -10,13 +10,9 @@ import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * A class to manage achievements.
@@ -34,6 +30,9 @@ import java.util.Set;
 public class AchievementManager implements ICollisionListener
 {
 
+    /** A flag that is set to true if an achievement has been completed. */
+    private boolean achievementCompleted = false;
+    
     /** The unachieved achievements. */
     private List<Achievement> incompleteList;
     
@@ -76,8 +75,7 @@ public class AchievementManager implements ICollisionListener
     {
         boolean achieved = false;
         
-        for (Iterator<Achievement> it = incompleteList.iterator(); 
-                it.hasNext(); )
+        for (Iterator<Achievement> it = incompleteList.iterator(); it.hasNext(); )
         {
             Achievement a = it.next();
             
@@ -86,35 +84,76 @@ public class AchievementManager implements ICollisionListener
                 this.completeList.add(a);
                 it.remove();
                 achieved = true;
+                this.achievementCompleted = true;
             }
         }
         
         return achieved;
     }
+
+    /**
+     * Returns true if one or more achievement has recently been completed.
+     * 
+     * @return
+     */
+    public boolean isAchievementCompleted()
+    {
+        return achievementCompleted;
+    }
+
+    /**
+     * Clears the achievement completed flag.
+     * 
+     * @param achievementCompleted
+     */
+    public void clearAchievementCompleted()
+    {
+        this.achievementCompleted = false;
+    }        
     
     /**
      * Report the completed descriptions to the console.
      */
     public void reportCompleted()
     {
+        // Clear the achievement completed flag.
+        this.achievementCompleted = false;
+        
         for (int i = 0; i < completeList.size(); i++)
-            LogManager.recordMessage(completeList.get(i).getDescription(),
+            LogManager.recordMessage(completeList.get(i).toString(),
                     "AcheivementManager#reportCompleted");
     }     
     
+    /**
+     * Listens for collision events.
+     * 
+     * @param e
+     */
     public void collisionOccured(CollisionEvent e)
     {
-       List<TileEntity> items =  e.getSet();
-       
-       StringBuffer buffer = new StringBuffer();
-       
-       for (int i = 0; i < items.size(); i++)
-       {
-           buffer.append(items.get(i).getType().toString() + " -> ");
-       }
-       
-       buffer.append("END");
-       
-       LogManager.recordMessage(buffer.toString());
+        List<TileEntity> collisionList =  e.getCollisionList();
+
+        StringBuffer buffer = new StringBuffer();
+
+        for (TileEntity t : collisionList)
+        {
+           buffer.append(t.getType().toString() + " -> ");
+        }
+
+        buffer.append("END");
+
+        LogManager.recordMessage(buffer.toString());
+        
+        for (Iterator<Achievement> it = incompleteList.iterator(); it.hasNext(); )
+        {
+            Achievement a = it.next();
+
+            if (a.evaluateCollision(collisionList) == true)
+            {
+                this.completeList.add(a);
+                it.remove();
+                this.achievementCompleted = true;
+            }
+        } // end for   
     }
 }

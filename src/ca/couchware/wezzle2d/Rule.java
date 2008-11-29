@@ -5,6 +5,9 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.TileType;
+
 /*
  * A class that holds two associated values.
  * 
@@ -17,15 +20,19 @@ package ca.couchware.wezzle2d;
  * 
  * @author Kevin
  */
+import ca.couchware.wezzle2d.util.Util;
+import java.util.List;
 public class Rule 
 {
            
-    /**
-     * The type of rule.
-     */
+    /** The type of rule. */
     public static enum Type
     {
-        SCORE, LEVEL, MOVES, LINES
+        SCORE, 
+        LEVEL, 
+        MOVES, 
+        LINES,
+        COLLISION
     };       
     
     /**
@@ -33,7 +40,12 @@ public class Rule
      */
     public static enum Operation
     {
-        LT, LTEQ, EQ, GTEQ, GT
+        LT, 
+        LTEQ, 
+        EQ, 
+        GTEQ, 
+        GT,
+        BETWEEN
     }
     
     /** 
@@ -42,6 +54,7 @@ public class Rule
     protected final Type type;
     protected final Operation operation;
     protected final int value;    
+    protected final TileType[] tileTypes;
     
     //--------------------------------------------------------------------------
     // Constructor
@@ -56,10 +69,27 @@ public class Rule
      * @param value The value we are testing against, i.e. less than 2.
      */
     public Rule(Type type, Operation operation, int value)
-    {        
-        this.type = type;
+    {   
+        assert type      != null;
+        assert operation != null;
+        assert value > 0;
+        
+        this.type      = type;
         this.operation = operation;
-        this.value = value;
+        this.value     = value;
+        this.tileTypes = new TileType[0];
+    }
+    
+    public Rule(Type type, Operation operation, TileType ... tileTypes)
+    {
+        assert type      != null;
+        assert operation != null;
+        assert tileTypes.length > 0;
+        
+        this.type      = type;
+        this.operation = operation;
+        this.tileTypes = tileTypes;
+        this.value     = -1;
     }
     
     public void onMatch()
@@ -72,14 +102,18 @@ public class Rule
     //--------------------------------------------------------------------------
     
     /**
-     * A private method that compares the achievement tuple with the actual 
-     * value.
+     * A public method that compares the achievement tuple with the actual 
+     * value.  This will only give a reliable answer for non-COLLISION 
+     * achievements.  It will always return false for collision type achievements.
      * 
-     * @param val The value of the field.
-     * @param rule The achievement rule.
+     * @param game The game state.
      */
     public boolean evaluate(Game game)
     {        
+        // Make sure we're not a COLLISION-type.
+        if (this.type == Type.COLLISION)
+            return false;
+        
         // Find the appropriate field value from the type.
         int x = -1;          
         
@@ -139,6 +173,32 @@ public class Rule
         }
         
         return false;
+    }
+    
+    /**
+     * A special evaluate for collisions.  Will always return false for
+     * non-collision achivements.
+     * 
+     * @param tileTypeList
+     * @return
+     */
+    public boolean evaluateCollision(List<TileEntity> tileList)
+    {
+        if (this.type != Type.COLLISION)
+            return false;
+        
+        if (tileList.size() < tileTypes.length)
+            return false;
+        
+        assert tileList.size() >= tileTypes.length;
+        
+        for (int i = 0; i < tileTypes.length; i++)
+        {
+            if (tileTypes[i] != tileList.get(i).getType())
+                return false;
+        }
+        
+        return true;
     }
 
     //--------------------------------------------------------------------------
