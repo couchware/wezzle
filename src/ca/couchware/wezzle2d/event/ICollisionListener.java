@@ -12,5 +12,5 @@ package ca.couchware.wezzle2d.event;
  */
 public interface ICollisionListener extends IListener
 {
-    public void Collision(CollisionEvent event);
+    public void collisionOccured(CollisionEvent event);
 }

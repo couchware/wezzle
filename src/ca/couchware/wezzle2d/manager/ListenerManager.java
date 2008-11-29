@@ -214,7 +214,7 @@ public class ListenerManager
          
         for (IListener listener : list)
         {
-            ((ICollisionListener) listener).Collision(e);
+            ((ICollisionListener) listener).collisionOccured(e);
         }
          
     }

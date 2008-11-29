@@ -1101,6 +1101,8 @@ public class BoardManager implements IManager
     
     public TileEntity cloneTile(TileEntity tile)
     {
+        assert tile != null;
+        
         TileType type = tile.getType();
         TileEntity t = makeTile(type, tile.getColor(), tile.getX(), tile.getY());
         
@@ -2110,9 +2112,7 @@ public class BoardManager implements IManager
         gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
         scratchBoard = (TileEntity[]) managerState.get(Keys.SCRATCH_BOARD);   
         board = (TileEntity[]) managerState.get(Keys.BOARD);     
-        
-       
-        
+                       
         // Make sure that this board is in the layer manager.
         layerize();
         

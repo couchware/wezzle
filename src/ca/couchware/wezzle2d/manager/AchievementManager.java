@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,18 +35,18 @@ public class AchievementManager implements ICollisionListener
 {
 
     /** The unachieved achievements. */
-    private LinkedList<Achievement> incompleteList;
+    private List<Achievement> incompleteList;
     
     /** The achieved achievements. */
-    private LinkedList<Achievement> completeList;
+    private List<Achievement> completeList;
         
     /**
      * The constructor.
      */
     private AchievementManager()
     {
-        this.incompleteList = new LinkedList<Achievement>();
-        this.completeList = new LinkedList<Achievement>();
+        this.incompleteList = new ArrayList<Achievement>();
+        this.completeList   = new ArrayList<Achievement>();
     }
     
     // Public API.
@@ -101,14 +102,19 @@ public class AchievementManager implements ICollisionListener
                     "AcheivementManager#reportCompleted");
     }     
     
-    public void Collision(CollisionEvent e)
+    public void collisionOccured(CollisionEvent e)
     {
-      ArrayList<TileEntity> items =  e.getSet();
+       List<TileEntity> items =  e.getSet();
        
-       for(int i = 0; i < items.size(); i++)
+       StringBuffer buffer = new StringBuffer();
+       
+       for (int i = 0; i < items.size(); i++)
        {
-           System.out.print(items.get(i).getType().toString() + "->");
+           buffer.append(items.get(i).getType().toString() + " -> ");
        }
-       System.out.println("END");
+       
+       buffer.append("END");
+       
+       LogManager.recordMessage(buffer.toString());
     }
 }

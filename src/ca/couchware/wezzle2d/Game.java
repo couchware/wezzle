@@ -150,10 +150,7 @@ public class Game extends Canvas implements IGameWindowCallback
     public Refactorer refactorer = Refactorer.get();
     
     /** The tile remover. */
-    // TODO Replace "null" with "TileRemover.get()" after Kevin's achievement
-    // changes.
-    public TileRemover tileRemover = TileRemover.get();
-    
+    public TileRemover tileRemover = TileRemover.get();    
     
     /** The animation manager in charge of animations. */
     public AnimationManager animationMan;
@@ -319,8 +316,7 @@ public class Game extends Canvas implements IGameWindowCallback
      * Initializes all the managers (except for the layer manager).
      */    
     private void initializeManagers(EnumSet<ManagerType> managerSet)
-    {        
-        tileRemover.initialize();
+    {                
         if (managerSet.contains(ManagerType.LAYER))
         {
             // Create the layer manager.   
@@ -778,7 +774,7 @@ public class Game extends Canvas implements IGameWindowCallback
                         levelScore,
                         targetLevelScore));
                 
-                TileRemover.get().notifyLevelUp();                                                
+                tileRemover.notifyLevelUp();                                                
 
                 soundMan.play(Sound.LEVEL_UP);
 
@@ -842,11 +838,12 @@ public class Game extends Canvas implements IGameWindowCallback
         // Run the refactorer.
         refactorer.updateLogic(this);
       
-        TileRemover.get().updateLogic(this);
+        // Update the tile remover.
+        tileRemover.updateLogic(this);
       
         // See if we should clear the cascade count.
         if (refactorer.isRefactoring() == false 
-                && TileRemover.get().isTileRemoving() == false
+                && tileRemover.isTileRemoving() == false
                 && pieceMan.isTileDropInProgress() == false)
             statMan.resetChainCount(); 
 
@@ -890,7 +887,7 @@ public class Game extends Canvas implements IGameWindowCallback
     public boolean isBusy()
     {
        return (refactorer.isRefactoring()               
-               || TileRemover.get().isTileRemoving()
+               || tileRemover.isTileRemoving()
                || gameOverInProgress == true
                || activateBoardShowAnimation == true
                || activateBoardHideAnimation == true

@@ -6,20 +6,16 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.animation.ExplosionAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.animation.IAnimation;
-import ca.couchware.wezzle2d.animation.JiggleAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.CollisionEvent;
-import ca.couchware.wezzle2d.event.IListenerManager;
 import ca.couchware.wezzle2d.event.LineEvent;
-import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.*;
@@ -29,7 +25,6 @@ import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
-import ca.couchware.wezzle2d.tile.BombTileEntity;
 import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.StarTileEntity;
 import ca.couchware.wezzle2d.tile.TileEntity;
@@ -52,7 +47,6 @@ public class TileRemover
 
     /** The only instance of this class to ever exist. */
     private static final TileRemover single = new TileRemover();
-
     
     /** If true, a line removal will be activated next loop. */    
     private boolean activateLineRemoval = false;
@@ -68,7 +62,7 @@ public class TileRemover
     private Map<TileType, Set<Integer>> itemMap;
     
     /** The last refactor speed used. */
-    private RefactorSpeed refactorSpeed = Refactorer.get().getRefactorSpeed();
+    private RefactorSpeed refactorSpeed;
     
     /** If true, level up. */
     private boolean activateLevelUp = false;
@@ -101,14 +95,32 @@ public class TileRemover
      * The private constructor.
      */
     private TileRemover()
-    { }
+    { 
+        // Initialize the sets.
+        this.tileRemovalSet = new HashSet<Integer>();
+        this.lastMatchSet   = new HashSet<Integer>();
+        
+        // Create the item set map.
+        this.itemMap = new EnumMap<TileType, Set<Integer>>(TileType.class);
+        
+        // Create a set for each item tile type.
+        EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);
+        tileTypeSet.remove(TileType.NORMAL);
+        tileTypeSet.remove(TileType.X2);
+        tileTypeSet.remove(TileType.X3);
+        tileTypeSet.remove(TileType.X4);
+        
+        // Now create all the item sets.
+        for (TileType t : tileTypeSet)
+            itemMap.put(t, new HashSet<Integer>());        
+    }      
 
     /**
      * Retrieve the single instance of this class.
      * 
      * @return The single instance of this class.
      */
-    public static TileRemover get()
+    static TileRemover get()
     {
         return single;
     }
@@ -132,7 +144,7 @@ public class TileRemover
         }
 
         // See if it just finished.
-        if (Refactorer.get().isFinished() == true && areItemSetsEmpty() == true)
+        if (game.refactorer.isFinished() == true && areItemSetsEmpty() == true)
         {
             findMatches(game);
         } // end if       
@@ -189,28 +201,7 @@ public class TileRemover
         }
         
         return true;
-    }
-   
-    public void initialize()
-    {
-        // Initialize the sets.
-        this.tileRemovalSet = new HashSet<Integer>();
-        this.lastMatchSet   = new HashSet<Integer>();
-        
-        // Create the item set map.
-        this.itemMap = new EnumMap<TileType, Set<Integer>>(TileType.class);
-        
-        // Create a set for each item tile type.
-        EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);
-        tileTypeSet.remove(TileType.NORMAL);
-        tileTypeSet.remove(TileType.X2);
-        tileTypeSet.remove(TileType.X3);
-        tileTypeSet.remove(TileType.X4);
-        
-        // Now create all the item sets.
-        for (TileType t : tileTypeSet)
-            itemMap.put(t, new HashSet<Integer>());        
-    }
+    }       
 
     public boolean isTileRemoving()
     {
@@ -299,7 +290,7 @@ public class TileRemover
             this.activateLineRemoval = true;
             
             // Record the refactor speed.
-            this.refactorSpeed = Refactorer.get().getRefactorSpeed();
+            this.refactorSpeed = game.refactorer.getRefactorSpeed();
         }
         else
         {
@@ -320,12 +311,15 @@ public class TileRemover
     }
 
     private IAnimation animateItemActivation(
+            final SettingsManager settingsMan,
             final LayerManager layerMan,
             final BoardManager boardMan, 
             final TileEntity tile)
     {
-        // The settings manager.
-        final SettingsManager settingsMan = SettingsManager.get();
+        assert settingsMan != null;
+        assert layerMan    != null;
+        assert boardMan    != null;
+        assert tile        != null;
         
         // The clone of tile, used to make the effect.
         final TileEntity clone = boardMan.cloneTile(tile);
@@ -463,14 +457,14 @@ public class TileRemover
             else if (this.itemMap.get(TileType.GRAVITY).isEmpty() == false)
             {                
                 shiftGravity(game); 
-                Refactorer.get()
+                game.refactorer
                         .setRefactorSpeed(RefactorSpeed.SHIFT)
                         .startRefactor();
             }
             // Otherwise, start a new refactor.
             else
             {
-                Refactorer.get()
+                game.refactorer
                         .setRefactorSpeed(refactorSpeed)
                         .startRefactor();
             }
@@ -510,12 +504,12 @@ public class TileRemover
         // Shortcuts to managers.
         AnimationManager animationMan = game.animationMan;
         BoardManager boardMan = game.boardMan;
-        ListenerManager listenerMan = game.listenerMan;
+        //ListenerManager listenerMan = game.listenerMan;
         ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = SettingsManager.get();
+        SettingsManager settingsMan = game.settingsMan;
         SoundManager soundMan = game.soundMan;
         StatManager statMan = game.statMan;                        
-        TutorialManager tutorialMan = game.tutorialMan;                
+        //TutorialManager tutorialMan = game.tutorialMan;                
 
         // Clear flag.
         activateLineRemoval = false;
@@ -675,6 +669,7 @@ public class TileRemover
                    
                     // Create and add the animation.                    
                     animationMan.add(animateItemActivation(
+                            game.settingsMan,
                             game.layerMan,
                             game.boardMan,
                             tile));
@@ -711,12 +706,12 @@ public class TileRemover
         AnimationManager animationMan = game.animationMan;
         BoardManager boardMan = game.boardMan;
         LayerManager layerMan = game.layerMan;
-        ListenerManager listenerMan = game.listenerMan;
+        //ListenerManager listenerMan = game.listenerMan;
         ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = SettingsManager.get();
+        SettingsManager settingsMan = game.settingsMan;
         SoundManager soundMan = game.soundMan;
         StatManager statMan = game.statMan;                        
-        TutorialManager tutorialMan = game.tutorialMan;  
+        //TutorialManager tutorialMan = game.tutorialMan;  
 
         // Shortcut to the set.
         Set<Integer> rocketRemovalSet = this.itemMap.get(TileType.ROCKET);
@@ -869,7 +864,7 @@ public class TileRemover
             
             if (t == null) continue;
             
-            t.setAnimation(animateItemActivation(layerMan, boardMan, t));
+            t.setAnimation(animateItemActivation(settingsMan, layerMan, boardMan, t));
             animationMan.add(t.getAnimation());
         }
 
@@ -950,12 +945,12 @@ public class TileRemover
         final AnimationManager animationMan = game.animationMan;
         final BoardManager boardMan = game.boardMan;
         final LayerManager layerMan = game.layerMan;
-        final ListenerManager listenerMan = game.listenerMan;
+        //final ListenerManager listenerMan = game.listenerMan;
         final ScoreManager scoreMan = game.scoreMan;
-        final SettingsManager settingsMan = SettingsManager.get();
+        final SettingsManager settingsMan = game.settingsMan;
         final SoundManager soundMan = game.soundMan;
         final StatManager statMan = game.statMan;                        
-        final TutorialManager tutorialMan = game.tutorialMan;                
+        //final TutorialManager tutorialMan = game.tutorialMan;                
 
         // Shortcut to the set.
         Set<Integer> bombRemovalSet = this.itemMap.get(TileType.BOMB);
@@ -1088,7 +1083,7 @@ public class TileRemover
         for (Integer i : allItemSet)
         {
             TileEntity t = boardMan.getTile(i);
-            t.setAnimation(animateItemActivation(layerMan, boardMan, t));
+            t.setAnimation(animateItemActivation(settingsMan, layerMan, boardMan, t));
             animationMan.add(t.getAnimation());
         }
 
@@ -1210,12 +1205,12 @@ public class TileRemover
         // Shortcuts to managers.
         AnimationManager animationMan = game.animationMan;
         BoardManager boardMan = game.boardMan;
-        ListenerManager listenerMan = game.listenerMan;
+        //ListenerManager listenerMan = game.listenerMan;
         ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = SettingsManager.get();
+        SettingsManager settingsMan = game.settingsMan;
         SoundManager soundMan = game.soundMan;
         StatManager statMan = game.statMan;                        
-        TutorialManager tutorialMan = game.tutorialMan;  
+        //TutorialManager tutorialMan = game.tutorialMan;  
         
         // Shortcut to the set.
         Set<Integer> starRemovalSet = this.itemMap.get(TileType.STAR);
