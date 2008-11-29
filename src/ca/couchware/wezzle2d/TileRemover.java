@@ -34,6 +34,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -357,7 +358,8 @@ public class TileRemover
     }
 
 
-    private void followThrough(Integer lastItem, ArrayList<TileEntity> itemsSeen, Game game) 
+    private void followThrough(Integer lastItem, List<TileEntity> itemsSeen
+            , Game game, List<TileEntity> allSeen) 
     {
         // The set to hold the tiles affected by the item.
         Set<Integer> tilesAffected = new HashSet<Integer>();
@@ -400,12 +402,16 @@ public class TileRemover
             if(t.getType()!= TileType.NORMAL)
             {
                 // We've found another item. Add it to the list and recurse.
-                if(itemsSeen.contains(t) == true)
+                if(allSeen.contains(t) == true)
                     continue;
                 
-                ArrayList<TileEntity> temp = new ArrayList<TileEntity>(itemsSeen);
+                //add to the list of all things seen.
+                allSeen.add(t);
+                
+                //Add to the temp list.
+                List<TileEntity> temp = new ArrayList<TileEntity>(itemsSeen);
                 temp.add(t);
-                followThrough(tileNum, temp, game);
+                followThrough(tileNum, temp, game, allSeen);
             }
         }
         
@@ -740,7 +746,10 @@ public class TileRemover
             
             itemsSeen.add(t);
             
-            followThrough(tileNum, itemsSeen, game);
+            List<TileEntity> allSeen = new ArrayList<TileEntity>();
+            allSeen.add(t);
+            
+            followThrough(tileNum, itemsSeen, game, allSeen);
 
             
         }
@@ -979,7 +988,10 @@ public class TileRemover
             
             itemsSeen.add(t);
             
-            followThrough(tileNum, itemsSeen, game);
+            List<TileEntity> allSeen = new ArrayList<TileEntity>();
+            allSeen.add(t);
+            
+            followThrough(tileNum, itemsSeen, game, allSeen);
 
             
         }
@@ -1239,7 +1251,10 @@ public class TileRemover
             
             itemsSeen.add(t);
             
-            followThrough(tileNum, itemsSeen, game);
+            List<TileEntity> allSeen = new ArrayList<TileEntity>();
+            allSeen.add(t);
+            
+            followThrough(tileNum, itemsSeen, game, allSeen);
 
             
         }
