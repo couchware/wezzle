@@ -732,6 +732,19 @@ public class TileRemover
         // Also used below.
         IAnimation a1, a2, a3;
         
+         List<TileEntity> allSeen = new ArrayList<TileEntity>();
+          
+          // Load the items into the allseen initially.
+         for (Iterator it = rocketRemovalSet.iterator(); it.hasNext();)
+        {
+            Integer tileNum = (Integer) it.next();
+            // get the tile entity.
+            TileEntity t = game.boardMan.getTile(tileNum);
+            
+            if(t.getType() != TileType.NORMAL)
+                allSeen.add(t);
+         }
+        
         //simulate all collisions that these rockets would achieve one at a time.
         for (Iterator it = rocketRemovalSet.iterator(); it.hasNext();)
         {
@@ -744,8 +757,6 @@ public class TileRemover
             
             itemsSeen.add(t);
             
-            List<TileEntity> allSeen = new ArrayList<TileEntity>();
-            allSeen.add(t);
             
             followThrough(tileNum, itemsSeen, game, allSeen);
 
@@ -974,6 +985,19 @@ public class TileRemover
         // Also used below.
         IAnimation a1, a2, a3;
 
+        List<TileEntity> allSeen = new ArrayList<TileEntity>();
+          
+          // Load the items into the allseen initially.
+         for (Iterator it = bombRemovalSet.iterator(); it.hasNext();)
+        {
+            Integer tileNum = (Integer) it.next();
+            // get the tile entity.
+            TileEntity t = game.boardMan.getTile(tileNum);
+            
+            if(t.getType() != TileType.NORMAL)
+                allSeen.add(t);
+         }
+        
           //simulate all collisions that these bombs would achieve one at a time.
         for (Iterator it = bombRemovalSet.iterator(); it.hasNext();)
         {
@@ -986,8 +1010,7 @@ public class TileRemover
             
             itemsSeen.add(t);
             
-            List<TileEntity> allSeen = new ArrayList<TileEntity>();
-            allSeen.add(t);
+            
             
             followThrough(tileNum, itemsSeen, game, allSeen);
 
@@ -1237,6 +1260,20 @@ public class TileRemover
         // Also used below.
         IAnimation a1, a2;
         
+        
+         List<TileEntity> allSeen = new ArrayList<TileEntity>();
+          
+          // Load the items into the allseen initially.
+         for (Iterator it = starRemovalSet.iterator(); it.hasNext();)
+        {
+            Integer tileNum = (Integer) it.next();
+            // get the tile entity.
+            TileEntity t = game.boardMan.getTile(tileNum);
+            
+            if(t.getType() != TileType.NORMAL)
+                allSeen.add(t);
+         }
+        
           //simulate all collisions that these stars would achieve one at a time.
         for (Iterator it = starRemovalSet.iterator(); it.hasNext();)
         {
@@ -1248,9 +1285,6 @@ public class TileRemover
            ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
             
             itemsSeen.add(t);
-            
-            List<TileEntity> allSeen = new ArrayList<TileEntity>();
-            allSeen.add(t);
             
             followThrough(tileNum, itemsSeen, game, allSeen);
 
