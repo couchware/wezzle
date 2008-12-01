@@ -48,7 +48,7 @@ public class TimerManager implements ILevelListener
 	/** 
      * Holds the internal time for comparison to time increments.
      */
-	private long internalTime;
+	private int internalTime;
     
     /** 
      * Is the timer paused? 
@@ -88,7 +88,7 @@ public class TimerManager implements ILevelListener
 	}
         
     /**
-     * Create a new timer manager instance.
+     * Get the one and only timer instance.
      * 
      * @return
      */

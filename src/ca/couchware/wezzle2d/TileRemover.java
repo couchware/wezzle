@@ -60,7 +60,7 @@ public class TileRemover
     private Set<Integer> lastMatchSet;
     
     /** The item set map.  Contains all the item sets. */
-    private Map<TileType, Set<Integer>> itemMap;
+    private Map<TileType, Set<Integer>> itemSetMap;
     
     /** The last refactor speed used. */
     private RefactorSpeed refactorSpeed;
@@ -102,7 +102,7 @@ public class TileRemover
         this.lastMatchSet   = new HashSet<Integer>();
         
         // Create the item set map.
-        this.itemMap = new EnumMap<TileType, Set<Integer>>(TileType.class);
+        this.itemSetMap = new EnumMap<TileType, Set<Integer>>(TileType.class);
         
         // Create a set for each item tile type.
         EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);
@@ -113,7 +113,7 @@ public class TileRemover
         
         // Now create all the item sets.
         for (TileType t : tileTypeSet)
-            itemMap.put(t, new HashSet<Integer>());        
+            itemSetMap.put(t, new HashSet<Integer>());        
     }      
 
     /**
@@ -188,13 +188,13 @@ public class TileRemover
      */
     private boolean areItemSetsEmpty()
     {
-        assert(this.itemMap != null);
+        assert(this.itemSetMap != null);
             
         
-        for (TileType t : this.itemMap.keySet())
+        for (TileType t : this.itemSetMap.keySet())
         {
-            if (this.itemMap.containsKey(t) 
-                    && this.itemMap.get(t).isEmpty() == false)
+            if (this.itemSetMap.containsKey(t) 
+                    && this.itemSetMap.get(t).isEmpty() == false)
             {
                 return false;
             }
@@ -444,19 +444,19 @@ public class TileRemover
             // See if there are any bombs in the bomb set.
             // If there are, activate the bomb removal.  
             
-            if (this.itemMap.get(TileType.ROCKET).isEmpty() == false)
+            if (this.itemSetMap.get(TileType.ROCKET).isEmpty() == false)
             {
                 this.activateRocketRemoval = true;
             }
-            else if (this.itemMap.get(TileType.STAR).isEmpty() == false)
+            else if (this.itemSetMap.get(TileType.STAR).isEmpty() == false)
             {
                 this.activateStarRemoval = true;
             }
-            else if (this.itemMap.get(TileType.BOMB).isEmpty() == false)
+            else if (this.itemSetMap.get(TileType.BOMB).isEmpty() == false)
             {
                 this.activateBombRemoval = true;
             }
-            else if (this.itemMap.get(TileType.GRAVITY).isEmpty() == false)
+            else if (this.itemSetMap.get(TileType.GRAVITY).isEmpty() == false)
             {                
                 shiftGravity(game); 
                 game.refactorer
@@ -480,10 +480,10 @@ public class TileRemover
     {                
         for (TileType t : tileTypeSet)
         {
-            if (itemMap.containsKey(t) == false)
+            if (itemSetMap.containsKey(t) == false)
                 continue;
             
-            Set<Integer> set = this.itemMap.get(t);
+            Set<Integer> set = this.itemSetMap.get(t);
             
             if (clear == true) set.clear();
             boardMan.scanFor(t, this.tileRemovalSet, set);                       
@@ -658,7 +658,7 @@ public class TileRemover
                 
                 // Get a set of all the items activated.
                 Set<Integer> allItemSet = new HashSet<Integer>();
-                for (Set<Integer> itemSet : itemMap.values())
+                for (Set<Integer> itemSet : itemSetMap.values())
                 {
                     allItemSet.addAll(itemSet);
                 }
@@ -679,7 +679,7 @@ public class TileRemover
             }           
         } // end if    
         
-        Set<Integer> gravityRemovalSet = itemMap.get(TileType.GRAVITY);
+        Set<Integer> gravityRemovalSet = itemSetMap.get(TileType.GRAVITY);
         if (gravityRemovalSet.isEmpty() == false)
         {
             for (Integer i : gravityRemovalSet)
@@ -716,7 +716,7 @@ public class TileRemover
         //TutorialManager tutorialMan = game.tutorialMan;  
 
         // Shortcut to the set.
-        Set<Integer> rocketRemovalSet = this.itemMap.get(TileType.ROCKET);
+        Set<Integer> rocketRemovalSet = this.itemSetMap.get(TileType.ROCKET);
         
         // Clear the flag.
         activateRocketRemoval = false;
@@ -870,8 +870,8 @@ public class TileRemover
         
         for (TileType t : tileTypeSet)
         {
-            if (itemMap.containsKey(t))            
-                allItemSet.addAll(itemMap.get(t));                
+            if (itemSetMap.containsKey(t))            
+                allItemSet.addAll(itemSetMap.get(t));                
         }              
         
         for (Integer i : allItemSet)
@@ -949,7 +949,7 @@ public class TileRemover
 
         // If other things were were hit, they will be dealt with in another
         // removal cycle.
-        this.itemMap.put(TileType.ROCKET, nextRocketRemovalSet);
+        this.itemSetMap.put(TileType.ROCKET, nextRocketRemovalSet);
 
         // Set the flag.
         tileRemovalInProgress = true;
@@ -969,7 +969,7 @@ public class TileRemover
         //final TutorialManager tutorialMan = game.tutorialMan;                
 
         // Shortcut to the set.
-        Set<Integer> bombRemovalSet = this.itemMap.get(TileType.BOMB);
+        Set<Integer> bombRemovalSet = this.itemSetMap.get(TileType.BOMB);
         
         // Clear the flag.
         activateBombRemoval = false;
@@ -1102,8 +1102,8 @@ public class TileRemover
         
         for (TileType t : tileTypeSet)
         {
-            if (itemMap.containsKey(t))            
-                allItemSet.addAll(itemMap.get(t));                
+            if (itemSetMap.containsKey(t))            
+                allItemSet.addAll(itemSetMap.get(t));                
         }
         
         for (Integer i : allItemSet)
@@ -1220,7 +1220,7 @@ public class TileRemover
 
         // If other bombs were hit, they will be dealt with in another
         // bomb removal cycle.
-        this.itemMap.put(TileType.BOMB, nextBombRemovalSet);        
+        this.itemSetMap.put(TileType.BOMB, nextBombRemovalSet);        
 
         // Set the flag.
         tileRemovalInProgress = true;
@@ -1239,7 +1239,7 @@ public class TileRemover
         //TutorialManager tutorialMan = game.tutorialMan;  
         
         // Shortcut to the set.
-        Set<Integer> starRemovalSet = this.itemMap.get(TileType.STAR);
+        Set<Integer> starRemovalSet = this.itemSetMap.get(TileType.STAR);
         
         // Clear the flag.
         activateStarRemoval = false;
@@ -1421,7 +1421,7 @@ public class TileRemover
     private void shiftGravity(Game game)
     {
         // Shortcut to the set.
-        Set<Integer> gravityRemovalSet = this.itemMap.get(TileType.GRAVITY);
+        Set<Integer> gravityRemovalSet = this.itemSetMap.get(TileType.GRAVITY);
         
         // Determine the new gravity.
         EnumSet<Direction> gravity = null;

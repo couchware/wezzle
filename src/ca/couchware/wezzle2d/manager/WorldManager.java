@@ -7,9 +7,11 @@ import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Manages the world.
@@ -32,7 +34,7 @@ public class WorldManager implements IManager, ILevelListener
 	/**
 	 * The item list.
 	 */
-	private ArrayList<Item> itemList;
+	private Map<TileType, Item> itemMap;
         
     /**
      * The multiplier list
@@ -119,7 +121,7 @@ public class WorldManager implements IManager, ILevelListener
         this.maximumMultipliers = 3;
         
         // Create the item list.
-        itemList = new ArrayList<Item>();                
+        itemMap = new EnumMap<TileType, Item>(TileType.class);                
         
         // Set the multipliers.
         multiplierList = new ArrayList<Item>();        
@@ -170,7 +172,8 @@ public class WorldManager implements IManager, ILevelListener
             public void onMatch()
             {
                 // Add the rocket.
-                itemList.add(new Item.Builder(TileType.ROCKET)
+                itemMap.put(TileType.ROCKET, 
+                        new Item.Builder(TileType.ROCKET)
                         .initialAmount(1).weight(55).maximumOnBoard(3).end());                
             }            
         });  
@@ -182,7 +185,8 @@ public class WorldManager implements IManager, ILevelListener
             public void onMatch()
             {
                 // Add the bomb.
-                itemList.add(new Item.Builder(TileType.GRAVITY)
+                itemMap.put(TileType.GRAVITY,
+                        new Item.Builder(TileType.GRAVITY)
                         .initialAmount(1).weight(50).maximumOnBoard(1).end());                
             }            
         });  
@@ -194,7 +198,8 @@ public class WorldManager implements IManager, ILevelListener
             public void onMatch()
             {
                 // Add the bomb.
-                itemList.add(new Item.Builder(TileType.BOMB)
+                itemMap.put(TileType.BOMB,
+                        new Item.Builder(TileType.BOMB)
                         .initialAmount(1).weight(10).maximumOnBoard(1).end());                
             }            
         }); 
@@ -206,7 +211,8 @@ public class WorldManager implements IManager, ILevelListener
             public void onMatch()
             {
                 // Add the star.
-                itemList.add(new Item.Builder(TileType.STAR)
+                itemMap.put(TileType.STAR,
+                        new Item.Builder(TileType.STAR)
                         .initialAmount(0).weight(5).maximumOnBoard(1).end());                
             }            
         });   
@@ -419,7 +425,7 @@ public class WorldManager implements IManager, ILevelListener
 	 */
 	public Item getItem(int index)
 	{
-		return itemList.get(index);
+		return itemMap.get(index);
 	}
 	
 	/**
@@ -431,13 +437,7 @@ public class WorldManager implements IManager, ILevelListener
 	 */
 	public Item getItem(TileType type)
 	{
-		for (Item item : itemList)
-        {
-			if (item.getTileType() == type)
-				return item;
-        }
-		
-		return null;
+		return itemMap.get(type);
 	}
        
     /**
@@ -451,9 +451,9 @@ public class WorldManager implements IManager, ILevelListener
         // Check if we do not return  a normal tile. There is
         // A flat 5% chance of this.
         int test = Util.random.nextInt(100);
-        if( test <= 5)
+        if (test <= 5)
         {
-            return itemList.get(0);
+            return itemMap.get(TileType.NORMAL);
         }
 
         // Build the list of items. This does not include items 
@@ -470,16 +470,16 @@ public class WorldManager implements IManager, ILevelListener
         //int probMults = (numItems-numMults) * constant + 50;
 
         // If there are no items in the game yet.
-        if(itemList.size() == 1)
+        if(itemMap.size() == 1)
             probItems = 0;
 
         // Select a number from 1 - 100.
         int pick = Util.random.nextInt(100);
 
 
-        if(numMultipliers < maximumMultipliers && numItems < maximumItems)
+        if (numMultipliers < maximumMultipliers && numItems < maximumItems)
         {
-            if(pick < probItems)
+            if (pick < probItems)
             {
                 useItems = true;
             }
@@ -498,18 +498,18 @@ public class WorldManager implements IManager, ILevelListener
         }
 
 
-        ArrayList<Item> items = new ArrayList<Item>();
+        List<Item> itemList = new ArrayList<Item>();
 
         if (useItems == true)
         {
-            for (Item item : itemList)
+            for (Item item : itemMap.values())
             {
                 // Skip the normal tile.
                 if (item.getTileType() == TileType.NORMAL)
                     continue;
 
                 if (item.getWeight() > 0)
-                    items.add(item);
+                    itemList.add(item);
             }
         }
 
@@ -518,24 +518,24 @@ public class WorldManager implements IManager, ILevelListener
             for (Item item : multiplierList)
             {
                 if (item.getWeight() > 0)
-                    items.add(item);
+                    itemList.add(item);
             }
         }
 
         // If the list is empty, return a normal tile.
-        if(items.size() <= 0)
+        if (itemList.size() <= 0)
         {
-           return itemList.get(0);
+           return itemMap.get(TileType.NORMAL);
         }
                         
 		// Create an array representing the item distribution 
             
-		int dist[] = new int[items.size() + 1];
+		int dist[] = new int[itemList.size() + 1];
 		dist[0] = 0;
 		
 		// Determine the distribution.
 		int i = 1;
-		for (Item item : items)
+		for (Item item : itemList)
 		{            
 			if (item.getWeight() == -1)
 				dist[i] = dist[i - 1];
@@ -544,8 +544,7 @@ public class WorldManager implements IManager, ILevelListener
 			
 			i++;
 		}
-		
-               
+		               
 		// Pick a random number between 0 and dist[dist.length - 1].
 		int randomNumber = Util.random.nextInt(dist[dist.length - 1]);
 		
@@ -553,7 +552,7 @@ public class WorldManager implements IManager, ILevelListener
 		{
 			if (randomNumber < dist[j])
             {
-				return items.get(j - 1);
+				return itemList.get(j - 1);
             }
 		}
 		
@@ -562,22 +561,27 @@ public class WorldManager implements IManager, ILevelListener
                 "Random number out of range! (" + randomNumber + ").", 
                 "WorldManager#getItem");
         
-		return items.get(0);
+		return itemList.get(0);
 	}
     
     /**
-	 * @return The items and mults
+	 * @return The items and multipliers
 	 */
-	public LinkedList<Item> getItemList()
+	public List<Item> getItemList()
 	{
-            LinkedList<Item> items = new LinkedList<Item>();
-            
-            for (Item item : itemList)
-                items.add(item);
-            for(Item item: multiplierList)
-                items.add(item);
+        List<Item> itemList = new ArrayList<Item>();
+
+        for (Item item : itemMap.values())
+        {
+            itemList.add(item);
+        }
+
+        for (Item item : multiplierList)
+        {
+            itemList.add(item);
+        }
                     
-		return items;
+		return itemList;
 	}
 
     public int getMaximumTime()
@@ -620,8 +624,9 @@ public class WorldManager implements IManager, ILevelListener
         // !IMPORTANT! Ensure that the first item is a normal tile. 
         // This is so that we can use the first item when returning a
         // normal tile whenever we want.
-        itemList.clear();
-        itemList.add(new Item.Builder(TileType.NORMAL)
+        itemMap.clear();
+        itemMap.put(TileType.NORMAL, 
+                new Item.Builder(TileType.NORMAL)
                 .initialAmount(28).weight(5).maximumOnBoard(100).end());
 //        itemList.add(new Item.Builder(TileType.ROCKET)
 //                .initialAmount(1).weight(55).maxOnBoard(3).end());
