@@ -312,6 +312,13 @@ public class Game extends Canvas implements IGameWindowCallback
 		window.start();
 	}
     
+        
+        public void startBoard()
+        {
+            boardMan.generateBoard(worldMan.getItemList());          
+            startBoardShowAnimation(AnimationType.ROW_FADE);
+        }
+        
     /**
      * Initializes all the managers (except for the layer manager).
      */    
@@ -370,8 +377,7 @@ public class Game extends Canvas implements IGameWindowCallback
             boardMan = BoardManager.newInstance(animationMan, layerMan, worldMan,
                     272, 139, 8, 10);    
             boardMan.setVisible(false);
-            boardMan.generateBoard(worldMan.getItemList());          
-            startBoardShowAnimation(AnimationType.ROW_FADE);  
+
         }
         
         if (managerSet.contains(ManagerType.PIECE))

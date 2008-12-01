@@ -148,7 +148,9 @@ public class WorldManager implements IManager, ILevelListener
     public static WorldManager newInstance()
     {
         return new WorldManager();
-    }        
+    }
+
+   
     
     //--------------------------------------------------------------------------
 	// Instance Methods
@@ -369,8 +371,18 @@ public class WorldManager implements IManager, ILevelListener
 	 */
 	public void setLevel(int level)
 	{
-		// Set the level.
-		this.level = level;								
+            // Increment initial amount of normal tiles.
+            
+            
+          
+            if(level != 1)
+            {
+                Item normalTiles = getItem(0);
+                normalTiles.setCurrentAmount((getItem(0).getInitialAmount() + level) - 1);
+            }
+		
+            // Set the level.
+            this.level = level;								
 	}	
 	
     /**
@@ -420,10 +432,7 @@ public class WorldManager implements IManager, ILevelListener
 	 * Increment the level.
 	 */
 	public void incrementLevel()
-	{
-		// Increment initial amount of normal tiles.		
-		getItem(0).incrementInitialAmount();
-		
+        {	
 		// Increment the level.
 		setLevel(level + 1);
 	}	

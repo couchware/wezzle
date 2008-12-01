@@ -332,11 +332,20 @@ public class BoardManager implements IManager
         this.clearBoard(); 
         assert(itemList.get(0) instanceof Item);
         
+        System.out.println("******* " + worldMan.getLevel());
+        
         int count = 0;
         for (int i = 0; i < itemList.size(); i++)
         {
+            int offset = 0;
+            
+            // Handle the case where the normal tiles are different. This occurs
+            // When players start on a level other than level 1.
+            if(i == 0)
+                offset = worldMan.getLevel()-1;
+            
             for (int j = 0; 
-                j < itemList.get(i).getInitialAmount(); j++)
+                j < itemList.get(i).getInitialAmount() + offset; j++)
             {
                 this.createTile(count, itemList.get(i).getTileType());
                 count++;

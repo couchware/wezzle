@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.graphics.IEntity;
+import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -391,7 +392,11 @@ public class PlayNowGroup extends AbstractGroup
             for (MusicPlayer p : playerMap.values())
             {                
                 p.stopAtGain(0.0);
-            }                           
+            }        
+            
+            game.startBoard();
+            
+              
             
             // Notify the main menu.
             this.parent.setActivated(false);
