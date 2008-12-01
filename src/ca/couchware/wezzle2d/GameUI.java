@@ -7,8 +7,10 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.ILineListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -17,6 +19,7 @@ import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ListenerManager;
+import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
 import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.Settings;
@@ -43,7 +46,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class GameUI implements ILevelListener, IScoreListener
+public class GameUI implements ILevelListener, ILineListener, IScoreListener
 {       
     
     /** The single instance of this class. */
@@ -513,6 +516,11 @@ public class GameUI implements ILevelListener, IScoreListener
     {
         // Update the progress bar.
         progressBar.setProgressMax(event.getScore());
-    }   
+    }
+
+    public void lineConsumed(LineEvent event, GameType gameType)
+    {
+        // ...
+    }
     
 }

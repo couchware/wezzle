@@ -56,15 +56,22 @@ public class WorldManager implements IManager, ILevelListener
      */
     private boolean gameInProgress = false;   
     
+    // Timer.
+    
+    private int minimumTime = 5;
+    private int maximumTime = 15;
+    
+    // Items & Drop.
+    
     /**
      * The maximum items on the screen at once.
      */
-    private int maxItems;
+    private int maximumItems;
     
     /**
      * The maximum multipliers on the screen at once.
      */
-    private int maxMultipliers;
+    private int maximumMultipliers;       
     
     /**
      * The percentage of tiles to maintain.
@@ -79,17 +86,7 @@ public class WorldManager implements IManager, ILevelListener
     /**
      * The number of pieces to drop in concurrently.
      */
-    private int parallelDropInAmount = 4;
-    
-    /**
-     * The minimum timer value.
-     */
-    private int timerMin = 5;
-    
-    /**
-     * The initial timer value.
-     */	
-    private int initialTimer = 15;
+    private int parallelDropInAmount = 4;       
         
     /**
      * The level at which the difficulty begins to increase.
@@ -100,6 +97,10 @@ public class WorldManager implements IManager, ILevelListener
      * The number of levels before the difficulty level increases.
      */
     private int levelDifficultySpeed = 3;
+    
+    // Wezzle tile.
+        
+    private int wezzleMaximumTimer = 5;
     
     //--------------------------------------------------------------------------
 	// Constructor
@@ -114,8 +115,8 @@ public class WorldManager implements IManager, ILevelListener
 	private WorldManager()
 	{										
         // Set the max items and mults.
-        this.maxItems       = 3;
-        this.maxMultipliers = 3;
+        this.maximumItems       = 3;
+        this.maximumMultipliers = 3;
         
         // Create the item list.
         itemList = new ArrayList<Item>();                
@@ -123,11 +124,11 @@ public class WorldManager implements IManager, ILevelListener
         // Set the multipliers.
         multiplierList = new ArrayList<Item>();        
         multiplierList.add(new Item.Builder(TileType.X2)
-                .initialAmount(2).weight(50).maxOnBoard(3).end());
+                .initialAmount(2).weight(50).maximumOnBoard(3).end());
         multiplierList.add(new Item.Builder(TileType.X3)
-                .initialAmount(0).weight(20).maxOnBoard(1).end());
+                .initialAmount(0).weight(20).maximumOnBoard(1).end());
         multiplierList.add(new Item.Builder(TileType.X4)
-                .initialAmount(0).weight(10).maxOnBoard(1).end());                
+                .initialAmount(0).weight(10).maximumOnBoard(1).end());                
                           
         // Make the mutable list the master list.
         masterRuleList = createMasterRuleList();
@@ -170,7 +171,7 @@ public class WorldManager implements IManager, ILevelListener
             {
                 // Add the rocket.
                 itemList.add(new Item.Builder(TileType.ROCKET)
-                        .initialAmount(1).weight(55).maxOnBoard(3).end());                
+                        .initialAmount(1).weight(55).maximumOnBoard(3).end());                
             }            
         });  
         
@@ -182,7 +183,7 @@ public class WorldManager implements IManager, ILevelListener
             {
                 // Add the bomb.
                 itemList.add(new Item.Builder(TileType.GRAVITY)
-                        .initialAmount(1).weight(50).maxOnBoard(1).end());                
+                        .initialAmount(1).weight(50).maximumOnBoard(1).end());                
             }            
         });  
         
@@ -194,7 +195,7 @@ public class WorldManager implements IManager, ILevelListener
             {
                 // Add the bomb.
                 itemList.add(new Item.Builder(TileType.BOMB)
-                        .initialAmount(1).weight(10).maxOnBoard(1).end());                
+                        .initialAmount(1).weight(10).maximumOnBoard(1).end());                
             }            
         }); 
         
@@ -206,7 +207,7 @@ public class WorldManager implements IManager, ILevelListener
             {
                 // Add the star.
                 itemList.add(new Item.Builder(TileType.STAR)
-                        .initialAmount(0).weight(5).maxOnBoard(1).end());                
+                        .initialAmount(0).weight(5).maximumOnBoard(1).end());                
             }            
         });   
         
@@ -222,33 +223,7 @@ public class WorldManager implements IManager, ILevelListener
 //        }); 
         
         return Collections.unmodifiableList(mutableList);
-    }        
-    
-//    public void levelUp(final Game game)
-//    {        
-//        this.incrementLevel();
-//        
-////        int currentLevelScore = game.scoreMan.getLevelScore() 
-////                - game.scoreMan.getTargetLevelScore();
-////        
-////        int targetLevelScore = generateTargetLevelScore(level);
-////        
-////        if(currentLevelScore > targetLevelScore / 2)
-////            currentLevelScore = targetLevelScore / 2;
-//        
-////        game.scoreMan.setLevelScore(currentLevelScore);        
-////		game.scoreMan.setTargetLevelScore(targetLevelScore);
-//        
-//        //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
-//               
-//        // Change the timer.
-////        int time = game.timerMan.getInitialTime();
-////        
-////        if(time > this.timerMin)
-////            time--;
-////        
-////        game.timerMan.setInitialTime(time);
-//    }
+    }           
     
     /**
      * Calculates the number of tiles to drop.
@@ -388,45 +363,35 @@ public class WorldManager implements IManager, ILevelListener
     /**
      * @return the maximum number of items.
      */
-    public int getMaxItems()
+    public int getMaximumItems()
     {
-        return maxItems;
+        return maximumItems;
     }
     
     /**
      * set the maximum number of items.
      */
-    public void setMaxItems(int maxItems)
+    public void setMaximumItems(int maximum)
     {
-        this.maxItems = maxItems;
+        this.maximumItems = maximum;
     }    
     
     
      /**
      * @return the maximum number of mults.
      */
-    public int getMaxMultipliers()
+    public int getMaximumMultipliers()
     {
-        return maxMultipliers;
+        return maximumMultipliers;
     }
     
     /**
      * set the maximum number of mults.
      */
-    public void setMaxMultipliers(int maxMults)
+    public void setMaximumMultipliers(int maximum)
     {
-        this.maxMultipliers = maxMults;
-    }    
-    
-    
-    /**
-     * Get the initial timer value.
-     * @return The initial timer.
-     */
-    public int getInitialTimer()
-    {
-        return initialTimer;
-    }        
+        this.maximumMultipliers = maximum;
+    }                
     
 	/**
 	 * Increment the level.
@@ -512,7 +477,7 @@ public class WorldManager implements IManager, ILevelListener
         int pick = Util.random.nextInt(100);
 
 
-        if(numMultipliers < maxMultipliers && numItems < maxItems)
+        if(numMultipliers < maximumMultipliers && numItems < maximumItems)
         {
             if(pick < probItems)
             {
@@ -523,11 +488,11 @@ public class WorldManager implements IManager, ILevelListener
                 useMultipliers = true;
             }
         }
-        else if (numMultipliers < maxMultipliers)
+        else if (numMultipliers < maximumMultipliers)
         {
             useMultipliers = true;
         }
-        else if (numItems < maxItems)
+        else if (numItems < maximumItems)
         {
             useItems = true;
         }
@@ -613,7 +578,19 @@ public class WorldManager implements IManager, ILevelListener
                 items.add(item);
                     
 		return items;
-	}               	
+	}
+
+    public int getMaximumTime()
+    {
+        return maximumTime;
+    }
+
+    public int getMinimumTime()
+    {
+        return minimumTime;
+    }
+    
+    
                 
     public void levelChanged(LevelEvent e)
     {
@@ -645,7 +622,7 @@ public class WorldManager implements IManager, ILevelListener
         // normal tile whenever we want.
         itemList.clear();
         itemList.add(new Item.Builder(TileType.NORMAL)
-                .initialAmount(28).weight(5).maxOnBoard(100).end());
+                .initialAmount(28).weight(5).maximumOnBoard(100).end());
 //        itemList.add(new Item.Builder(TileType.ROCKET)
 //                .initialAmount(1).weight(55).maxOnBoard(3).end());
 //        itemList.add(new Item.Builder(TileType.BOMB)

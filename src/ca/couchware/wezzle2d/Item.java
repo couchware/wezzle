@@ -77,7 +77,7 @@ public class Item
         public Builder weight(int val) 
         { weight = val; return this; }
         
-        public Builder maxOnBoard(int val) 
+        public Builder maximumOnBoard(int val) 
         { maxOnScreen = val; return this; }
         
         public Item end()

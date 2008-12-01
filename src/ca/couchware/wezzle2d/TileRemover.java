@@ -179,7 +179,6 @@ public class TileRemover
         {            
             processRemoval(game);
         }
-
     }
     
     /**
@@ -264,20 +263,19 @@ public class TileRemover
         statMan.incrementCycleLineCount(cycleX);
         statMan.incrementCycleLineCount(cycleY);
         
-        //  Handle any lines we may have had.
-        if (cycleX + cycleY > 0)
+        //  Handle any lines we may have had.       
+        if (game.tutorialMan.isTutorialInProgress() == true)
         {
-            if (game.tutorialMan.isTutorialInProgress() == true)
-            {
-                game.listenerMan.notifyLineConsumed(new LineEvent(game.statMan.getCycleLineCount(), this),
-                        GameType.TUTORIAL);
-            }
-            else
-            {
-                game.listenerMan.notifyLineConsumed(new LineEvent(game.statMan.getCycleLineCount(), this),
-                        GameType.GAME);
-            }
+            game.listenerMan.notifyLineConsumed(new LineEvent(
+                    game.statMan.getCycleLineCount(), this),
+                    GameType.TUTORIAL);
         }
+        else
+        {
+            game.listenerMan.notifyLineConsumed(new LineEvent(
+                    game.statMan.getCycleLineCount(), this),
+                    GameType.GAME);
+        }                
 
         // Copy the match into the last line match holder.
         lastMatchSet.clear();
@@ -744,7 +742,7 @@ public class TileRemover
             if(t.getType() != TileType.NORMAL)
                 allSeen.add(t);
          }
-        
+                
         //simulate all collisions that these rockets would achieve one at a time.
         for (Iterator it = rocketRemovalSet.iterator(); it.hasNext();)
         {
@@ -1006,15 +1004,10 @@ public class TileRemover
             TileEntity t = boardMan.getTile(tileNum);
             
             // Create a set to hold the current item.
-           ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
+            ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
             
-            itemsSeen.add(t);
-            
-            
-            
-            followThrough(tileNum, itemsSeen, game, allSeen);
-
-            
+            itemsSeen.add(t);                        
+            followThrough(tileNum, itemsSeen, game, allSeen);            
         }
         
         // Get the tiles the bombs would affect.

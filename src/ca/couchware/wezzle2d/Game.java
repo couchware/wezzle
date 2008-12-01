@@ -423,7 +423,12 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.TIMER))
         {
             // Create the time manager.
-            timerMan = TimerManager.newInstance(worldMan.getInitialTimer()); 
+            if (worldMan == null)
+                throw new IllegalStateException("World Manager has not been initalized yet!");
+                
+            TimerManager.setMinimumTime(worldMan.getMinimumTime());
+            TimerManager.setMaximumTime(worldMan.getMaximumTime());
+            timerMan = TimerManager.newInstance(); 
             listenerMan.registerListener(Listener.LEVEL, timerMan);
         }
         

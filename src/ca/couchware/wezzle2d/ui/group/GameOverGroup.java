@@ -165,7 +165,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
             level = game.worldMan.getLevel();
 
             // Reset the timer to the initial.
-            game.timerMan.setInitialTime(game.worldMan.getInitialTimer());
+            game.timerMan.resetInitialTime();
         }
         
         // Notify all listeners of reset.

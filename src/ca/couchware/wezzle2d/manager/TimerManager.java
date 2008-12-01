@@ -14,16 +14,26 @@ import ca.couchware.wezzle2d.util.Util;
  *
  */
 public class TimerManager implements ILevelListener
-{
-    /** 
-     * The minimum time.
-     */
-    private static final int MINIMUM_TIME = 5;
-    
+{       
     /**
      * The default time.
      */
-    private static final int DEFAULT_TIME = 20;
+    private static int maximumTime = 15;
+
+    public static void setMaximumTime(int time)
+    {
+        maximumTime = time;
+    }        
+    
+    /** 
+     * The minimum time.
+     */
+    private static int minimumTime = 5;
+
+    public static void setMinimumTime(int time)
+    {
+        minimumTime = time;
+    }        
     
 	/** 
      * The current time on the timer. 
@@ -68,28 +78,24 @@ public class TimerManager implements ILevelListener
 	 * 
 	 * @param initialTime The initial time on the timer.
 	 */
-	private TimerManager(int initialTime)
-	{
-		assert(initialTime > 0);
-		
+	private TimerManager()
+	{		
 		this.currentTime = initialTime;
-		this.initialTime = initialTime;
+		this.initialTime = maximumTime;
 		this.internalTime = 0;
         this.paused = false;
         this.stopped = false;
 	}
         
-        // Public API
-        
-        public static TimerManager newInstance()
-        {
-            return new TimerManager(DEFAULT_TIME);
-        }
-        
-        public static TimerManager newInstance(int initialTime)
-        {
-            return new TimerManager(initialTime);
-        }
+    /**
+     * Create a new timer manager instance.
+     * 
+     * @return
+     */
+    public static TimerManager newInstance()
+    {
+        return new TimerManager();
+    }                
 
 	/**
 	 * A method to set the time on the timer.
@@ -141,12 +147,18 @@ public class TimerManager implements ILevelListener
 
 	/**
 	 * Set the initial time.
+     * 
 	 * @param time The new time.
 	 */
 	public void setInitialTime(int time)
 	{
 		this.initialTime = time;
 	}
+    
+    public void resetInitialTime()
+    {
+        this.initialTime = maximumTime;
+    }
 	
 	/**
 	 * A method to increment the internal time. If a second has passed
@@ -221,7 +233,7 @@ public class TimerManager implements ILevelListener
     {
         int time = getInitialTime();
         
-        if (time > MINIMUM_TIME) 
+        if (time > minimumTime) 
             time--;
         
         setInitialTime(time);
