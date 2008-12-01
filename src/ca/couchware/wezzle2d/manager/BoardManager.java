@@ -332,8 +332,6 @@ public class BoardManager implements IManager
         this.clearBoard(); 
         assert(itemList.get(0) instanceof Item);
         
-        System.out.println("******* " + worldMan.getLevel());
-        
         int count = 0;
         for (int i = 0; i < itemList.size(); i++)
         {
