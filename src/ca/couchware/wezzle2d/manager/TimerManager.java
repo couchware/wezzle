@@ -1,45 +1,45 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
-import ca.couchware.wezzle2d.util.Util;
 
 /**
  * The TimeManager is a class that manages the time for the Timer.
- * The class works as follows: An internal count is held starting at 0.
- * An offset is passed in every update with an increment. When the internal count
- * goes above 1000ms (or 1 second) the timer is decremented.
+ * 
+ * Internals: *** SUBJECT TO CHANGE, DO NOT RELY ON THIS INFORMATION ***
+ * The class works as follows: 
+ * An internal count is held starting at 0.
+ * An offset is passed in every update with an increment. 
+ * When the internal count goes above 1000 ms (or 1 second) the timer 
+ * is decremented.
  * 
  * @author Kevin Grad
  *
  */
 public class TimerManager implements ILevelListener
-{       
+{           
+   
+    /**
+     * The single instance of the manager.
+     */
+    private static final TimerManager single = new TimerManager();
+    
     /**
      * The default time.
      */
-    private static int maximumTime = 15;
-
-    public static void setMaximumTime(int time)
-    {
-        maximumTime = time;
-    }        
-    
+    private int maximumTime = 15;
+   
     /** 
      * The minimum time.
      */
-    private static int minimumTime = 5;
-
-    public static void setMinimumTime(int time)
-    {
-        minimumTime = time;
-    }        
+    private int minimumTime = 5;
     
 	/** 
      * The current time on the timer. 
      */
-	private int currentTime;
-	
+	private int currentTime;	    
+    
 	/** 
      * The initial time for this timer. 
      */
@@ -79,12 +79,12 @@ public class TimerManager implements ILevelListener
 	 * @param initialTime The initial time on the timer.
 	 */
 	private TimerManager()
-	{		
-		this.currentTime = initialTime;
-		this.initialTime = maximumTime;
+	{				
+		this.initialTime  = maximumTime;
+        this.currentTime  = initialTime;
 		this.internalTime = 0;
-        this.paused = false;
-        this.stopped = false;
+        this.paused       = false;
+        this.stopped      = false;
 	}
         
     /**
@@ -92,81 +92,23 @@ public class TimerManager implements ILevelListener
      * 
      * @return
      */
-    public static TimerManager newInstance()
+    public static TimerManager get()
     {
-        return new TimerManager();
+        return single;
     }                
 
-	/**
-	 * A method to set the time on the timer.
-	 * 
-	 * @param time The new time.
-	 */
-	public void setTime(int time)
-	{
-		assert time >= 0;
-		
-		this.currentTime = time;
-	}
-
-	/**
-	 * Get the timer time.
-	 * @return The time.
-	 */
-	public int getTime()
-	{
-		return this.currentTime;
-	}
-	
-	/**
-	 * Reset the internal second count. I.e. the part that is modified by 
-     * delta.
-	 */
-	public void resetInternalTimer()
-	{
-		this.internalTime = 0;
-	}
-
-	/**
-	 * Reset the timer.
-	 */
-	public void resetTimer()
-	{
-		this.currentTime = this.initialTime;
-        this.resetInternalTimer();
-	}        
-    
-	/**
-	 * Get the initial time.
-	 * @return The initial time.
-	 */
-	public int getInitialTime()
-	{
-		return this.initialTime;
-	}
-
-	/**
-	 * Set the initial time.
-     * 
-	 * @param time The new time.
-	 */
-	public void setInitialTime(int time)
-	{
-		this.initialTime = time;
-	}
-    
-    public void resetInitialTime()
+    public void updateLogic(Game game)
     {
-        this.initialTime = maximumTime;
+        incrementInternalTime();
     }
-	
-	/**
+    
+    /**
 	 * A method to increment the internal time. If a second has passed
 	 * the internal time goes to 0 and the current time is decremented.
 	 * 
 	 * @param offset The elapsed time.
 	 */
-	public void incrementInternalTime()
+	private void incrementInternalTime()
 	{                
         // If the timer is paused, don't do anything.
         if (paused == true || stopped == true)
@@ -192,6 +134,63 @@ public class TimerManager implements ILevelListener
 		}
 	}
     
+	/**
+	 * A method to set the time on the timer.
+	 * 
+	 * @param time The new time.
+	 */
+	public void setTime(int time)
+	{
+		assert time >= 0;
+		
+		this.currentTime = time;
+	}
+
+	/**
+	 * Get the timer time.
+	 * @return The time.
+	 */
+	public int getTime()
+	{
+		return this.currentTime;
+	}
+		
+	/**
+	 * Reset the timer.
+	 */
+	public void resetTimer()
+	{
+		this.currentTime  = this.initialTime;
+        this.internalTime = 0;
+	}        
+    
+	/**
+	 * Get the initial time.
+	 * @return The initial time.
+	 */
+	public int getInitialTime()
+	{
+		return this.initialTime;
+	}
+
+	/**
+	 * Set the initial time.
+     * 
+	 * @param time The new time.
+	 */
+	public void setInitialTime(int time)
+	{
+		this.initialTime = time;
+	}
+    
+    /**
+     * Reset the initial time to it's maximum amount.
+     */
+    public void resetInitialTime()
+    {
+        this.initialTime = maximumTime;
+    }
+		    
     /**
      * Pause the timer.
      * 
@@ -238,5 +237,25 @@ public class TimerManager implements ILevelListener
         
         setInitialTime(time);
     }
+
+    public int getMaximumTime()
+    {
+        return maximumTime;
+    }
+
+    public void setMaximumTime(int maximumTime)
+    {
+        this.maximumTime = maximumTime;
+    }
+
+    public int getMinimumTime()
+    {
+        return minimumTime;
+    }
+
+    public void setMinimumTime(int minimumTime)
+    {
+        this.minimumTime = minimumTime;
+    }        
 		
 }

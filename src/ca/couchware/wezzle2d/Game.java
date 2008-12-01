@@ -189,7 +189,7 @@ public class Game extends Canvas implements IGameWindowCallback
     public SoundManager soundMan;             
     
     /** The manager in charge of keeping track of the time. */
-    public TimerManager timerMan;
+    public TimerManager timerMan = TimerManager.get();
     
     /** The manager in charge of running tutorials. */
     public TutorialManager tutorialMan;   
@@ -426,9 +426,9 @@ public class Game extends Canvas implements IGameWindowCallback
             if (worldMan == null)
                 throw new IllegalStateException("World Manager has not been initalized yet!");
                 
-            TimerManager.setMinimumTime(worldMan.getMinimumTime());
-            TimerManager.setMaximumTime(worldMan.getMaximumTime());
-            timerMan = TimerManager.newInstance(); 
+            timerMan.setMinimumTime(worldMan.getMinimumTime());
+            timerMan.setMaximumTime(worldMan.getMaximumTime());
+            timerMan.resetTimer(); 
             listenerMan.registerListener(Listener.LEVEL, timerMan);
         }
         
@@ -885,7 +885,9 @@ public class Game extends Canvas implements IGameWindowCallback
 
         // Handle the timer.
         if (boardMan.isVisible() == true)
-            timerMan.incrementInternalTime();
+        {
+            timerMan.updateLogic(this);
+        }
 
         // Check to see if we should force a piece commit.
         if (timerMan.getTime() < 0)
