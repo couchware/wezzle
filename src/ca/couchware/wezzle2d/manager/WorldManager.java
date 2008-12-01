@@ -352,18 +352,16 @@ public class WorldManager implements IManager, ILevelListener
 	 */
 	public void setLevel(int level)
 	{
-            // Increment initial amount of normal tiles.
-            
-            
-          
-            if(level != 1)
-            {
-                Item normalTiles = getItem(0);
-                normalTiles.setCurrentAmount((getItem(0).getInitialAmount() + level) - 1);
-            }
-		
-            // Set the level.
-            this.level = level;								
+        // Increment initial amount of normal tiles.
+        if (level != 1)
+        {
+            Item normalTiles = getItem(TileType.NORMAL);
+            normalTiles.setCurrentAmount(
+                    (getItem(TileType.NORMAL).getInitialAmount() + level) - 1);
+        }
+
+        // Set the level.
+        this.level = level;								
 	}	
 	
     /**
@@ -415,18 +413,7 @@ public class WorldManager implements IManager, ILevelListener
     public int getParallelTileDropInAmount()
     {
         return this.parallelDropInAmount;
-    }
-    
-	/**
-	 * Get the descriptor for the item at the specified index.
-	 * 
-	 * @param index The index.
-	 * @return The ItemDescriptor.
-	 */
-	public Item getItem(int index)
-	{
-		return itemMap.get(index);
-	}
+    }    	
 	
 	/**
 	 * Get the descriptor for the item with the specified class.
