@@ -199,6 +199,11 @@ public class PauseGroup extends AbstractGroup implements
             this.setLinesPerMove(statMan.getLinesPerMove());
         }
     }
+    
+    public void moveCompleted(MoveEvent event)
+    {
+        // Don't need this.
+    }
        
     public void lineConsumed(LineEvent e, GameType gameType)
     {                
@@ -224,6 +229,6 @@ public class PauseGroup extends AbstractGroup implements
     public void gameOver(GameEvent event)
     {
         // Intentionally left blank.
-    }
+    }    
     
 }

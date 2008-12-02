@@ -129,6 +129,8 @@ public class PieceManager implements IMouseListener
 		this.boardMan     = boardMan;
         
         // Add the mouse listener.
+        // This is problematic.  It should not be here.
+        // TODO Move outside of the constructor!
         window.addMouseListener(this);               
         
         // Create the piece map.
@@ -754,12 +756,12 @@ public class PieceManager implements IMouseListener
         // Increment the moves.
         if (game.tutorialMan.isTutorialInProgress() == true)
         {
-            game.listenerMan.notifyMoveCommitted(new MoveEvent(1, this), 
+            game.listenerMan.notifyMoveCommitted(new MoveEvent(this, 1), 
                     ListenerManager.GameType.TUTORIAL); 
         }
         else
         {
-             game.listenerMan.notifyMoveCommitted(new MoveEvent(1, this), 
+             game.listenerMan.notifyMoveCommitted(new MoveEvent(this, 1), 
                     ListenerManager.GameType.GAME); 
         }
         

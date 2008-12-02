@@ -2,7 +2,13 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.ILineListener;
+import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.event.LineEvent;
+import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.event.WezzleEvent;
+import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
@@ -20,11 +26,17 @@ import java.util.Map;
  *
  */
 
-public class WorldManager implements IManager, ILevelListener
+public class WorldManager implements IManager, 
+        ILineListener, 
+        ILevelListener, 
+        IMoveListener
 {       
 	//--------------------------------------------------------------------------
 	// Instance Members
 	//--------------------------------------------------------------------------	   
+    
+    /** The listener manager. */
+    private ListenerManager listenerMan;
     
 	/**
 	 * The current level
@@ -102,7 +114,9 @@ public class WorldManager implements IManager, ILevelListener
     
     // Wezzle tile.
         
-    private int wezzleMaximumTimer = 5;
+    private int wezzleLineCount = 0;
+    private int wezzleMaximumTime = 5;
+    private int wezzleTime = wezzleMaximumTime;
     
     //--------------------------------------------------------------------------
 	// Constructor
@@ -114,8 +128,11 @@ public class WorldManager implements IManager, ILevelListener
 	 * @param board
 	 * @param scoreManager
 	 */
-	private WorldManager()
-	{										
+	private WorldManager(ListenerManager listenerMan)
+	{				
+        // Remember the listener manager.
+        this.listenerMan = listenerMan;
+        
         // Set the max items and mults.
         this.maximumItems       = 3;
         this.maximumMultipliers = 3;
@@ -148,12 +165,10 @@ public class WorldManager implements IManager, ILevelListener
      * @param settingsMan
      * @return
      */       
-    public static WorldManager newInstance()
+    public static WorldManager newInstance(ListenerManager listenerMan)
     {
-        return new WorldManager();
-    }
-
-   
+        return new WorldManager(listenerMan);
+    }   
     
     //--------------------------------------------------------------------------
 	// Instance Methods
@@ -580,15 +595,26 @@ public class WorldManager implements IManager, ILevelListener
     {
         return minimumTime;
     }
-    
-    
-                
-    public void levelChanged(LevelEvent e)
+
+    public int getWezzleTime()
     {
-        this.incrementLevel();
-//        for (int i = 0; i < e.getLevel(); i++)
-//            this.levelUp(e.getGame());
+        return wezzleTime;
     }
+
+    public void setWezzleTime(int wezzleTime)
+    {
+        this.wezzleTime = wezzleTime;
+    }
+
+    public int getWezzleMaximumTime()
+    {
+        return wezzleMaximumTime;
+    }
+
+    public void setWezzleMaximumTime(int wezzleMaximumTime)
+    {
+        this.wezzleMaximumTime = wezzleMaximumTime;
+    }        
 
     public void saveState()
     {
@@ -615,6 +641,9 @@ public class WorldManager implements IManager, ILevelListener
         itemMap.put(TileType.NORMAL, 
                 new Item.Builder(TileType.NORMAL)
                 .initialAmount(28).weight(5).maximumOnBoard(100).end());
+        itemMap.put(TileType.WEZZLE,
+                new Item.Builder(TileType.WEZZLE)
+                .initialAmount(0).weight(0).maximumOnBoard(4).end());
 //        itemList.add(new Item.Builder(TileType.ROCKET)
 //                .initialAmount(1).weight(55).maxOnBoard(3).end());
 //        itemList.add(new Item.Builder(TileType.BOMB)
@@ -627,6 +656,63 @@ public class WorldManager implements IManager, ILevelListener
         // Reset the rules.
         currentRuleList.clear();
         currentRuleList.addAll(masterRuleList);
+    }
+
+    public void levelChanged(LevelEvent e)
+    {
+        this.incrementLevel();
+//        for (int i = 0; i < e.getLevel(); i++)
+//            this.levelUp(e.getGame());
+    }
+    
+    public void lineConsumed(LineEvent event, GameType gameType)
+    {
+        // Only worry about the Wezzle tile if it's in the item map.
+        if (itemMap.containsKey(TileType.WEZZLE) == false)
+            return;
+         
+        // Record how many lines were found.
+        this.wezzleLineCount += event.getLineCount();                                         
+    }
+
+    public void moveCommitted(MoveEvent event, GameType gameType)
+    {
+        // Intentionally left blank.        
+    }
+
+    public void moveCompleted(MoveEvent event)
+    {
+        // Only worry about the Wezzle tile if it's in the item map.
+        if (itemMap.containsKey(TileType.WEZZLE) == false)
+            return;    
+        
+        if (this.wezzleLineCount == 0)
+        {
+            this.wezzleTime--;
+            LogManager.recordMessage(
+                    "Wezzle timer is at: " + this.wezzleTime);
+            
+            if (wezzleTime != 0)
+            {
+                this.listenerMan.notifyWezzleTimerChanged(
+                    new WezzleEvent(this, this.wezzleTime));
+            }
+        }
+           
+        if (this.wezzleTime == 0)
+        {   
+            this.wezzleTime = this.wezzleMaximumTime;
+            Item wezzleItem = itemMap.get(TileType.WEZZLE);
+            wezzleItem.incrementCurrentAmount();
+            LogManager.recordMessage(
+                    "Wezzle infection increased: " + wezzleItem.getCurrentAmount());
+            
+            this.listenerMan.notifyWezzleTimerChanged(
+                    new WezzleEvent(this, this.wezzleTime));
+        }
+        
+        // Reset the line count.
+        this.wezzleLineCount = 0;
     }
     
 }

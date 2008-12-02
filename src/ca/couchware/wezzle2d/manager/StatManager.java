@@ -21,7 +21,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
 	 * The current move count.
 	 */
 	private int moveCount;
-    
+        
     /**
      * The current line count.
      */
@@ -216,11 +216,17 @@ public class StatManager implements IManager, IMoveListener, ILineListener
     
     /**
      * Handle a move event.
+     * 
      * @param e The move event.
      */    
     public void moveCommitted(MoveEvent e, GameType gameType)
     {
         this.setMoveCount(this.getMoveCount() + e.getMoveCount());
+    }
+    
+    public void moveCompleted(MoveEvent event)
+    {
+        // Intentionally left blank.
     }
 
     /**
@@ -258,6 +264,6 @@ public class StatManager implements IManager, IMoveListener, ILineListener
         lineCount = 0;
         cycleLineCount = 0;
         chainCount = 0;
-    }
+    }    
     
 }

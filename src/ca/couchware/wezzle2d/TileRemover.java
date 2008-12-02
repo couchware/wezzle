@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
+import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.*;
@@ -205,11 +206,11 @@ public class TileRemover
 
     public boolean isTileRemoving()
     {
-        return this.activateLineRemoval 
+        return this.tileRemovalInProgress
+                || this.activateLineRemoval 
                 || this.activateBombRemoval 
                 || this.activateStarRemoval 
-                || this.activateRocketRemoval                
-                || this.tileRemovalInProgress;
+                || this.activateRocketRemoval;
     }
 
     public void levelUp(final Game game)
@@ -305,6 +306,9 @@ public class TileRemover
 
                 // Reset the mouse.
                 pieceMan.clearMouseButtonSet();
+                
+                // Fire the event.
+                game.listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));
             }                 
         } // end if
     }

@@ -1,8 +1,10 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.ui.ILabel;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;

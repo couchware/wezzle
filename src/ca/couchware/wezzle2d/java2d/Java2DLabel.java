@@ -12,12 +12,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
-import java.awt.font.FontRenderContext;
 import java.util.EnumSet;
 
 /**
@@ -54,7 +52,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     /**
      * The text of the label.
      */
-    final private String text;
+    private String text;
     
 	/** 
      * The font. 
@@ -69,7 +67,7 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     /**
      * The text layout instance.
      */
-	final private TextLayout textLayout;		
+	private TextLayout textLayout;		
     
     /**
      * Should the text layout be cached?
@@ -102,30 +100,16 @@ public class Java2DLabel extends AbstractEntity implements ILabel
         this.text = text;
         this.visible = visible;
         this.cached = cached;
-           
-        // If the string is empty, then don't do anything.
-        if (text.length() != 0)
-        {
-            // Get the font.
-            this.font = FontStore.get().getFont(size);
-
-            // Create the text layout object.
-            this.baselineLayout = TextLayoutStore.get()
-                    .getTextLayout(window.getDrawGraphics(), baselineText, font, true);
-            this.textLayout = TextLayoutStore.get()
-                    .getTextLayout(window.getDrawGraphics(), text, font, cached);            
-
-            // Setup the alignment.  This should be replaced, alignment should
-            // be immutable.                   
-            this.offsetX = determineLabelOffsetX(alignment);
-            this.offsetY = determineLabelOffsetY(alignment);
-        }     
-        else
-        {
-            this.font = null;
-            this.baselineLayout = null;
-            this.textLayout = null;            
-        }
+                           
+        // Get the font.
+        this.font = FontStore.get().getFont(size);
+        
+        // Set the baseline layout.
+        this.baselineLayout = TextLayoutStore.get()
+                    .getTextLayout(window.getDrawGraphics(), baselineText, font, true);                
+        
+        // Set the text.
+        setText(text);
         
         // Set dirty so it will be drawn.        
         dirty = true;
@@ -331,7 +315,29 @@ public class Java2DLabel extends AbstractEntity implements ILabel
     public String getText()
     {
         return text;
-    }          
+    }     
+    
+    public void setText(String text)
+    {
+        this.text = text;
+        
+        // If the string is empty, then don't do anything.
+        if (text.length() != 0)
+        {           
+            // Create the text layout object.            
+            this.textLayout = TextLayoutStore.get()
+                    .getTextLayout(window.getDrawGraphics(), text, font, cached);            
+
+            // Setup the alignment.  This should be replaced, alignment should
+            // be immutable.                   
+            this.offsetX = determineLabelOffsetX(alignment);
+            this.offsetY = determineLabelOffsetY(alignment);
+        }     
+        else
+        {            
+            this.textLayout = null;            
+        }
+    }
 
     @Override
     public void setRotation(double theta)

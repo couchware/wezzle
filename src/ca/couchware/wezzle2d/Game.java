@@ -311,13 +311,12 @@ public class Game extends Canvas implements IGameWindowCallback
 	{
 		window.start();
 	}
-    
-        
-        public void startBoard()
-        {
-            boardMan.generateBoard(worldMan.getItemList());          
-            startBoardShowAnimation(AnimationType.ROW_FADE);
-        }
+            
+    public void startBoard()
+    {
+        boardMan.generateBoard(worldMan.getItemList());          
+        startBoardShowAnimation(AnimationType.ROW_FADE);
+    }
         
     /**
      * Initializes all the managers (except for the layer manager).
@@ -366,9 +365,11 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.WORLD))
         {
             // Create the world manager.
-            worldMan = WorldManager.newInstance();  
+            worldMan = WorldManager.newInstance(listenerMan);  
             worldMan.setGameInProgress(true);
             listenerMan.registerListener(Listener.LEVEL, worldMan);
+            listenerMan.registerListener(Listener.LINE,  worldMan);
+            listenerMan.registerListener(Listener.MOVE,  worldMan);
         }
         
         if (managerSet.contains(ManagerType.BOARD))
@@ -618,7 +619,8 @@ public class Game extends Canvas implements IGameWindowCallback
                 menuTransition = null;
             }            
         } // end if
-                               
+                     
+        // Update UI.
         ui.updateLogic(this);
         
         // Check on board animation.

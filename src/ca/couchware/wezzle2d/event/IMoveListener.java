@@ -15,4 +15,5 @@ import ca.couchware.wezzle2d.manager.ListenerManager;
 public interface IMoveListener extends IListener
 {
     public void moveCommitted(MoveEvent event, ListenerManager.GameType gameType);
+    public void moveCompleted(MoveEvent event);
 }

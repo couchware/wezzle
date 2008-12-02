@@ -14,10 +14,12 @@ import ca.couchware.wezzle2d.event.ILineListener;
 import ca.couchware.wezzle2d.event.IListener;
 import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
+import ca.couchware.wezzle2d.event.IWezzleListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.event.WezzleEvent;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -54,7 +56,8 @@ public class ListenerManager
         MOVE,
         LINE,
         COLLISION,
-        GAME
+        GAME,
+        WEZZLE
     }
     
     /** The single listener manager. */
@@ -64,7 +67,7 @@ public class ListenerManager
     private Map<Listener, List<IListener>> listenerMap;
             
     /**
-     * private constructor to ensure only a single entity ever exists.
+     * Private constructor to ensure only a single instance ever exists.
      */
     private ListenerManager()
     {
@@ -100,6 +103,7 @@ public class ListenerManager
     
     /**
      * Notify all score listeners.
+     * 
      * @param e The event.
      */    
     public void notifyScoreIncreased(ScoreEvent e)
@@ -114,6 +118,7 @@ public class ListenerManager
     
     /**
      * Notify all score listeners.
+     * 
      * @param e The event.
      */    
     public void notifyScoreChanged(ScoreEvent e)
@@ -138,6 +143,7 @@ public class ListenerManager
     
     /**
      * Notify all level listeners.
+     * 
      * @param e The event.
      */    
     public void notifyLevelChanged(LevelEvent e)
@@ -152,6 +158,7 @@ public class ListenerManager
     
     /**
      * Notify all move listeners.
+     * 
      * @param e The event.
      */    
     public void notifyMoveCommitted(MoveEvent e, GameType gameType)
@@ -165,7 +172,23 @@ public class ListenerManager
     }
     
     /**
+     * Notify all move listeners.
+     * 
+     * @param e The event.
+     */    
+    public void notifyMoveCompleted(MoveEvent e)
+    {
+        List<IListener> list = listenerMap.get(Listener.MOVE);
+        
+        for (IListener listener : list)
+        {
+            ((IMoveListener) listener).moveCompleted(e);
+        }
+    }
+    
+    /**
      * Notify all line listeners.
+     * 
      * @param e The event.
      */    
     public void notifyLineConsumed(LineEvent e, GameType gameType)
@@ -218,5 +241,16 @@ public class ListenerManager
         }
          
     }
+    
+    public void notifyWezzleTimerChanged(WezzleEvent e)
+    {
+         List<IListener> list = listenerMap.get(Listener.WEZZLE);
+         
+        for (IListener listener : list)
+        {
+            ((IWezzleListener) listener).wezzleTimerChanged(e);
+        }
+         
+    }       
 
 }

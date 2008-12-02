@@ -28,7 +28,12 @@ public interface ILabel extends IEntity
     /**
      * Get the text contained in the label.
      */
-    public String getText();     
+    public String getText(); 
+    
+    /**
+     * Set the text contained in the label.
+     */
+    public void setText(String text);
     
     /**
      * Is the label cached in some way?

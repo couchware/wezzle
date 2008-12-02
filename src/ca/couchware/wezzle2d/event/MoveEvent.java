@@ -16,12 +16,14 @@ public class MoveEvent extends EventObject
 {
     private int moveCount;
     
-    public MoveEvent(int deltaMoves, Object eventSource)
+    public MoveEvent(Object source, int moveCount)
     {
-        super(eventSource);
-        
-        moveCount = deltaMoves;
+        super(source);        
+        this.moveCount = moveCount;
     }
     
-    public int getMoveCount(){ return this.moveCount; }
+    public int getMoveCount()
+    { 
+        return moveCount; 
+    }
 }

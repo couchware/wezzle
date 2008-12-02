@@ -32,7 +32,7 @@ public class LWJGLLabel extends AbstractEntity implements ILabel
     /**
      * The text of the label.
      */
-    final private String text;
+    private String text;
     
     /**
      * The color of the label.
@@ -93,6 +93,11 @@ public class LWJGLLabel extends AbstractEntity implements ILabel
     public String getText()
     {
         return text;
+    }
+    
+    public void setText(String text)
+    {
+        this.text = text;
     }
 
     public boolean isCached()

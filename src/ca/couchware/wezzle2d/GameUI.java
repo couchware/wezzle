@@ -9,9 +9,11 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.ILineListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
+import ca.couchware.wezzle2d.event.IWezzleListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.event.WezzleEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.GroupManager;
@@ -46,7 +48,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class GameUI implements ILevelListener, ILineListener, IScoreListener
+public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
 {       
     
     /** The single instance of this class. */
@@ -64,8 +66,8 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
     final private static String HIGH_SCORE_HEADER_PATH = Settings.getSpriteResourcesPath()
             + "/Header_HighScore.png";     
     
-    /** A reference to the score manager. */
-    
+    /** A reference to the layer manager. */
+    private LayerManager layerMan;
     
     /** The background sprite. */
     private GraphicEntity background;    
@@ -184,8 +186,9 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
         });     
         
         // Add the listeners.
-        game.listenerMan.registerListener(Listener.LEVEL, this);
-        game.listenerMan.registerListener(Listener.SCORE, this);
+        game.listenerMan.registerListener(Listener.LEVEL,  this);
+        game.listenerMan.registerListener(Listener.SCORE,  this);
+        game.listenerMan.registerListener(Listener.WEZZLE, this);                
     }
     
     /**
@@ -251,7 +254,7 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
         // Set up the Wezzle timer text.
         wezzleTimerLabel = new LabelBuilder(470, 70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(PRIMARY_COLOR).size(25).text("8").end();
+                .color(PRIMARY_COLOR).size(25).text("").end();
         layerMan.add(wezzleTimerLabel, Layer.UI);
         
         // Set up the level header.
@@ -263,7 +266,7 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
         levelLabel = new LabelBuilder(126, 210)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(PRIMARY_COLOR).size(20).text("--").end();                
+                .color(PRIMARY_COLOR).size(20).text("").end();                
         layerMan.add(levelLabel, Layer.UI);        
         
         // Set up the score header.
@@ -276,7 +279,7 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
         highScoreLabel = new LabelBuilder(126, 337)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(PRIMARY_COLOR).size(20).text("--").end();
+                .color(PRIMARY_COLOR).size(20).text("").end();
         layerMan.add(highScoreLabel, Layer.UI);
         
         // Set up the score header.
@@ -288,7 +291,7 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
         scoreLabel = new LabelBuilder(126, 460)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(PRIMARY_COLOR).size(20).text("--").end();
+                .color(PRIMARY_COLOR).size(20).text("").end();
         layerMan.add(scoreLabel, Layer.UI);
     }
     
@@ -441,6 +444,13 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
             layerMan.add(timerLabel, Layer.UI);
             timerLabel.getDrawRect();
         }
+        
+        // Set the wezzle timer text.
+        if (!wezzleTimerLabel.getText().equals(String.valueOf(worldMan.getWezzleTime())))            
+        {
+            this.wezzleTimerLabel
+                    .setText(String.valueOf(worldMan.getWezzleTime()));                                 
+        }
 
         // Draw the high score text.
         if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
@@ -487,10 +497,10 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
             }
 
             // Set the score text.
-            if (!scoreLabel.getText().equals("--"))
+            if (!scoreLabel.getText().equals(""))
             {
                 layerMan.remove(scoreLabel, Layer.UI);
-                scoreLabel = new LabelBuilder(scoreLabel).text("--").end();
+                scoreLabel = new LabelBuilder(scoreLabel).text("").end();
                 layerMan.add(scoreLabel, Layer.UI);
             }
         }       
@@ -518,9 +528,9 @@ public class GameUI implements ILevelListener, ILineListener, IScoreListener
         progressBar.setProgressMax(event.getScore());
     }
 
-    public void lineConsumed(LineEvent event, GameType gameType)
+    public void wezzleTimerChanged(WezzleEvent event)
     {
-        // ...
+        this.wezzleTimerLabel.setText(String.valueOf(event.getTimerValue()));   
     }
     
 }
