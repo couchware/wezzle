@@ -177,7 +177,7 @@ public class ZoomAnimation extends AbstractAnimation
         
         public Builder(Type type, IEntity entity)
         {
-            assert type != null;
+            assert type   != null;
             assert entity != null;
             
             this.type = type;
@@ -204,9 +204,9 @@ public class ZoomAnimation extends AbstractAnimation
     {     
         // Make sure we've set the started flag.
         if (this.started == false)
-        {
+        {            
             // Record the initial position.                
-            setStarted();
+            setStarted();                       
         }
         
         // Check if we're done, if we are, return.

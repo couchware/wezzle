@@ -7,7 +7,10 @@ package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.manager.LogManager;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Wraps a group of entities, allowing certain operations to be applied
@@ -18,12 +21,18 @@ import java.util.EnumSet;
 public class EntityGroup extends AbstractEntity
 {
         
-    protected IEntity[] entities;        
+    protected List<IEntity> entityList;        
     
     public EntityGroup(IEntity ... entities)
     {
         // Remember the entities.
-        this.entities = entities;
+        this.entityList = Arrays.asList(entities);
+    }
+    
+    public EntityGroup(List<? extends IEntity> entityList)
+    {
+        // Remember the entities.
+        this.entityList = new ArrayList<IEntity>(entityList);
     }
     
     /**
@@ -36,7 +45,7 @@ public class EntityGroup extends AbstractEntity
     {
         super.setVisible(visible);
         
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.setVisible(visible);
         
         this.dirty = true;
@@ -50,7 +59,7 @@ public class EntityGroup extends AbstractEntity
 	{                            
 		super.setX(x);
         
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.setX(x);
         
         this.dirty = true;
@@ -64,7 +73,7 @@ public class EntityGroup extends AbstractEntity
 	{
 		super.setX(y);
         
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.setY(y);
         
         this.dirty = true;
@@ -73,7 +82,7 @@ public class EntityGroup extends AbstractEntity
     @Override
     public void translate(final int dx, final int dy)
     {
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.translate(dx, dy);
         
         this.dirty = true;
@@ -84,7 +93,7 @@ public class EntityGroup extends AbstractEntity
     {
         super.setHeight(height);
         
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.setHeight(height);
         
         this.dirty = true;
@@ -95,7 +104,7 @@ public class EntityGroup extends AbstractEntity
     {
         super.setWidth(width);
         
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.setWidth(width);
         
         this.dirty = true;
@@ -113,7 +122,7 @@ public class EntityGroup extends AbstractEntity
         
         super.setOpacity(opacity);
         
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.setOpacity(opacity);
         
         this.dirty = true;                
@@ -127,7 +136,7 @@ public class EntityGroup extends AbstractEntity
     {                
         super.setRotation(theta);
         
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.setRotation(theta);
         
         this.dirty = true;
@@ -144,7 +153,7 @@ public class EntityGroup extends AbstractEntity
         
         boolean updated = false;
         
-        for (IEntity e : entities)                    
+        for (IEntity e : entityList)                    
             if (e.draw() == true) updated = true;        
         
         return updated;
@@ -156,12 +165,17 @@ public class EntityGroup extends AbstractEntity
         return alignment;
     }      
     
+    private Rectangle EMPTY_RECTANGLE = new Rectangle();
+    
     @Override
     public Rectangle getDrawRect()
     {
-        drawRect = entities[0].getDrawRect();
+        if (entityList.size() == 0)
+            return EMPTY_RECTANGLE;
+        
+        drawRect = entityList.get(0).getDrawRect();
                         
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             drawRect.add(e.getDrawRect());
         
         return drawRect;
@@ -170,13 +184,13 @@ public class EntityGroup extends AbstractEntity
     @Override
     public void resetDrawRect()
     {        
-        for (IEntity e : entities)
+        for (IEntity e : entityList)
             e.resetDrawRect();
     }
     
     public int size()
     {
-        return entities.length;
+        return entityList.size();
     }
     
 }

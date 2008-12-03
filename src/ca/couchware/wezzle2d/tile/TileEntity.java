@@ -1,13 +1,13 @@
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.manager.BoardManager;
-import ca.couchware.wezzle2d.ui.IClickable;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.ui.IClickable;
 
 /**
  * A class representing a game tile.
+ * 
  * @author cdmckay
  *
  */
@@ -15,20 +15,14 @@ import ca.couchware.wezzle2d.manager.Settings;
 public class TileEntity extends GraphicEntity implements IClickable
 {                                 
 	
-	/**
-	 * The associated board manager.
-	 */
+	/** The associated board manager. */
 	protected final BoardManager boardMan;	    
     
-	/**
-	 * The colour of the tile.
-	 */
+	/** The colour of the tile. */
 	protected final TileColor color;	
     
-    /**
-     * The tile type.
-     */
-    protected TileType type;
+    /** The tile type, i.e. NORMAL, ROCKET, etc. */
+    protected TileType type;       
    
 	/**
 	 * Creates a tile at (x,y) with the specified color.
@@ -84,7 +78,7 @@ public class TileEntity extends GraphicEntity implements IClickable
     public TileType getType()
     {
         return type;
-    }        
+    }    
     
 	@Override
     public boolean draw()

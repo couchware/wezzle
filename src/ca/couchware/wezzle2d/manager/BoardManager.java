@@ -7,17 +7,17 @@ import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.*;
 import ca.couchware.wezzle2d.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -145,6 +145,13 @@ public class BoardManager implements IManager
      */
     final private ImmutableRectangle shape;
     
+    /** 
+     * The colour locked map.  If the key in the map has a true value, that
+     * means it is locked and cannot form lines.
+     */
+    final private Map<TileColor, Boolean> lockedColorMap =
+            new EnumMap<TileColor, Boolean>(TileColor.class);
+    
     /**
      * The hash map keys for storing the score manager state.
      */
@@ -162,7 +169,7 @@ public class BoardManager implements IManager
     /**
      * The hash map used to save the score manager's state.
      */
-    final private EnumMap<Keys, Object> managerState = 
+    final private Map<Keys, Object> managerState = 
             new EnumMap<Keys, Object>(Keys.class);
     
     //--------------------------------------------------------------------------
@@ -197,7 +204,7 @@ public class BoardManager implements IManager
     /**
      * The number of mults.
      */
-    private int numberOfMults;
+    private int numberOfMultipliers;
     
     /**
      * The gravity corner.
@@ -233,11 +240,11 @@ public class BoardManager implements IManager
         
         // Keep reference to managers.
         this.animationMan = animationMan;
-        this.layerMan = layerMan;
-        this.worldMan = worldMan;
+        this.layerMan     = layerMan;
+        this.worldMan     = worldMan;
         
 		// Set the cell width and height. Hard-coded to 32x32 for now.
-		this.cellWidth = 32;
+		this.cellWidth  = 32;
 		this.cellHeight = 32;
 		
 		// Set the x and y coordinates.
@@ -259,28 +266,29 @@ public class BoardManager implements IManager
         // Create the shape.
         this.shape = new ImmutableRectangle(x, y, width, height);
         
-        // Set the number of colours.
-        this.numberOfColors = 5;
-                
-        // Set the number of tiles.
-        this.numberOfTiles = 0;
-        
-        // Set the number of items.
-        this.numberOfItems = 0;
-        
-        this.numberOfMults = 0;
+        // Set the number of various things.
+        this.numberOfColors      = 5;
+        this.numberOfTiles       = 0;   
+        this.numberOfMultipliers = 0;
+        this.numberOfItems       = 0;                        
         
         // Set the gravity to be to the bottom left by default.
         this.gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
 		
 		// Initialize board.
-		board = new TileEntity[cells];
+		board        = new TileEntity[cells];
         scratchBoard = new TileEntity[cells];
         
         // Create the board background graphic.
         GraphicEntity entity = new GraphicEntity.Builder(x - 12, y - 12, PATH)
                 .opacity(90).end();        
         layerMan.add(entity, Layer.BACKGROUND);        
+        
+        // Fill the locked colour map with falses (enabling all colours to start).
+        for (TileColor c : TileColor.values())
+        {
+            lockedColorMap.put(c, false);
+        }
 	}
             
     /**
@@ -507,10 +515,14 @@ public class BoardManager implements IManager
 			
 			// Make sure there's a tile here.
 			if (board[i] == null)
-				continue;
+				continue;                        
 			
 			// Get the color of this tile.
 			TileColor color = board[i].getColor();
+            
+            // Make sure the tile's colour is not locked.
+            if (lockedColorMap.get(color) == true)
+                continue;
 			
 			// See how long we have a match for.
 			int j;
@@ -568,6 +580,10 @@ public class BoardManager implements IManager
 			
 			// Get the color of this tile.
 			TileColor color = board[ti].getColor();
+            
+            // Make sure the tile's colour is not locked.
+            if (lockedColorMap.get(color) == true)
+                continue;
 			
 			// See how long we have a match for.
 			int j;
@@ -938,7 +954,8 @@ public class BoardManager implements IManager
     public void addTile(final int index, final TileEntity t)
     {
         // Sanity check.
-        assert (index >= 0 && index < cells);   
+        assert index >= 0 && index < cells;
+        assert t != null;
         
         // Make sure the tile is located properly.
         t.setXYPosition(x + (index % columns) * cellWidth, 
@@ -964,10 +981,40 @@ public class BoardManager implements IManager
                        
         // If we're overwriting a tile, remove it first.
         if (getTile(index) != null)
+        {
             removeTile(index);
+        }
         
 		// Set the tile.
 		board[index] = t;
+       
+        switch (t.getType())
+        {
+            case NORMAL:
+            case WEZZLE:                
+                break;
+                
+            case X2:
+            case X3:
+            case X4:
+                
+                LogManager.recordMessage("Multiplier added.", "BoardManager#addMult");
+                this.incrementNumberOfMultipliers();
+                
+                break;
+                        
+            case ROCKET:
+            case GRAVITY:
+            case BOMB:
+            case STAR:
+                
+                LogManager.recordMessage("Item added.", "BoardManager#addTile");
+                this.incrementNumberOfItems();
+                
+                break;
+                
+            default: throw new IllegalStateException("Unhandled tile type.");
+        }              
         
         // Increment tile count.
         numberOfTiles++;
@@ -1025,6 +1072,10 @@ public class BoardManager implements IManager
                 t = new GravityTileEntity(this, color, x, y);
                 break;
                 
+            case WEZZLE:
+                t = new WezzleTileEntity(this, color, x, y);
+                break;
+                
             default: throw new AssertionError("Unknown type.");
         }
         
@@ -1067,22 +1118,7 @@ public class BoardManager implements IManager
         }
         
         // Add the tile.
-        addTile(index, t);
-        if (t.getClass() != TileEntity.class)
-        {
-          if (t.getClass() == X2TileEntity.class || t.getClass() == X3TileEntity.class 
-                    || t.getClass() == X4TileEntity.class)
-            {
-                 
-                 LogManager.recordMessage("Mult added.", "BoardManager#addMult");
-                this.incrementNumberOfMults();
-            }
-            else
-            {
-                LogManager.recordMessage("Item added.", "BoardManager#addTile");
-                this.incrementNumberOfItems();
-            }    
-        }
+        addTile(index, t);               
         
         // Return the tile.
         return t;
@@ -1106,23 +1142,50 @@ public class BoardManager implements IManager
         return createTile(row * columns + column, type);
     }
     
+    /**
+     * Replace a tile with a new tile of the same colour.
+     * 
+     * @param index
+     * @param type
+     * @return The new tile.
+     */
+    public TileEntity replaceTile(int index, TileType type)
+    {                                                     
+        // Remove the old, insert the new.       
+        TileColor color = getTile(index).getColor();
+        this.removeTile(index);
+        return this.createTile(index, type, color);    
+    }
+    
+    /**
+     * Replace a tile with a pre-made tile.
+     * 
+     * @param index
+     * @param tile
+     */
+    public void replaceTile(int index, TileEntity tile)
+    {
+        this.removeTile(index);
+        this.addTile(index, tile);
+    }
+    
     public TileEntity cloneTile(TileEntity tile)
     {
         assert tile != null;
         
         TileType type = tile.getType();
-        TileEntity t = makeTile(type, tile.getColor(), tile.getX(), tile.getY());
+        TileEntity clone = makeTile(type, tile.getColor(), tile.getX(), tile.getY());
         
-        switch(type)
+        switch (type)
         {
             case ROCKET:
-                RocketTileEntity rocketTile = (RocketTileEntity) tile;
-                RocketTileEntity rt = (RocketTileEntity) t;                
-                rt.setDirection(rocketTile.getDirection());                
+                RocketTileEntity rocketTile  = (RocketTileEntity) tile;
+                RocketTileEntity rocketClone = (RocketTileEntity) clone;                
+                rocketClone.setDirection(rocketTile.getDirection());                
                 break;                                
         }        
         
-        return t;
+        return clone;
     }
     
     public void removeTile(final int index)
@@ -1159,7 +1222,7 @@ public class BoardManager implements IManager
             if (t.getClass() == X2TileEntity.class || t.getClass() == X3TileEntity.class 
                     || t.getClass() == X4TileEntity.class)
             {
-                this.decrementNumberOfMults();
+                this.decrementNumberOfMultipliers();
             }
             else
                 this.decrementNumberOfItems();
@@ -1198,7 +1261,9 @@ public class BoardManager implements IManager
             removeTile((Integer) it.next());        
     }
 	
-	public TileEntity getTile(int index)
+	
+    
+    public TileEntity getTile(int index)
 	{
 		// Sanity check.
 		assert(index >= 0 && index < cells);
@@ -1221,7 +1286,7 @@ public class BoardManager implements IManager
 		return getTile(column + (row * columns));
 	}
     
-    public EntityGroup getTiles(int index1, int index2)
+    public EntityGroup getTileRange(int index1, int index2)
     {
         assert index1 >= 0 && index1 < cells;
         assert index2 >= index1 && index2 < cells;               
@@ -1251,6 +1316,22 @@ public class BoardManager implements IManager
         
         return new EntityGroup(entities);
     }	
+    
+    public EntityGroup getTiles(List<Integer> indexList)
+    {
+        assert indexList != null;
+        
+        List<TileEntity> tileList = new ArrayList<TileEntity>();
+        
+        TileEntity t;
+        for (Integer i : indexList)
+        {
+            t = getTile(i);
+            if (t != null) tileList.add(t);
+        }
+        
+        return new EntityGroup(tileList);
+    }
 
 	public void swapTile(int index1, int index2)
 	{
@@ -1943,31 +2024,30 @@ public class BoardManager implements IManager
         return cells;
     }
     
-    public void insertItemRandomly(TileType type)
-    {
+    public void insertRandomItem(TileType type)
+    {        
+        Set<TileType>  typeSet  = EnumSet.of(TileType.NORMAL);
+        Set<TileColor> colorSet = EnumSet.allOf(TileColor.class);
+     
         // Get a random tile location.
-        int [] locations = this.getTileLocations();
+        List<Integer> indexSet = this.getTileIndices(typeSet, colorSet);
         
-        if(locations == null)
-            return;
+        // If there are no available locations, do nothing.
+        if (indexSet.size() == 0) return;
         
-        int random = Util.random.nextInt(locations.length);
+        // Get a random index.
+        Collections.shuffle(indexSet, Util.random);        
+        int index = indexSet.get(0);
         
-        int index = locations[random];
-        // Remove the old, insert the new.
-        TileColor color = getTile(index).getColor();
-        this.removeTile(index);
-        this.createTile(index, type, color);
-        
-    }
-    
+        // Replace the tile.
+        replaceTile(index, type);
+    }            
             
     public int getNumberOfItems()
     {
         return this.numberOfItems;
     }
-    
-    
+        
     public void setNumberOfItems(final int numberOfItems)
     {
         this.numberOfItems = numberOfItems;
@@ -1983,24 +2063,24 @@ public class BoardManager implements IManager
         this.numberOfItems++;
     }    
 
-    public int getNumberOfMults()
+    public int getNumberOfMultipliers()
     {
-        return this.numberOfMults;
+        return this.numberOfMultipliers;
     }
     
-    public void setNumberOfMults(final int numberOfmults)
+    public void setNumberOfMultipliers(final int numberOfMultipliers)
     {
-        this.numberOfMults = numberOfmults;
+        this.numberOfMultipliers = numberOfMultipliers;
     }
     
-    public void decrementNumberOfMults()
+    public void decrementNumberOfMultipliers()
     {
-        this.numberOfMults--;
+        this.numberOfMultipliers--;
     }
     
-    public void incrementNumberOfMults()
+    public void incrementNumberOfMultipliers()
     {
-        this.numberOfMults++;
+        this.numberOfMultipliers++;
     }    
     
     
@@ -2014,31 +2094,32 @@ public class BoardManager implements IManager
         }
         
         return counter;
-    }
-
-    private int[] getTileLocations()
-    {
-        int size = this.getNumberOfTiles()-this.getNumberOfItems()
-                -this.getNumberOfMults();
+    }   
+       
+    public List<Integer> getTileIndices(
+            Set<TileType>  typeFilter, 
+            Set<TileColor> colorFilter)
+    {         
+        assert typeFilter  != null;
+        assert colorFilter != null;
         
-        if(size <= 0)
-            return null;
+        List<Integer> indexList = new ArrayList<Integer>();
+        TileEntity tile;        
         
-        int[] locations = new int[size];  
-        TileEntity temp;
-        int count = 0;
-        
-        for(int i = 0; i < this.cells; i++)
+        for (int i = 0; i < this.cells; i++)
         {
-            temp = this.getTile(i);
-            if (temp != null && temp.getType() == TileType.NORMAL)
+            tile = this.getTile(i);
+            if (tile != null
+                    && typeFilter.contains(tile.getType())
+                    && colorFilter.contains(tile.getColor()))
             {
-                locations[count++] = i;
+                indexList.add(i);
             }
         }
         
-        return locations;
-    }
+        return indexList;
+    }               
+    
     public int getNumberOfColors()
     {
         return numberOfColors;
@@ -2095,7 +2176,7 @@ public class BoardManager implements IManager
     {
         managerState.put(Keys.NUMBER_OF_COLORS, numberOfColors);
         managerState.put(Keys.NUMBER_OF_ITEMS, numberOfItems);
-        managerState.put(Keys.NUMBER_OF_MULTS, numberOfMults);
+        managerState.put(Keys.NUMBER_OF_MULTS, numberOfMultipliers);
         managerState.put(Keys.NUMBER_OF_TILES, numberOfTiles);
         managerState.put(Keys.GRAVITY, gravity);
         managerState.put(Keys.BOARD, board.clone());
@@ -2103,7 +2184,7 @@ public class BoardManager implements IManager
         
         LogManager.recordMessage("Saved " + numberOfTiles + " tiles.");  
         LogManager.recordMessage("Saved " + numberOfItems + " items.");
-        LogManager.recordMessage("Saved " + numberOfMults + " mults.");
+        LogManager.recordMessage("Saved " + numberOfMultipliers + " mults.");
     }
 
     @SuppressWarnings("unchecked") 
@@ -2115,7 +2196,7 @@ public class BoardManager implements IManager
         numberOfColors = (Integer) managerState.get(Keys.NUMBER_OF_COLORS);
         numberOfItems = (Integer) managerState.get(Keys.NUMBER_OF_ITEMS);
         numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);  
-        numberOfMults = (Integer) managerState.get(Keys.NUMBER_OF_MULTS);
+        numberOfMultipliers = (Integer) managerState.get(Keys.NUMBER_OF_MULTS);
         gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
         scratchBoard = (TileEntity[]) managerState.get(Keys.SCRATCH_BOARD);   
         board = (TileEntity[]) managerState.get(Keys.BOARD);     
@@ -2145,13 +2226,19 @@ public class BoardManager implements IManager
         
         LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
         LogManager.recordMessage("Loaded " + numberOfItems + " items.");
-        LogManager.recordMessage("Loaded " + numberOfMults + " mults.");
+        LogManager.recordMessage("Loaded " + numberOfMultipliers + " mults.");
     }
 
     public void resetState()
     {
         // Reset the number of colours.
         setNumberOfColors(DEFAULT_NUMBER_OF_COLORS);
+        
+        // Reset the color locks.
+        for (TileColor c : TileColor.values())
+        {
+            lockedColorMap.put(c, false);
+        }
     }
     
     public int asColumn(int index)
@@ -2162,6 +2249,28 @@ public class BoardManager implements IManager
     public int asRow(int index)
     {
         return (index / columns);
+    }
+    
+    /**
+     * Set the locked status of a tile color.
+     * 
+     * @param color
+     * @param locked
+     */
+    public void setColorLocked(TileColor color, boolean locked)
+    {
+        lockedColorMap.put(color, locked);
+    }
+    
+    /**
+     * Checks to see if a tile color is locked or not.
+     * 
+     * @param color
+     * @return
+     */
+    public boolean isColorLocked(TileColor color)
+    {
+        return lockedColorMap.get(color);
     }
     
     /**

@@ -78,6 +78,9 @@ public class MetaAnimation extends AbstractAnimation
         public Builder add(IAnimation val) 
         { animationList.add(val); return this; }
         
+        public Builder addAll(List<IAnimation> val)
+        { animationList.addAll(val); return this; }
+        
         public Builder runRule(RunRule val)
         { runRule = val; return this; }
         

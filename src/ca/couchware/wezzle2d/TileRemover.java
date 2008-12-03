@@ -7,16 +7,19 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
+import ca.couchware.wezzle2d.animation.MetaAnimation.RunRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.*;
@@ -28,9 +31,11 @@ import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.StarTileEntity;
+import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.TileType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -83,6 +88,12 @@ public class TileRemover
     
     /** If true, do not activate items on this removal. */
     private boolean noItems = false;
+    
+    /** If true, a wezzle tile infection is in progress. */
+    private boolean tileInfectionInProgress = false;
+    
+    /** The tile infection animation. */
+    private IAnimation tileInfectionAnimation = FinishedAnimation.get();
         
     /** If true, a bomb removal will be activated next loop. */
     private boolean activateBombRemoval = false;    
@@ -106,11 +117,12 @@ public class TileRemover
         this.itemSetMap = new EnumMap<TileType, Set<Integer>>(TileType.class);
         
         // Create a set for each item tile type.
-        EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);
+        EnumSet<TileType> tileTypeSet = EnumSet.allOf(TileType.class);        
         tileTypeSet.remove(TileType.NORMAL);
         tileTypeSet.remove(TileType.X2);
         tileTypeSet.remove(TileType.X3);
         tileTypeSet.remove(TileType.X4);
+        tileTypeSet.remove(TileType.WEZZLE);
         
         // Now create all the item sets.
         for (TileType t : tileTypeSet)
@@ -139,6 +151,15 @@ public class TileRemover
      */
     public void updateLogic(final Game game)
     {
+        final AnimationManager animationMan = game.animationMan;
+        final BoardManager boardMan         = game.boardMan;
+        final LayerManager layerMan         = game.layerMan;
+        final ListenerManager listenerMan   = game.listenerMan;
+        final PieceManager pieceMan         = game.pieceMan;
+        final SettingsManager settingsMan   = game.settingsMan;
+        final TimerManager timerMan         = game.timerMan;
+        final WorldManager worldMan         = game.worldMan;
+        
         if (activateLevelUp == true)
         {
             activateLevelUp = false;
@@ -149,6 +170,161 @@ public class TileRemover
         if (game.refactorer.isFinished() == true && areItemSetsEmpty() == true)
         {
             findMatches(game);
+            
+            // If there are matches, score them, remove 
+            // them and then refactor again.
+            if (!tileRemovalSet.isEmpty())
+            {
+                startLineRemoval(game.refactorer);
+            }
+            else
+            {
+                // Make sure the tiles are not still dropping.
+                if (!pieceMan.isTileDropInProgress())
+                {      
+                    // Fire the event.
+                    listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));                                         
+                    
+                    //See if the wezzle timer has run out.  If it has, start
+                    // the tile infection.
+                    if (worldMan.getWezzleTime() == 0 && boardMan.getNumberOfTiles() > 0)
+                    {                                        
+                        // Look for any item that is not a wezzle tile or multiplier.
+                        List<Integer> indexList = boardMan.getTileIndices(
+                                EnumSet.of(
+                                    TileType.ROCKET,
+                                    TileType.GRAVITY,
+                                    TileType.BOMB,
+                                    TileType.STAR
+                                ),
+                                EnumSet.allOf(TileColor.class));
+
+                        // Look for any item that is not a wezzle tile.
+                        if (indexList.isEmpty() == true)
+                        {
+                            indexList = boardMan.getTileIndices(
+                                EnumSet.of(
+                                    TileType.X2,
+                                    TileType.X3,
+                                    TileType.X4
+                                ),
+                                EnumSet.allOf(TileColor.class));
+                        }
+                        
+                        // Look for any tile that is not a wezzle tile.
+                        if (indexList.isEmpty() == true)
+                        {                            
+                            indexList = boardMan.getTileIndices(
+                                    EnumSet.of(TileType.NORMAL),
+                                    EnumSet.allOf(TileColor.class));
+                        }
+
+                        // Get a random one from that list and replace it.                        
+                        Collections.shuffle(indexList);
+                        final int index = indexList.get(0);
+                        final TileEntity oldTile = boardMan.getTile(index);                       
+                        
+                        // Create the new wezzle tile.
+                        final TileEntity newTile = boardMan.makeTile(
+                                TileType.WEZZLE, 
+                                oldTile.getColor(), 
+                                oldTile.getX(), oldTile.getY());
+                        
+                        // Start an animation.                        
+                        IAnimation wezzle1 = new ZoomAnimation.Builder(ZoomAnimation.Type.IN, oldTile)
+                                .speed(settingsMan.getInt(Key.ANIMATION_WEZZLE_ZOOM_IN_SPEED))
+                                .end();
+                        
+                        wezzle1.setFinishRunnable(new Runnable()
+                        {
+                            public void run()
+                            { boardMan.removeTile(index); }
+                        });
+                        
+                        IAnimation wezzle2 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, newTile)                                
+                                .speed(settingsMan.getInt(Key.ANIMATION_WEZZLE_ZOOM_OUT_SPEED))
+                                .end();
+                        
+                        // Add tile to layer manager for animation purposes.
+                        wezzle2.setStartRunnable(new Runnable()
+                        {
+                            public void run()
+                            { layerMan.add(newTile, Layer.TILE); }
+                        });
+                        
+                        // Remove tile for layer manager and add it to the 
+                        // board manager.
+                        wezzle2.setFinishRunnable(new Runnable()
+                        {
+                            public void run()
+                            { 
+                                layerMan.remove(newTile, Layer.TILE); 
+                                boardMan.addTile(index, newTile);
+                            }
+                        });                                                                        
+                        
+                        // If the color is already locked, no need to fade it.
+                        IAnimation fade = FinishedAnimation.get();
+                        if (!boardMan.isColorLocked(newTile.getColor()))
+                        {
+                            EntityGroup e = boardMan.getTiles(
+                                boardMan.getTileIndices(
+                                    EnumSet.complementOf(EnumSet.of(TileType.WEZZLE)), 
+                                    EnumSet.of(newTile.getColor())));                                                
+                        
+                            fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
+                                    .minOpacity(settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_MIN_OPACITY))
+                                    .wait(settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_WAIT))
+                                    .duration(settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_DURATION))
+                                    .end();
+                        } // end if                                                                                             
+                        
+                        IAnimation wezzleMeta = new MetaAnimation.Builder()
+                                .runRule(RunRule.SEQUENCE)
+                                .add(wezzle1)
+                                .add(wezzle2)
+                                .end();
+                        
+                        IAnimation meta = new MetaAnimation.Builder()
+                                .runRule(RunRule.SIMULTANEOUS)
+                                .finishRule(FinishRule.ALL)
+                                .add(wezzleMeta)
+                                .add(fade)
+                                .end();
+                                                                              
+                        // Set the animation.
+                        this.tileInfectionAnimation = meta;
+                        animationMan.add(meta);
+                        
+                        // Lock the color.
+                        boardMan.setColorLocked(newTile.getColor(), true);
+                        
+                        // The infection is now in progress.
+                        this.tileInfectionInProgress = true;                                                
+                    }    
+                    else
+                    {
+                        // Start the next move.
+                        startNextMove(pieceMan, timerMan);
+                    }
+                } // end if                                
+            } // end if
+        } // end if       
+        
+        // If there's an infection in progress, check to see if it's done.
+        if (this.tileInfectionInProgress == true)       
+        {
+            if (tileInfectionAnimation.isFinished() == true)
+            {
+                // Reset the wezzle timer.
+                worldMan.resetWezzleTime();
+
+                // Start the next move.
+                startNextMove(pieceMan, timerMan);
+
+                // Turn off the infection flag.
+                this.tileInfectionInProgress = false;            
+            }
         } // end if       
 
         // If a line removal was activated.
@@ -182,6 +358,29 @@ public class TileRemover
         }
     }
     
+    private void startLineRemoval(Refactorer refactorer)
+    {
+        // Activate the line removal.
+        this.activateLineRemoval = true;
+
+        // Record the refactor speed.
+        this.refactorSpeed = refactorer.getRefactorSpeed();
+    }   
+    
+    private void startNextMove(PieceManager pieceMan, TimerManager timerMan)
+    {
+        // Load new piece and make it visible.
+        pieceMan.loadPiece();
+        pieceMan.getPieceGrid().setVisible(true);               
+
+        // Reset the mouse.
+        pieceMan.clearMouseButtonSet();
+
+        // Unpause the timer.
+        timerMan.resetTimer();
+        timerMan.setPaused(false);
+    }
+    
     /**
      * Checks the emptiness of all the item sets.
      * 
@@ -189,9 +388,8 @@ public class TileRemover
      */
     private boolean areItemSetsEmpty()
     {
-        assert(this.itemSetMap != null);
-            
-        
+        assert this.itemSetMap != null;
+                    
         for (TileType t : this.itemSetMap.keySet())
         {
             if (this.itemSetMap.containsKey(t) 
@@ -207,6 +405,7 @@ public class TileRemover
     public boolean isTileRemoving()
     {
         return this.tileRemovalInProgress
+                || this.tileInfectionInProgress
                 || this.activateLineRemoval 
                 || this.activateBombRemoval 
                 || this.activateStarRemoval 
@@ -250,10 +449,8 @@ public class TileRemover
     public void findMatches(final Game game)
     {
         // Shortcuts to the managers.
-        BoardManager boardMan = game.boardMan;
-        PieceManager pieceMan = game.pieceMan;
-        StatManager  statMan  = game.statMan;                
-        TimerManager timerMan = game.timerMan;
+        BoardManager boardMan       = game.boardMan;        
+        StatManager  statMan        = game.statMan;                       
         
         // Look for matches.
         tileRemovalSet.clear();
@@ -280,37 +477,7 @@ public class TileRemover
 
         // Copy the match into the last line match holder.
         lastMatchSet.clear();
-        lastMatchSet.addAll(tileRemovalSet);
-
-        // If there are matches, score them, remove 
-        // them and then refactor again.
-        if (tileRemovalSet.isEmpty() == false)
-        {
-            // Activate the line removal.
-            this.activateLineRemoval = true;
-            
-            // Record the refactor speed.
-            this.refactorSpeed = game.refactorer.getRefactorSpeed();
-        }
-        else
-        {
-            // Make sure the tiles are not still dropping.
-            if (pieceMan.isTileDropInProgress() == false)
-            {
-                pieceMan.loadPiece();
-                pieceMan.getPieceGrid().setVisible(true);
-
-                // Unpause the timer.
-                timerMan.resetTimer();
-                timerMan.setPaused(false);
-
-                // Reset the mouse.
-                pieceMan.clearMouseButtonSet();
-                
-                // Fire the event.
-                game.listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));
-            }                 
-        } // end if
+        lastMatchSet.addAll(tileRemovalSet);                
     }
 
     private IAnimation animateItemActivation(
@@ -361,9 +528,9 @@ public class TileRemover
 
 
     private void followThrough(
+            Game game,
             Integer lastItem, 
-            List<TileEntity> itemsSeen, 
-            Game game, 
+            List<TileEntity> itemsSeenList,              
             List<TileEntity> allSeenList) 
     {
         // The set to hold the tiles affected by the item.
@@ -409,15 +576,17 @@ public class TileRemover
                 allSeenList.add(t);
                 
                 // Add to the temp list.
-                List<TileEntity> list = new ArrayList<TileEntity>(itemsSeen);
+                List<TileEntity> list = new ArrayList<TileEntity>(itemsSeenList);
                 list.add(t);
-                followThrough(index, list, game, allSeenList);
+                followThrough(game, index, list, allSeenList);
             }
         }
         
         // When we are done.  Return the event.
-        if (itemsSeen.isEmpty() == false)
-            game.listenerMan.notifyCollision(new CollisionEvent(this, itemsSeen));
+        if (itemsSeenList.isEmpty() == false)
+        {
+            game.listenerMan.notifyCollision(new CollisionEvent(this, itemsSeenList));
+        }
     }
     
     private void processRemoval(final Game game)
@@ -434,6 +603,7 @@ public class TileRemover
             if (boardMan.getTile((Integer) it.next()).getAnimation().isFinished() == false)
             {
                 animationInProgress = true;
+                break;
             }
         } // end for
 
@@ -654,9 +824,22 @@ public class TileRemover
                 }
                 else
                 {
-                    t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
+                    IAnimation a1 = new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
                             .speed(settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED))
-                            .end());
+                            .end();
+                    
+                    IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                            .wait(settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_WAIT))
+                            .duration(settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_DURATION))
+                            .end();
+                    
+                    IAnimation meta = new MetaAnimation.Builder()
+                            .finishRule(FinishRule.ALL)
+                            .add(a1)
+                            .add(a2)
+                            .end();
+                    
+                    t.setAnimation(meta);
                     animationMan.add(t.getAnimation());                                        
                 }                                
                 
@@ -703,9 +886,7 @@ public class TileRemover
         // Set the flag.
         tileRemovalInProgress = true;
     }    
-    
-    
-
+        
     private void removeRockets(final Game game)
     {        
         // Shortcuts to managers.
@@ -734,35 +915,27 @@ public class TileRemover
         // Also used below.
         IAnimation a1, a2, a3;
         
-         List<TileEntity> allSeen = new ArrayList<TileEntity>();
+        List<TileEntity> allSeenSet = new ArrayList<TileEntity>();
           
-          // Load the items into the allseen initially.
-         for (Iterator it = rocketRemovalSet.iterator(); it.hasNext();)
-        {
-            Integer tileNum = (Integer) it.next();
-            // get the tile entity.
-            TileEntity t = game.boardMan.getTile(tileNum);
+        // Load the items into the allseen initially.
+        for (Integer index : rocketRemovalSet)
+        {            
+            TileEntity t = game.boardMan.getTile(index);
             
-            if(t.getType() != TileType.NORMAL)
-                allSeen.add(t);
+            if (t.getType() != TileType.NORMAL)
+            {
+                allSeenSet.add(t);
+            }
          }
                 
-        //simulate all collisions that these rockets would achieve one at a time.
-        for (Iterator it = rocketRemovalSet.iterator(); it.hasNext();)
-        {
-            Integer tileNum = (Integer) it.next();
-            // get the tile entity.
-            TileEntity t = boardMan.getTile(tileNum);
-            
+        // Simulate all collisions that these rockets would achieve one at a time.
+        for (Integer index : rocketRemovalSet)
+        {            
             // Create a set to hold the current item.
-           ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
+            List<TileEntity> itemsSeen = new ArrayList<TileEntity>();
+            itemsSeen.add(boardMan.getTile(index));
             
-            itemsSeen.add(t);
-            
-            
-            followThrough(tileNum, itemsSeen, game, allSeen);
-
-            
+            followThrough(game, index, itemsSeen, allSeenSet);
         }
 
         // Get the tiles the rockets would affect.
@@ -989,29 +1162,25 @@ public class TileRemover
 
         List<TileEntity> allSeen = new ArrayList<TileEntity>();
           
-          // Load the items into the allseen initially.
-         for (Iterator it = bombRemovalSet.iterator(); it.hasNext();)
-        {
-            Integer tileNum = (Integer) it.next();
-            // get the tile entity.
-            TileEntity t = game.boardMan.getTile(tileNum);
+        // Load the items into the allseen initially.
+        for (Integer index : bombRemovalSet)
+        {          
+            TileEntity t = game.boardMan.getTile(index);
             
-            if(t.getType() != TileType.NORMAL)
+            if (t.getType() != TileType.NORMAL)
+            {
                 allSeen.add(t);
-         }
+            }
+        }
         
-          //simulate all collisions that these bombs would achieve one at a time.
-        for (Iterator it = bombRemovalSet.iterator(); it.hasNext();)
-        {
-            Integer tileNum = (Integer) it.next();
-            // get the tile entity.
-            TileEntity t = boardMan.getTile(tileNum);
-            
+        // Simulate all collisions that these bombs would achieve one at a time.
+        for (Integer index : bombRemovalSet)
+        {           
             // Create a set to hold the current item.
-            ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
+            List<TileEntity> itemsSeenList = new ArrayList<TileEntity>();            
+            itemsSeenList.add(boardMan.getTile(index));                        
             
-            itemsSeen.add(t);                        
-            followThrough(tileNum, itemsSeen, game, allSeen);            
+            followThrough(game, index, itemsSeenList, allSeen);            
         }
         
         // Get the tiles the bombs would affect.
@@ -1179,14 +1348,10 @@ public class TileRemover
                 });
 
                 t.setAnimation(meta);
-                animationMan.add(meta);
-                
-//                t.setAnimation(new ExplosionAnimation(t, game.layerMan));
-//                animationMan.add(t.getAnimation());
+                animationMan.add(meta);                
             }
             else
-            {
-//                a1 = new JiggleAnimation(600, 50, t);               
+            {           
                 a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                         .wait(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_WAIT))
                         .duration(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_DURATION))
@@ -1258,36 +1423,28 @@ public class TileRemover
         IAnimation a1, a2;
         
         
-         List<TileEntity> allSeen = new ArrayList<TileEntity>();
+        List<TileEntity> allSeenSet = new ArrayList<TileEntity>();
           
-          // Load the items into the allseen initially.
-         for (Iterator it = starRemovalSet.iterator(); it.hasNext();)
-        {
-            Integer tileNum = (Integer) it.next();
-            // get the tile entity.
-            TileEntity t = game.boardMan.getTile(tileNum);
+        // Load the items into the allseen initially.
+        for (Integer index : starRemovalSet)
+        {            
+            TileEntity t = game.boardMan.getTile(index);
             
-            if(t.getType() != TileType.NORMAL)
-                allSeen.add(t);
-         }
-        
-          //simulate all collisions that these stars would achieve one at a time.
-        for (Iterator it = starRemovalSet.iterator(); it.hasNext();)
-        {
-            Integer tileNum = (Integer) it.next();
-            // get the tile entity.
-            TileEntity t = boardMan.getTile(tileNum);
-            
-            // Create a set to hold the current item.
-           ArrayList<TileEntity> itemsSeen = new ArrayList<TileEntity>();
-            
-            itemsSeen.add(t);
-            
-            followThrough(tileNum, itemsSeen, game, allSeen);
-
-            
+            if (t.getType() != TileType.NORMAL)
+            {
+                allSeenSet.add(t);
+            }
         }
         
+        // Simulate all collisions that these stars would achieve one at a time.
+        for (Integer index : starRemovalSet)
+        {           
+            // Create a set to hold the current item.
+            List<TileEntity> itemsSeenList = new ArrayList<TileEntity>();            
+            itemsSeenList.add(boardMan.getTile(index));                        
+            
+            followThrough(game, index, itemsSeenList, allSeenSet);            
+        }
 
         // Get the tiles the bombs would affect.
         boardMan.processStars(starRemovalSet, tileRemovalSet);
@@ -1308,19 +1465,7 @@ public class TileRemover
         deltaScore = scoreMan.calculateLineScore(
                 tileRemovalSet,
                 ScoreType.STAR,
-                statMan.getChainCount());
-
-        // Fire a score event.
-//        if (tutorialMan.isTutorialInProgress() == true)
-//        {
-//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-//                    IListenerManager.GameType.TUTORIAL);
-//        }
-//        else
-//        {
-//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-//                    IListenerManager.GameType.GAME);
-//        }
+                statMan.getChainCount());       
         
         // Increment the score.
         if (game.tutorialMan.isTutorialInProgress() == false)       

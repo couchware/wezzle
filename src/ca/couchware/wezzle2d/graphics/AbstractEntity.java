@@ -267,7 +267,7 @@ public abstract class AbstractEntity implements IEntity
         return opacity;
     }   
     
-    public void setDisabled(final boolean disabled)
+    public void setDisabled(boolean disabled)
     {
         this.disabled = disabled;
     }

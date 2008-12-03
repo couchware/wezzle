@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.piece.*;
 import ca.couchware.wezzle2d.ui.ILabel;
@@ -59,7 +60,16 @@ public class PieceManager implements IMouseListener
     
     /** A set of buttons that were clicked. */
     private EnumSet<MouseButton> mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+        
+    /** The animation manager that animations are run with. */
+	private AnimationManager animationMan;
     
+	/** The board manager the piece manager to attached to. */
+	private BoardManager boardMan;    
+    
+    /** The current wezzle animation. */
+    private IAnimation wezzleAnimation = FinishedAnimation.get();
+     
     /**
      * Should the piece manager drop automatically drop tiles after a 
      * commit?
@@ -74,18 +84,12 @@ public class PieceManager implements IMouseListener
     
     /** The number of tiles to drop this turn. */
     private int totalTileDropAmount = 0;        
-    
-    /** The index list. */
-    private ArrayList<Integer> openIndexList;
-    
+      
     /** The tile currently being dropped. */
     private List<TileEntity> tileDropList = new ArrayList<TileEntity>();
     
      /** Was the board recently refactored? */
-    private boolean refactored = false;	          
-    
-    /** The piece map. */
-    //private EnumMap<PieceType, Piece> pieceMap;
+    private boolean refactored = false;	                  
     
     /** The current piece. */
     private Piece piece;
@@ -93,12 +97,6 @@ public class PieceManager implements IMouseListener
 	/** The piece grid. */
 	private PieceGrid pieceGrid;       
 	
-    /** The animation manager that animations are run with. */
-	private AnimationManager animationMan;
-    
-	/** The board manager the piece manager to attached to. */
-	private BoardManager boardMan;
-    
     /**
      * The restriction board.  All the entries that are true are clickable,
      * all the ones that are false are not.
@@ -148,10 +146,7 @@ public class PieceManager implements IMouseListener
         
         // Load a random piece.
         loadPiece();
-        pieceGrid.setXYPosition(limitPosition(window.getMouseImmutablePosition()));				                
-        
-        // Create the index list.
-        this.openIndexList = new ArrayList<Integer>();    
+        pieceGrid.setXYPosition(limitPosition(window.getMouseImmutablePosition()));				                               
         
         // Create the restriction board and fill it with trues.
         restrictionBoard = new boolean[boardMan.getCells()];
@@ -404,17 +399,17 @@ public class PieceManager implements IMouseListener
     //--------------------------------------------------------------------------
     
     public void updateLogic(final Game game)
-    {                     
+    {                
+        final SettingsManager settingsMan = game.settingsMan;
+        final WorldManager worldMan       = game.worldMan;
+        
         // If the board is refactoring, do not logicify.
-        if (game.isBusy() == true)
-             return;                 
+        if (game.isBusy() == true) return;                 
                  
         // Which row should we be dropping tiles into?
         int dropRow = 0;
         if (boardMan.getGravity().contains(Direction.UP))
-            dropRow = boardMan.getRows() - 1;
-        else
-            dropRow = 0;
+            dropRow = boardMan.getRows() - 1;       
         
         // Drop in any tiles that need to be dropped, one at a time. 
         //
@@ -434,14 +429,14 @@ public class PieceManager implements IMouseListener
                     parallelTileDropInAmount = totalTileDropAmount;                              
                 
                 // Count the open columns and build a list of all open indices.
-                openIndexList.clear();
+                List<Integer> openIndexList = new ArrayList<Integer>();
                 int openColumnCount = 0;                                                
                 for (int i = 0; i < boardMan.getColumns(); i++)
                 {
                     if (boardMan.getTile(i, dropRow) == null)
                     {
                         openColumnCount++;
-                        openIndexList.add(new Integer(i));
+                        openIndexList.add(i);
                     }
                 }                         
                 
@@ -458,17 +453,7 @@ public class PieceManager implements IMouseListener
                 LinkedList<Integer> randomIndexQueue = new LinkedList<Integer>();
                 randomIndexQueue.addAll(openIndexList);
                 Collections.shuffle(randomIndexQueue, Util.random);
-                
-                // Generate the indices. pick a random index from the available
-                // indices in the indexList.
-//                for (int i = 0; i < openIndexList.size(); i++)
-//                {
-//                    int r = Util.random.nextInt(openIndexList.size());
-//                    Integer randomIndex = openIndexList.get(r);
-//                    randomIndexQueue.add(randomIndex);
-//                    openIndexList.remove(openIndexList.indexOf(randomIndex));
-//                }                                                                   
-                
+                              
                 // If there are less items left (to ensure only 1 drop per drop 
                 // in) and we have less than the max number of items...
                 // drop an item in. Otherwise drop a normal.
@@ -481,18 +466,21 @@ public class PieceManager implements IMouseListener
                     game.startGameOver();
                 }
                 else if (totalTileDropAmount == 1 
-                        && ( game.boardMan.getNumberOfItems() < game.worldMan.getMaximumItems() 
-                        || game.boardMan.getNumberOfMults() < game.worldMan.getMaximumMultipliers()))
+                        && (boardMan.getNumberOfItems() < worldMan.getMaximumItems() 
+                        || boardMan.getNumberOfMultipliers() < worldMan.getMaximumMultipliers()))
                 {
+                    TileType type = worldMan.getItem(
+                                boardMan.getNumberOfItems(),
+                                boardMan.getNumberOfMultipliers()).getTileType();
+                    
                     // The tile is an item.
-                    tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
-                            dropRow, game.worldMan.getItem(game.boardMan.getNumberOfItems(),
-                            game.boardMan.getNumberOfMults()).getTileType()));
-                                  
+                    tileDropList.add(
+                            boardMan.createTile(
+                                randomIndexQueue.remove(), dropRow, type));                                  
                 }
                 else if (totalTileDropAmount <= parallelTileDropInAmount
-                       && (game.boardMan.getNumberOfItems() < game.worldMan.getMaximumItems()
-                       || game.boardMan.getNumberOfMults() < game.worldMan.getMaximumMultipliers()))
+                       && (boardMan.getNumberOfItems() < worldMan.getMaximumItems()
+                       || boardMan.getNumberOfMultipliers() < worldMan.getMaximumMultipliers()))
                 {
                     // This must be true.
                     assert totalTileDropAmount <= randomIndexQueue.size();
@@ -500,22 +488,31 @@ public class PieceManager implements IMouseListener
                     // Drop in the first amount.
                     for (int i = 0; i < totalTileDropAmount - 1; i++)
                     {
-                        tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
-                                dropRow, TileType.NORMAL)); 
+                        tileDropList.add(boardMan.createTile(
+                                randomIndexQueue.remove(), 
+                                dropRow, 
+                                TileType.NORMAL)); 
                     }
                     
+                    TileType type = worldMan.getItem(
+                                boardMan.getNumberOfItems(),
+                                boardMan.getNumberOfMultipliers()).getTileType();
+                    
                     // Drop in the item tile.
-                    tileDropList.add(boardMan.createTile(randomIndexQueue.remove(),
-                            dropRow, game.worldMan.getItem(game.boardMan.getNumberOfItems(),
-                            game.boardMan.getNumberOfMults()).getTileType()));                     
+                    tileDropList.add(
+                            boardMan.createTile(
+                                randomIndexQueue.remove(), dropRow, type));                     
                 }
                 else
                 {
                     // They are all normals.
                     for (int i = 0; i < parallelTileDropInAmount; i++)
                     {
-                        tileDropList.add(boardMan.createTile(randomIndexQueue.remove(), 
-                                dropRow, TileType.NORMAL));
+                        tileDropList.add(
+                                boardMan.createTile(
+                                    randomIndexQueue.remove(), 
+                                    dropRow, 
+                                    TileType.NORMAL));
                     }                 
                 }                
                           
@@ -535,10 +532,19 @@ public class PieceManager implements IMouseListener
                                     "A tile was null in the tile drop list.");
                         }
                         else
-                        {           
-                            //IAnimation a = new ZoomInAnimation(tileDropped[i]);
+                        {                                       
+                            // If the tile is locked, change it's opacity to the
+                            // locked opacity.
+                            if (boardMan.isColorLocked(tile.getColor()) == true)
+                            {
+                                Key key = Key.ANIMATION_WEZZLE_FADE_MIN_OPACITY;
+                                tile.setOpacity(settingsMan.getInt(key));
+                            }
+                            
                             IAnimation a = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, tile)
-                                    .speed(50).end();
+                                    .speed(settingsMan.getInt(Key.ANIMATION_DROP_ZOOM_OUT_SPEED))
+                                    .end();
+                            
                             tile.setAnimation(a);
                             animationMan.add(a);
                         }
@@ -550,7 +556,7 @@ public class PieceManager implements IMouseListener
             } 
             // If we got here, the animating is in progress, so we need to check
             // if it's done.  If it is, de-reference it and refactor.
-            else if (isAnimationDone(tileDropList) == true)
+            else if (isAnimationDone(tileDropList) && wezzleAnimation.isFinished())
             {
                 // Clear the flag.
                 tileDropAnimationInProgress = false;
@@ -576,7 +582,7 @@ public class PieceManager implements IMouseListener
                     throw new IllegalStateException("Tile drop count is: "
                             + totalTileDropAmount);
                 }                
-            }
+            } // end if
         }
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.
@@ -677,23 +683,52 @@ public class PieceManager implements IMouseListener
         // Play the sound.
         game.soundMan.play(Sound.CLICK);
         
+        // The wezzle fade animation.
+        List<IAnimation> wezzleAnimationList = new ArrayList<IAnimation>();
+        
+        TileEntity tile = null;
         for (Integer index : indexSet)
-            boardMan.getTile(index).onClick();
+        {
+            tile = boardMan.getTile(index);
+            
+            // Invoke the on-click behaviour.            
+            tile.onClick();
+            
+            // Do something special if it's a wezzle tile.
+            if (tile.getType() == TileType.WEZZLE)
+            {
+                // See if this is the last wezzle tile of that colour.
+                int count = boardMan.getTileIndices(
+                        EnumSet.of(tile.getType()), 
+                        EnumSet.of(tile.getColor())).size();
+                
+                if (count == 1)
+                {
+                    // Unlock the colour.
+                    boardMan.setColorLocked(tile.getColor(), false);
+                    
+                    // Get all tiles of that colour.
+                    EntityGroup e = boardMan.getTiles(boardMan.getTileIndices(
+                            EnumSet.complementOf(EnumSet.of(TileType.WEZZLE)), 
+                            EnumSet.of(tile.getColor())));                    
+                    
+                    // Create a fade animation for fading them back.
+                    wezzleAnimationList.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
+                            .minOpacity(game.settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_MIN_OPACITY))
+                            .wait(game.settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_WAIT))
+                            .duration(game.settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_DURATION))
+                            .end());
+                }
+            } // end if           
+        } // end for
+        
+        // Set the wezzle animation.
+        this.wezzleAnimation = new MetaAnimation.Builder()
+                .addAll(wezzleAnimationList).end();
+        game.animationMan.add(this.wezzleAnimation);
         
         // Remove and score the piece.
-        int deltaScore = game.scoreMan.calculatePieceScore(indexSet);    
-        
-        // Notify the listener manager.
-//        if (game.tutorialMan.isTutorialInProgress() == true)
-//        {
-//            game.listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1), 
-//                IListenerManager.GameType.TUTORIAL);
-//        }
-//        else
-//        {
-//            game.listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1), 
-//                IListenerManager.GameType.GAME);
-//        }
+        int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                    
         
         // Increment the score.
         if (game.tutorialMan.isTutorialInProgress() == false)       
@@ -768,7 +803,9 @@ public class PieceManager implements IMouseListener
         
         // Start a tile drop.
         if (tileDropOnCommit == true)
+        {
             tileDropInProgress = true;
+        }
 
         // Make visible.
         pieceGrid.setVisible(false);        
@@ -968,7 +1005,7 @@ public class PieceManager implements IMouseListener
                 
             //temp.
             case MIDDLE:
-                boardMan.insertItemRandomly(TileType.BOMB);
+                boardMan.insertRandomItem(TileType.BOMB);
                 break;
                 
             default:

@@ -729,19 +729,19 @@ public class Game extends Canvas implements IGameWindowCallback
         // The keys.
         if (window.isKeyPressed('b'))
         {
-           boardMan.insertItemRandomly(TileType.BOMB);
+           boardMan.insertRandomItem(TileType.BOMB);
         }
         if (window.isKeyPressed('r'))
         {
-           boardMan.insertItemRandomly(TileType.ROCKET);
+           boardMan.insertRandomItem(TileType.ROCKET);
         }
         if (window.isKeyPressed('s'))
         {
-           boardMan.insertItemRandomly(TileType.STAR);
+           boardMan.insertRandomItem(TileType.STAR);
         }
         if (window.isKeyPressed('g'))
         {
-           boardMan.insertItemRandomly(TileType.GRAVITY);
+           boardMan.insertRandomItem(TileType.GRAVITY);
         }    
         if (window.isKeyPressed('R'))
         {

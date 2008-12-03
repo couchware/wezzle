@@ -75,6 +75,12 @@ public class FadeAnimation extends AbstractAnimation
         this.wait     = builder.wait;        
         this.duration = builder.duration;        
         
+        // If duration is 0, then it's already finished.
+        if (this.duration == 0)
+        {
+            setFinished();
+        }
+        
         // Set the opacities.
         this.minOpacity = builder.minOpacity;
         this.maxOpacity = builder.maxOpacity;                        

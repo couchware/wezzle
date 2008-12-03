@@ -114,9 +114,9 @@ public class WorldManager implements IManager,
     
     // Wezzle tile.
         
-    private int wezzleLineCount = 0;
-    private int wezzleMaximumTime = 5;
-    private int wezzleTime = wezzleMaximumTime;
+    private int wezzleLineCount   = 0;
+    private int wezzleMaximumTime = 3;
+    private int wezzleTime        = wezzleMaximumTime;
     
     //--------------------------------------------------------------------------
 	// Constructor
@@ -604,6 +604,14 @@ public class WorldManager implements IManager,
     public void setWezzleTime(int wezzleTime)
     {
         this.wezzleTime = wezzleTime;
+        
+        this.listenerMan.notifyWezzleTimerChanged(
+                new WezzleEvent(this, this.wezzleTime)); 
+    }
+    
+    public void resetWezzleTime()
+    {
+        setWezzleTime(this.wezzleMaximumTime);
     }
 
     public int getWezzleMaximumTime()
@@ -688,28 +696,27 @@ public class WorldManager implements IManager,
         
         if (this.wezzleLineCount == 0)
         {
-            this.wezzleTime--;
-            LogManager.recordMessage(
-                    "Wezzle timer is at: " + this.wezzleTime);
+            // Check to see if the wezzle was handled.  If not, throw an
+            // exception and just die already.
+            if (this.wezzleTime == 0)
+                throw new IllegalStateException("Wezzle tile not handled!");
             
-            if (wezzleTime != 0)
-            {
-                this.listenerMan.notifyWezzleTimerChanged(
-                    new WezzleEvent(this, this.wezzleTime));
-            }
+            setWezzleTime(this.wezzleTime - 1);
+            LogManager.recordMessage(
+                    "Wezzle timer is at: " + this.wezzleTime);                                              
         }
            
-        if (this.wezzleTime == 0)
-        {   
-            this.wezzleTime = this.wezzleMaximumTime;
-            Item wezzleItem = itemMap.get(TileType.WEZZLE);
-            wezzleItem.incrementCurrentAmount();
-            LogManager.recordMessage(
-                    "Wezzle infection increased: " + wezzleItem.getCurrentAmount());
-            
-            this.listenerMan.notifyWezzleTimerChanged(
-                    new WezzleEvent(this, this.wezzleTime));
-        }
+//        if (this.wezzleTime == 0)
+//        {   
+//            this.wezzleTime = this.wezzleMaximumTime;
+//            Item wezzleItem = itemMap.get(TileType.WEZZLE);
+//            wezzleItem.incrementCurrentAmount();
+//            LogManager.recordMessage(
+//                    "Wezzle infection increased: " + wezzleItem.getCurrentAmount());
+//            
+//            this.listenerMan.notifyWezzleTimerChanged(
+//                    new WezzleEvent(this, this.wezzleTime));
+//        }
         
         // Reset the line count.
         this.wezzleLineCount = 0;

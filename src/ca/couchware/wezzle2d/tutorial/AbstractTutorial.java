@@ -116,7 +116,7 @@ public abstract class AbstractTutorial implements ITutorial
             game.pieceMan.stopAnimation();                                            
             
             // Fade the board out.            
-            final EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
+            final EntityGroup e = game.boardMan.getTileRange(game.boardMan.getCells() / 2, 
                     game.boardMan.getCells() - 1);  
             
             IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
@@ -265,7 +265,7 @@ public abstract class AbstractTutorial implements ITutorial
         createBoard(game);
         
         // Fade board in.
-        final EntityGroup e = game.boardMan.getTiles(game.boardMan.getCells() / 2, 
+        final EntityGroup e = game.boardMan.getTileRange(game.boardMan.getCells() / 2, 
                 game.boardMan.getCells() - 1);        
         
         e.setVisible(false);
