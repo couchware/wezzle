@@ -35,7 +35,8 @@ public class Settings
         GAME_TICKS_PER_SECOND,
         GAME_COLOR_PRIMARY,
         GAME_COLOR_SECONDARY,
-        GAME_COLOR_DISABLED,        
+        GAME_COLOR_DISABLED,  
+        GAME_COLOR_WEZZLE_TIMER,
         
         // Debug values.
         

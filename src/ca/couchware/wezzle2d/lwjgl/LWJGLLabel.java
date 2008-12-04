@@ -98,6 +98,14 @@ public class LWJGLLabel extends AbstractEntity implements ILabel
     public void setText(String text)
     {
         this.text = text;
+        
+        // Set width and height based on the font.
+        this.width = font.stringWidth(text);
+        this.height = font.getHeight();
+        
+        // Determine the offset.
+        this.offsetX = determineLabelOffsetX(alignment);
+        this.offsetY = determineLabelOffsetY(alignment);
     }
 
     public boolean isCached()

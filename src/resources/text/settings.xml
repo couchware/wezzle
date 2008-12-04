@@ -23,6 +23,9 @@
   <entry name="GAME_COLOR_DISABLED">
     <color red="178" green="178" blue="178" alpha="255" />
   </entry>
+  <entry name="GAME_COLOR_WEZZLE_TIMER">
+    <color red="234" green="210" blue="0" alpha="255" />  
+  </entry>
   <entry name="DEBUG_SHOW_CLIP_RECT">false</entry>
   <entry name="REFACTOR_SPEED_X_SLOWER">70</entry>
   <entry name="REFACTOR_SPEED_Y_SLOWER">70</entry>

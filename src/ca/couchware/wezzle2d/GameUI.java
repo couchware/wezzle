@@ -15,6 +15,7 @@ import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.event.WezzleEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
@@ -36,6 +37,8 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Window;
+import ca.couchware.wezzle2d.ui.Window.Border;
 import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
 import ca.couchware.wezzle2d.ui.group.OptionsGroup;
@@ -230,6 +233,9 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         final Color PRIMARY_COLOR = 
                 SettingsManager.get().getColor(Key.GAME_COLOR_PRIMARY);
         
+        final Color WEZZLE_TIMER_COLOR =
+                SettingsManager.get().getColor(Key.GAME_COLOR_WEZZLE_TIMER);
+        
         // Set up the copyright label.
         copyrightLabel = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
@@ -246,15 +252,15 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         layerMan.add(versionLabel, Layer.UI);
         
 		// Set up the timer text.
-        timerLabel = new LabelBuilder(400, 70)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+        timerLabel = new LabelBuilder(400, 110)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .color(PRIMARY_COLOR).size(50).text("").end();
         layerMan.add(timerLabel, Layer.UI);
         
         // Set up the Wezzle timer text.
-        wezzleTimerLabel = new LabelBuilder(470, 70)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(PRIMARY_COLOR).size(25).text("").end();
+        wezzleTimerLabel = new LabelBuilder(495, 110)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
+                .color(WEZZLE_TIMER_COLOR).size(25).text("").end();
         layerMan.add(wezzleTimerLabel, Layer.UI);
         
         // Set up the level header.
@@ -306,7 +312,14 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
                 .end();
         
         layerMan.add(background, Layer.BACKGROUND);   
-        layerMan.toBack(background, Layer.BACKGROUND);
+        layerMan.toBack(background, Layer.BACKGROUND);     
+        
+        // Use the wezzle tile cover to indicate wezzle shit.
+        IEntity wezzle = new GraphicEntity
+                .Builder(455, 81, Settings.getSpriteResourcesPath() + "/ItemWezzle2.png")
+                .end();
+         
+        layerMan.add(wezzle, Layer.BACKGROUND);
         
         // Create the progress bar.
         progressBar = new ProgressBar.Builder(393, 501)

@@ -2226,7 +2226,7 @@ public class BoardManager implements IManager
         
         LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
         LogManager.recordMessage("Loaded " + numberOfItems + " items.");
-        LogManager.recordMessage("Loaded " + numberOfMultipliers + " mults.");
+        LogManager.recordMessage("Loaded " + numberOfMultipliers + " multipliers.");
     }
 
     public void resetState()

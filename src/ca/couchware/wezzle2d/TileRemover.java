@@ -2,6 +2,7 @@
  *  Wezzle
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
+
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
@@ -81,7 +82,7 @@ public class TileRemover
     private Set<Integer> tileRemovalSet;
     
     /** If true, uses jump animation instead of zoom. */
-    private boolean useJumpAnimation = false;
+    private boolean levelUpInProgress = false;
     
     /** If true, award no points for this tile removal. */
     private boolean noScore = false;
@@ -182,9 +183,17 @@ public class TileRemover
                 // Make sure the tiles are not still dropping.
                 if (!pieceMan.isTileDropInProgress())
                 {      
-                    // Fire the event.
-                    listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));                                         
+                    // Don't fire a move completed event if we're just
+                    // doing the level up line removal.
+                    if (!levelUpInProgress)
+                    {
+                        // Fire the move completed event.
+                        listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));  
+                    }
                     
+                    // Clear the level up in progress flag.
+                    levelUpInProgress = false;      
+                                                                               
                     //See if the wezzle timer has run out.  If it has, start
                     // the tile infection.
                     if (worldMan.getWezzleTime() == 0 && boardMan.getNumberOfTiles() > 0)
@@ -416,7 +425,7 @@ public class TileRemover
     {
         // Set some flags for the level up.
         this.activateLineRemoval = true;
-        this.useJumpAnimation = true;
+        this.levelUpInProgress = true;
         this.noScore = true;
         this.noItems = true;
         
@@ -794,7 +803,7 @@ public class TileRemover
             {
                 TileEntity t = boardMan.getTile((Integer) it.next());
 
-                if (useJumpAnimation == true)
+                if (levelUpInProgress == true)
                 {
                     i++;
                     int angle = i % 2 == 0 ? 70 : 180 - 70;
@@ -878,10 +887,7 @@ public class TileRemover
                 t.setAnimation(a);
                 animationMan.add(a);
             }            
-        }
-        
-        // Clear the animation flag.
-        useJumpAnimation = false;          
+        }                    
 
         // Set the flag.
         tileRemovalInProgress = true;
