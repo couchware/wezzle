@@ -51,7 +51,7 @@ public class WorldManager implements IManager,
     /**
      * The multiplier list
      */
-    private List<Item> multiplierList;        
+    private Map<TileType, Item> multiplierMap;        
     
     /**
      * The master rule list.  Contains all the rules that should exist
@@ -141,12 +141,12 @@ public class WorldManager implements IManager,
         itemMap = new EnumMap<TileType, Item>(TileType.class);                
         
         // Set the multipliers.
-        multiplierList = new ArrayList<Item>();        
-        multiplierList.add(new Item.Builder(TileType.X2)
+        multiplierMap = new EnumMap<TileType, Item>(TileType.class);        
+        multiplierMap.put(TileType.X2, new Item.Builder(TileType.X2)
                 .initialAmount(2).weight(50).maximumOnBoard(3).end());
-        multiplierList.add(new Item.Builder(TileType.X3)
+        multiplierMap.put(TileType.X3, new Item.Builder(TileType.X3)
                 .initialAmount(0).weight(20).maximumOnBoard(1).end());
-        multiplierList.add(new Item.Builder(TileType.X4)
+        multiplierMap.put(TileType.X4, new Item.Builder(TileType.X4)
                 .initialAmount(0).weight(10).maximumOnBoard(1).end());                
                           
         // Make the mutable list the master list.
@@ -370,9 +370,9 @@ public class WorldManager implements IManager,
         // Increment initial amount of normal tiles.
         if (level != 1)
         {
-            Item normalTiles = getItem(TileType.NORMAL);
+            Item normalTiles = getItemOrMultiplier(TileType.NORMAL);
             normalTiles.setCurrentAmount(
-                    (getItem(TileType.NORMAL).getInitialAmount() + level) - 1);
+                    (getItemOrMultiplier(TileType.NORMAL).getInitialAmount() + level) - 1);
         }
 
         // Set the level.
@@ -437,9 +437,17 @@ public class WorldManager implements IManager,
 	 * @param type
 	 * @return 
 	 */
-	public Item getItem(TileType type)
+	public Item getItemOrMultiplier(TileType type)
 	{
-		return itemMap.get(type);
+		Item item = null;
+        
+        item = itemMap.get(type);
+        if (item != null) return item;
+        
+        item = multiplierMap.get(type);
+        if (item != null) return item;
+        
+        throw new RuntimeException("Attempted to get an item or multiplier that did not exist.");
 	}
        
     /**
@@ -447,11 +455,10 @@ public class WorldManager implements IManager,
      * 
      * @return 
      */
-    public Item getItem(int numItems, int numMultipliers)
-	{	
-        
+    public Item getItem(int numberOfItems, int numberOfMultipliers)
+	{	        
         // Check if we do not return  a normal tile. There is
-        // A flat 5% chance of this.
+        // a flat 5% chance of this.
         int test = Util.random.nextInt(100);
         if (test <= 5)
         {
@@ -464,11 +471,11 @@ public class WorldManager implements IManager,
 
         boolean useItems = false;
         boolean useMultipliers = false;
-        int constant = 15;
+        final int CONSTANT = 15;        
 
         // calculate the probability of an item. The probability of a mult
         // is 1 - probability of item.
-        int probItems = (numMultipliers-numItems) * constant + 50;
+        int probItems = (numberOfMultipliers-numberOfItems) * CONSTANT + 50;
         //int probMults = (numItems-numMults) * constant + 50;
 
         // If there are no items in the game yet.
@@ -479,7 +486,7 @@ public class WorldManager implements IManager,
         int pick = Util.random.nextInt(100);
 
 
-        if (numMultipliers < maximumMultipliers && numItems < maximumItems)
+        if (numberOfMultipliers < maximumMultipliers && numberOfItems < maximumItems)
         {
             if (pick < probItems)
             {
@@ -490,15 +497,14 @@ public class WorldManager implements IManager,
                 useMultipliers = true;
             }
         }
-        else if (numMultipliers < maximumMultipliers)
+        else if (numberOfMultipliers < maximumMultipliers)
         {
             useMultipliers = true;
         }
-        else if (numItems < maximumItems)
+        else if (numberOfItems < maximumItems)
         {
             useItems = true;
         }
-
 
         List<Item> itemList = new ArrayList<Item>();
 
@@ -517,7 +523,7 @@ public class WorldManager implements IManager,
 
         if (useMultipliers == true)
         {  
-            for (Item item : multiplierList)
+            for (Item item : multiplierMap.values())
             {
                 if (item.getWeight() > 0)
                     itemList.add(item);
@@ -567,22 +573,15 @@ public class WorldManager implements IManager,
 	}
     
     /**
-	 * @return The items and multipliers
+     * Get a list of all the items and multipliers.
+     * 
+	 * @return A list of all the items and multipliers.
 	 */
 	public List<Item> getItemList()
 	{
         List<Item> itemList = new ArrayList<Item>();
-
-        for (Item item : itemMap.values())
-        {
-            itemList.add(item);
-        }
-
-        for (Item item : multiplierList)
-        {
-            itemList.add(item);
-        }
-                    
+        itemList.addAll(itemMap.values());
+        itemList.addAll(multiplierMap.values());                    
 		return itemList;
 	}
 

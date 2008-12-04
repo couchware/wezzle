@@ -978,11 +978,20 @@ public class BoardManager implements IManager
 //                this.incrementNumberOfItems();
 //            }    
 //        }
-                       
+                                       
         // If we're overwriting a tile, remove it first.
         if (getTile(index) != null)
         {
             removeTile(index);
+        }
+        
+        // Increment the item count.
+        if (t.getType() != TileType.NORMAL)
+        {
+            Item item = worldMan.getItemOrMultiplier(t.getType()); 
+            if (item == null) LogManager.recordMessage("Missing type was " + t.getType());
+            item.incrementCurrentAmount();
+            LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");                        
         }
         
 		// Set the tile.
@@ -1101,21 +1110,7 @@ public class BoardManager implements IManager
         // The new tile.
         int tx = x + (index % columns) * cellWidth;
         int ty = y + (index / columns) * cellHeight;
-        TileEntity t = makeTile(type, color, tx, ty);        
-                        
-        //Increment the item count.
-        if (t.getType() != TileType.NORMAL)
-        {
-            for (Item item : worldMan.getItemList())
-            {
-                if(item.getTileType() == t.getType())
-                {
-                    item.incrementCurrentAmount();
-                    LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
-                    break;
-                }
-            }
-        }
+        TileEntity t = makeTile(type, color, tx, ty);                                        
         
         // Add the tile.
         addTile(index, t);               
@@ -1195,38 +1190,47 @@ public class BoardManager implements IManager
         
         // Get the tile.
         TileEntity t = getTile(index);
-        
-      
+              
         // If the tile does not exist, throw an exception.
         if (t == null)
             throw new NullPointerException("No tile at that index.");        
         
         // Decrement the item count.
+         // Increment the item count.
         if (t.getType() != TileType.NORMAL)
         {
-            for (Item item : worldMan.getItemList())
-            {
-                if(item.getTileType() == t.getType())
-                {
-                    item.decrementCurrentAmount();
-                    LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
-                    break;
-                }
-            }
+            Item item = worldMan.getItemOrMultiplier(t.getType());            
+            item.decrementCurrentAmount();
+            LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");                        
         }
         
-        // If this is an item, decrement the item count.
-        if (t.getClass() != TileEntity.class)
+        switch (t.getType())
         {
-            //check the class
-            if (t.getClass() == X2TileEntity.class || t.getClass() == X3TileEntity.class 
-                    || t.getClass() == X4TileEntity.class)
-            {
+            case NORMAL:
+            case WEZZLE:                
+                break;
+                
+            case X2:
+            case X3:
+            case X4:
+                
+                LogManager.recordMessage("Multiplier removed.", "BoardManager#addMult");
                 this.decrementNumberOfMultipliers();
-            }
-            else
+                
+                break;
+                        
+            case ROCKET:
+            case GRAVITY:
+            case BOMB:
+            case STAR:
+                
+                LogManager.recordMessage("Item removed.", "BoardManager#addTile");
                 this.decrementNumberOfItems();
-        }
+                
+                break;
+                
+            default: throw new IllegalStateException("Unhandled tile type.");
+        }  
         
         // Remove from layer manager.
         if (layerMan.exists(t, Layer.TILE))
