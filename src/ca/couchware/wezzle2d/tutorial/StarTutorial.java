@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.Item;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -49,6 +50,10 @@ public class StarTutorial extends AbstractTutorial
     {
         // Invoke the super.
         super.initialize(game);
+        
+        // Add this item to the world manager.
+        game.worldMan.addItem(new Item.Builder(TileType.STAR)
+                .initialAmount(0).maximumOnBoard(1).weight(0).end());
         
         // Slow down refactor so the user can see more clearly what happens.
         refactorer.setRefactorSpeed(RefactorSpeed.SLOW);
@@ -198,5 +203,14 @@ public class StarTutorial extends AbstractTutorial
         
         game.boardMan.setVisible(true);
     }   
+    
+    @Override
+    protected void finish(Game game)
+    {
+        super.finish(game);
+        
+        // Add this item to the world manager.
+        game.worldMan.removeItem(TileType.STAR);
+    }
 
 }

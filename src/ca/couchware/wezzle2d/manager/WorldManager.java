@@ -430,6 +430,36 @@ public class WorldManager implements IManager,
         return this.parallelDropInAmount;
     }    	
 	
+    public void addItem(Item item)
+    {
+        this.itemMap.put(item.getTileType(), item);
+    }
+    
+    public void addMultiplier(Item multiplier)
+    {
+        this.multiplierMap.put(multiplier.getTileType(), multiplier);
+    }
+    
+    public void removeItem(TileType type)
+    {
+        this.itemMap.remove(type);
+    }
+    
+    public void removeItem(Item item)
+    {
+        this.removeItem(item.getTileType());
+    }        
+    
+    public void removeMultiplier(TileType type)
+    {
+        this.multiplierMap.remove(type);
+    }
+    
+    public void removeMultiplier(Item multiplier)
+    {
+        this.removeMultiplier(multiplier.getTileType());
+    }
+    
 	/**
 	 * Get the descriptor for the item with the specified class.
 	 * Returns null if the class does not exist.
@@ -648,9 +678,9 @@ public class WorldManager implements IManager,
         itemMap.put(TileType.NORMAL, 
                 new Item.Builder(TileType.NORMAL)
                 .initialAmount(28).weight(5).maximumOnBoard(100).end());
-        itemMap.put(TileType.WEZZLE,
-                new Item.Builder(TileType.WEZZLE)
-                .initialAmount(0).weight(0).maximumOnBoard(4).end());
+//        itemMap.put(TileType.WEZZLE,
+//                new Item.Builder(TileType.WEZZLE)
+//                .initialAmount(0).weight(0).maximumOnBoard(4).end());
 //        itemList.add(new Item.Builder(TileType.ROCKET)
 //                .initialAmount(1).weight(55).maxOnBoard(3).end());
 //        itemList.add(new Item.Builder(TileType.BOMB)
