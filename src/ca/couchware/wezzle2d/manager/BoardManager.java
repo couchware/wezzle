@@ -412,7 +412,7 @@ public class BoardManager implements IManager
 	/**
 	 * An instant refactor used for generating boards.
 	 */
-	private void instantRefactorBoard()
+	public void instantRefactorBoard()
 	{
         // Check the vertical direction.
         if (gravity.contains(Direction.DOWN) == true)
@@ -521,8 +521,8 @@ public class BoardManager implements IManager
 			TileColor color = board[i].getColor();
             
             // Make sure the tile's colour is not locked.
-            if (lockedColorMap.get(color) == true)
-                continue;
+           // if (lockedColorMap.get(color) == true)
+            //    continue;
 			
 			// See how long we have a match for.
 			int j;
@@ -582,8 +582,8 @@ public class BoardManager implements IManager
 			TileColor color = board[ti].getColor();
             
             // Make sure the tile's colour is not locked.
-            if (lockedColorMap.get(color) == true)
-                continue;
+            //if (lockedColorMap.get(color) == true)
+              //  continue;
 			
 			// See how long we have a match for.
 			int j;
@@ -1152,6 +1152,31 @@ public class BoardManager implements IManager
         return this.createTile(index, type, color);    
     }
     
+    
+       /**
+     * Replace a tile with a new tile of the same colour.
+     * 
+     * @param index
+     * @param type
+     * @return The new tile.
+     */
+    public TileEntity replaceTile(int index, TileColor color)
+    {                                                     
+        // Remove the old, insert the new.       
+        TileType type = this.getTile(index).getType();
+        this.removeTile(index);
+        return this.createTile(index, type, color);    
+    }
+    
+     public TileEntity replaceTile(TileEntity t, TileColor color)
+    {                                                     
+        // Remove the old, insert the new.       
+        TileType type = t.getType();
+        int index = getIndex(t);
+        this.removeTile(t);
+        return this.createTile(index, type, color);    
+    }
+    
     /**
      * Replace a tile with a pre-made tile.
      * 
@@ -1181,6 +1206,34 @@ public class BoardManager implements IManager
         }        
         
         return clone;
+    }
+    
+    public int getIndex(TileEntity t)
+    {
+        for(int i = 0; i < board.length; i++)
+        {
+            TileEntity testTile = getTile(i);
+            
+            if(testTile != null)
+            {
+                if(t.equals(testTile))
+                {
+                    return i;
+                }
+            }
+        }
+        
+       return -1;
+    }
+    
+    public void removeTile(TileEntity t)
+    {
+       int i = getIndex(t);
+       
+       assert(i != -1);
+       
+       removeTile(i);
+               
     }
     
     public void removeTile(final int index)

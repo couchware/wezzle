@@ -416,7 +416,7 @@ public class PieceManager implements IMouseListener
         // The if statement encompasses the entire function in order to ensure
         // that the board is locked while tiles are dropping.
         if (tileDropInProgress == true)
-        {          
+        {
             // Is the tile dropped currently being animated?
             // If not, that means we need to drop a new one.            
             if (tileDropAnimationInProgress == false)
@@ -473,10 +473,13 @@ public class PieceManager implements IMouseListener
                                 boardMan.getNumberOfItems(),
                                 boardMan.getNumberOfMultipliers()).getTileType();
                     
+                    int randomIndex = randomIndexQueue.remove();
+                    //initialIndexList.add(randomIndex);
+                    
                     // The tile is an item.
                     tileDropList.add(
                             boardMan.createTile(
-                                randomIndexQueue.remove(), dropRow, type));                                  
+                                randomIndex, dropRow, type));                                  
                 }
                 else if (totalTileDropAmount <= parallelTileDropInAmount
                        && (boardMan.getNumberOfItems() < worldMan.getMaximumItems()
@@ -488,8 +491,11 @@ public class PieceManager implements IMouseListener
                     // Drop in the first amount.
                     for (int i = 0; i < totalTileDropAmount - 1; i++)
                     {
+                        int randomIndex = randomIndexQueue.remove();
+                        //initialIndexList.add(randomIndex);
+                        
                         tileDropList.add(boardMan.createTile(
-                                randomIndexQueue.remove(), 
+                                randomIndex, 
                                 dropRow, 
                                 TileType.NORMAL)); 
                     }
@@ -499,23 +505,177 @@ public class PieceManager implements IMouseListener
                                 boardMan.getNumberOfMultipliers()).getTileType();
                     
                     // Drop in the item tile.
+                    int randomIndex = randomIndexQueue.remove();
+                    //initialIndexList.add(randomIndex);
+                    
                     tileDropList.add(
                             boardMan.createTile(
-                                randomIndexQueue.remove(), dropRow, type));                     
+                                randomIndex, dropRow, type));                     
                 }
                 else
                 {
                     // They are all normals.
                     for (int i = 0; i < parallelTileDropInAmount; i++)
                     {
+                        int randomIndex = randomIndexQueue.remove();
+                        //initialIndexList.add(randomIndex);
+                        
                         tileDropList.add(
                                 boardMan.createTile(
-                                    randomIndexQueue.remove(), 
+                                    randomIndex, 
                                     dropRow, 
                                     TileType.NORMAL));
                     }                 
                 }                
-                          
+                
+                // At this point, the tile drop list is built.
+                // simulate the drops and change colours if necessary.
+                // The point of this is to ensure that no lines come from the dropped in tiles.
+                // The formula is as follows: lock the colors. refactor the board.
+                // find all the xmatches. change the colors of the drop in tiles until 
+                // there are no more x matches. do the same for the y matches.
+                // delete the tiles from the board. Add the new tiles back in the
+                // original positions with the new colours. unlock the board. continue.
+   
+        
+               
+               // lock all the colours so no lines are scored.
+               for(TileColor t : TileColor.values())
+               {
+                   boardMan.setColorLocked(t, true);
+               }
+               
+              List<Integer> initialIndexList = new ArrayList<Integer>();
+               // get the initial indices
+               for(TileEntity t : tileDropList)
+               {
+                   initialIndexList.add(boardMan.getIndex(t));
+               }
+               
+               
+                //refactor the board.
+                boardMan.instantRefactorBoard();
+               
+               
+                
+                // check for lines and switch the colors of the appropriate tiles
+               while(true)
+               {
+                   
+                    Set<Integer> matchSet = new HashSet<Integer>();
+                    
+                    int numMatches = -1;
+                    
+                    // The number of found matches. also puts the matches into matchset.
+                    numMatches = boardMan.findXMatch(matchSet);
+                    
+                    // We found lines, change the color of the appropriate tiles
+                    if( numMatches != 0)
+                    {
+                         System.out.println("XXXXXXXXXXXXXXXXXXXXXX");
+                     
+                        for(Iterator i = matchSet.iterator(); i.hasNext(); )
+                        {
+                            TileEntity tempTile = boardMan.getTile((Integer)i.next());
+                            
+                            //if we found a tile in the match set, change the colour.
+                            //if we found a tile in the match set, change the colour.
+                            if(tileDropList.contains(tempTile))
+                            {
+                                
+                                TileColor oldColor = tempTile.getColor();
+                                
+                                while(true)
+                                {
+                                    TileColor newColor = TileColor.getRandomColor(boardMan.getNumberOfColors());
+                                    
+                                    if(oldColor != newColor)
+                                    {
+                                        int index = tileDropList.indexOf(tempTile);
+                                        tempTile = boardMan.replaceTile(boardMan.getIndex(tempTile), newColor);
+                                        tileDropList.remove(index);
+                                        tileDropList.add(index, tempTile);
+                                        break;
+                                    }      
+                                }
+                            }
+                        }
+                            
+                        
+                        continue;
+                    }
+                    
+                    
+                    
+                    numMatches = boardMan.findYMatch(matchSet);
+                    
+                    if( numMatches != 0)
+                    {
+                        System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYY");
+                        
+                        for(Iterator i = matchSet.iterator(); i.hasNext(); )
+                        {
+                            TileEntity tempTile = boardMan.getTile((Integer)i.next());
+                            
+                            //if we found a tile in the match set, change the colour.
+                            if(tileDropList.contains(tempTile))
+                            {
+                                
+                                TileColor oldColor = tempTile.getColor();
+                                
+                                while(true)
+                                {
+                                    TileColor newColor = TileColor.getRandomColor(boardMan.getNumberOfColors());
+                                    
+                                    if(oldColor != newColor)
+                                    {
+                                        int index = tileDropList.indexOf(tempTile);
+                                        tempTile = boardMan.replaceTile(boardMan.getIndex(tempTile), newColor);
+                                        tileDropList.remove(index);
+                                        tileDropList.add(index, tempTile);
+                                        break;
+                                    }      
+                                }
+                            }
+                        }
+                        continue;
+                    }
+                    
+                    // We have found an acceptable list. transfer it over.
+                    List<TileEntity> newList = new ArrayList<TileEntity>();
+                    
+                    int count = 0;
+                    for(TileEntity t : tileDropList)
+                    {
+                        // remove the old tile.
+                        boardMan.removeTile(t);
+                         
+                        // add the new.
+                        newList.add(
+                                boardMan.createTile(
+                                    initialIndexList.get(count), 
+                                    t.getType(), 
+                                    t.getColor()));
+                        count++;
+                        
+                       
+                       
+                    }
+                    
+                    
+                    // use the new list.
+                    tileDropList = newList;
+                    
+                    break;
+               }
+                
+                // unlock all the colours so no lines are scored.
+               for(TileColor t : TileColor.values())
+               {
+                   boardMan.setColorLocked(t, false);
+               }
+                
+                
                 // See if the tile drop is still in progress.  If it's not
                 // (which would be in the case of a game over), don't play
                 // the sound or set the animation flag.
