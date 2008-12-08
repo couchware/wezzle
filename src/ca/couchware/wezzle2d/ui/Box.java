@@ -281,97 +281,69 @@ public class Box extends AbstractEntity implements IMouseListener
         // Draw the corners.
         
         // Top left.
-        cornerSprite.draw(
-                x + offsetX, 
-                y + offsetY, 
-                cornerSprite.getWidth(), cornerSprite.getHeight(), 
-                0, opacity);
+        cornerSprite.draw(x + offsetX, y + offsetY)                
+                .opacity(opacity)
+                .end();
         
         // Top right.
         cornerSprite.draw(
                 x + offsetX + width - cornerSprite.getWidth(), 
-                y + offsetY, 
-                cornerSprite.getWidth(), cornerSprite.getHeight(), 
-                Math.toRadians(90), opacity);
+                y + offsetY)               
+                .opacity(opacity)
+                .theta(Math.toRadians(90))
+                .end();
         
         // Bottom left.
         cornerSprite.draw(
-                x + offsetX, 
-                y + offsetY + height - cornerSprite.getWidth(), 
-                cornerSprite.getWidth(), cornerSprite.getHeight(), 
-                Math.toRadians(-90), opacity);
+                x + offsetX,  
+                y + offsetY + height - cornerSprite.getWidth())               
+                .opacity(opacity)
+                .theta(Math.toRadians(-90))
+                .end();      
         
         // Bottom right.
         cornerSprite.draw(
                 x + offsetX + width - cornerSprite.getWidth(), 
-                y + offsetY + height - cornerSprite.getHeight(), 
-                cornerSprite.getWidth(), cornerSprite.getHeight(), 
-                Math.toRadians(180), opacity);  
+                y + offsetY + height - cornerSprite.getHeight())               
+                .opacity(opacity)
+                .theta(Math.toRadians(180))
+                .end();               
         
         // Draw the horizontal sides.
         horizontalSprite.draw(
                 x + offsetX + cornerSprite.getWidth(), 
-                y + offsetY,
-                width - cornerSprite.getWidth() * 2, 
-                horizontalSprite.getHeight(),
-                0, opacity);        
+                y + offsetY)
+                .width(width - cornerSprite.getWidth() * 2)               
+                .opacity(opacity)
+                .end();
         
-        // Top.
-//        final int topLimit = (int) Math.ceil((double) width / (double) horizontalSprite.getWidth());              
-//        for (int i = 0; i < topLimit; i++)
-//        {
-//            // See if we're the last part, and if we are, chop it a bit.
-//            if (i == topLimit - 1)
-//            {   
-//                int finalWidth = width 
-//                        - cornerSprite.getWidth() * 2 
-//                        - (topLimit - 1) * horizontalSprite.getWidth();
-//                
-//                horizontalSprite.drawRegion(
-//                    x + offsetX + cornerSprite.getWidth() + horizontalSprite.getWidth() * i, 
-//                    y + offsetY,        
-//                    horizontalSprite.getWidth(),
-//                    horizontalSprite.getHeight(),
-//                    0, 0,
-//                    finalWidth, horizontalSprite.getHeight(),
-//                    0, opacity);
-//            }
-//            else
-//            {                   
-//                horizontalSprite.draw(
-//                    x + offsetX + cornerSprite.getWidth() + horizontalSprite.getWidth() * i, 
-//                    y + offsetY,        
-//                    horizontalSprite.getWidth(),
-//                    horizontalSprite.getHeight(),                    
-//                    0, opacity);   
-//            }                               
-//        }
-                   
         // Bottom.
         horizontalSprite.draw(
                 x + offsetX + cornerSprite.getWidth(), 
-                y + offsetY + height - cornerSprite.getHeight(),
-                width - cornerSprite.getWidth() * 2, 
-                horizontalSprite.getHeight(),
-                Math.toRadians(180), opacity);
+                y + offsetY + height - cornerSprite.getHeight())
+                .width(width - cornerSprite.getWidth() * 2)                
+                .theta(Math.toRadians(180))
+                .opacity(opacity)
+                .end();
         
         // Draw the vertical sides.
         
         // Left.
         verticalSprite.draw(
                 x + offsetX, 
-                y + offsetY + cornerSprite.getHeight(),
-                verticalSprite.getWidth(), 
-                height - cornerSprite.getHeight() * 2,
-                0, opacity);
+                y + offsetY + cornerSprite.getHeight())                
+                .height(height - cornerSprite.getHeight() * 2)
+                .opacity(opacity)
+                .end();
         
         // Right.
         verticalSprite.draw(
                 x + offsetX + width - cornerSprite.getWidth(), 
-                y + offsetY + cornerSprite.getHeight(),
-                verticalSprite.getWidth(), 
-                height - cornerSprite.getHeight() * 2,
-                Math.toRadians(180), opacity);
+                y + offsetY + cornerSprite.getHeight())               
+                .height(height - cornerSprite.getHeight() * 2)
+                .theta(Math.toRadians(180))
+                .opacity(opacity)
+                .end();
         
         return true;
     }        

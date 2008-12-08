@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.graphics.ISprite;
+import ca.couchware.wezzle2d.graphics.ISpriteDrawer;
 import java.awt.Rectangle;
 import java.io.IOException;
 import org.lwjgl.opengl.GL11;
@@ -94,9 +95,9 @@ public class LWJGLSprite implements ISprite
      * @param x The x location at which to draw this sprite
      * @param y The y location at which to draw this sprite
      */
-    public void draw(int x, int y)
+    public ISpriteDrawer draw(int x, int y)
     {
-        draw(x, y, this.width, this.height, 0, 100);
+        return new SpriteDrawer(x, y);
     }
     
     public void draw(int x, int y, double theta, int opacity)
@@ -188,4 +189,67 @@ public class LWJGLSprite implements ISprite
 		GL11.glRotatef((float) -Math.toDegrees(theta), 0, 0, 1);
 		GL11.glTranslatef(-rx, -ry, 0);				        
 	}   
+    
+    public class SpriteDrawer implements ISpriteDrawer
+    {
+        
+        final int x;
+        final int y;
+        int w = width;
+        int h = height;  
+        double theta = 0.0;
+        int opacity  = 100;
+        
+        private SpriteDrawer(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+        
+        public ISpriteDrawer width(int val)
+        {            
+            w = val; return this;
+        }
+
+        public ISpriteDrawer height(int val)
+        {         
+            h = val; return this;
+        }
+
+        public ISpriteDrawer theta(double val)
+        {
+            theta = val; return this;
+        }
+
+        public ISpriteDrawer opacity(int val)
+        {
+            opacity = val; return this;
+        }
+
+        public ISpriteDrawer regionX(int val)
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ISpriteDrawer regionY(int val)
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ISpriteDrawer regionWidth(int val)
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ISpriteDrawer regionHeight(int val)
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void end()
+        {
+            draw(x, y, w, h, theta, opacity);
+        }
+        
+    }
 }

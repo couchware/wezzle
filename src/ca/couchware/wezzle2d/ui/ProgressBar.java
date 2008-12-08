@@ -259,9 +259,8 @@ public class ProgressBar extends AbstractEntity
             return false;
         
         // Draw the container.
-        containerSprite.draw(x + offsetX, y + offsetY,
-                containerSprite.getWidth(), containerSprite.getHeight(),
-                0.0, Util.scaleInt(0, 100, 0, 90, opacity));
+        containerSprite.draw(x + offsetX, y + offsetY)                                
+                .opacity(Util.scaleInt(0, 100, 0, 90, opacity)).end();
         
         // Draw the text.
         if (showLabel == true) progressLabel.draw();
@@ -293,20 +292,16 @@ public class ProgressBar extends AbstractEntity
         }
         else
         {
-            leftSprite.draw(alignedX, alignedY,
-                    leftSprite.getWidth(), leftSprite.getHeight(),
-                    0.0, opacity);
+            leftSprite.draw(alignedX, alignedY).opacity(opacity).end();                    
             
             for (int i = 4; i < progressWidth - 4; i += 2)
             {
-                middleSprite.draw(alignedX + i, alignedY,
-                        middleSprite.getWidth(), middleSprite.getHeight(),
-                        0.0, opacity);                
+                middleSprite.draw(alignedX + i, alignedY)
+                        .opacity(opacity).end();                        
             }            
             
-            rightSprite.draw(alignedX + progressWidth - 4, alignedY,
-                    rightSprite.getWidth(), rightSprite.getHeight(),
-                    0.0, opacity);
+            rightSprite.draw(alignedX + progressWidth - 4, alignedY)
+                    .opacity(opacity).end();                    
         }
         
         return true;

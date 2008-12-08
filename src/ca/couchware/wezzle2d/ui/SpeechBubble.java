@@ -229,7 +229,9 @@ public class SpeechBubble extends AbstractEntity
         if (visible == false)
             return false;
         
-        sprite.draw(x + offsetX, y + offsetY, width, height, theta, opacity);
+        sprite.draw(x + offsetX, y + offsetY).width(width).height(height)
+                .theta(theta).opacity(opacity).end();
+        
         label.draw();
         
         return true;

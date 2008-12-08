@@ -18,7 +18,7 @@ public class SpriteButton extends AbstractSpriteButton
 {    
     
     /** The default color. */
-    private static Color defaultColor = Color.RED;
+    protected static Color defaultColor = Color.RED;
     
     /**
      * Change the default color for all sprite buttons.
@@ -29,7 +29,7 @@ public class SpriteButton extends AbstractSpriteButton
     { defaultColor = color; }    
     
     /** The graphic file type. */
-    final private static String FILE_TYPE = ".png";
+    final protected static String FILE_TYPE = ".png";
     
     /** The left sprite. */
     final private static String LEFT_SPRITE_PATH = Settings.getSpriteResourcesPath() 
@@ -50,46 +50,46 @@ public class SpriteButton extends AbstractSpriteButton
     final private Color textColor;   
 
     /** The left sprite of the button. */
-    final private ISprite leftSprite;
+    final protected ISprite leftSprite;
     
     /** The middle sprite of the button. */
-    final private ISprite middleSprite;
+    final protected ISprite middleSprite;
     
     /** The right sprite of the button. */
-    final private ISprite rightSprite;
+    final protected ISprite rightSprite;
     
     /** The normal label. */
-    final private ILabel normalLabel;   
+    final protected ILabel normalLabel;   
     
     /** The hover label. */
-    final private ILabel hoverLabel;
+    final protected ILabel hoverLabel;
     
     /** The active label. */
-    final private ILabel activeLabel;       
+    final protected ILabel activeLabel;       
     
     /** The size of the text on the button. */
-    final private int textSize;
+    final protected int textSize;
        
     /** The normal opacity when the button is off. */
-    private int normalOpacity;
+    protected int normalOpacity;
     
     /** The hover opacity. */
-    private int hoverOpacity;
+    protected int hoverOpacity;
     
     /** The pressed opacity. */
-    private int pressedOpacity;
+    protected int pressedOpacity;
     
     /** The active opacity. */
-    private int activeOpacity;
+    protected int activeOpacity;
     
     /** The normal text. */
-    private final String normalText;
+    protected final String normalText;
     
     /** The hover text. */
-    private final String hoverText;
+    protected final String hoverText;
     
     /** The active text. */
-    private final String activeText;       
+    protected final String activeText;       
     
     /**
      * Creates a button at the coordinates provided.
@@ -276,26 +276,23 @@ public class SpriteButton extends AbstractSpriteButton
         }                
     }    
         
-    private void drawButton(int o)
+    protected void drawButton(int o)
     {
         final int X = x + offsetX;
         final int Y = y + offsetY;
         
-        leftSprite.draw(X, Y, leftSprite.getWidth(), height, 0.0, o);
+        leftSprite.draw(X, Y)
+                .width(leftSprite.getWidth()).height(height).opacity(o).end();
                 
-        middleSprite.draw(
-                x + offsetX + leftSprite.getWidth(), 
-                y + offsetY,
-                width - leftSprite.getWidth() - rightSprite.getWidth(), 
-                height,
-                0.0, o); 
+        middleSprite.draw(X + leftSprite.getWidth(), Y)
+                .width(width - leftSprite.getWidth() - rightSprite.getWidth())
+                .height(height).opacity(o).end();
         
-        rightSprite.draw(X + width - leftSprite.getWidth(), Y, 
-                rightSprite.getWidth(), height, 
-                0.0, o);
+        rightSprite.draw(X + width - leftSprite.getWidth(), Y)
+                .width(rightSprite.getWidth()).height(height).opacity(o).end();                
     }
     
-    private void drawNormal()
+    protected void drawNormal()
     {                
 //        sprite.draw(
 //                x + offsetX, y + offsetY, 
@@ -307,7 +304,7 @@ public class SpriteButton extends AbstractSpriteButton
         normalLabel.draw();
     }
     
-    private void drawActivated()
+    protected void drawActivated()
     {        
 //        sprite.draw(
 //                x + offsetX, y + offsetY, 
@@ -327,7 +324,7 @@ public class SpriteButton extends AbstractSpriteButton
         }
     }
     
-    private void drawHovered()
+    protected void drawHovered()
     {
         //sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(hoverOpacity));
         drawButton(opacitize(hoverOpacity));
@@ -352,7 +349,7 @@ public class SpriteButton extends AbstractSpriteButton
         }
     }
     
-    private void drawPressed()
+    protected void drawPressed()
     {
         //sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(pressedOpacity));
         drawButton(opacitize(pressedOpacity));

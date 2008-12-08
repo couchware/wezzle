@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.tile;
 import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.graphics.GraphicEntity;
 
 /**
  * An abstract class for making item tiles like bombs and rockets.
@@ -15,7 +16,7 @@ public abstract class ItemTileEntity extends TileEntity
     /**
      * The sprite representing the bomb graphic.
      */
-    final protected ISprite itemSprite;
+    final protected ISprite itemGraphic;
     
     /**
      * The rotation of the item.
@@ -37,7 +38,7 @@ public abstract class ItemTileEntity extends TileEntity
         super(boardMan, color, x, y);
         
         // Load bomb sprite.
-        itemSprite = ResourceFactory.get().getSprite(path);
+        itemGraphic = ResourceFactory.get().getSprite(path);
         
         // Initialize the item theta.
         itemTheta = 0;
@@ -58,7 +59,7 @@ public abstract class ItemTileEntity extends TileEntity
         
         // Draw bomb on top of it.
         //itemSprite.draw((int) x2, (int) y2, width, height, itemTheta, opacity);
-        itemSprite.draw(x, y, width, height, itemTheta, opacity);
+        itemGraphic.draw(x, y).width(width).height(height).theta(itemTheta).opacity(opacity).end();
         
         return true;
     }

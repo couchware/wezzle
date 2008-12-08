@@ -118,7 +118,7 @@ public class PieceGrid extends AbstractEntity
 				if (structure[i][j] == true)
                 {
                     sprites[i][j].draw(x + (i - 1) * boardMan.getCellWidth(),
-                            y + (j - 1) * boardMan.getCellHeight());
+                            y + (j - 1) * boardMan.getCellHeight()).end();
                 } // end if
             } // end for
         } // end for	
