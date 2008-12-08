@@ -57,7 +57,7 @@ public abstract class AbstractTutorial implements ITutorial
     protected IButton continueButton;
     
     /** The list of rules. */
-    private List<Rule> ruleList = new ArrayList<Rule>();
+    private List<Rule> ruleList = new ArrayList<Rule>();        
     
     /**
      * Create a new tutorial that is activated when the associated rule is
@@ -115,6 +115,10 @@ public abstract class AbstractTutorial implements ITutorial
             // Stop the piece animation.
             game.pieceMan.getPieceGrid().setVisible(false); 
             game.pieceMan.stopAnimation();                                            
+            
+            // Lock the whole board.
+            game.pieceMan.clearRestrictionBoard();
+            game.pieceMan.reverseRestrictionBoard();
             
             // Fade the board out.            
             final EntityGroup e = game.boardMan.getTileRange(game.boardMan.getCells() / 2, 
@@ -252,7 +256,7 @@ public abstract class AbstractTutorial implements ITutorial
     }
         
     protected void repeat(final Game game)
-    {
+    {                
         // Make sure to reset the gravity.
         game.boardMan.setGravity(EnumSet.of(Direction.DOWN, Direction.LEFT));
         

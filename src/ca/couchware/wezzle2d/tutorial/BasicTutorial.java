@@ -51,13 +51,7 @@ public class BasicTutorial extends AbstractTutorial
         super.initialize(game);            
         
         // Slow down refactor so the user can see more clearly what happens.
-        refactorer.setRefactorSpeed(RefactorSpeed.SLOWER);
-        
-         // Set restriction board so that only the bottom left corner is
-        // clickable.
-        game.pieceMan.clearRestrictionBoard();
-        game.pieceMan.reverseRestrictionBoard();
-        game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
+        refactorer.setRefactorSpeed(RefactorSpeed.SLOWER);                
         
         // Create the text that instructs the user to click the block.        
         this.labelList = new ArrayList<ILabel>();
@@ -145,5 +139,17 @@ public class BasicTutorial extends AbstractTutorial
         
         game.boardMan.setVisible(true);
     }   
+    
+    @Override
+    protected void repeat(Game game)
+    {
+        super.repeat(game);
+        
+        // Set restriction board so that only the bottom left corner is
+        // clickable.
+        game.pieceMan.clearRestrictionBoard();
+        game.pieceMan.reverseRestrictionBoard();
+        game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
+    }
 
 }

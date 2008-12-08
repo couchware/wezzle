@@ -977,7 +977,7 @@ public class PieceManager implements IMouseListener
      */
     public boolean[] getRestrictionBoard()
     {
-        return restrictionBoard;
+        return restrictionBoard.clone();
     }
 
     /**
@@ -987,7 +987,7 @@ public class PieceManager implements IMouseListener
      */
     public void setRestrictionBoard(boolean[] restrictionBoard)
     {
-        this.restrictionBoard = restrictionBoard;
+        this.restrictionBoard = restrictionBoard.clone();
     }        
     
     /**

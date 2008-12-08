@@ -57,13 +57,7 @@ public class GravityTutorial extends AbstractTutorial
                 .initialAmount(0).maximumOnBoard(1).weight(0).end());
         
         // Slow down refactor so the user can see more clearly what happens.
-        refactorer.setRefactorSpeed(RefactorSpeed.SLOW);
-        
-         // Set restriction board so that only the bottom left corner is
-        // clickable.
-        game.pieceMan.clearRestrictionBoard();
-        game.pieceMan.reverseRestrictionBoard();
-        game.pieceMan.setRestrictionCell(3, game.boardMan.getRows() - 1, true);
+        refactorer.setRefactorSpeed(RefactorSpeed.SLOW);                
         
         // Create the text that instructs the user to click the block.        
         this.labelList = new ArrayList<ILabel>();
@@ -186,6 +180,18 @@ public class GravityTutorial extends AbstractTutorial
         
         // Add this item to the world manager.
         game.worldMan.removeItem(TileType.GRAVITY);
+    }
+    
+    @Override
+    protected void repeat(Game game)
+    {
+        super.repeat(game);
+        
+        // Set restriction board so that only the bottom left corner is
+        // clickable.
+        game.pieceMan.clearRestrictionBoard();
+        game.pieceMan.reverseRestrictionBoard();
+        game.pieceMan.setRestrictionCell(3, game.boardMan.getRows() - 1, true);
     }
     
 }
