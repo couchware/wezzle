@@ -186,7 +186,6 @@ public class WorldManager implements IManager,
             @Override
             public void onMatch()
             {
-                System.out.println("HERHEEHRHERHERHEHR");
                 // Add the rocket.
                 itemMap.put(TileType.ROCKET, 
                         new Item.Builder(TileType.ROCKET)
