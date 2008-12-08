@@ -17,7 +17,7 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpriteButton;
-import ca.couchware.wezzle2d.ui.Window;
+import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import java.util.EnumSet;
 
@@ -36,7 +36,7 @@ public class ExitGroup extends AbstractGroup
     final private LayerManager layerMan;
     
     /** The background window. */
-    final private Window win;        
+    final private Box win;        
     
     /** The "Yes" button. */
     final private IButton yesButton;
@@ -57,7 +57,7 @@ public class ExitGroup extends AbstractGroup
         this.layerMan    = layerMan;        
                         
         // Create the window.
-        win = new Window.Builder(268, 300).width(430).height(470)
+        win = new Box.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(settingsMan.getInt(Key.MAIN_MENU_WINDOW_OPACITY))
                 .visible(false).end();
@@ -91,7 +91,7 @@ public class ExitGroup extends AbstractGroup
         this.yesButton = new SpriteButton.Builder(266, 400)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .type(SpriteButton.Type.THIN).visible(false).offOpacity(90)
+                .type(SpriteButton.Type.THIN).visible(false).normalOpacity(90)
                 .text("Yes").end();
         this.entityList.add(this.yesButton);
         

@@ -103,7 +103,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         restartButton = new SpriteButton.Builder(400, 345)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.THIN)
-                .text("Restart").offOpacity(70).visible(false).end();
+                .text("Restart").normalOpacity(70).visible(false).end();
         layerMan.add(restartButton, Layer.UI);
         entityList.add(restartButton);
         

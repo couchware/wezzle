@@ -26,7 +26,7 @@ import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.SpriteButton;
-import ca.couchware.wezzle2d.ui.Window;
+import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import ca.couchware.wezzle2d.util.Util;
@@ -110,7 +110,7 @@ public class PlayNowGroup extends AbstractGroup
     /**
      * The background window.
      */
-    private Window win;
+    private Box win;
     
     public PlayNowGroup(IGroup parent, 
             final SettingsManager settingsMan,
@@ -129,7 +129,7 @@ public class PlayNowGroup extends AbstractGroup
         final Color OPTION_COLOR = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
         
         // Create the window.
-        win = new Window.Builder(268, 300).width(430).height(470)
+        win = new Box.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
                 .visible(false).end();
@@ -149,7 +149,7 @@ public class PlayNowGroup extends AbstractGroup
         this.nameButton = new SpriteButton.Builder(355, nl.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(OPTION_COLOR)
-                .type(SpriteButton.Type.NORMAL).visible(false).offOpacity(90)
+                .type(SpriteButton.Type.NORMAL).visible(false).normalOpacity(90)
                 .text("TEST").end();
         this.entityList.add(this.nameButton);
         
@@ -167,7 +167,7 @@ public class PlayNowGroup extends AbstractGroup
         // Create the level down button.
         this.levelDownButton = new SpriteButton.Builder(this.levelNumberLabel.getX() - 55, ll.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))                
-                .type(SpriteButton.Type.SMALL_CIRCULAR).offOpacity(90)
+                .type(SpriteButton.Type.SMALL_CIRCULAR).normalOpacity(90)
                 .text("-").visible(false).end();
         this.entityList.add(this.levelDownButton);
         
@@ -182,9 +182,9 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(tl);
         
         // Create a window background for this option.
-        Window w = new Window.Builder(268, tl.getY() + SPACING).width(380).height(70)
+        Box w = new Box.Builder(268, tl.getY() + SPACING).width(380).height(70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .border(Window.Border.MEDIUM).opacity(80).visible(false).end();                    
+                .border(Box.Border.MEDIUM).opacity(80).visible(false).end();                    
         
         this.entityList.add(w);        
         
@@ -234,7 +234,7 @@ public class PlayNowGroup extends AbstractGroup
         this.startButton = new SpriteButton.Builder(266, 435)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .type(SpriteButton.Type.LARGE).visible(false).offOpacity(90)
+                .type(SpriteButton.Type.LARGE).visible(false).normalOpacity(90)
                 .text("Start").end();
         this.entityList.add(this.startButton);
                 

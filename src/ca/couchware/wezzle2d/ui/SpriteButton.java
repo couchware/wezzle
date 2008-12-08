@@ -79,9 +79,9 @@ public class SpriteButton extends AbstractSpriteButton
     }        
            
     /** The color of the button. */
-    final private Color color;
+    final private Color textColor;
     
-    /** The type of button. */
+//    /** The type of button. */
     final private Type type;
     
     /** The normal sprite. */
@@ -98,11 +98,9 @@ public class SpriteButton extends AbstractSpriteButton
     
     /** The size of the text on the button. */
     final private int textSize;
-    
-    /*
-     * The normal opacity.
-     */
-    // The inherited "opacity" variable is used.    
+       
+    /** The normal opacity when the button is off. */
+    private int normalOpacity;
     
     /** The hover opacity. */
     private int hoverOpacity;
@@ -111,7 +109,7 @@ public class SpriteButton extends AbstractSpriteButton
     private int pressedOpacity;
     
     /** The active opacity. */
-    private int onOpacity;
+    private int activeOpacity;
     
     /** The normal text. */
     private final String normalText;
@@ -134,14 +132,15 @@ public class SpriteButton extends AbstractSpriteButton
         super(builder.x, builder.y);
         
         // Assign values from builder.      
-        this.color          = builder.color;
+        this.textColor      = builder.textColor;
         this.normalText     = builder.normalText;       
         this.hoverText      = builder.hoverText;
         this.activeText     = builder.activeText;        
-        this.opacity        = limitOpacity(builder.offOpacity);
+        this.normalOpacity  = limitOpacity(builder.normalOpacity);
         this.hoverOpacity   = limitOpacity(builder.hoverOpacity);
         this.pressedOpacity = limitOpacity(builder.pressedOpacity);
-        this.onOpacity      = limitOpacity(builder.onOpacity);
+        this.activeOpacity  = limitOpacity(builder.activeOpacity);
+        this.opacity        = limitOpacity(builder.opacity);
         this.type           = builder.type;
         
         // Determine which text size to use.  If it is 0, then use the 
@@ -175,7 +174,7 @@ public class SpriteButton extends AbstractSpriteButton
         // Create the normal label.
         this.normalLabel = new LabelBuilder(x + offsetX + width / 2, y + offsetY + height / 2)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(color).size(textSize).text(normalText).end(); 
+                .color(textColor).size(textSize).text(normalText).end(); 
         
         // Create the other labels, using the normal label as a template.
         if (this.hoverText != null)   
@@ -205,15 +204,16 @@ public class SpriteButton extends AbstractSpriteButton
         
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
-        private Color color = defaultColor;
+        private Color textColor = defaultColor;
         private String normalText = "Button";
         private String hoverText = null;
         private String activeText = null;
-        private int textSize = 0;
-        private int offOpacity = 80;
-        private int hoverOpacity = 100;
+        private int textSize = 0;        
         private int pressedOpacity = 100;
-        private int onOpacity = 100;
+        private int hoverOpacity   = 100;        
+        private int activeOpacity  = 100;
+        private int normalOpacity  = 80;
+        private int opacity        = 100;
         private Type type = Type.NORMAL;  
         private boolean visible = true;
         private boolean disabled = false;
@@ -226,20 +226,21 @@ public class SpriteButton extends AbstractSpriteButton
         
         public Builder(SpriteButton button)
         {            
-            this.x              = button.x;
-            this.y              = button.y;
-            this.alignment      = button.alignment.clone();
-            this.color          = button.color;
-            this.normalText     = button.normalText;
-            this.hoverText      = button.hoverText;
-            this.textSize       = button.textSize;
-            this.offOpacity     = button.opacity;           
-            this.hoverOpacity   = button.hoverOpacity;
-            this.pressedOpacity = button.pressedOpacity;
-            this.onOpacity      = button.onOpacity;
-            this.type           = button.type;
-            this.visible        = button.visible;
-            this.disabled       = button.disabled;
+            this.x                = button.x;
+            this.y                = button.y;
+            this.alignment        = button.alignment.clone();
+            this.textColor            = button.textColor;
+            this.normalText       = button.normalText;
+            this.hoverText        = button.hoverText;
+            this.textSize         = button.textSize;            
+            this.hoverOpacity     = button.hoverOpacity;
+            this.pressedOpacity   = button.pressedOpacity;
+            this.activeOpacity    = button.activeOpacity;
+            this.normalOpacity    = button.normalOpacity;       
+            this.opacity          = button.opacity;
+            this.type             = button.type;
+            this.visible          = button.visible;
+            this.disabled         = button.disabled;
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -249,7 +250,7 @@ public class SpriteButton extends AbstractSpriteButton
         { alignment = val; return this; }
         
         public Builder color(Color val)
-        { color = val; return this; }
+        { textColor = val; return this; }
         
         public Builder text(String val)
         {
@@ -269,8 +270,8 @@ public class SpriteButton extends AbstractSpriteButton
         public Builder textSize(int val)
         { textSize = val; return this; }
         
-        public Builder offOpacity(int val)                 
-        { offOpacity = val; return this; }
+        public Builder normalOpacity(int val)                 
+        { normalOpacity = val; return this; }
         
         public Builder hoverOpacity(int val) 
         { hoverOpacity = val; return this; }
@@ -278,8 +279,11 @@ public class SpriteButton extends AbstractSpriteButton
         public Builder pressedOpacity(int val)
         { pressedOpacity = val; return this; }
         
-        public Builder onOpacity(int val) 
-        { onOpacity = val; return this; }
+        public Builder activeOpacity(int val) 
+        { activeOpacity = val; return this; }
+        
+        public Builder opacity(int val)
+        { opacity = val; return this; }
         
         public Builder type(Type val) 
         { type = val; return this; }
@@ -301,52 +305,103 @@ public class SpriteButton extends AbstractSpriteButton
         }                
     }    
         
+//    private void drawButton()
+//    {
+//        int scaledOpacity = Util.scaleInt(0, 100, 0, 255, opacitize(normalOpacity));
+//        int border = 2;
+//        
+//        window.setColor(SuperColor.newInstance(Color.BLACK, scaledOpacity));
+//        window.fillRoundRect(
+//                x + offsetX, y + offsetY, 
+//                width, height,
+//                10);        
+//        
+//        window.setColor(SuperColor.newInstance(Color.DARK_GRAY, scaledOpacity));
+//        window.fillRoundRect(
+//                x + offsetX + border, y + offsetY + border, 
+//                width - border * 2, height - border * 2,
+//                10);
+//    }
+    
     private void drawNormal()
     {                
-        sprite.draw(x + offsetX, y + offsetY, width, height, 
-                //0, 0, width / 2, height,
-                0.0, opacity);        
+        sprite.draw(
+                x + offsetX, y + offsetY, 
+                width, height,                 
+                0.0, opacitize(normalOpacity));   
+//        drawButton();  
+        
+        normalLabel.setOpacity(opacity);
         normalLabel.draw();
     }
     
     private void drawActivated()
     {        
-        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, onOpacity);
+        sprite.draw(
+                x + offsetX, y + offsetY, 
+                width, height, 
+                0.0, opacitize(activeOpacity));        
+//        drawButton();   
         
-        if (activeLabel != null) activeLabel.draw();
-        else normalLabel.draw();
+        if (activeLabel != null)
+        {
+            activeLabel.setOpacity(opacity);
+            activeLabel.draw();            
+        }
+        else 
+        {
+            normalLabel.setOpacity(opacity);
+            normalLabel.draw();
+        }
     }
     
     private void drawHovered()
     {
-        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, hoverOpacity);
+        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(hoverOpacity));
         
-        if (hoverLabel != null) hoverLabel.draw();        
+        if (hoverLabel != null) 
+        {
+            hoverLabel.setOpacity(opacity);
+            hoverLabel.draw();        
+        }
         else
         {
             if (activeLabel != null && isActivated() == true)
+            {
+                activeLabel.setOpacity(opacity);
                 activeLabel.draw();
+            }
             else
+            {
+                normalLabel.setOpacity(opacity);
                 normalLabel.draw();
+            }
         }
     }
     
     private void drawPressed()
     {
-        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, pressedOpacity);
+        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(pressedOpacity));
+        normalLabel.setOpacity(opacity);
         normalLabel.translate(0, 1);
         normalLabel.draw();
         normalLabel.translate(0, -1);
     }   
-
-    public int getOnOpacity()
+    
+    
+    private int opacitize(int targetOpacity)
     {
-        return onOpacity;
+        return Util.scaleInt(0, 100, 0, targetOpacity, this.opacity);
     }
 
-    public void setOnOpacity(int activeOpacity)
+    public int getActiveOpacity()
     {
-        this.onOpacity = limitOpacity(activeOpacity);
+        return activeOpacity;
+    }
+
+    public void setActiveOpacity(int activeOpacity)
+    {
+        this.activeOpacity = limitOpacity(activeOpacity);
         setDirty(true);
     }
 
@@ -372,12 +427,12 @@ public class SpriteButton extends AbstractSpriteButton
         setDirty(true);
     }    
 
-    public int getOffOpacity()
+    public int getNormalOpacity()
     {
         return getOpacity();
     }
 
-    public void setOffOpacity(int offOpacity)
+    public void setNormalOpacity(int offOpacity)
     {
         setOpacity(offOpacity);
     }             

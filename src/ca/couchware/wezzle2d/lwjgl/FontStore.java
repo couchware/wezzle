@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.lwjgl;
 
-import ca.couchware.wezzle2d.java2d.*;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import java.awt.Font;

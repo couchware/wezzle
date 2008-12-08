@@ -37,8 +37,8 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.SpriteButton;
-import ca.couchware.wezzle2d.ui.Window;
-import ca.couchware.wezzle2d.ui.Window.Border;
+import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.Box.Border;
 import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
 import ca.couchware.wezzle2d.ui.group.OptionsGroup;
@@ -205,14 +205,14 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         highScoreButton = new SpriteButton.Builder(128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.HUGE).text("")
-                .offOpacity(0).hoverOpacity(70).onOpacity(95).end();
+                .normalOpacity(0).hoverOpacity(70).activeOpacity(95).end();
         layerMan.add(highScoreButton, Layer.UI);
                 
         // Create pause button.        
         pauseButton = new SpriteButton.Builder(668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.NORMAL).text("Pause").activeText("Resume")
-                .offOpacity(70).end();
+                .normalOpacity(70).end();
         layerMan.add(pauseButton, Layer.UI);    
         
         // Create the options button, using pause button as a template.
