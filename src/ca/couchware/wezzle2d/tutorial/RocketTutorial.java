@@ -53,8 +53,8 @@ public class RocketTutorial extends AbstractTutorial
         super.initialize(game);   
         
         // Add this item to the world manager.
-        game.worldMan.addItem(new Item.Builder(TileType.ROCKET)
-                .initialAmount(0).maximumOnBoard(1).weight(0).end());
+        //game.worldMan.addItem(new Item.Builder(TileType.ROCKET)
+        //        .initialAmount(0).maximumOnBoard(1).weight(0).end());
         
         // Slow down refactor so the user can see more clearly what happens.
         refactorer.setRefactorSpeed(RefactorSpeed.SLOW);
@@ -194,7 +194,7 @@ public class RocketTutorial extends AbstractTutorial
         super.finish(game);
         
         // Add this item to the world manager.
-        game.worldMan.removeItem(TileType.ROCKET);
+        //game.worldMan.removeItem(TileType.ROCKET);
     }
 
 }

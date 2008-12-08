@@ -186,6 +186,7 @@ public class WorldManager implements IManager,
             @Override
             public void onMatch()
             {
+                System.out.println("HERHEEHRHERHERHEHR");
                 // Add the rocket.
                 itemMap.put(TileType.ROCKET, 
                         new Item.Builder(TileType.ROCKET)
@@ -327,6 +328,7 @@ public class WorldManager implements IManager,
             
             if (rule.evaluate(game) == true)
             {
+                System.out.println(rule.getType() + "<-----------");
                 rule.onMatch();
                 it.remove();
             }

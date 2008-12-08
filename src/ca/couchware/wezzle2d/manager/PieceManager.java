@@ -627,7 +627,7 @@ public class PieceManager implements IMouseListener
                                 {
                                     TileColor newColor = TileColor.getRandomColor(boardMan.getNumberOfColors());
                                     
-                                    if(oldColor != newColor)
+                                    if(oldColor != newColor) 
                                     {
                                         int index = tileDropList.indexOf(tempTile);
                                         tempTile = boardMan.replaceTile(boardMan.getIndex(tempTile), newColor);

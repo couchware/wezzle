@@ -902,11 +902,14 @@ public class Game extends Canvas implements IGameWindowCallback
         // Update piece manager logic and then draw it.
         pieceMan.updateLogic(this);
 
-         // Update the tutorial manager logic.
+         // Update the world manager logic.
+        worldMan.updateLogic(this);        
+        
+         // Update the tutorial manager logic. This must be done after the world
+        // manager because it relies on the proper items being in the item list.
         tutorialMan.updateLogic(this);
 
-        // Update the world manager logic.
-        worldMan.updateLogic(this);                       
+                      
 
         // --- UI LOGIC STUB --
 
