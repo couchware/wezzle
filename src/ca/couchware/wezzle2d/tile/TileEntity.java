@@ -98,6 +98,13 @@ public class TileEntity extends GraphicEntity implements IClickable
         return true;
 	}   
     
+//    @Override
+//    public String toString()
+//    {
+//        StringBuffer buffer = new StringBuffer();
+//        buffer.append(String.format
+//    }
+    
     //--------------------------------------------------------------------------
     // Clickable
     //--------------------------------------------------------------------------
@@ -105,14 +112,14 @@ public class TileEntity extends GraphicEntity implements IClickable
     /**
      * The stored click action.
      */
-    Runnable clickAction = null;
+    Runnable clickHook = null;
     
     /**
      * Sets the click runnable.
      */
-    public void setClickHook(Runnable clickAction)
+    public void setClickHook(Runnable hook)
     { 
-        this.clickAction = clickAction;
+        this.clickHook = hook;
     }
     
     /**
@@ -120,7 +127,7 @@ public class TileEntity extends GraphicEntity implements IClickable
      */
     public Runnable getClickHook()
     {
-        return clickAction;
+        return clickHook;
     }
     
     /**
@@ -128,7 +135,7 @@ public class TileEntity extends GraphicEntity implements IClickable
      */
     public void runClickHook()
     {
-        if (clickAction != null) clickAction.run();
+        if (clickHook != null) clickHook.run();
     }
     
 }

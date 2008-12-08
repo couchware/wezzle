@@ -536,9 +536,7 @@ public class PieceManager implements IMouseListener
                 // there are no more x matches. do the same for the y matches.
                 // delete the tiles from the board. Add the new tiles back in the
                 // original positions with the new colours. unlock the board. continue.
-   
-        
-               
+                          
                // lock all the colours so no lines are scored.
                for(TileColor t : TileColor.values())
                {
@@ -562,32 +560,38 @@ public class PieceManager implements IMouseListener
                while(true)
                {
                    
-                    Set<Integer> matchSet = new HashSet<Integer>();
-                    Set<Integer> yMatchSet = new HashSet<Integer>();
                     
-                    int numMatches = -1;
                     
                     // The number of found matches. also puts the matches into matchset.
-                    numMatches = boardMan.findXMatch(matchSet);
-                    numMatches += boardMan.findYMatch(yMatchSet);
+                    Set<Integer> set = new HashSet<Integer>();
+                    Set<Integer> matchSet = new HashSet<Integer>();
+                    boardMan.findXMatch(set);
+                    boardMan.findYMatch(matchSet);
+                    matchSet.addAll(set);
                     
                     // union the sets.
-                    matchSet.addAll(yMatchSet);
+                    //matchSet.addAll(yMatchSet);
+                    
+                    Set<TileEntity> tileMatchSet = new HashSet<TileEntity>();
+                    for (Integer i : matchSet) tileMatchSet.add(boardMan.getTile(i));
+                    
+                    // Intersect them.
+                    tileMatchSet.retainAll(tileDropList);
                     
                     // We found lines, change the color of the appropriate tiles
-                    if( numMatches != 0)
+                    if(tileMatchSet.isEmpty() == false)
                     {
-                         System.out.println("<----- Line prevented ---------->");
+                         System.out.println("<----- Line Prevented ----->");
                      
-                        for(int i : matchSet)
+                        for (TileEntity matchedTile : tileMatchSet)
                         {
-                            TileEntity tempTile = boardMan.getTile(i);
+                            //TileEntity tempTile = boardMan.getTile(i);
                             
-                            //if we found a tile in the match set, change the colour.
-                            if(tileDropList.contains(tempTile))
-                            {
-                                
-                                TileColor oldColor = tempTile.getColor();
+//                            //if we found a tile in the match set, change the colour.
+//                            if(tileDropList.contains(tempTile))
+//                            {
+//                                
+                                TileColor oldColor = matchedTile.getColor();
                                 
                                 while(true)
                                 {
@@ -595,13 +599,13 @@ public class PieceManager implements IMouseListener
                                     
                                     if(oldColor != newColor)
                                     {
-                                        int index = tileDropList.indexOf(tempTile);
-                                        TileEntity newTile = boardMan.replaceTile(boardMan.getIndex(tempTile), newColor);
+                                        int index = tileDropList.indexOf(matchedTile);
+                                        TileEntity newTile = boardMan.replaceTile(boardMan.getIndex(matchedTile), newColor);
                                         tileDropList.set(index, newTile);
                                         break;
                                     }      
                                 }
-                            }
+                            //}
                         }
                             
                         
@@ -615,6 +619,7 @@ public class PieceManager implements IMouseListener
                     for(TileEntity t : tileDropList)
                     {
                         // remove the old tile.
+                        //LogManager.recordMessage("" + tileDropList);
                         boardMan.removeTile(t);
                          
                         // add the new.
