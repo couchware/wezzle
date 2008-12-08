@@ -47,14 +47,14 @@ public interface IAnimation
     /**
      * Set the start action.
      */
-    public void setStartHook(Runnable startRunnable);        
+    public void setStartRunnable(Runnable startRunnable);        
     
     public Runnable getStartRunnable();    
     
     /**
      * Set the finish action.
      */
-    public void setFinishHook(Runnable finishRunnable);      
+    public void setFinishRunnable(Runnable finishRunnable);      
     
     public Runnable getFinishRunnable();    
     
@@ -62,11 +62,11 @@ public interface IAnimation
      * This method is run when the animation is first loaded by the
      * animation manager.
      */
-    public void runStartHook();
+    public void onStart();
     
     /**
      * This method is run when the animation is finished running.
      */
-    public void runFinishHook();    
+    public void onFinish();    
         
 }

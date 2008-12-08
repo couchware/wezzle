@@ -546,9 +546,11 @@ public class Game extends Canvas implements IGameWindowCallback
                 window.clearMouseEvents();
                                
                 // Create the main menu.
-                mainMenu = new MainMenuGroup(this);
+                mainMenu = new MainMenuGroup(
+                        settingsMan, 
+                        animationMan, 
+                        musicMan);
                 
-                // Set the drawer.
                 setDrawer(mainMenu);
             }   
             else return;                        
@@ -573,13 +575,11 @@ public class Game extends Canvas implements IGameWindowCallback
                 
                 // Create the layer manager transition animation.
                 this.menuTransition = new CircularTransition.Builder(layerMan)
-                        .wait(200)
-                        .minRadius(10)
-                        .speed(400).end();
+                        .minRadius(10).speed(400).end();
                 setDrawer(menuTransition);
                 
                 // When the transition is done, enable the game controls.
-                this.menuTransition.setFinishHook(new Runnable()
+                this.menuTransition.setFinishRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.setDisabled(false); }
@@ -838,13 +838,13 @@ public class Game extends Canvas implements IGameWindowCallback
                         .theta(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_THETA))                       
                         .end(); 
 
-                a2.setStartHook(new Runnable()
+                a2.setStartRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.add(label, Layer.EFFECT); }
                 });
 
-                a2.setFinishHook(new Runnable()
+                a2.setFinishRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.remove(label, Layer.EFFECT); }

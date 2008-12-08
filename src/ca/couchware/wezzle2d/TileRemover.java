@@ -244,7 +244,7 @@ public class TileRemover
                                 .speed(settingsMan.getInt(Key.ANIMATION_WEZZLE_ZOOM_IN_SPEED))
                                 .end();
                         
-                        wezzle1.setFinishHook(new Runnable()
+                        wezzle1.setFinishRunnable(new Runnable()
                         {
                             public void run()
                             { boardMan.removeTile(index); }
@@ -255,7 +255,7 @@ public class TileRemover
                                 .end();
                         
                         // Add tile to layer manager for animation purposes.
-                        wezzle2.setStartHook(new Runnable()
+                        wezzle2.setStartRunnable(new Runnable()
                         {
                             public void run()
                             { layerMan.add(newTile, Layer.TILE); }
@@ -263,7 +263,7 @@ public class TileRemover
                         
                         // Remove tile for layer manager and add it to the 
                         // board manager.
-                        wezzle2.setFinishHook(new Runnable()
+                        wezzle2.setFinishRunnable(new Runnable()
                         {
                             public void run()
                             { 
@@ -524,7 +524,7 @@ public class TileRemover
                 .add(anim2)
                 .end();
 
-        meta.setFinishHook(new Runnable()
+        meta.setFinishRunnable(new Runnable()
         {
            public void run() 
            { layerMan.remove(clone, Layer.EFFECT); }
@@ -748,7 +748,7 @@ public class TileRemover
                 .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
-            a2.setStartHook(new Runnable()
+            a2.setStartRunnable(new Runnable()
             {
                 public void run()
                 {
@@ -756,7 +756,7 @@ public class TileRemover
                 }
             });
 
-            a2.setFinishHook(new Runnable()
+            a2.setFinishRunnable(new Runnable()
             {
                 public void run()
                 {
@@ -1006,7 +1006,7 @@ public class TileRemover
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
                 .end();
 
-        a2.setStartHook(new Runnable()
+        a2.setStartRunnable(new Runnable()
         {
             public void run()
             {
@@ -1014,7 +1014,7 @@ public class TileRemover
             }
         });
 
-        a2.setFinishHook(new Runnable()
+        a2.setFinishRunnable(new Runnable()
         {
             public void run()
             {
@@ -1234,7 +1234,7 @@ public class TileRemover
                 .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
-        a2.setStartHook(new Runnable()
+        a2.setStartRunnable(new Runnable()
         {
             public void run()
             {
@@ -1242,7 +1242,7 @@ public class TileRemover
             }
         });
 
-        a2.setFinishHook(new Runnable()
+        a2.setFinishRunnable(new Runnable()
         {
             public void run()
             {
@@ -1347,7 +1347,7 @@ public class TileRemover
                         .add(anim3)
                         .end();
 
-                meta.setFinishHook(new Runnable()
+                meta.setFinishRunnable(new Runnable()
                 {
                    public void run() 
                    { layerMan.remove(explosion, Layer.EFFECT); }
@@ -1501,7 +1501,7 @@ public class TileRemover
                 .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
-        a2.setStartHook(new Runnable()
+        a2.setStartRunnable(new Runnable()
         {
             public void run()
             {
@@ -1509,7 +1509,7 @@ public class TileRemover
             }
         });
 
-        a2.setFinishHook(new Runnable()
+        a2.setFinishRunnable(new Runnable()
         {
             public void run()
             {

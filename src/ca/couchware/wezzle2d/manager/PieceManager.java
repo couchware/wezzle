@@ -824,7 +824,7 @@ public class PieceManager implements IMouseListener
             tile = boardMan.getTile(index);
             
             // Invoke the on-click behaviour.            
-            tile.runClickHook();
+            tile.onClick();
             
             // Do something special if it's a wezzle tile.
             if (tile.getType() == TileType.WEZZLE)
@@ -893,13 +893,13 @@ public class PieceManager implements IMouseListener
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
                 .end();
                     
-        a2.setStartHook(new Runnable()
+        a2.setStartRunnable(new Runnable()
         {
             public void run()
             { game.layerMan.add(label, Layer.EFFECT); }
         });
 
-        a2.setFinishHook(new Runnable()
+        a2.setFinishRunnable(new Runnable()
         {
             public void run()
             { game.layerMan.remove(label, Layer.EFFECT); }

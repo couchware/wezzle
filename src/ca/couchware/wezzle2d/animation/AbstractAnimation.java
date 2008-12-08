@@ -13,23 +13,30 @@ package ca.couchware.wezzle2d.animation;
 public abstract class AbstractAnimation implements IAnimation
 {
 
-    /** A empty runnable, used as the default hook. */
-    protected Runnable EMPTY_HOOK = new Runnable() { public void run() { } };
-    
-    /** Whether or not the animation is visible. */
+    /**
+     * Whether or not the animation is visible.
+     */
     protected boolean visible = true;
     
-    /** Whether or not the animation has started. */
+    /**
+     * Whether or not the animation has started.
+     */
     protected boolean started = false;
     
-    /** Whether or not the animation is done. */
+    /**
+     * Whether or not the animation is done.
+     */
     protected boolean finished = false;        
     
-    /** The start action. */
-    protected Runnable startHook = EMPTY_HOOK;
+    /**
+     * The start action.
+     */
+    protected Runnable startRunnable;
     
-    /** The finish action. */
-    protected Runnable finishHook = EMPTY_HOOK;
+    /**
+     * The finish action.
+     */
+    protected Runnable finishRunnable;       
     
     /**
      * Advance the frame.
@@ -55,7 +62,7 @@ public abstract class AbstractAnimation implements IAnimation
             this.started = true;
             
             // Run the on-start runnable.
-            runStartHook();
+            onStart();
         }
     }
     
@@ -71,7 +78,7 @@ public abstract class AbstractAnimation implements IAnimation
             this.finished = true;
             
             // Run the on-finish runnable.
-            runFinishHook();
+            onFinish();
         }
     }
 
@@ -88,39 +95,37 @@ public abstract class AbstractAnimation implements IAnimation
     /**
      * Set the start action.
      */
-    public void setStartHook(Runnable hook)
+    public void setStartRunnable(Runnable startRunnable)
     {
-        assert hook != null;
-        this.startHook = hook;
+        this.startRunnable = startRunnable;
     }       
     
     public Runnable getStartRunnable()
     {
-        return this.startHook;
+        return this.startRunnable;
     }
     
     /**
      * Set the finish action.
      */
-    public void setFinishHook(Runnable hook)
+    public void setFinishRunnable(Runnable finishRunnable)
     {
-        assert hook != null;
-        this.finishHook = hook;
+        this.finishRunnable = finishRunnable;
     }    
     
      public Runnable getFinishRunnable()
     {
-        return this.finishHook;
+        return this.finishRunnable;
     }
 
-    final public void runStartHook()
+    final public void onStart()
     {
-        startHook.run();
+        if (startRunnable != null) startRunnable.run();
     }
 
-    final public void runFinishHook()
+    final public void onFinish()
     {
-        finishHook.run();
+        if (finishRunnable != null) finishRunnable.run();
     }        
     
 }

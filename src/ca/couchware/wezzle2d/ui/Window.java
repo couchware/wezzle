@@ -24,7 +24,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class Box extends AbstractEntity implements IMouseListener
+public class Window extends AbstractEntity implements IMouseListener
 {           
     
     /**
@@ -115,7 +115,7 @@ public class Box extends AbstractEntity implements IMouseListener
      * @param width
      * @param height
      */
-    private Box(Builder builder)
+    private Window(Builder builder)
     {
         // Set window reference.
         this.window = ResourceFactory.get().getGameWindow();
@@ -164,7 +164,7 @@ public class Box extends AbstractEntity implements IMouseListener
         this.color = new Color(0, 0, 0, ((float) opacity) / 100.0f);
     }
     
-    public static class Builder implements IBuilder<Box>
+    public static class Builder implements IBuilder<Window>
     {
         // Required values.       
         private int x;
@@ -185,7 +185,7 @@ public class Box extends AbstractEntity implements IMouseListener
             this.y = y;
         }
         
-        public Builder(Box window)
+        public Builder(Window window)
         {            
             this.x = window.x;
             this.y = window.y;
@@ -219,9 +219,9 @@ public class Box extends AbstractEntity implements IMouseListener
         public Builder border(Border val)
         { border = val; return this; }
         
-        public Box end()
+        public Window end()
         {
-            Box win = new Box(this);
+            Window win = new Window(this);
             
             if (visible == true && disabled == false)
                 win.window.addMouseListener(win); 

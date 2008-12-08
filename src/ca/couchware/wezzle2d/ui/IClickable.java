@@ -17,16 +17,16 @@ public interface IClickable
     /**
      * The method that is run when the entity is clicked.
      */
-    public void runClickHook();
+    public void onClick();
     
     /**
      * A method for getting a runnable that is run when the entitiy is clicked.
      */
-    public Runnable getClickHook();
+    public Runnable getClickRunnable();
     
     /**
      * A method for setting a runnable that is run when the entity is clicked.
      */
-    public void setClickHook(Runnable hook);
+    public void setClickRunnable(Runnable r);
     
 }

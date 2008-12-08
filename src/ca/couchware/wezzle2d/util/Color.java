@@ -5,38 +5,32 @@
 
 package ca.couchware.wezzle2d.util;
 
-import java.awt.Color;
 import org.jdom.Element;
 
 /**
  *
  * @author cdmckay
  */
-public class SuperColor extends Color implements IXMLizable
+public class Color extends java.awt.Color implements IXMLizable
 {
 
-    private SuperColor(int red, int green, int blue, int alpha)
+    private Color(int red, int green, int blue, int alpha)
     {
         super(red, green, blue, alpha);
     }
     
-    public static SuperColor newInstance(int red, int green, int blue, int alpha)
+    public static Color newInstance(int red, int green, int blue, int alpha)
     {
-        return new SuperColor(red, green, blue, alpha);
+        return new Color(red, green, blue, alpha);
     }
     
-    public static SuperColor newInstance(Color color, int alpha)
-    {
-        return new SuperColor(color.getRed(), color.getGreen(), color.getBlue(), alpha);
-    }
-    
-    public static SuperColor newInstanceFromXML(Element element)
+    public static Color newInstanceFromXML(Element element)
     {
         int r = Integer.parseInt(element.getAttributeValue("red"));
         int g = Integer.parseInt(element.getAttributeValue("green"));
         int b = Integer.parseInt(element.getAttributeValue("blue"));
         int a = Integer.parseInt(element.getAttributeValue("alpha"));
-        return new SuperColor(r, g, b, a);
+        return new Color(r, g, b, a);
     }
     
     public Element toXMLElement()
@@ -47,11 +41,6 @@ public class SuperColor extends Color implements IXMLizable
         element.setAttribute("blue", String.valueOf(getBlue()));                    
         element.setAttribute("alpha", String.valueOf(getAlpha()));
         return element;
-    }
-    
-    public static int scaleOpacity(int val)
-    {        
-        return Util.scaleInt(0, 100, 0, 255, val);
     }
             
 }

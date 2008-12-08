@@ -1729,7 +1729,7 @@ public class BoardManager implements IManager
                         .wait(fadeWait).duration(fadeDuration).end();
                 
                 // Make the animation remove itself.                
-                a1.setFinishHook(new Runnable()
+                a1.setFinishRunnable(new Runnable()
                 {
                    public void run()
                    {
@@ -1918,7 +1918,7 @@ public class BoardManager implements IManager
                         .speed(moveSpeed).end();
                 
                 // Make the animation remove itself.                
-                a1.setFinishHook(new Runnable()
+                a1.setFinishRunnable(new Runnable()
                 {
                    public void run()
                    {

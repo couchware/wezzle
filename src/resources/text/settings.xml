@@ -48,7 +48,7 @@
   <entry name="ANIMATION_JUMP_FADE_DURATION">880</entry>
   <entry name="ANIMATION_LINE_REMOVE_ZOOM_SPEED">50</entry>
   <entry name="ANIMATION_LINE_REMOVE_FADE_WAIT">0</entry>
-  <entry name="ANIMATION_LINE_REMOVE_FADE_DURATION">0</entry>
+  <entry name="ANIMATION_LINE_REMOVE_FADE_DURATION">300</entry>
   <entry name="ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED">80</entry>
   <entry name="ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION">200</entry>
   <entry name="ANIMATION_ITEM_ACTIVATE_FADE_WAIT">0</entry>
@@ -116,5 +116,5 @@
   <entry name="MAIN_MENU_LOGO_FADE_IN_WAIT">580</entry>
   <entry name="MAIN_MENU_LOGO_FADE_IN_DURATION">2400</entry>
   <entry name="MAIN_MENU_LOGO_FADE_OUT_WAIT">0</entry>
-  <entry name="MAIN_MENU_LOGO_FADE_OUT_DURATION">1000</entry>    
+  <entry name="MAIN_MENU_LOGO_FADE_OUT_DURATION">1600</entry>    
 </settings>

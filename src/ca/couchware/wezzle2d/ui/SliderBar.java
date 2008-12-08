@@ -12,7 +12,6 @@ import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.*;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.geom.RectangularShape;
@@ -39,7 +38,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     /**
      * The width of the clickable slider bar area.
      */
-    //final private static int WIDTH = 208;
+    final private static int WIDTH = 208;
     
     /**
      * The height of the clickable slider bar area.
@@ -143,7 +142,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         this.y_ = y;
         
         // Set the dimensions.
-        this.width = builder.width;
+        this.width = WIDTH;
         this.height = HEIGHT;
         
         // Set default anchor.
@@ -152,7 +151,11 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         this.offsetY = determineOffsetY(alignment, height);
         
         // Save shape reference.
-        this.shape = new Rectangle(x + offsetX, y + offsetY, this.width, this.height);
+        this.shape = new Rectangle(x + offsetX, y + offsetY, WIDTH, HEIGHT);                      
+        
+        // Load in the sprites.
+        this.spriteRail = ResourceFactory.get()
+                .getSprite(Settings.getSpriteResourcesPath() + "/SliderBarRailThick.png");
         
         this.spriteHandle = ResourceFactory.get()
                 .getSprite(Settings.getSpriteResourcesPath() + "/SliderBarHandleRounded.png");
@@ -187,7 +190,6 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
         private int opacity = 100;
-        private int width = 200;
         private boolean visible = true;
         private double virtualLower = 0.0;
         private double virtualUpper = 1.0;
@@ -207,7 +209,6 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             this.y = sliderBar.y;
             this.alignment = sliderBar.alignment.clone();            
             this.opacity = sliderBar.opacity;                        
-            this.width = sliderBar.width;
             this.visible = sliderBar.visible;
             this.virtualLower = sliderBar.virtualLower;
             this.virtualUpper = sliderBar.virtualUpper;
@@ -222,9 +223,6 @@ public class SliderBar extends AbstractEntity implements IMouseListener
                         
         public Builder opacity(int val)
         { opacity = val; return this; }
-        
-        public Builder width(int val)
-        { width = val; return this; }
         
         public Builder visible(boolean val) 
         { visible = val; return this; }
@@ -250,19 +248,6 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     // Instance Methods
     // -------------------------------------------------------------------------
     
-    private void drawRail(int x, int y, int width, int height, int border)
-    {
-        window.setColor(SuperColor.newInstance(
-                Color.BLACK, 
-                SuperColor.scaleOpacity(opacity)));
-        window.fillRect(x, y, width + border * 2, height + border * 2);
-        
-        window.setColor(SuperColor.newInstance(
-                Color.DARK_GRAY, 
-                SuperColor.scaleOpacity(opacity)));
-        window.fillRect(x + border, y + border, width, height);
-    }
-    
     @Override
     public boolean draw()
     {
@@ -275,8 +260,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             return false;
         
         // Draw the rail.
-        //spriteRail.draw(x + offsetX, y + offsetY + (HEIGHT - spriteRail.getHeight()) / 2);
-        drawRail(x + offsetX, y + offsetY + (HEIGHT - 4) / 2, width, 2, 1);
+        spriteRail.draw(x + offsetX, y + offsetY + (HEIGHT - spriteRail.getHeight()) / 2);
         
         // Draw the handle.
         spriteHandle.draw(x + offsetX + slideOffset, y + offsetY);
@@ -499,7 +483,6 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     /**
      * Set the slider offset as value between 0.0 and 1.0.  Automatically 
      * ensures that the passed value is within the range.
-     * 
      * @param slideOffsetPercent
      */
     final public void setSlideOffsetPercent(final double slideOffsetPercent)
@@ -519,8 +502,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      */
     final public void setVirtualValue(double value)
     {
-        assert value >= virtualLower;
-        assert value <= virtualUpper;
+        assert(value >= virtualLower);
+        assert(value <= virtualUpper);
         
         double percent = (value - virtualLower) / (virtualUpper - virtualLower);        
         setSlideOffsetPercent(percent);

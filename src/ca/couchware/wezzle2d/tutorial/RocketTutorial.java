@@ -130,14 +130,14 @@ public class RocketTutorial extends AbstractTutorial
         // Create bottom row.        
         TileEntity t1 = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);                         
-        t1.setClickHook(r);
+        t1.setClickRunnable(r);
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.BLUE);
         
         TileEntity t2 = game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);
-        t2.setClickHook(r);
+        t2.setClickRunnable(r);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.BLUE);
@@ -160,7 +160,7 @@ public class RocketTutorial extends AbstractTutorial
         
         TileEntity t3 = game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.RED);
-        t3.setClickHook(r);
+        t3.setClickRunnable(r);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.BLUE);
@@ -177,7 +177,7 @@ public class RocketTutorial extends AbstractTutorial
         
         TileEntity t4 = game.boardMan.createTile(1, game.boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.RED);
-        t4.setClickHook(r);
+        t4.setClickRunnable(r);
         
         game.boardMan.createTile(2, game.boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.BLUE);

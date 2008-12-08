@@ -12,7 +12,7 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.Window;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import java.util.EnumSet;
 
@@ -32,7 +32,7 @@ public class TutorialGroup extends AbstractGroup
     final private LayerManager layerMan;
     
     /** The background window. */
-    Box win;
+    Window win;
     
     public TutorialGroup(
             SettingsManager settingsMan,
@@ -43,7 +43,7 @@ public class TutorialGroup extends AbstractGroup
         this.layerMan    = layerMan;
         
          // Create the window.
-        win = new Box.Builder(268, 300).width(430).height(470)
+        win = new Window.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(settingsMan.getInt(Key.MAIN_MENU_WINDOW_OPACITY)).visible(false).end();
         this.layerMan.add(win, Layer.UI);         
