@@ -563,22 +563,26 @@ public class PieceManager implements IMouseListener
                {
                    
                     Set<Integer> matchSet = new HashSet<Integer>();
+                    Set<Integer> yMatchSet = new HashSet<Integer>();
                     
                     int numMatches = -1;
                     
                     // The number of found matches. also puts the matches into matchset.
                     numMatches = boardMan.findXMatch(matchSet);
+                    numMatches += boardMan.findYMatch(yMatchSet);
+                    
+                    // union the sets.
+                    matchSet.addAll(yMatchSet);
                     
                     // We found lines, change the color of the appropriate tiles
                     if( numMatches != 0)
                     {
-                         System.out.println("XXXXXXXXXXXXXXXXXXXXXX");
+                         System.out.println("<----- Line prevented ---------->");
                      
-                        for(Iterator i = matchSet.iterator(); i.hasNext(); )
+                        for(int i : matchSet)
                         {
-                            TileEntity tempTile = boardMan.getTile((Integer)i.next());
+                            TileEntity tempTile = boardMan.getTile(i);
                             
-                            //if we found a tile in the match set, change the colour.
                             //if we found a tile in the match set, change the colour.
                             if(tileDropList.contains(tempTile))
                             {
@@ -592,9 +596,8 @@ public class PieceManager implements IMouseListener
                                     if(oldColor != newColor)
                                     {
                                         int index = tileDropList.indexOf(tempTile);
-                                        tempTile = boardMan.replaceTile(boardMan.getIndex(tempTile), newColor);
-                                        tileDropList.remove(index);
-                                        tileDropList.add(index, tempTile);
+                                        TileEntity newTile = boardMan.replaceTile(boardMan.getIndex(tempTile), newColor);
+                                        tileDropList.set(index, newTile);
                                         break;
                                     }      
                                 }
@@ -603,43 +606,7 @@ public class PieceManager implements IMouseListener
                             
                         
                         continue;
-                    }
-                    
-                    
-                    
-                    numMatches = boardMan.findYMatch(matchSet);
-                    
-                    if( numMatches != 0)
-                    {
-                        System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYY");
-                        
-                        for(Iterator i = matchSet.iterator(); i.hasNext(); )
-                        {
-                            TileEntity tempTile = boardMan.getTile((Integer)i.next());
-                            
-                            //if we found a tile in the match set, change the colour.
-                            if(tileDropList.contains(tempTile))
-                            {
-                                
-                                TileColor oldColor = tempTile.getColor();
-                                
-                                while(true)
-                                {
-                                    TileColor newColor = TileColor.getRandomColor(boardMan.getNumberOfColors());
-                                    
-                                    if(oldColor != newColor) 
-                                    {
-                                        int index = tileDropList.indexOf(tempTile);
-                                        tempTile = boardMan.replaceTile(boardMan.getIndex(tempTile), newColor);
-                                        tileDropList.remove(index);
-                                        tileDropList.add(index, tempTile);
-                                        break;
-                                    }      
-                                }
-                            }
-                        }
-                        continue;
-                    }
+                    } 
                     
                     // We have found an acceptable list. transfer it over.
                     List<TileEntity> newList = new ArrayList<TileEntity>();
