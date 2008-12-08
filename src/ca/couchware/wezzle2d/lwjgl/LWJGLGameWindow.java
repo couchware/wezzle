@@ -378,7 +378,8 @@ public class LWJGLGameWindow implements IGameWindow
             // Clear screen.
             GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            GL11.glLoadIdentity();             			                                                      
+            GL11.glLoadIdentity();             		
+            //GL11.glEnable(GL11.GL_LINE_SMOOTH | GL11.GL_POLYGON_SMOOTH);
                         
             if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
             {
@@ -400,8 +401,10 @@ public class LWJGLGameWindow implements IGameWindow
 //
 //                callback.render();  
                 
-                callback.update();
-                callback.draw();                
+                callback.update();                                               
+                callback.draw();                                                
+                
+                GL11.glColor3f(0, 0, 0);                
                 Display.sync(TICKS_PER_SECOND);                
             }
             // The window is not in the foreground, so we can allow other stuff to run and
@@ -449,28 +452,32 @@ public class LWJGLGameWindow implements IGameWindow
         return color;
     }    
 
+    private void bindColor()
+    {
+        GL11.glColor4f((float) color.getRed()   / 255f,
+                       (float) color.getGreen() / 255f,
+                       (float) color.getBlue()  / 255f,
+                       (float) color.getAlpha() / 255f);
+        GL11.glLineWidth(1.0f);
+    }    
+    
     public void drawRect(int x, int y, int width, int height)
     {
-        drawRect(x, y, width, height, GL11.GL_LINE_LOOP, color);
+        drawRect(x, y, width, height, GL11.GL_LINE_LOOP);
     }
 
     public void fillRect(int x, int y, int width, int height)
     {
-        drawRect(x, y, width, height, GL11.GL_QUADS, color);
+        drawRect(x, y, width, height, GL11.GL_QUADS);
     }
     
     private void drawRect(
             int x, int y, int width, int height,
-            int type, 
-            Color color) 
+            int type) 
     {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-        GL11.glColor4f((float) color.getRed() / 255f,
-                       (float) color.getGreen() / 255f,
-                       (float) color.getBlue() / 255f,
-                       (float) color.getAlpha() / 255f);
-        GL11.glLineWidth(1.0f);
+        bindColor();
 
         GL11.glBegin(type);
             GL11.glVertex2f(x, 		   y);
@@ -482,7 +489,7 @@ public class LWJGLGameWindow implements IGameWindow
         GL11.glColor3f(1.0f, 1.0f, 1.0f);
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-	}
+	}     
 
     public void setClip(Shape shape)
     {                
@@ -589,7 +596,7 @@ public class LWJGLGameWindow implements IGameWindow
         else
         {
             Rectangle rect = shape.getBounds();
-            drawRectangle(rect.x, rect.y, rect.width, rect.height, true);
+            drawRect(rect.x, rect.y, rect.width, rect.height, true);
         }
         
         // Re-enable colours.
@@ -605,7 +612,7 @@ public class LWJGLGameWindow implements IGameWindow
        return null;
     }       
     
-    private void drawRectangle(int x, int y, int width, int height, boolean filled)
+    private void drawRect(int x, int y, int width, int height, boolean filled)
     {
         int mode = filled ? GL11.GL_POLYGON : GL11.GL_LINE_LOOP;
         
@@ -638,8 +645,158 @@ public class LWJGLGameWindow implements IGameWindow
                         wf * (float) Math.cos(t) + xf, 
                         hf * (float) Math.sin(t) + yf);
         GL11.glEnd();        
-    }        
+    }      
+       
+    /**
+	 * Fill an arc.
+	 * 
+	 * @param x1
+	 *            The x coordinate of the top left corner of a box containing
+	 *            the arc
+	 * @param y1
+	 *            The y coordinate of the top left corner of a box containing
+	 *            the arc
+	 * @param width
+	 *            The width of the arc
+	 * @param height
+	 *            The height of the arc
+	 * @param segments
+	 *            The number of line segments to use when filling the arc
+	 * @param start
+	 *            The angle the arc starts at
+	 * @param end
+	 *            The angle the arc ends at
+	 */
+	public void fillArc(
+            float x1, float y1, 
+            float width, float height,
+			int segments, 
+            float start, float end) 
+    {		
 
+		while (end < start) 
+        {
+			end += 360;
+		}
+
+		float cx = x1 + (width / 2.0f);
+		float cy = y1 + (height / 2.0f);
+
+        int step = 360 / segments;
+        
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_POLYGON_SMOOTH);
+        
+        bindColor();
+        
+		GL11.glBegin(GL11.GL_TRIANGLE_FAN);		        
+		GL11.glVertex2f(cx, cy);
+
+		for (int a = (int) start; a < (int) (end + step); a += step) 
+        {			
+            float angle = a;			
+            if (angle > end) 
+            {
+				angle = end;
+			}
+
+			float x = (float) (cx + (Math.cos(Math.toRadians(angle)) * width / 2.0f));
+			float y = (float) (cy + (Math.sin(Math.toRadians(angle)) * height / 2.0f));
+
+			GL11.glVertex2f(x, y);
+		}
+		GL11.glEnd();
+        
+        // Anti-alias code.
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+        GL11.glVertex2f(cx, cy);
+        if (end != 360) {
+            end -= 10;
+        }
+
+        for (int a = (int) start; a < (int) (end + step); a += step) 
+        {
+            float angle = a;
+            if (angle > end) 
+            {
+                angle = end;
+            }
+
+            float x = (float) (cx + (Math.cos(Math.toRadians(angle + 10))
+                    * width  / 2.0f));
+            float y = (float) (cy + (Math.sin(Math.toRadians(angle + 10))
+                    * height / 2.0f));
+
+            GL11.glVertex2f(x, y);
+        }
+        GL11.glEnd();			
+        
+        GL11.glEnable(GL11.GL_TEXTURE_2D);	
+	}
+        
+    public void fillRoundRect(int x, int y, int width, int height, int cornerRadius)
+    {
+        fillRoundRect(x, y, width, height, cornerRadius, 30);
+    }
+
+    /**
+	 * Fill a rounded rectangle
+	 * 
+	 * @param x
+	 *            The x coordinate of the top left corner of the rectangle
+	 * @param y
+	 *            The y coordinate of the top left corner of the rectangle
+	 * @param width
+	 *            The width of the rectangle
+	 * @param height
+	 *            The height of the rectangle
+	 * @param cornerRadius
+	 *            The radius of the rounded edges on the corners
+	 * @param segments
+	 *            The number of segments to make the corners out of
+	 */
+	public void fillRoundRect(
+            int x, int y, 
+            int width, int height,
+			int cornerRadius, int segments) 
+    {
+		if (cornerRadius < 0)
+        {
+			throw new IllegalArgumentException("corner radius must be > 0");
+        }
+        
+		if (cornerRadius == 0) 
+        {
+			fillRect(x, y, width, height);
+			return;
+		}
+
+		int minRadius = (int) Math.min(width, height) / 2;
+		
+        // Make sure that w & h are larger than 2 * cornerRadius.
+		if (cornerRadius > minRadius) 
+        {
+			cornerRadius = minRadius;
+		}
+
+		int d = cornerRadius * 2;
+
+		fillRect(x + cornerRadius, y, width - d, cornerRadius);
+		fillRect(x, y + cornerRadius, cornerRadius, height - d);
+		fillRect(x + width - cornerRadius, y + cornerRadius, cornerRadius, height - d);
+		fillRect(x + cornerRadius, y + height - cornerRadius, width - d, cornerRadius);
+		fillRect(x + cornerRadius, y + cornerRadius, width - d, height - d);
+
+		// Bottom right - 0, 90.
+		fillArc(x + width - d, y + height - d, d, d, segments, 0, 90);
+		// Bottom left - 90, 180.
+		fillArc(x, y + height - d, d, d, segments, 90, 180);
+		// Top right - 270, 360.
+		fillArc(x + width - d, y, d, d, segments, 270, 360);
+		// Top left - 180, 270.
+		fillArc(x, y, d, d, segments, 180, 270);
+	}
+    
     public void setCursor(int type)
     {
         // Intentionally left blank.
@@ -715,7 +872,11 @@ public class LWJGLGameWindow implements IGameWindow
      * Fires all the queued up mouse events.
      */
     public void fireMouseEvents()
-    {                
+    {           
+        // Before we start, make a copy of the listener list in case
+        // one of the listeners modifies their listener status.
+        List<IMouseListener> list = new ArrayList<IMouseListener>(mouseListenerList);
+        
         // Poll mouse events.
         while (Mouse.next())
         {    
@@ -765,14 +926,14 @@ public class LWJGLGameWindow implements IGameWindow
                 {
                     case MOUSE_PRESSED:
                         
-                        for (IMouseListener l : mouseListenerList)
+                        for (IMouseListener l : list)
                             l.mousePressed(event);
                         
                         break;
 
                     case MOUSE_RELEASED:                                               
                         
-                        for (IMouseListener l : mouseListenerList)
+                        for (IMouseListener l : list)
                             l.mouseReleased(event);
                         
                         break;
@@ -793,7 +954,7 @@ public class LWJGLGameWindow implements IGameWindow
                             mousePosition,
                             MouseEvent.Type.MOUSE_DRAGGED);
                 
-                    for (IMouseListener l : mouseListenerList)
+                    for (IMouseListener l : list)
                         l.mouseDragged(event);
                 }
                 else
@@ -804,7 +965,7 @@ public class LWJGLGameWindow implements IGameWindow
                             mousePosition,
                             MouseEvent.Type.MOUSE_MOVED);
                 
-                    for (IMouseListener l : mouseListenerList)
+                    for (IMouseListener l : list)
                         l.mouseMoved(event);
                 }                
             } // end if                       
@@ -849,5 +1010,5 @@ public class LWJGLGameWindow implements IGameWindow
         if (mouseListenerList.remove(l) == false)
             throw new IllegalStateException("Failed to remove listener!");
     }
-
+   
 }

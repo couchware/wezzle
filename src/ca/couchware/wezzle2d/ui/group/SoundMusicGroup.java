@@ -112,6 +112,7 @@ public class SoundMusicGroup extends AbstractGroup
         // Create the sound slider bar.
         soundSlider = new SliderBar.Builder(400, 272)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .width(230)
                 .virtualRange(0.0, 1.0)                    
                 .virtualValue(SettingsManager.get().getDouble(Key.USER_SOUND_VOLUME))
                 .visible(false).end();
@@ -136,6 +137,7 @@ public class SoundMusicGroup extends AbstractGroup
         // Create the music slider bar.
         musicSlider = new SliderBar.Builder(400, 359)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .width(230)
                 .virtualRange(0.0, 1.0)
                 .virtualValue(SettingsManager.get().getDouble(Key.USER_MUSIC_VOLUME))
                 .visible(false).end();
@@ -146,7 +148,7 @@ public class SoundMusicGroup extends AbstractGroup
         backButton = new SpriteButton.Builder(400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.THIN)
-                .text("Back").offOpacity(70).visible(false).end();        
+                .text("Back").normalOpacity(70).visible(false).end();        
         layerMan.add(backButton, Layer.UI);     
         entityList.add(backButton);
     }

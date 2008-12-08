@@ -2,7 +2,7 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.Settings.Value;
-import ca.couchware.wezzle2d.util.Color;
+import ca.couchware.wezzle2d.util.SuperColor;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -274,7 +274,7 @@ public class SettingsManager
         
         if (element.getName().equals("color"))
         {                        
-            instance = Color.newInstanceFromXML(element);
+            instance = SuperColor.newInstanceFromXML(element);
         }
         else if (element.getName().equals("high-score"))
         {                            
@@ -290,9 +290,9 @@ public class SettingsManager
     
     private Content createXMLFromInstance(Object object)
     {
-         if (object instanceof Color)
+         if (object instanceof SuperColor)
         {
-            Color color = (Color) object;
+            SuperColor color = (SuperColor) object;
             return color.toXMLElement();
         }
         else if (object instanceof HighScore)
@@ -425,9 +425,9 @@ public class SettingsManager
             : Boolean.valueOf(getString(key));
 	}      
     
-    public Color getColor(Key key)
+    public SuperColor getColor(Key key)
     {
-        return (Color) getObject(key);
+        return (SuperColor) getObject(key);
     }
     
 }

@@ -14,12 +14,14 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
+import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -101,7 +103,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     private EnumMap<Menu, IGroup> groupMap;
     
     /** The current button that is activated. */
-    private Menu currentButton = Menu.NONE;    
+    private Menu currentMenu = Menu.NONE;    
     
     /** The animation manager. */
     private AnimationManager animationMan;
@@ -124,15 +126,12 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     /**
      * Create a new main menu.
      */
-    public MainMenuGroup(            
-            SettingsManager settingsMan,
-            AnimationManager animationMan, 
-            MusicManager musicMan)
+    public MainMenuGroup(Game game)
     {                
         // Store the manager references.
-        this.settingsMan  = settingsMan;
-        this.animationMan = animationMan;                        
-        this.musicMan     = musicMan;
+        this.settingsMan  = game.settingsMan;
+        this.animationMan = game.animationMan;                        
+        this.musicMan     = game.musicMan;
         this.layerMan     = LayerManager.newInstance();
         
         // Set the main menu as activated.
@@ -179,7 +178,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         initializeButtons();
         
         // Create the groups.
-        initializeGroups();
+        initializeGroups(game);
                 
         // Create the slide animation.
         this.slideAnimation = new MetaAnimation.Builder()
@@ -191,6 +190,9 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         this.animationMan.add(this.slideAnimation);
     };
     
+    /**
+     * Initialize all the buttons.
+     */
     private void initializeButtons()
     {                
         // Create the button list.
@@ -200,51 +202,53 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         IButton templateButton = null;
         
         // A temporary button holder.
-        IButton button = null;
+        IButton button = null;              
         
         // Create the buttons.               
-        button = new SpriteButton.Builder(910, 153)
+        button = new SpriteButton.Builder(630, 153)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))               
                 .type(SpriteButton.Type.THIN).text("Play Now").textSize(20)
-                .hoverOpacity(70).offOpacity(0).disabled(true).end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.PLAY_NOW, button);                
+                .hoverOpacity(70).normalOpacity(0).disabled(true).end();       
+        buttonMap.put(Menu.PLAY_NOW, button);             
              
         // Make this button the template.
         templateButton = (SpriteButton) button;
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(202).text("Tutorial").end();
-        layerMan.add(button, Layer.UI);
+                .y(202).text("Tutorial").end();        
         buttonMap.put(Menu.TUTORIAL, button);                        
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(251).text("Options").end();
-        layerMan.add(button, Layer.UI);
+                .y(251).text("Options").end();        
         buttonMap.put(Menu.OPTIONS, button);
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(300).text("Upgrade").end();
-        layerMan.add(button, Layer.UI);
+                .y(300).text("Upgrade").end();        
         buttonMap.put(Menu.UPGRADE, button);     
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(349).text("Achievements").end();
-        layerMan.add(button, Layer.UI);
+                .y(349).text("Achievements").end();        
         buttonMap.put(Menu.ACHIEVEMENTS, button);
         
         button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(398).text("High Scores").end();
-        layerMan.add(button, Layer.UI);
+                .y(398).text("High Scores").end();        
         buttonMap.put(Menu.HIGH_SCORES, button);
                 
         button = new SpriteButton.Builder((SpriteButton) templateButton)
-                .y(447).text("Exit").end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.EXIT, button);                                   
+                .y(447).text("Exit").end();        
+        buttonMap.put(Menu.EXIT, button);  
+        
+        for (IButton btn : buttonMap.values())
+        {
+            layerMan.add(btn, Layer.UI);
+            btn.setClickHook(createButtonClickHandler(btn));
+        }
     };
-    
-    private void initializeGroups()
+        
+    /**
+     * Initialize all the groups.
+     */
+    private void initializeGroups(Game game)
     {
         // Create the group map.
         this.groupMap = new EnumMap<Menu, IGroup>(Menu.class);
@@ -258,10 +262,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         this.groupMap.put(Menu.NONE, group);
         
         // Create the "Play Now" group.
-        group = new PlayNowGroup(this, 
-                this.settingsMan,
-                this.layerMan, 
-                this.musicMan);
+        group = new PlayNowGroup(this, this.layerMan, game);
         this.groupMap.put(Menu.PLAY_NOW, group);
         
         // Create the "Tutorial" group.
@@ -289,6 +290,89 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         this.groupMap.put(Menu.EXIT, group);
     }
     
+    /**
+     * Creates the button handler runnable that handles the click event for the 
+     * given button.
+     * 
+     * @param button
+     * @return
+     */
+    private Runnable createButtonClickHandler(final IButton button)
+    {
+        return new Runnable()
+        {
+            public void run()
+            {
+                handleButtonClick(button);
+            }
+        };
+    }
+    
+    /**
+     * Handles the button click for the given button.
+     * 
+     * @param button
+     */
+    private void handleButtonClick(final IButton button)
+    {
+        assert button != null;
+        
+        // Make sure we're in the ready state, otherwise ignore the
+        // click.
+        if (this.state != State.READY)
+            return;
+                    
+        for (final Menu menu : this.buttonMap.keySet())
+        {
+            // Make sure their clicked flag is clear.
+            IButton btn = buttonMap.get(menu);
+
+            // Activate the button if it is the clicked button.
+            if (btn.equals(button) == true)
+            {
+                // Activate the new button.
+                //LogManager.recordWarning("Activating...");
+                btn.setActivated(true);
+                btn.setDisabled(true);
+
+                // Animate the change.
+                this.currentAnimation = new MetaAnimation.Builder()
+                        .finishRule(MetaAnimation.FinishRule.ALL)                            
+                        .add(this.groupMap.get(currentMenu).animateHide())
+                        .add(this.groupMap.get(menu).animateShow())
+                        .end();     
+                                
+                this.currentAnimation.setFinishHook(new Runnable()
+                {
+                    public void run()
+                    {
+                        for (IButton btn : buttonMap.values())
+                        {
+                            if (!btn.equals(button))
+                                btn.setDisabled(false);
+                        }
+                    }                    
+                });
+
+                // Set the new current button.                            
+                this.currentMenu = menu;
+
+                // Activate the current group.
+                this.groupMap.get(menu).setActivated(true);
+            }
+            else
+            {
+                btn.setActivated(false);               
+
+                // Deactivate the other groups.
+                this.groupMap.get(menu).setActivated(false);
+            }                        
+            
+            // Disable all buttons while the menu is changing.
+            btn.setDisabled(true);
+        } // end for        
+    }    
+    
     public void updateLogic(Game game)
     {       
         switch (state)
@@ -301,76 +385,22 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                     this.animationMan.add(this.currentAnimation);
                     this.state = State.ANIMATING;
                     break;
-                }
-                
-                // The button that was clicked.  Null if no button was clicked.
-                IButton clickedButton = null;
-                
-                for (IButton btn : this.buttonMap.values())
-                {
-                    if (btn.clicked() == true)
-                    {
-                        clickedButton = btn;
-                        break;
-                    }
-                } // end for
-                
-                // See if a button was clicked.  If it was, then unclick all
-                // the others.
-                if (clickedButton != null)
-                {
-                    for (Menu m : this.buttonMap.keySet())
-                    {
-                        // Make sure their clicked flag is clear.
-                        IButton btn = buttonMap.get(m);
-                        
-                        // Activate the button if it is the clicked button.
-                        if (btn.equals(clickedButton) == true)
-                        {
-                            // Activate the new button.
-                            btn.setActivated(true);
-                            btn.setDisabled(true);
-                            
-                            // Animate the change.
-                            this.currentAnimation = new MetaAnimation.Builder()
-                                    .finishRule(MetaAnimation.FinishRule.ALL)
-                                    //.runRule(MetaAnimation.RunRule.SEQUENCE)
-                                    .add(this.groupMap.get(currentButton).animateHide())
-                                    .add(this.groupMap.get(m).animateShow())
-                                    .end();
-                            //this.animationMan.add(this.animation);
-                            
-                            // Set the new current button.                            
-                            this.currentButton = m;
-                            
-                            // Activate the current group.
-                            this.groupMap.get(m).setActivated(true);
-                        }
-                        else
-                        {
-                            btn.setActivated(false);
-                            btn.setDisabled(false);
-                            
-                            // Deactivate the other groups.
-                            this.groupMap.get(m).setActivated(false);
-                        }                        
-                    } // end for
-                } // end if
+                }                
                 
                 // See if the running group deactivated itself.  If it did,
                 // then we need to hide the group and deactivate the button.
                 // This will bring us back to the initial menu screen with
                 // no buttons activated.
-                IGroup group = this.groupMap.get(currentButton);
+                IGroup group = this.groupMap.get(currentMenu);
                 if (group.isActivated() == false)
                 {
-                    this.buttonMap.get(currentButton).setActivated(false);
-                    this.buttonMap.get(currentButton).setDisabled(false);
+                    this.buttonMap.get(currentMenu).setActivated(false);
+                    this.buttonMap.get(currentMenu).setDisabled(false);
                     
                     this.currentAnimation = group.animateHide();
                     //this.animationMan.add(this.animation);
                     
-                    this.currentButton = Menu.NONE;
+                    this.currentMenu = Menu.NONE;
                                        
                     group.resetControls();
                 }
@@ -387,7 +417,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                         final IAnimation a = animateHide();
                         
                         // Attach a runnable setting the state to finished.
-                        a.setFinishRunnable(new Runnable()
+                        a.setFinishHook(new Runnable()
                         {
                             public void run()
                             { state = State.FINISHED; }
@@ -413,8 +443,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 
             case FINISHED:
                 
-                // Do nothing, we're done.
-                
+                // Do nothing, we're done.                
                 break;
                 
             default: throw new AssertionError();
@@ -440,20 +469,26 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 continue;
             
             final IButton btn = this.buttonMap.get(m);
+            btn.setDisabled(false);
             
-            final IAnimation a = new MoveAnimation.Builder(btn).theta(180)
-                    .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
-                    .minX(settingsMan.getInt(Key.MAIN_MENU_SLIDE_MIN_X))
-                    .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
+//            final IAnimation a = new MoveAnimation.Builder(btn).theta(180)
+//                    .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT))
+//                    .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
+//                    .minX(settingsMan.getInt(Key.MAIN_MENU_SLIDE_MIN_X))                    
+//                    .end();
+            
+            final IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, btn)
+                    .wait(580)
+                    .duration(2400)
                     .end();
             
             builder.add(a);
             
-            a.setFinishRunnable(new Runnable()
-            {
-                public void run()
-                { btn.setDisabled(false); }
-            });
+//            a.setFinishRunnable(new Runnable()
+//            {
+//                public void run()
+//                { btn.setDisabled(false); }
+//            });
         }
         
         // Complete the meta animation.
@@ -468,7 +503,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 .finishRule(MetaAnimation.FinishRule.ALL);
         
         // Hide the current group.
-        builder.add(this.groupMap.get(this.currentButton).animateHide());
+        builder.add(this.groupMap.get(this.currentMenu).animateHide());
         
         // Fade out the logo.
         IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
@@ -476,7 +511,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 .duration(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_DURATION))
                 .end();
         
-        f.setFinishRunnable(new Runnable()
+        f.setFinishHook(new Runnable()
         {
             public void run()
             { 
@@ -489,19 +524,32 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
          
         // Slide out the buttons.
         // Animate the buttons coming in.        
-        for (Menu m : this.buttonMap.keySet())
+        for (Menu menu : this.buttonMap.keySet())
         {                        
-            final IButton btn = this.buttonMap.get(m);
+            final IButton btn = this.buttonMap.get(menu);
             
-            final IAnimation a = new MoveAnimation.Builder(btn).theta(0)
-                    .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
-                    .maxX(910)
-                    .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
+//            final IAnimation a1 = new MoveAnimation.Builder(btn).theta(0)
+//                    //.speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
+//                    .speed(200)
+//                    .maxX(910)
+//                    //.wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT))
+//                    .wait(0)
+//                    .end();
+            
+            final IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, btn)
+                    .wait(0)
+                    .duration(1000)
                     .end();
             
-            builder.add(a);
+            final IAnimation meta = new MetaAnimation.Builder()
+                    .finishRule(FinishRule.FIRST)
+//                    .add(a1)
+                    .add(a2)
+                    .end();
             
-            a.setStartRunnable(new Runnable()
+            builder.add(meta);
+            
+            meta.setStartHook(new Runnable()
             {
                 public void run()
                 { btn.setDisabled(true); }

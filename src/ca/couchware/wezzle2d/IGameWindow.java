@@ -100,7 +100,9 @@ public interface IGameWindow
      * @param width
      * @param height
      */
-    public void fillRect(int x, int y, int width, int height);       
+    public void fillRect(int x, int y, int width, int height);
+    
+    public void fillRoundRect(int x, int y, int width, int height, int cornerRadius);            
     
     //--------------------------------------------------------------------------
     // Clip

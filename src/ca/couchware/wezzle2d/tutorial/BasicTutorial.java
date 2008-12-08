@@ -110,7 +110,7 @@ public class BasicTutorial extends AbstractTutorial
                 TileType.NORMAL, TileColor.RED);
         
         // Set a click action.
-        t.setClickRunnable(new Runnable()
+        t.setClickHook(new Runnable()
         {           
            public void run()
            {               

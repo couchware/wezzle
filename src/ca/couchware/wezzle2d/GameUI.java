@@ -37,8 +37,8 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.SpriteButton;
-import ca.couchware.wezzle2d.ui.Window;
-import ca.couchware.wezzle2d.ui.Window.Border;
+import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.Box.Border;
 import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
 import ca.couchware.wezzle2d.ui.group.OptionsGroup;
@@ -160,19 +160,28 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         // Initialize buttons.    
         loader.addRunnable(new Runnable()
         {
-           public void run() { initializeButtons(game.layerMan); }
+           public void run() 
+           { 
+               initializeButtons(game.layerMan, game.groupMan); 
+           }
         });                                 
                 
         // Initialize labels.  
         loader.addRunnable(new Runnable()
         {
-           public void run() { initializeLabels(game.layerMan); }
+           public void run()
+           { 
+               initializeLabels(game.layerMan);
+           }
         });        
         
         // Initialize miscellaneous components.
         loader.addRunnable(new Runnable()
         {
-           public void run() { initializeComponents(game.layerMan); }
+           public void run() 
+           {
+               initializeComponents(game.layerMan); 
+           }
         });        
              
         // Initialize the groups.   
@@ -199,26 +208,88 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     /**
      * Initializes all the buttons that appear on the main game screen.
      */
-    private void initializeButtons(LayerManager layerMan)
+    private void initializeButtons(
+            final LayerManager layerMan,
+            final GroupManager groupMan)
     {        
         // The high score button.
         highScoreButton = new SpriteButton.Builder(128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.HUGE).text("")
-                .offOpacity(0).hoverOpacity(70).onOpacity(95).end();
+                .normalOpacity(0).hoverOpacity(70).activeOpacity(95).end();
         layerMan.add(highScoreButton, Layer.UI);
+        
+        // Set the click hook.
+        highScoreButton.setClickHook(new Runnable()
+        {
+           public void run()
+           {
+                if (highScoreButton.isActivated() == true)            
+                {                           
+                    groupMan.showGroup(highScoreButton, highScoreGroup, 
+                            GroupManager.Class.HIGH_SCORE,
+                            GroupManager.Layer.MIDDLE);            
+                }
+                else
+                {
+                    groupMan.hideGroup(
+                            GroupManager.Class.HIGH_SCORE,
+                            GroupManager.Layer.MIDDLE);
+                }
+           }
+        });
                 
         // Create pause button.        
         pauseButton = new SpriteButton.Builder(668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.NORMAL).text("Pause").activeText("Resume")
-                .offOpacity(70).end();
+                .normalOpacity(70).end();
         layerMan.add(pauseButton, Layer.UI);    
+        
+        // Set the click hook.
+        pauseButton.setClickHook(new Runnable()
+        {
+           public void run()
+           {
+                if (pauseButton.isActivated() == true)            
+                {                
+                    groupMan.showGroup(pauseButton, pauseGroup, 
+                            GroupManager.Class.PAUSE,
+                            GroupManager.Layer.MIDDLE);            
+                }
+                else
+                {
+                    groupMan.hideGroup(
+                            GroupManager.Class.PAUSE,
+                            GroupManager.Layer.MIDDLE);            
+                }
+           }
+        });
         
         // Create the options button, using pause button as a template.
         optionsButton = new SpriteButton.Builder((SpriteButton) pauseButton)
                 .y(299).text("Options").end();
-        layerMan.add(optionsButton, Layer.UI);                
+        layerMan.add(optionsButton, Layer.UI);  
+        
+        // Set the click hook.
+        optionsButton.setClickHook(new Runnable()
+        {
+           public void run()
+           {
+                if (optionsButton.isActivated() == true)  
+                {                
+                    groupMan.showGroup(optionsButton, optionsGroup,
+                            GroupManager.Class.OPTIONS,
+                            GroupManager.Layer.MIDDLE);            
+                }
+                else     
+                {
+                    groupMan.hideGroup(
+                            GroupManager.Class.OPTIONS,
+                            GroupManager.Layer.MIDDLE);
+                }
+           }
+        });
         
         // Create the help buttton, using pause button as a template.
         helpButton = new SpriteButton.Builder((SpriteButton) optionsButton)
@@ -411,7 +482,7 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     public void updateLogic(Game game)
     {
         // Make shortcuts to the managers.
-        GroupManager groupMan       = game.groupMan;
+        //GroupManager groupMan       = game.groupMan;
         LayerManager layerMan       = game.layerMan;
         ScoreManager scoreMan       = game.scoreMan;
         TimerManager timerMan       = game.timerMan;
@@ -419,55 +490,55 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         WorldManager worldMan       = game.worldMan;
         
         // If the high score button was just clicked.
-        if (highScoreButton.clicked() == true)
-        {
-            if (highScoreButton.isActivated() == true)            
-            {                           
-                groupMan.showGroup(highScoreButton, highScoreGroup, 
-                        GroupManager.Class.HIGH_SCORE,
-                        GroupManager.Layer.MIDDLE);            
-            }
-            else
-            {
-                groupMan.hideGroup(
-                        GroupManager.Class.HIGH_SCORE,
-                        GroupManager.Layer.MIDDLE);
-            }
-        } // end if
-        
-        // If the pause button was just clicked.
-        if (pauseButton.clicked() == true)
-        {            
-            if (pauseButton.isActivated() == true)            
-            {                
-                groupMan.showGroup(pauseButton, pauseGroup, 
-                        GroupManager.Class.PAUSE,
-                        GroupManager.Layer.MIDDLE);            
-            }
-            else
-            {
-                groupMan.hideGroup(
-                        GroupManager.Class.PAUSE,
-                        GroupManager.Layer.MIDDLE);            
-            }
-        } // end if
-        
-        // If the options button was just clicked.
-        if (optionsButton.clicked() == true)
-        {                           
-            if (optionsButton.isActivated() == true)  
-            {                
-                groupMan.showGroup(optionsButton, optionsGroup,
-                        GroupManager.Class.OPTIONS,
-                        GroupManager.Layer.MIDDLE);            
-            }
-            else     
-            {
-                groupMan.hideGroup(
-                        GroupManager.Class.OPTIONS,
-                        GroupManager.Layer.MIDDLE);
-            }
-        } // end if  
+//        if (highScoreButton.clicked() == true)
+//        {
+//            if (highScoreButton.isActivated() == true)            
+//            {                           
+//                groupMan.showGroup(highScoreButton, highScoreGroup, 
+//                        GroupManager.Class.HIGH_SCORE,
+//                        GroupManager.Layer.MIDDLE);            
+//            }
+//            else
+//            {
+//                groupMan.hideGroup(
+//                        GroupManager.Class.HIGH_SCORE,
+//                        GroupManager.Layer.MIDDLE);
+//            }
+//        } // end if
+//        
+//        // If the pause button was just clicked.
+//        if (pauseButton.clicked() == true)
+//        {            
+//            if (pauseButton.isActivated() == true)            
+//            {                
+//                groupMan.showGroup(pauseButton, pauseGroup, 
+//                        GroupManager.Class.PAUSE,
+//                        GroupManager.Layer.MIDDLE);            
+//            }
+//            else
+//            {
+//                groupMan.hideGroup(
+//                        GroupManager.Class.PAUSE,
+//                        GroupManager.Layer.MIDDLE);            
+//            }
+//        } // end if
+//        
+//        // If the options button was just clicked.
+//        if (optionsButton.clicked() == true)
+//        {                           
+//            if (optionsButton.isActivated() == true)  
+//            {                
+//                groupMan.showGroup(optionsButton, optionsGroup,
+//                        GroupManager.Class.OPTIONS,
+//                        GroupManager.Layer.MIDDLE);            
+//            }
+//            else     
+//            {
+//                groupMan.hideGroup(
+//                        GroupManager.Class.OPTIONS,
+//                        GroupManager.Layer.MIDDLE);
+//            }
+//        } // end if  
         
         // Draw the timer text.
         if (!timerLabel.getText().equals(String.valueOf(timerMan.getTime())))            

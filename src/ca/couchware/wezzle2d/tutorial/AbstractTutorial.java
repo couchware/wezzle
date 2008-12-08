@@ -98,7 +98,7 @@ public abstract class AbstractTutorial implements ITutorial
         repeatButton = new SpriteButton.Builder(400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.THIN)
-                .text("Repeat").offOpacity(70).visible(false).end();
+                .text("Repeat").normalOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Layer.EFFECT);
         
          // Create continue button, using the repeat button as a template.
@@ -123,7 +123,7 @@ public abstract class AbstractTutorial implements ITutorial
             IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
                     .wait(0).duration(500).end();
             
-            a.setFinishRunnable(new Runnable()
+            a.setFinishHook(new Runnable()
             {
                 public void run()
                 { e.setVisible(false); }

@@ -16,7 +16,6 @@ import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.graphics.IEntity;
-import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -26,10 +25,9 @@ import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.SpriteButton;
-import ca.couchware.wezzle2d.ui.Window;
+import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
-import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,9 +35,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
@@ -51,39 +46,19 @@ import javazoom.jlgui.basicplayer.BasicPlayerException;
 public class PlayNowGroup extends AbstractGroup
 {
     
-    /**
-     * The minimum level the user can select.
-     */
+    /** The minimum level the user can select. */
     final private static int MIN_LEVEL = 1;
     
-    /*
-     * The maximum level the user can select.
-     */
-    final private static int MAX_LEVEL = 15;      
+    /** The maximum level the user can select. */
+    final private static int MAX_LEVEL = 15;          
     
-    /**
-     * The layer manager.
-     */
-    final private LayerManager layerMan;
-    
-    /**
-     * The music manager.
-     */
-    final private MusicManager musicMan;
-    
-    /**
-     * The name button.
-     */
+    /** The name button. */
     final private IButton nameButton;
     
-    /**
-     * The level down button.
-     */
+    /** The level down button. */
     final private IButton levelDownButton;
     
-    /**
-     * The level up button.
-     */
+    /** The level up button. */
     final private IButton levelUpButton;
     
     /** The level label. */
@@ -92,48 +67,41 @@ public class PlayNowGroup extends AbstractGroup
     /** The level. */
     private int levelNumber = 1;
     
-    /**
-     * The music radio group.
-     */
+    /** The music radio group. */
     final private RadioGroup<Theme> themeRadio;        
     
-    /**
-     * The music player map.
-     */
-    private Map<Theme, MusicPlayer> playerMap;   
+    /** The music player map. */
+    private Map<Theme, MusicPlayer> playerMap;       
     
-    /**
-     * The start button.
-     */
+    /** The start button. */
     final private IButton startButton;
     
     /**
      * The background window.
      */
-    private Window win;
+    private Box box;
     
-    public PlayNowGroup(IGroup parent, 
-            final SettingsManager settingsMan,
+    public PlayNowGroup(
+            final IGroup parent, 
             final LayerManager layerMan, 
-            final MusicManager musicMan)
+            final Game game)
     {
         // Invoke the super.
         super(parent);
                
-        // Set the managers.
-        this.layerMan = layerMan;
-        this.musicMan = musicMan;
+        // Set the managers.        
+        final SettingsManager settingsMan = game.settingsMan;       
         
         // The colors.
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
         final Color OPTION_COLOR = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
         
         // Create the window.
-        win = new Window.Builder(268, 300).width(430).height(470)
+        box = new Box.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
                 .visible(false).end();
-        this.layerMan.add(win, Layer.UI);         
+        layerMan.add(box, Layer.UI);         
         
         // The label spacing.
         final int SPACING = 60;
@@ -149,7 +117,7 @@ public class PlayNowGroup extends AbstractGroup
         this.nameButton = new SpriteButton.Builder(355, nl.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(OPTION_COLOR)
-                .type(SpriteButton.Type.NORMAL).visible(false).offOpacity(90)
+                .type(SpriteButton.Type.NORMAL).visible(false).normalOpacity(90)
                 .text("TEST").end();
         this.entityList.add(this.nameButton);
         
@@ -167,45 +135,60 @@ public class PlayNowGroup extends AbstractGroup
         // Create the level down button.
         this.levelDownButton = new SpriteButton.Builder(this.levelNumberLabel.getX() - 55, ll.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))                
-                .type(SpriteButton.Type.SMALL_CIRCULAR).offOpacity(90)
-                .text("-").visible(false).end();
+                .type(SpriteButton.Type.SMALL_CIRCULAR).normalOpacity(90)
+                .text("-").visible(false).end();        
+        
+        this.levelDownButton.setClickHook(new Runnable()
+        {
+            public void run() { handleLevelDownButtonClick(layerMan); }
+        });
+        
         this.entityList.add(this.levelDownButton);
         
         // Create the level up button.
         this.levelUpButton = new SpriteButton.Builder((SpriteButton) levelDownButton)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))                
-                .x(this.levelNumberLabel.getX() + 55).text("+").end();
-        this.entityList.add(this.levelUpButton);                       
+                .x(this.levelNumberLabel.getX() + 55).text("+").end();        
+        
+        this.levelUpButton.setClickHook(new Runnable()
+        {
+            public void run() { handleLevelUpButtonClick(layerMan); }
+        });
+        
+        this.entityList.add(this.levelUpButton); 
               
         // Create the music theme label.
         ILabel tl = new LabelBuilder(nl).y(nl.getY() + SPACING * 2).text("Music Theme").end();
         this.entityList.add(tl);
         
         // Create a window background for this option.
-        Window w = new Window.Builder(268, tl.getY() + SPACING).width(380).height(70)
+        Box w = new Box.Builder(268, tl.getY() + SPACING).width(380).height(70)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .border(Window.Border.MEDIUM).opacity(80).visible(false).end();                    
+                .border(Box.Border.MEDIUM)
+                .opacity(80)
+                .visible(false)
+                .end();                    
         
         this.entityList.add(w);        
         
         // Create the music players.
-        createPlayers();
+        createAudioPlayers();
         
         // Creat the level limit radio group.        
         RadioItem themeItem1 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("A").end();
-        themeItem1.setMouseOnRunnable(createFadeInRunnable(Theme.A));        
-        themeItem1.setMouseOffRunnable(createFadeOutRunnable(Theme.A));
+        themeItem1.setMouseOnHook(createFadeInRunnable(Theme.A));        
+        themeItem1.setMouseOffHook(createFadeOutRunnable(Theme.A));
         
         RadioItem themeItem2 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("B").end();
-        themeItem2.setMouseOnRunnable(createFadeInRunnable(Theme.B));        
-        themeItem2.setMouseOffRunnable(createFadeOutRunnable(Theme.B));
+        themeItem2.setMouseOnHook(createFadeInRunnable(Theme.B));        
+        themeItem2.setMouseOffHook(createFadeOutRunnable(Theme.B));
         
         RadioItem themeItem3 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("C").end();
-        themeItem3.setMouseOnRunnable(createFadeInRunnable(Theme.C));        
-        themeItem3.setMouseOffRunnable(createFadeOutRunnable(Theme.C));
+        themeItem3.setMouseOnHook(createFadeInRunnable(Theme.C));        
+        themeItem3.setMouseOffHook(createFadeOutRunnable(Theme.C));
         
         Map<Theme, Boolean> themeMap = new EnumMap<Theme, Boolean>(Theme.class);
         themeMap.put(Theme.A, false);
@@ -234,16 +217,22 @@ public class PlayNowGroup extends AbstractGroup
         this.startButton = new SpriteButton.Builder(266, 435)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .type(SpriteButton.Type.LARGE).visible(false).offOpacity(90)
+                .type(SpriteButton.Type.LARGE).visible(false).normalOpacity(90)
                 .text("Start").end();
+        
+        this.startButton.setClickHook(new Runnable()
+        {
+            public void run() { handleStartButtonClick(game); }
+        });
+        
         this.entityList.add(this.startButton);
                 
         // Add them all to the layer manager.
         for (IEntity e : this.entityList)
-            this.layerMan.add(e, Layer.UI);        
+            layerMan.add(e, Layer.UI);        
     }
     
-    private void createPlayers()
+    private void createAudioPlayers()
     {
         // Create the music player map.
         this.playerMap = new EnumMap<Theme, MusicPlayer>(Theme.class);
@@ -295,14 +284,14 @@ public class PlayNowGroup extends AbstractGroup
     @Override
     public IAnimation animateShow()
     {       
-        win.setXYPosition(268, -300);
-        win.setVisible(true);        
+        box.setXYPosition(268, -300);
+        box.setVisible(true);        
         
-        IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
+        IAnimation a = new MoveAnimation.Builder(box).theta(-90).maxY(300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
                 .end();   
         
-        a.setFinishRunnable(new Runnable()
+        a.setFinishHook(new Runnable()
         {
            public void run()
            { setVisible(true); }
@@ -314,12 +303,12 @@ public class PlayNowGroup extends AbstractGroup
     @Override
     public IAnimation animateHide()
     {        
-        IAnimation a = new MoveAnimation.Builder(win).theta(-90)
+        IAnimation a = new MoveAnimation.Builder(box).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
                 .end();
         
-        a.setStartRunnable(new Runnable()
+        a.setStartHook(new Runnable()
         {
            public void run()
            { setVisible(false); }
@@ -328,79 +317,92 @@ public class PlayNowGroup extends AbstractGroup
         return a;
     }
         
+    private void handleLevelDownButtonClick(LayerManager layerMan)
+    {
+        // Reset the level down button.
+        this.levelDownButton.setActivated(false);
+
+        // Extract the current setting.            
+        levelNumber = levelNumber - 1 < MIN_LEVEL 
+                ? MIN_LEVEL 
+                : levelNumber - 1;
+
+        // Remove old label.
+        this.entityList.remove(this.levelNumberLabel);
+        layerMan.remove(this.levelNumberLabel, Layer.UI);
+
+        // Add new label.
+        this.levelNumberLabel = new LabelBuilder(this.levelNumberLabel)
+                .text(String.valueOf(levelNumber)).end();
+
+        // Add it.
+        this.entityList.add(this.levelNumberLabel);
+        layerMan.add(this.levelNumberLabel, Layer.UI);   
+    }
+    
+    private void handleLevelUpButtonClick(LayerManager layerMan)
+    {
+        // Reset the level up button.
+        this.levelUpButton.setActivated(false);
+
+        // Determine new setting.
+        levelNumber = levelNumber + 1 > MAX_LEVEL 
+                ? MAX_LEVEL 
+                : levelNumber + 1;
+
+        // Remove old label.
+        this.entityList.remove(this.levelNumberLabel);
+        layerMan.remove(this.levelNumberLabel, Layer.UI);
+
+        // Add new label.
+        this.levelNumberLabel = new LabelBuilder(this.levelNumberLabel)
+                .text(String.valueOf(levelNumber)).end();
+
+        // Add it.
+        this.entityList.add(this.levelNumberLabel);
+        layerMan.add(this.levelNumberLabel, Layer.UI);    
+    }
+    
+    private void handleStartButtonClick(Game game)
+    {
+        // Set the music.
+        game.musicMan.setTheme(themeRadio.getSelectedKey());
+
+        // Set the target score.
+        game.worldMan.setLevel(levelNumber);
+        game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
+        game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));
+        //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
+
+        // Stop all the player.
+        for (MusicPlayer p : playerMap.values())
+        {                
+            p.stopAtGain(0.0);
+        }        
+
+        game.startBoard();
+
+        // Notify the main menu.
+        this.parent.setActivated(false);
+    }
+    
     public void updateLogic(Game game)
     {
-        // See if the level down button was clicked.
-        if (this.levelDownButton.clicked() == true)
-        {
-            // Reset the level down button.
-            this.levelDownButton.setActivated(false);
-            
-            // Extract the current setting.            
-            levelNumber = levelNumber - 1 < MIN_LEVEL 
-                    ? MIN_LEVEL 
-                    : levelNumber - 1;
-            
-            // Remove old label.
-            this.entityList.remove(this.levelNumberLabel);
-            this.layerMan.remove(this.levelNumberLabel, Layer.UI);
-            
-            // Add new label.
-            this.levelNumberLabel = new LabelBuilder(this.levelNumberLabel)
-                    .text(String.valueOf(levelNumber)).end();
-            
-            // Add it.
-            this.entityList.add(this.levelNumberLabel);
-            this.layerMan.add(this.levelNumberLabel, Layer.UI);                       
-        }
-        // See if the level up button was clicked.
-        else if (this.levelUpButton.clicked() == true)
-        {
-            // Reset the level up button.
-            this.levelUpButton.setActivated(false);
-            
-            // Determine new setting.
-            levelNumber = levelNumber + 1 > MAX_LEVEL 
-                    ? MAX_LEVEL 
-                    : levelNumber + 1;
-            
-            // Remove old label.
-            this.entityList.remove(this.levelNumberLabel);
-            this.layerMan.remove(this.levelNumberLabel, Layer.UI);
-            
-            // Add new label.
-            this.levelNumberLabel = new LabelBuilder(this.levelNumberLabel)
-                    .text(String.valueOf(levelNumber)).end();
-            
-            // Add it.
-            this.entityList.add(this.levelNumberLabel);
-            this.layerMan.add(this.levelNumberLabel, Layer.UI);           
-        }       
-        // See if the start button has been pressed.
-        else if (this.startButton.clicked() == true)
-        {
-            // Set the music.
-            this.musicMan.setTheme(themeRadio.getSelectedKey());
-            
-            // Set the target score.
-            game.worldMan.setLevel(levelNumber);
-            game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
-            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));
-            //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
-                                      
-            // Stop all the player.
-            for (MusicPlayer p : playerMap.values())
-            {                
-                p.stopAtGain(0.0);
-            }        
-            
-            game.startBoard();
-            
-              
-            
-            // Notify the main menu.
-            this.parent.setActivated(false);
-        }
+//        // See if the level down button was clicked.
+//        if (this.levelDownButton.clicked() == true)
+//        {
+//                                
+//        }
+//        // See if the level up button was clicked.
+//        else if (this.levelUpButton.clicked() == true)
+//        {
+//                   
+//        }       
+//        // See if the start button has been pressed.
+//        else if (this.startButton.clicked() == true)
+//        {
+//           
+//        }
     }
     
 }

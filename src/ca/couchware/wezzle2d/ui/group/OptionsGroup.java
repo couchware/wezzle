@@ -80,7 +80,7 @@ public class OptionsGroup extends AbstractGroup
         upgradeButton = new SpriteButton.Builder(400, 246)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .type(SpriteButton.Type.THIN)
-                .text("Upgrade").offOpacity(80).visible(false).end();        
+                .text("Upgrade").normalOpacity(80).visible(false).end();        
         layerMan.add(upgradeButton, Layer.UI);
         entityList.add(upgradeButton);
         

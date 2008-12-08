@@ -76,22 +76,39 @@ public class Util
 		array[c2][r2] = swap;
 	}
     
+    /**
+     * Scales a value.
+     *  
+     * @param fromLower
+     * @param fromUpper
+     * @param toLower
+     * @param toUpper
+     * @param fromNumber
+     * @return
+     */
     public static int scaleInt(int fromLower, int fromUpper,
             int toLower, int toUpper, int fromNumber)
-    {
-        assert(fromUpper > fromLower);
-        assert(toUpper > toLower);
+    {        
+        assert fromUpper >= fromLower;
+        assert toUpper   >= toLower;
         
         if (fromNumber < fromLower)
+        {
             return toLower;
+        }
         else if (fromNumber > fromUpper)
+        {
             return toUpper;
+        }
         
         int fromRange = fromUpper - fromLower;
+        if (fromRange == 0) return 0;
+        
         double fromFraction = (double) (fromNumber - fromLower)
                 / (double) fromRange;
         
         int toRange = toUpper - toLower;
+        if (toRange == 0) return 0;
         
         return toLower + (int) (((double) toRange) * fromFraction);
     }

@@ -110,7 +110,7 @@ public class TileEntity extends GraphicEntity implements IClickable
     /**
      * Sets the click runnable.
      */
-    public void setClickRunnable(Runnable clickAction)
+    public void setClickHook(Runnable clickAction)
     { 
         this.clickAction = clickAction;
     }
@@ -118,7 +118,7 @@ public class TileEntity extends GraphicEntity implements IClickable
     /**
      * Gets the click runnable.
      */
-    public Runnable getClickRunnable()
+    public Runnable getClickHook()
     {
         return clickAction;
     }
@@ -126,7 +126,7 @@ public class TileEntity extends GraphicEntity implements IClickable
     /**
      * This method is called when the tile is clicked.
      */
-    public void onClick()
+    public void runClickHook()
     {
         if (clickAction != null) clickAction.run();
     }

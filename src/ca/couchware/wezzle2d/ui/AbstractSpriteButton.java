@@ -18,15 +18,16 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
         IButton, IMouseListener       
 {
     
-    /**
-     * Is the mouse on or off the button.
-     */
+    /** Is the mouse on or off the button. */
     public static enum State
     {
         PRESSED,
         HOVERED,
         ACTIVATED
     }
+    
+    /** A runnable with an empty body. */
+    private static Runnable EMPTY_HOOK = new Runnable() { public void run () { } };
     
     // -------------------------------------------------------------------------
     // Instance Attributes
@@ -48,11 +49,11 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
      */
     protected ImmutableRectangle shape;                
     
-    /**
-     * Was the button just clicked?  This flag is cleared once it
-     * is read.
-     */
-    private boolean clicked = false;        
+//    /**
+//     * Was the button just clicked?  This flag is cleared once it
+//     * is read.
+//     */
+    private boolean clicked = false;           
     
     // -------------------------------------------------------------------------
     // Constructors
@@ -105,13 +106,14 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     protected void handleReleased()
     {                                             
         if (state.containsAll(EnumSet.of(State.PRESSED, State.HOVERED)))
-        {
-           clicked = true;                      
-           
+        {                                         
            if (state.remove(State.ACTIVATED) == false)
            {               
                state.add(State.ACTIVATED);
            }
+           
+           clicked = true;
+           runClickHook();
         }   
         
         state.remove(State.PRESSED);
@@ -163,17 +165,17 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     /**
      * The mouse on runnable.
      */
-    protected Runnable mouseOnRunnable = null;
+    protected Runnable mouseOnHook = EMPTY_HOOK;
 
-    public void setMouseOnRunnable(Runnable mouseOnRunnable)
+    public void setMouseOnHook(Runnable hook)
     {
-        this.mouseOnRunnable = mouseOnRunnable;
+        assert hook != null;
+        this.mouseOnHook = hook;
     }        
     
     protected void handleMouseOn()
-    {   
-        if (mouseOnRunnable != null)
-            mouseOnRunnable.run();
+    {           
+        mouseOnHook.run();
         
         //LogManager.recordMessage(this + " on called");
         // Set the cursor appropriately.
@@ -185,17 +187,16 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     /**
      * The mouse off runnable.
      */
-    protected Runnable mouseOffRunnable = null;
+    protected Runnable mouseOffHook = EMPTY_HOOK;
 
-    public void setMouseOffRunnable(Runnable mouseOffRunnable)
+    public void setMouseOffHook(Runnable hoook)
     {
-        this.mouseOffRunnable = mouseOffRunnable;
+        this.mouseOffHook = hoook;
     }            
                
     protected void handleMouseOff()
-    {   
-        if (mouseOffRunnable != null)
-            mouseOffRunnable.run(); 
+    {           
+        mouseOffHook.run(); 
         
         //LogManager.recordMessage(this + " off called");
         // Set the cursor appropriately.
@@ -316,33 +317,31 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
     // Clickable
     //--------------------------------------------------------------------------
     
-    /**
-     * The stored click action.
-     */
-    Runnable clickRunnable = null;
+    /** The runnable that is run when the button is clicked. */
+    protected Runnable clickHook = EMPTY_HOOK;
     
     /**
      * Sets the click runnable.
      */
-    public void setClickRunnable(Runnable clickRunnable)
+    public void setClickHook(Runnable hook)
     { 
-        this.clickRunnable = clickRunnable;
+        this.clickHook = hook;
     }
     
     /**
      * Gets the click runnable.
      */
-    public Runnable getClickRunnable()
+    public Runnable getClickHook()
     {
-        return clickRunnable;
+        return clickHook;
     }
     
     /**
      * This method is called when the tile is clicked.
      */
-    public void onClick()
+    public void runClickHook()
     {
-        if (clickRunnable != null) clickRunnable.run();
+        clickHook.run();
     }
     
     //--------------------------------------------------------------------------
