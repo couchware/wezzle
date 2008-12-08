@@ -205,7 +205,8 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         // Create the buttons.               
         button = new SpriteButton.Builder(910, 153)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))               
-                .type(SpriteButton.Type.THIN).text("Play Now").textSize(20)
+                //.type(SpriteButton.Type.THIN)
+                .text("Play Now").textSize(20)
                 .hoverOpacity(70).normalOpacity(0).disabled(true).end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.PLAY_NOW, button);                

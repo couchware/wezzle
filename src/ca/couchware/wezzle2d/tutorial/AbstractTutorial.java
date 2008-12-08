@@ -97,7 +97,7 @@ public abstract class AbstractTutorial implements ITutorial
         // Create repeat button.
         repeatButton = new SpriteButton.Builder(400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.THIN)
+                //.type(SpriteButton.Type.THIN)
                 .text("Repeat").normalOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Layer.EFFECT);
         

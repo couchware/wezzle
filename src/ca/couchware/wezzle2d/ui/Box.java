@@ -21,7 +21,8 @@ import java.awt.Color;
 import java.util.EnumSet;
 
 /**
- *
+ * Creates a graphical box.
+ * 
  * @author cdmckay
  */
 public class Box extends AbstractEntity implements IMouseListener

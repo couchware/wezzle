@@ -119,7 +119,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         // Create close button.
         closeButton = new SpriteButton.Builder(400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.THIN)
+                //.type(SpriteButton.Type.THIN)
                 .text("Close").normalOpacity(70).visible(false).end();
         layerMan.add(closeButton, Layer.UI);
         entityList.add(closeButton);

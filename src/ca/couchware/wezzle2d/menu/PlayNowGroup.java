@@ -149,7 +149,9 @@ public class PlayNowGroup extends AbstractGroup
         this.nameButton = new SpriteButton.Builder(355, nl.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(OPTION_COLOR)
-                .type(SpriteButton.Type.NORMAL).visible(false).normalOpacity(90)
+                .width(150)
+                //.type(SpriteButton.Type.NORMAL)
+                .visible(false).normalOpacity(90)
                 .text("TEST").end();
         this.entityList.add(this.nameButton);
         
@@ -167,13 +169,16 @@ public class PlayNowGroup extends AbstractGroup
         // Create the level down button.
         this.levelDownButton = new SpriteButton.Builder(this.levelNumberLabel.getX() - 55, ll.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))                
-                .type(SpriteButton.Type.SMALL_CIRCULAR).normalOpacity(90)
+                //.type(SpriteButton.Type.SMALL_CIRCULAR)
+                .width(30)
+                .normalOpacity(90)
                 .text("-").visible(false).end();
         this.entityList.add(this.levelDownButton);
         
         // Create the level up button.
         this.levelUpButton = new SpriteButton.Builder((SpriteButton) levelDownButton)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))                
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT)) 
+                .width(30)
                 .x(this.levelNumberLabel.getX() + 55).text("+").end();
         this.entityList.add(this.levelUpButton);                       
               
@@ -234,7 +239,8 @@ public class PlayNowGroup extends AbstractGroup
         this.startButton = new SpriteButton.Builder(266, 435)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .type(SpriteButton.Type.LARGE).visible(false).normalOpacity(90)
+                //.type(SpriteButton.Type.LARGE)
+                .visible(false).normalOpacity(90)
                 .text("Start").end();
         this.entityList.add(this.startButton);
                 

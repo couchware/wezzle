@@ -91,7 +91,8 @@ public class ExitGroup extends AbstractGroup
         this.yesButton = new SpriteButton.Builder(266, 400)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .type(SpriteButton.Type.THIN).visible(false).normalOpacity(90)
+                //.type(SpriteButton.Type.THIN)
+                .visible(false).normalOpacity(90)
                 .text("Yes").end();
         this.entityList.add(this.yesButton);
         

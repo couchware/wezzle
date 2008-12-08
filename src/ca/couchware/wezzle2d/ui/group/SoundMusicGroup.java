@@ -145,7 +145,7 @@ public class SoundMusicGroup extends AbstractGroup
         // Create back button.
         backButton = new SpriteButton.Builder(400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.THIN)
+                //.type(SpriteButton.Type.THIN)
                 .text("Back").normalOpacity(70).visible(false).end();        
         layerMan.add(backButton, Layer.UI);     
         entityList.add(backButton);

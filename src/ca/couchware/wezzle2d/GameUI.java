@@ -204,14 +204,17 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         // The high score button.
         highScoreButton = new SpriteButton.Builder(128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.HUGE).text("")
+                //.type(SpriteButton.Type.HUGE)
+                .text("")
                 .normalOpacity(0).hoverOpacity(70).activeOpacity(95).end();
         layerMan.add(highScoreButton, Layer.UI);
                 
         // Create pause button.        
         pauseButton = new SpriteButton.Builder(668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(SpriteButton.Type.NORMAL).text("Pause").activeText("Resume")
+                //.type(SpriteButton.Type.NORMAL)
+                .width(170)
+                .text("Pause").activeText("Resume")
                 .normalOpacity(70).end();
         layerMan.add(pauseButton, Layer.UI);    
         

@@ -28,64 +28,35 @@ public class SpriteButton extends AbstractSpriteButton
     public static void setDefaultColor(Color color)
     { defaultColor = color; }    
     
-    /** The different sizes of the buttons. */
-    public enum Type
-    {
-        /** A small circular button suitable for use in +/- clickers. */
-        SMALL_CIRCULAR("Button_SmallCircular.png", 18), 
-        
-        /** A thinner, longer button used in the main menu. */
-        THIN          ("Button_Thin.png",          20),        
-        
-        /** The "normal" sized button used in the in-game UI. */
-        NORMAL        ("Button_Normal.png",        18), 
-        
-        /** A larger, squarish button used in the main menu. */
-        LARGE         ("Button_Large.png",         24), 
-        
-        /** A huge, squarish button used in the in-game button as the high-score button. */
-        HUGE          ("Button_Huge.png",          26);       
-                
-        /** The file name of the sprite that represents the button. */
-        private String filename;
-        
-        /** The text size of the text that will be written on the button */
-        private int textSize;
-        
-        /** 
-         * Constructor that stores the filename. 
-         * 
-         * @param filename The filename of the button's appearance.
-         * @param textSize The text size.
-         */
-        Type(String filename, int textSize)
-        { this.filename = filename; this.textSize = textSize; }
-        
-        /** 
-         * An accessor for getting the sprite's filename. 
-         * 
-         * @return The filename.
-         */
-        public String getFilename()
-        { return filename; }
-        
-        /** 
-         * An accessor for getting the sprite's text size. 
-         * 
-         * @return The text size.
-         */
-        public int getTextSize()
-        { return textSize; }
-    }        
+    /** The graphic file type. */
+    final private static String FILE_TYPE = ".png";
+    
+    /** The left sprite. */
+    final private static String LEFT_SPRITE_PATH = Settings.getSpriteResourcesPath() 
+            + "/Button_Thin_Left" 
+            + FILE_TYPE;
+    
+    /** The middle sprite. */
+    final private static String MIDDLE_SPRITE_PATH = Settings.getSpriteResourcesPath() 
+            + "/Button_Thin_Middle" 
+            + FILE_TYPE;
+    
+    /** The right sprite. */
+    final private static String RIGHT_SPRITE_PATH = Settings.getSpriteResourcesPath() 
+            + "/Button_Thin_Right" 
+            + FILE_TYPE;
            
     /** The color of the button. */
-    final private Color textColor;
+    final private Color textColor;   
+
+    /** The left sprite of the button. */
+    final private ISprite leftSprite;
     
-//    /** The type of button. */
-    final private Type type;
+    /** The middle sprite of the button. */
+    final private ISprite middleSprite;
     
-    /** The normal sprite. */
-    final private ISprite sprite;       
+    /** The right sprite of the button. */
+    final private ISprite rightSprite;
     
     /** The normal label. */
     final private ILabel normalLabel;   
@@ -132,6 +103,7 @@ public class SpriteButton extends AbstractSpriteButton
         super(builder.x, builder.y);
         
         // Assign values from builder.      
+        this.textSize       = builder.textSize;
         this.textColor      = builder.textColor;
         this.normalText     = builder.normalText;       
         this.hoverText      = builder.hoverText;
@@ -141,28 +113,27 @@ public class SpriteButton extends AbstractSpriteButton
         this.pressedOpacity = limitOpacity(builder.pressedOpacity);
         this.activeOpacity  = limitOpacity(builder.activeOpacity);
         this.opacity        = limitOpacity(builder.opacity);
-        this.type           = builder.type;
-        
-        // Determine which text size to use.  If it is 0, then use the 
-        // one from the text-size map.  Otherwise, use the one provided 
-        // by the builder.
-        if (builder.textSize == 0)
-            this.textSize = this.type.getTextSize();
-        else
-            this.textSize = builder.textSize;
-        
+                
         // Set the visibility.
         this.visible = builder.visible;
         this.disabled = builder.disabled;
                                                                    
-        // Load the normal sprite.
-        sprite = ResourceFactory.get()
-                .getSprite(Settings.getSpriteResourcesPath() + "/" + this.type.getFilename());      
+        // Load the sprites.
+        leftSprite   = ResourceFactory.get().getSprite(LEFT_SPRITE_PATH);      
+        middleSprite = ResourceFactory.get().getSprite(MIDDLE_SPRITE_PATH);      
+        rightSprite  = ResourceFactory.get().getSprite(RIGHT_SPRITE_PATH);      
         
         // Assign values based on the values from builder.        
-        this.width = sprite.getWidth();
-        this.height = sprite.getHeight();
+        this.width  = builder.width;
+        this.height = 40;
         
+        // Make sure the width is acceptable.
+        int w1 = leftSprite.getWidth();        
+        int w2 = rightSprite.getWidth();                     
+        
+        if (w1 + w2 > width)
+            throw new RuntimeException("The button width is too narrow.");
+                        
         // Determine the offsets.
         this.alignment = builder.alignment;
         this.offsetX = determineOffsetX(alignment, width);
@@ -208,13 +179,13 @@ public class SpriteButton extends AbstractSpriteButton
         private String normalText = "Button";
         private String hoverText = null;
         private String activeText = null;
-        private int textSize = 0;        
+        private int width = 220;
+        private int textSize = 20;        
         private int pressedOpacity = 100;
         private int hoverOpacity   = 100;        
         private int activeOpacity  = 100;
         private int normalOpacity  = 80;
         private int opacity        = 100;
-        private Type type = Type.NORMAL;  
         private boolean visible = true;
         private boolean disabled = false;
         
@@ -229,16 +200,16 @@ public class SpriteButton extends AbstractSpriteButton
             this.x                = button.x;
             this.y                = button.y;
             this.alignment        = button.alignment.clone();
-            this.textColor            = button.textColor;
+            this.textColor        = button.textColor;
             this.normalText       = button.normalText;
             this.hoverText        = button.hoverText;
+            this.width            = button.width;
             this.textSize         = button.textSize;            
             this.hoverOpacity     = button.hoverOpacity;
             this.pressedOpacity   = button.pressedOpacity;
             this.activeOpacity    = button.activeOpacity;
             this.normalOpacity    = button.normalOpacity;       
-            this.opacity          = button.opacity;
-            this.type             = button.type;
+            this.opacity          = button.opacity;            
             this.visible          = button.visible;
             this.disabled         = button.disabled;
         }
@@ -267,6 +238,9 @@ public class SpriteButton extends AbstractSpriteButton
         public Builder activeText(String val)                 
         { activeText = val; return this; }
         
+        public Builder width(int val)
+        { width = val; return this; }
+        
         public Builder textSize(int val)
         { textSize = val; return this; }
         
@@ -284,10 +258,7 @@ public class SpriteButton extends AbstractSpriteButton
         
         public Builder opacity(int val)
         { opacity = val; return this; }
-        
-        public Builder type(Type val) 
-        { type = val; return this; }
-        
+                
         public Builder visible(boolean val) 
         { visible = val; return this; }
         
@@ -305,31 +276,32 @@ public class SpriteButton extends AbstractSpriteButton
         }                
     }    
         
-//    private void drawButton()
-//    {
-//        int scaledOpacity = Util.scaleInt(0, 100, 0, 255, opacitize(normalOpacity));
-//        int border = 2;
-//        
-//        window.setColor(SuperColor.newInstance(Color.BLACK, scaledOpacity));
-//        window.fillRoundRect(
-//                x + offsetX, y + offsetY, 
-//                width, height,
-//                10);        
-//        
-//        window.setColor(SuperColor.newInstance(Color.DARK_GRAY, scaledOpacity));
-//        window.fillRoundRect(
-//                x + offsetX + border, y + offsetY + border, 
-//                width - border * 2, height - border * 2,
-//                10);
-//    }
+    private void drawButton(int o)
+    {
+        final int X = x + offsetX;
+        final int Y = y + offsetY;
+        
+        leftSprite.draw(X, Y, leftSprite.getWidth(), height, 0.0, o);
+                
+        middleSprite.draw(
+                x + offsetX + leftSprite.getWidth(), 
+                y + offsetY,
+                width - leftSprite.getWidth() - rightSprite.getWidth(), 
+                height,
+                0.0, o); 
+        
+        rightSprite.draw(X + width - leftSprite.getWidth(), Y, 
+                rightSprite.getWidth(), height, 
+                0.0, o);
+    }
     
     private void drawNormal()
     {                
-        sprite.draw(
-                x + offsetX, y + offsetY, 
-                width, height,                 
-                0.0, opacitize(normalOpacity));   
-//        drawButton();  
+//        sprite.draw(
+//                x + offsetX, y + offsetY, 
+//                width, height,                 
+//                0.0, opacitize(normalOpacity));   
+        drawButton(opacitize(normalOpacity));  
         
         normalLabel.setOpacity(opacity);
         normalLabel.draw();
@@ -337,11 +309,11 @@ public class SpriteButton extends AbstractSpriteButton
     
     private void drawActivated()
     {        
-        sprite.draw(
-                x + offsetX, y + offsetY, 
-                width, height, 
-                0.0, opacitize(activeOpacity));        
-//        drawButton();   
+//        sprite.draw(
+//                x + offsetX, y + offsetY, 
+//                width, height, 
+//                0.0, opacitize(activeOpacity));        
+        drawButton(opacitize(activeOpacity));   
         
         if (activeLabel != null)
         {
@@ -357,7 +329,8 @@ public class SpriteButton extends AbstractSpriteButton
     
     private void drawHovered()
     {
-        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(hoverOpacity));
+        //sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(hoverOpacity));
+        drawButton(opacitize(hoverOpacity));
         
         if (hoverLabel != null) 
         {
@@ -381,7 +354,8 @@ public class SpriteButton extends AbstractSpriteButton
     
     private void drawPressed()
     {
-        sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(pressedOpacity));
+        //sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(pressedOpacity));
+        drawButton(opacitize(pressedOpacity));
         normalLabel.setOpacity(opacity);
         normalLabel.translate(0, 1);
         normalLabel.draw();
