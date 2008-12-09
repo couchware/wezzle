@@ -1175,7 +1175,7 @@ public class BoardManager implements IManager, IKeyListener
         // Remove the old, insert the new.       
         TileType type = t.getType();
         int index = getIndex(t);
-        this.removeTile(t);
+        this.removeTile(index);
         return this.createTile(index, type, color);    
     }
     
@@ -1231,11 +1231,9 @@ public class BoardManager implements IManager, IKeyListener
     public void removeTile(TileEntity t)
     {
        int i = getIndex(t);
-       
        assert(i != -1);
-       
+      
        removeTile(i);
-               
     }
     
     public void removeTile(final int index)
