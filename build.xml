@@ -5,13 +5,7 @@
 <project name="Wezzle2D" default="default" basedir=".">
     <description>Builds, tests, and runs the project Wezzle2D.</description>
     <import file="nbproject/build-impl.xml"/>
-    <import file="nbproject/profiler-build-impl.xml"/>   
-	<buildnumber file="build.number" />   
-    
-    <!-- This target copies the build number to the resource dir. -->
-	<target name="-pre-compile">
-		<copy file="${basedir}/build.number" todir="${src.dir}/resources/text"/>
-    </target>
+    <import file="nbproject/profiler-build-impl.xml"/>   	
 
     <!-- This target excludes the resources from the main JAR. -->
     <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available+main.class+mkdist.available" name="-do-jar-with-libraries">

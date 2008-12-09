@@ -212,7 +212,7 @@ public class Game extends Canvas implements IGameWindowCallback
             Settings.getTextResourcesPath() + "/build.number";                             
     
     /** The current build number. */
-    private String buildNumber;        
+    final private String BUILD_NUMBER = "$Id$";        
     
     /** The current drawer. */
     private IDrawer drawer;
@@ -260,38 +260,10 @@ public class Game extends Canvas implements IGameWindowCallback
 	 */
 	public Game(ResourceFactory.Renderer renderer) 
 	{
-        // Get the build number.
-        Properties buildProperties = new Properties();            
-               
-        try
-        {
-            URL url = this.getClass().getClassLoader()
-                .getResource(BUILD_NUMBER_PATH);  
-            
-            InputStream in = url.openStream();
-            buildProperties.load(in);
-            in.close();
-            
-            buildNumber = 
-                    (String) buildProperties.getProperty("build.number");
-        }
-        catch (Exception e)
-        {
-            LogManager.recordException(e);
-            LogManager.recordWarning("Could not find build number at: "
-                    + BUILD_NUMBER_PATH + "!",
-                    "Game#this");
-            buildNumber = "???";
-        }
-        finally
-        {
-            if (buildNumber == null)
-                buildNumber = "???";
-        }               
-        
+       
         // Print the build number.
         LogManager.recordMessage("Date: " + (new Date()));   
-        LogManager.recordMessage("Wezzle Build: " + buildNumber);
+        LogManager.recordMessage("Wezzle Build: " + BUILD_NUMBER);
         LogManager.recordMessage("Wezzle Version: " + APPLICATION_VERSION);
         LogManager.recordMessage("Java Version: " + System.getProperty("java.version"));
         LogManager.recordMessage("OS Name: " + System.getProperty("os.name"));
