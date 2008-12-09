@@ -714,7 +714,7 @@ public class WorldManager implements IManager,
             return;
          
         // Record how many lines were found.
-        this.wezzleLineCount += event.getLineCount();                                         
+        //this.wezzleLineCount += event.getLineCount();                                         
     }
 
     public void moveCommitted(MoveEvent event, GameType gameType)
@@ -728,17 +728,17 @@ public class WorldManager implements IManager,
         if (itemMap.containsKey(TileType.WEZZLE) == false)
             return;    
         
-        if (this.wezzleLineCount == 0)
-        {
-            // Check to see if the wezzle was handled.  If not, throw an
-            // exception and just die already.
-            if (this.wezzleTime == 0)
-                throw new IllegalStateException("Wezzle tile not handled!");
-            
-            setWezzleTime(this.wezzleTime - 1);
-            LogManager.recordMessage(
-                    "Wezzle timer is at: " + this.wezzleTime);                                              
-        }
+//        if (this.wezzleLineCount == 0)
+//        {
+//            // Check to see if the wezzle was handled.  If not, throw an
+//            // exception and just die already.
+//            if (this.wezzleTime == 0)
+//                throw new IllegalStateException("Wezzle tile not handled!");
+//            
+//            setWezzleTime(this.wezzleTime - 1);
+//            LogManager.recordMessage(
+//                    "Wezzle timer is at: " + this.wezzleTime);                                              
+//        }
            
 //        if (this.wezzleTime == 0)
 //        {   

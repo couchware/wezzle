@@ -6,6 +6,12 @@
 package ca.couchware.wezzle2d.tile;
 
 import ca.couchware.wezzle2d.util.Util;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The list of possible tile colours.
@@ -21,8 +27,8 @@ public enum TileColor
     YELLOW, 
     BLACK, 
     BROWN, 
-    WHITE;
-            
+    WHITE;          
+    
     @Override
     public String toString()
 	{
@@ -31,13 +37,23 @@ public enum TileColor
     }  
     
     public static TileColor getRandomColor(int max)
+    {        
+        Set<TileColor> emptySet = Collections.emptySet();
+        return getRandomColor(max, emptySet);
+    }
+    
+    public static TileColor getRandomColor(int max, Set<TileColor> filterSet)
 	{
         TileColor[] colors = values();
+        List<TileColor> colorList = new ArrayList<TileColor>(Arrays.asList(colors));
         
-        assert(max > 0);
-        assert(max <= colors.length);
+        assert max > 0;
+        assert max <= colorList.size();                   
         
-		return colors[Util.random.nextInt(max)];
+        colorList.removeAll(EnumSet.range(colors[max], colors[colors.length - 1]));
+        colorList.removeAll(filterSet);
+        
+		return colorList.get(Util.random.nextInt(colorList.size()));
 	}	
 } 
 

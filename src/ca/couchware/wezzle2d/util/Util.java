@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.util;
 
 import java.util.Random;
+import java.util.Set;
 
 /**
  * A utilty static class providing various convenience methods.
@@ -184,6 +185,20 @@ public class Util
         return minimum;
     }
     
+    public static <T> T getRandomElement(Set<T> set)
+    {
+        int rnd = random.nextInt(set.size());
+        
+        int count = 0;
+        for (T t : set)
+        {
+            if (count == rnd) return t;
+            count++;
+        }
+        
+        throw new RuntimeException("This should not happen.");
+    }
+    
     /**
      * Counts the number of line breaks (i.e. '\n' characters) in the passed
      * string.  Throws exception on null strings.
@@ -204,7 +219,7 @@ public class Util
         
         return n;
     }
-    
+            
     /**
      * Extracts the file extension from a file with the name.ext format.
      * 

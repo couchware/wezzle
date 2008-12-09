@@ -533,107 +533,88 @@ public class PieceManager implements IMouseListener
                 // delete the tiles from the board. Add the new tiles back in the
                 // original positions with the new colours. continue.
                           
-              List<Integer> initialIndexList = new ArrayList<Integer>();
-               // get the initial indices
-               for(TileEntity t : tileDropList)
-               {
-                   initialIndexList.add(boardMan.getIndex(t));
-               }
-               
-               
-                //refactor the board.
-                boardMan.instantRefactorBoard();
-               
-               
+                List<Integer> initialIndexList = new ArrayList<Integer>();
                 
-                // check for lines and switch the colors of the appropriate tiles
-               while(true)
-               {
-                   
-                    
-                    
-                    // The number of found matches. also puts the matches into matchset.
+                // Get the initial indices.
+                for (TileEntity t : tileDropList)
+                {
+                    initialIndexList.add(boardMan.getIndex(t));
+                }
+
+                // Refactor the board.
+                boardMan.instantRefactorBoard();
+
+                // Check for lines and switch the colors of the appropriate tiles.
+                while (true)
+                {
+                    // The number of found matches. Also puts the matches into match set.
                     Set<Integer> set = new HashSet<Integer>();
                     Set<Integer> matchSet = new HashSet<Integer>();
                     boardMan.findXMatch(set);
                     boardMan.findYMatch(matchSet);
                     matchSet.addAll(set);
-                    
-                    // union the sets.
-                    //matchSet.addAll(yMatchSet);
-                    
-                    Set<TileEntity> tileMatchSet = new HashSet<TileEntity>();
-                    for (Integer i : matchSet) tileMatchSet.add(boardMan.getTile(i));
-                    
-                    // Intersect them.
-                    tileMatchSet.retainAll(tileDropList);
-                    
-                    // We found lines, change the color of the appropriate tiles
-                    if(tileMatchSet.isEmpty() == false)
-                    {
-                         
-                     
-                        for (TileEntity matchedTile : tileMatchSet)
-                        {                        
-                                TileColor oldColor = matchedTile.getColor();
-                                
-                                while(true)
-                                {
-                                    TileColor newColor = TileColor.getRandomColor(boardMan.getNumberOfColors());
-                                    
-                                    if(oldColor != newColor)
-                                    {
-                                        int index = tileDropList.indexOf(matchedTile);
-                                        assert(index != -1);
-                                        TileEntity newTile = boardMan.replaceTile(boardMan.getIndex(matchedTile), newColor);
-                                        tileDropList.set(index, newTile);
-                                        break;
-                                    }      
-                                }
-                            //}
-                        }
-                            
-                        // This continue ensures that if we ever get into the if statement
-                        // it will start over again incase our solution creates a different line.
-                        continue;
-                    } 
-                    
-                 
-                    //if we get here, we have no lines.
-                    break;
-               }
-                
-                   // We have found an acceptable list. transfer it over.
-                    List<TileEntity> newList = new ArrayList<TileEntity>();
-                    
-                    int count = 0;
-                    
-                    // remove all the old tiles. this will prevent tiles from
-                    // potentially blocking the new tiles.
-                    for(TileEntity t : tileDropList)
-                    {
-                        // remove the old tile.
-                        //LogManager.recordMessage("" + tileDropList);
-                        
-                        boardMan.removeTile(t);
-                        //System.out.println("Removed tile " + (count+1) + "/" + tileDropList.size());
-                        
-                    }
                    
-                    // Add the new tiles in the initial indexes.
-                    for(TileEntity t: tileDropList)
+                    Set<TileEntity> tileMatchSet = new HashSet<TileEntity>();
+                    for (Integer i : matchSet)
                     {
-                        // add the new.
-                        newList.add(
-                                boardMan.createTile(
-                                    initialIndexList.get(count), 
-                                    t.getType(), 
-                                    t.getColor()));
-                        count++;
-                   }
+                        tileMatchSet.add(boardMan.getTile(i));
+                    }
                     
-                    tileDropList = newList;
+                    // Intersect the tile match set with the tile drop list.
+                    tileMatchSet.retainAll(tileDropList);
 
+                    // We found lines, change the color of the appropriate tiles.
+                    if (tileMatchSet.isEmpty() == true)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        for (TileEntity matchedTile : tileMatchSet)
+                        {
+                            TileColor oldColor = matchedTile.getColor();                         
+                            TileColor newColor = TileColor.getRandomColor(
+                                    boardMan.getNumberOfColors(),
+                                    EnumSet.of(oldColor));
+                                
+                            int index = tileDropList.indexOf(matchedTile);
+                            assert index != -1;
+                            TileEntity newTile = boardMan.replaceTile(boardMan.getIndex(matchedTile), newColor);
+                            tileDropList.set(index, newTile);
+                        }                                               
+                    } // end if
+                } // end while
+                
+                // Remove all the old tiles. this will prevent tiles from
+                // potentially blocking the new tiles.
+                for (TileEntity t : tileDropList)
+                {                    
+                    //LogManager.recordMessage("" + tileDropList);
+
+                    // Remove the old tile.
+                    boardMan.removeTile(t);
+                    
+                    //LogManager.recordMessage("Removed tile " + (count + 1) + "/" + tileDropList.size());
+                }
+
+                // Create a new tile drop list from the old one.
+                List<TileEntity> newTileDropList = new ArrayList<TileEntity>();
+                
+                // Add the new tiles in the initial indexes.
+                int count = 0;
+                for (TileEntity t : tileDropList)
+                {
+                    // Add the new.
+                    newTileDropList.add(
+                            boardMan.createTile(
+                            initialIndexList.get(count),
+                            t.getType(),
+                            t.getColor()));                                        
+                    count++;
+                }
+
+                tileDropList.clear();
+                tileDropList.addAll(newTileDropList);
                     
                 // See if the tile drop is still in progress.  If it's not
                 // (which would be in the case of a game over), don't play
