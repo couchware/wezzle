@@ -42,7 +42,7 @@ public class BombTutorial extends AbstractTutorial
         super(refactorer, "Bomb Tutorial");
         
         // Activate the tutorial on a specific level.      
-        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 9));
+        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 5));
     }
     
     @Override

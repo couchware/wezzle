@@ -105,12 +105,17 @@ public class WorldManager implements IManager,
     /**
      * The level at which the difficulty begins to increase.
      */
-    private int difficultyIncreaseLevel = 9;
+    private int difficultyIncreaseLevel = 3;
     
     /**
      * The number of levels before the difficulty level increases.
      */
-    private int levelDifficultySpeed = 3;
+    private int levelDifficultySpeed = 2;
+    
+    /** 
+     * The maximum number of tiles to drop in.
+     */
+    private int maximumDropAmount = 10;
     
     // Wezzle tile.
         
@@ -194,7 +199,7 @@ public class WorldManager implements IManager,
         });  
         
         // Make it so the bomb block is added.
-        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 6)
+        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 4)
         {
             @Override
             public void onMatch()
@@ -207,7 +212,7 @@ public class WorldManager implements IManager,
         });  
         
         // Make it so the bomb block is added.
-        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 9)
+        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 5)
         {
             @Override
             public void onMatch()
@@ -220,7 +225,7 @@ public class WorldManager implements IManager,
         }); 
         
         // Make it so the star block is added.
-        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 12)
+        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 6)
         {
             @Override
             public void onMatch()
@@ -275,14 +280,25 @@ public class WorldManager implements IManager,
             // If we are past the level ramp up point, drop in more.
             if (this.level > this.difficultyIncreaseLevel)
             {
-                  return pieceSize +  levelDrop 
+                  int dropAmt = pieceSize +  levelDrop 
                     + (this.level - this.difficultyIncreaseLevel) 
                     + boardPercentage + this.minimumDrop;
+                  
+                    if(dropAmt > this.maximumDropAmount + pieceSize)
+                    dropAmt = this.maximumDropAmount + pieceSize;
+                
+                return dropAmt;
+                  
             }
             else
             {
-                return pieceSize + levelDrop + boardPercentage 
+                int dropAmt = pieceSize + levelDrop + boardPercentage 
                         + this.minimumDrop;
+                
+                  if(dropAmt > this.maximumDropAmount + pieceSize)
+                    dropAmt = this.maximumDropAmount + pieceSize;
+                
+                return dropAmt;
             }
         }
         else
@@ -290,12 +306,24 @@ public class WorldManager implements IManager,
             // If we are past the level ramp up point, drop in more.
             if (this.level > this.difficultyIncreaseLevel)
             {
-                return pieceSize + levelDrop
+                int dropAmt = pieceSize + levelDrop
                     + (this.level - this.difficultyIncreaseLevel) 
                     + this.minimumDrop;
+                
+                if(dropAmt > this.maximumDropAmount + pieceSize)
+                    dropAmt = this.maximumDropAmount + pieceSize;
+                
+                return dropAmt;
             }
             else
-                return pieceSize + levelDrop + this.minimumDrop;
+            {
+                int dropAmt = pieceSize + levelDrop + this.minimumDrop;
+                
+                  if(dropAmt > this.maximumDropAmount + pieceSize)
+                    dropAmt = this.maximumDropAmount + pieceSize;
+                
+                return dropAmt;
+            }
         }
     }          
     

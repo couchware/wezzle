@@ -43,7 +43,7 @@ public class GravityTutorial extends AbstractTutorial
         super(refactorer, "Gravity Tutorial");
         
         // Activate the tutorial on a specific level.
-        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 6));
+        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 4));
     }
     
     @Override

@@ -42,7 +42,7 @@ public class StarTutorial extends AbstractTutorial
         super(refactorer, "Star Tutorial");
         
         // Activate the tutorial on a specific level.
-        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 12));
+        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 6));
     }
     
     @Override
