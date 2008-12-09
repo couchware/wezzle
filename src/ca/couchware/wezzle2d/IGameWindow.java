@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Color;
@@ -122,6 +123,24 @@ public interface IGameWindow
      * @return
      */
     public Shape getClip();
+    
+    //--------------------------------------------------------------------------
+    // Keyboard
+    //--------------------------------------------------------------------------
+    
+    /**
+	 * Registers a mouse listener.
+     * 
+     * @param l
+	 */
+	public void addKeyListener(IKeyListener l);		
+    
+    /**
+     * Unregisters a mouse listener.
+     * 
+     * @param l
+     */
+    public void removeKeyListener(IKeyListener l);  
     
     //--------------------------------------------------------------------------
     // Mouse

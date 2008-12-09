@@ -378,7 +378,9 @@ public class Game extends Canvas implements IGameWindowCallback
             boardMan = BoardManager.newInstance(animationMan, layerMan, worldMan,
                     272, 139, 8, 10);    
             boardMan.setVisible(false);
-
+            
+            // Listen for key presses.
+            window.addKeyListener(boardMan);
         }
         
         if (managerSet.contains(ManagerType.PIECE))
@@ -386,7 +388,10 @@ public class Game extends Canvas implements IGameWindowCallback
             // Create the piece manager.
             pieceMan = PieceManager.newInstance(refactorer, animationMan, boardMan);        
             pieceMan.getPieceGrid().setVisible(false);
-            layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);
+            layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);  
+            
+            // Listen for the mouse.
+            window.addMouseListener(pieceMan);
         }
         
         if (managerSet.contains(ManagerType.GROUP))
@@ -727,22 +732,22 @@ public class Game extends Canvas implements IGameWindowCallback
         window.updateKeyPresses();
                         
         // The keys.
-        if (window.isKeyPressed('b'))
-        {
-           boardMan.insertRandomItem(TileType.BOMB);
-        }
-        if (window.isKeyPressed('r'))
-        {
-           boardMan.insertRandomItem(TileType.ROCKET);
-        }
-        if (window.isKeyPressed('s'))
-        {
-           boardMan.insertRandomItem(TileType.STAR);
-        }
-        if (window.isKeyPressed('g'))
-        {
-           boardMan.insertRandomItem(TileType.GRAVITY);
-        }    
+//        if (window.isKeyPressed('b'))
+//        {
+//           boardMan.insertRandomItem(TileType.BOMB);
+//        }
+//        if (window.isKeyPressed('r'))
+//        {
+//           boardMan.insertRandomItem(TileType.ROCKET);
+//        }
+//        if (window.isKeyPressed('s'))
+//        {
+//           boardMan.insertRandomItem(TileType.STAR);
+//        }
+//        if (window.isKeyPressed('g'))
+//        {
+//           boardMan.insertRandomItem(TileType.GRAVITY);
+//        }    
         if (window.isKeyPressed('R'))
         {
             SettingsManager.get().loadUserSettings();

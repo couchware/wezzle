@@ -7,7 +7,9 @@ package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.IGameWindowCallback;
+import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MouseEvent.Button;
 import ca.couchware.wezzle2d.manager.LogManager;
@@ -15,7 +17,6 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -52,7 +53,7 @@ public class LWJGLGameWindow implements IGameWindow
     /**
      * The key presses.
      */
-    private Set<Character> keyPresses;
+    private Set<Character> keyPressSet;
     
     /**
      * The mouse states.
@@ -91,7 +92,7 @@ public class LWJGLGameWindow implements IGameWindow
 	 */
 	public LWJGLGameWindow() 
     {
-        this.keyPresses = new HashSet<Character>();
+        this.keyPressSet = new HashSet<Character>();
         
         this.mouseStateMap = 
                 new EnumMap<Button, Boolean>(Button.class);
@@ -316,31 +317,7 @@ public class LWJGLGameWindow implements IGameWindow
 	public void setGameWindowCallback(IGameWindowCallback callback) 
     {
 		this.callback = callback;
-	}
-	
-        public void updateKeyPresses()
-        { 
-            // if non-empty, clear.
-            if(this.keyPresses.isEmpty() == false)
-                this.keyPresses.clear();
-            
-            while(org.lwjgl.input.Keyboard.next())
-            {
-                this.keyPresses.add(org.lwjgl.input.Keyboard.getEventCharacter());
-            }
-          
-        }
-	/**
-	 * Check if a particular key is current pressed.
-	 *
-	 * @param keyCode The code associated with the key to check 
-	 * @return True if the specified key is pressed
-	 */
-	public boolean isKeyPressed(int key) 
-        {		
-	
-            return this.keyPresses.contains((char)key);
-	}
+	}	    
        
     /**
      * Get the accurate system time.
@@ -430,15 +407,9 @@ public class LWJGLGameWindow implements IGameWindow
 	}
     
     //--------------------------------------------------------------------------
-    // Color & clip code from GTGE.
+    // Color & clip code.
     //--------------------------------------------------------------------------
-    
-    /** A null rectangle. **/
-    final private static Rectangle NULL_RECTANGLE = new Rectangle();
-     
-    /** The clip area. */
-    private Rectangle clipArea;
-    
+       
     /** The current colour. */
     private Color color = Color.BLACK;
     
@@ -806,7 +777,73 @@ public class LWJGLGameWindow implements IGameWindow
     {
         return new ImmutablePosition(Mouse.getX(), height - Mouse.getY());
     }
-       
+    
+    //--------------------------------------------------------------------------
+    // IKeyListener Attributes
+    //--------------------------------------------------------------------------
+    
+    List<IKeyListener> keyListenerList = new ArrayList<IKeyListener>();
+    
+    //--------------------------------------------------------------------------
+    // IKeyListener Methods
+    //-------------------------------------------------------------------------- 
+    
+    public void addKeyListener(IKeyListener l)
+    {
+        if (l == null)
+            throw new NullPointerException();
+        
+        if (keyListenerList.contains(l))
+            throw new IllegalStateException("Listener already registered!");
+        
+        keyListenerList.add(l);
+    }
+        
+    public void removeKeyListener(IKeyListener l)
+    {
+        if (l == null)
+            throw new NullPointerException();
+        
+        if (!keyListenerList.contains(l))
+            throw new IllegalStateException("Listener not registered!");
+        
+        if (keyListenerList.remove(l) == false)
+            throw new IllegalStateException("Failed to remove listener!");
+    }
+    
+    public void updateKeyPresses()
+    {         
+        // If non-empty, clear.
+        if (this.keyPressSet.isEmpty() == false)
+        {
+            this.keyPressSet.clear();
+        }
+
+        while (org.lwjgl.input.Keyboard.next())
+        {
+            char ch = org.lwjgl.input.Keyboard.getEventCharacter();
+            
+            for (IKeyListener l : keyListenerList)
+            {
+                l.keyPressed(new KeyEvent(this, ch));
+            }
+            
+            this.keyPressSet.add(ch);
+        }
+    }
+    
+	/**
+	 * Check if a particular key is current pressed.
+	 *
+	 * @param keyCode The code associated with the key to check 
+	 * @return True if the specified key is pressed
+	 */
+	public boolean isKeyPressed(int key) 
+        {		
+	
+            return this.keyPressSet.contains((char)key);
+	}
+    
     //--------------------------------------------------------------------------
     // IMouseListener Attributes
     //--------------------------------------------------------------------------
@@ -814,7 +851,7 @@ public class LWJGLGameWindow implements IGameWindow
     List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();      
     private ImmutablePosition mousePosition = new ImmutablePosition(
             Mouse.getX(), height - Mouse.getY());
-    
+        
     //--------------------------------------------------------------------------
     // IMouseListener Methods
     //--------------------------------------------------------------------------        

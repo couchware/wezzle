@@ -1,9 +1,11 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -28,7 +30,7 @@ import java.util.Set;
  * 
  */
 
-public class BoardManager implements IManager
+public class BoardManager implements IManager, IKeyListener
 {	
     //--------------------------------------------------------------------------
     // Static Members
@@ -2081,7 +2083,7 @@ public class BoardManager implements IManager
         return cells;
     }
     
-    public void insertRandomItem(TileType type)
+    public void insertItemRandomly(TileType type)
     {        
         Set<TileType>  typeSet  = EnumSet.of(TileType.NORMAL);
         Set<TileColor> colorSet = EnumSet.allOf(TileColor.class);
@@ -2366,6 +2368,33 @@ public class BoardManager implements IManager
             return Direction.UP;
         else
             return Direction.NONE;
+    }
+
+    public void keyPressed(KeyEvent event)
+    {
+        switch (event.getCharacter())
+        {
+            case 'r':
+                insertItemRandomly(TileType.ROCKET);
+                break;
+                
+            case 'g':
+                insertItemRandomly(TileType.GRAVITY);
+                break;
+                
+            case 'b':
+                insertItemRandomly(TileType.BOMB);
+                break;
+                
+            case 's':
+                insertItemRandomly(TileType.STAR);
+                break;            
+        }
+    }
+
+    public void keyReleased(KeyEvent event)
+    {
+        // Ignore this.
     }
 
 }

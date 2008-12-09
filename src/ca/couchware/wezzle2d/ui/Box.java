@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
@@ -256,7 +255,7 @@ public class Box extends AbstractEntity implements IMouseListener
     }
     
     /**
-     * Draw the window to the screen.
+     * Draw the box to the screen.
      */
     @Override
     public boolean draw()

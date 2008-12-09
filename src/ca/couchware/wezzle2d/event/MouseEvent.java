@@ -11,7 +11,8 @@ import java.util.EnumSet;
 import java.util.EventObject;
 
 /**
- *
+ * A mouse event.
+ * 
  * @author cdmckay
  */
 public class MouseEvent extends EventObject

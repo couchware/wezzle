@@ -676,20 +676,24 @@ public class WorldManager implements IManager,
         // This is so that we can use the first item when returning a
         // normal tile whenever we want.
         itemMap.clear();
-        itemMap.put(TileType.NORMAL, 
-                new Item.Builder(TileType.NORMAL)
+        
+        itemMap.put(TileType.NORMAL, new Item.Builder(TileType.NORMAL)
                 .initialAmount(28).weight(5).maximumOnBoard(100).end());
-//        itemMap.put(TileType.WEZZLE,
-//                new Item.Builder(TileType.WEZZLE)
-//                .initialAmount(0).weight(0).maximumOnBoard(4).end());
-//        itemList.add(new Item.Builder(TileType.ROCKET)
-//                .initialAmount(1).weight(55).maxOnBoard(3).end());
-//        itemList.add(new Item.Builder(TileType.BOMB)
-//                .initialAmount(1).weight(10).maxOnBoard(1).end());   
-//        itemList.add(new Item.Builder(TileType.STAR)
-//                .initialAmount(1).weight(5).maxOnBoard(1).end());
-//        itemList.add(new Item.Builder(TileType.GRAVITY)
-//                .initialAmount(5).weight(50).maxOnBoard(1).end());
+        
+        itemMap.put(TileType.WEZZLE, new Item.Builder(TileType.WEZZLE)
+                .initialAmount(0).weight(0).maximumOnBoard(4).end());
+        
+        itemMap.put(TileType.ROCKET, new Item.Builder(TileType.ROCKET)
+                .initialAmount(0).weight(0).maximumOnBoard(1).end());
+        
+        itemMap.put(TileType.BOMB, new Item.Builder(TileType.BOMB)
+                .initialAmount(0).weight(0).maximumOnBoard(1).end());  
+        
+        itemMap.put(TileType.STAR, new Item.Builder(TileType.STAR)
+                .initialAmount(0).weight(0).maximumOnBoard(1).end());
+        
+        itemMap.put(TileType.GRAVITY, new Item.Builder(TileType.GRAVITY)
+                .initialAmount(0).weight(0).maximumOnBoard(1).end());
         
         // Reset the rules.
         currentRuleList.clear();

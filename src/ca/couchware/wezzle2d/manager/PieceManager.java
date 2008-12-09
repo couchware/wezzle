@@ -124,12 +124,7 @@ public class PieceManager implements IMouseListener
         this.window       = ResourceFactory.get().getGameWindow();
         this.refactorer   = refactorer;
         this.animationMan = animationMan;
-		this.boardMan     = boardMan;
-        
-        // Add the mouse listener.
-        // This is problematic.  It should not be here.
-        // TODO Move outside of the constructor!
-        window.addMouseListener(this);               
+		this.boardMan     = boardMan;                                   
         
         // Create the piece map.
 //        pieceMap = new EnumMap<PieceType, Piece>(PieceType.class);
@@ -1137,7 +1132,7 @@ public class PieceManager implements IMouseListener
                 
             //temp.
             case MIDDLE:
-                boardMan.insertRandomItem(TileType.BOMB);
+                boardMan.insertItemRandomly(TileType.BOMB);
                 break;
                 
             default:
