@@ -15,9 +15,6 @@ public interface ISpriteDrawer
     public ISpriteDrawer height(int val);
     public ISpriteDrawer theta(double val);
     public ISpriteDrawer opacity(int val);
-    public ISpriteDrawer regionX(int val);
-    public ISpriteDrawer regionY(int val);
-    public ISpriteDrawer regionWidth(int val);
-    public ISpriteDrawer regionHeight(int val);
+    public ISpriteDrawer region(int x, int y, int width, int height);
     public void end(); 
 }

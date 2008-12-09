@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.ISpriteDrawer;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Rectangle;
 import java.io.IOException;
 import org.lwjgl.opengl.GL11;
@@ -98,14 +99,9 @@ public class LWJGLSprite implements ISprite
     public ISpriteDrawer draw(int x, int y)
     {
         return new SpriteDrawer(x, y);
-    }
-    
-    public void draw(int x, int y, double theta, int opacity)
-    {
-        draw(x, y, this.width, this.height, theta, opacity);
-    }
+    }        
 
-    public void draw(
+    private void draw(
             int x, int y, int width, int height, 
             double theta, int opacity)
     {
@@ -160,15 +156,13 @@ public class LWJGLSprite implements ISprite
         GL11.glPopMatrix();
     }
 
-    public void drawRegion(
+    private void drawRegion(
             int x, int y, int width, int height, 
-            int regionX, int regionY, int regionWidth, int regionHeight, 
+            int regionX, int regionY, int regionWidth, int regionHeight,
             double theta, int opacity)
     {
-        window.setClip(new Rectangle(x, y, regionWidth, regionHeight));
-        
-        draw(x - regionX, y - regionY, width, height, theta, opacity);
-        
+        window.setClip(new Rectangle(x, y, regionWidth, regionHeight));        
+        draw(x - regionX, y - regionY, width, height, theta, opacity);        
         window.setClip(null);
     }
     
@@ -199,6 +193,7 @@ public class LWJGLSprite implements ISprite
         int h = height;  
         double theta = 0.0;
         int opacity  = 100;
+        ImmutableRectangle regionRect = null;
         
         private SpriteDrawer(int x, int y)
         {
@@ -226,29 +221,28 @@ public class LWJGLSprite implements ISprite
             opacity = val; return this;
         }
 
-        public ISpriteDrawer regionX(int val)
+        public ISpriteDrawer region(int x, int y, int width, int height)
         {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+            regionRect = new ImmutableRectangle(x, y, width, height);
+            return this;
+        }       
 
-        public ISpriteDrawer regionY(int val)
-        {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        public ISpriteDrawer regionWidth(int val)
-        {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        public ISpriteDrawer regionHeight(int val)
-        {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
+        /**
+         * Draws the rectangle to the screen.
+         */
         public void end()
         {
-            draw(x, y, w, h, theta, opacity);
+            if (regionRect == null)
+            {
+                draw(x, y, w, h, theta, opacity);
+            }
+            else
+            {                       
+                drawRegion(x, y, width, height, 
+                        regionRect.getX(),     regionRect.getY(), 
+                        regionRect.getWidth(), regionRect.getHeight(),
+                        theta, opacity);
+            }
         }
         
     }

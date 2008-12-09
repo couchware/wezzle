@@ -273,22 +273,10 @@ public class ProgressBar extends AbstractEntity
         if (progress == 0)
             ; // Do nada.
         else if (progressWidth <= 8)
-        {
-            int w = progressWidth / 2;
-            
-            leftSprite.drawRegion(
-                    alignedX, alignedY,
-                    leftSprite.getWidth(), leftSprite.getHeight(),
-                    0, 0, 
-                    w, leftSprite.getHeight(), 
-                    0.0, opacity);                 
-            
-            rightSprite.drawRegion(                    
-                    alignedX + w, alignedY,
-                    rightSprite.getWidth(), rightSprite.getHeight(),
-                    rightSprite.getWidth() - w, 0,
-                    w, rightSprite.getHeight(), 
-                    0.0, opacity);                        
+        {                        
+            leftSprite.draw(alignedX, alignedY).opacity(opacity)                    
+                    .region(0, 0, progressWidth, leftSprite.getHeight())
+                    .end();                                            
         }
         else
         {

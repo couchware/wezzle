@@ -64,21 +64,21 @@ public interface ISprite
 //	 */
 //    public void draw(int x, int y, double theta, int opacity);
 //    
-    /**
-     * Draw the the region of the sprite to the the coordinate provided with
-     * the given opacity.
-     * 
-     * @param x
-     * @param y
-     * @param rx
-     * @param ry
-     * @param rwidth
-     * @param rheight
-     * @param opacity
-     */
-    public void drawRegion(int x, int y, 
-            int width, int height,
-            int rx, int ry, 
-            int rwidth, int rheight, 
-            double theta, int opacity);        
+//    /**
+//     * Draw the the region of the sprite to the the coordinate provided with
+//     * the given opacity.
+//     * 
+//     * @param x
+//     * @param y
+//     * @param rx
+//     * @param ry
+//     * @param rwidth
+//     * @param rheight
+//     * @param opacity
+//     */
+//    public void drawRegion(int x, int y, 
+//            int width, int height,
+//            int rx, int ry, 
+//            int rwidth, int rheight, 
+//            double theta, int opacity);        
 }
