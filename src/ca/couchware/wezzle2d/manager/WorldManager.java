@@ -204,6 +204,8 @@ public class WorldManager implements IManager,
             @Override
             public void onMatch()
             {
+                LogManager.recordMessage("Gravity item enabled.");
+                
                 // Add the bomb.
                 itemMap.put(TileType.GRAVITY,
                         new Item.Builder(TileType.GRAVITY)
@@ -217,6 +219,8 @@ public class WorldManager implements IManager,
             @Override
             public void onMatch()
             {
+                LogManager.recordMessage("Bomb item enabled.");
+                
                 // Add the bomb.
                 itemMap.put(TileType.BOMB,
                         new Item.Builder(TileType.BOMB)

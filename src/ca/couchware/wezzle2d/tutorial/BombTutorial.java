@@ -52,8 +52,8 @@ public class BombTutorial extends AbstractTutorial
         super.initialize(game);   
         
         // Add this item to the world manager.
-        game.worldMan.addItem(new Item.Builder(TileType.BOMB)
-                .initialAmount(0).maximumOnBoard(1).weight(0).end());
+        //game.worldMan.addItem(new Item.Builder(TileType.BOMB)
+        //        .initialAmount(0).maximumOnBoard(1).weight(0).end());
         
         // Slow down refactor so the user can see more clearly what happens.
         refactorer.setRefactorSpeed(RefactorSpeed.SLOW);                
@@ -190,7 +190,7 @@ public class BombTutorial extends AbstractTutorial
         super.finish(game);
         
         // Add this item to the world manager.
-        game.worldMan.removeItem(TileType.BOMB);
+        //game.worldMan.removeItem(TileType.BOMB);
     }
     
     @Override
