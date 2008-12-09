@@ -205,14 +205,10 @@ public class Game extends Canvas implements IGameWindowCallback
     
     //--------------------------------------------------------------------------
     // Private Members
-    //--------------------------------------------------------------------------
-            
-    /** The build nunber path. */
-    final private static String BUILD_NUMBER_PATH = 
-            Settings.getTextResourcesPath() + "/build.number";                             
+    //--------------------------------------------------------------------------                                 
     
     /** The current build number. */
-    final private String BUILD_NUMBER = "$Id$";        
+    final private String BUILD_NUMBER = "N/A";        
     
     /** The current drawer. */
     private IDrawer drawer;
