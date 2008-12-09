@@ -33,7 +33,7 @@ public class TimerManager implements ILevelListener
     /** 
      * The minimum time.
      */
-    private int minimumTime = 5;
+    private int minimumTime = 1;
     
 	/** 
      * The current time on the timer. 

@@ -49,7 +49,7 @@ import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
 import java.io.InputStream;
@@ -1066,7 +1066,7 @@ public class Game extends Canvas implements IGameWindowCallback
         ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        SpriteButton.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));           
+        Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));           
         
         try
         {

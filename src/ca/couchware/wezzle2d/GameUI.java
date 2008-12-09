@@ -36,9 +36,10 @@ import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Box.Border;
+import ca.couchware.wezzle2d.ui.MammothButton;
 import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
 import ca.couchware.wezzle2d.ui.group.OptionsGroup;
@@ -202,15 +203,14 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     private void initializeButtons(LayerManager layerMan)
     {        
         // The high score button.
-        highScoreButton = new SpriteButton.Builder(128, 299)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                //.type(SpriteButton.Type.HUGE)
+        highScoreButton = new MammothButton.Builder(128, 299)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("")
                 .normalOpacity(0).hoverOpacity(70).activeOpacity(95).end();
         layerMan.add(highScoreButton, Layer.UI);
                 
         // Create pause button.        
-        pauseButton = new SpriteButton.Builder(668, 211)
+        pauseButton = new Button.Builder(668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.NORMAL)
                 .width(170)
@@ -219,12 +219,12 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         layerMan.add(pauseButton, Layer.UI);    
         
         // Create the options button, using pause button as a template.
-        optionsButton = new SpriteButton.Builder((SpriteButton) pauseButton)
+        optionsButton = new Button.Builder((Button) pauseButton)
                 .y(299).text("Options").end();
         layerMan.add(optionsButton, Layer.UI);                
         
         // Create the help buttton, using pause button as a template.
-        helpButton = new SpriteButton.Builder((SpriteButton) optionsButton)
+        helpButton = new Button.Builder((Button) optionsButton)
                 .y(387).text("Help").end();               
         layerMan.add(helpButton, Layer.UI);     
     }

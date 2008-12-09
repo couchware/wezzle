@@ -14,7 +14,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class SpriteButton extends AbstractSpriteButton
+public class Button extends AbstractButton
 {    
     
     /** The default color. */
@@ -50,13 +50,13 @@ public class SpriteButton extends AbstractSpriteButton
     final private Color textColor;   
 
     /** The left sprite of the button. */
-    final protected ISprite leftSprite;
+    protected ISprite leftSprite;
     
     /** The middle sprite of the button. */
-    final protected ISprite middleSprite;
+    protected ISprite middleSprite;
     
     /** The right sprite of the button. */
-    final protected ISprite rightSprite;
+    protected ISprite rightSprite;
     
     /** The normal label. */
     final protected ILabel normalLabel;   
@@ -96,7 +96,7 @@ public class SpriteButton extends AbstractSpriteButton
      * @param x
      * @param y
      */
-    private SpriteButton(Builder builder)
+    protected Button(Builder builder)
     {      
         // Invoke the super on the required arguments.
         // This will set their variables as well.
@@ -125,13 +125,9 @@ public class SpriteButton extends AbstractSpriteButton
         
         // Assign values based on the values from builder.        
         this.width  = builder.width;
-        this.height = 40;
-        
-        // Make sure the width is acceptable.
-        int w1 = leftSprite.getWidth();        
-        int w2 = rightSprite.getWidth();                     
-        
-        if (w1 + w2 > width)
+        this.height = middleSprite.getHeight();
+               
+        if (!validateWidth())
             throw new RuntimeException("The button width is too narrow.");
                         
         // Determine the offsets.
@@ -167,27 +163,27 @@ public class SpriteButton extends AbstractSpriteButton
         }
     }
     
-    public static class Builder implements IBuilder<SpriteButton>
+    public static class Builder implements IBuilder<Button>
     {
         // Required values.       
-        private int x;
-        private int y;        
+        protected int x;
+        protected int y;        
         
         // Optional values.
-        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
-        private Color textColor = defaultColor;
-        private String normalText = "Button";
-        private String hoverText = null;
-        private String activeText = null;
-        private int width = 220;
-        private int textSize = 20;        
-        private int pressedOpacity = 100;
-        private int hoverOpacity   = 100;        
-        private int activeOpacity  = 100;
-        private int normalOpacity  = 80;
-        private int opacity        = 100;
-        private boolean visible = true;
-        private boolean disabled = false;
+        protected EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
+        protected Color textColor = defaultColor;
+        protected String normalText = "Button";
+        protected String hoverText = null;
+        protected String activeText = null;
+        protected int width = 220;
+        protected int textSize = 20;        
+        protected int pressedOpacity = 100;
+        protected int hoverOpacity   = 100;        
+        protected int activeOpacity  = 100;
+        protected int normalOpacity  = 80;
+        protected int opacity        = 100;
+        protected boolean visible = true;
+        protected boolean disabled = false;
         
         public Builder(int x, int y)
         {            
@@ -195,7 +191,7 @@ public class SpriteButton extends AbstractSpriteButton
             this.y = y;
         }
         
-        public Builder(SpriteButton button)
+        public Builder(Button button)
         {            
             this.x                = button.x;
             this.y                = button.y;
@@ -265,9 +261,9 @@ public class SpriteButton extends AbstractSpriteButton
         public Builder disabled(boolean val)
         { disabled = val; return this; }
         
-        public SpriteButton end()
+        public Button end()
         {
-            SpriteButton button = new SpriteButton(this);
+            Button button = new Button(this);
             
             if (visible == true && disabled == false)
                 button.window.addMouseListener(button);           
@@ -275,6 +271,18 @@ public class SpriteButton extends AbstractSpriteButton
             return button;
         }                
     }    
+    
+    final protected boolean validateWidth()
+    {
+        // Make sure the width is acceptable.
+        int w1 = leftSprite.getWidth();        
+        int w2 = rightSprite.getWidth();                             
+        
+        if (w1 + w2 > width)
+            return false;
+        else
+            return true;
+    }
         
     protected void drawButton(int o)
     {

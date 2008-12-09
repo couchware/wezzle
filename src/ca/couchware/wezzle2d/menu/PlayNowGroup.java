@@ -25,8 +25,9 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.ui.RadioItem;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.TallButton;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import ca.couchware.wezzle2d.util.Util;
@@ -146,7 +147,7 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(nl);
         
         // Create the temporary test name.
-        this.nameButton = new SpriteButton.Builder(355, nl.getY())
+        this.nameButton = new Button.Builder(355, nl.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(OPTION_COLOR)
                 .width(150)
@@ -167,7 +168,7 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(this.levelNumberLabel);
         
         // Create the level down button.
-        this.levelDownButton = new SpriteButton.Builder(this.levelNumberLabel.getX() - 55, ll.getY())
+        this.levelDownButton = new Button.Builder(this.levelNumberLabel.getX() - 55, ll.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))                
                 //.type(SpriteButton.Type.SMALL_CIRCULAR)
                 .width(30)
@@ -176,7 +177,7 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(this.levelDownButton);
         
         // Create the level up button.
-        this.levelUpButton = new SpriteButton.Builder((SpriteButton) levelDownButton)
+        this.levelUpButton = new Button.Builder((Button) levelDownButton)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT)) 
                 .width(30)
                 .x(this.levelNumberLabel.getX() + 55).text("+").end();
@@ -236,7 +237,7 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(themeRadio);    
                
         // Create the start button.
-        this.startButton = new SpriteButton.Builder(266, 435)
+        this.startButton = new TallButton.Builder(266, 435)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 //.type(SpriteButton.Type.LARGE)

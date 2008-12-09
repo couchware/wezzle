@@ -4,7 +4,7 @@ import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.HighScore;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -117,7 +117,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         updateLabels();
         
         // Create close button.
-        closeButton = new SpriteButton.Builder(400, 408)
+        closeButton = new Button.Builder(400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Close").normalOpacity(70).visible(false).end();

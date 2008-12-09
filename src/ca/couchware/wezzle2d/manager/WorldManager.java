@@ -237,7 +237,7 @@ public class WorldManager implements IManager,
                 // Add the star.
                 itemMap.put(TileType.STAR,
                         new Item.Builder(TileType.STAR)
-                        .initialAmount(0).weight(5).maximumOnBoard(1).end());                
+                        .initialAmount(0).weight(10).maximumOnBoard(1).end());                
             }            
         });   
         

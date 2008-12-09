@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -143,7 +143,7 @@ public class SoundMusicGroup extends AbstractGroup
         entityList.add(musicSlider);                      
         
         // Create back button.
-        backButton = new SpriteButton.Builder(400, 408)
+        backButton = new Button.Builder(400, 408)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Back").normalOpacity(70).visible(false).end();        

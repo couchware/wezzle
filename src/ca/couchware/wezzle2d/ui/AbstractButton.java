@@ -14,7 +14,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public abstract class AbstractSpriteButton extends AbstractEntity implements        
+public abstract class AbstractButton extends AbstractEntity implements        
         IButton, IMouseListener       
 {
     
@@ -62,7 +62,7 @@ public abstract class AbstractSpriteButton extends AbstractEntity implements
      * The constructor.
      * @param shape The shape of the button.
      */
-    protected AbstractSpriteButton(final int x, final int y)
+    protected AbstractButton(final int x, final int y)
     {      
         // Grab the window reference.
         this.window = ResourceFactory.get().getGameWindow();

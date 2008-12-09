@@ -3,7 +3,7 @@ package ca.couchware.wezzle2d.ui.group;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -77,7 +77,7 @@ public class OptionsGroup extends AbstractGroup
         entityList.add(headerLabel);
         
         // Create upgrade button.
-        upgradeButton = new SpriteButton.Builder(400, 246)
+        upgradeButton = new Button.Builder(400, 246)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Upgrade").normalOpacity(80).visible(false).end();        
@@ -85,7 +85,7 @@ public class OptionsGroup extends AbstractGroup
         entityList.add(upgradeButton);
         
         // Create audio button.
-        audioButton = new SpriteButton.Builder((SpriteButton) upgradeButton).y(300)
+        audioButton = new Button.Builder((Button) upgradeButton).y(300)
             .text("Sound/Music").end();
         layerMan.add(audioButton, Layer.UI);
         entityList.add(audioButton);
@@ -95,13 +95,13 @@ public class OptionsGroup extends AbstractGroup
         groupMan.register(audioGroup);
         
         // Create main menu button.
-        mainMenuButton = new SpriteButton.Builder((SpriteButton) upgradeButton).y(354)
+        mainMenuButton = new Button.Builder((Button) upgradeButton).y(354)
             .text("Main Menu").end();
         layerMan.add(mainMenuButton, Layer.UI);
         entityList.add(mainMenuButton);
         
         // Create back button.
-        backButton = new SpriteButton.Builder((SpriteButton) upgradeButton).y(408)
+        backButton = new Button.Builder((Button) upgradeButton).y(408)
             .text("Back").end();
         layerMan.add(backButton, Layer.UI);     
         entityList.add(backButton);

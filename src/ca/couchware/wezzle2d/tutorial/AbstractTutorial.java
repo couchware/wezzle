@@ -17,7 +17,7 @@ import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -95,14 +95,14 @@ public abstract class AbstractTutorial implements ITutorial
         game.timerMan.setStopped(true);       
         
         // Create repeat button.
-        repeatButton = new SpriteButton.Builder(400, 330)
+        repeatButton = new Button.Builder(400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Repeat").normalOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Layer.EFFECT);
         
          // Create continue button, using the repeat button as a template.
-        continueButton = new SpriteButton.Builder((SpriteButton) repeatButton)
+        continueButton = new Button.Builder((Button) repeatButton)
                 .y(390).text("Continue").end();
         game.layerMan.add(continueButton, Layer.EFFECT);          
     }

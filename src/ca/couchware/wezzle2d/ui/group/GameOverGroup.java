@@ -2,7 +2,7 @@ package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
@@ -100,7 +100,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         entityList.add(scoreLabel);
         
         // Create restart button.
-        restartButton = new SpriteButton.Builder(400, 345)
+        restartButton = new Button.Builder(400, 345)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Restart").normalOpacity(70).visible(false).end();
@@ -108,7 +108,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         entityList.add(restartButton);
         
         // Create continue button, using the restart button as a template.
-        continueButton = new SpriteButton.Builder((SpriteButton) restartButton)
+        continueButton = new Button.Builder((Button) restartButton)
                 .y(405).text("Continue").end();
         layerMan.add(continueButton, Layer.UI);
         entityList.add(continueButton);

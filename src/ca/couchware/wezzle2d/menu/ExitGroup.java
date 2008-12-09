@@ -16,7 +16,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import java.util.EnumSet;
@@ -88,7 +88,7 @@ public class ExitGroup extends AbstractGroup
 //                .text("No").end();
 //        this.entityList.add(this.noButton);
         
-        this.yesButton = new SpriteButton.Builder(266, 400)
+        this.yesButton = new Button.Builder(266, 400)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 //.type(SpriteButton.Type.THIN)
@@ -97,7 +97,7 @@ public class ExitGroup extends AbstractGroup
         this.entityList.add(this.yesButton);
         
         // Add the "No" button.
-        this.noButton = new SpriteButton.Builder((SpriteButton) yesButton)
+        this.noButton = new Button.Builder((Button) yesButton)
                 .y(yesButton.getY() + 60).text("No").end();
         this.entityList.add(this.noButton);
         

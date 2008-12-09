@@ -26,7 +26,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
-import ca.couchware.wezzle2d.ui.SpriteButton;
+import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.EmptyGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
@@ -203,7 +203,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         IButton button = null;
         
         // Create the buttons.               
-        button = new SpriteButton.Builder(910, 153)
+        button = new Button.Builder(910, 153)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))               
                 //.type(SpriteButton.Type.THIN)
                 .text("Play Now").textSize(20)
@@ -212,34 +212,34 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         buttonMap.put(Menu.PLAY_NOW, button);                
              
         // Make this button the template.
-        templateButton = (SpriteButton) button;
+        templateButton = (Button) button;
         
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
+        button = new Button.Builder((Button) templateButton)
                 .y(202).text("Tutorial").end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.TUTORIAL, button);                        
         
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
+        button = new Button.Builder((Button) templateButton)
                 .y(251).text("Options").end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.OPTIONS, button);
         
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
+        button = new Button.Builder((Button) templateButton)
                 .y(300).text("Upgrade").end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.UPGRADE, button);     
         
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
+        button = new Button.Builder((Button) templateButton)
                 .y(349).text("Achievements").end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.ACHIEVEMENTS, button);
         
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
+        button = new Button.Builder((Button) templateButton)
                 .y(398).text("High Scores").end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.HIGH_SCORES, button);
                 
-        button = new SpriteButton.Builder((SpriteButton) templateButton)
+        button = new Button.Builder((Button) templateButton)
                 .y(447).text("Exit").end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.EXIT, button);                                   

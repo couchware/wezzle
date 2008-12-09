@@ -21,7 +21,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class RadioItem extends AbstractSpriteButton
+public class RadioItem extends AbstractButton
 {
     
     /** The default color. */
