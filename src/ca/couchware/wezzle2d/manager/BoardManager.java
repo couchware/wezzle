@@ -83,9 +83,9 @@ public class BoardManager implements IManager, IKeyListener
     final private AnimationManager animationMan;
     
     /**
-     * The world Manager
+     * The item manager.
      */
-    final private WorldManager worldMan;
+    final private ItemManager itemMan;
     
     /**
      * The layer manager.
@@ -232,8 +232,8 @@ public class BoardManager implements IManager, IKeyListener
 	 */
 	private BoardManager(
             final AnimationManager animationMan,
-            final LayerManager layerMan,
-            final WorldManager worldMan,
+            final LayerManager     layerMan,
+            final ItemManager      itemMan,
             final int x, final int y, 
             final int columns, final int rows)
 	{
@@ -243,7 +243,7 @@ public class BoardManager implements IManager, IKeyListener
         // Keep reference to managers.
         this.animationMan = animationMan;
         this.layerMan     = layerMan;
-        this.worldMan     = worldMan;
+        this.itemMan      = itemMan;
         
 		// Set the cell width and height. Hard-coded to 32x32 for now.
 		this.cellWidth  = 32;
@@ -306,11 +306,11 @@ public class BoardManager implements IManager, IKeyListener
      */    
     public static BoardManager newInstance(final AnimationManager animationMan,
         final LayerManager layerMan,
-        final WorldManager worldMan,
+        final ItemManager itemMan,
         final int x, final int y, 
         final int columns, final int rows)
     {
-        return new BoardManager(animationMan, layerMan, worldMan, x, y, columns, rows);
+        return new BoardManager(animationMan, layerMan, itemMan, x, y, columns, rows);
     }
     
     //--------------------------------------------------------------------------
@@ -336,7 +336,7 @@ public class BoardManager implements IManager, IKeyListener
      * 
 	 * @param items A linked list of Item Descriptors.
 	 */
-	public void generateBoard(List<Item> itemList)
+	public void generateBoard(List<Item> itemList, int level)
 	{
         // Make sure the board is clean.
         this.clearBoard(); 
@@ -349,8 +349,10 @@ public class BoardManager implements IManager, IKeyListener
             
             // Handle the case where the normal tiles are different. This occurs
             // When players start on a level other than level 1.
-            if(i == 0)
-                offset = worldMan.getLevel()-1;
+            if (i == 0)
+            {
+                offset = level - 1;
+            }
             
             for (int j = 0; 
                 j < itemList.get(i).getInitialAmount() + offset; j++)
@@ -398,7 +400,7 @@ public class BoardManager implements IManager, IKeyListener
         }
         
         // Ensure the item counts are set to 0
-        for (Item item : worldMan.getItemList())
+        for (Item item : itemMan.getItemList())
             item.setCurrentAmount(0);
     }       
         
@@ -990,7 +992,7 @@ public class BoardManager implements IManager, IKeyListener
         // Increment the item count.
         if (t.getType() != TileType.NORMAL)
         {
-            Item item = worldMan.getItemOrMultiplier(t.getType()); 
+            Item item = itemMan.getItemOrMultiplier(t.getType()); 
             if (item == null) LogManager.recordMessage("Missing type was " + t.getType());
             item.incrementCurrentAmount();
             LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");                        
@@ -1252,7 +1254,7 @@ public class BoardManager implements IManager, IKeyListener
          // Increment the item count.
         if (t.getType() != TileType.NORMAL)
         {
-            Item item = worldMan.getItemOrMultiplier(t.getType());            
+            Item item = itemMan.getItemOrMultiplier(t.getType());            
             item.decrementCurrentAmount();
             LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");                        
         }
@@ -2269,7 +2271,7 @@ public class BoardManager implements IManager, IKeyListener
             
             if (t.getType() != TileType.NORMAL)
             {
-                for (Item item : worldMan.getItemList())
+                for (Item item : itemMan.getItemList())
                 {
                     if(item.getTileType() == t.getType())
                     {

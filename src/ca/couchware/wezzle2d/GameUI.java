@@ -31,7 +31,7 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.manager.TutorialManager;
-import ca.couchware.wezzle2d.manager.WorldManager;
+import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
@@ -419,7 +419,7 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         ScoreManager scoreMan       = game.scoreMan;
         TimerManager timerMan       = game.timerMan;
         TutorialManager tutorialMan = game.tutorialMan;
-        WorldManager worldMan       = game.worldMan;
+        LevelManager levelMan       = game.levelMan;
         
         // If the high score button was just clicked.
         if (highScoreButton.clicked() == true)
@@ -479,9 +479,9 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         }
         
         // Set the wezzle timer text.
-//        if (!wezzleTimerLabel.getText().equals(String.valueOf(worldMan.getWezzleTime())))            
+//        if (!wezzleTimerLabel.getText().equals(String.valueOf(levelMan.getWezzleTime())))            
 //        {
-//            //wezzleTimerLabel.setText(String.valueOf(worldMan.getWezzleTime()));                                 
+//            //wezzleTimerLabel.setText(String.valueOf(levelMan.getWezzleTime()));                                 
 //        }
 
         // Draw the high score text.
@@ -493,11 +493,11 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         if (tutorialMan.isTutorialInProgress() == false)
         {
             // Set the level text.
-            if (!levelLabel.getText().equals(String.valueOf(worldMan.getLevel())))
+            if (!levelLabel.getText().equals(String.valueOf(levelMan.getLevel())))
             {
                 layerMan.remove(levelLabel, Layer.UI);
                 levelLabel = new LabelBuilder(levelLabel)
-                        .text(String.valueOf(worldMan.getLevel())).end();
+                        .text(String.valueOf(levelMan.getLevel())).end();
                 layerMan.add(levelLabel, Layer.UI);
             }
 
@@ -536,7 +536,7 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
 
     public void levelChanged(LevelEvent event)
     {
-        progressBar.setProgressMax(event.getTargetLevelScore());
+        progressBar.setProgressMax(event.getNextTargetLevelScore());
     }
 
     public void scoreIncreased(ScoreEvent event)

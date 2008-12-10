@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
+import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
@@ -18,6 +19,7 @@ import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.CollisionEvent;
+import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
@@ -50,7 +52,7 @@ import java.util.Set;
  * 
  * @author kgrad
  */
-public class TileRemover
+public class TileRemover implements ILevelListener
 {
 
     /** The only instance of this class to ever exist. */
@@ -159,7 +161,7 @@ public class TileRemover
         final PieceManager pieceMan         = game.pieceMan;
         final SettingsManager settingsMan   = game.settingsMan;
         final TimerManager timerMan         = game.timerMan;
-        final WorldManager worldMan         = game.worldMan;
+        final LevelManager levelMan         = game.levelMan;
         
         if (activateLevelUp == true)
         {
@@ -188,153 +190,18 @@ public class TileRemover
                     if (!levelUpInProgress)
                     {
                         // Fire the move completed event.
-                        listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));  
+                        listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));                                                       
                     }
                     
                     // Clear the level up in progress flag.
                     levelUpInProgress = false;      
-                                                                               
-                    //See if the wezzle timer has run out.  If it has, start
-                    // the tile infection.
-                    if (worldMan.getWezzleTime() == 0 && boardMan.getNumberOfTiles() > 0)
-                    {                                        
-                        // Look for any item that is not a wezzle tile or multiplier.
-                        List<Integer> indexList = boardMan.getTileIndices(
-                                EnumSet.of(
-                                    TileType.ROCKET,
-                                    TileType.GRAVITY,
-                                    TileType.BOMB,
-                                    TileType.STAR
-                                ),
-                                EnumSet.allOf(TileColor.class));
-
-                        // Look for any item that is not a wezzle tile.
-                        if (indexList.isEmpty() == true)
-                        {
-                            indexList = boardMan.getTileIndices(
-                                EnumSet.of(
-                                    TileType.X2,
-                                    TileType.X3,
-                                    TileType.X4
-                                ),
-                                EnumSet.allOf(TileColor.class));
-                        }
-                        
-                        // Look for any tile that is not a wezzle tile.
-                        if (indexList.isEmpty() == true)
-                        {                            
-                            indexList = boardMan.getTileIndices(
-                                    EnumSet.of(TileType.NORMAL),
-                                    EnumSet.allOf(TileColor.class));
-                        }
-
-                        // Get a random one from that list and replace it.                        
-                        Collections.shuffle(indexList);
-                        final int index = indexList.get(0);
-                        final TileEntity oldTile = boardMan.getTile(index);                       
-                        
-                        // Create the new wezzle tile.
-                        final TileEntity newTile = boardMan.makeTile(
-                                TileType.WEZZLE, 
-                                oldTile.getColor(), 
-                                oldTile.getX(), oldTile.getY());
-                        
-                        // Start an animation.                        
-                        IAnimation wezzle1 = new ZoomAnimation.Builder(ZoomAnimation.Type.IN, oldTile)
-                                .speed(settingsMan.getInt(Key.ANIMATION_WEZZLE_ZOOM_IN_SPEED))
-                                .end();
-                        
-                        wezzle1.setFinishRunnable(new Runnable()
-                        {
-                            public void run()
-                            { boardMan.removeTile(index); }
-                        });
-                        
-                        IAnimation wezzle2 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, newTile)                                
-                                .speed(settingsMan.getInt(Key.ANIMATION_WEZZLE_ZOOM_OUT_SPEED))
-                                .end();
-                        
-                        // Add tile to layer manager for animation purposes.
-                        wezzle2.setStartRunnable(new Runnable()
-                        {
-                            public void run()
-                            { layerMan.add(newTile, Layer.TILE); }
-                        });
-                        
-                        // Remove tile for layer manager and add it to the 
-                        // board manager.
-                        wezzle2.setFinishRunnable(new Runnable()
-                        {
-                            public void run()
-                            { 
-                                layerMan.remove(newTile, Layer.TILE); 
-                                boardMan.addTile(index, newTile);
-                            }
-                        });                                                                        
-                        
-                        // If the color is already locked, no need to fade it.
-                        IAnimation fade = FinishedAnimation.get();
-                        if (!boardMan.isColorLocked(newTile.getColor()))
-                        {
-                            EntityGroup e = boardMan.getTiles(
-                                boardMan.getTileIndices(
-                                    EnumSet.complementOf(EnumSet.of(TileType.WEZZLE)), 
-                                    EnumSet.of(newTile.getColor())));                                                
-                        
-                            fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
-                                    .minOpacity(settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_MIN_OPACITY))
-                                    .wait(settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_WAIT))
-                                    .duration(settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_DURATION))
-                                    .end();
-                        } // end if                                                                                             
-                        
-                        IAnimation wezzleMeta = new MetaAnimation.Builder()
-                                .runRule(RunRule.SEQUENCE)
-                                .add(wezzle1)
-                                .add(wezzle2)
-                                .end();
-                        
-                        IAnimation meta = new MetaAnimation.Builder()
-                                .runRule(RunRule.SIMULTANEOUS)
-                                .finishRule(FinishRule.ALL)
-                                .add(wezzleMeta)
-                                .add(fade)
-                                .end();
-                                                                              
-                        // Set the animation.
-                        this.tileInfectionAnimation = meta;
-                        animationMan.add(meta);
-                        
-                        // Lock the color.
-                        boardMan.setColorLocked(newTile.getColor(), true);
-                        
-                        // The infection is now in progress.
-                        this.tileInfectionInProgress = true;                                                
-                    }    
-                    else
-                    {
-                        // Start the next move.
-                        startNextMove(pieceMan, timerMan);
-                    }
-                } // end if                                
+                    
+                    // Start the next move.
+                    startNextMove(pieceMan, timerMan);
+                                                                                                  
+                } // end if                                                                               
             } // end if
-        } // end if       
-        
-        // If there's an infection in progress, check to see if it's done.
-        if (this.tileInfectionInProgress == true)       
-        {
-            if (tileInfectionAnimation.isFinished() == true)
-            {
-                // Reset the wezzle timer.
-                worldMan.resetWezzleTime();
-
-                // Start the next move.
-                startNextMove(pieceMan, timerMan);
-
-                // Turn off the infection flag.
-                this.tileInfectionInProgress = false;            
-            }
-        } // end if       
+        } // end if                       
 
         // If a line removal was activated.
         if (this.activateLineRemoval == true)
@@ -421,7 +288,7 @@ public class TileRemover
                 || this.activateRocketRemoval;
     }
 
-    public void levelUp(final Game game)
+    private void levelUp(final Game game)
     {
         // Set some flags for the level up.
         this.activateLineRemoval = true;
@@ -1595,12 +1462,9 @@ public class TileRemover
         // Clear the gravity tiles.
         gravityRemovalSet.clear();
     }
-
-    /**
-     * Notify the tile remover of a level-up.
-     */
-    public void notifyLevelUp()
-    {
-        this.activateLevelUp = true;
+   
+    public void levelChanged(LevelEvent event)
+    {                
+        this.activateLevelUp = event.isLevelUp();
     }
 }

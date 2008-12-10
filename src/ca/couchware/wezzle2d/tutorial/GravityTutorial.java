@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.Item;
+import ca.couchware.wezzle2d.manager.Item;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -53,7 +53,7 @@ public class GravityTutorial extends AbstractTutorial
         super.initialize(game);                            
         
         // Add this item to the world manager.
-        //game.worldMan.addItem(new Item.Builder(TileType.GRAVITY)
+        //game.levelMan.addItem(new Item.Builder(TileType.GRAVITY)
         //        .initialAmount(0).maximumOnBoard(1).weight(0).end());
         
         // Slow down refactor so the user can see more clearly what happens.
@@ -179,7 +179,7 @@ public class GravityTutorial extends AbstractTutorial
         super.finish(game);
         
         // Add this item to the world manager.
-        //game.worldMan.removeItem(TileType.GRAVITY);
+        //game.levelMan.removeItem(TileType.GRAVITY);
     }
     
     @Override

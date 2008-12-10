@@ -181,6 +181,7 @@ public class TimerManager implements ILevelListener
 	public void setInitialTime(int time)
 	{
 		this.initialTime = time;
+        LogManager.recordMessage("Initial time changed to " + time);
 	}
     
     /**
@@ -188,7 +189,7 @@ public class TimerManager implements ILevelListener
      */
     public void resetInitialTime()
     {
-        this.initialTime = maximumTime;
+        setInitialTime(maximumTime);
     }
 		    
     /**
@@ -230,12 +231,15 @@ public class TimerManager implements ILevelListener
 
     public void levelChanged(LevelEvent event)
     {
-        int time = getInitialTime();
+        int time = maximumTime - event.getNewLevel() + 1;
         
-        if (time > minimumTime) 
-            time--;
+        if (time < minimumTime)
+            time = minimumTime;
         
         setInitialTime(time);
+        //resetTimer();
+        
+        LogManager.recordMessage("Level changed.");
     }
 
     public int getMaximumTime()

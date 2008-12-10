@@ -396,7 +396,7 @@ public class PieceManager implements IMouseListener
     public void updateLogic(final Game game)
     {                
         final SettingsManager settingsMan = game.settingsMan;
-        final WorldManager worldMan       = game.worldMan;
+        final ItemManager     itemMan     = game.itemMan;
         
         // If the board is refactoring, do not logicify.
         if (game.isBusy() == true) return;                 
@@ -417,7 +417,7 @@ public class PieceManager implements IMouseListener
             if (tileDropAnimationInProgress == false)
             {
                 // The number of pieces to drop in.
-                int parallelTileDropInAmount = game.worldMan.getParallelTileDropInAmount();                                
+                int parallelTileDropInAmount = game.levelMan.getParallelTileDropInAmount();                                
                 
                 // Adjust for the pieces left to drop in.
                 if (parallelTileDropInAmount > totalTileDropAmount)
@@ -461,10 +461,10 @@ public class PieceManager implements IMouseListener
                     game.startGameOver();
                 }
                 else if (totalTileDropAmount == 1 
-                        && (boardMan.getNumberOfItems() < worldMan.getMaximumItems() 
-                        || boardMan.getNumberOfMultipliers() < worldMan.getMaximumMultipliers()))
+                        && (boardMan.getNumberOfItems() < itemMan.getMaximumItems() 
+                        || boardMan.getNumberOfMultipliers() < itemMan.getMaximumMultipliers()))
                 {
-                    TileType type = worldMan.getItem(
+                    TileType type = itemMan.getItem(
                                 boardMan.getNumberOfItems(),
                                 boardMan.getNumberOfMultipliers()).getTileType();
                     
@@ -477,8 +477,8 @@ public class PieceManager implements IMouseListener
                                 randomIndex, dropRow, type));                                  
                 }
                 else if (totalTileDropAmount <= parallelTileDropInAmount
-                       && (boardMan.getNumberOfItems() < worldMan.getMaximumItems()
-                       || boardMan.getNumberOfMultipliers() < worldMan.getMaximumMultipliers()))
+                       && (boardMan.getNumberOfItems() < itemMan.getMaximumItems()
+                       || boardMan.getNumberOfMultipliers() < itemMan.getMaximumMultipliers()))
                 {
                     // This must be true.
                     assert totalTileDropAmount <= randomIndexQueue.size();
@@ -495,7 +495,7 @@ public class PieceManager implements IMouseListener
                                 TileType.NORMAL)); 
                     }
                     
-                    TileType type = worldMan.getItem(
+                    TileType type = itemMan.getItem(
                                 boardMan.getNumberOfItems(),
                                 boardMan.getNumberOfMultipliers()).getTileType();
                     
@@ -886,7 +886,7 @@ public class PieceManager implements IMouseListener
 
         // Set the count to the piece size.
         this.totalTileDropAmount = 
-                game.worldMan.calculateDropNumber(game, this.piece.getSize());
+                game.levelMan.calculateDropNumber(game, this.piece.getSize());
 
         // Increment the moves.
         if (game.tutorialMan.isTutorialInProgress() == true)

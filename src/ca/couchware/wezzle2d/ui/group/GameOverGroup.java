@@ -152,7 +152,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
                 GroupManager.Layer.BOTTOM);
         
         // The level we reset to.
-        int level = game.worldMan.getLevel();
+        int level = game.levelMan.getLevel();
         
         // Reset a bunch of stuff.
         if (isRestartActivated() == true)
@@ -161,8 +161,8 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
             game.boardMan.resetState();
             
             // Reset the world manager.
-            game.worldMan.resetState();  
-            level = game.worldMan.getLevel();
+            game.levelMan.resetState();  
+            level = game.levelMan.getLevel();
 
             // Reset the timer to the initial.
             game.timerMan.resetInitialTime();
@@ -174,8 +174,8 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
 //        game.scoreMan.setLevelScore(0);
 //        game.scoreMan.setTotalScore(0); 
 //        game.scoreMan.setTargetLevelScore(
-//                game.worldMan.generateTargetLevelScore(
-//                game.worldMan.getLevel()));    
+//                game.levelMan.generateTargetLevelScore(
+//                game.levelMan.getLevel()));    
         
         //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
                        
@@ -184,7 +184,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
 
         // Create board and make it invisible.
         game.boardMan.setVisible(false);
-        game.boardMan.generateBoard(game.worldMan.getItemList());                    
+        game.boardMan.generateBoard(game.itemMan.getItemList(), game.levelMan.getLevel());                    
 
         // Unpause the game.
         // Don't worry! The game won't pass updates to the 

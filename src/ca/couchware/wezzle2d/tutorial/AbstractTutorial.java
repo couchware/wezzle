@@ -83,11 +83,7 @@ public abstract class AbstractTutorial implements ITutorial
         game.boardMan.saveState();
         game.statMan.saveState();
         game.scoreMan.saveState();
-        
-        // Turn off the game in progress variable in the world manager.
-        game.worldMan.setGameInProgress(false);
-        //game.worldMan.
-              
+             
         // Stop the piece manager from dropping.
         game.pieceMan.setTileDropOnCommit(false);
         

@@ -22,23 +22,31 @@ public class LevelEvent extends EventObject
     final private int newLevel;
     
     /** The level score. */
-    final private int levelScore;
+    final private int nextLevelScore;
     
     /** The target level score. */
-    final private int targetLevelScore;
+    final private int nextTargetLevelScore;
+    
+    /** 
+     * Is the event a level-up?  That is, did it result from the player 
+     * completing a level.
+     */
+    final private boolean levelUp;
     
     public LevelEvent(
             Object source, 
             int oldLevel,            
             int newLevel,
-            int levelScore,
-            int targetLevelScore)
+            boolean levelUp,
+            int nextLevelScore,
+            int nextTargetLevelScore)
     {
         super(source);
         this.oldLevel = oldLevel;
         this.newLevel = newLevel;
-        this.levelScore = levelScore;
-        this.targetLevelScore = targetLevelScore;
+        this.levelUp = levelUp;
+        this.nextLevelScore = nextLevelScore;
+        this.nextTargetLevelScore = nextTargetLevelScore;
     }   
 
     public int getOldLevel()
@@ -49,16 +57,21 @@ public class LevelEvent extends EventObject
     public int getNewLevel()
     {
         return newLevel;
-    }  
-    
-    public int getLevelScore()
-    {
-        return levelScore;
     }
 
-    public int getTargetLevelScore()
+    public boolean isLevelUp()
     {
-        return targetLevelScore;
+        return levelUp;
+    }        
+    
+    public int getNextLevelScore()
+    {
+        return nextLevelScore;
+    }
+
+    public int getNextTargetLevelScore()
+    {
+        return nextTargetLevelScore;
     }   
         
 }

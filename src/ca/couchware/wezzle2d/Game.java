@@ -11,7 +11,6 @@ import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
-import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.manager.AnimationManager;
@@ -20,6 +19,7 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
+import ca.couchware.wezzle2d.manager.ItemManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ListenerManager;
@@ -34,7 +34,7 @@ import ca.couchware.wezzle2d.manager.SoundManager;
 import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.manager.TutorialManager;
-import ca.couchware.wezzle2d.manager.WorldManager;
+import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.menu.MainMenuGroup;
 import ca.couchware.wezzle2d.tile.TileType;
@@ -52,13 +52,10 @@ import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -88,21 +85,22 @@ public class Game extends Canvas implements IGameWindowCallback
     public static enum ManagerType
     {
         ACHIEVEMENT, 
+        ANIMATION,
         BOARD, 
         GROUP, 
-        HIGHSCORE, 
+        HIGHSCORE,
+        ITEM,
         LAYER, 
         LISTENER,
-        PIECE, 
-        //SETTINGS,
+        MUSIC, 
+        PIECE,         
         SCORE, 
+        SOUND,
         STAT, 
         TIMER, 
-        WORLD, 
-        ANIMATION, 
         TUTORIAL, 
-        MUSIC, 
-        SOUND    
+        LEVEL                      
+                          
     }       
           
     /** The width of the screen. */
@@ -163,6 +161,9 @@ public class Game extends Canvas implements IGameWindowCallback
        
     /** The high score manager. */    
     public HighScoreManager highScoreMan;
+    
+    /** The item manager. */
+    public ItemManager itemMan;
     	
     /** The game layer manager. */
     public LayerManager layerMan;
@@ -195,7 +196,7 @@ public class Game extends Canvas implements IGameWindowCallback
     public TutorialManager tutorialMan;   
     
     /** The Manager in charge of the world. */
-    public WorldManager worldMan;    	
+    public LevelManager levelMan;    	
     
     /** The Manager in charge of Listeners. */
     public ListenerManager listenerMan = ListenerManager.get();
@@ -282,7 +283,7 @@ public class Game extends Canvas implements IGameWindowCallback
             
     public void startBoard()
     {
-        boardMan.generateBoard(worldMan.getItemList());          
+        boardMan.generateBoard(itemMan.getItemList(), levelMan.getLevel());          
         startBoardShowAnimation(AnimationType.ROW_FADE);
     }
         
@@ -291,6 +292,18 @@ public class Game extends Canvas implements IGameWindowCallback
      */    
     private void initializeManagers(EnumSet<ManagerType> managerSet)
     {                
+        if (managerSet.contains(ManagerType.SOUND))
+        {
+            // Create the sound manager.
+            soundMan = SoundManager.newInstance(executor);
+        }
+        
+        if (managerSet.contains(ManagerType.MUSIC))
+        {
+            // Create the music manager.            
+            musicMan = MusicManager.newInstance(executor);  
+        }   
+        
         if (managerSet.contains(ManagerType.LAYER))
         {
             // Create the layer manager.   
@@ -302,6 +315,20 @@ public class Game extends Canvas implements IGameWindowCallback
             // Create the animation manager.
             animationMan = AnimationManager.newInstance();                
         }
+        
+        if (managerSet.contains(ManagerType.HIGHSCORE))
+        {
+            // Create the high score manager.
+            highScoreMan = HighScoreManager.newInstance();  
+        }      
+        
+        if (managerSet.contains(ManagerType.ITEM))
+        {
+            // Create the manager.
+            itemMan = ItemManager.newInstance();  
+            
+            listenerMan.registerListener(Listener.LEVEL, itemMan);
+        } 
         
         if (managerSet.contains(ManagerType.STAT))
         {
@@ -322,28 +349,13 @@ public class Game extends Canvas implements IGameWindowCallback
             tutorialMan.add(new RocketTutorial(refactorer));
             tutorialMan.add(new BombTutorial(refactorer));
             tutorialMan.add(new StarTutorial(refactorer));
-        }           
-        
-        if (managerSet.contains(ManagerType.HIGHSCORE))
-        {
-            // Create the high score manager.
-            highScoreMan = HighScoreManager.newInstance();  
-        }
-        
-        if (managerSet.contains(ManagerType.WORLD))
-        {
-            // Create the world manager.
-            worldMan = WorldManager.newInstance(listenerMan);  
-            worldMan.setGameInProgress(true);
-            listenerMan.registerListener(Listener.LEVEL, worldMan);
-            listenerMan.registerListener(Listener.LINE,  worldMan);
-            listenerMan.registerListener(Listener.MOVE,  worldMan);
-        }
+        }                           
         
         if (managerSet.contains(ManagerType.BOARD))
         {
             // Create the board manager.
-            boardMan = BoardManager.newInstance(animationMan, layerMan, worldMan,
+            boardMan = BoardManager.newInstance(
+                    animationMan, layerMan, itemMan,
                     272, 139, 8, 10);    
             boardMan.setVisible(false);
             
@@ -376,32 +388,24 @@ public class Game extends Canvas implements IGameWindowCallback
                     highScoreMan, 
                     listenerMan);
             
-            //scoreMan.setTargetLevelScore(worldMan.generateTargetLevelScore());
+            //scoreMan.setTargetLevelScore(levelMan.generateTargetLevelScore());
             listenerMan.registerListener(Listener.GAME,  scoreMan);
             listenerMan.registerListener(Listener.LEVEL, scoreMan);
             //listenerMan.registerListener(Listener.SCORE, scoreMan);            
         }
         
-        if (managerSet.contains(ManagerType.SOUND))
+        if (managerSet.contains(ManagerType.LEVEL))
         {
-            // Create the sound manager.
-            soundMan = SoundManager.newInstance(executor);
-        }
-        
-        if (managerSet.contains(ManagerType.MUSIC))
-        {
-            // Create the music manager.            
-            musicMan = MusicManager.newInstance(executor);  
-        }               
+            // Create the world manager.
+            levelMan = LevelManager.newInstance(listenerMan, scoreMan);                  
+        }                           
         
         if (managerSet.contains(ManagerType.TIMER))
         {
             // Create the time manager.
-            if (worldMan == null)
+            if (levelMan == null)
                 throw new IllegalStateException("World Manager has not been initalized yet!");
-                
-            timerMan.setMinimumTime(worldMan.getMinimumTime());
-            timerMan.setMaximumTime(worldMan.getMaximumTime());
+                           
             timerMan.resetTimer(); 
             listenerMan.registerListener(Listener.LEVEL, timerMan);
         }
@@ -467,7 +471,8 @@ public class Game extends Canvas implements IGameWindowCallback
      */
     private void initializeMembers()
     {
-        // Nada.
+        // Make the tile remover listen for level events.
+        listenerMan.registerListener(Listener.LEVEL, tileRemover);
     }
     
 	/**
@@ -699,23 +704,7 @@ public class Game extends Canvas implements IGameWindowCallback
         window.fireMouseEvents();                
         window.updateKeyPresses();
                         
-        // The keys.
-//        if (window.isKeyPressed('b'))
-//        {
-//           boardMan.insertRandomItem(TileType.BOMB);
-//        }
-//        if (window.isKeyPressed('r'))
-//        {
-//           boardMan.insertRandomItem(TileType.ROCKET);
-//        }
-//        if (window.isKeyPressed('s'))
-//        {
-//           boardMan.insertRandomItem(TileType.STAR);
-//        }
-//        if (window.isKeyPressed('g'))
-//        {
-//           boardMan.insertRandomItem(TileType.GRAVITY);
-//        }    
+        // The keys.      
         if (window.isKeyPressed('R'))
         {
             SettingsManager.get().loadUserSettings();
@@ -762,27 +751,12 @@ public class Game extends Canvas implements IGameWindowCallback
                 // Hide piece.                    
                 pieceMan.getPieceGrid().setVisible(false);
                 pieceMan.stopAnimation();
+                timerMan.setPaused(true);
 
                 LogManager.recordMessage("Level up!", "Game#frameRendering");
-                //worldMan.levelUp(this);
+                //levelMan.levelUp(this);
                
-                // lots o' shit to add to the level event
-                int level = worldMan.getLevel();
-                int levelScore = scoreMan.getLevelScore() - scoreMan.getTargetLevelScore();       
-                int targetLevelScore  = scoreMan.generateTargetLevelScore(level + 1);
-        
-                if (levelScore > targetLevelScore / 2)
-                {
-                    levelScore = targetLevelScore / 2;
-                }
-                
-                listenerMan.notifyLevelChanged(new LevelEvent(this, 
-                        level, 
-                        level + 1,
-                        levelScore,
-                        targetLevelScore));
-                
-                tileRemover.notifyLevelUp();                                                
+                levelMan.incrementLevel();                                                           
 
                 soundMan.play(Sound.LEVEL_UP);
 
@@ -875,17 +849,13 @@ public class Game extends Canvas implements IGameWindowCallback
         // Update piece manager logic and then draw it.
         pieceMan.updateLogic(this);
 
-         // Update the world manager logic.
-        worldMan.updateLogic(this);        
+         // Update the item manager logic.
+        itemMan.updateLogic(this);        
         
          // Update the tutorial manager logic. This must be done after the world
         // manager because it relies on the proper items being in the item list.
         tutorialMan.updateLogic(this);
-
-                      
-
-        // --- UI LOGIC STUB --
-
+    
         // Reset the line count.
         //statMan.incrementLineCount(statMan.getCycleLineCount());       
         
@@ -960,8 +930,8 @@ public class Game extends Canvas implements IGameWindowCallback
 
         // Add the new score.
         highScoreMan.offerScore("TEST", scoreMan.getTotalScore(), 
-                worldMan.getLevel());
-        listenerMan.notifyGameOver(new GameEvent(this, worldMan.getLevel()));
+                levelMan.getLevel());
+        listenerMan.notifyGameOver(new GameEvent(this, levelMan.getLevel()));
         //highScoreGroup.updateLabels();
         
         // Activate the game over process.

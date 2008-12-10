@@ -125,7 +125,7 @@ public class Rule
                 break;
                 
             case LEVEL:
-                x = game.worldMan.getLevel();
+                x = game.levelMan.getLevel();
                 break;
                 
             case MOVES:

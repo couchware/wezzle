@@ -417,8 +417,8 @@ import java.util.Set;
     
     public void levelChanged(LevelEvent event)
     {
-        setLevelScore(event.getLevelScore());        
-		setTargetLevelScore(event.getTargetLevelScore());
+        setLevelScore(event.getNextLevelScore());        
+		setTargetLevelScore(event.getNextTargetLevelScore());
     }  
     
 //    public void scoreReset(ScoreEvent event)

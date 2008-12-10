@@ -390,9 +390,10 @@ public class PlayNowGroup extends AbstractGroup
             this.musicMan.setTheme(themeRadio.getSelectedKey());
             
             // Set the target score.
-            game.worldMan.setLevel(levelNumber);
+            game.levelMan.setLevel(levelNumber, false);
+            game.timerMan.resetTimer();
             game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
-            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));
+            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));            
             //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
                                       
             // Stop all the player.
@@ -401,9 +402,7 @@ public class PlayNowGroup extends AbstractGroup
                 p.stopAtGain(0.0);
             }        
             
-            game.startBoard();
-            
-              
+            game.startBoard();                          
             
             // Notify the main menu.
             this.parent.setActivated(false);
