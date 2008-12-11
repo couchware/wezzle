@@ -28,7 +28,7 @@ public class TimerManager implements ILevelListener
     /**
      * The default time.
      */
-    private int maximumTime = 12;
+    private int maximumTime = 10;
    
     /** 
      * The minimum time.
