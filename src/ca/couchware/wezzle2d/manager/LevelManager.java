@@ -55,7 +55,7 @@ public class LevelManager implements IManager
     /** 
      * The maximum number of tiles to drop in.
      */
-    private int maximumDropAmount = 7;
+    private int maximumDropAmount = 9;
            
     //--------------------------------------------------------------------------
 	// Constructor
