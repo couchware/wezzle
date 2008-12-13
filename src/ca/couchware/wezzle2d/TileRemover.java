@@ -247,7 +247,8 @@ public class TileRemover implements ILevelListener
     {
         // Load new piece and make it visible.
         pieceMan.loadPiece();
-        pieceMan.getPieceGrid().setVisible(true);               
+        pieceMan.getPieceGrid().setVisible(true);    
+        pieceMan.startAnimation(timerMan);
 
         // Reset the mouse.
         pieceMan.clearMouseButtonSet();

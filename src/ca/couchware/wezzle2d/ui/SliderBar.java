@@ -279,7 +279,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         drawRail(x + offsetX, y + offsetY + (HEIGHT - 4) / 2, width, 2, 1);
         
         // Draw the handle.
-        spriteHandle.draw(x + offsetX + slideOffset, y + offsetY);
+        spriteHandle.draw(x + offsetX + slideOffset, y + offsetY).end();
         
         return true;
     }

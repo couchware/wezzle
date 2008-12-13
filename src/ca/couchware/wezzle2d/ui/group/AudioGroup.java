@@ -23,7 +23,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class SoundMusicGroup extends AbstractGroup
+public class AudioGroup extends AbstractGroup
 {    
     
     /**
@@ -79,7 +79,7 @@ public class SoundMusicGroup extends AbstractGroup
      * @param groupMan
      * @param propertyMan
      */    
-    public SoundMusicGroup(
+    public AudioGroup(
             SettingsManager settingsMan,
             LayerManager layerMan)
     {
@@ -90,7 +90,7 @@ public class SoundMusicGroup extends AbstractGroup
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26)
-                .text("Sound/Music").visible(false).end();
+                .text("Audio").visible(false).end();
         layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
                

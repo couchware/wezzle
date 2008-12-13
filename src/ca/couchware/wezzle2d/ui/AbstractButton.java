@@ -98,13 +98,19 @@ public abstract class AbstractButton extends AbstractEntity implements
     {
         super.setX(x);
         shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);
+        
+        // Pretend like we just moved the mouse.
+        handleMoved(window.getMouseImmutablePosition());
     }
     
     @Override
     public void setY(int y)
     {
         super.setY(y);
-        shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);     
+        shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);    
+        
+        // Pretend like we just moved the mouse.
+        handleMoved(window.getMouseImmutablePosition());
     }
     
     protected void handleReleased()

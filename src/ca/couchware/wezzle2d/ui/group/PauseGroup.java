@@ -70,7 +70,7 @@ public class PauseGroup extends AbstractGroup implements
         // Create the "Paused" text.
         mainLabel = new LabelBuilder(400, 245)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(30)
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(38)
                 .text("Paused")
                 .visible(false).end();
         layerMan.add(mainLabel, Layer.UI);
@@ -79,7 +79,7 @@ public class PauseGroup extends AbstractGroup implements
         movesLabel = new LabelBuilder(400, 310)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
-                .text("0 moves taken")
+                .text("0 moves")
                 .visible(false).end();
         layerMan.add(movesLabel, Layer.UI);
         entityList.add(movesLabel);
@@ -87,7 +87,7 @@ public class PauseGroup extends AbstractGroup implements
         linesLabel = new LabelBuilder(400, 340)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
-                .text("0 lines cleared")
+                .text("0 lines")
                 .visible(false).end();
         layerMan.add(linesLabel, Layer.UI);
         entityList.add(linesLabel);
@@ -95,7 +95,7 @@ public class PauseGroup extends AbstractGroup implements
         linesPerMoveLabel = new LabelBuilder(400, 370)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
-                .text("0.0 lines per move")
+                .text("0.0 lines/move")
                 .visible(false).end();
         layerMan.add(linesPerMoveLabel, Layer.UI);
         entityList.add(linesPerMoveLabel);
@@ -108,21 +108,9 @@ public class PauseGroup extends AbstractGroup implements
         // Record the current number of moves.
         this.moves = moves;
         
-        // Set the moves label.
-        layerMan.remove(movesLabel, Layer.UI);
-        entityList.remove(movesLabel);
-        if (moves == 1)
-        {
-            movesLabel = new LabelBuilder(movesLabel)
-                    .text("1 move taken").end();            
-        }
-        else
-        {
-            movesLabel = new LabelBuilder(movesLabel)
-                    .text(moves + " moves taken").end(); 
-        }
-        layerMan.add(movesLabel, Layer.UI);
-        entityList.add(movesLabel);
+        // Set the moves label.       
+        if (moves == 1) movesLabel.setText("1 move");           
+        else movesLabel.setText(moves + " moves");
     }       
     
     private void setLines(int lines)
@@ -132,21 +120,9 @@ public class PauseGroup extends AbstractGroup implements
         // Record the current number of moves.
         this.lines = lines;
         
-        // Set the lines label.
-        layerMan.remove(linesLabel, Layer.UI);
-        entityList.remove(linesLabel);
-        if (lines == 1)
-        {
-            linesLabel = new LabelBuilder(linesLabel)
-                    .text("1 line cleared").end();            
-        }
-        else
-        {
-            linesLabel = new LabelBuilder(linesLabel)
-                    .text(lines + " lines cleared").end(); 
-        }
-        layerMan.add(linesLabel, Layer.UI);  
-        entityList.add(linesLabel);
+        // Set the lines label.        
+        if (lines == 1) linesLabel.setText("1 line");     
+        else linesLabel.setText(lines + " lines");     
     }
     
     private void setLinesPerMove(double linesPerMove)
@@ -156,14 +132,8 @@ public class PauseGroup extends AbstractGroup implements
         // Record the current lpm.
         this.linesPerMove = linesPerMove;
         
-        // Set the lines per move label.
-        //linesPerMoveLabel.setText(lpm + " lines per move");
-        layerMan.remove(linesPerMoveLabel, Layer.UI);
-        entityList.remove(linesPerMoveLabel);
-        linesPerMoveLabel = new LabelBuilder(linesPerMoveLabel)
-                .text(linesPerMove + " lines per move").end();
-        layerMan.add(linesPerMoveLabel, Layer.UI);
-        entityList.add(linesPerMoveLabel);
+        // Set the lines per move label.        
+        linesPerMoveLabel.setText(linesPerMove + " lines/move");        
     }      
     
      @Override

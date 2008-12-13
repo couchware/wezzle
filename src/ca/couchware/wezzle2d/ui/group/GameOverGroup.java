@@ -163,6 +163,10 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
             // Reset the world manager.
             game.levelMan.resetState();  
             level = game.levelMan.getLevel();
+            
+            // Reset the item manager.
+            game.itemMan.resetState();
+            game.itemMan.evaluateRules(game);
 
             // Reset the timer to the initial.
             game.timerMan.resetInitialTime();
@@ -170,14 +174,6 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         
         // Notify all listeners of reset.
         game.listenerMan.notifyGameReset(new GameEvent(this, level));
-
-//        game.scoreMan.setLevelScore(0);
-//        game.scoreMan.setTotalScore(0); 
-//        game.scoreMan.setTargetLevelScore(
-//                game.levelMan.generateTargetLevelScore(
-//                game.levelMan.getLevel()));    
-        
-        //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
                        
         game.statMan.resetMoveCount();
         game.statMan.resetLineCount();

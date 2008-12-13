@@ -7,22 +7,18 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.ILevelListener;
-import ca.couchware.wezzle2d.event.ILineListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
 import ca.couchware.wezzle2d.event.IWezzleListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
-import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.event.WezzleEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
-import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ListenerManager;
-import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
 import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.Settings;
@@ -37,17 +33,13 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ILabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.Button;
-import ca.couchware.wezzle2d.ui.Box;
-import ca.couchware.wezzle2d.ui.Box.Border;
 import ca.couchware.wezzle2d.ui.MammothButton;
 import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
 import ca.couchware.wezzle2d.ui.group.OptionsGroup;
 import ca.couchware.wezzle2d.ui.group.PauseGroup;
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * A class for handling the Wezzle UI.
@@ -131,10 +123,7 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     
     /** The high score group. */
     private HighScoreGroup highScoreGroup;     
-    
-    /** The wezzle icons indicating how many turns left until a wezzle. */
-    private List<IEntity> wezzleList = new ArrayList<IEntity>(4);
-    
+       
     /**
      * Private constructor to ensure singletonness.
      */

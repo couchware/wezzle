@@ -42,7 +42,7 @@ public class OptionsGroup extends AbstractGroup
     /**
      * The audio group.
      */
-    private SoundMusicGroup audioGroup;
+    private AudioGroup audioGroup;
 
     /**
      * The main menu button.
@@ -91,7 +91,7 @@ public class OptionsGroup extends AbstractGroup
         entityList.add(audioButton);
         
         // Create the audio group.
-        audioGroup = new SoundMusicGroup(settingsMan, layerMan);
+        audioGroup = new AudioGroup(settingsMan, layerMan);
         groupMan.register(audioGroup);
         
         // Create main menu button.
@@ -152,7 +152,7 @@ public class OptionsGroup extends AbstractGroup
             game.groupMan.showGroup(audioButton, audioGroup, 
                 GroupManager.Class.OPTIONS,
                 GroupManager.Layer.MIDDLE);
-        }       
+        }             
     }
     
 }

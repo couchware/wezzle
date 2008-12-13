@@ -64,6 +64,9 @@ public class LWJGLGameWindow implements IGameWindow
      * True if the game is currently "running", i.e. the game loop is looping .
      */
 	private boolean gameRunning = true;
+    
+    /** True if the window is active. */
+    private boolean active = false;
   
 	/**
      * The width of the game display area.
@@ -272,7 +275,6 @@ public class LWJGLGameWindow implements IGameWindow
         {
             this.originalDisplayMode = Display.getDisplayMode();
             setDisplayMode(width, height, false);
-//            Display.setFullscreen(true);
             Display.setVSyncEnabled(true);            
             Display.create(new PixelFormat(0, 16, 1));
             Display.setTitle(this.title);            
@@ -367,6 +369,13 @@ public class LWJGLGameWindow implements IGameWindow
             // The window is in the foreground, so we should play the game
             else if (Display.isActive())
             {
+                // Notify of activation.
+                if (this.active == false) 
+                {
+                    callback.windowActivated();
+                    this.active = true;
+                }
+                
 //                loopCounter = 0;
 //
 //                while (getTime() > nextGameTick && loopCounter < MAX_FRAME_SKIP)
@@ -388,6 +397,12 @@ public class LWJGLGameWindow implements IGameWindow
             // infrequently update.
             else
             {
+                if (this.active == true)
+                {
+                    callback.windowDeactivated();
+                    this.active = false;
+                }
+                
                 try
                 {
                     Thread.sleep(100);

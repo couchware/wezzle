@@ -2374,21 +2374,21 @@ public class BoardManager implements IManager, IKeyListener
     {
         switch (event.getCharacter())
         {
-            case 'r':
-                insertItemRandomly(TileType.ROCKET);
-                break;
-                
-            case 'g':
-                insertItemRandomly(TileType.GRAVITY);
-                break;
-                
-            case 'b':
-                insertItemRandomly(TileType.BOMB);
-                break;
-                
-            case 's':
-                insertItemRandomly(TileType.STAR);
-                break;            
+//            case 'r':
+//                insertItemRandomly(TileType.ROCKET);
+//                break;
+//                
+//            case 'g':
+//                insertItemRandomly(TileType.GRAVITY);
+//                break;
+//                
+//            case 'b':
+//                insertItemRandomly(TileType.BOMB);
+//                break;
+//                
+//            case 's':
+//                insertItemRandomly(TileType.STAR);
+//                break;            
         }
     }
 

@@ -338,6 +338,12 @@ public class PieceManager implements IMouseListener
         }
     }
     
+    public void startAnimation(TimerManager timerMan)
+    {
+        startAnimationAt(pieceGrid.getXYPosition(), 
+                getPulseSpeed(timerMan.getInitialTime(), timerMan.getTime()));
+    }
+    
     private void adjustAnimationAt(final ImmutablePosition p, int speed)
     {
         Set<Integer> indexSet = new HashSet<Integer>();
@@ -717,10 +723,8 @@ public class PieceManager implements IMouseListener
                 // Filter the current position.
                 ImmutablePosition pos = limitPosition(p);
 
-                int speed = Util.scaleInt(
-                        0, game.timerMan.getInitialTime(), 
-                        SLOW_SPEED, FAST_SPEED, 
-                        game.timerMan.getInitialTime() - game.timerMan.getTime());                                
+                int speed = getPulseSpeed(game.timerMan.getInitialTime(), 
+                        game.timerMan.getTime());                             
                 
                 // If the position changed, or the board was refactored.
                 if (pos.getX() != pieceGrid.getX()
@@ -746,6 +750,18 @@ public class PieceManager implements IMouseListener
                 }
             } // end if
         } // end if
+    }
+    
+    /**
+     * Determines the pulse speed based on the initial time and the current time.
+     * 
+     * @param initialTime
+     * @param time
+     * @return
+     */
+    private int getPulseSpeed(int initialTime, int time)
+    {
+        return Util.scaleInt(0, initialTime, SLOW_SPEED, FAST_SPEED, initialTime - time);
     }
     
     public void initiateCommit(final Game game)

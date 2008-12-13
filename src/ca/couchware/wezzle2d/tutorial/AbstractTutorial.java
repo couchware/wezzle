@@ -296,6 +296,7 @@ public abstract class AbstractTutorial implements ITutorial
         
         // Piece is visible.
         game.pieceMan.getPieceGrid().setVisible(true);
+        game.pieceMan.startAnimation(game.timerMan);
     }    
     
     protected abstract void createBoard(final Game game);

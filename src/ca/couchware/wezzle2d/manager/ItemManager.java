@@ -379,12 +379,8 @@ public class ItemManager implements IManager, ILevelListener
     // Logic
     //--------------------------------------------------------------------------
     
-    public void updateLogic(final Game game)
-    {       
-        // If the board is refactoring, do not logicify.
-        if (game.isBusy() == true)
-             return;                    
-        
+    public void evaluateRules(Game game)
+    {
         for (Iterator<Rule> it = currentRuleList.iterator(); it.hasNext(); )
         {
             Rule rule = it.next();
@@ -394,7 +390,16 @@ public class ItemManager implements IManager, ILevelListener
                 rule.onMatch();
                 it.remove();
             }
-        }            
+        } // end for
+    }
+    
+    public void updateLogic(final Game game)
+    {       
+        // If the board is refactoring, do not logicify.
+        if (game.isBusy() == true)
+             return;                    
+        
+        evaluateRules(game);
     }
     
     public void saveState()

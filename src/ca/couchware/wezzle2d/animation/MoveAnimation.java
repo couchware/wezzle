@@ -285,7 +285,10 @@ public class MoveAnimation extends AbstractAnimation
             }
             
             if (duration > 0 && ms > wait + duration)   
-                setFinished();                                                        
+                setFinished();    
+            
+            // Update the mouse shit.
+            //entity.
         }        
     }
     
