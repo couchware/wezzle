@@ -22,12 +22,14 @@ import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.ITextField;
 import ca.couchware.wezzle2d.ui.TallButton;
+import ca.couchware.wezzle2d.ui.TextField;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import ca.couchware.wezzle2d.util.Util;
@@ -75,7 +77,7 @@ public class PlayNowGroup extends AbstractGroup
     /**
      * The name button.
      */
-    final private IButton nameButton;
+    final private ITextField nameField;
     
     /**
      * The level down button.
@@ -88,7 +90,7 @@ public class PlayNowGroup extends AbstractGroup
     final private IButton levelUpButton;
     
     /** The level label. */
-    private ILabel levelNumberLabel;    
+    private ITextLabel levelNumberLabel;    
     
     /** The level. */
     private int levelNumber = 1;
@@ -140,28 +142,31 @@ public class PlayNowGroup extends AbstractGroup
         final int SPACING = 60;
         
         // Create the name label.
-        ILabel nl = new LabelBuilder(85, 125)
+        ITextLabel nl = new LabelBuilder(85, 125)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Name").size(20)
                 .visible(false).end();
         this.entityList.add(nl);
         
-        // Create the temporary test name.
-        this.nameButton = new Button.Builder(355, nl.getY())
+        // Create the test name.
+        this.nameField = new TextField.Builder(355, nl.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(OPTION_COLOR)
                 .width(150)
                 //.type(SpriteButton.Type.NORMAL)
-                .visible(false).normalOpacity(90)
-                .text("TEST").end();
-        this.entityList.add(this.nameButton);
+                .visible(false)
+                .normalOpacity(90)
+                .text("User")
+                .maximumLength(4)
+                .end();
+        this.entityList.add(this.nameField);
         
         // Create the level label.
-        ILabel ll = new LabelBuilder(nl).y(nl.getY() + SPACING * 1).text("Level").end();
+        ITextLabel ll = new LabelBuilder(nl).y(nl.getY() + SPACING * 1).text("Level").end();
         this.entityList.add(ll);
         
         // Create the level number label.
-        this.levelNumberLabel = new LabelBuilder(nameButton.getX(), ll.getY())                
+        this.levelNumberLabel = new LabelBuilder(nameField.getX(), ll.getY())                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
                 .size(20).visible(false).text(String.valueOf(levelNumber)).end();
@@ -184,7 +189,7 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(this.levelUpButton);                       
               
         // Create the music theme label.
-        ILabel tl = new LabelBuilder(nl).y(nl.getY() + SPACING * 2).text("Music Theme").end();
+        ITextLabel tl = new LabelBuilder(nl).y(nl.getY() + SPACING * 2).text("Music Theme").end();
         this.entityList.add(tl);
         
         // Create a window background for this option.

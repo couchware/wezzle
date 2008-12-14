@@ -25,8 +25,9 @@ import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.TextField;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.EmptyGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
@@ -141,10 +142,10 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         // Add the background.
         GraphicEntity backgroundGraphic = 
                 new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
-        layerMan.add(backgroundGraphic, Layer.BACKGROUND);
+        layerMan.add(backgroundGraphic, Layer.BACKGROUND);                       
                 
         // Set up the copyright label.               
-        ILabel l1 = new LabelBuilder(10, 600 - 10)
+        ITextLabel l1 = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED))
                 .size(12)                
@@ -152,7 +153,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         layerMan.add(l1, Layer.UI);
         
         // Set up the version label.	
-        ILabel l2 = new LabelBuilder(800 - 10, 600 - 10)
+        ITextLabel l2 = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
                 .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED))
                 .size(12)                

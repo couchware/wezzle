@@ -38,17 +38,17 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
     /**
      * The header label.
      */
-    private ILabel headerLabel;
+    private ITextLabel headerLabel;
     
     /**
      * The final score header label.
      */
-    private ILabel scoreHeaderLabel;
+    private ITextLabel scoreHeaderLabel;
     
     /**
      * The final score label.
      */
-    private ILabel scoreLabel;
+    private ITextLabel scoreLabel;
     
     /**
      * The restart button.

@@ -17,7 +17,7 @@ import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.piece.*;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -855,7 +855,7 @@ public class PieceManager implements IMouseListener
         // Add score SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(indexSet);
         
-        final ILabel label = new LabelBuilder(p.getX(), p.getY())
+        final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(game.settingsMan.getColor(Key.SCT_COLOR_PIECE))
                 .size(game.scoreMan.determineFontSize(deltaScore))

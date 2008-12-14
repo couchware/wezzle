@@ -15,7 +15,7 @@ import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
@@ -64,7 +64,7 @@ public class ExitGroup extends AbstractGroup
         this.layerMan.add(win, Layer.UI);               
                
         // Line 1.
-        ILabel l1 = new LabelBuilder(266, 155)
+        ITextLabel l1 = new LabelBuilder(266, 155)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(22).visible(false)
@@ -72,7 +72,7 @@ public class ExitGroup extends AbstractGroup
         this.entityList.add(l1);
         
         // Line 2.
-        ILabel l2 = new LabelBuilder(l1).y(l1.getY() + 30)
+        ITextLabel l2 = new LabelBuilder(l1).y(l1.getY() + 30)
                 .text("you want to exit?").end();
         this.entityList.add(l2);                
         

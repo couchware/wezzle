@@ -64,7 +64,7 @@ public class SpeechBubble extends AbstractEntity
     private ISprite sprite;
     
     /** The label representing the text in the speech bubble. */
-    private ILabel label;
+    private ITextLabel label;
     
     /**
      * Static constructor.

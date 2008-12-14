@@ -30,7 +30,7 @@ import ca.couchware.wezzle2d.manager.TutorialManager;
 import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.MammothButton;
@@ -80,22 +80,22 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     public ProgressBar progressBar; 
     
     /** The timer text. */
-    private ILabel timerLabel;
+    private ITextLabel timerLabel;
     
     /** The wezzle timer text. */
-    private ILabel wezzleTimerLabel;  
+    private ITextLabel wezzleTimerLabel;  
     
     /** The score header graphic. */
     private GraphicEntity scoreHeaderLabel;
         
     /** The score text. */
-    private ILabel scoreLabel;
+    private ITextLabel scoreLabel;
     
     /** The high score header graphic. */
     private GraphicEntity highScoreHeaderLabel;
             
     /** The high score text. */
-    private ILabel highScoreLabel;
+    private ITextLabel highScoreLabel;
     
     /** The high score header button. */
     private IButton highScoreButton;
@@ -104,13 +104,13 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     private GraphicEntity levelHeader;
     
     /** The level text. */
-    private ILabel levelLabel;            
+    private ITextLabel levelLabel;            
     
     /** The version label. */
-    private ILabel versionLabel;     
+    private ITextLabel versionLabel;     
     
     /** The copyright label. */
-    private ILabel copyrightLabel;
+    private ITextLabel copyrightLabel;
     
     /** The pause group. */
     private PauseGroup pauseGroup;

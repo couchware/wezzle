@@ -45,7 +45,7 @@ import ca.couchware.wezzle2d.tutorial.BombTutorial;
 import ca.couchware.wezzle2d.tutorial.GravityTutorial;
 import ca.couchware.wezzle2d.tutorial.RocketTutorial;
 import ca.couchware.wezzle2d.tutorial.StarTutorial;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
@@ -577,6 +577,7 @@ public class Game extends Canvas implements IGameWindowCallback
             {      
                 // Fire the mouse events.
                 window.fireMouseEvents();
+                window.updateKeyPresses();
                 
                 // Draw using the loader.
                 return;
@@ -767,7 +768,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 int y = pieceMan.getPieceGrid().getY() 
                         + boardMan.getCellHeight() / 2;
                                                 
-                final ILabel label = new LabelBuilder(x, y)
+                final ITextLabel label = new LabelBuilder(x, y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                         .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                         .size(settingsMan.getInt(Key.SCT_LEVELUP_TEXT_SIZE))

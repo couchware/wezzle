@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -17,7 +17,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class LWJGLLabel extends AbstractEntity implements ILabel
+public class LWJGLTextLabel extends AbstractEntity implements ITextLabel
 {
     /** 
      * The game window to which this text is going to be drawn 
@@ -44,7 +44,7 @@ public class LWJGLLabel extends AbstractEntity implements ILabel
      */
 	final private TrueTypeFont font;         
     
-    public LWJGLLabel(
+    public LWJGLTextLabel(
             LWJGLGameWindow window,
             int x, int y,
             EnumSet<Alignment> alignment,

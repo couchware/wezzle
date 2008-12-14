@@ -57,7 +57,7 @@ public abstract class AbstractButton extends AbstractEntity implements
      * Was the button just clicked?  This flag is cleared once it
      * is read.
      */
-    private boolean clicked = false;        
+    protected boolean clicked = false;        
     
     // -------------------------------------------------------------------------
     // Constructors

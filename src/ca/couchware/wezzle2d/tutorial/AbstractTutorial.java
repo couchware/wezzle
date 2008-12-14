@@ -15,7 +15,7 @@ import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.Button;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public abstract class AbstractTutorial implements ITutorial
     protected boolean menuShown = false;
     
     /** The text that directs the user. */
-    protected List<ILabel> labelList;
+    protected List<ITextLabel> labelList;
     
     /** A speech bubble that indicates where the user should press. */
     protected SpeechBubble bubble;       
@@ -234,7 +234,7 @@ public abstract class AbstractTutorial implements ITutorial
         bubble = null;
         
         // Remove the text label.
-        for (ILabel label : labelList)
+        for (ITextLabel label : labelList)
             game.layerMan.remove(label, Layer.EFFECT);       
         labelList = null;
         

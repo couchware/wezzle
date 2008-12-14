@@ -1,20 +1,33 @@
+/*
+ * Wezzle
+ * Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ */
+
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.graphics.ISprite;
+import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.event.IKeyListener;
+import ca.couchware.wezzle2d.event.KeyEvent;
+import ca.couchware.wezzle2d.event.MouseEvent;
+import ca.couchware.wezzle2d.graphics.ISprite;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.util.*;
+import ca.couchware.wezzle2d.util.Ascii;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.util.EnumSet;
+import java.util.Set;
 
 /**
- * A class for creating a rectangular boolean button.
+ * A class for creating text boxes that allow the user to enter text
+ * when active and stop taking text when not active.
  * 
  * @author cdmckay
  */
-public class Button extends AbstractButton
+public class TextField extends AbstractButton implements ITextField, IKeyListener
 {    
     
     /** The default color. */
@@ -26,7 +39,16 @@ public class Button extends AbstractButton
      * @param The new color.
      */
     public static void setDefaultColor(Color color)
-    { defaultColor = color; }    
+    { defaultColor = color; }            
+    
+    
+    
+    /** 
+     * The character appended to the end of the label text when it is being
+     * edited.
+     */
+    final private static String EDIT_CHARACTER = "*";
+            
     
     /** The graphic file type. */
     final protected static String FILE_TYPE = ".png";
@@ -45,6 +67,15 @@ public class Button extends AbstractButton
     final private static String RIGHT_SPRITE_PATH = Settings.getSpriteResourcesPath() 
             + "/Button_Thin_Right" 
             + FILE_TYPE;
+    
+    final protected Set<Ascii> allowedAsciiSet = createAllowedAsciiSet();
+    
+    protected Set<Ascii> createAllowedAsciiSet()
+    {
+        Set<Ascii> set = EnumSet.range(Ascii.UPPER_A, Ascii.UPPER_Z);       
+        set.addAll(EnumSet.range(Ascii.LOWER_A, Ascii.LOWER_Z));
+        return set;
+    }
            
     /** The color of the button. */
     final protected Color textColor;   
@@ -60,9 +91,6 @@ public class Button extends AbstractButton
     
     /** The normal label. */
     final protected ITextLabel normalLabel;   
-    
-    /** The hover label. */
-    final protected ITextLabel hoverLabel;
     
     /** The active label. */
     final protected ITextLabel activeLabel;       
@@ -83,20 +111,17 @@ public class Button extends AbstractButton
     protected int activeOpacity;
     
     /** The normal text. */
-    protected final String normalText;
+    protected final String normalText;         
     
-    /** The hover text. */
-    protected final String hoverText;
-    
-    /** The active text. */
-    protected final String activeText;       
+    /** The maximum length of the text field. */
+    protected final int maximumLength;
     
     /**
      * Creates a button at the coordinates provided.
      * @param x
      * @param y
      */
-    protected Button(Builder builder)
+    protected TextField(Builder builder)
     {      
         // Invoke the super on the required arguments.
         // This will set their variables as well.
@@ -106,13 +131,15 @@ public class Button extends AbstractButton
         this.textSize       = builder.textSize;
         this.textColor      = builder.textColor;
         this.normalText     = builder.normalText;       
-        this.hoverText      = builder.hoverText;
-        this.activeText     = builder.activeText;        
         this.normalOpacity  = limitOpacity(builder.normalOpacity);
         this.hoverOpacity   = limitOpacity(builder.hoverOpacity);
         this.pressedOpacity = limitOpacity(builder.pressedOpacity);
         this.activeOpacity  = limitOpacity(builder.activeOpacity);
         this.opacity        = limitOpacity(builder.opacity);
+                                
+        this.maximumLength = builder.maximumLength > 0
+                ? builder.maximumLength
+                : 1;
                 
         // Set the visibility.
         this.visible = builder.visible;
@@ -143,27 +170,13 @@ public class Button extends AbstractButton
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(textColor).size(textSize).text(normalText).end(); 
         
-        // Create the other labels, using the normal label as a template.
-        if (this.hoverText != null)   
-        {
-            this.hoverLabel = new LabelBuilder(normalLabel).text(hoverText).end();                
-        }
-        else
-        {
-            this.hoverLabel = null;
-        }
-        
-        if (this.activeText != null)
-        {
-            this.activeLabel = new LabelBuilder(normalLabel).text(activeText).end();                
-        }
-        else
-        {
-            this.activeLabel = null;
-        }
+        // Create the active label, which is just the normal label with
+        // an underscore at the end.
+        this.activeLabel = new LabelBuilder(normalLabel)
+                .text(normalLabel.getText() + EDIT_CHARACTER).end();
     }
     
-    public static class Builder implements IBuilder<Button>
+    public static class Builder implements IBuilder<TextField>
     {
         // Required values.       
         protected int x;
@@ -172,9 +185,7 @@ public class Button extends AbstractButton
         // Optional values.
         protected EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
         protected Color textColor = defaultColor;
-        protected String normalText = "Button";
-        protected String hoverText = null;
-        protected String activeText = null;
+        protected String normalText = "Button";        
         protected int width = 220;
         protected int textSize = 20;        
         protected int pressedOpacity = 100;
@@ -183,7 +194,8 @@ public class Button extends AbstractButton
         protected int normalOpacity  = 80;
         protected int opacity        = 100;
         protected boolean visible = true;
-        protected boolean disabled = false;
+        protected boolean disabled = false;        
+        protected int maximumLength = 8;
         
         public Builder(int x, int y)
         {            
@@ -191,24 +203,23 @@ public class Button extends AbstractButton
             this.y = y;
         }
         
-        public Builder(Button button)
+        public Builder(TextField textBox)
         {            
-            this.x                = button.x;
-            this.y                = button.y;
-            this.alignment        = button.alignment.clone();
-            this.textColor        = button.textColor;
-            this.normalText       = button.normalText;
-            this.hoverText        = button.hoverText;
-            this.activeText       = button.activeText;
-            this.width            = button.width;
-            this.textSize         = button.textSize;            
-            this.hoverOpacity     = button.hoverOpacity;
-            this.pressedOpacity   = button.pressedOpacity;
-            this.activeOpacity    = button.activeOpacity;
-            this.normalOpacity    = button.normalOpacity;       
-            this.opacity          = button.opacity;            
-            this.visible          = button.visible;
-            this.disabled         = button.disabled;
+            this.x                = textBox.x;
+            this.y                = textBox.y;
+            this.alignment        = textBox.alignment.clone();
+            this.textColor        = textBox.textColor;
+            this.normalText       = textBox.normalText;           
+            this.width            = textBox.width;
+            this.textSize         = textBox.textSize;            
+            this.hoverOpacity     = textBox.hoverOpacity;
+            this.pressedOpacity   = textBox.pressedOpacity;
+            this.activeOpacity    = textBox.activeOpacity;
+            this.normalOpacity    = textBox.normalOpacity;       
+            this.opacity          = textBox.opacity;            
+            this.visible          = textBox.visible;
+            this.disabled         = textBox.disabled;
+            this.maximumLength    = textBox.maximumLength;
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -222,18 +233,12 @@ public class Button extends AbstractButton
         
         public Builder text(String val)
         {
-            normalText(val); hoverText(null); activeText(null);
+            normalText(val);
             return this;
         }
         
         public Builder normalText(String val) 
-        { normalText = val; return this; }
-        
-        public Builder hoverText(String val) 
-        { hoverText = val; return this; }
-        
-        public Builder activeText(String val)                 
-        { activeText = val; return this; }
+        { normalText = val; return this; }                
         
         public Builder width(int val)
         { width = val; return this; }
@@ -262,14 +267,20 @@ public class Button extends AbstractButton
         public Builder disabled(boolean val)
         { disabled = val; return this; }
         
-        public Button end()
+        public Builder maximumLength(int val)
+        { maximumLength = val; return this; }
+        
+        public TextField end()
         {
-            Button button = new Button(this);
+            TextField textBox = new TextField(this);
             
             if (visible == true && disabled == false)
-                button.window.addMouseListener(button);           
+            {
+                textBox.window.addMouseListener(textBox);           
+                textBox.window.addKeyListener(textBox);
+            }
             
-            return button;
+            return textBox;
         }                
     }    
     
@@ -337,25 +348,17 @@ public class Button extends AbstractButton
     {
         //sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(hoverOpacity));
         drawButton(opacitize(hoverOpacity));
-        
-        if (hoverLabel != null) 
+             
+        if (activeLabel != null && isActivated() == true)
         {
-            hoverLabel.setOpacity(opacity);
-            hoverLabel.draw();        
+            activeLabel.setOpacity(opacity);
+            activeLabel.draw();
         }
         else
         {
-            if (activeLabel != null && isActivated() == true)
-            {
-                activeLabel.setOpacity(opacity);
-                activeLabel.draw();
-            }
-            else
-            {
-                normalLabel.setOpacity(opacity);
-                normalLabel.draw();
-            }
-        }
+            normalLabel.setOpacity(opacity);
+            normalLabel.draw();
+        }        
     }
     
     protected void drawPressed()
@@ -421,24 +424,39 @@ public class Button extends AbstractButton
     {
         return normalText;
     }
-
-    public String getHoverText()
-    {
-        return hoverText;
-    }
-    
-    public String getActiveText()
-    {
-        return activeText;
-    }
+        
+    // This is overridden so that the text box will
+    // stop taking input when the user clicks elsewhere.
+    @Override    
+    public void mousePressed(MouseEvent e)
+	{      		
+        // Ignore click if we're outside the button.
+        if (state.contains(State.HOVERED) == false)
+        {            
+            state.remove(State.ACTIVATED);
+            this.dirty = true;
+            return;                    
+        }
+                        
+		// Check which button.
+        switch (e.getButton())
+        {
+            // Left mouse clicked.
+            case LEFT:
+                handlePressed();
+                break;                        
+                
+            default:
+                // Intentionally left blank.
+        }
+	}
     
     @Override
     public void setX(int x)
     {
         super.setX(x);
         
-        normalLabel.setX(x);
-        if (hoverLabel != null) hoverLabel.setX(x);
+        normalLabel.setX(x);       
         if (activeLabel != null) activeLabel.setX(x);
     }
     
@@ -447,10 +465,19 @@ public class Button extends AbstractButton
     {
         super.setY(y);
         
-        normalLabel.setY(y);
-        if (hoverLabel != null) hoverLabel.setY(y);
+        normalLabel.setY(y);        
         if (activeLabel != null) activeLabel.setY(y);
     }
+
+    /**
+     * Gets the maximum allowable length for this text field.
+     * 
+     * @return
+     */
+    public int getMaximumLength()
+    {
+        return maximumLength;
+    }   
     
     public boolean draw()
     {
@@ -477,4 +504,84 @@ public class Button extends AbstractButton
         return true;
     }
 
-}
+    @Override
+    public void setVisible(boolean visible)
+    {
+        // Ignore if visibility not changed.
+        if (this.visible == visible || this.disabled == true)
+        {
+            this.visible = visible;
+            return;
+        }
+        
+        // Invoke super.
+        super.setVisible(visible);
+        
+        // Add or remove listener based on visibility.
+        swapKeyListener(visible);     
+    }
+    
+    /**
+     * Adds or removes this instance from the key listener list.
+     * 
+     * @param add
+     */
+    private void swapKeyListener(boolean add)
+    {
+        // If we're adding the listener.
+        if (add == true)
+        {            
+            window.addKeyListener(this);            
+        }
+        // If we're removing it.
+        else
+        {                              
+            window.removeKeyListener(this);            
+        }  
+    }
+    
+    public void keyPressed(KeyEvent event)
+    {    
+        //LogManager.recordMessage(event.getChar() + " (" + (int) event.getChar() + ")");
+        
+        // Get the key that was pressed.
+        Ascii a = Ascii.valueOf(event.getChar());                
+        
+        if (state.contains(State.ACTIVATED))
+        {       
+            String text = normalLabel.getText();
+            
+            if (text.length() > 0 && a == Ascii.BACKSPACE)
+            {                                                
+                normalLabel.setText(text.substring(0, text.length() - 1));
+            }      
+            else if (a == Ascii.CR)
+            {
+                state.remove(State.ACTIVATED);
+            }
+            else if (text.length() < maximumLength && allowedAsciiSet.contains(a))
+            {
+                normalLabel.setText(text + a);               
+            }            
+            
+            activeLabel.setText(normalLabel.getText() + EDIT_CHARACTER);
+        }        
+    }
+
+    public void keyReleased(KeyEvent event)
+    {
+        // Doesn't work right now.
+    }
+
+    public String getText()
+    {
+        return normalLabel.getText();
+    }
+
+    public void setText(String text)
+    {
+        normalLabel.setText(text);
+        activeLabel.setText(text + EDIT_CHARACTER);
+    }
+
+}    

@@ -6,9 +6,9 @@ import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 //import ca.couchware.wezzle2d.java2d.Java2DLabel;
 //import ca.couchware.wezzle2d.java2d.SpriteStore;
 import ca.couchware.wezzle2d.lwjgl.LWJGLGameWindow;
-import ca.couchware.wezzle2d.lwjgl.LWJGLLabel;
+import ca.couchware.wezzle2d.lwjgl.LWJGLTextLabel;
 import ca.couchware.wezzle2d.lwjgl.LWJGLSprite;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.awt.Color;
 import java.util.EnumSet;
 
@@ -165,7 +165,7 @@ public class ResourceFactory
 	 *
 	 * @return A Text object that can be modified and drawn to screen.
 	 */
-	private ILabel getLabel(LabelBuilder builder)
+	private ITextLabel getLabel(LabelBuilder builder)
 	{
 		if (window == null)
 		{
@@ -188,7 +188,7 @@ public class ResourceFactory
 //                        builder.cached);
 			
             case LWJGL:
-                return new LWJGLLabel((LWJGLGameWindow) window,
+                return new LWJGLTextLabel((LWJGLGameWindow) window,
                         builder.x,
                         builder.y,
                         builder.alignment,                       
@@ -202,7 +202,7 @@ public class ResourceFactory
 		throw new RuntimeException("Unknown rendering type: " + renderer);
 	}      
     
-    public static class LabelBuilder implements IBuilder<ILabel>
+    public static class LabelBuilder implements IBuilder<ITextLabel>
     {        
         private int x;
         private int y;        
@@ -222,7 +222,7 @@ public class ResourceFactory
             this.y = y;
         }               
         
-        public LabelBuilder(ILabel label)
+        public LabelBuilder(ITextLabel label)
         {
             this.x = label.getX();
             this.y = label.getY();
@@ -261,7 +261,7 @@ public class ResourceFactory
         public LabelBuilder cached(boolean val)
         { cached = val; return this; }
 
-        public ILabel end()
+        public ITextLabel end()
         {
             return get().getLabel(this);
         }                

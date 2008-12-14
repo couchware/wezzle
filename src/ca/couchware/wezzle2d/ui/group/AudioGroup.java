@@ -34,7 +34,7 @@ public class AudioGroup extends AbstractGroup
     /**
      * The header label.
      */
-    private ILabel headerLabel;       
+    private ITextLabel headerLabel;       
         
     /**
      * The sound radio group options.

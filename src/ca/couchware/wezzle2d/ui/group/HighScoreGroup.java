@@ -37,22 +37,22 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
     /**
      * The header label.
      */
-    private ILabel headerLabel;
+    private ITextLabel headerLabel;
     
     /**
      * The "no high score" label, line 1.
      */
-    private ILabel noHighScoreLabel1;
+    private ITextLabel noHighScoreLabel1;
     
     /**
      * The "no high score" label, line 2.
      */
-    private ILabel noHighScoreLabel2;    
+    private ITextLabel noHighScoreLabel2;    
     
     /**
      * The player score labels.
      */
-    private ILabel[] scoreLabels;
+    private ITextLabel[] scoreLabels;
     
     /**
      * The close button.
@@ -100,7 +100,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         entityList.add(noHighScoreLabel2);                
         
         // Create the score labels.
-        scoreLabels = new ILabel[HighScoreManager.NUMBER_OF_SCORES];                
+        scoreLabels = new ITextLabel[HighScoreManager.NUMBER_OF_SCORES];                
         
         // Create all the labels.
         for (int i = 0; i < scoreLabels.length; i++)

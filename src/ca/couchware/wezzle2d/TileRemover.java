@@ -30,7 +30,7 @@ import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.tile.RocketTileEntity;
 import ca.couchware.wezzle2d.tile.StarTileEntity;
@@ -599,7 +599,7 @@ public class TileRemover implements ILevelListener
             // Show the SCT.
             ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
-            final ILabel label = new LabelBuilder(p.getX(), p.getY())
+            final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .color(settingsMan.getColor(Key.SCT_COLOR_LINE)).size(scoreMan.determineFontSize(deltaScore))
                     .text(String.valueOf(deltaScore)).end();
@@ -854,7 +854,7 @@ public class TileRemover implements ILevelListener
         // Show the SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
-        final ILabel label = new LabelBuilder(p.getX(), p.getY())
+        final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.SCT_COLOR_ITEM))
                 .size(scoreMan.determineFontSize(deltaScore))
@@ -1085,7 +1085,7 @@ public class TileRemover implements ILevelListener
         // Show the SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
-        final ILabel label = new LabelBuilder(p.getX(), p.getY())
+        final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.SCT_COLOR_ITEM)).size(scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore)).end();
@@ -1350,7 +1350,7 @@ public class TileRemover implements ILevelListener
         // Show the SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
 
-        final ILabel label = new LabelBuilder(p.getX(), p.getY())
+        final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.SCT_COLOR_ITEM))
                 .size(scoreMan.determineFontSize(deltaScore))

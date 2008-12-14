@@ -69,7 +69,7 @@ public class ProgressBar extends AbstractEntity
     final private boolean showLabel;
     
     /** The progress text. */
-    private ILabel progressLabel;
+    private ITextLabel progressLabel;
     
     /** The container sprite. */   
     final private ISprite containerSprite;

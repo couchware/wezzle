@@ -2372,7 +2372,7 @@ public class BoardManager implements IManager, IKeyListener
 
     public void keyPressed(KeyEvent event)
     {
-        switch (event.getCharacter())
+        switch (event.getChar())
         {
 //            case 'r':
 //                insertItemRandomly(TileType.ROCKET);

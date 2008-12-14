@@ -12,7 +12,7 @@ import java.awt.Color;
  *
  * @author cdmckay
  */
-public interface ILabel extends IEntity 
+public interface ITextLabel extends IEntity 
 {
 
     /**

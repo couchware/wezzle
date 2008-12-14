@@ -23,7 +23,7 @@ public class KeyEvent extends EventObject
         this.ch = ch;
     }
     
-    public char getCharacter()
+    public char getChar()
     {
         return ch;
     }

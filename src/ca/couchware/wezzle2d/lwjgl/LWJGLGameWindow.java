@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MouseEvent.Button;
 import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.Ascii;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -805,6 +806,8 @@ public class LWJGLGameWindow implements IGameWindow
     
     public void addKeyListener(IKeyListener l)
     {
+        LogManager.recordMessage("Added key listener for " + l);
+        
         if (l == null)
             throw new NullPointerException();
         
@@ -816,6 +819,8 @@ public class LWJGLGameWindow implements IGameWindow
         
     public void removeKeyListener(IKeyListener l)
     {
+        LogManager.recordMessage("Removed key listener for " + l);        
+        
         if (l == null)
             throw new NullPointerException();
         
@@ -836,11 +841,16 @@ public class LWJGLGameWindow implements IGameWindow
 
         while (org.lwjgl.input.Keyboard.next())
         {
-            char ch = org.lwjgl.input.Keyboard.getEventCharacter();
-            
+            char ch = Keyboard.getEventCharacter();
+            Ascii a = Ascii.valueOf(ch);
+                                    
             for (IKeyListener l : keyListenerList)
             {
-                l.keyPressed(new KeyEvent(this, ch));
+                // If it equals NUL, then it's actually a key up.
+                if (a != Ascii.NUL)               
+                {                    
+                    l.keyPressed(new KeyEvent(this, ch));    
+                }                
             }
             
             this.keyPressSet.add(ch);
@@ -854,8 +864,7 @@ public class LWJGLGameWindow implements IGameWindow
 	 * @return True if the specified key is pressed
 	 */
 	public boolean isKeyPressed(int key) 
-        {		
-	
+    {			
             return this.keyPressSet.contains((char)key);
 	}
     

@@ -10,7 +10,7 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.event.*;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.LogManager;
@@ -40,16 +40,16 @@ public class PauseGroup extends AbstractGroup implements
     final private StatManager statMan;
     
     /** The main label showing the paused text. */
-    private ILabel mainLabel;
+    private ITextLabel mainLabel;
     
     /** The moves label. */
-    private ILabel movesLabel;
+    private ITextLabel movesLabel;
     
     /** The lines label. */
-    private ILabel linesLabel;
+    private ITextLabel linesLabel;
     
     /** The lines per move label. */
-    private ILabel linesPerMoveLabel;
+    private ITextLabel linesPerMoveLabel;
     
     private int    moves = 0;
     private int    lines = 0;

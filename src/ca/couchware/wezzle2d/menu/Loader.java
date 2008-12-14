@@ -19,7 +19,7 @@ import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import java.io.File;
 import java.io.IOException;
@@ -118,21 +118,21 @@ public class Loader implements IDrawer
         layerMan.add(backgroundGraphic, Layer.BACKGROUND);
                 
         // Set up the copyright label.               
-        ILabel l1 = new LabelBuilder(10, 600 - 10)
+        ITextLabel l1 = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED)).size(12)                
                 .text(Game.COPYRIGHT).end();
         layerMan.add(l1, Layer.UI);
         
         // Set up the version label.	
-        ILabel l2 = new LabelBuilder(800 - 10, 600 - 10)
+        ITextLabel l2 = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
                 .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED)).size(12)                
                 .text(Game.TITLE).end();                        
         layerMan.add(l2, Layer.UI);
         
         // Create the loader label.
-        ILabel l3 = new ResourceFactory.LabelBuilder(400, 273)
+        ITextLabel l3 = new ResourceFactory.LabelBuilder(400, 273)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .cached(false).size(26).text("Loading Wezzle...").end();
         this.layerMan.add(l3, Layer.UI);

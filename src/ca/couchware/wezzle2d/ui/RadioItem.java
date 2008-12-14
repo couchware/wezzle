@@ -84,7 +84,7 @@ public class RadioItem extends AbstractButton
     /**
      * The label associated with the radio item.
      */
-    private ILabel label;
+    private ITextLabel label;
     
     /**
      * The text that will appear in the label.

@@ -27,7 +27,7 @@ public class OptionsGroup extends AbstractGroup
     /**
      * The header label.
      */
-    private ILabel headerLabel;
+    private ITextLabel headerLabel;
     
     /**
      * The help button.

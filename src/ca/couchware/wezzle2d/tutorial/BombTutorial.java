@@ -19,7 +19,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.ui.ILabel;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.SpeechBubble.BubbleType;
 import java.util.ArrayList;
@@ -59,8 +59,8 @@ public class BombTutorial extends AbstractTutorial
         refactorer.setRefactorSpeed(RefactorSpeed.SLOW);                
         
         // Create the text that instructs the user to click the block.        
-        this.labelList = new ArrayList<ILabel>();
-        ILabel label = null;
+        this.labelList = new ArrayList<ITextLabel>();
+        ITextLabel label = null;
         
         // Line 1.
         label = new LabelBuilder(280, 166)
