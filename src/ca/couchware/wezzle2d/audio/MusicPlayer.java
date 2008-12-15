@@ -182,7 +182,7 @@ public class MusicPlayer
                 double n = normalizedGain.get();
                 double delta = 0.05;                
 
-                if (Util.equals(n, targetNormalizedGain, 0.02))
+                if (Util.equalsDouble(n, targetNormalizedGain, 0.02))
                 {
                     //LogManager.recordMessage("Fade completed.");                    
                     
@@ -263,7 +263,7 @@ public class MusicPlayer
             {
                 LogManager.recordMessage("Checking...");
                 
-                if (Util.equals(targetGain, normalizedGain.get(), 0.02))
+                if (Util.equalsDouble(targetGain, normalizedGain.get(), 0.02))
                 {                                        
                     synchronized (player)
                     {                        

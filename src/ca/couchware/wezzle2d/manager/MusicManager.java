@@ -39,13 +39,13 @@ public class MusicManager
         NONE,
         
         /** TRON */
-        A,
+        TRON,
         
         /** ELECTRONIC */
-        B,
+        ELECTRONIC,
         
         /** HIP POP */
-        C,
+        HIPPOP,
         
         /** All themes, in a random order. */
         ALL,
@@ -132,17 +132,17 @@ public class MusicManager
         
         // Create a theme list (used below).
         List<Theme> themeList = new ArrayList<Theme>(3);
-        themeList.add(Theme.A);
-        themeList.add(Theme.B);
-        themeList.add(Theme.C);
+        themeList.add(Theme.TRON);
+        themeList.add(Theme.ELECTRONIC);
+        themeList.add(Theme.HIPPOP);
         Collections.shuffle(themeList);
         
         // See which theme it is.
         switch (theme)
         {
-            case A:                                                
-            case B:
-            case C:
+            case TRON:                                                
+            case ELECTRONIC:
+            case HIPPOP:
                 
                enqueueTheme(theme);
                break;
@@ -174,7 +174,7 @@ public class MusicManager
         // See which theme it is.
         switch (theme)
         {
-            case A:
+            case TRON:
                 
                 this.playList.add(Music.TRON1);
                 this.playList.add(Music.TRON2);
@@ -182,7 +182,7 @@ public class MusicManager
                    
                 break;
                 
-            case B:
+            case ELECTRONIC:
                 
                 this.playList.add(Music.ELECTRONIC1);
                 this.playList.add(Music.ELECTRONIC2);
@@ -190,7 +190,7 @@ public class MusicManager
                 
                 break;
                 
-            case C:
+            case HIPPOP:
                 
                 this.playList.add(Music.HIPPOP1);
                 this.playList.add(Music.HIPPOP2);

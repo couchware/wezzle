@@ -21,6 +21,11 @@ public interface ITextLabel extends IEntity
     public Color getColor();
     
     /**
+     * Set the color of the label.
+     */
+    public void setColor(Color color);
+    
+    /**
      * Get the size of the label.
      */
     public int getSize();

@@ -361,7 +361,7 @@ public class LWJGLGameWindow implements IGameWindow
             GL11.glLoadIdentity();             		
             //GL11.glEnable(GL11.GL_LINE_SMOOTH | GL11.GL_POLYGON_SMOOTH);
                         
-            if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
+            if (Display.isCloseRequested())
             {
                 gameRunning = false;
                 Display.destroy();

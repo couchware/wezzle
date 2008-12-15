@@ -509,6 +509,9 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     
     public double getVirtualValue()
     {
+        // Determine the virtual value.                
+        virtualValue = virtualLower + (virtualUpper - virtualLower) * getSlideOffsetPercent();
+        
         return virtualValue;
     }
     
@@ -527,10 +530,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     }   
 
     public double getVirtualLower()
-    {
-        // Determine the virtual value.                
-        virtualValue = (virtualUpper - virtualLower) * getSlideOffsetPercent();
-        
+    {                
         // Return the value.
         return virtualLower;
     }  

@@ -127,7 +127,7 @@ public class PauseGroup extends AbstractGroup implements
     
     private void setLinesPerMove(double linesPerMove)
     {
-        if (Util.equals(this.linesPerMove, linesPerMove)) return;
+        if (Util.equalsDouble(this.linesPerMove, linesPerMove)) return;
         
         // Record the current lpm.
         this.linesPerMove = linesPerMove;

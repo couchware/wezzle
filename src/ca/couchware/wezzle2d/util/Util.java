@@ -24,7 +24,7 @@ public class Util
     /**
      * A method for squaring integers.
      * 
-     * @int x The integer to square.
+     * @param x The integer to square.
      */
     public static int sq(int x)
     {
@@ -34,7 +34,7 @@ public class Util
     /**
      * A method for squaring doubles.
      * 
-     * @int x The double to square.
+     * @param x The double to square.
      */
     public static double sq(double x)
     {
@@ -141,7 +141,7 @@ public class Util
      * @param b
      * @param eps
      */
-    public static boolean equals(double a, double b, double eps)
+    public static boolean equalsDouble(double a, double b, double eps)
     {
         // See if they're exactly equal first.
         if (a == b) return true;
@@ -159,32 +159,11 @@ public class Util
      * @param a
      * @param b
      */
-    public static boolean equals(double a, double b)
+    public static boolean equalsDouble(double a, double b)
     {
-        return equals(a, b, EPSILON);
+        return equalsDouble(a, b, EPSILON);
     }
-    
-    /**
-     * Determines the minimum of the passed integers.
-     * 
-     * @param numbers
-     * @return
-     */
-    public static int minimumInt(int ... numbers)
-    {
-        if (numbers.length == 0) 
-            throw new IllegalArgumentException("Requires at least 1 integer.");
-        
-        int minimum = numbers[0];
-        for (int i = 0; i < numbers.length; i++)
-        {
-            if (numbers[i] < minimum)
-                minimum = numbers[i];
-        }
-        
-        return minimum;
-    }
-    
+      
     public static <T> T getRandomElement(Set<T> set)
     {
         int rnd = random.nextInt(set.size());
@@ -198,28 +177,7 @@ public class Util
         
         throw new RuntimeException("This should not happen.");
     }
-    
-    /**
-     * Counts the number of line breaks (i.e. '\n' characters) in the passed
-     * string.  Throws exception on null strings.
-     * 
-     * @return The number of line breaks.
-     */
-    public static int countLineBreaks(String text)
-    {
-        if (text == null)
-            throw new IllegalStateException(
-                    "Attempted to count newlines on a null string.");                
-        
-        int n = 0;
-        
-        for (int i = 0; i < text.length(); i++)
-            if (text.charAt(i) == '\n')
-                n++;
-        
-        return n;
-    }
-            
+       
     /**
      * Extracts the file extension from a file with the name.ext format.
      * 
@@ -237,6 +195,22 @@ public class Util
         
         return ext;
     }       
+    
+    public static String padString(String str, char ch, int length)
+    {
+        StringBuffer buffer = new StringBuffer(str);
+        int strLength  = buffer.length();
+        
+        if (length > 0 && length > strLength)
+        {
+            for (int i = strLength; i < length; i++)
+            {
+                buffer.append(ch);                
+            } // end for
+        } // end if
+        
+        return buffer.toString();
+    }
     
     public static String toDotFormat(String str)
     {

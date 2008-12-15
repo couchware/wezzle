@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.Ascii;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import ca.couchware.wezzle2d.util.SuperColor;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.util.EnumSet;
@@ -40,15 +41,12 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
      */
     public static void setDefaultColor(Color color)
     { defaultColor = color; }            
-    
-    
-    
+            
     /** 
      * The character appended to the end of the label text when it is being
      * edited.
      */
-    final private static String EDIT_CHARACTER = "*";
-            
+    final private static char EDIT_CHARACTER = '|';       
     
     /** The graphic file type. */
     final protected static String FILE_TYPE = ".png";
@@ -77,8 +75,14 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         return set;
     }
            
+    /** The normal text. */
+    final protected String defaultText;  
+    
     /** The color of the button. */
-    final protected Color textColor;   
+    final protected Color normalColor;   
+    
+     /** The color of the button. */
+    final protected Color activeColor;   
 
     /** The left sprite of the button. */
     protected ISprite leftSprite;
@@ -108,10 +112,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     protected int pressedOpacity;
     
     /** The active opacity. */
-    protected int activeOpacity;
-    
-    /** The normal text. */
-    protected final String normalText;         
+    protected int activeOpacity;               
     
     /** The maximum length of the text field. */
     protected final int maximumLength;
@@ -129,8 +130,9 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         
         // Assign values from builder.      
         this.textSize       = builder.textSize;
-        this.textColor      = builder.textColor;
-        this.normalText     = builder.normalText;       
+        this.normalColor    = builder.normalColor;
+        this.activeColor     = builder.activeColor;
+        this.defaultText    = builder.defaultText;       
         this.normalOpacity  = limitOpacity(builder.normalOpacity);
         this.hoverOpacity   = limitOpacity(builder.hoverOpacity);
         this.pressedOpacity = limitOpacity(builder.pressedOpacity);
@@ -168,12 +170,13 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         // Create the normal label.
         this.normalLabel = new LabelBuilder(x + offsetX + width / 2, y + offsetY + height / 2)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(textColor).size(textSize).text(normalText).end(); 
+                .color(normalColor).size(textSize).text(defaultText).end(); 
         
         // Create the active label, which is just the normal label with
         // an underscore at the end.
         this.activeLabel = new LabelBuilder(normalLabel)
-                .text(normalLabel.getText() + EDIT_CHARACTER).end();
+                .color(activeColor)
+                .text(Util.padString("", EDIT_CHARACTER, maximumLength)).end();
     }
     
     public static class Builder implements IBuilder<TextField>
@@ -184,8 +187,9 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         
         // Optional values.
         protected EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
-        protected Color textColor = defaultColor;
-        protected String normalText = "Button";        
+        protected Color normalColor = defaultColor;
+        protected Color activeColor  = defaultColor;
+        protected String defaultText = "Button";        
         protected int width = 220;
         protected int textSize = 20;        
         protected int pressedOpacity = 100;
@@ -208,8 +212,9 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
             this.x                = textBox.x;
             this.y                = textBox.y;
             this.alignment        = textBox.alignment.clone();
-            this.textColor        = textBox.textColor;
-            this.normalText       = textBox.normalText;           
+            this.normalColor      = textBox.normalColor;
+            this.activeColor       = textBox.activeColor;
+            this.defaultText      = textBox.defaultText;           
             this.width            = textBox.width;
             this.textSize         = textBox.textSize;            
             this.hoverOpacity     = textBox.hoverOpacity;
@@ -228,17 +233,17 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         public Builder alignment(EnumSet<Alignment> val) 
         { alignment = val; return this; }
         
-        public Builder color(Color val)
-        { textColor = val; return this; }
+        public Builder normalColor(Color val)
+        { normalColor = val; return this; }
+        
+        public Builder activeColor(Color val)
+        { activeColor = val; return this; }
         
         public Builder text(String val)
-        {
-            normalText(val);
-            return this;
-        }
+        { defaultText(val); return this; }
         
-        public Builder normalText(String val) 
-        { normalText = val; return this; }                
+        public Builder defaultText(String val) 
+        { defaultText = val; return this; }                
         
         public Builder width(int val)
         { width = val; return this; }
@@ -282,7 +287,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
             
             return textBox;
         }                
-    }    
+    }            
     
     final protected boolean validateWidth()
     {
@@ -312,13 +317,27 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
                 .width(rightSprite.getWidth()).height(height).opacity(o).end();                
     }
     
+    private void drawUnderline(int x, int y, int width, int height, int border)
+    {                
+        window.setColor(SuperColor.newInstance( 
+                Color.BLACK, 
+                SuperColor.scaleOpacity(opacity)));
+        window.fillRect(x, y, width + border * 2, height + border * 2);
+        
+        window.setColor(SuperColor.newInstance(
+                Color.DARK_GRAY, 
+                SuperColor.scaleOpacity(opacity)));
+        window.fillRect(x + border, y + border, width, height);
+    }
+    
     protected void drawNormal()
     {                
 //        sprite.draw(
 //                x + offsetX, y + offsetY, 
 //                width, height,                 
 //                0.0, opacitize(normalOpacity));   
-        drawButton(opacitize(normalOpacity));  
+        //drawButton(opacitize(normalOpacity));  
+        drawUnderline(this.x + 6 + offsetX, this.y + height - 6 + offsetY, this.width - 12, 1, 1);
         
         normalLabel.setOpacity(opacity);
         normalLabel.draw();
@@ -330,7 +349,8 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
 //                x + offsetX, y + offsetY, 
 //                width, height, 
 //                0.0, opacitize(activeOpacity));        
-        drawButton(opacitize(activeOpacity));   
+        //drawButton(opacitize(activeOpacity));   
+        drawUnderline(this.x + 6 + offsetX, this.y + height - 6 + offsetY, this.width - 12, 1, 1);
         
         if (activeLabel != null)
         {
@@ -347,24 +367,28 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     protected void drawHovered()
     {
         //sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(hoverOpacity));
-        drawButton(opacitize(hoverOpacity));
+        //drawButton(opacitize(hoverOpacity));
+        drawUnderline(this.x + 6 + offsetX, this.y + height - 6 + offsetY, this.width - 12, 1, 1);
              
         if (activeLabel != null && isActivated() == true)
         {
-            activeLabel.setOpacity(opacity);
-            activeLabel.draw();
+            activeLabel.setOpacity(opacity);            
+            activeLabel.draw();            
         }
         else
         {
             normalLabel.setOpacity(opacity);
+            normalLabel.setColor(activeColor);
             normalLabel.draw();
+            normalLabel.setColor(normalColor);
         }        
     }
     
     protected void drawPressed()
     {
         //sprite.draw(x + offsetX, y + offsetY, width, height, 0.0, opacitize(pressedOpacity));
-        drawButton(opacitize(pressedOpacity));
+        //drawButton(opacitize(pressedOpacity));
+        drawUnderline(this.x + 6 + offsetX, this.y + height - 6 + offsetY, this.width - 12, 1, 1);
         normalLabel.setOpacity(opacity);
         normalLabel.translate(0, 1);
         normalLabel.draw();
@@ -422,7 +446,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
 
     public String getNormalText()
     {
-        return normalText;
+        return defaultText;
     }
         
     // This is overridden so that the text box will
@@ -434,6 +458,12 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         if (state.contains(State.HOVERED) == false)
         {            
             state.remove(State.ACTIVATED);
+            
+            if (normalLabel.getText().length() == 0)
+            {
+                normalLabel.setText(defaultText);
+            }
+            
             this.dirty = true;
             return;                    
         }
@@ -503,7 +533,34 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         
         return true;
     }
-
+        
+    @Override
+    protected void handlePressed()
+    {   
+        // Invoke super.
+        super.handlePressed();
+        
+        // Blank out the normal label.
+        normalLabel.setText("");
+        
+        // Change the string to be *'s.
+        activeLabel.setText("" + EDIT_CHARACTER);
+    }    
+    
+    @Override
+    protected void handleReleased()
+    {                                             
+        if (state.containsAll(EnumSet.of(State.PRESSED, State.HOVERED)))
+        {
+           clicked = true;                                                          
+           state.add(State.ACTIVATED);           
+        }   
+        
+        state.remove(State.PRESSED);
+                            
+        setDirty(true);
+    }
+    
     @Override
     public void setVisible(boolean visible)
     {
@@ -551,19 +608,35 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         {       
             String text = normalLabel.getText();
             
-            if (text.length() > 0 && a == Ascii.BACKSPACE)
-            {                                                
-                normalLabel.setText(text.substring(0, text.length() - 1));
-            }      
-            else if (a == Ascii.CR)
+            switch (a)
             {
-                state.remove(State.ACTIVATED);
+                case BACKSPACE:
+                    
+                    if (text.length() > 0)                    
+                        normalLabel.setText(text.substring(0, text.length() - 1));
+                    
+                    break;
+                    
+                case CR:
+                case ESC:
+                    
+                    state.remove(State.ACTIVATED);
+                
+                    if (normalLabel.getText().length() == 0)                    
+                        normalLabel.setText(defaultText);
+                    
+                    break;
+                                        
+                default:
+                    
+                    if (text.length() < maximumLength 
+                            && allowedAsciiSet.contains(a))     
+                    {
+                        normalLabel.setText(text + a);                                       
+                    }
             }
-            else if (text.length() < maximumLength && allowedAsciiSet.contains(a))
-            {
-                normalLabel.setText(text + a);               
-            }            
-            
+                        
+            // Set the active label.
             activeLabel.setText(normalLabel.getText() + EDIT_CHARACTER);
         }        
     }
@@ -581,7 +654,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     public void setText(String text)
     {
         normalLabel.setText(text);
-        activeLabel.setText(text + EDIT_CHARACTER);
+        //activeLabel.setText(text + EDIT_CHARACTER);
     }
 
 }    

@@ -84,6 +84,11 @@ public class LWJGLTextLabel extends AbstractEntity implements ITextLabel
     {
         return color;
     }
+    
+    public void setColor(Color color)
+    {
+        this.color = color;
+    }
 
     public int getSize()
     {
