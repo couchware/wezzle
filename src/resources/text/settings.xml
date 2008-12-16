@@ -13,6 +13,10 @@
     <high-score name="" score="0" level="0"/>
     <high-score name="" score="0" level="0"/>
   </entry> 
+  <entry name="USER_ACHIEVEMENT">
+    <achievement name="Scorerer" type="SCORE" operation="GT" value="300" status="INCOMPLETE" description="Score a lot" difficulty="BRONZE"/>
+    <achievement name="Testerer" type="SCORE" operation="GT" value="600" status="INCOMPLETE" description="Score even more" difficulty="SILVER"/>
+  </entry>
   <entry name="GAME_TICKS_PER_SECOND">60</entry>
   <entry name="GAME_COLOR_PRIMARY">
     <color red="252" green="233" blue="45" alpha="255" />
