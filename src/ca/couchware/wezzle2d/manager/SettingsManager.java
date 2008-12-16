@@ -280,6 +280,10 @@ public class SettingsManager
         {                            
             instance = HighScore.newInstanceFromXML(element);
         }
+         else if (element.getName().equals("achievement"))
+        {                            
+            instance = Achievement.newInstanceFromXML(element);
+        }
         else
         {
             instance = null;
@@ -299,6 +303,11 @@ public class SettingsManager
         {
             HighScore score = (HighScore) object;
             return score.toXMLElement();
+        }
+        else if (object instanceof Achievement)
+        {
+            Achievement achievement = (Achievement) object;
+            return achievement.toXMLElement();
         }
         else
         {

@@ -8,11 +8,14 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.util.IXMLizable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.jdom.Element;
 
 /**
  * A class to manage achievements.
@@ -46,6 +49,7 @@ public class AchievementManager implements ICollisionListener
     {
         this.incompleteList = new ArrayList<Achievement>();
         this.completeList   = new ArrayList<Achievement>();
+        this.importAchievements();
     }
     
     // Public API.
@@ -156,4 +160,28 @@ public class AchievementManager implements ICollisionListener
             }
         } // end for   
     }
+    
+    private void importAchievements()
+    {
+        SettingsManager settingsMan = SettingsManager.get();
+        
+        // Get the list from the settings manager.
+       
+        String str = settingsMan.getObject(Key.USER_ACHIEVEMENT).toString();
+        System.out.println("HEREHER " + str);
+        
+        List list = (List) settingsMan.getObject(Key.USER_ACHIEVEMENT);
+        
+        for (Object object : list)     
+        {
+            Achievement achieve = (Achievement)object;
+            
+            if(achieve.getStatus() == Achievement.Status.COMPLETE)
+                this.completeList.add(achieve);
+            else
+                this.add(achieve);
+        }
+    }
+
+ 
 }

@@ -27,7 +27,8 @@ public class Settings
         USER_MUSIC_VOLUME,
         USER_SOUND,
         USER_SOUND_VOLUME,
-        USER_HIGHSCORE,       
+        USER_HIGHSCORE,   
+        USER_ACHIEVEMENT,
         
         // Game mechanic values.
         

@@ -8,7 +8,10 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.util.IXMLizable;
+import java.util.ArrayList;
 import java.util.List;
+import org.jdom.Element;
 
 /**
  * An achievement will hold all the state information required for that 
@@ -33,7 +36,7 @@ import java.util.List;
  * 
  * @author Kevin
  */
-public class Achievement
+public class Achievement implements IXMLizable
 {
     /** The levels of achievement difficulty. */
     public static enum Difficulty
@@ -43,11 +46,17 @@ public class Achievement
         GOLD, 
         PLATINUM
     }
+     public static enum Status
+    {
+        INCOMPLETE, 
+        COMPLETE
+    }
        
-    private List<Rule> ruleList;
-    private String title;
-    private String description;
-    private Difficulty difficulty;    
+    private final List<Rule> ruleList;
+    private final String name;
+    private final String description;
+    private final Difficulty difficulty;   
+    private final Status status;
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -58,15 +67,26 @@ public class Achievement
      * @param description
      * @param difficulty
      */
-    public Achievement(List<Rule> ruleList, 
+    private Achievement(List<Rule> ruleList, 
             String title,
             String description, 
-            Difficulty difficulty)
+            Difficulty difficulty, 
+            Status status)
     {
-        this.ruleList    = ruleList;
-        this.title       = title;
+         this.ruleList    = ruleList;
+        this.name       = title;
         this.description = description;
         this.difficulty  = difficulty;
+        this.status = status;
+    }
+        
+    public static Achievement newInstance(List<Rule> ruleList, 
+            String title,
+            String description, 
+            Difficulty difficulty, 
+            Status status)
+    {
+       return new Achievement(ruleList, title, description, difficulty, status);
     }
     
     /**
@@ -112,8 +132,13 @@ public class Achievement
     
     public String getTitle()
     {
-        return title;
-    }        
+        return name;
+    }    
+    
+    public Status getStatus()
+    {
+        return status;
+    }
     
     /**
      * Get the description of the achievement.
@@ -128,6 +153,49 @@ public class Achievement
     @Override
     public String toString()
     {
-        return "[" + this.title + " - " + this.difficulty + "] " + this.description;
+        return "[" + this.name + " - " + this.difficulty + "] " + this.description;
+    }
+
+     public static Achievement newInstanceFromXML(Element element)
+    {
+        String name = element.getAttributeValue("name");
+        String type = element.getAttributeValue("type");
+        String operation = element.getAttributeValue("operation");
+        
+        if(operation == "COLLISION")
+        {
+            //to be implemented.
+        }
+        
+        int value = Integer.parseInt(element.getAttributeValue("value"));
+        String status = element.getAttributeValue("status");
+        String description = element.getAttributeValue("description");
+        String difficulty = element.getAttributeValue("difficulty");
+        
+        // Parse the enums.
+        Rule.Type t = Rule.Type.valueOf(type);
+        Rule.Operation o = Rule.Operation.valueOf(operation);
+        Difficulty d = Difficulty.valueOf(difficulty);
+        Status s = Status.valueOf(status);
+        
+        
+        List<Rule> rules = new ArrayList<Rule>();
+        rules.add(new Rule(t, o, value));
+        
+        
+        return newInstance(rules, name, description, d, s);
+    }
+    
+    public Element toXMLElement() 
+    {
+       Element element = new Element("achievement");
+        element.setAttribute("name",  this.name);
+        element.setAttribute("type", String.valueOf(this.ruleList.get(0).getType()));
+        element.setAttribute("operation", String.valueOf(this.ruleList.get(0).getOperation()));
+        element.setAttribute("value", String.valueOf(this.ruleList.get(0).getValue()));
+        element.setAttribute("status", String.valueOf(this.status));
+        element.setAttribute("description", this.description);
+        element.setAttribute("difficulty", String.valueOf(this.difficulty));
+        return element;
     }
 }

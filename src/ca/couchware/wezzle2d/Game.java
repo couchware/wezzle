@@ -416,53 +416,53 @@ public class Game extends Canvas implements IGameWindowCallback
             achievementMan = AchievementManager.newInstance();
             listenerMan.registerListener(Listener.COLLISION, achievementMan);
         
-            // Load the test achievements.        
-            List<Rule> rules1 = new LinkedList<Rule>();
-            List<Rule> rules2 = new LinkedList<Rule>();
-            List<Rule> rules3 = new LinkedList<Rule>();
-            List<Rule> rules4 = new LinkedList<Rule>();
-            List<Rule> rules5 = new LinkedList<Rule>();
-
-            rules1.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 2000));
-
-            achievementMan.add(new Achievement(rules1, 
-                     "Scorelord I",
-                     "Score greater than 2000", 
-                     Achievement.Difficulty.BRONZE));        
-
-            rules2.add(new Rule(Rule.Type.SCORE, 
-                    Rule.Operation.GT, 5000));
-
-            achievementMan.add(new Achievement(rules2, 
-                     "Scorelord II",
-                     "Score greater than 5000", 
-                     Achievement.Difficulty.BRONZE));
-
-            rules3.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 1000));        
-            rules3.add(new Rule(Rule.Type.MOVES, Rule.Operation.LTEQ, 3));
-
-            achievementMan.add(new Achievement(rules3, 
-                     "Dextrous Scorelord",
-                     "Score greater than 1000, moves less than or equal to 3", 
-                     Achievement.Difficulty.BRONZE));
-
-            rules4.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GT, 2));
-
-            achievementMan.add(new Achievement(rules4, 
-                     "Levelator",
-                     "Level greater than 2", 
-                     Achievement.Difficulty.BRONZE));
-            
-            rules5.add(new Rule(
-                    Rule.Type.COLLISION, 
-                    Rule.Operation.BETWEEN,
-                    TileType.ROCKET,
-                    TileType.ROCKET));
-            
-            achievementMan.add(new Achievement(rules5,
-                    "Rocketeer II",
-                    "Hit a rocket with a rocket",
-                    Achievement.Difficulty.SILVER));
+//            // Load the test achievements.        
+//            List<Rule> rules1 = new LinkedList<Rule>();
+//            List<Rule> rules2 = new LinkedList<Rule>();
+//            List<Rule> rules3 = new LinkedList<Rule>();
+//            List<Rule> rules4 = new LinkedList<Rule>();
+//            List<Rule> rules5 = new LinkedList<Rule>();
+//
+//            rules1.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 2000));
+//
+//            achievementMan.add(new Achievement(rules1, 
+//                     "Scorelord I",
+//                     "Score greater than 2000", 
+//                     Achievement.Difficulty.BRONZE));        
+//
+//            rules2.add(new Rule(Rule.Type.SCORE, 
+//                    Rule.Operation.GT, 5000));
+//
+//            achievementMan.add(new Achievement(rules2, 
+//                     "Scorelord II",
+//                     "Score greater than 5000", 
+//                     Achievement.Difficulty.BRONZE));
+//
+//            rules3.add(new Rule(Rule.Type.SCORE, Rule.Operation.GT, 1000));        
+//            rules3.add(new Rule(Rule.Type.MOVES, Rule.Operation.LTEQ, 3));
+//
+//            achievementMan.add(new Achievement(rules3, 
+//                     "Dextrous Scorelord",
+//                     "Score greater than 1000, moves less than or equal to 3", 
+//                     Achievement.Difficulty.BRONZE));
+//
+//            rules4.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GT, 2));
+//
+//            achievementMan.add(new Achievement(rules4, 
+//                     "Levelator",
+//                     "Level greater than 2", 
+//                     Achievement.Difficulty.BRONZE));
+//            
+//            rules5.add(new Rule(
+//                    Rule.Type.COLLISION, 
+//                    Rule.Operation.BETWEEN,
+//                    TileType.ROCKET,
+//                    TileType.ROCKET));
+//            
+//            achievementMan.add(new Achievement(rules5,
+//                    "Rocketeer II",
+//                    "Hit a rocket with a rocket",
+//                    Achievement.Difficulty.SILVER));
         }              
     }        
     
