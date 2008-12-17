@@ -162,6 +162,9 @@ public class Settings
     
     // Static settings.
     
+    /** The upgrade URL. */
+    final private static String upgradeUrl = "http://couchware.ca";
+    
     /** The cross platform line separator. */
     final private static String lineSeparator = System.getProperty("line.separator");
     
@@ -204,6 +207,11 @@ public class Settings
     /** The file path to the log file. */    
     final private static String logFilePath = logPath + "/log.txt";
 
+    public static String getUpgradeUrl()
+    {
+        return upgradeUrl;
+    }   
+    
     public static String getDefaultSettingsFilePath()
     {
         return defaultSettingsFilePath;

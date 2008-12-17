@@ -147,7 +147,7 @@ public class AudioGroup extends AbstractGroup
         entityList.add(musicSlider);                      
         
         // Create back button.
-        backButton = new Button.Builder(400, 408)
+        backButton = new Button.Builder(400, 420)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Back").normalOpacity(70).visible(false).end();        

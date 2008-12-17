@@ -8,9 +8,15 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.*;
+import edu.stanford.ejalbert.BrowserLauncher;
+import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
+import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.util.EnumSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,40 +25,29 @@ import java.util.EnumSet;
 public class OptionsGroup extends AbstractGroup
 {
     
-    /**
-     * The layer manager.
-     */
+    /** The browser launcher. */
+    BrowserLauncher launcher;
+    
+    /** The layer manager. */
     final private LayerManager layerMan;
     
-    /**
-     * The header label.
-     */
+    /** The header label. */
     private ITextLabel headerLabel;
     
-    /**
-     * The help button.
-     */
+    /** The help button. */
     private IButton upgradeButton;
     
-    /**
-     * The audio button.
-     */
+    /** The audio button. */
     private IButton audioButton;
     
-    /**
-     * The audio group.
-     */
+    /** The audio group. */
     private AudioGroup audioGroup;
 
-    /**
-     * The main menu button.
-     */
+    /** The main menu button. */
     private IButton mainMenuButton;
 
-    /**
-     * The back button.
-     */
-    private IButton backButton;    
+    /** The back button. */
+    private IButton closeButton;    
     
     /**
      * The constructor.
@@ -80,7 +75,7 @@ public class OptionsGroup extends AbstractGroup
         upgradeButton = new Button.Builder(400, 246)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
-                .text("Upgrade").normalOpacity(80).visible(false).end();        
+                .text("Buy Now").normalOpacity(80).visible(false).end();        
         layerMan.add(upgradeButton, Layer.UI);
         entityList.add(upgradeButton);
         
@@ -101,20 +96,33 @@ public class OptionsGroup extends AbstractGroup
         entityList.add(mainMenuButton);
         
         // Create back button.
-        backButton = new Button.Builder((Button) upgradeButton).y(408)
-            .text("Back").end();
-        layerMan.add(backButton, Layer.UI);     
-        entityList.add(backButton);
+        closeButton = new Button.Builder((Button) upgradeButton).y(420)
+            .text("Close").end();
+        layerMan.add(closeButton, Layer.UI);     
+        entityList.add(closeButton);
+        try
+        {
+            // Create the browser launcher.
+            this.launcher = new BrowserLauncher();
+        }
+        catch (BrowserLaunchingInitializingException ex)
+        {
+            Logger.getLogger(OptionsGroup.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (UnsupportedOperatingSystemException ex)
+        {
+            Logger.getLogger(OptionsGroup.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }      
     
     public boolean isBackButtonClicked()
     {
-        return backButton.clicked();
+        return closeButton.clicked();
     }  
     
     public boolean isBackButtonActivated()
     {
-        return backButton.isActivated();
+        return closeButton.isActivated();
     }
     
     @Override
@@ -138,11 +146,17 @@ public class OptionsGroup extends AbstractGroup
      */    
     public void updateLogic(Game game)
     {
+        // See if Buy Now was pressed.
+        if (upgradeButton.clicked() == true)
+        {
+            upgradeButton.setActivated(false);
+            launcher.openURLinBrowser(Settings.getUpgradeUrl());
+        }
         // Check if the back button was pressed.
-        if (backButton.isActivated() == true)
+        if (closeButton.isActivated() == true)
         {            
             // Hide all side triggered menues.
-            backButton.setActivated(false);
+            closeButton.setActivated(false);
             game.groupMan.hideGroup(this);
         }
         // Check if the sound/music button was pressed.

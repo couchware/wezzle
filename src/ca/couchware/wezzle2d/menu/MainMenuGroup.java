@@ -306,9 +306,9 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 {
                     if (btn.clicked() == true)
                     {
-                        clickedButton = btn;
-                        break;
-                    }
+                        clickedButton = btn;                        
+                        // Do not short-circuit!                        
+                    }                   
                 } // end for
                 
                 // See if a button was clicked.  If it was, then unclick all
@@ -333,8 +333,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                                     //.runRule(MetaAnimation.RunRule.SEQUENCE)
                                     .add(this.groupMap.get(currentButton).animateHide())
                                     .add(this.groupMap.get(m).animateShow())
-                                    .end();
-                            //this.animationMan.add(this.animation);
+                                    .end();                            
                             
                             // Set the new current button.                            
                             this.currentButton = m;
