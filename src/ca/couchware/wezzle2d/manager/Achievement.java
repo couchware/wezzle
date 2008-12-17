@@ -11,8 +11,10 @@ import ca.couchware.wezzle2d.tile.TileEntity;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.jdom.Element;
+
 
 
 /**
@@ -54,7 +56,7 @@ public class Achievement implements IXMLizable
     private final String name;
     private final String description;
     private final Difficulty difficulty;   
-    //private final Date date;
+    private final Date date;
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -68,23 +70,23 @@ public class Achievement implements IXMLizable
     private Achievement(List<Rule> ruleList, 
             String title,
             String description, 
-            Difficulty difficulty)//, 
-            //Date completed)
+            Difficulty difficulty, 
+            Date completed)
     {
         this.ruleList    = ruleList;
         this.name       = title;
         this.description = description;
         this.difficulty  = difficulty;
-      //  this.date = date;
+        this.date = completed;
     }
         
     public static Achievement newInstance(List<Rule> ruleList, 
             String title,
             String description, 
-            Difficulty difficulty)//, 
-           // Date date)
+            Difficulty difficulty, 
+            Date date)
     {
-       return new Achievement(ruleList, title, description, difficulty);//, date);
+       return new Achievement(ruleList, title, description, difficulty, date);
     }
     
     /**
@@ -133,10 +135,10 @@ public class Achievement implements IXMLizable
         return name;
     }    
     
-//    public Date getDateCompleted()
-//    {
-//        return date;
-//    }
+    public Date getDateCompleted()
+    {
+        return date;
+    }
     
     /**
      * Get the description of the achievement.
@@ -204,13 +206,13 @@ public class Achievement implements IXMLizable
        
         
         // Todo: get dates working
-       // Date date = null;
+        Date date = null;
         
         
        
         
         
-        return newInstance(rules, name, description, difficulty);//, date);
+        return newInstance(rules, name, description, difficulty, date);
     }
     
     public Element toXMLElement() 
@@ -229,7 +231,7 @@ public class Achievement implements IXMLizable
             rule.setAttribute("type", type);
             rule.setAttribute("operation", String.valueOf(this.ruleList.get(i).getOperation()));
             
-            if(type == "COLLISION")
+            if(type.equals("COLLISION"))
             {
                 TileType[] itemList = ruleList.get(i).getItemList();
                

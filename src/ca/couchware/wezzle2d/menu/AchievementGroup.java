@@ -82,25 +82,25 @@ public class AchievementGroup extends AbstractGroup
         
         achievementList = new ArrayList<Achievement>();
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster I", 
-                "Dummy description.", Achievement.Difficulty.BRONZE));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Chain Gang", 
-                "Dummy description.", Achievement.Difficulty.BRONZE));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Scoring Wizard", 
-                "Dummy description.", Achievement.Difficulty.BRONZE));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Big Scorer", 
-                "Dummy description.", Achievement.Difficulty.BRONZE));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Line Driver", 
-                "Dummy description.", Achievement.Difficulty.BRONZE));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster II", 
-                "Dummy description.", Achievement.Difficulty.BRONZE));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster III", 
-                "Dummy description.", Achievement.Difficulty.BRONZE));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
                         
 //        // Create the list of titles for the first 5 achievements.
 //        titleList = new ArrayList<ITextLabel>();

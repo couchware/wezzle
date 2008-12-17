@@ -172,9 +172,9 @@ public class AchievementManager implements ICollisionListener
         {
             Achievement achieve = (Achievement)object;
             
-//            if(achieve.getStatus() == Achievement.Status.COMPLETE)
-//                this.completeList.add(achieve);
-//            else
+            if(achieve.getDateCompleted() != null)
+                this.completeList.add(achieve);
+            else
                 this.add(achieve);
         }
     }
