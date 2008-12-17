@@ -36,23 +36,32 @@ import java.util.EnumSet;
  */
 public class SliderBar extends AbstractEntity implements IMouseListener
 {
-    /**
-     * The width of the clickable slider bar area.
-     */
-    //final private static int WIDTH = 208;
     
-    /**
-     * The height of the clickable slider bar area.
-     */
-    final private static int HEIGHT = 16;     
+    /** The possible orientations of the slider bar. */
+    public enum Orientation
+    {        
+        HORIZONTAL,
+        VERTICAL
+    }        
     
-    /**
-     * The slider states.
-     */
+    /** The slider states. */
     private static enum State
     {
-        NORMAL, PRESSED
+        NORMAL, 
+        PRESSED
     }
+    
+    /**
+     * The width of the slider bar.  This is only used when
+     * the bar is VERTICAL.
+     */
+    final private static int WIDTH = 16;
+    
+    /**
+     * The height of the slider bar area.  This is only used when the 
+     * bar if HORIZONTAL.
+     */
+    final private static int HEIGHT = 16;     
 
     // -------------------------------------------------------------------------
     // Instance Attributes
@@ -69,20 +78,18 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      */
     private final RectangularShape shape;       
     
+    /** The orientation of the slider bar. */
+    private final Orientation orientation;
+    
     /**
      * The current state of the button.
      */
-    private State state;
+    private State state;    
     
     /**
 	 * The current location of the mouse pointer.
 	 */
-	private ImmutablePosition mousePosition;
-    
-    /**
-     * The sprite for the rail.
-     */
-    private ISprite spriteRail;
+	private ImmutablePosition mousePosition;      
     
     /**
      * The sprite for the handle.
@@ -142,30 +149,51 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         this.x_ = x;
         this.y_ = y;
         
-        // Set the dimensions.
-        this.width = builder.width;
-        this.height = HEIGHT;
+        // Load the slider bar handle.
+        this.spriteHandle = ResourceFactory.get()
+                .getSprite(Settings.getSpriteResourcesPath() + "/SliderBarHandleRounded.png");
         
+        // Set the orientation.
+        this.orientation = builder.orientation;
+        
+        // Set the dimensions.
+        switch (orientation)
+        {
+            case HORIZONTAL:
+                this.width  = builder.width;
+                this.height = HEIGHT;    
+                
+                // Determine the maximum slider offset.
+                this.maxOffset = width - spriteHandle.getWidth();
+                
+                break;
+                
+            case VERTICAL:
+                this.width  = WIDTH;
+                this.height = builder.height;
+                
+                // Determine the maximum slider offset.
+                this.maxOffset = height - spriteHandle.getWidth();
+                
+                break;
+         
+            default: throw new AssertionError();
+        }
+              
         // Set default anchor.
         this.alignment = builder.alignment;
         this.offsetX = determineOffsetX(alignment, width);
         this.offsetY = determineOffsetY(alignment, height);
         
         // Save shape reference.
-        this.shape = new Rectangle(x + offsetX, y + offsetY, this.width, this.height);
-        
-        this.spriteHandle = ResourceFactory.get()
-                .getSprite(Settings.getSpriteResourcesPath() + "/SliderBarHandleRounded.png");
+        this.shape = new Rectangle(x + offsetX, y + offsetY, this.width, this.height);               
         
         // Start in normal state.
         this.state = State.NORMAL;
         
-        // Default the slider to the far left.
+        // Default the slider to the left/top.
         this.slideOffset = 0;
-        
-        // Determine the maximum slider offset.
-        this.maxOffset = width - spriteHandle.getWidth();
-        
+                       
         // Initially it is not changed.
         this.changed = false;
         
@@ -185,9 +213,11 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         private int y;     
         
         // Optional values.
-        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
+        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);              
         private int opacity = 100;
-        private int width = 200;
+        private int width  = 200;
+        private int height = 200;
+        private Orientation orientation = Orientation.HORIZONTAL;
         private boolean visible = true;
         private double virtualLower = 0.0;
         private double virtualUpper = 1.0;
@@ -205,7 +235,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             this.window = sliderBar.window;
             this.x = sliderBar.x;
             this.y = sliderBar.y;
-            this.alignment = sliderBar.alignment.clone();            
+            this.alignment = sliderBar.alignment.clone();     
+            this.orientation = sliderBar.orientation;
             this.opacity = sliderBar.opacity;                        
             this.width = sliderBar.width;
             this.visible = sliderBar.visible;
@@ -225,6 +256,12 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         
         public Builder width(int val)
         { width = val; return this; }
+        
+        public Builder height(int val)
+        { height = val; return this; }
+        
+        public Builder orientation(Orientation val)
+        { orientation = val; return this; }
         
         public Builder visible(boolean val) 
         { visible = val; return this; }
@@ -275,11 +312,30 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             return false;
         
         // Draw the rail.
-        //spriteRail.draw(x + offsetX, y + offsetY + (HEIGHT - spriteRail.getHeight()) / 2);
-        drawRail(x + offsetX, y + offsetY + (HEIGHT - 4) / 2, width, 2, 1);
+        switch (orientation)
+        {
+            case HORIZONTAL:
+                
+                drawRail(x + offsetX, y + offsetY + (HEIGHT - 4) / 2, width - 1, 2, 1);                
+                spriteHandle.draw(x + offsetX + slideOffset, y + offsetY).end();
+                
+                break;
+                
+            case VERTICAL:
+                
+                drawRail(x + offsetX + (WIDTH - 4) / 2, y + offsetY, 2, height - 2, 1);
+                spriteHandle.draw(
+                            x + offsetX,
+                            y + offsetY + slideOffset - spriteHandle.getWidth() / 2 + 5)                        
+                        .theta(Math.toRadians(90), 0, spriteHandle.getHeight())
+                        .end();
+                
+                break;
+                
+            default: throw new AssertionError();
+        }
         
-        // Draw the handle.
-        spriteHandle.draw(x + offsetX + slideOffset, y + offsetY).end();
+        
         
         return true;
     }
@@ -306,8 +362,23 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         {
             // Left mouse clicked.
             case LEFT:
+                
                 state = State.PRESSED; 
-                setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
+                
+                switch (orientation)
+                {
+                    case HORIZONTAL:
+                        setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
+                        break;
+                        
+                    case VERTICAL:
+                        setSlideOffset(p.getY() - y - offsetY - spriteHandle.getWidth() / 2);
+                        break;
+                        
+                    default: throw new AssertionError();
+                }
+                                             
+                break;
                 
             default:                
                 break;   
@@ -340,8 +411,21 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             setMousePosition(e.getX(), e.getY());
             final ImmutablePosition p = getMousePosition();
 
-            // If the state is pressed, then move the slider around.        
-            setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
+            // If the state is pressed, then move the slider around.   
+            switch (orientation)
+            {
+                case HORIZONTAL:
+                    
+                    setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
+                    break;
+                    
+                case VERTICAL:
+                    
+                    setSlideOffset(p.getY() - y - offsetY - spriteHandle.getWidth() / 2);
+                    break;
+                    
+                default: throw new AssertionError();
+            }                        
         }       
     }
 
@@ -449,7 +533,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      */
     final public void setVirtualRange(double lower, double upper)
     {
-        assert(upper > lower);
+        assert upper > lower;
         
         this.virtualLower = lower;
         this.virtualUpper = upper;

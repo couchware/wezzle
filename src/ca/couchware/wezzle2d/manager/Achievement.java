@@ -71,7 +71,7 @@ public class Achievement implements IXMLizable
             Difficulty difficulty)//, 
             //Date completed)
     {
-         this.ruleList    = ruleList;
+        this.ruleList    = ruleList;
         this.name       = title;
         this.description = description;
         this.difficulty  = difficulty;

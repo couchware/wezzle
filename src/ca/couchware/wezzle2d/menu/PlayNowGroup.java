@@ -320,7 +320,7 @@ public class PlayNowGroup extends AbstractGroup
     @Override
     public IAnimation animateShow()
     {       
-        box.setXYPosition(268, -300);
+        box.setPosition(268, -300);
         box.setVisible(true);        
         
         IAnimation a = new MoveAnimation.Builder(box).theta(-90).maxY(300)

@@ -156,7 +156,7 @@ public class Box extends AbstractEntity implements IMouseListener
         this.pathVertical = Settings.getSpriteResourcesPath() + "/Window" + border + "Vertical.png";
                 
         cornerSprite = ResourceFactory.get().getSprite(pathCorner);
-        horizontalSprite = ResourceFactory.get().getSprite(pathHorizontal);
+        horizontalSprite = ResourceFactory.get().getSprite(pathHorizontal);                
         verticalSprite = ResourceFactory.get().getSprite(pathVertical);
         
         // Create the background colour.  This colour is changed each time
@@ -289,7 +289,7 @@ public class Box extends AbstractEntity implements IMouseListener
                 x + offsetX + width - cornerSprite.getWidth(), 
                 y + offsetY)               
                 .opacity(opacity)
-                .theta(Math.toRadians(90))
+                .theta(Math.toRadians(90), cornerSprite.getWidth() / 2, cornerSprite.getHeight() / 2)
                 .end();
         
         // Bottom left.
@@ -297,15 +297,15 @@ public class Box extends AbstractEntity implements IMouseListener
                 x + offsetX,  
                 y + offsetY + height - cornerSprite.getWidth())               
                 .opacity(opacity)
-                .theta(Math.toRadians(-90))
+                .theta(Math.toRadians(-90), cornerSprite.getWidth() / 2, cornerSprite.getHeight() / 2)
                 .end();      
         
         // Bottom right.
         cornerSprite.draw(
-                x + offsetX + width - cornerSprite.getWidth(), 
+                x + offsetX + width  - cornerSprite.getWidth(), 
                 y + offsetY + height - cornerSprite.getHeight())               
                 .opacity(opacity)
-                .theta(Math.toRadians(180))
+                .theta(Math.toRadians(180), cornerSprite.getWidth() / 2, cornerSprite.getHeight() / 2)
                 .end();               
         
         // Draw the horizontal sides.
@@ -316,15 +316,16 @@ public class Box extends AbstractEntity implements IMouseListener
                 .opacity(opacity)
                 .end();
         
-        // Bottom.
+        // Bottom.        
+        int w = width - cornerSprite.getWidth() * 2;
         horizontalSprite.draw(
                 x + offsetX + cornerSprite.getWidth(), 
                 y + offsetY + height - cornerSprite.getHeight())
-                .width(width - cornerSprite.getWidth() * 2)                
-                .theta(Math.toRadians(180))
+                .width(w)                
+                .theta(Math.toRadians(180), w / 2, horizontalSprite.getHeight() / 2)
                 .opacity(opacity)
                 .end();
-        
+               
         // Draw the vertical sides.
         
         // Left.
@@ -336,11 +337,12 @@ public class Box extends AbstractEntity implements IMouseListener
                 .end();
         
         // Right.
+        int h = height - cornerSprite.getHeight() * 2;
         verticalSprite.draw(
                 x + offsetX + width - cornerSprite.getWidth(), 
                 y + offsetY + cornerSprite.getHeight())               
-                .height(height - cornerSprite.getHeight() * 2)
-                .theta(Math.toRadians(180))
+                .height(h)
+                .theta(Math.toRadians(180), verticalSprite.getWidth() / 2, h / 2)
                 .opacity(opacity)
                 .end();
         

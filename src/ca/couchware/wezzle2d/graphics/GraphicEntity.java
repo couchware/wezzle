@@ -144,7 +144,7 @@ public class GraphicEntity extends AbstractEntity
 //        sprite.draw(x + offsetX, y + offsetY, 
 //                width, height, theta, opacity);      
         sprite.draw(x + offsetX, y + offsetY).width(width).height(height)
-                .theta(theta).opacity(opacity).end();                
+                .theta(theta, rotationAnchor).opacity(opacity).end();                
         
         return true;
 	}     

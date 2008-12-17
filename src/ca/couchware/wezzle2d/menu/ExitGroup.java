@@ -109,7 +109,7 @@ public class ExitGroup extends AbstractGroup
     @Override
     public IAnimation animateShow()
     {       
-        win.setXYPosition(268, -300);
+        win.setPosition(268, -300);
         win.setVisible(true);        
         
         IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)

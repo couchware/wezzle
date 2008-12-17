@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.ISpriteDrawer;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -102,8 +103,9 @@ public class LWJGLSprite implements ISprite
     }        
 
     private void draw(
-            int x, int y, int width, int height, 
-            double theta, int opacity)
+            int x, int y, int width, int height,             
+            double theta, int tx, int ty,
+            int opacity)
     {
         // Store the current model matrix.
         GL11.glPushMatrix();        
@@ -127,7 +129,7 @@ public class LWJGLSprite implements ISprite
         texture.bind();
                         
         // Rotate.
-        rotate(-theta, x + width / 2, y + height / 2);
+        rotate(-theta, x + tx, y + ty);
         
         // Translate to the right location and prepare to draw.
         GL11.glTranslatef(x, y, 0);  
@@ -147,7 +149,7 @@ public class LWJGLSprite implements ISprite
         GL11.glEnd();
         
         // Rotate back.
-        rotate(-theta, x + width / 2, y + height / 2);
+        rotate(theta, x + tx, y + ty);
         
         // Turn off transparency again.
         GL11.glColor4f(1f, 1f, 1f, 1f);
@@ -159,10 +161,11 @@ public class LWJGLSprite implements ISprite
     private void drawRegion(
             int x, int y, int width, int height, 
             int regionX, int regionY, int regionWidth, int regionHeight,
-            double theta, int opacity)
+            double theta, int tx, int ty,
+            int opacity)
     {
         window.setClip(new Rectangle(x, y, regionWidth, regionHeight));        
-        draw(x - regionX, y - regionY, width, height, theta, opacity);        
+        draw(x - regionX, y - regionY, width, height, theta, tx, ty, opacity);        
         window.setClip(null);
     }
     
@@ -185,10 +188,11 @@ public class LWJGLSprite implements ISprite
 	}   
     
     public class SpriteDrawer implements ISpriteDrawer
-    {
-        
+    {        
         final int x;
-        final int y;
+        final int y;    
+        int tx = 0;
+        int ty = 0;
         int w = width;
         int h = height;  
         double theta = 0.0;
@@ -215,6 +219,20 @@ public class LWJGLSprite implements ISprite
         {
             theta = val; return this;
         }
+        
+        public ISpriteDrawer theta(double val, int tx, int ty)
+        {
+            this.theta = val;
+            this.tx = tx;
+            this.ty = ty;
+            return this;
+        }
+        
+        public ISpriteDrawer theta(double val, ImmutablePosition anchor)
+        {
+            theta(val, anchor.getX(), anchor.getY());
+            return this;
+        }
 
         public ISpriteDrawer opacity(int val)
         {
@@ -234,16 +252,17 @@ public class LWJGLSprite implements ISprite
         {
             if (regionRect == null)
             {
-                draw(x, y, w, h, theta, opacity);
+                draw(x, y, w, h, theta, tx, ty, opacity);
             }
             else
             {                       
                 drawRegion(x, y, width, height, 
                         regionRect.getX(),     regionRect.getY(), 
                         regionRect.getWidth(), regionRect.getHeight(),
-                        theta, opacity);
+                        theta, tx, ty,
+                        opacity);
             }
-        }
+        }       
         
     }
 }

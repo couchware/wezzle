@@ -962,7 +962,7 @@ public class BoardManager implements IManager, IKeyListener
         assert t != null;
         
         // Make sure the tile is located properly.
-        t.setXYPosition(x + (index % columns) * cellWidth, 
+        t.setPosition(x + (index % columns) * cellWidth, 
                 y + (index / columns) * cellHeight);
         t.resetDrawRect();
         

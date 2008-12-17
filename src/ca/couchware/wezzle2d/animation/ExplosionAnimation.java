@@ -93,7 +93,7 @@ public class ExplosionAnimation extends AbstractAnimation
         // Move it to the centre of the entity.
         explosion.setX(entity.getX() + (entity.getWidth()  / 2) - 1);
         explosion.setY(entity.getY() + (entity.getHeight() / 2) - 1);                                      
-        this.initialPosition = explosion.getXYPosition();                                                            
+        this.initialPosition = explosion.getPosition();                                                            
         
         // Reset the draw rectangle.
         explosion.resetDrawRect();

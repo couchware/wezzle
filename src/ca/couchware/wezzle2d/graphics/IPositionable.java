@@ -63,7 +63,7 @@ public interface IPositionable
      * 
      * @return The x- and y-coordinates.
      */
-    public ImmutablePosition getXYPosition();
+    public ImmutablePosition getPosition();
     
     /**
      * Sets the x- and y-coordiantes.
@@ -71,14 +71,14 @@ public interface IPositionable
      * @param x
      * @param y
      */
-    public void setXYPosition(final int x, final int y);
+    public void setPosition(final int x, final int y);
     
     /**
      * Sets the x- and y-coordinates.
      * 
      * @param p
      */
-    public void setXYPosition(final ImmutablePosition p);
+    public void setPosition(final ImmutablePosition p);
     
     /**
      * Translate the positionable by the given (x,y) amount.

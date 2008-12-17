@@ -40,10 +40,13 @@ public abstract class AbstractEntity implements IEntity
      */
     protected boolean disabled = false;
     
-     /**
+    /**
      * The rotation.
      */
     protected double theta = 0.0;
+    
+    /** The rotation anchor x-coordinate. */
+    protected ImmutablePosition rotationAnchor = ImmutablePosition.ORIGIN;
     
     /**
      * The opacity (in percent).
@@ -182,18 +185,18 @@ public abstract class AbstractEntity implements IEntity
     }
 
     
-    public ImmutablePosition getXYPosition()
+    public ImmutablePosition getPosition()
     {
         return new ImmutablePosition(getX(), getY());
     }
 
-    public void setXYPosition(int x, int y)
+    public void setPosition(int x, int y)
     {
         setX(x);
         setY(y);
     }
 
-    public void setXYPosition(ImmutablePosition p)
+    public void setPosition(ImmutablePosition p)
     {
         setX(p.getX());
         setY(p.getY());
@@ -294,6 +297,16 @@ public abstract class AbstractEntity implements IEntity
     public double getRotation()
     {
         return this.theta;
+    }
+    
+    public void setRotationAnchor(int tx, int ty)
+    {
+        this.rotationAnchor = new ImmutablePosition(tx, ty);
+    }
+    
+    public ImmutablePosition getRotationAnchor()
+    {
+        return rotationAnchor;
     }
     
     /**

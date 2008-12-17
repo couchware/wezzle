@@ -5,6 +5,8 @@
 
 package ca.couchware.wezzle2d.graphics;
 
+import ca.couchware.wezzle2d.util.ImmutablePosition;
+
 /**
  *
  * @author cdmckay
@@ -35,6 +37,9 @@ public interface IEntity extends IDrawable, IPositionable
      * Gets the current theta.
      */
     public double getRotation();
+    
+    public void setRotationAnchor(int tx, int ty);    
+    public ImmutablePosition getRotationAnchor();
     
     /**
      * Sets the disabled status of the entity.

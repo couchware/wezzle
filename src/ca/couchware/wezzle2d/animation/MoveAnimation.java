@@ -230,7 +230,7 @@ public class MoveAnimation extends AbstractAnimation
         if (waitFinished == false && ms > wait)
         {
             // Record initial position now.
-            initialPosition = entity.getXYPosition();   
+            initialPosition = entity.getPosition();   
             
             // And start!
             waitFinished = true;
@@ -275,7 +275,7 @@ public class MoveAnimation extends AbstractAnimation
             
             entity.setX(newX);                        
             entity.setY(newY);                        
-            entity.setRotation((ms * omega) / 1000);
+            entity.setRotation((ms * omega) / 1000);            
                     
             if ((finishRule == FinishRule.FIRST && (doneX == true || doneY == true))
                 || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))                

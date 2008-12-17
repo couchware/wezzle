@@ -141,7 +141,7 @@ public class PieceManager implements IMouseListener
         
         // Load a random piece.
         loadPiece();
-        pieceGrid.setXYPosition(limitPosition(window.getMouseImmutablePosition()));				                               
+        pieceGrid.setPosition(limitPosition(window.getMouseImmutablePosition()));				                               
         
         // Create the restriction board and fill it with trues.
         restrictionBoard = new boolean[boardMan.getCells()];
@@ -192,7 +192,7 @@ public class PieceManager implements IMouseListener
             piece.rotate();                    
         
         // Adjust the piece grid.
-        pieceGrid.setXYPosition(limitPosition(pieceGrid.getXYPosition()));
+        pieceGrid.setPosition(limitPosition(pieceGrid.getPosition()));
         pieceGrid.setDirty(true);
 	}
     
@@ -340,7 +340,7 @@ public class PieceManager implements IMouseListener
     
     public void startAnimation(TimerManager timerMan)
     {
-        startAnimationAt(pieceGrid.getXYPosition(), 
+        startAnimationAt(pieceGrid.getPosition(), 
                 getPulseSpeed(timerMan.getInitialTime(), timerMan.getTime()));
     }
     
@@ -368,7 +368,7 @@ public class PieceManager implements IMouseListener
     
     public void stopAnimation()
     {
-        stopAnimationAt(pieceGrid.getXYPosition());
+        stopAnimationAt(pieceGrid.getPosition());
     }
     
     private void stopAnimationAt(final ImmutablePosition p)
@@ -708,11 +708,11 @@ public class PieceManager implements IMouseListener
                 stopAnimation();
                 
                 piece.rotate();
-                pieceGrid.setXYPosition(limitPosition(pieceGrid.getXYPosition()));
+                pieceGrid.setPosition(limitPosition(pieceGrid.getPosition()));
                 pieceGrid.setDirty(true);                                
                 
                 if (pieceGrid.isVisible() == true)
-                    startAnimationAt(pieceGrid.getXYPosition(), SLOW_SPEED);
+                    startAnimationAt(pieceGrid.getPosition(), SLOW_SPEED);
 
                 // Reset released buttons.
                 mouseButtonSet = EnumSet.noneOf(MouseButton.class);
@@ -735,10 +735,10 @@ public class PieceManager implements IMouseListener
                     refactored = false;
 
                     // Stop the old animations.
-                    stopAnimationAt(pieceGrid.getXYPosition());
+                    stopAnimationAt(pieceGrid.getPosition());
 
                     // Update piece grid position.
-                    pieceGrid.setXYPosition(pos);             
+                    pieceGrid.setPosition(pos);             
                                         
                     // Start new animation.   
                     if (pieceGrid.isVisible() == true)
@@ -746,7 +746,7 @@ public class PieceManager implements IMouseListener
                 } 
                 else
                 {                                        
-                    adjustAnimationAt(pieceGrid.getXYPosition(), speed);
+                    adjustAnimationAt(pieceGrid.getPosition(), speed);
                 }
             } // end if
         } // end if
@@ -773,7 +773,7 @@ public class PieceManager implements IMouseListener
         // Get the indices of the committed pieces.
         Set<Integer> indexSet = new LinkedHashSet<Integer>();
         Set<Integer> blankSet = new LinkedHashSet<Integer>();
-        getSelectedIndexSet(this.pieceGrid.getXYPosition(), indexSet, blankSet);                                
+        getSelectedIndexSet(this.pieceGrid.getPosition(), indexSet, blankSet);                                
         
         // See if any of the indices are restricted.
         for (Integer index : indexSet)

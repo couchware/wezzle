@@ -92,7 +92,7 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         this.height = 0;
         for (RadioItem item : itemMap.values())
         {
-            item.setXYPosition(x + width, y);
+            item.setPosition(x + width, y);
             this.width += pad + item.getWidth();
             this.height = (item.getHeight() > this.height) 
                     ? item.getHeight()

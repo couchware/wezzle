@@ -163,6 +163,8 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         // Create the wezzle logo.
         IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
+        e1.setRotationAnchor(e1.getWidth() / 2, e1.getHeight() / 2);
+        
         layerMan.add(e1, Layer.BACKGROUND);      
         this.rotateAnimation = new MoveAnimation.Builder(e1)
                 .gravity(0).speed(0)
@@ -204,46 +206,44 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         IButton button = null;
         
         // Create the buttons.               
-        button = new Button.Builder(910, 153)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))               
-                //.type(SpriteButton.Type.THIN)
-                .text("Play Now").textSize(20)
-                .hoverOpacity(70).normalOpacity(0).disabled(true).end();
+        templateButton = new Button.Builder(910, 153)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                               
+                .text("")
+                .textSize(20)
+                .hoverOpacity(70)
+                .normalOpacity(0)
+                .disabled(true)
+                .end();        
+                   
+        button = new Button.Builder((Button) templateButton)
+                .y(222).text("Play Now").end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.PLAY_NOW, button);                
-             
-        // Make this button the template.
-        templateButton = (Button) button;
+        buttonMap.put(Menu.PLAY_NOW, button);                        
+        
+//        button = new Button.Builder((Button) templateButton)
+//                .y(251).text("Options").end();
+//        layerMan.add(button, Layer.UI);
+//        buttonMap.put(Menu.OPTIONS, button);               
         
         button = new Button.Builder((Button) templateButton)
-                .y(202).text("Tutorial").end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.TUTORIAL, button);                        
-        
-        button = new Button.Builder((Button) templateButton)
-                .y(251).text("Options").end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.OPTIONS, button);
-        
-        button = new Button.Builder((Button) templateButton)
-                .y(300).text("Upgrade").end();
-        layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.UPGRADE, button);     
-        
-        button = new Button.Builder((Button) templateButton)
-                .y(349).text("Achievements").end();
+                .y(271).text("Achievements").end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.ACHIEVEMENTS, button);
         
         button = new Button.Builder((Button) templateButton)
-                .y(398).text("High Scores").end();
+                .y(320).text("High Scores").end();
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.HIGH_SCORES, button);
-                
-        button = new Button.Builder((Button) templateButton)
-                .y(447).text("Exit").end();
+        
+         button = new Button.Builder((Button) templateButton)
+                .y(369).text("Buy Now").end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.EXIT, button);                                   
+        buttonMap.put(Menu.UPGRADE, button);     
+                
+//        button = new Button.Builder((Button) templateButton)
+//                .y(447).text("Exit").end();
+//        layerMan.add(button, Layer.UI);
+//        buttonMap.put(Menu.EXIT, button);                                   
     };
     
     private void initializeGroups()
@@ -268,27 +268,21 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         
         // Create the "Tutorial" group.
         group = new TutorialGroup(this.settingsMan, this.layerMan);
-        this.groupMap.put(Menu.TUTORIAL, group);
-        
-        // Create the "Options" group.
-        group = new TutorialGroup(this.settingsMan, this.layerMan);
-        this.groupMap.put(Menu.OPTIONS, group);
-        
-         // Create the "Upgrade" group.
-        group = new TutorialGroup(this.settingsMan, this.layerMan);
-        this.groupMap.put(Menu.UPGRADE, group);
+        this.groupMap.put(Menu.TUTORIAL, group);                       
         
          // Create the "Achievements" group.
-        group = new TutorialGroup(this.settingsMan, this.layerMan);
+        group = new AchievementGroup(this,
+                this.settingsMan, 
+                this.layerMan);
         this.groupMap.put(Menu.ACHIEVEMENTS, group);
         
          // Create the "High Scores" group.
         group = new TutorialGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.HIGH_SCORES, group);
         
-        // Create the "Exit" group.
-        group = new ExitGroup(this.settingsMan, this.layerMan);
-        this.groupMap.put(Menu.EXIT, group);
+         // Create the "Upgrade" group.
+        group = new TutorialGroup(this.settingsMan, this.layerMan);
+        this.groupMap.put(Menu.UPGRADE, group);
     }
     
     public void updateLogic(Game game)
