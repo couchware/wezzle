@@ -39,12 +39,14 @@ public class AudioGroup extends AbstractGroup
     /**
      * The sound radio group options.
      */
-    private enum Sound { ON, OFF }
+    //private enum Sound { ON, OFF }
+    final private static int SOUND_ON  = 0;
+    final private static int SOUND_OFF = 1;
     
     /**
      * The sound on/off radio group.
      */        
-    private RadioGroup<Sound> soundRadio;    
+    private RadioGroup soundRadio;    
     
     /**
      * The sound slider bar.
@@ -54,12 +56,14 @@ public class AudioGroup extends AbstractGroup
     /**
      * The music radio group options.
      */
-    private enum Music { ON, OFF }
+    //private enum Music { ON, OFF }
+    final private static int MUSIC_ON  = 0;
+    final private static int MUSIC_OFF = 1;
     
     /**
      * The music on/off radio group.
      */     
-    private RadioGroup<Music> musicRadio;         
+    private RadioGroup musicRadio;         
     
     /**
      * The music slider bar.
@@ -98,10 +102,10 @@ public class AudioGroup extends AbstractGroup
         // in the radio groups below.
         RadioItem soundItem1 = new RadioItem.Builder().text("Sound On").end();
         RadioItem soundItem2 = new RadioItem.Builder().text("Off").end();        
-        soundRadio = new RadioGroup.Builder<Sound>(400, 233, Sound.class)
+        soundRadio = new RadioGroup.Builder(400, 233)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(Sound.ON, soundItem1, SettingsManager.get().getBoolean(Key.USER_SOUND))
-                .add(Sound.OFF, soundItem2, !SettingsManager.get().getBoolean(Key.USER_SOUND))
+                .add(soundItem1, SettingsManager.get().getBoolean(Key.USER_SOUND))
+                .add(soundItem2, !SettingsManager.get().getBoolean(Key.USER_SOUND))
                 .visible(false).end();
         layerMan.add(soundRadio, Layer.UI);
         entityList.add(soundRadio);             
@@ -122,10 +126,10 @@ public class AudioGroup extends AbstractGroup
         // in the radio groups below.
         RadioItem musicItem1 = new RadioItem.Builder().text("Music On").end();
         RadioItem musicItem2 = new RadioItem.Builder().text("Off").end();        
-        musicRadio = new RadioGroup.Builder<Music>(400, 321, Music.class)
+        musicRadio = new RadioGroup.Builder(400, 321)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(Music.ON, musicItem1, SettingsManager.get().getBoolean(Key.USER_MUSIC))
-                .add(Music.OFF, musicItem2, !SettingsManager.get().getBoolean(Key.USER_MUSIC))
+                .add(musicItem1, SettingsManager.get().getBoolean(Key.USER_MUSIC))
+                .add(musicItem2, !SettingsManager.get().getBoolean(Key.USER_MUSIC))
                 .visible(false).end();
         layerMan.add(musicRadio, Layer.UI);
         entityList.add(musicRadio);            
@@ -167,7 +171,7 @@ public class AudioGroup extends AbstractGroup
         }   
         else if (soundRadio.changed() == true)
         {
-            boolean soundOn = soundRadio.getSelectedKey() == Sound.ON;
+            boolean soundOn = soundRadio.getSelectedIndex() == SOUND_ON;
             
             // Set the property.            
             SettingsManager.get().setBoolean(Key.USER_SOUND, soundOn);            
@@ -178,7 +182,7 @@ public class AudioGroup extends AbstractGroup
         }
         else if (musicRadio.changed() == true)
         {
-            boolean musicOn = musicRadio.getSelectedKey() == Music.ON;
+            boolean musicOn = musicRadio.getSelectedIndex() == MUSIC_ON;
             
             // Set the property.            
             SettingsManager.get().setBoolean(Key.USER_MUSIC, musicOn);

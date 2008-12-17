@@ -13,12 +13,15 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Achievement;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SliderBar;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
@@ -54,14 +57,14 @@ public class AchievementGroup extends AbstractGroup
     /** The background window. */
     private Box box;
     
+    /** The slider bar used to scroll the achievements. */
+    private SliderBar sliderBar;
+    
     /** The offset in the achievement list. */
     private int offset = 0;
     
     /** The list of achievements. */
-    private List<Achievement> achievementList;
-    
-    /** The list of achievement title labels. */
-    private List<ITextLabel> titleList;
+    private List<Achievement> achievementList;        
     
     public AchievementGroup(IGroup parent, 
             final SettingsManager settingsMan,
@@ -99,16 +102,17 @@ public class AchievementGroup extends AbstractGroup
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster III", 
                 "Dummy description.", Achievement.Difficulty.BRONZE));
                         
-        // Create the list of titles for the first 5 achievements.
-        titleList = new ArrayList<ITextLabel>();
-        for (Achievement ach : achievementList)
-        {            
-            titleList.add(new ResourceFactory.LabelBuilder(0, 0)
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                    .size(18)
-                    .text(ach.getTitle())                    
-                    .end());                              
-        }               
+//        // Create the list of titles for the first 5 achievements.
+//        titleList = new ArrayList<ITextLabel>();
+//        for (Achievement ach : achievementList)
+//        {            
+//            titleList.add(new ResourceFactory.LabelBuilder(0, 0)
+//                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+//                    .size(18)
+//                    .text(ach.getTitle())      
+//                    .visible(false)
+//                    .end());       
+//        }               
                 
         // The colors.
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
@@ -137,13 +141,15 @@ public class AchievementGroup extends AbstractGroup
                 .end();
         this.entityList.add(listBox);  
         
-        SliderBar sliderBar = new SliderBar.Builder(442, 229)
-                .height(170)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .orientation(SliderBar.Orientation.VERTICAL)
-                .visible(false)
-                .end();
-        entityList.add(sliderBar);
+//        this.sliderBar = new SliderBar.Builder(442, 229)
+//                .height(170)
+//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+//                .orientation(SliderBar.Orientation.VERTICAL)
+//                .virtualRange(0, Math.max(0, titleList.size() - ACHIEVEMENTS_AT_ONCE))
+//                .virtualValue(0)
+//                .visible(false)
+//                .end();
+//        entityList.add(sliderBar);
         
         // The first box.
         Box descriptionBox = new Box.Builder(68, 346)
@@ -161,37 +167,33 @@ public class AchievementGroup extends AbstractGroup
         }
         
         // Adjust the scroller.
-        adjustScroller();        
+        adjustScroller(false);        
     }
     
     /**
      * Moves the scroller into the proper position.
      */
-    private void adjustScroller()
+    private void adjustScroller(boolean visible)
     {
-        // Make sure the offset isn't too high.
-        assert offset < titleList.size() - ACHIEVEMENTS_AT_ONCE;
-            
-        // Make all labels invisible.
-        for (ITextLabel label : titleList)
-        {
-            entityList.remove(label);
-            
-            if (layerMan.exists(label, Layer.UI))
-                layerMan.remove(label, Layer.UI);                        
-        }
-        
-        // Move the labels into the right position.
-        for (int i = offset; i < offset + ACHIEVEMENTS_AT_ONCE; i++)
-        {
-            ITextLabel label = titleList.get(i);
-            label.setX(X_POSITION);
-            label.setY(Y_POSITION + Y_SPACING * i);
-            label.setVisible(false);
-            
-            entityList.add(label);
-            layerMan.add(label, Layer.UI);
-        }
+//        // Make sure the offset isn't too high.
+//        assert offset <= titleList.size() - ACHIEVEMENTS_AT_ONCE;
+//            
+//        // Make all labels invisible.
+//        for (ITextLabel label : titleList)
+//        {
+//            entityList.remove(label);                                  
+//        }
+//        
+//        // Move the labels into the right position.
+//        for (int i = 0; i < ACHIEVEMENTS_AT_ONCE; i++)
+//        {
+//            ITextLabel label = titleList.get(i + offset);
+//            label.setX(X_POSITION);
+//            label.setY(Y_POSITION + Y_SPACING * i);
+//            label.setVisible(visible);
+//            
+//            entityList.add(label);           
+//        }
     }
     
     @Override
@@ -232,6 +234,17 @@ public class AchievementGroup extends AbstractGroup
         
     public void updateLogic(Game game)
     {    
+//        if (sliderBar.changed() == true)
+//        {
+//            LogManager.recordMessage("Slider bar is at " + sliderBar.getVirtualValue());
+//            int newOffset = (int) sliderBar.getVirtualValue();
+//            
+//            if (newOffset != offset)
+//            {
+//                this.offset = newOffset;
+//                adjustScroller(true);
+//            }
+//        }
     }
     
 }

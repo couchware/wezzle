@@ -7,17 +7,14 @@ package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.IGameWindow;
-import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A UI element for representing a group of RadioItems.
@@ -31,7 +28,7 @@ import java.util.Map;
  * 
  * @author cdmckay
  */
-public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMouseListener
+public class RadioGroup extends AbstractEntity implements IMouseListener
 {
     
     /**
@@ -50,14 +47,14 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
     private ImmutableRectangle shape;
     
     /** 
-     * Map of radio items. 
+     * List of radio items.
      */    
-    private Map<T, RadioItem> itemMap;   
+    private List<RadioItem> itemList;   
     
     /**
      * The key of currently selected item.
      */
-    private T selectedKey;
+    private int selectedIndex;
     
     /**
      * The amount of space between each radio item.
@@ -69,14 +66,14 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
      * 
      * @param builder
      */    
-    private RadioGroup(Builder<T> builder)
+    private RadioGroup(Builder builder)
     {
         // Add the window reference.
         this.window = builder.window;
         
         // Add list reference.
         //this.itemList = builder.itemList;
-        this.itemMap = builder.itemMap;
+        this.itemList = builder.itemList;
         
         // Set the pad.
         this.pad = builder.pad;
@@ -90,7 +87,7 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         // Determine the width and height.
         this.width = 0;
         this.height = 0;
-        for (RadioItem item : itemMap.values())
+        for (RadioItem item : itemList)
         {
             item.setPosition(x + width, y);
             this.width += pad + item.getWidth();
@@ -117,7 +114,7 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         this.visible = builder.visible;        
         
         // Adjust all the radio items.
-        for (RadioItem item : itemMap.values())
+        for (RadioItem item : itemList)
         {
             item.translate(offsetX, offsetY);        
             item.setOpacity(opacity);
@@ -125,14 +122,14 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         }
         
         // Select a key.
-        if (builder.selectedKey != null)
+        if (builder.selectedIndex != -1)
         {
-            this.setSelectedKey(builder.selectedKey);
+            this.setSelectedIndex(builder.selectedIndex);
             this.changed = false;
         }
     }
     
-    public static class Builder<E extends Enum<E>> implements IBuilder<RadioGroup>
+    public static class Builder implements IBuilder<RadioGroup>
     {
         // Required values.  
         private final IGameWindow window;
@@ -140,8 +137,8 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         private int y;     
         
         // The radio item map.
-        private final Map<E, RadioItem> itemMap;
-        private E selectedKey;
+        private final List<RadioItem> itemList;
+        private int selectedIndex = -1;
         
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);                
@@ -149,13 +146,13 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         private boolean visible = true;        
         private int pad = 20;                       
         
-        public Builder(int x, int y, Class<E> keyType)
+        public Builder(int x, int y)
         {         
             this.window = ResourceFactory.get().getGameWindow();
             this.x = x;
             this.y = y;
             
-            this.itemMap = new EnumMap<E, RadioItem>(keyType);
+            this.itemList = new ArrayList<RadioItem>();
         }
         
 //        public Builder(RadioGroup radioGroup)
@@ -172,30 +169,39 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
 //                this.itemList.add(new RadioItem.Builder(item).end());
 //        }
         
-        public Builder<E> x(int val) { x = val; return this; }        
-        public Builder<E> y(int val) { y = val; return this; }
+        public Builder x(int val) { x = val; return this; }        
+        public Builder y(int val) { y = val; return this; }
                
-        public Builder<E> alignment(EnumSet<Alignment> val) 
+        public Builder alignment(EnumSet<Alignment> val) 
         { alignment = val; return this; }
                         
-        public Builder<E> opacity(int val)
+        public Builder opacity(int val)
         { opacity = val; return this; }
         
-        public Builder<E> visible(boolean val) 
+        public Builder visible(boolean val) 
         { visible = val; return this; }
         
-        public Builder<E> pad(int val)
+        public Builder pad(int val)
         { pad = val; return this; }
              
-        public Builder<E> add(E key, RadioItem val)        
-        { itemMap.put(key, val); return this; }
+        public Builder add(RadioItem val)        
+        { itemList.add(val); return this; }
         
-        public Builder<E> add(E key, RadioItem val, boolean selected)        
-        { itemMap.put(key, val); if (selected) selectedKey = key; return this; }
+        public Builder add(RadioItem val, boolean selected)        
+        { 
+            itemList.add(val); 
+            
+            if (selected == true)
+            {
+                selectedIndex = itemList.size() - 1; 
+            }
+            
+            return this;
+        }
         
-        public RadioGroup<E> end()
+        public RadioGroup end()
         {
-            RadioGroup<E> group = new RadioGroup<E>(this);
+            RadioGroup group = new RadioGroup(this);
             
             if (visible == true)
                 window.addMouseListener(group);            
@@ -209,7 +215,7 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
     {
         super.setOpacity(opacity);
         
-        for (RadioItem item : itemMap.values())
+        for (RadioItem item : itemList)
             item.setOpacity(opacity);
     }
     
@@ -223,7 +229,7 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         // Invoke super.
         super.setVisible(visible);
         
-        for (RadioItem item : itemMap.values())
+        for (RadioItem item : itemList)
                 item.setVisible(visible);
         
         // Add or remove listener based on visibility.
@@ -241,7 +247,7 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
     @Override
     public boolean isDirty()
     {
-        for (RadioItem item : itemMap.values())
+        for (RadioItem item : itemList)
             if (item.isDirty() == true)
                 return true;
         
@@ -251,32 +257,33 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
     @Override
     public void setDirty(boolean dirty)
     {
-         for (RadioItem item : itemMap.values())
+         for (RadioItem item : itemList)
              item.setDirty(dirty);
     }
 
-    public T getSelectedKey()
+    public int getSelectedIndex()
     {
-        return selectedKey;
+        return selectedIndex;
     }
 
-    final public void setSelectedKey(T selectedKey)
+    final public void setSelectedIndex(int selectedIndex)
     {        
-        if (this.selectedKey == null || !(this.selectedKey ==  selectedKey))
+        if (this.selectedIndex == -1 || this.selectedIndex != selectedIndex)
             changed = true;
         
-        this.selectedKey = selectedKey;
+        this.selectedIndex = selectedIndex;
         
-        for (T key : itemMap.keySet())
+        for (int i = 0; i < itemList.size(); i++)
         {
-            if (key == selectedKey)
+            if (i == selectedIndex)
             {
-                this.itemMap.get(key).setActivated(true);
-                continue;
+                this.itemList.get(i).setActivated(true);                
             }
-            
-            this.itemMap.get(key).setActivated(false);
-        }                
+            else
+            {
+                this.itemList.get(i).setActivated(false);
+            }            
+        } // end for            
     }        
             
     public boolean changed()
@@ -300,7 +307,7 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         if (visible == false)
             return false;
         
-        for (RadioItem item : itemMap.values())
+        for (RadioItem item : itemList)
             item.draw();
         
         return true;
@@ -332,12 +339,14 @@ public class RadioGroup<T extends Enum<T>> extends AbstractEntity implements IMo
         if (shape.contains(e.getPosition()) == true)
         {            
             // See which one it was released over.
-            for (T key : itemMap.keySet())
-                if (itemMap.get(key).getShape().contains(e.getPosition()))
+            for (int i = 0; i < itemList.size(); i++)
+            {
+                if (itemList.get(i).getShape().contains(e.getPosition()))
                 {
-                    setSelectedKey(key);                       
+                    setSelectedIndex(i);                       
                     break;
                 }
+            }
         }
 
 //        LogManager.recordMessage(itemList.size() + "");

@@ -26,10 +26,7 @@ import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
-import ca.couchware.wezzle2d.ui.ITextField;
 import ca.couchware.wezzle2d.ui.SliderBar;
-import ca.couchware.wezzle2d.ui.TallButton;
-import ca.couchware.wezzle2d.ui.TextField;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import java.awt.Color;
@@ -80,18 +77,24 @@ public class PlayNowGroup extends AbstractGroup
     private final SliderBar levelSlider;
     
     /** The possibilies for the tutorial. */
-    private enum Tutorial { ON, OFF }
+    //private enum Tutorial { ON, OFF }
+    final private static int TUTORIAL_ON = 0;
+    final private static int TUTORIAL_OFF = 1;
     
     /** The tutorial radio group. */
-    final private RadioGroup<Tutorial> tutorialRadio;
+    final private RadioGroup tutorialRadio;
     
     /** The music radio group. */
-    final private RadioGroup<Theme> themeRadio;        
+    final private RadioGroup themeRadio;        
+    
+    final private static int THEME_TRON = 0;
+    final private static int THEME_ELECTRONIC = 1;
+    final private static int THEME_HIPPOP = 2;
     
     /**
      * The music player map.
      */
-    private Map<Theme, MusicPlayer> playerMap;   
+    private List<MusicPlayer> playerMap;   
     
     /**
      * The start button.
@@ -190,13 +193,12 @@ public class PlayNowGroup extends AbstractGroup
                 .color(OPTION_COLOR)
                 .text("Off").end();
         
-        this.tutorialRadio = new RadioGroup.Builder<Tutorial>(
+        this.tutorialRadio = new RadioGroup.Builder(
                     268,
-                    tutorialLabel.getY() + 35,
-                    Tutorial.class)
+                    tutorialLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .add(Tutorial.ON,  tutorialOn,  true)
-                .add(Tutorial.OFF, tutorialOff, false)
+                .add(tutorialOn,  true)
+                .add(tutorialOff, false)
                 .visible(false)
                 .end();
         this.entityList.add(tutorialRadio);                
@@ -216,18 +218,18 @@ public class PlayNowGroup extends AbstractGroup
         // Creat the level limit radio group.        
         RadioItem themeItem1 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("Tron").end();
-        themeItem1.setMouseOnRunnable(createFadeInRunnable(Theme.TRON));        
-        themeItem1.setMouseOffRunnable(createFadeOutRunnable(Theme.TRON));
+        themeItem1.setMouseOnRunnable(createFadeInRunnable(THEME_TRON));        
+        themeItem1.setMouseOffRunnable(createFadeOutRunnable(THEME_TRON));
         
         RadioItem themeItem2 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("Elec").end();
-        themeItem2.setMouseOnRunnable(createFadeInRunnable(Theme.ELECTRONIC));        
-        themeItem2.setMouseOffRunnable(createFadeOutRunnable(Theme.ELECTRONIC));
+        themeItem2.setMouseOnRunnable(createFadeInRunnable(THEME_ELECTRONIC));        
+        themeItem2.setMouseOffRunnable(createFadeOutRunnable(THEME_ELECTRONIC));
         
         RadioItem themeItem3 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("HipPop").end();
-        themeItem3.setMouseOnRunnable(createFadeInRunnable(Theme.HIPPOP));        
-        themeItem3.setMouseOffRunnable(createFadeOutRunnable(Theme.HIPPOP));
+        themeItem3.setMouseOnRunnable(createFadeInRunnable(THEME_HIPPOP));        
+        themeItem3.setMouseOffRunnable(createFadeOutRunnable(THEME_HIPPOP));
         
         Map<Theme, Boolean> themeMap = new EnumMap<Theme, Boolean>(Theme.class);
         themeMap.put(Theme.TRON, false);
@@ -242,14 +244,13 @@ public class PlayNowGroup extends AbstractGroup
                 .text("All").end();
         RadioItem themeItem5 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("?").end();
-        this.themeRadio = new RadioGroup.Builder<Theme>(
+        this.themeRadio = new RadioGroup.Builder(
                     268, 
-                    themeLabel.getY() + 35,
-                    Theme.class)
+                    themeLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .add(Theme.TRON, themeItem1, themeMap.get(Theme.TRON))
-                .add(Theme.ELECTRONIC, themeItem2, themeMap.get(Theme.ELECTRONIC))
-                .add(Theme.HIPPOP, themeItem3, themeMap.get(Theme.HIPPOP))              
+                .add(themeItem1, themeMap.get(Theme.TRON))
+                .add(themeItem2, themeMap.get(Theme.ELECTRONIC))
+                .add(themeItem3, themeMap.get(Theme.HIPPOP))              
                 .pad(20).visible(false).end();
         this.entityList.add(themeRadio);    
                
@@ -271,16 +272,16 @@ public class PlayNowGroup extends AbstractGroup
     private void createPlayers()
     {
         // Create the music player map.
-        this.playerMap = new EnumMap<Theme, MusicPlayer>(Theme.class);
+        this.playerMap = new ArrayList<MusicPlayer>();
        
         // Create three players, 1 for each theme.
-        this.playerMap.put(Theme.TRON, MusicManager.createPlayer(Music.TRON2));
-        this.playerMap.put(Theme.ELECTRONIC, MusicManager.createPlayer(Music.ELECTRONIC1));
-        this.playerMap.put(Theme.HIPPOP, MusicManager.createPlayer(Music.HIPPOP1));        
+        this.playerMap.add(MusicManager.createPlayer(Music.TRON2));
+        this.playerMap.add(MusicManager.createPlayer(Music.ELECTRONIC1));
+        this.playerMap.add(MusicManager.createPlayer(Music.HIPPOP1));        
         
         try 
         {            
-            for (MusicPlayer p : playerMap.values())
+            for (MusicPlayer p : playerMap)
             {
                 p.setLoop(true);
                 p.play();        
@@ -294,25 +295,25 @@ public class PlayNowGroup extends AbstractGroup
         }             
     }
     
-    private Runnable createFadeInRunnable(final Theme theme)
+    private Runnable createFadeInRunnable(final int playerIndex)
     {
         return new Runnable()
         {
             public void run()
             { 
-                playerMap.get(theme).fadeToGain(
+                playerMap.get(playerIndex).fadeToGain(
                         SettingsManager.get().getDouble(Settings.Key.USER_MUSIC_VOLUME));
             }
         };
     }
     
-    private Runnable createFadeOutRunnable(final Theme theme)
+    private Runnable createFadeOutRunnable(final int playerIndex)
     {
         return new Runnable()
         {
             public void run()
             { 
-                playerMap.get(theme).fadeToGain(0.0);
+                playerMap.get(playerIndex).fadeToGain(0.0);
             }
         };
     }
@@ -410,7 +411,23 @@ public class PlayNowGroup extends AbstractGroup
         else if (this.startButton.clicked() == true)
         {
             // Set the music.
-            this.musicMan.setTheme(themeRadio.getSelectedKey());
+            Theme theme = null;
+            switch (themeRadio.getSelectedIndex())
+            {
+                case THEME_TRON:
+                    theme = Theme.TRON;
+                    break;
+                case THEME_ELECTRONIC:
+                    theme = Theme.ELECTRONIC;
+                    break;
+                case THEME_HIPPOP:
+                    theme = Theme.HIPPOP;
+                    break;
+                    
+                default: throw new AssertionError();
+            }
+            
+            this.musicMan.setTheme(theme);
             
             // Set the target score.
             game.levelMan.setLevel(levelNumber, false);
@@ -420,7 +437,7 @@ public class PlayNowGroup extends AbstractGroup
             //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
                                       
             // Stop all the player.
-            for (MusicPlayer p : playerMap.values())
+            for (MusicPlayer p : playerMap)
             {                
                 p.stopAtGain(0.0);
             }        

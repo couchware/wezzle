@@ -105,7 +105,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         // Create all the labels.
         for (int i = 0; i < scoreLabels.length; i++)
         {                      
-            scoreLabels[i] = new LabelBuilder(400, 225 + (30 * i))
+            scoreLabels[i] = new LabelBuilder(400, 225 + (35 * i))
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).opacity(0).size(16).text(" ")
                     .visible(false).end();
@@ -117,7 +117,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         updateLabels();
         
         // Create close button.
-        closeButton = new Button.Builder(400, 408)
+        closeButton = new Button.Builder(400, 420)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Close").normalOpacity(70).visible(false).end();
