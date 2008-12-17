@@ -59,7 +59,9 @@ public abstract class ItemTileEntity extends TileEntity
         
         // Draw bomb on top of it.
         //itemSprite.draw((int) x2, (int) y2, width, height, itemTheta, opacity);
-        itemGraphic.draw(x, y).width(width).height(height).theta(itemTheta).opacity(opacity).end();
+        itemGraphic.draw(x, y).width(width).height(height)
+                .theta(itemTheta, width / 2, height /2)
+                .opacity(opacity).end();
         
         return true;
     }
