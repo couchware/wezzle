@@ -165,20 +165,16 @@ public class AchievementManager implements ICollisionListener
     {
         SettingsManager settingsMan = SettingsManager.get();
         
-        // Get the list from the settings manager.
-       
-        String str = settingsMan.getObject(Key.USER_ACHIEVEMENT).toString();
-        System.out.println("HEREHER " + str);
-        
+        // Get the list from the settings manager. 
         List list = (List) settingsMan.getObject(Key.USER_ACHIEVEMENT);
         
         for (Object object : list)     
         {
             Achievement achieve = (Achievement)object;
             
-            if(achieve.getStatus() == Achievement.Status.COMPLETE)
-                this.completeList.add(achieve);
-            else
+//            if(achieve.getStatus() == Achievement.Status.COMPLETE)
+//                this.completeList.add(achieve);
+//            else
                 this.add(achieve);
         }
     }

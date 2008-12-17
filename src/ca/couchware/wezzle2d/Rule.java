@@ -92,6 +92,18 @@ public class Rule
         this.value     = -1;
     }
     
+     public Rule(Type type, Operation operation, List<TileType> tileTypes)
+    {
+        assert type      != null;
+        assert operation != null;
+        assert tileTypes.size() > 0;
+        
+        this.type      = type;
+        this.operation = operation;
+        this.tileTypes = tileTypes.toArray(new TileType[0]);
+        this.value     = -1;
+    }
+    
     public void onMatch()
     {
         // Optionally overridden.
@@ -214,6 +226,11 @@ public class Rule
     {
         return value;
     }  
+    
+    public TileType[] getItemList()
+    {
+        return this.tileTypes;
+    }
 
     public Type getType() 
     {
