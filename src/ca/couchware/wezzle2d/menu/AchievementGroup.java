@@ -13,24 +13,28 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
-import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Achievement;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.Achievement.Difficulty;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Box;
-import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.ui.Scroller;
-import ca.couchware.wezzle2d.ui.SliderBar;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import java.awt.Color;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The play now group, which holds all the configuration options for playing
@@ -39,7 +43,31 @@ import java.util.List;
  * @author cdmckay
  */
 public class AchievementGroup extends AbstractGroup
-{               
+{       
+    
+    /** The data formatter used for setting the status. */
+    final private static DateFormat dateFormatter = 
+            new SimpleDateFormat("MMM d yyyy");
+    
+    /** The color map for the difficulties. */
+    final private static Map<Difficulty, Color> difficultyColorMap = 
+            createDifficultyColorMap();
+    
+    final private static Map<Difficulty, Color> createDifficultyColorMap()
+    {
+        Map<Difficulty, Color> map = new EnumMap<Difficulty, Color>(Difficulty.class);
+        map.put(Difficulty.BRONZE,   new Color(213, 151, 88));
+        map.put(Difficulty.SILVER,   new Color(178, 178, 178));
+        map.put(Difficulty.GOLD,     new Color(255, 191, 0));
+        map.put(Difficulty.PLATINUM, new Color(212, 212, 212)); 
+        return Collections.unmodifiableMap(map);
+    }
+    
+    /** The colour of completed achievements. */
+    final private Color COLOR_COMPLETED;    
+    
+    /** The colour of not completed achievements. */
+    final private Color COLOR_NOT_COMPLETED;
     
     /** The layer manager. */
     final private LayerManager layerMan;
@@ -56,15 +84,15 @@ public class AchievementGroup extends AbstractGroup
     /** The label for the title of the achievement. */
     private ITextLabel achievementTitle;
     
-    /** The label for line 1 of the description. */
-    private ITextLabel achievementDescription1;
+    /** The difficulty of the achievement. */
+    private ITextLabel achievementDifficulty;
     
-    /** The label for line 2 of the description. */
-    private ITextLabel achievementDescription2;
-    
+    /** The array of labels for the description. */
+    private ITextLabel[] achievementDescriptionArray;
+        
     /** The label for the status of the achievement. */
-    private ITextLabel achievementStatus;
-    
+    private ITextLabel achievementStatus;    
+           
     public AchievementGroup(IGroup parent, 
             final SettingsManager settingsMan,
             final LayerManager layerMan)            
@@ -74,6 +102,13 @@ public class AchievementGroup extends AbstractGroup
                
         // Set the managers.
         this.layerMan = layerMan;
+        
+        // Set the completed/not completed colors.
+        this.COLOR_COMPLETED = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
+        this.COLOR_NOT_COMPLETED = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
+        
+        // The label color.
+        final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);                
         
         // Fill the achievemnt with some dummy achievements.
         List<Rule> ruleList = new ArrayList<Rule>();
@@ -90,21 +125,17 @@ public class AchievementGroup extends AbstractGroup
                 "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Big Scorer", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, null));
+                "Dummy description.\nLike really dummy.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Line Driver", 
                 "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster II", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, null));
+                "Dummy description.", Achievement.Difficulty.SILVER, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster III", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, null));                                      
-                
-        // The colors.
-        final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
-        final Color OPTION_COLOR = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
-        
+                "Dummy description.", Achievement.Difficulty.GOLD, Calendar.getInstance().getTime()));                                      
+                        
         // Create the window.
         box = new Box.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -131,14 +162,24 @@ public class AchievementGroup extends AbstractGroup
         // Create the list of titles for the first 5 achievements.
         Scroller.Builder builder = new Scroller.Builder(68, 229)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .padding(Padding.newInstance(12, 30, 2, 2))
+                .padding(Padding.newInstance(12, 30, 12, 12))                
+                .rows(4)
                 .visible(false);
         for (Achievement ach : achievementList)
         {            
-            builder.add(ach.getTitle());       
+            builder.add(ach.getTitle());             
         }         
-        scroller = builder.end();
+        scroller = builder.selectedIndex(0).end();
         entityList.add(scroller);
+        
+        for (int i = 0; i < achievementList.size(); i++)
+        {
+            Achievement ach = achievementList.get(i);
+            if (ach.getDateCompleted() == null)
+                scroller.setColor(i, COLOR_NOT_COMPLETED);
+            else
+                scroller.setColor(i, COLOR_COMPLETED);
+        }
         
         // The first box.
         Box descriptionBox = new Box.Builder(68, 346)
@@ -149,34 +190,47 @@ public class AchievementGroup extends AbstractGroup
                 .end();
         this.entityList.add(descriptionBox);  
         
-        // The achievement title.
-        this.achievementTitle = new ResourceFactory.LabelBuilder(96, 376)
+        // The achievement description text.
+        this.achievementTitle = new ResourceFactory.LabelBuilder(96, 381)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .visible(false)
                 .text("Chain Gang I - Bronze").size(20)
                 .end();
         this.entityList.add(this.achievementTitle);
-                
-        this.achievementDescription1 = new ResourceFactory.LabelBuilder(96, 410)
+        
+        // The achievement description text.
+        this.achievementDifficulty = new ResourceFactory.LabelBuilder(440, 381)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .visible(false)
+                .text("BRONZE").size(12)
+                .end();
+        this.entityList.add(this.achievementDifficulty);
+               
+        this.achievementDescriptionArray = new ITextLabel[3];
+        
+        for (int i = 0; i < achievementDescriptionArray.length; i++)
+        {
+            achievementDescriptionArray[i] = new ResourceFactory.LabelBuilder(0, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .visible(false)
-                .text("Get a chain of 3 or more lines.").size(12)
-                .end();
-        this.entityList.add(this.achievementDescription1);
+                .text("").size(12)
+                .end();            
+            this.entityList.add(achievementDescriptionArray[i]);
+        }
         
-        this.achievementDescription2 = new ResourceFactory.LabelBuilder(96, 430)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .visible(false)
-                .text("I'm serious.").size(12)
-                .end();
-        this.entityList.add(this.achievementDescription2);
+        achievementDescriptionArray[0].setPosition(96, 410);
+        achievementDescriptionArray[1].setPosition(96, 430);
+        achievementDescriptionArray[2].setPosition(96, 450);          
         
-        this.achievementStatus = new ResourceFactory.LabelBuilder(96, 496)
+        this.achievementStatus = new ResourceFactory.LabelBuilder(96, 491)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .visible(false)
                 .text("This achievement has not been completed.").size(12)
                 .end();
         this.entityList.add(this.achievementStatus);
+        
+        // Show the first achievement in the list.
+        updateAchievementText(achievementList.get(0));
         
         // Add them all to the layer manager.
         for (IEntity e : this.entityList)
@@ -221,19 +275,54 @@ public class AchievementGroup extends AbstractGroup
         return a;
     }
         
+    final private void updateAchievementText(Achievement ach)
+    {
+        // Set the title.
+        achievementTitle.setText(ach.getTitle());
+        
+        // Set the difficulty.
+        Difficulty difficulty = ach.getDifficulty();
+        achievementDifficulty.setText(difficulty.toString());
+        achievementDifficulty.setColor(difficultyColorMap.get(difficulty));
+        
+        // Split description up.
+        String[] lineArray;
+        if (ach.getDescription().contains("\n"))
+        {
+            lineArray = ach.getDescription().split("\n");
+        }
+        else
+        {
+            lineArray = new String[] { ach.getDescription() };
+        }   
+        
+        // Set the description.
+        int min = Math.min(achievementDescriptionArray.length, lineArray.length);
+        for (int i = 0; i < min; i++)
+        {
+            achievementDescriptionArray[i].setText(lineArray[i]);
+        }
+        
+        // Set the status.
+        Date date = ach.getDateCompleted();
+        if (date == null)
+        {
+            achievementStatus.setText("This achievement has not been completed.");            
+        }
+        else
+        {            
+            achievementStatus.setText("This achievement was completed " + dateFormatter.format(date) + ".");
+        }
+    }
+    
     public void updateLogic(Game game)
     {    
-//        if (sliderBar.changed() == true)
-//        {
-//            LogManager.recordMessage("Slider bar is at " + sliderBar.getVirtualValue());
-//            int newOffset = (int) sliderBar.getVirtualValue();
-//            
-//            if (newOffset != offset)
-//            {
-//                this.offset = newOffset;
-//                adjustScroller(true);
-//            }
-//        }
+        if (scroller.changed() == true)
+        {
+            //LogManager.recordMessage("Scroller is at " + scroller.getSelectedIndex());            
+            Achievement ach = achievementList.get(scroller.getSelectedIndex());
+            updateAchievementText(ach);
+        }
     }
     
 }

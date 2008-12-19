@@ -47,7 +47,7 @@ public class Button extends AbstractButton
             + FILE_TYPE;
            
     /** The color of the button. */
-    final protected Color textColor;   
+    protected Color textColor;   
 
     /** The left sprite of the button. */
     protected ISprite leftSprite;
@@ -442,13 +442,26 @@ public class Button extends AbstractButton
         return activeText;
     }
     
+    public Color getTextColor()
+    {
+        return textColor;
+    }
+    
+    public void setTextColor(Color color)
+    {
+        this.textColor = color;
+        normalLabel.setColor(color);
+        if (hoverLabel != null)  hoverLabel.setColor(color);
+        if (activeLabel != null) activeLabel.setColor(color);
+    }
+    
     @Override
     public void setX(int x)
     {
         super.setX(x);
         
         normalLabel.setX(x + offsetX + width / 2);
-        if (hoverLabel != null) hoverLabel.setX(x + offsetX + width / 2);
+        if (hoverLabel != null)  hoverLabel.setX(x + offsetX + width / 2);
         if (activeLabel != null) activeLabel.setX(x + offsetX + width / 2);
     }
     
@@ -458,7 +471,7 @@ public class Button extends AbstractButton
         super.setY(y);
         
         normalLabel.setY(y + offsetY + height / 2);
-        if (hoverLabel != null) hoverLabel.setY(y + offsetY + height / 2);
+        if (hoverLabel != null)  hoverLabel.setY(y + offsetY + height / 2);
         if (activeLabel != null) activeLabel.setY(y + offsetY + height / 2);
     }
     

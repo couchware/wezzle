@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -47,10 +48,10 @@ public class Scroller extends AbstractEntity implements IMouseListener
     private int scrollOffset = 0;        
     
     /** The number of achievements showing at once in the scroller. */
-    final private int optionsAtOnce;   
+    final private int rows;   
     
     /** The amount of space between each label in the scoller. */
-    final private int optionSpacing;
+    final private int spacing;
     
     /** The key of currently selected item. */
     private int selectedIndex;
@@ -64,8 +65,8 @@ public class Scroller extends AbstractEntity implements IMouseListener
         this.width  = builder.width;
         this.height = builder.height;               
         this.padding = builder.padding;
-        this.optionsAtOnce = builder.optionsAtOnce;
-        this.optionSpacing = (this.height - padding.getTop() - padding.getBottom()) / this.optionsAtOnce;        
+        this.rows = builder.rows;
+        this.spacing = (this.height - padding.getTop() - padding.getBottom()) / this.rows;        
                 
         // Set to visible.
         this.visible = builder.visible;                
@@ -111,10 +112,10 @@ public class Scroller extends AbstractEntity implements IMouseListener
                     this.x + this.offsetX + this.width - padding.getRight(),
                     this.y + this.offsetY + this.height / 2
                 )
-                .height(this.height - padding.getTop() - padding.getBottom() - 20)
+                .height(this.height - padding.getTop() - padding.getBottom())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .orientation(SliderBar.Orientation.VERTICAL)
-                .virtualRange(0, Math.max(0, buttonList.size() - optionsAtOnce))
+                .virtualRange(0, Math.max(0, buttonList.size() - rows))
                 .virtualValue(0)                
                 .end();     
         
@@ -156,7 +157,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         private int height = 200;       
         private boolean visible = true;
         private List<String> optionList = new ArrayList<String>();        
-        private int optionsAtOnce = 5;
+        private int rows = 5;
         private Padding padding = Padding.NONE;
         private int selectedIndex = -1;
         
@@ -177,7 +178,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
             this.width = scroller.width;
             this.height = scroller.height;
             this.visible = scroller.visible;      
-            this.optionsAtOnce = scroller.optionsAtOnce;
+            this.rows = scroller.rows;
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -201,10 +202,34 @@ public class Scroller extends AbstractEntity implements IMouseListener
         public Builder padding(Padding val)                
         { padding = val; return this; }
         
-        public Builder add(String option)
+        public Builder rows(int val)
+        { this.rows = val; return this; }
+        
+        public Builder add(String option, boolean selected)
         {
             optionList.add(option);
+            
+            if (selected == true)
+            {
+                selectedIndex = optionList.size() - 1;
+            }
+            
             return this;
+        }
+        
+        public Builder add(String option)
+        {
+            return add(option, false);
+        }
+        
+        public Builder selectedIndex(int val)
+        { 
+            if (val >= optionList.size())
+            {
+                throw new IllegalArgumentException("Selected index is larger than option list.");
+            }
+            
+            selectedIndex = val; return this; 
         }
         
         public Builder addAll(List<String> optionList)
@@ -228,7 +253,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     private void updateButtonPositions()
     {
         // Make sure the offset isn't too high.
-        assert scrollOffset <= buttonList.size() - optionsAtOnce;
+        assert scrollOffset <= buttonList.size() - rows;
             
         // Make all labels invisible.
         for (IButton button : buttonList)
@@ -237,11 +262,11 @@ public class Scroller extends AbstractEntity implements IMouseListener
         }
         
         // Move the labels into the right position.
-        for (int i = 0; i < optionsAtOnce; i++)
+        for (int i = 0; i < rows; i++)
         {
             IButton button = buttonList.get(i + scrollOffset);
             button.setX(this.x + offsetX + padding.getLeft());
-            button.setY(this.y + offsetY + padding.getTop() + (optionSpacing / 2) + optionSpacing * i);
+            button.setY(this.y + offsetY + padding.getTop() + (spacing / 2) + spacing * i);
             button.setVisible(true);                           
         }
     }
@@ -303,6 +328,40 @@ public class Scroller extends AbstractEntity implements IMouseListener
             }            
         } // end for            
     }      
+    
+    public Color getColor(int index)
+    {
+        assert index >= 0;
+        assert index < buttonList.size();
+        
+        IButton button = buttonList.get(index);
+        
+        if (button instanceof Button)
+        {
+            return ((Button) button).getTextColor();
+        }                
+        else
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+    
+    public void setColor(int index, Color color)
+    {
+        assert index >= 0;
+        assert index < buttonList.size();
+        
+        IButton button = buttonList.get(index);
+        
+        if (button instanceof Button)
+        {
+            ((Button) button).setTextColor(color);
+        }                
+        else
+        {
+            throw new UnsupportedOperationException();
+        }                
+    }
     
     @Override
     public boolean draw()

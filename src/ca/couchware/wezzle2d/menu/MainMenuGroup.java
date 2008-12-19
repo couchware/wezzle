@@ -194,7 +194,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         this.animationMan.add(this.slideAnimation);
     };
     
-    private void initializeButtons()
+    private void initializeButtons() 
     {                
         // Create the button list.
         this.buttonMap = new EnumMap<Menu, IButton>(Menu.class);
