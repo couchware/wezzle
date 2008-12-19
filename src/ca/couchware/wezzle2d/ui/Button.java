@@ -123,23 +123,8 @@ public class Button extends AbstractButton
         middleSprite = ResourceFactory.get().getSprite(MIDDLE_SPRITE_PATH);      
         rightSprite  = ResourceFactory.get().getSprite(RIGHT_SPRITE_PATH);      
         
-        // Assign values based on the values from builder.        
-        this.width  = builder.width;
-        this.height = middleSprite.getHeight();
-               
-        if (!validateWidth())
-            throw new RuntimeException("The button width is too narrow.");
-                        
-        // Determine the offsets.
-        this.alignment = builder.alignment;
-        this.offsetX = determineOffsetX(alignment, width);
-        this.offsetY = determineOffsetY(alignment, height);
-        
-        // Set the shape.
-        this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);                                      
-        
         // Create the normal label.
-        this.normalLabel = new LabelBuilder(x + offsetX + width / 2, y + offsetY + height / 2)
+        this.normalLabel = new LabelBuilder(0, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(textColor).size(textSize).text(normalText).end(); 
         
@@ -161,6 +146,27 @@ public class Button extends AbstractButton
         {
             this.activeLabel = null;
         }
+        
+        // Assign values based on the values from builder.        
+        this.width = builder.autoWidth 
+               ? normalLabel.getWidth() + 30
+               : builder.width;
+        
+        this.height = middleSprite.getHeight();
+        
+         // Determine the offsets.
+        this.alignment = builder.alignment;
+        this.offsetX = determineOffsetX(alignment, width);
+        this.offsetY = determineOffsetY(alignment, height);
+        
+        // Set the shape.
+        this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);    
+        
+        // Set the label position now that we have the width figured out.
+        normalLabel.setPosition(x + offsetX + width / 2, y + offsetY + height / 2);
+               
+        if (!validateWidth())
+            throw new RuntimeException("The button width is too narrow.");                                                                                 
     }
     
     public static class Builder implements IBuilder<Button>
@@ -184,6 +190,7 @@ public class Button extends AbstractButton
         protected int opacity        = 100;
         protected boolean visible = true;
         protected boolean disabled = false;
+        protected boolean autoWidth = false;
         
         public Builder(int x, int y)
         {            
@@ -237,6 +244,9 @@ public class Button extends AbstractButton
         
         public Builder width(int val)
         { width = val; return this; }
+        
+        public Builder autoWidth(boolean val)
+        { autoWidth = val; return this; }
         
         public Builder textSize(int val)
         { textSize = val; return this; }
@@ -437,9 +447,9 @@ public class Button extends AbstractButton
     {
         super.setX(x);
         
-        normalLabel.setX(x);
-        if (hoverLabel != null) hoverLabel.setX(x);
-        if (activeLabel != null) activeLabel.setX(x);
+        normalLabel.setX(x + offsetX + width / 2);
+        if (hoverLabel != null) hoverLabel.setX(x + offsetX + width / 2);
+        if (activeLabel != null) activeLabel.setX(x + offsetX + width / 2);
     }
     
     @Override
@@ -447,9 +457,9 @@ public class Button extends AbstractButton
     {
         super.setY(y);
         
-        normalLabel.setY(y);
-        if (hoverLabel != null) hoverLabel.setY(y);
-        if (activeLabel != null) activeLabel.setY(y);
+        normalLabel.setY(y + offsetY + height / 2);
+        if (hoverLabel != null) hoverLabel.setY(y + offsetY + height / 2);
+        if (activeLabel != null) activeLabel.setY(y + offsetY + height / 2);
     }
     
     public boolean draw()

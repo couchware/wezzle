@@ -105,7 +105,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         this.offsetX = determineOffsetX(alignment, width);
         this.offsetY = determineOffsetY(alignment, height);
         
-         // Set the shape.
+        // Set the shape.
         this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, 
                 width, height);
         

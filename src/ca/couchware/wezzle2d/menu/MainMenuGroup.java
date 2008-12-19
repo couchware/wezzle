@@ -315,10 +315,10 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 // the others.
                 if (clickedButton != null)
                 {
-                    for (Menu m : this.buttonMap.keySet())
+                    for (Menu menu : this.buttonMap.keySet())
                     {
                         // Make sure their clicked flag is clear.
-                        IButton btn = buttonMap.get(m);
+                        IButton btn = buttonMap.get(menu);
                         
                         // Activate the button if it is the clicked button.
                         if (btn.equals(clickedButton) == true)
@@ -332,14 +332,14 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                                     .finishRule(MetaAnimation.FinishRule.ALL)
                                     //.runRule(MetaAnimation.RunRule.SEQUENCE)
                                     .add(this.groupMap.get(currentButton).animateHide())
-                                    .add(this.groupMap.get(m).animateShow())
+                                    .add(this.groupMap.get(menu).animateShow())
                                     .end();                            
                             
                             // Set the new current button.                            
-                            this.currentButton = m;
+                            this.currentButton = menu;
                             
                             // Activate the current group.
-                            this.groupMap.get(m).setActivated(true);
+                            this.groupMap.get(menu).setActivated(true);
                         }
                         else
                         {
@@ -347,7 +347,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                             btn.setDisabled(false);
                             
                             // Deactivate the other groups.
-                            this.groupMap.get(m).setActivated(false);
+                            this.groupMap.get(menu).setActivated(false);
                         }                        
                     } // end for
                 } // end if

@@ -16,7 +16,9 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.geom.RectangularShape;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 
 /**
@@ -576,8 +578,14 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         // in lieu of setDirty because it is called form the constructor.
         dirty = true;
         
-        // Set changed.
+        // Set changed.        
         changed = true;
+        
+        // Determine the virtual value.                
+        calculateVirtualValue();
+        
+        // Fire change event.
+        fireChangeEvent(this.virtualValue);
     }
     
     /**
@@ -591,10 +599,15 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         setSlideOffset((int) ((double) maxOffset * slideOffsetPercent));
     }      
     
+    private void calculateVirtualValue()
+    {
+        virtualValue = virtualLower + (virtualUpper - virtualLower) * getSlideOffsetPercent();
+    }
+    
     public double getVirtualValue()
     {
         // Determine the virtual value.                
-        virtualValue = virtualLower + (virtualUpper - virtualLower) * getSlideOffsetPercent();
+        calculateVirtualValue();
         
         return virtualValue;
     }
@@ -623,5 +636,36 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     {
         return virtualUpper;
     }   
-            
+    
+    /** An interface for listening to SliderBar changes. */
+    public static interface IChangeListener 
+    {
+        public void sliderBarChanged(double virtualValue);
+    }
+    
+    /** The change listener list. */
+    private List<IChangeListener> changeListenerList = new ArrayList<IChangeListener>();
+    
+    private void fireChangeEvent(double virtualValue)
+    {
+        for (IChangeListener listener : changeListenerList)
+            listener.sliderBarChanged(virtualValue);
+    }
+    
+    public void addChangeListener(IChangeListener listener)
+    {
+        if (this.changeListenerList.contains(listener))
+            throw new IllegalArgumentException("Listener already registered!");
+        
+        this.changeListenerList.add(listener);
+    }
+    
+    public void removeChangeListener(IChangeListener listener)
+    {
+        if (!this.changeListenerList.contains(listener))
+            throw new IllegalArgumentException("Listener is not registered!");
+        
+        this.changeListenerList.remove(listener);
+    }
+    
 }

@@ -239,11 +239,7 @@ public class PlayNowGroup extends AbstractGroup
         List<Theme> themeList = new ArrayList<Theme>(themeMap.keySet());
         Collections.shuffle(themeList);
         themeMap.put(themeList.get(0), true);
-        
-        RadioItem themeItem4 = new RadioItem.Builder().color(OPTION_COLOR)
-                .text("All").end();
-        RadioItem themeItem5 = new RadioItem.Builder().color(OPTION_COLOR)
-                .text("?").end();
+               
         this.themeRadio = new RadioGroup.Builder(
                     268, 
                     themeLabel.getY() + 35)
@@ -255,7 +251,7 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(themeRadio);    
                
         // Create the start button.
-        this.startButton = new Button.Builder(268, 459)
+        this.startButton = new Button.Builder(268, 450)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .normalOpacity(90)                

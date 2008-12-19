@@ -22,6 +22,8 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.IButton;
+import ca.couchware.wezzle2d.ui.Padding;
+import ca.couchware.wezzle2d.ui.Scroller;
 import ca.couchware.wezzle2d.ui.SliderBar;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
@@ -37,19 +39,7 @@ import java.util.List;
  * @author cdmckay
  */
 public class AchievementGroup extends AbstractGroup
-{        
-    
-    /** The x-position of the labels in the scroller. */
-    final private static int X_POSITION = 90;
-    
-    /** The y-position of the top label in the scoller. */
-    final private static int Y_POSITION = 156;
-    
-    /** The amount of space between each label in the scoller. */
-    final private static int Y_SPACING = 37;
-    
-    /** The number of achievements showing at once in the scroller. */
-    final private static int ACHIEVEMENTS_AT_ONCE = 5;   
+{               
     
     /** The layer manager. */
     final private LayerManager layerMan;
@@ -58,13 +48,22 @@ public class AchievementGroup extends AbstractGroup
     private Box box;
     
     /** The slider bar used to scroll the achievements. */
-    private SliderBar sliderBar;
-    
-    /** The offset in the achievement list. */
-    private int offset = 0;
-    
+    private Scroller scroller;
+        
     /** The list of achievements. */
-    private List<Achievement> achievementList;        
+    private List<Achievement> achievementList;    
+    
+    /** The label for the title of the achievement. */
+    private ITextLabel achievementTitle;
+    
+    /** The label for line 1 of the description. */
+    private ITextLabel achievementDescription1;
+    
+    /** The label for line 2 of the description. */
+    private ITextLabel achievementDescription2;
+    
+    /** The label for the status of the achievement. */
+    private ITextLabel achievementStatus;
     
     public AchievementGroup(IGroup parent, 
             final SettingsManager settingsMan,
@@ -100,19 +99,7 @@ public class AchievementGroup extends AbstractGroup
                 "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster III", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-                        
-//        // Create the list of titles for the first 5 achievements.
-//        titleList = new ArrayList<ITextLabel>();
-//        for (Achievement ach : achievementList)
-//        {            
-//            titleList.add(new ResourceFactory.LabelBuilder(0, 0)
-//                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-//                    .size(18)
-//                    .text(ach.getTitle())      
-//                    .visible(false)
-//                    .end());       
-//        }               
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));                                      
                 
         // The colors.
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
@@ -141,15 +128,17 @@ public class AchievementGroup extends AbstractGroup
                 .end();
         this.entityList.add(listBox);  
         
-//        this.sliderBar = new SliderBar.Builder(442, 229)
-//                .height(170)
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .orientation(SliderBar.Orientation.VERTICAL)
-//                .virtualRange(0, Math.max(0, titleList.size() - ACHIEVEMENTS_AT_ONCE))
-//                .virtualValue(0)
-//                .visible(false)
-//                .end();
-//        entityList.add(sliderBar);
+        // Create the list of titles for the first 5 achievements.
+        Scroller.Builder builder = new Scroller.Builder(68, 229)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .padding(Padding.newInstance(12, 30, 2, 2))
+                .visible(false);
+        for (Achievement ach : achievementList)
+        {            
+            builder.add(ach.getTitle());       
+        }         
+        scroller = builder.end();
+        entityList.add(scroller);
         
         // The first box.
         Box descriptionBox = new Box.Builder(68, 346)
@@ -160,41 +149,41 @@ public class AchievementGroup extends AbstractGroup
                 .end();
         this.entityList.add(descriptionBox);  
         
+        // The achievement title.
+        this.achievementTitle = new ResourceFactory.LabelBuilder(96, 376)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .visible(false)
+                .text("Chain Gang I - Bronze").size(20)
+                .end();
+        this.entityList.add(this.achievementTitle);
+                
+        this.achievementDescription1 = new ResourceFactory.LabelBuilder(96, 410)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .visible(false)
+                .text("Get a chain of 3 or more lines.").size(12)
+                .end();
+        this.entityList.add(this.achievementDescription1);
+        
+        this.achievementDescription2 = new ResourceFactory.LabelBuilder(96, 430)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .visible(false)
+                .text("I'm serious.").size(12)
+                .end();
+        this.entityList.add(this.achievementDescription2);
+        
+        this.achievementStatus = new ResourceFactory.LabelBuilder(96, 496)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .visible(false)
+                .text("This achievement has not been completed.").size(12)
+                .end();
+        this.entityList.add(this.achievementStatus);
+        
         // Add them all to the layer manager.
         for (IEntity e : this.entityList)
         {
             this.layerMan.add(e, Layer.UI);        
-        }
-        
-        // Adjust the scroller.
-        adjustScroller(false);        
-    }
-    
-    /**
-     * Moves the scroller into the proper position.
-     */
-    private void adjustScroller(boolean visible)
-    {
-//        // Make sure the offset isn't too high.
-//        assert offset <= titleList.size() - ACHIEVEMENTS_AT_ONCE;
-//            
-//        // Make all labels invisible.
-//        for (ITextLabel label : titleList)
-//        {
-//            entityList.remove(label);                                  
-//        }
-//        
-//        // Move the labels into the right position.
-//        for (int i = 0; i < ACHIEVEMENTS_AT_ONCE; i++)
-//        {
-//            ITextLabel label = titleList.get(i + offset);
-//            label.setX(X_POSITION);
-//            label.setY(Y_POSITION + Y_SPACING * i);
-//            label.setVisible(visible);
-//            
-//            entityList.add(label);           
-//        }
-    }
+        }                    
+    }       
     
     @Override
     public IAnimation animateShow()

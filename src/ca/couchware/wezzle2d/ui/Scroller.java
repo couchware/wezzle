@@ -8,7 +8,11 @@ package ca.couchware.wezzle2d.ui;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
+import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -18,18 +22,124 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class Scroller extends AbstractEntity
+public class Scroller extends AbstractEntity implements IMouseListener
 {
 
     /** The game window. */
-    private IGameWindow window;
+    final private IGameWindow window;
+    
+    /** The shape of the group. */
+    private ImmutableRectangle shape;
+    
+    /** Has the scroller been changed? */
+    private boolean changed = false;
+    
+    /** The padding. */
+    private Padding padding;
     
     /** The list of options in the scroller. */
-    private List<IButton> optionList;
+    final private List<IButton> buttonList;
+    
+    /** The slider bar used to scroll the scroller. */
+    final private SliderBar scrollBar;      
+    
+    /** The current offset of the scroller. */
+    private int scrollOffset = 0;        
+    
+    /** The number of achievements showing at once in the scroller. */
+    final private int optionsAtOnce;   
+    
+    /** The amount of space between each label in the scoller. */
+    final private int optionSpacing;
+    
+    /** The key of currently selected item. */
+    private int selectedIndex;
     
     private Scroller(Builder builder)
     {
+        // Set some values from the builder.
+        this.window = builder.window;
+        this.x = builder.x;
+        this.y = builder.y;
+        this.width  = builder.width;
+        this.height = builder.height;               
+        this.padding = builder.padding;
+        this.optionsAtOnce = builder.optionsAtOnce;
+        this.optionSpacing = (this.height - padding.getTop() - padding.getBottom()) / this.optionsAtOnce;        
+                
+        // Set to visible.
+        this.visible = builder.visible;                
+                
+        // Set default anchor.
+        this.alignment = builder.alignment;
+        this.offsetX = determineOffsetX(alignment, width);
+        this.offsetY = determineOffsetY(alignment, height);
+               
+        // Set the shape.
+        this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, 
+                width, height);
         
+        // Create the button list.
+        this.buttonList = new ArrayList<IButton>();
+        
+        // Create all the buttons.
+        IButton templateButton = new Button.Builder(0, 0)
+                .text("").textSize(18)
+                .end();
+        
+        for (String optionText : builder.optionList)
+        {            
+            buttonList.add(new Button.Builder((Button) templateButton) 
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                    .autoWidth(true)
+                    .normalOpacity(0)
+                    //.hoverOpacity(10)
+                    .activeOpacity(100)
+                    .visible(false)
+                    .text(optionText).end());
+        }
+        
+        // Set the selected index.
+        this.selectedIndex = builder.selectedIndex;
+        if (builder.selectedIndex != -1)            
+        {
+            buttonList.get(selectedIndex).setActivated(true);            
+        }            
+            
+        // Create the scroll bar.
+        this.scrollBar = new SliderBar.Builder(
+                    this.x + this.offsetX + this.width - padding.getRight(),
+                    this.y + this.offsetY + this.height / 2
+                )
+                .height(this.height - padding.getTop() - padding.getBottom() - 20)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .orientation(SliderBar.Orientation.VERTICAL)
+                .virtualRange(0, Math.max(0, buttonList.size() - optionsAtOnce))
+                .virtualValue(0)                
+                .end();     
+        
+        // Make the scroller listen for slider bar changes.
+        this.scrollBar.addChangeListener(new SliderBar.IChangeListener() 
+        {
+            public void sliderBarChanged(double virtualValue)
+            {
+                // Convert to an integer.
+                int offset = (int) virtualValue;
+
+                // See if it's different (enough).
+                if (offset != scrollOffset)
+                {
+                    // Update the offset.
+                    scrollOffset = offset;
+
+                    // Update the button position.
+                    updateButtonPositions();
+                }              
+            }
+        });
+        
+        // Update the button positions.
+        updateButtonPositions();
     }
     
     public static class Builder implements IBuilder<Scroller>
@@ -42,9 +152,13 @@ public class Scroller extends AbstractEntity
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);              
         private int opacity = 100;
-        private int width = 200;
+        private int width = 400;
         private int height = 200;       
         private boolean visible = true;
+        private List<String> optionList = new ArrayList<String>();        
+        private int optionsAtOnce = 5;
+        private Padding padding = Padding.NONE;
+        private int selectedIndex = -1;
         
         public Builder(int x, int y)
         {            
@@ -61,7 +175,9 @@ public class Scroller extends AbstractEntity
             this.alignment = scroller.alignment.clone();                 
             this.opacity = scroller.opacity;                        
             this.width = scroller.width;
-            this.visible = scroller.visible;            
+            this.height = scroller.height;
+            this.visible = scroller.visible;      
+            this.optionsAtOnce = scroller.optionsAtOnce;
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -82,27 +198,180 @@ public class Scroller extends AbstractEntity
         public Builder visible(boolean val) 
         { visible = val; return this; }
             
+        public Builder padding(Padding val)                
+        { padding = val; return this; }
+        
         public Builder add(String option)
         {
+            optionList.add(option);
             return this;
         }
         
         public Builder addAll(List<String> optionList)
         {
+            optionList.addAll(optionList);
             return this;
         }
         
         public Scroller end()
         {
-            Scroller scroller = new Scroller(this);                       
+            Scroller scroller = new Scroller(this);         
+            
+            // Add the mouse listener.
+            if (visible == true)
+                window.addMouseListener(scroller);                                    
+                                    
             return scroller;
         }                
     }
     
+    private void updateButtonPositions()
+    {
+        // Make sure the offset isn't too high.
+        assert scrollOffset <= buttonList.size() - optionsAtOnce;
+            
+        // Make all labels invisible.
+        for (IButton button : buttonList)
+        {
+            button.setVisible(false);
+        }
+        
+        // Move the labels into the right position.
+        for (int i = 0; i < optionsAtOnce; i++)
+        {
+            IButton button = buttonList.get(i + scrollOffset);
+            button.setX(this.x + offsetX + padding.getLeft());
+            button.setY(this.y + offsetY + padding.getTop() + (optionSpacing / 2) + optionSpacing * i);
+            button.setVisible(true);                           
+        }
+    }
+    
+    @Override
+    public void setVisible(boolean visible)
+    {
+        // Ignore if visibility not changed.
+        if (this.visible == visible)
+            return;
+        
+        // Invoke super.
+        super.setVisible(visible);      
+        
+        // Add or remove listener based on visibility.
+        if (visible == true)
+        {                           
+            //LogManager.recordMessage("Added");
+            window.addMouseListener(this);
+        }
+        else
+        {                            
+            window.removeMouseListener(this);            
+        }                   
+    }
+    
+    public boolean changed()
+    {
+        boolean val = changed;
+        changed = false;
+        return val;
+    }
+    
+    public boolean changed(boolean preserve)
+    {
+        if (preserve == true)
+            return changed;
+        else
+            return changed();
+    }       
+    
+    public int getSelectedIndex()
+    {
+        return selectedIndex;
+    }
+
+    final public void setSelectedIndex(int selectedIndex)
+    {        
+        if (this.selectedIndex == -1 || this.selectedIndex != selectedIndex)
+            changed = true;
+        
+        this.selectedIndex = selectedIndex;
+        
+        for (int i = 0; i < buttonList.size(); i++)
+        {
+            if (i != selectedIndex)          
+            {
+                this.buttonList.get(i).setActivated(false);
+            }            
+        } // end for            
+    }      
+    
     @Override
     public boolean draw()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Don't draw if not visible.
+        if (visible == false)
+            return false;        
+        
+        for (IButton button : buttonList)
+            button.draw();
+        
+        scrollBar.draw();
+        
+        return true;
+    }    
+    
+    public void mouseClicked(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseEntered(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseExited(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mousePressed(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseReleased(MouseEvent e)
+    {
+        // See if the mouse was released over this.
+        if (shape.contains(e.getPosition()) == true)
+        {            
+            // See which one it was released over.
+            for (int i = 0; i < buttonList.size(); i++)
+            {
+                IButton button = buttonList.get(i);
+                
+                if (button.isVisible()
+                        && button.getShape().contains(e.getPosition()))
+                {
+                    setSelectedIndex(i);                       
+                    break;
+                }
+            }
+        }
+
+//        LogManager.recordMessage(itemList.size() + "");
+//        for (RadioItem item : itemList)
+//            LogManager.recordMessage("isActivated = " + item.isActivated());
+    }
+
+    public void mouseDragged(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+
+    public void mouseMoved(MouseEvent e)
+    {
+//        if (shape.contains(e.getPosition()))
+//            LogManager.recordMessage("I'm over the area!");
     }    
 
 }
