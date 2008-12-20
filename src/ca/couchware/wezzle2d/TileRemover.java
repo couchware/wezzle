@@ -1242,7 +1242,9 @@ public class TileRemover implements ILevelListener
                 {
                     theta = (int) Math.toDegrees(Math.atan(h / v));
                     if (h == -1) theta -= 180;                    
-                }                                              
+                }         
+                
+                t.setRotationAnchor(t.getWidth() / 2, t.getHeight() / 2);
                                                                     
                 a2 = new MoveAnimation.Builder(t)
                         .wait(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_WAIT))
@@ -1256,6 +1258,7 @@ public class TileRemover implements ILevelListener
                 t.setAnimation(a1);
                 animationMan.add(a1);
                 animationMan.add(a2);
+                
                 a1 = null;
                 a2 = null;
             }

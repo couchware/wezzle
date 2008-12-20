@@ -964,24 +964,7 @@ public class BoardManager implements IManager, IKeyListener
         // Make sure the tile is located properly.
         t.setPosition(x + (index % columns) * cellWidth, 
                 y + (index / columns) * cellHeight);
-        t.resetDrawRect();
-        
-        // If this is an item, increment the count.
-//        if (t.getClass() != TileEntity.class)
-//        {
-//            if (t.getClass() == X2TileEntity.class || t.getClass() == X3TileEntity.class 
-//                    || t.getClass() == X4TileEntity.class)
-//            {
-//                 
-//                 LogManager.recordMessage("Mult added.", "BoardManager#addMult");
-//                this.incrementNumberOfMults();
-//            }
-//            else
-//            {
-//                LogManager.recordMessage("Item added.", "BoardManager#addTile");
-//                this.incrementNumberOfItems();
-//            }    
-//        }
+        t.resetDrawRect();           
                                        
         // If we're overwriting a tile, remove it first.
         if (getTile(index) != null)
@@ -2374,21 +2357,21 @@ public class BoardManager implements IManager, IKeyListener
     {
         switch (event.getChar())
         {
-//            case 'r':
-//                insertItemRandomly(TileType.ROCKET);
-//                break;
-//                
-//            case 'g':
-//                insertItemRandomly(TileType.GRAVITY);
-//                break;
-//                
-//            case 'b':
-//                insertItemRandomly(TileType.BOMB);
-//                break;
-//                
-//            case 's':
-//                insertItemRandomly(TileType.STAR);
-//                break;            
+            case 'r':
+                insertItemRandomly(TileType.ROCKET);
+                break;
+                
+            case 'g':
+                insertItemRandomly(TileType.GRAVITY);
+                break;
+                
+            case 'b':
+                insertItemRandomly(TileType.BOMB);
+                break;
+                
+            case 's':
+                insertItemRandomly(TileType.STAR);
+                break;            
         }
     }
 

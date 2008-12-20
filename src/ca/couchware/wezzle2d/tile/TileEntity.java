@@ -92,8 +92,8 @@ public class TileEntity extends GraphicEntity implements IClickable
         if (isVisible() == false)
             return false;
                         
-        sprite.draw(x + offsetX, y + offsetY).width(width).height(height)
-                .theta(theta).opacity(opacity).end();                          
+        sprite.draw(x + offsetX, y + offsetY).width(width).height(height)                
+                .theta(theta, rotationAnchor).opacity(opacity).end();                          
         
         return true;
 	}   
