@@ -114,9 +114,9 @@ public class StarTutorial extends AbstractTutorial
         game.boardMan.clearBoard();
          
         // Set a click action.
-        Runnable r = new Runnable()
+        TileEntity.ITileListener listener = new TileEntity.ITileListener()
         {           
-           public void run()
+           public void tileClicked()
            {               
                // Fade out the bubble.            
                IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
@@ -134,7 +134,7 @@ public class StarTutorial extends AbstractTutorial
         
         TileEntity t2 = game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);
-        t2.setClickRunnable(r);
+        t2.addTileListener(listener);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.YELLOW);
@@ -161,7 +161,7 @@ public class StarTutorial extends AbstractTutorial
         
         TileEntity t3 = game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.RED);
-        t3.setClickRunnable(r);
+        t3.addTileListener(listener);
         
         game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.YELLOW);
@@ -178,7 +178,7 @@ public class StarTutorial extends AbstractTutorial
         
         TileEntity t4 = game.boardMan.createTile(1, game.boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.RED);
-        t4.setClickRunnable(r);
+        t4.addTileListener(listener);
         
         game.boardMan.createTile(2, game.boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.YELLOW);

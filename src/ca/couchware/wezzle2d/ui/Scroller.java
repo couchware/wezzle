@@ -35,6 +35,9 @@ public class Scroller extends AbstractEntity implements IMouseListener
     /** Has the scroller been changed? */
     private boolean changed = false;
     
+    /** The text size. */
+    private int textSize;
+    
     /** The padding. */
     private Padding padding;
     
@@ -66,7 +69,8 @@ public class Scroller extends AbstractEntity implements IMouseListener
         this.height = builder.height;               
         this.padding = builder.padding;
         this.rows = builder.rows;
-        this.spacing = (this.height - padding.getTop() - padding.getBottom()) / this.rows;        
+        this.spacing = (this.height - padding.getTop() - padding.getBottom()) / this.rows;      
+        this.textSize = builder.textSize;
                 
         // Set to visible.
         this.visible = builder.visible;                
@@ -85,7 +89,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         
         // Create all the buttons.
         IButton templateButton = new Button.Builder(0, 0)
-                .text("").textSize(18)
+                .text("").textSize(textSize)
                 .end();
         
         for (String optionText : builder.optionList)
@@ -120,7 +124,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
                 .end();     
         
         // Make the scroller listen for slider bar changes.
-        this.scrollBar.addChangeListener(new SliderBar.IChangeListener() 
+        this.scrollBar.addSliderBarListener(new SliderBar.ISliderBarListener() 
         {
             public void sliderBarChanged(double virtualValue)
             {
@@ -156,8 +160,9 @@ public class Scroller extends AbstractEntity implements IMouseListener
         private int width = 400;
         private int height = 200;       
         private boolean visible = true;
+        private int textSize = 18;
         private List<String> optionList = new ArrayList<String>();        
-        private int rows = 5;
+        private int rows = 5;        
         private Padding padding = Padding.NONE;
         private int selectedIndex = -1;
         
@@ -177,7 +182,8 @@ public class Scroller extends AbstractEntity implements IMouseListener
             this.opacity = scroller.opacity;                        
             this.width = scroller.width;
             this.height = scroller.height;
-            this.visible = scroller.visible;      
+            this.visible = scroller.visible; 
+            this.textSize = scroller.textSize;
             this.rows = scroller.rows;
         }
         
@@ -199,6 +205,9 @@ public class Scroller extends AbstractEntity implements IMouseListener
         public Builder visible(boolean val) 
         { visible = val; return this; }
             
+        public Builder textSize(int val)
+        { textSize = val; return this; }
+        
         public Builder padding(Padding val)                
         { padding = val; return this; }
         

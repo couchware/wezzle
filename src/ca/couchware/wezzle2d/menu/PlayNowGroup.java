@@ -247,7 +247,7 @@ public class PlayNowGroup extends AbstractGroup
                 .add(themeItem1, themeMap.get(Theme.TRON))
                 .add(themeItem2, themeMap.get(Theme.ELECTRONIC))
                 .add(themeItem3, themeMap.get(Theme.HIPPOP))              
-                .pad(20).visible(false).end();
+                .itemSpacing(20).visible(false).end();
         this.entityList.add(themeRadio);    
                
         // Create the start button.

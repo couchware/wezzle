@@ -808,7 +808,7 @@ public class PieceManager implements IMouseListener
             tile = boardMan.getTile(index);
             
             // Invoke the on-click behaviour.            
-            tile.onClick();
+            tile.fireTileClickedEvent();
             
             // Do something special if it's a wezzle tile.
             if (tile.getType() == TileType.WEZZLE)

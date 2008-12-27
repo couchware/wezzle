@@ -12,7 +12,9 @@ import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Cursor;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * A class representing a clickable button.
@@ -117,7 +119,8 @@ public abstract class AbstractButton extends AbstractEntity implements
     {                                             
         if (state.containsAll(EnumSet.of(State.PRESSED, State.HOVERED)))
         {
-           clicked = true;                      
+           clicked = true;    
+           fireButtonClickedEvent();
            
            if (state.remove(State.ACTIVATED) == false)
            {               
@@ -323,38 +326,38 @@ public abstract class AbstractButton extends AbstractEntity implements
         return shape;
     }
     
-    //--------------------------------------------------------------------------
-    // Clickable
-    //--------------------------------------------------------------------------
-    
-    /**
-     * The stored click action.
-     */
-    Runnable clickRunnable = null;
-    
-    /**
-     * Sets the click runnable.
-     */
-    public void setClickRunnable(Runnable clickRunnable)
-    { 
-        this.clickRunnable = clickRunnable;
-    }
-    
-    /**
-     * Gets the click runnable.
-     */
-    public Runnable getClickRunnable()
-    {
-        return clickRunnable;
-    }
-    
-    /**
-     * This method is called when the tile is clicked.
-     */
-    public void onClick()
-    {
-        if (clickRunnable != null) clickRunnable.run();
-    }
+//    //--------------------------------------------------------------------------
+//    // Clickable
+//    //--------------------------------------------------------------------------
+//    
+//    /**
+//     * The stored click action.
+//     */
+//    Runnable clickRunnable = null;
+//    
+//    /**
+//     * Sets the click runnable.
+//     */
+//    public void setClickRunnable(Runnable clickRunnable)
+//    { 
+//        this.clickRunnable = clickRunnable;
+//    }
+//    
+//    /**
+//     * Gets the click runnable.
+//     */
+//    public Runnable getClickRunnable()
+//    {
+//        return clickRunnable;
+//    }
+//    
+//    /**
+//     * This method is called when the tile is clicked.
+//     */
+//    public void onClick()
+//    {
+//        if (clickRunnable != null) clickRunnable.run();
+//    }
     
     //--------------------------------------------------------------------------
     // Events
@@ -423,6 +426,31 @@ public abstract class AbstractButton extends AbstractEntity implements
 	public void mouseMoved(MouseEvent e)
 	{	
         handleMoved(e.getPosition());
-    }        
+    }    
+    
+    /** The button listener list. */
+    private List<IButtonListener> buttonListenerList = new ArrayList<IButtonListener>();
+    
+    protected void fireButtonClickedEvent()
+    {
+        for (IButtonListener listener : buttonListenerList)
+            listener.buttonClicked();
+    }
+    
+    public void addButtonListener(IButtonListener listener)
+    {
+        if (this.buttonListenerList.contains(listener))
+            throw new IllegalArgumentException("Listener already registered!");
+        
+        this.buttonListenerList.add(listener);
+    }
+    
+    public void removeButtonListener(IButtonListener listener)
+    {
+        if (!this.buttonListenerList.contains(listener))
+            throw new IllegalArgumentException("Listener is not registered!");
+        
+        this.buttonListenerList.remove(listener);
+    }
             
 }

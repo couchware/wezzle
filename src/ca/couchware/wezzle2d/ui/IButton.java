@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.util.*;
@@ -10,7 +9,7 @@ import ca.couchware.wezzle2d.util.*;
  * 
  * @author cdmckay
  */
-public interface IButton extends IEntity, IClickable, IMouseListener
+public interface IButton extends IEntity, IMouseListener
 {        
            
     /**
@@ -48,6 +47,23 @@ public interface IButton extends IEntity, IClickable, IMouseListener
     /**
      * Get the shape of the button.
      */
-    public ImmutableRectangle getShape();        
-         
+    public ImmutableRectangle getShape();
+    
+    /** An interface for listening for button events. */
+    public static interface IButtonListener 
+    {
+        public void buttonClicked();
+    }       
+    
+    /**
+     * Registers a button listener.
+     * @param listener
+     */
+    public void addButtonListener(IButtonListener listener);    
+
+    /**
+     * Unregisters a button listener.
+     * @param listener
+     */
+    public void removeButtonListener(IButtonListener listener);             
 }

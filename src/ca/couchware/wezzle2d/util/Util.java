@@ -212,9 +212,17 @@ public class Util
         return buffer.toString();
     }
     
+    /**
+     * Converts a string passed in with the format "THE_SWIFT_RED_FOX" to
+     * the format "The.Swift.Red.Fox".  Used mainly for the settings file.
+     * 
+     * @param str
+     * @return
+     */
     public static String toDotFormat(String str)
     {
         StringBuffer buffer = new StringBuffer();
+        
         for (int i = 0; i < str.length(); i++)
         {
             char ch = str.charAt(i);
@@ -222,13 +230,31 @@ public class Util
             if (i == 0) 
                 buffer.append(Character.toUpperCase(ch));
             else if (ch == '_') 
-            {
-                buffer.setCharAt(i - 1, Character.toUpperCase(buffer.charAt(i - 1)));
+            {                               
                 buffer.append('.');
-            }                            
+            }  
+            else
+            {
+                if (buffer.charAt(i - 1) == '.')
+                    buffer.append(Character.toUpperCase(ch));                          
+                else
+                    buffer.append(Character.toLowerCase(ch));                          
+            }
         }
         
         return buffer.toString();
+    }
+    
+     /**
+     * Converts a string passed in with the format "The.Swift.Red.Fox" to
+     * the format "THE_SWIFT_RED_FOX".  Used mainly for the settings file.
+     * 
+     * @param str
+     * @return
+     */
+    public static String toUnderScoreFormat(String str)
+    {
+        return str.replace('.', '_').toUpperCase();
     }
     
 }

@@ -585,7 +585,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         calculateVirtualValue();
         
         // Fire change event.
-        fireChangeEvent(this.virtualValue);
+        fireSliderBarChangedEvent(this.virtualValue);
     }
     
     /**
@@ -638,34 +638,34 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     }   
     
     /** An interface for listening to SliderBar changes. */
-    public static interface IChangeListener 
+    public static interface ISliderBarListener 
     {
         public void sliderBarChanged(double virtualValue);
     }
     
     /** The change listener list. */
-    private List<IChangeListener> changeListenerList = new ArrayList<IChangeListener>();
+    private List<ISliderBarListener> sliderBarListenerList = new ArrayList<ISliderBarListener>();
     
-    private void fireChangeEvent(double virtualValue)
+    private void fireSliderBarChangedEvent(double virtualValue)
     {
-        for (IChangeListener listener : changeListenerList)
+        for (ISliderBarListener listener : sliderBarListenerList)
             listener.sliderBarChanged(virtualValue);
     }
     
-    public void addChangeListener(IChangeListener listener)
+    public void addSliderBarListener(ISliderBarListener listener)
     {
-        if (this.changeListenerList.contains(listener))
+        if (this.sliderBarListenerList.contains(listener))
             throw new IllegalArgumentException("Listener already registered!");
         
-        this.changeListenerList.add(listener);
+        this.sliderBarListenerList.add(listener);
     }
     
-    public void removeChangeListener(IChangeListener listener)
+    public void removeSliderBarListener(ISliderBarListener listener)
     {
-        if (!this.changeListenerList.contains(listener))
+        if (!this.sliderBarListenerList.contains(listener))
             throw new IllegalArgumentException("Listener is not registered!");
         
-        this.changeListenerList.remove(listener);
+        this.sliderBarListenerList.remove(listener);
     }
     
 }

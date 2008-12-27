@@ -59,7 +59,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
     /**
      * The amount of space between each radio item.
      */
-    final private int pad;
+    final private int itemSpacing;
     
     /**
      * The constructor.
@@ -76,7 +76,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         this.itemList = builder.itemList;
         
         // Set the pad.
-        this.pad = builder.pad;
+        this.itemSpacing = builder.itemSpacing;
         
         // Set the coordinates.
         this.x = builder.x;
@@ -90,12 +90,12 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         for (RadioItem item : itemList)
         {
             item.setPosition(x + width, y);
-            this.width += pad + item.getWidth();
+            this.width += itemSpacing + item.getWidth();
             this.height = (item.getHeight() > this.height) 
                     ? item.getHeight()
                     : this.height;
         }       
-        this.width -= pad;
+        this.width -= itemSpacing;
         
         this.width_ = width;
         this.height_ = height;               
@@ -144,7 +144,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);                
         private int opacity = 100;
         private boolean visible = true;        
-        private int pad = 20;                       
+        private int itemSpacing = 20;                       
         
         public Builder(int x, int y)
         {         
@@ -181,8 +181,8 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         public Builder visible(boolean val) 
         { visible = val; return this; }
         
-        public Builder pad(int val)
-        { pad = val; return this; }
+        public Builder itemSpacing(int val)
+        { itemSpacing = val; return this; }
              
         public Builder add(RadioItem val)        
         { itemList.add(val); return this; }

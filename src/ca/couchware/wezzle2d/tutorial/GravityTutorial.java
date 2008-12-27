@@ -126,9 +126,9 @@ public class GravityTutorial extends AbstractTutorial
                 TileType.NORMAL, TileColor.RED);
         
         // Set a click action.
-        t.setClickRunnable(new Runnable()
+        t.addTileListener(new TileEntity.ITileListener()
         {           
-           public void run()
+           public void tileClicked()
            {               
                // Fade out the bubble.            
                IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
