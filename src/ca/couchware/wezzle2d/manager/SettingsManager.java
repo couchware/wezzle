@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.Settings.Value;
 import ca.couchware.wezzle2d.util.SuperColor;
+import ca.couchware.wezzle2d.util.Util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,8 +12,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -46,10 +49,10 @@ public class SettingsManager
         this.map = new EnumMap<Key, Object>(Key.class);		
 
         // Load defaults settings.                
-        loadDefaultSettings();        		
-
+        loadDefaultSettings();
+        
         // Load user-made settings on top of that.
-        loadUserSettings();                
+        loadExternalSettings();
 	}
         
     /**
@@ -80,35 +83,41 @@ public class SettingsManager
                     "SettingsManager");
             LogManager.recordException(e);            
         }
-    }
+    }   
     
     /**
      * Loads default values for all keys that need defaults.
      */
-    public void loadDefaultSettings()
+    public void loadDefaultSettings(String path)
     {   
         // The ClassLoader.getResource() ensures we get the sprite
         // from the appropriate place, this helps with deploying the game
         // with things like webstart. You could equally do a file look
         // up here.
-        URL url = this.getClass().getClassLoader().getResource(Settings.getDefaultSettingsFilePath());
+        URL url = this.getClass().getClassLoader().getResource(path);
 
         if (url == null)
         {
             LogManager.recordWarning(
-                    "Can't find required resource: " + Settings.getDefaultSettingsFilePath(), 
+                    "Can't find required resource: " + path, 
                     "SettingsManager#loadDefaultSettings");
             System.exit(0);
         }
 
         // Load the data from XML.
-        loadFromXML(url);
+        loadFromXML(url);        
     }
     
-    public void loadUserSettings()
+    public void loadDefaultSettings()
+    {
+        loadDefaultSettings(Settings.getDefaultGameSettingsFilePath());
+        loadDefaultSettings(Settings.getDefaultUserSettingsFilePath());
+    }        
+    
+    public void loadExternalSettings(String path, String file)
     {
         // Check if the directory exists.
-        File dir = new File(Settings.getUserSettingsPath());
+        File dir = new File(path);
 
         // If the directory doesn't exist. Create it.
         if (dir.isDirectory() == false)
@@ -116,14 +125,14 @@ public class SettingsManager
             dir.mkdir();
         }
        
-        File f = new File(Settings.getUserSettingsFilePath());
+        File f = new File(path + "/" + file);
         
         if (f.exists() == true && f.length() > 0)               
         {            
             try
             {
                 // Load from XML.
-                loadFromXML(new File(Settings.getUserSettingsFilePath()).toURL());
+                loadFromXML(f.toURL());
             }
             catch (MalformedURLException ex)
             {
@@ -134,6 +143,12 @@ public class SettingsManager
         {
             LogManager.recordWarning("Could not load user settings.");
         }
+    }
+    
+    public void loadExternalSettings()
+    {
+        loadExternalSettings(Settings.getExternalSettingsPath(), Settings.getGameSettingsFilename());
+        loadExternalSettings(Settings.getExternalSettingsPath(), Settings.getUserSettingsFilename());
     }
     
     private void loadFromXML(URL url)
@@ -149,7 +164,7 @@ public class SettingsManager
             {
                 Element entry = (Element) o;
                                 
-                String name = entry.getAttributeValue("name");
+                String name = Util.toUnderScoreFormat(entry.getAttributeValue("name"));
                 
                 // Check for children.
                 List children = entry.getChildren();
@@ -218,7 +233,9 @@ public class SettingsManager
      * 
 	 * @throws IOException
 	 */
-	public void saveSettings() throws IOException
+	public void saveSettings(
+            Set<Key> keySet,
+            String filePath) throws IOException
 	{
         // Create a new document.
         Document doc = new Document();
@@ -230,8 +247,11 @@ public class SettingsManager
         // Add all the entries.
         for (Key key : Key.values())
         {
+            if (!keySet.contains(key))
+                continue;           
+            
             Element entry = new Element("entry");
-            entry.setAttribute("name", key.toString());
+            entry.setAttribute("name", Util.toDotFormat(key.toString()));
             if (map.containsKey(key))
             {
                 Object value = map.get(key);
@@ -253,7 +273,7 @@ public class SettingsManager
         } // end for
         
         // Make sure the file exists.
-        File f = new File(Settings.getUserSettingsFilePath());
+        File f = new File(filePath);
         if (f.exists() == false)
         {
             createFile(f);
@@ -263,12 +283,18 @@ public class SettingsManager
         Format format = Format.getPrettyFormat();
         //format.setExpandEmptyElements(true);                
         XMLOutputter outputter = new XMLOutputter(format);                                                        
-        OutputStream out = new FileOutputStream(Settings.getUserSettingsFilePath());
+        OutputStream out = new FileOutputStream(filePath);
         outputter.output(doc, out);
         out.close();        
     }		    	       
     
-     private Object createInstanceFromXML(Element element)
+    public void saveSettings() throws IOException
+    {
+        saveSettings(EnumSet.complementOf(Settings.getUserKeys()), Settings.getGameSettingsFilePath());
+        saveSettings(Settings.getUserKeys(), Settings.getUserSettingsFilePath());        
+    }
+    
+    private Object createInstanceFromXML(Element element)
     {
         Object instance;
         

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <entry name="Conf.Version">CONF_VERSION_1</entry>  
+  <entry name="Game.Ticks.Per.Second">60</entry>
+  <entry name="Game.Color.Primary">
+    <color red="252" green="233" blue="45" alpha="255" />
+  </entry>
+  <entry name="Game.Color.Secondary">
+    <color red="255" green="255" blue="255" alpha="255" />
+  </entry>
+  <entry name="Game.Color.Disabled">
+    <color red="178" green="178" blue="178" alpha="255" />
+  </entry>
+  <entry name="Game.Color.Wezzle.Timer">
+    <color red="234" green="210" blue="0" alpha="255" />
+  </entry>
+  <entry name="Debug.Show.Clip.Rect">false</entry>
+  <entry name="Refactor.Speed.X.Slower">70</entry>
+  <entry name="Refactor.Speed.Y.Slower">70</entry>
+  <entry name="Refactor.Speed.X.Slow">125</entry>
+  <entry name="Refactor.Speed.Y.Slow">125</entry>
+  <entry name="Refactor.Speed.X.Normal">190</entry>
+  <entry name="Refactor.Speed.Y.Normal">250</entry>
+  <entry name="Refactor.Speed.X.Shift">250</entry>
+  <entry name="Refactor.Speed.Y.Shift">250</entry>
+  <entry name="Animation.Drop.Zoom.Out.Speed">50</entry>
+  <entry name="Animation.Wezzle.Zoom.In.Speed">70</entry>
+  <entry name="Animation.Wezzle.Zoom.Out.Speed">70</entry>
+  <entry name="Animation.Wezzle.Fade.Min.Opacity">50</entry>
+  <entry name="Animation.Wezzle.Fade.Wait">0</entry>
+  <entry name="Animation.Wezzle.Fade.Duration">200</entry>
+  <entry name="Animation.Jump.Move.Speed">340</entry>
+  <entry name="Animation.Jump.Move.Duration">880</entry>
+  <entry name="Animation.Jump.Move.Gravity">800</entry>
+  <entry name="Animation.Jump.Fade.Wait">0</entry>
+  <entry name="Animation.Jump.Fade.Duration">880</entry>
+  <entry name="Animation.Line.Remove.Zoom.Speed">50</entry>
+  <entry name="Animation.Line.Remove.Fade.Wait">0</entry>
+  <entry name="Animation.Line.Remove.Fade.Duration">0</entry>
+  <entry name="Animation.Item.Activate.Zoom.Speed">80</entry>
+  <entry name="Animation.Item.Activate.Zoom.Duration">200</entry>
+  <entry name="Animation.Item.Activate.Fade.Wait">0</entry>
+  <entry name="Animation.Item.Activate.Fade.Duration">200</entry>
+  <entry name="Animation.Rocket.Move.Duration">880</entry>
+  <entry name="Animation.Rocket.Move.Speed">375</entry>
+  <entry name="Animation.Rocket.Move.Gravity">0</entry>
+  <entry name="Animation.Rocket.Fade.Wait">0</entry>
+  <entry name="Animation.Rocket.Fade.Duration">880</entry>
+  <entry name="Animation.Bomb.Tile.Fade.Wait">0</entry>
+  <entry name="Animation.Bomb.Tile.Fade.Duration">350</entry>
+  <entry name="Animation.Bomb.Shrapnel.Fade.Wait">0</entry>
+  <entry name="Animation.Bomb.Shrapnel.Fade.Duration">400</entry>
+  <entry name="Animation.Bomb.Shrapnel.Move.Wait">0</entry>
+  <entry name="Animation.Bomb.Shrapnel.Move.Duration">400</entry>
+  <entry name="Animation.Bomb.Shrapnel.Move.Speed">300</entry>
+  <entry name="Animation.Bomb.Shrapnel.Move.Gravity">0</entry>
+  <entry name="Animation.Bomb.Shrapnel.Move.Omega">6.25</entry>
+  <entry name="Animation.Bomb.Explode.Zoom.Speed">300</entry>
+  <entry name="Animation.Bomb.Explode.Zoom.Duration">300</entry>
+  <entry name="Animation.Bomb.Explode.Fade.Wait">0</entry>
+  <entry name="Animation.Bomb.Explode.Fade.Duration">300</entry>
+  <entry name="Animation.Explosion.Speed">150</entry>
+  <entry name="Animation.Explosion.Opacity">50</entry>
+  <entry name="Animation.Explosion.Initial.Width">2</entry>
+  <entry name="Animation.Explosion.Initial.Height">2</entry>
+  <entry name="Animation.Rowfade.Wait">220</entry>
+  <entry name="Animation.Rowfade.Duration">960</entry>
+  <entry name="Animation.Slidefade.Fade.Wait">0</entry>
+  <entry name="Animation.Slidefade.Fade.Duration">580</entry>
+  <entry name="Animation.Slidefade.Move.Wait">0</entry>
+  <entry name="Animation.Slidefade.Move.Duration">580</entry>
+  <entry name="Animation.Slidefade.Move.Speed">150</entry>
+  <entry name="Animation.Piece.Pulse.Speed.Slow">8</entry>
+  <entry name="Animation.Piece.Pulse.Speed.Fast">35</entry>
+  <entry name="Sct.Color.Piece">
+    <color red="240" green="240" blue="240" alpha="255" />
+  </entry>
+  <entry name="Sct.Color.Line">
+    <color red="252" green="233" blue="45" alpha="255" />
+  </entry>
+  <entry name="Sct.Color.Item">
+    <color red="255" green="127" blue="0" alpha="255" />
+  </entry>
+  <entry name="Sct.Score.Move.Duration">1300</entry>
+  <entry name="Sct.Score.Move.Speed">30</entry>
+  <entry name="Sct.Score.Move.Theta">90</entry>
+  <entry name="Sct.Score.Fade.Wait">420</entry>
+  <entry name="Sct.Score.Fade.Duration">880</entry>
+  <entry name="Sct.Score.Fade.Min.Opacity">0</entry>
+  <entry name="Sct.Score.Fade.Max.Opacity">100</entry>
+  <entry name="Sct.Levelup.Text">Level Up!</entry>
+  <entry name="Sct.Levelup.Text.Size">26</entry>
+  <entry name="Sct.Levelup.Move.Duration">1300</entry>
+  <entry name="Sct.Levelup.Move.Speed">30</entry>
+  <entry name="Sct.Levelup.Move.Theta">0</entry>
+  <entry name="Loader.Bar.Fade.Wait">580</entry>
+  <entry name="Loader.Bar.Fade.Duration">1280</entry>
+  <entry name="Main.Menu.Starburst.Omega">0.125</entry>
+  <entry name="Main.Menu.Window.Opacity">60</entry>
+  <entry name="Main.Menu.Window.Speed">800</entry>
+  <entry name="Main.Menu.Slide.Speed">375</entry>
+  <entry name="Main.Menu.Slide.Min.X">630</entry>
+  <entry name="Main.Menu.Slide.Wait">230</entry>
+  <entry name="Main.Menu.Logo.Fade.In.Wait">580</entry>
+  <entry name="Main.Menu.Logo.Fade.In.Duration">2400</entry>
+  <entry name="Main.Menu.Logo.Fade.Out.Wait">0</entry>
+  <entry name="Main.Menu.Logo.Fade.Out.Duration">1600</entry>
+</settings>

@@ -709,8 +709,8 @@ public class Game extends Canvas implements IGameWindowCallback
         // The keys.      
         if (window.isKeyPressed('R'))
         {
-            SettingsManager.get().loadUserSettings();
-            LogManager.recordMessage("Reloaded user settings from " + Settings.getUserSettingsFilePath());
+            SettingsManager.get().loadExternalSettings();
+            LogManager.recordMessage("Reloaded external settings.");
         }
         
         // Check the achievements.

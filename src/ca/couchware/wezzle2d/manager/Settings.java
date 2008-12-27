@@ -5,6 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Contains all the settings keys and values.
  * 
@@ -21,8 +24,7 @@ public class Settings
         CONF_VERSION,                                               
         
         // User values.
-        
-        USER_RENDER_TYPE,        
+                
         USER_MUSIC,
         USER_MUSIC_VOLUME,
         USER_SOUND,
@@ -156,8 +158,6 @@ public class Settings
     public enum Value
     {
         CONF_VERSION_1,
-        USER_RENDER_JAVA2D,
-        USER_RENDER_LWJGL;
     }
     
     // Static settings.
@@ -187,34 +187,73 @@ public class Settings
     final private static String textResourcesPath = resourcesPath + "/text";
         
     /** The name of the settings file. */
-    final private static String settingsFilename = "settings.xml";       
+    final private static String gameSettingsFileName = "game-settings.xml";     
     
-     /** The file path of default settings file. */
-    final private static String defaultSettingsFilePath = textResourcesPath 
-            + "/" + settingsFilename;
+    /** The name of the user settings file. */
+    final private static String userSettingsFileName = "user-settings.xml";
+    
+    /** The file path of default game settings file. */
+    final private static String defaultGameSettingsFilePath = textResourcesPath 
+            + "/" + gameSettingsFileName;
+    
+    /** The file path of default user settings file. */    
+    final private static String defaultUserSettingsFilePath = textResourcesPath 
+            + "/" + userSettingsFileName;
     
     /** The path to the user settings file. */
-    final private static String userSettingsPath = 
+    final private static String externalSettingsPath = 
             System.getProperty("user.home") + "/.Couchware/Wezzle";
                     
-    /** The file path of default settings file. */
-    final private static String userSettingsFilePath = userSettingsPath 
-            + "/" + settingsFilename;
+    /** The file path of default game settings file. */
+    final private static String gameSettingsFilePath = externalSettingsPath 
+            + "/" + gameSettingsFileName;
+    
+    /** The file path of default user settings file. */
+    final private static String userSettingsFilePath = externalSettingsPath 
+            + "/" + userSettingsFileName;
     
     /** The path to the log file. */
-    final private static String logPath = userSettingsPath;
+    final private static String logPath = externalSettingsPath;
     
     /** The file path to the log file. */    
     final private static String logFilePath = logPath + "/log.txt";
 
+    /** A set of all the user keys. */
+    final private static EnumSet<Key> userKeys = calculateUserKeys();
+    
+    /**
+     * Determines all the user settings keys and returns them.
+     * @return
+     */
+    final private static EnumSet<Key> calculateUserKeys()
+    {
+        EnumSet<Key> set = EnumSet.noneOf(Key.class);
+        
+        for (Key key : Key.values())
+            if (key.toString().startsWith("USER_"))
+                set.add(key);       
+        
+        return set;
+    }
+
+    public static EnumSet<Key> getUserKeys()
+    {
+        return userKeys;
+    }        
+    
     public static String getUpgradeUrl()
     {
         return upgradeUrl;
     }   
     
-    public static String getDefaultSettingsFilePath()
+    public static String getDefaultGameSettingsFilePath()
     {
-        return defaultSettingsFilePath;
+        return defaultGameSettingsFilePath;
+    }
+    
+    public static String getDefaultUserSettingsFilePath()
+    {
+        return defaultUserSettingsFilePath;
     }
 
     public static String getFontResourcesPath()
@@ -247,9 +286,14 @@ public class Settings
         return resourcesPath;
     }
 
-    public static String getSettingsFilename()
+    public static String getGameSettingsFilename()
     {
-        return settingsFilename;
+        return gameSettingsFileName;
+    }
+    
+     public static String getUserSettingsFilename()
+    {
+        return userSettingsFileName;
     }
 
     public static String getTextResourcesPath()
@@ -265,16 +309,21 @@ public class Settings
     public static String getSpriteResourcesPath()
     {
         return spriteResourcesPath;
+    }   
+    
+    public static String getGameSettingsFilePath()
+    {
+        return gameSettingsFilePath;
     }
-
-    public static String getUserSettingsFilePath()
+    
+     public static String getUserSettingsFilePath()
     {
         return userSettingsFilePath;
     }
 
-    public static String getUserSettingsPath()
+    public static String getExternalSettingsPath()
     {
-        return userSettingsPath;
+        return externalSettingsPath;
     }        
     
     // Dynamic non-text file settings.
