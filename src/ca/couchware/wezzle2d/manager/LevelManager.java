@@ -27,35 +27,35 @@ public class LevelManager implements IManager
 	 */
 	private int level = 1;    	       
     
-    /**
-     * The percentage of tiles to maintain.
-     */
-    private int tileRatio = 80;
-    
-    /**
-     * The minimum drop.
-     */
-    private int minimumDrop = 1;
-    
-    /**
-     * The number of pieces to drop in concurrently.
-     */
-    private int parallelDropInAmount = 4;       
+//    /**
+//     * The percentage of tiles to maintain.
+//     */
+//    private int tileRatio = 80;
+//    
+//    /**
+//     * The minimum drop.
+//     */
+//    private int minimumDrop = 1;
+//    
+//    /**
+//     * The number of pieces to drop in concurrently.
+//     */
+//    private int parallelDropInAmount = 4;       
         
-    /**
-     * The level at which the difficulty begins to increase.
-     */
-    private int difficultyIncreaseLevel = 3;
+//    /**
+//     * The level at which the difficulty begins to increase.
+//     */
+//    private int difficultyIncreaseLevel = 3;
+//    
+//    /**
+//     * The number of levels before the difficulty level increases.
+//     */
+//    private int levelDifficultySpeed = 2;
     
-    /**
-     * The number of levels before the difficulty level increases.
-     */
-    private int levelDifficultySpeed = 2;
-    
-    /** 
-     * The maximum number of tiles to drop in.
-     */
-    private int maximumDropAmount = 8;
+//    /** 
+//     * The maximum number of tiles to drop in.
+//     */
+//    private int maximumDropAmount = 8;
            
     //--------------------------------------------------------------------------
 	// Constructor
@@ -91,81 +91,81 @@ public class LevelManager implements IManager
 	// Instance Methods
 	//--------------------------------------------------------------------------               
     
-    /**
-     * Calculates the number of tiles to drop.
-     * 
-     * @param game The game.
-     * @param pieceSize The size of the piece consumed.
-     * @return The number of tiles do drop.
-     */
-    public int calculateDropNumber(final Game game, int pieceSize)
-    {
-        float tiles = game.boardMan.getNumberOfTiles();
-        float totalSpots = game.boardMan.getColumns() * game.boardMan.getRows();
-        
-        // The number of tiles for the current level.
-        int levelDrop = (this.level / this.levelDifficultySpeed);
-        
-        // Check for difficulty ramp up.
-        if (this.level > this.difficultyIncreaseLevel)
-            levelDrop = (this.difficultyIncreaseLevel / this.levelDifficultySpeed);
-        
-        // The percent of the board to readd.
-        int  boardPercentage = (int)((totalSpots - tiles) * 0.1f); 
-        
-        // We are low. drop in a percentage of the tiles, increasing if there 
-        // are fewer tiles.
-        if ((tiles / totalSpots) * 100 < this.tileRatio)
-        {
-            // If we are past the level ramp up point, drop in more.
-            if (this.level > this.difficultyIncreaseLevel)
-            {
-                  int dropAmt = pieceSize +  levelDrop 
-                    + (this.level - this.difficultyIncreaseLevel) 
-                    + boardPercentage + this.minimumDrop;
-                  
-                    if(dropAmt > this.maximumDropAmount + pieceSize)
-                    dropAmt = this.maximumDropAmount + pieceSize;
-                
-                return dropAmt;
-                  
-            }
-            else
-            {
-                int dropAmt = pieceSize + levelDrop + boardPercentage 
-                        + this.minimumDrop;
-                
-                  if(dropAmt > this.maximumDropAmount + pieceSize)
-                    dropAmt = this.maximumDropAmount + pieceSize;
-                
-                return dropAmt;
-            }
-        }
-        else
-        {
-            // If we are past the level ramp up point, drop in more.
-            if (this.level > this.difficultyIncreaseLevel)
-            {
-                int dropAmt = pieceSize + levelDrop
-                    + (this.level - this.difficultyIncreaseLevel) 
-                    + this.minimumDrop;
-                
-                if(dropAmt > this.maximumDropAmount + pieceSize)
-                    dropAmt = this.maximumDropAmount + pieceSize;
-                
-                return dropAmt;
-            }
-            else
-            {
-                int dropAmt = pieceSize + levelDrop + this.minimumDrop;
-                
-                  if(dropAmt > this.maximumDropAmount + pieceSize)
-                    dropAmt = this.maximumDropAmount + pieceSize;
-                
-                return dropAmt;
-            }
-        }
-    }                  
+//    /**
+//     * Calculates the number of tiles to drop.
+//     * 
+//     * @param game The game.
+//     * @param pieceSize The size of the piece consumed.
+//     * @return The number of tiles do drop.
+//     */
+//    public int calculateDropNumber(final Game game, int pieceSize)
+//    {
+//        float tiles = game.boardMan.getNumberOfTiles();
+//        float totalSpots = game.boardMan.getColumns() * game.boardMan.getRows();
+//        
+//        // The number of tiles for the current level.
+//        int levelDrop = (this.level / this.levelDifficultySpeed);
+//        
+//        // Check for difficulty ramp up.
+//        if (this.level > this.difficultyIncreaseLevel)
+//            levelDrop = (this.difficultyIncreaseLevel / this.levelDifficultySpeed);
+//        
+//        // The percent of the board to readd.
+//        int  boardPercentage = (int)((totalSpots - tiles) * 0.1f); 
+//        
+//        // We are low. drop in a percentage of the tiles, increasing if there 
+//        // are fewer tiles.
+//        if ((tiles / totalSpots) * 100 < this.tileRatio)
+//        {
+//            // If we are past the level ramp up point, drop in more.
+//            if (this.level > this.difficultyIncreaseLevel)
+//            {
+//                  int dropAmt = pieceSize +  levelDrop 
+//                    + (this.level - this.difficultyIncreaseLevel) 
+//                    + boardPercentage + this.minimumDrop;
+//                  
+//                    if(dropAmt > this.maximumDropAmount + pieceSize)
+//                    dropAmt = this.maximumDropAmount + pieceSize;
+//                
+//                return dropAmt;
+//                  
+//            }
+//            else
+//            {
+//                int dropAmt = pieceSize + levelDrop + boardPercentage 
+//                        + this.minimumDrop;
+//                
+//                  if(dropAmt > this.maximumDropAmount + pieceSize)
+//                    dropAmt = this.maximumDropAmount + pieceSize;
+//                
+//                return dropAmt;
+//            }
+//        }
+//        else
+//        {
+//            // If we are past the level ramp up point, drop in more.
+//            if (this.level > this.difficultyIncreaseLevel)
+//            {
+//                int dropAmt = pieceSize + levelDrop
+//                    + (this.level - this.difficultyIncreaseLevel) 
+//                    + this.minimumDrop;
+//                
+//                if(dropAmt > this.maximumDropAmount + pieceSize)
+//                    dropAmt = this.maximumDropAmount + pieceSize;
+//                
+//                return dropAmt;
+//            }
+//            else
+//            {
+//                int dropAmt = pieceSize + levelDrop + this.minimumDrop;
+//                
+//                  if(dropAmt > this.maximumDropAmount + pieceSize)
+//                    dropAmt = this.maximumDropAmount + pieceSize;
+//                
+//                return dropAmt;
+//            }
+//        }
+//    }                  
    
     //--------------------------------------------------------------------------
 	// Getters and Setters
@@ -221,14 +221,14 @@ public class LevelManager implements IManager
 		setLevel(level + 1, true);
 	}	
 	            
-    /**
-     * Get the parallel drop in amount.
-     * @return The amount.
-     */
-    public int getParallelTileDropInAmount()
-    {
-        return this.parallelDropInAmount;
-    }    	
+//    /**
+//     * Get the parallel drop in amount.
+//     * @return The amount.
+//     */
+//    public int getParallelTileDropInAmount()
+//    {
+//        return this.parallelDropInAmount;
+//    }    	
 	               
     public void saveState()
     {

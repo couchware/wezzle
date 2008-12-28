@@ -161,7 +161,7 @@ public class TileRemover implements ILevelListener
         final PieceManager pieceMan         = game.pieceMan;
         final SettingsManager settingsMan   = game.settingsMan;
         final TimerManager timerMan         = game.timerMan;
-        final LevelManager levelMan         = game.levelMan;
+        final LevelManager levelMan         = game.levelMan;                
         
         if (activateLevelUp == true)
         {
@@ -183,7 +183,7 @@ public class TileRemover implements ILevelListener
             else
             {
                 // Make sure the tiles are not still dropping.
-                if (!pieceMan.isTileDropInProgress())
+                if (!game.tileDropper.isTileDropping())
                 {      
                     // Don't fire a move completed event if we're just
                     // doing the level up line removal.

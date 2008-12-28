@@ -65,9 +65,9 @@ public class SettingsManager
         return single;
     }            
                    
-	// ---------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	// Instance Methods
-	// ---------------------------------------------------------------------------	            
+	// -------------------------------------------------------------------------          
     
     private void createFile(File f)
     {               
@@ -212,7 +212,7 @@ public class SettingsManager
                     map.put(Key.valueOf(name), value);
                     LogManager.recordMessage(name + " = " + value);    
                 }
-                catch (IllegalArgumentException ex)
+                catch (IllegalArgumentException e)
                 {
                     LogManager.recordMessage("Unknown key: " + name); 
                 }
@@ -306,7 +306,7 @@ public class SettingsManager
         {                            
             instance = HighScore.newInstanceFromXML(element);
         }
-         else if (element.getName().equals("achievement"))
+        else if (element.getName().equals("achievement"))
         {                            
             instance = Achievement.newInstanceFromXML(element);
         }

@@ -85,7 +85,7 @@ public abstract class AbstractTutorial implements ITutorial
         game.scoreMan.saveState();
              
         // Stop the piece manager from dropping.
-        game.pieceMan.setTileDropOnCommit(false);
+        game.tileDropper.setDropOnCommit(false);
         
         // Stop the timer.
         game.timerMan.setStopped(true);       
@@ -242,7 +242,7 @@ public abstract class AbstractTutorial implements ITutorial
         game.pieceMan.clearRestrictionBoard();
         
         // Turn on tile drops.
-        game.pieceMan.setTileDropOnCommit(true);   
+        game.tileDropper.setDropOnCommit(true);   
         
         // Start the timer.        
         game.timerMan.setStopped(false);  

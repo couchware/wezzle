@@ -147,6 +147,9 @@ public class Game extends Canvas implements IGameWindowCallback
     /** The refactorer. */
     public Refactorer refactorer = Refactorer.get();
     
+    /** The tile dropper. */
+    public TileDropper tileDropper = TileDropper.get();
+    
     /** The tile remover. */
     public TileRemover tileRemover = TileRemover.get();    
     
@@ -744,8 +747,7 @@ public class Game extends Canvas implements IGameWindowCallback
     private void updateBoard()
     {
         // See if it's time to level-up.
-        if (pieceMan.isTileDropInProgress() == false
-                && isBusy() == false)
+        if (!this.tileDropper.isTileDropping() && !this.isBusy())
         {
             // Handle Level up.
             if (scoreMan.getLevelScore() >= scoreMan.getTargetLevelScore())
@@ -828,8 +830,10 @@ public class Game extends Canvas implements IGameWindowCallback
         // See if we should clear the cascade count.
         if (refactorer.isRefactoring() == false 
                 && tileRemover.isTileRemoving() == false
-                && pieceMan.isTileDropInProgress() == false)
+                && tileDropper.isTileDropping() == false)
+        {
             statMan.resetChainCount(); 
+        }
 
         // Animation all animations.
         animationMan.animate();
@@ -848,6 +852,9 @@ public class Game extends Canvas implements IGameWindowCallback
             pieceMan.initiateCommit(this);            
         }
 
+        // Update tile dropper.
+        tileDropper.updateLogic(this);
+        
         // Update piece manager logic and then draw it.
         pieceMan.updateLogic(this);
 
@@ -859,8 +866,7 @@ public class Game extends Canvas implements IGameWindowCallback
         tutorialMan.updateLogic(this);
     
         // Reset the line count.
-        //statMan.incrementLineCount(statMan.getCycleLineCount());       
-        
+        //statMan.incrementLineCount(statMan.getCycleLineCount());               
         statMan.resetCycleLineCount();
     }       
       
@@ -872,7 +878,7 @@ public class Game extends Canvas implements IGameWindowCallback
     public boolean isBusy()
     {
        return (refactorer.isRefactoring()               
-               || tileRemover.isTileRemoving()
+               || tileRemover.isTileRemoving()               
                || gameOverInProgress == true
                || activateBoardShowAnimation == true
                || activateBoardHideAnimation == true
