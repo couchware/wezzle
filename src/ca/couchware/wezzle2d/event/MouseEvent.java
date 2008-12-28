@@ -46,19 +46,22 @@ public class MouseEvent extends EventObject
         META
     }
     
-    private Button button;    
+    final private Button button;    
     
-    private EnumSet<Modifier> modifierState;
+    final private EnumSet<Modifier> modifierState;
     
-    private ImmutablePosition position;
+    final private ImmutablePosition position;
     
-    private Type type;
+    final private Type type;
+    
+    final private int deltaWheel;
     
     public MouseEvent(Object source,
             Button buttonState, 
             EnumSet<Modifier> modifierState,
             ImmutablePosition position,
-            Type type) 
+            Type type,
+            int deltaWheel) 
     {     
         // Call super.
         super(source);
@@ -80,6 +83,7 @@ public class MouseEvent extends EventObject
         this.modifierState = modifierState;
         this.position = position;
         this.type = type;
+        this.deltaWheel = deltaWheel;        
     }        
     
     public MouseEvent(java.awt.event.MouseEvent event, Type type)
@@ -121,6 +125,9 @@ public class MouseEvent extends EventObject
         
         // Set the type.
         this.type = type;
+        
+        // Set the delta wheel.
+        this.deltaWheel = 0;
     }
     
     public Button getButton()
@@ -152,5 +159,12 @@ public class MouseEvent extends EventObject
     {
         return type;
     }
+
+    public int getDeltaWheel()
+    {
+        return deltaWheel;
+    }
+    
+    
 
 }

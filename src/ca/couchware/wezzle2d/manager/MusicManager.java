@@ -63,6 +63,11 @@ public class MusicManager
      * A link to the executor that the manager uses to play sounds.
      */
     private Executor executor;
+    
+    /**
+     * The settings manager.
+     */
+    private SettingsManager settingsMan;
        
     /** 
      * The list of the music.
@@ -88,10 +93,11 @@ public class MusicManager
     /**
      * Creates the song list.
      */
-    private MusicManager(Executor executor) 
+    private MusicManager(Executor executor, SettingsManager settingsMan) 
     {        
         // The executor.
         this.executor = executor;
+        this.settingsMan = settingsMan;
                
         // Initiate the array list and song number.
         this.playList = new ArrayList<Music>();                     
@@ -100,15 +106,15 @@ public class MusicManager
         this.index = 0;    
                         
         // Get the default volume.
-        setNormalizedGain(SettingsManager.get().getDouble(Key.USER_MUSIC_VOLUME));                
+        setNormalizedGain((double) settingsMan.getInt(Key.USER_MUSIC_VOLUME) / 100.0);                
     }
         
     /**
      * Static constructor.
      */
-    public static MusicManager newInstance(Executor executor)
+    public static MusicManager newInstance(Executor executor, SettingsManager settingsMan)
     {
-        return new MusicManager(executor);
+        return new MusicManager(executor, settingsMan);
     }           
     
     public void setTheme(Theme theme)
@@ -326,8 +332,9 @@ public class MusicManager
         {
             nGain = 1.0;
         }
+        
         // Adjust the property;
-        SettingsManager.get().setDouble(Key.USER_MUSIC_VOLUME, nGain);
+        settingsMan.setInt(Key.USER_MUSIC_VOLUME, (int) (nGain * 100));
 
         // Rememeber it.
         this.normalizedGain = nGain;

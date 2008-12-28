@@ -298,13 +298,13 @@ public class Game extends Canvas implements IGameWindowCallback
         if (managerSet.contains(ManagerType.SOUND))
         {
             // Create the sound manager.
-            soundMan = SoundManager.newInstance(executor);
+            soundMan = SoundManager.newInstance(executor, settingsMan);
         }
         
         if (managerSet.contains(ManagerType.MUSIC))
         {
             // Create the music manager.            
-            musicMan = MusicManager.newInstance(executor);  
+            musicMan = MusicManager.newInstance(executor, settingsMan);  
         }   
         
         if (managerSet.contains(ManagerType.LAYER))

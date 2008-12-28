@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>  
   <entry name="User.Music">true</entry>
-  <entry name="User.Music.Volume">0.5</entry>
+  <entry name="User.Music.Volume">50</entry>
   <entry name="User.Sound">true</entry>
-  <entry name="User.Sound.Volume">0.5</entry>
+  <entry name="User.Sound.Volume">50</entry>
   <entry name="User.Highscore">
     <high-score name="" score="0" level="0" />
     <high-score name="" score="0" level="0" />

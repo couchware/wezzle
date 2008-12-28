@@ -126,10 +126,10 @@ public class Scroller extends AbstractEntity implements IMouseListener
         // Make the scroller listen for slider bar changes.
         this.scrollBar.addSliderBarListener(new SliderBar.ISliderBarListener() 
         {
-            public void sliderBarChanged(double virtualValue)
+            public void sliderBarChanged(int virtualValue)
             {
                 // Convert to an integer.
-                int offset = (int) virtualValue;
+                int offset = virtualValue;
 
                 // See if it's different (enough).
                 if (offset != scrollOffset)
@@ -441,5 +441,17 @@ public class Scroller extends AbstractEntity implements IMouseListener
 //        if (shape.contains(e.getPosition()))
 //            LogManager.recordMessage("I'm over the area!");
     }    
+    
+    public void mouseWheel(MouseEvent e)
+    {
+        int signum = -e.getDeltaWheel() / Math.abs(e.getDeltaWheel());
+        int offset = scrollOffset + signum;
+        
+        if (offset >= 0 && offset <= buttonList.size() - rows)
+        {
+            //scrollOffset = offset;
+            scrollBar.setVirtualValue(offset);            
+        }
+    }
 
 }

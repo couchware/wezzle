@@ -34,7 +34,12 @@ public class SoundManager
     /**
      * A link to the executor that the manager uses to play sounds.
      */
-    private Executor executor;      
+    private Executor executor;   
+    
+    /**
+     * The settings manager.
+     */
+    private SettingsManager settingsMan;
     
     /** 
      * The list of effects.
@@ -62,10 +67,11 @@ public class SoundManager
      * @param executor
      * @param propertyMan
      */
-    private SoundManager(Executor executor) 
+    private SoundManager(Executor executor, SettingsManager settingsMan) 
     {        
         // The executor.
-        this.executor = executor;             
+        this.executor = executor;  
+        this.settingsMan = settingsMan;
         
         // Initiate the array list.
         this.soundList = new ArrayList<List<SoundPlayer>>(); 
@@ -97,7 +103,7 @@ public class SoundManager
                 path + "/SoundRocket.wav");
              
         // Get the default volume.
-        setNormalizedGain(SettingsManager.get().getDouble(Key.USER_SOUND_VOLUME));
+        setNormalizedGain((double) settingsMan.getInt(Key.USER_SOUND_VOLUME) / 100.0);
         
         // Check if on or off.
         if (SettingsManager.get().getBoolean(Key.USER_SOUND) == true)
@@ -117,9 +123,9 @@ public class SoundManager
      * @param userProperties
      * @return
      */
-    public static SoundManager newInstance(Executor executor)
+    public static SoundManager newInstance(Executor executor, SettingsManager settingsMan)
     {
-        return new SoundManager(executor);
+        return new SoundManager(executor, settingsMan);
     }
     
     /**
@@ -219,7 +225,7 @@ public class SoundManager
         else if (nGain > 1.0) nGain = 1.0;
         
         // Adjust the property;
-        SettingsManager.get().setDouble(Key.USER_SOUND_VOLUME, nGain);
+        settingsMan.setInt(Key.USER_SOUND_VOLUME, (int) (nGain * 100));
         
         // Remember it.
         this.normalizedGain = nGain;                

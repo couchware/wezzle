@@ -363,6 +363,11 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
     {
 //        if (shape.contains(e.getPosition()))
 //            LogManager.recordMessage("I'm over the area!");
-    }        
+    }     
+    
+    public void mouseWheel(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
     
 }

@@ -428,6 +428,11 @@ public abstract class AbstractButton extends AbstractEntity implements
         handleMoved(e.getPosition());
     }    
     
+    public void mouseWheel(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
+    
     /** The button listener list. */
     private List<IButtonListener> buttonListenerList = new ArrayList<IButtonListener>();
     

@@ -944,6 +944,7 @@ public class LWJGLGameWindow implements IGameWindow
             boolean mouseMoved = false;                        
             int mouseX = Mouse.getEventX();
             int mouseY = height - Mouse.getEventY();
+            int deltaWheel = Mouse.getEventDWheel();
             
             // Check for mouse movement.            
             if (mouseX != mousePosition.getX() 
@@ -981,7 +982,8 @@ public class LWJGLGameWindow implements IGameWindow
                         buttonEnum,
                         EnumSet.noneOf(MouseEvent.Modifier.class),
                         mousePosition,
-                        type);
+                        type,
+                        deltaWheel);
                 
                 switch (type)
                 {
@@ -1013,7 +1015,8 @@ public class LWJGLGameWindow implements IGameWindow
                             buttonEnum,
                             EnumSet.noneOf(MouseEvent.Modifier.class),
                             mousePosition,
-                            MouseEvent.Type.MOUSE_DRAGGED);
+                            MouseEvent.Type.MOUSE_DRAGGED,
+                            deltaWheel);
                 
                     for (IMouseListener l : list)
                         l.mouseDragged(event);
@@ -1024,12 +1027,26 @@ public class LWJGLGameWindow implements IGameWindow
                             MouseEvent.Button.NONE,
                             EnumSet.noneOf(MouseEvent.Modifier.class),
                             mousePosition,
-                            MouseEvent.Type.MOUSE_MOVED);
+                            MouseEvent.Type.MOUSE_MOVED,
+                            deltaWheel);
                 
                     for (IMouseListener l : list)
                         l.mouseMoved(event);
                 }                
-            } // end if                       
+            } // end if    
+            
+            if (deltaWheel != 0)
+            {
+                MouseEvent event = new MouseEvent(this, 
+                        MouseEvent.Button.NONE,
+                        EnumSet.noneOf(MouseEvent.Modifier.class),
+                        mousePosition,
+                        MouseEvent.Type.MOUSE_WHEEL,
+                        deltaWheel);
+                
+                for (IMouseListener l : list)
+                    l.mouseWheel(event);
+            }
             
         } // end while
     }

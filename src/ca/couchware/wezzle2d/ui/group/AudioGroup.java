@@ -116,8 +116,8 @@ public class AudioGroup extends AbstractGroup
         // Create the sound slider bar.
         soundSlider = new SliderBar.Builder(400, 272)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .virtualRange(0.0, 1.0)                    
-                .virtualValue(SettingsManager.get().getDouble(Key.USER_SOUND_VOLUME))
+                .virtualRange(0, 100)                    
+                .virtualValue(SettingsManager.get().getInt(Key.USER_SOUND_VOLUME))
                 .visible(false).end();
         layerMan.add(soundSlider, Layer.UI);
         entityList.add(soundSlider);        
@@ -140,8 +140,8 @@ public class AudioGroup extends AbstractGroup
         // Create the music slider bar.
         musicSlider = new SliderBar.Builder(400, 359)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .virtualRange(0.0, 1.0)
-                .virtualValue(SettingsManager.get().getDouble(Key.USER_MUSIC_VOLUME))
+                .virtualRange(0, 100)
+                .virtualValue(SettingsManager.get().getInt(Key.USER_MUSIC_VOLUME))
                 .visible(false).end();
         layerMan.add(musicSlider, Layer.UI);
         entityList.add(musicSlider);                      
@@ -193,8 +193,7 @@ public class AudioGroup extends AbstractGroup
         else if (soundSlider.changed() == true)
         {
             // The new sound value.
-            double gain = soundSlider.getVirtualLower() 
-                    + soundSlider.getVirtualValue();                      
+            double gain = soundSlider.getVirtualPercent();                  
             
             // Set the volume.
             game.soundMan.setNormalizedGain(gain);
@@ -202,8 +201,7 @@ public class AudioGroup extends AbstractGroup
         else if (musicSlider.changed() == true)
         {
             // The new sound value.
-            double gain = musicSlider.getVirtualLower() 
-                    + musicSlider.getVirtualValue();                        
+            double gain = musicSlider.getVirtualPercent();
             
             // Set the volume.
             game.musicMan.setNormalizedGain(gain);

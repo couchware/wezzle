@@ -510,5 +510,10 @@ public class Box extends AbstractEntity implements IMouseListener
     {
         handleMoved(e.getPosition());
     }
+
+    public void mouseWheel(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
     
 }

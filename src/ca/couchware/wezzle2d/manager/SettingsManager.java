@@ -141,7 +141,7 @@ public class SettingsManager
         } // end if  
         else
         {
-            LogManager.recordWarning("Could not load user settings.");
+            LogManager.recordWarning("Could not load external settings.");
         }
     }
     
@@ -209,8 +209,9 @@ public class SettingsManager
                 
                 try 
                 {
-                    map.put(Key.valueOf(name), value);
-                    LogManager.recordMessage(name + " = " + value);    
+                    Key key = Key.valueOf(name);
+                    map.put(key, value);
+                    LogManager.recordMessage(key + " = " + value);    
                 }
                 catch (IllegalArgumentException e)
                 {
@@ -412,10 +413,25 @@ public class SettingsManager
 	 * @return The property
 	 */
 	public int getInt(Key key)
-	{		
-		return getString(key) == null 
-            ? null 
-            : Integer.parseInt(getString(key));
+	{	
+        int val = 0;
+        
+        try 
+        {
+            if (getString(key) == null)
+            {
+                throw new NullPointerException("Key did not exist.");
+            }
+            
+            val = Integer.parseInt(getString(key));               
+        }
+        catch (NumberFormatException e)
+        {
+            LogManager.recordWarning("Could not convert " + key + ": " + getString(key));
+            throw e;
+        }
+        
+        return val;
 	}
         
     public long getLong(Key key)

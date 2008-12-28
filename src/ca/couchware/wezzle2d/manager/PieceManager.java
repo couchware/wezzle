@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.FadeAnimation.Type;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -20,12 +19,10 @@ import ca.couchware.wezzle2d.piece.*;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -406,293 +403,9 @@ public class PieceManager implements IMouseListener
         
         // If the board is refactoring, do not logicify.
         if (game.isBusy() == true) return;                 
-//                 
-//        // Which row should we be dropping tiles into?
-//        int dropRow = 0;
-//        if (boardMan.getGravity().contains(Direction.UP))
-//            dropRow = boardMan.getRows() - 1;       
-//        
-//        // Drop in any tiles that need to be dropped, one at a time. 
-//        //
-//        // The if statement encompasses the entire function in order to ensure
-//        // that the board is locked while tiles are dropping.
-//        if (tileDropInProgress == true)
-//        {
-//            // Is the tile dropped currently being animated?
-//            // If not, that means we need to drop a new one.            
-//            if (tileDropAnimationInProgress == false)
-//            {
-//                // The number of pieces to drop in.
-//                int parallelTileDropInAmount = game.levelMan.getParallelTileDropInAmount();                                
-//                
-//                // Adjust for the pieces left to drop in.
-//                if (parallelTileDropInAmount > totalTileDropAmount)
-//                    parallelTileDropInAmount = totalTileDropAmount;                              
-//                
-//                // Count the open columns and build a list of all open indices.
-//                List<Integer> openIndexList = new ArrayList<Integer>();
-//                int openColumnCount = 0;                                                
-//                for (int i = 0; i < boardMan.getColumns(); i++)
-//                {
-//                    if (boardMan.getTile(i, dropRow) == null)
-//                    {
-//                        openColumnCount++;
-//                        openIndexList.add(i);
-//                    }
-//                }                         
-//                
-//                // At this point these must be equal.
-//                assert openColumnCount == openIndexList.size();
-//                
-//                // Automatically adjust the number of pieces to fall in based
-//                // on the number of open columns.
-//                if (parallelTileDropInAmount > openColumnCount)
-//                    parallelTileDropInAmount = openColumnCount;                              
-//                
-//                // Create a queue holding all the open columns in a randomized
-//                // order.
-//                LinkedList<Integer> randomIndexQueue = new LinkedList<Integer>();
-//                randomIndexQueue.addAll(openIndexList);
-//                Collections.shuffle(randomIndexQueue, Util.random);
-//                              
-//                // If there are less items left (to ensure only 1 drop per drop 
-//                // in) and we have less than the max number of items...
-//                // drop an item in. Otherwise drop a normal.
-//                if (openColumnCount == 0 && totalTileDropAmount > 0)                
-//                {                    
-//                    // The tile drop is no longer in progress.
-//                    tileDropInProgress = false;
-//                    
-//                    // Start the game over routine.
-//                    game.startGameOver();
-//                }
-//                else if (totalTileDropAmount == 1 
-//                        && (boardMan.getNumberOfItems() < itemMan.getMaximumItems() 
-//                        || boardMan.getNumberOfMultipliers() < itemMan.getMaximumMultipliers()))
-//                {
-//                    TileType type = itemMan.getItem(
-//                                boardMan.getNumberOfItems(),
-//                                boardMan.getNumberOfMultipliers()).getTileType();
-//                    
-//                    int randomIndex = randomIndexQueue.remove();
-//                    //initialIndexList.add(randomIndex);
-//                    
-//                    // The tile is an item.
-//                    tileDropList.add(
-//                            boardMan.createTile(
-//                                randomIndex, dropRow, type));                                  
-//                }
-//                else if (totalTileDropAmount <= parallelTileDropInAmount
-//                       && (boardMan.getNumberOfItems() < itemMan.getMaximumItems()
-//                       || boardMan.getNumberOfMultipliers() < itemMan.getMaximumMultipliers()))
-//                {
-//                    // This must be true.
-//                    assert totalTileDropAmount <= randomIndexQueue.size();
-//                    
-//                    // Drop in the first amount.
-//                    for (int i = 0; i < totalTileDropAmount - 1; i++)
-//                    {
-//                        int randomIndex = randomIndexQueue.remove();
-//                        //initialIndexList.add(randomIndex);
-//                        
-//                        tileDropList.add(boardMan.createTile(
-//                                randomIndex, 
-//                                dropRow, 
-//                                TileType.NORMAL)); 
-//                    }
-//                    
-//                    TileType type = itemMan.getItem(
-//                                boardMan.getNumberOfItems(),
-//                                boardMan.getNumberOfMultipliers()).getTileType();
-//                    
-//                    // Drop in the item tile.
-//                    int randomIndex = randomIndexQueue.remove();
-//                    //initialIndexList.add(randomIndex);
-//                    
-//                    tileDropList.add(
-//                            boardMan.createTile(
-//                                randomIndex, dropRow, type));                     
-//                }
-//                else
-//                {
-//                    // They are all normals.
-//                    for (int i = 0; i < parallelTileDropInAmount; i++)
-//                    {
-//                        int randomIndex = randomIndexQueue.remove();
-//                        //initialIndexList.add(randomIndex);
-//                        
-//                        tileDropList.add(
-//                                boardMan.createTile(
-//                                    randomIndex, 
-//                                    dropRow, 
-//                                    TileType.NORMAL));
-//                    }                 
-//                }                
-//                
-//                
-//                // At this point, the tile drop list is built.
-//                // simulate the drops and change colours if necessary.
-//                // The point of this is to ensure that no lines come from the dropped in tiles.
-//                // The formula is as follows: instant refactor the board without removing lines.
-//                // find all the xmatches. change the colors of the drop in tiles until 
-//                // there are no more x matches. do the same for the y matches.
-//                // delete the tiles from the board. Add the new tiles back in the
-//                // original positions with the new colours. continue.
-//                          
-//                List<Integer> initialIndexList = new ArrayList<Integer>();
-//                
-//                // Get the initial indices.
-//                for (TileEntity t : tileDropList)
-//                {
-//                    initialIndexList.add(boardMan.getIndex(t));
-//                }
-//
-//                // Refactor the board.
-//                boardMan.instantRefactorBoard();
-//
-//                // Check for lines and switch the colors of the appropriate tiles.
-//                while (true)
-//                {
-//                    // The number of found matches. Also puts the matches into match set.
-//                    Set<Integer> set = new HashSet<Integer>();
-//                    Set<Integer> matchSet = new HashSet<Integer>();
-//                    boardMan.findXMatch(set);
-//                    boardMan.findYMatch(matchSet);
-//                    matchSet.addAll(set);
-//                   
-//                    Set<TileEntity> tileMatchSet = new HashSet<TileEntity>();
-//                    for (Integer i : matchSet)
-//                    {
-//                        tileMatchSet.add(boardMan.getTile(i));
-//                    }
-//                    
-//                    // Intersect the tile match set with the tile drop list.
-//                    tileMatchSet.retainAll(tileDropList);
-//
-//                    // We found lines, change the color of the appropriate tiles.
-//                    if (tileMatchSet.isEmpty() == true)
-//                    {
-//                        break;
-//                    }
-//                    else
-//                    {
-//                        for (TileEntity matchedTile : tileMatchSet)
-//                        {
-//                            TileColor oldColor = matchedTile.getColor();                         
-//                            TileColor newColor = TileColor.getRandomColor(
-//                                    boardMan.getNumberOfColors(),
-//                                    EnumSet.of(oldColor));
-//                                
-//                            int index = tileDropList.indexOf(matchedTile);
-//                            assert index != -1;
-//                            TileEntity newTile = boardMan.replaceTile(boardMan.getIndex(matchedTile), newColor);
-//                            tileDropList.set(index, newTile);
-//                        }                                               
-//                    } // end if
-//                } // end while
-//                
-//                // Remove all the old tiles. this will prevent tiles from
-//                // potentially blocking the new tiles.
-//                for (TileEntity t : tileDropList)
-//                {                    
-//                    //LogManager.recordMessage("" + tileDropList);
-//
-//                    // Remove the old tile.
-//                    boardMan.removeTile(t);
-//                    
-//                    //LogManager.recordMessage("Removed tile " + (count + 1) + "/" + tileDropList.size());
-//                }
-//
-//                // Create a new tile drop list from the old one.
-//                List<TileEntity> newTileDropList = new ArrayList<TileEntity>();
-//                
-//                // Add the new tiles in the initial indexes.
-//                int count = 0;
-//                for (TileEntity t : tileDropList)
-//                {
-//                    // Add the new.
-//                    newTileDropList.add(
-//                            boardMan.createTile(
-//                            initialIndexList.get(count),
-//                            t.getType(),
-//                            t.getColor()));                                        
-//                    count++;
-//                }
-//
-//                tileDropList.clear();
-//                tileDropList.addAll(newTileDropList);
-//                    
-//                // See if the tile drop is still in progress.  If it's not
-//                // (which would be in the case of a game over), don't play
-//                // the sound or set the animation flag.
-//                if (tileDropInProgress == true)
-//                {        
-//                    // Start the animation.
-//                    game.soundMan.play(Sound.BLEEP);
-//                    
-//                    for (TileEntity tile : tileDropList)
-//                    {
-//                        if (tile == null)
-//                        {
-//                            throw new NullPointerException(
-//                                    "A tile was null in the tile drop list.");
-//                        }
-//                        else
-//                        {                                       
-//                            // If the tile is locked, change it's opacity to the
-//                            // locked opacity.
-//                            if (boardMan.isColorLocked(tile.getColor()) == true)
-//                            {
-//                                Key key = Key.ANIMATION_WEZZLE_FADE_MIN_OPACITY;
-//                                tile.setOpacity(settingsMan.getInt(key));
-//                            }
-//                            
-//                            IAnimation a = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, tile)
-//                                    .speed(settingsMan.getInt(Key.ANIMATION_DROP_ZOOM_OUT_SPEED))
-//                                    .end();
-//                            
-//                            tile.setAnimation(a);
-//                            animationMan.add(a);
-//                        }
-//                    }
-//                 
-//                    // Set the animation flag.
-//                    tileDropAnimationInProgress = true;
-//                }                                                     
-//            } 
-//            // If we got here, the animating is in progress, so we need to check
-//            // if it's done.  If it is, de-reference it and refactor.
-//            else if (isAnimationDone(tileDropList) && wezzleAnimation.isFinished())
-//            {
-//                // Clear the flag.
-//                tileDropAnimationInProgress = false;
-//                               
-//                // Run refactor.
-//                refactorer.startRefactor();
-//                
-//                // Remove the amount just removed from the total.
-//                totalTileDropAmount -= tileDropList.size();
-//                
-//                // De-reference the tile dropped.
-//                tileDropList.clear();
-//                
-//                // Check to see if we have more tiles to drop. 
-//                // If not, stop tile dropping.
-//                if (totalTileDropAmount == 0)  
-//                {
-//                    tileDropInProgress = false;
-//                }
-//                // Defensive.
-//                else if (totalTileDropAmount < 0)
-//                {
-//                    throw new IllegalStateException("Tile drop count is: "
-//                            + totalTileDropAmount);
-//                }                
-//            } // end if
-//        }
+
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.
-        //else
         if (!game.tileDropper.isTileDropping())
         {      
             // Grab the current mouse position.
@@ -1116,6 +829,11 @@ public class PieceManager implements IMouseListener
     public void mouseMoved(MouseEvent e)
     {
         // Intentionally blank.
+    }
+
+    public void mouseWheel(MouseEvent e)
+    {
+        //LogManager.recordMessage("Wheeled by: " + e.getDeltaWheel());
     }
     
 }

@@ -18,4 +18,5 @@ public interface IMouseListener extends IListener
     public void mouseReleased(MouseEvent e);
     public void mouseDragged(MouseEvent e);
     public void mouseMoved(MouseEvent e);
+    public void mouseWheel(MouseEvent e);
 }

@@ -111,17 +111,17 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     /**
      * The lower part of the virtual range.
      */
-    private double virtualLower;
+    private int virtualLower;
     
     /**
      * The upper part of the virutal range.
      */
-    private double virtualUpper;
+    private int virtualUpper;
     
     /**
      * The current virtual value.
      */
-    private double virtualValue;
+    private int virtualValue;
     
     /**
      * Whether or not the slider value has changed.
@@ -192,16 +192,17 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         
         // Start in normal state.
         this.state = State.NORMAL;
-        
-        // Default the slider to the left/top.
-        this.slideOffset = 0;
-                       
+                
         // Initially it is not changed.
         this.changed = false;
         
         // Set the virtual stuff.
-        setVirtualRange(builder.virtualLower, builder.virtualUpper);
-        setVirtualValue(builder.virtualValue);
+        this.virtualLower = builder.virtualLower;
+        this.virtualUpper = builder.virtualUpper;
+        this.virtualValue = builder.virtualValue;                
+        
+        // Default the slider to the left/top.
+        this.slideOffset = (int) ((double) maxOffset * getVirtualPercent());
         
         // Set dirty so it will be drawn.        
         this.dirty = true;
@@ -221,9 +222,9 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         private int height = 200;
         private Orientation orientation = Orientation.HORIZONTAL;
         private boolean visible = true;
-        private double virtualLower = 0.0;
-        private double virtualUpper = 1.0;
-        private double virtualValue = 0.5;
+        private int virtualLower = 0;
+        private int virtualUpper = 100;
+        private int virtualValue = 0;
         
         public Builder(int x, int y)
         {            
@@ -268,10 +269,10 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         public Builder visible(boolean val) 
         { visible = val; return this; }
         
-        public Builder virtualRange(double l, double u)
+        public Builder virtualRange(int l, int u)
         { virtualLower = l; virtualUpper = u; return this; }   
         
-        public Builder virtualValue(double val)        
+        public Builder virtualValue(int val)        
         { virtualValue = val; return this; }           
         
         public SliderBar end()
@@ -385,6 +386,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             default:                
                 break;   
         }
+        
+        synchronize();
 	}
 
     public void mouseReleased(MouseEvent e)
@@ -427,8 +430,10 @@ public class SliderBar extends AbstractEntity implements IMouseListener
                     break;
                     
                 default: throw new AssertionError();
-            }                        
-        }       
+            } 
+            
+            synchronize();
+        }                     
     }
 
     public void mouseMoved(MouseEvent e)
@@ -458,6 +463,11 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             window.setCursor(Cursor.DEFAULT_CURSOR);
         }
     } 
+    
+    public void mouseWheel(MouseEvent e)
+    {
+        // Intentionally left blank.
+    }
     
     public boolean changed()
     {
@@ -527,38 +537,13 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         }        
     }
     
-    /**
-     * Sets the virtual range for the slider.
-     * 
-     * @param lower
-     * @param upper
-     */
-    final public void setVirtualRange(double lower, double upper)
+    private void synchronize()
     {
-        assert upper > lower;
-        
-        this.virtualLower = lower;
-        this.virtualUpper = upper;
+        double percent = (double) slideOffset / (double) maxOffset;
+        this.virtualValue = this.virtualLower 
+                + (int) ((double) (this.virtualUpper - this.virtualLower) * percent);
     }
     
-    /**
-     * Get the slider offset.
-     * @return
-     */
-    public int getSlideOffset()
-    {
-        return slideOffset;
-    }
-    
-    /**
-     * Get the slider offset as a value between 0.0 and 1.0.
-     * @return
-     */
-    public double getSlideOffsetPercent()
-    {
-        return (double) slideOffset / (double) maxOffset;
-    }
-
     /**
      * Set the slider offset.  Automatically ensures that the value is within
      * the correct range.
@@ -580,35 +565,13 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         
         // Set changed.        
         changed = true;
-        
-        // Determine the virtual value.                
-        calculateVirtualValue();
-        
+              
         // Fire change event.
         fireSliderBarChangedEvent(this.virtualValue);
-    }
-    
-    /**
-     * Set the slider offset as value between 0.0 and 1.0.  Automatically 
-     * ensures that the passed value is within the range.
-     * 
-     * @param slideOffsetPercent
-     */
-    final public void setSlideOffsetPercent(final double slideOffsetPercent)
-    {
-        setSlideOffset((int) ((double) maxOffset * slideOffsetPercent));
-    }      
-    
-    private void calculateVirtualValue()
-    {
-        virtualValue = virtualLower + (virtualUpper - virtualLower) * getSlideOffsetPercent();
-    }
-    
-    public double getVirtualValue()
-    {
-        // Determine the virtual value.                
-        calculateVirtualValue();
-        
+    }           
+       
+    public int getVirtualValue()
+    {       
         return virtualValue;
     }
     
@@ -617,36 +580,41 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      *
      * @param value
      */
-    final public void setVirtualValue(double value)
+    final public void setVirtualValue(int value)
     {
         assert value >= virtualLower;
         assert value <= virtualUpper;
+        this.virtualValue = value;
         
-        double percent = (value - virtualLower) / (virtualUpper - virtualLower);        
-        setSlideOffsetPercent(percent);
+        setSlideOffset(((virtualValue - virtualLower) * maxOffset) / (virtualUpper - virtualLower));
     }   
 
-    public double getVirtualLower()
+    public int getVirtualLower()
     {                
         // Return the value.
         return virtualLower;
     }  
 
-    public double getVirtualUpper()
+    public int getVirtualUpper()
     {
         return virtualUpper;
     }   
     
+    final public double getVirtualPercent()
+    {
+        return (double) (virtualValue - virtualLower) / (double) (virtualUpper - virtualLower);
+    }
+    
     /** An interface for listening to SliderBar changes. */
     public static interface ISliderBarListener 
     {
-        public void sliderBarChanged(double virtualValue);
+        public void sliderBarChanged(int virtualValue);
     }
     
     /** The change listener list. */
     private List<ISliderBarListener> sliderBarListenerList = new ArrayList<ISliderBarListener>();
     
-    private void fireSliderBarChangedEvent(double virtualValue)
+    private void fireSliderBarChangedEvent(int virtualValue)
     {
         for (ISliderBarListener listener : sliderBarListenerList)
             listener.sliderBarChanged(virtualValue);
