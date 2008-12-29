@@ -647,7 +647,8 @@ public class TileRemover implements ILevelListener
         }
 
         // Play the sound.
-        soundMan.play(Sound.LINE);
+        int chainNumber = Math.min(7, statMan.getChainCount());
+        soundMan.play(Sound.valueOf("LINE_" + chainNumber));
 
         // Make sure bombs aren't removed (they get removed
         // in a different step).  However, if the no-items

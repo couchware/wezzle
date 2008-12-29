@@ -81,26 +81,32 @@ public class SoundManager
         // handles buffering.
         String path = Settings.getSoundResourcesPath();
         
-        this.create(Sound.LINE,
-                path + "/SoundLine.wav");
+        // Create the sound objects.
+        for (Sound sound : Sound.values())
+        {
+            this.create(sound, path + "/" + sound.toString() + ".wav");
+        }
         
-        this.create(Sound.BOMB,
-                path + "/SoundExplosion.wav");
-        
-        this.create(Sound.BLEEP,
-                path + "/SoundBleep.wav");
-        
-        this.create(Sound.CLICK,
-                path + "/SoundClick.wav");
-        
-        this.create(Sound.LEVEL_UP,
-                path + "/SoundLevelUp.wav");
-        
-        this.create(Sound.STAR,
-                path + "/SoundDing.wav");
-        
-        this.create(Sound.ROCKET,
-                path + "/SoundRocket.wav");
+//        this.create(Sound.LINE,
+//                path + "/SoundLine.wav");
+//        
+//        this.create(Sound.BOMB,
+//                path + "/SoundExplosion.wav");
+//        
+//        this.create(Sound.BLEEP,
+//                path + "/SoundBleep.wav");
+//        
+//        this.create(Sound.CLICK,
+//                path + "/SoundClick.wav");
+//        
+//        this.create(Sound.LEVEL_UP,
+//                path + "/SoundLevelUp.wav");
+//        
+//        this.create(Sound.STAR,
+//                path + "/SoundDing.wav");
+//        
+//        this.create(Sound.ROCKET,
+//                path + "/SoundRocket.wav");
              
         // Get the default volume.
         setNormalizedGain((double) settingsMan.getInt(Key.USER_SOUND_VOLUME) / 100.0);

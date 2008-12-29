@@ -11,8 +11,14 @@ package ca.couchware.wezzle2d.audio;
  */
 public enum Sound 
 {
-    BOMB,
-    LINE,
+    BOMB,    
+    LINE_1,
+    LINE_2,
+    LINE_3,
+    LINE_4,
+    LINE_5,
+    LINE_6,
+    LINE_7,
     BLEEP,
     CLICK,
     LEVEL_UP,

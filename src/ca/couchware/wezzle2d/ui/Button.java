@@ -166,7 +166,11 @@ public class Button extends AbstractButton
         this.shape = new ImmutableRectangle(x + offsetX, y + offsetY, width, height);    
         
         // Set the label position now that we have the width figured out.
-        normalLabel.setPosition(x + offsetX + width / 2, y + offsetY + height / 2);
+        final int POS_X = x + offsetX + width / 2;
+        final int POS_Y = y + offsetY + height / 2;
+        normalLabel.setPosition(POS_X, POS_Y);
+        if (hoverLabel  != null) hoverLabel.setPosition(POS_X, POS_Y);
+        if (activeLabel != null) activeLabel.setPosition(POS_X, POS_Y);
                
         if (!validateWidth())
             throw new RuntimeException("The button width is too narrow.");                                                                                 

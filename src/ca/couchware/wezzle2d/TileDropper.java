@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.ItemManager;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.tile.TileColor;
@@ -114,35 +115,28 @@ public class TileDropper
                 parallelDropAmount = Math.min(parallelDropAmount, totalDropAmount);
                 
                 // Count the open columns and build a list of all open indices.
-                List<Integer> openColumnList = new ArrayList<Integer>();
-                int openColumnCount = 0;  
+                LinkedList<Integer> openIndexList = new LinkedList<Integer>();               
                 
                 for (int i = 0; i < boardMan.getColumns(); i++)
                 {
                     if (boardMan.getTile(i, row) == null)
-                    {
-                        openColumnCount++;
-                        openColumnList.add(i);
+                    {                       
+                        openIndexList.add(i);
                     }
                 }                         
-                
-                // At this point these must be equal.
-                assert openColumnCount == openColumnList.size();
-                
+                              
                 // Automatically adjust the number of pieces to fall in based
                 // on the number of open columns.
-                parallelDropAmount = Math.min(parallelDropAmount, openColumnCount);               
+                parallelDropAmount = Math.min(parallelDropAmount, openIndexList.size());               
                 
                 // Create a queue holding all the open columns in a randomized
-                // order.
-                LinkedList<Integer> randomIndexQueue = new LinkedList<Integer>();
-                randomIndexQueue.addAll(openColumnList);
-                Collections.shuffle(randomIndexQueue, Util.random);
+                // order.                
+                Collections.shuffle(openIndexList, Util.random);
                               
                 // If there are less items left (to ensure only 1 drop per drop 
                 // in) and we have less than the max number of items...
                 // drop an item in. Otherwise drop a normal.
-                if (openColumnCount == 0 && totalDropAmount > 0)                
+                if (openIndexList.size() == 0 && totalDropAmount > 0)                
                 {                    
                     // The tile drop is no longer in progress.
                     tileDropping = false;
@@ -154,29 +148,30 @@ public class TileDropper
                         && (boardMan.getNumberOfItems() < itemMan.getMaximumItems() 
                         || boardMan.getNumberOfMultipliers() < itemMan.getMaximumMultipliers()))
                 {
+                    //LogManager.recordWarning("A, totalDropAmount = " + totalDropAmount);
                     TileType type = itemMan.getItem(
                             boardMan.getNumberOfItems(),
                             boardMan.getNumberOfMultipliers())
                             .getTileType();
                     
-                    int randomIndex = randomIndexQueue.remove();                    
+                    int randomIndex = openIndexList.remove();                    
                     
                     // The tile is an item.
-                    tileDropList.add(
-                            boardMan.createTile(
-                                randomIndex, row, type));                                  
+                    tileDropList.add(boardMan.createTile(randomIndex, row, type));                                  
                 }
                 else if (totalDropAmount <= maximumParallelDropAmount
                        && (boardMan.getNumberOfItems() < itemMan.getMaximumItems()
                        || boardMan.getNumberOfMultipliers() < itemMan.getMaximumMultipliers()))
                 {
-                    // This must be true.
-                    assert totalDropAmount <= randomIndexQueue.size();
+                    //LogManager.recordWarning("B, totalDropAmount = " + totalDropAmount);                    
                     
-                    // Drop in the first amount.
+                    // This must be true.
+                    assert totalDropAmount <= openIndexList.size();
+                    
+                    // Drop in the first amount, minus 1 for the item.
                     for (int i = 0; i < totalDropAmount - 1; i++)
                     {
-                        int randomIndex = randomIndexQueue.remove();
+                        int randomIndex = openIndexList.remove();
                         //initialIndexList.add(randomIndex);
                         
                         tileDropList.add(boardMan.createTile(
@@ -190,19 +185,19 @@ public class TileDropper
                                 boardMan.getNumberOfMultipliers()).getTileType();
                     
                     // Drop in the item tile.
-                    int randomIndex = randomIndexQueue.remove();
+                    int randomIndex = openIndexList.remove();
                     //initialIndexList.add(randomIndex);
                     
-                    tileDropList.add(
-                            boardMan.createTile(
-                                randomIndex, row, type));                     
+                    tileDropList.add(boardMan.createTile(randomIndex, row, type));                     
                 }
                 else
                 {
+                    //LogManager.recordWarning("C, totalDropAmount = " + totalDropAmount);
+                    
                     // They are all normals.
-                    for (int i = 0; i < maximumParallelDropAmount; i++)
+                    for (int i = 0; i < parallelDropAmount; i++)
                     {
-                        int randomIndex = randomIndexQueue.remove();                        
+                        int randomIndex = openIndexList.remove();                        
                         tileDropList.add(boardMan.createTile(randomIndex, row, TileType.NORMAL));
                     }                 
                 }                                
@@ -357,7 +352,7 @@ public class TileDropper
                 if (totalDropAmount == 0)  
                 {
                     tileDropping = false;
-                }
+                }                
                 // Defensive.
                 else if (totalDropAmount < 0)
                 {
