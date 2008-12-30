@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -21,7 +22,7 @@ public class TutorialManager
     /**
      * The tutorial list.
      */
-    private ArrayList<ITutorial> tutorialList;
+    private List<ITutorial> tutorialList;
     
     /**
      * The currently running tutorial.
@@ -33,13 +34,17 @@ public class TutorialManager
         // Initialize animation list.
         tutorialList = new ArrayList<ITutorial>();                
     }
-    
-    
-    // Public API.
+        
+    /**
+     * Returns a new tutorial manager instance.
+     * 
+     * @return
+     */
     public static TutorialManager newInstance()
     {
         return new TutorialManager();
     }
+    
     /**
      * Add a tutorial to the manager's list.
      * 
@@ -59,6 +64,14 @@ public class TutorialManager
     {
         if (contains(t) == true)
             tutorialList.remove(t);
+    }
+    
+    /**
+     * Remove all tutorials from the manager.
+     */
+    public void clear()
+    {
+        tutorialList.clear();
     }
     
     /**

@@ -182,8 +182,7 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         
         // Add the listeners.
         game.listenerMan.registerListener(Listener.LEVEL,  this);
-        game.listenerMan.registerListener(Listener.SCORE,  this);
-        game.listenerMan.registerListener(Listener.WEZZLE, this);                
+        game.listenerMan.registerListener(Listener.SCORE,  this);       
     }
     
     /**

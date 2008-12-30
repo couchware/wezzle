@@ -431,6 +431,12 @@ public class PlayNowGroup extends AbstractGroup
             game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
             game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));            
             //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
+            
+            // Turn off the tutorials if necessary.
+            if (this.tutorialRadio.getSelectedIndex() == TUTORIAL_OFF)
+            {
+                game.tutorialMan.clear();
+            }
                                       
             // Stop all the player.
             for (MusicPlayer p : playerMap)

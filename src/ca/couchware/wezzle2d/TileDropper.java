@@ -250,7 +250,7 @@ public class TileDropper
                             tileDropList.set(index, newTile);
                         }                                               
                     } // end if
-                } // end while
+                } // end while                                                
                 
                 // Remove all the old tiles. this will prevent tiles from
                 // potentially blocking the new tiles.
@@ -271,12 +271,17 @@ public class TileDropper
                 int count = 0;
                 for (TileEntity t : tileDropList)
                 {
+                    // This gives the drop a small chance of getting a line.
+                    TileColor color;
+                    if (count == 0) color = TileColor.getRandomColor(boardMan.getNumberOfColors());
+                    else color = t.getColor();
+                    
                     // Add the new.
                     newTileDropList.add(
                             boardMan.createTile(
                             initialIndexList.get(count),
                             t.getType(),
-                            t.getColor()));                                        
+                            color));                                        
                     count++;
                 }
 
