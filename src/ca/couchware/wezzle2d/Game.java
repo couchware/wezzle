@@ -833,6 +833,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 && tileDropper.isTileDropping() == false)
         {
             statMan.resetChainCount(); 
+            statMan.resetLineChainCount();
         }
 
         // Animation all animations.

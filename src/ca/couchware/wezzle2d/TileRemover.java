@@ -569,6 +569,7 @@ public class TileRemover implements ILevelListener
 
         // Increment chain count.
         statMan.incrementChainCount();
+        statMan.incrementLineChainCount();
 
         // Calculate score, unless no-score flag is set.
         if (noScore == false)
@@ -647,7 +648,7 @@ public class TileRemover implements ILevelListener
         }
 
         // Play the sound.
-        int chainNumber = Math.min(7, statMan.getChainCount());
+        int chainNumber = Math.min(7, statMan.getLineChainCount());
         soundMan.play(Sound.valueOf("LINE_" + chainNumber));
 
         // Make sure bombs aren't removed (they get removed
@@ -832,19 +833,7 @@ public class TileRemover implements ILevelListener
         deltaScore = scoreMan.calculateLineScore(
                 tileRemovalSet,
                 ScoreType.STAR,
-                statMan.getChainCount());
-
-        // Fire a score event.
-//        if (tutorialMan.isTutorialInProgress() == true)
-//        {
-//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-//                    IListenerManager.GameType.TUTORIAL);
-//        }
-//        else
-//        {
-//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-//                    IListenerManager.GameType.GAME);
-//        }
+                statMan.getChainCount());       
         
         // Increment the score.
         if (game.tutorialMan.isTutorialInProgress() == false)       

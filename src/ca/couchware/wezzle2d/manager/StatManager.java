@@ -26,7 +26,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
      * The current line count.
      */
     private int lineCount;
-    
+        
     /**
      * The current cycle line count.
      */
@@ -37,6 +37,17 @@ public class StatManager implements IManager, IMoveListener, ILineListener
      */
     private int chainCount;
     
+    /**
+     * The current line chain count.  This is different from the normal chain
+     * count in that it only counts lines made, and not items activated.
+     * 
+     * For example, if the player got a line with a rocket, which blew away
+     * a line, and then the the resulting refactor maade another line, then 
+     * the "line" chain count would only be 2 while the chain count would be
+     * 3.
+     */
+    private int lineChainCount;
+    
    /**
      * The hash map keys for storing the score manager state.
      */
@@ -45,7 +56,8 @@ public class StatManager implements IManager, IMoveListener, ILineListener
         MOVE_COUNT,
         LINE_COUNT,
         CYCLE_LINE_COUNT,
-        CHAIN_COUNT
+        CHAIN_COUNT,
+        LINE_CHAIN_COUNT
     }
     
     /**
@@ -55,26 +67,29 @@ public class StatManager implements IManager, IMoveListener, ILineListener
 	
 	/**
 	 * The constructor.
-	 *  private to ensure singleton.
+	 * Private to ensure singleton.
 	 */
 	private StatManager()
 	{
-              // Create the save state.
-            managerState = new EnumMap<Keys, Object>(Keys.class);
+        // Create the save state.
+        managerState = new EnumMap<Keys, Object>(Keys.class);
 
-            // Reset the counters.
-            this.resetMoveCount();                
-            this.resetLineCount();
-            this.resetCycleLineCount();
-            this.resetChainCount();      
+        // Reset the counters.
+        this.resetMoveCount();                
+        this.resetLineCount();
+        this.resetCycleLineCount();
+        this.resetChainCount();    
+        this.resetLineChainCount();
 	}
         
-        
-        // Public APi.
-        public static StatManager newInstance()
-        {
-            return new StatManager();
-        }
+    /**
+     * Create a new stat manager instance.
+     * @return
+     */    
+    public static StatManager newInstance()
+    {
+        return new StatManager();
+    }
         
 	/**
 	 * @return the currentMoves
@@ -95,7 +110,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
     /**
      * A method to increment the move count.
      */
-    private void incrementMoveCount()
+    public void incrementMoveCount()
     {
         this.moveCount++;
     }
@@ -118,7 +133,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
         this.lineCount = lineCount;
     }
 
-	private void incrementLineCount()
+	public void incrementLineCount()
     {
         this.lineCount++;
     }
@@ -151,6 +166,26 @@ public class StatManager implements IManager, IMoveListener, ILineListener
     public void resetChainCount()
     {
         setChainCount(0);
+    }
+
+    public int getLineChainCount()
+    {
+        return lineChainCount;
+    }
+
+    public void setLineChainCount(int lineChainCount)
+    {
+        this.lineChainCount = lineChainCount;
+    }
+    
+    public void incrementLineChainCount()
+    {
+        this.lineChainCount++;
+    }
+    
+    public void resetLineChainCount()
+    {
+        this.lineChainCount = 0;
     }
 
     public int getCycleLineCount()
@@ -238,6 +273,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
         managerState.put(Keys.LINE_COUNT, lineCount);
         managerState.put(Keys.CYCLE_LINE_COUNT, cycleLineCount);
         managerState.put(Keys.CHAIN_COUNT, chainCount);
+        managerState.put(Keys.LINE_CHAIN_COUNT, lineChainCount);
     }
 
     /**
@@ -256,6 +292,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
         lineCount = (Integer) managerState.get(Keys.LINE_COUNT); 
         cycleLineCount = (Integer) managerState.get(Keys.CYCLE_LINE_COUNT); 
         chainCount = (Integer) managerState.get(Keys.CHAIN_COUNT); 
+        lineChainCount = (Integer) managerState.get(Keys.LINE_CHAIN_COUNT); 
     }
 
     public void resetState()
@@ -264,6 +301,7 @@ public class StatManager implements IManager, IMoveListener, ILineListener
         lineCount = 0;
         cycleLineCount = 0;
         chainCount = 0;
+        lineChainCount = 0;
     }    
     
 }

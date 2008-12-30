@@ -133,6 +133,12 @@ public class TileDropper
                 // order.                
                 Collections.shuffle(openIndexList, Util.random);
                               
+                // The current number of items and multipliers.
+                int items          = boardMan.getNumberOfItems();
+                int multipliers    = boardMan.getNumberOfMultipliers();
+                int maxItems       = itemMan.getMaximumItems();
+                int maxMultipliers = itemMan.getMaximumMultipliers();
+                
                 // If there are less items left (to ensure only 1 drop per drop 
                 // in) and we have less than the max number of items...
                 // drop an item in. Otherwise drop a normal.
@@ -144,24 +150,10 @@ public class TileDropper
                     // Start the game over routine.
                     game.startGameOver();
                 }
-                else if (totalDropAmount == 1 
-                        && (boardMan.getNumberOfItems() < itemMan.getMaximumItems() 
-                        || boardMan.getNumberOfMultipliers() < itemMan.getMaximumMultipliers()))
-                {
-                    //LogManager.recordWarning("A, totalDropAmount = " + totalDropAmount);
-                    TileType type = itemMan.getItem(
-                            boardMan.getNumberOfItems(),
-                            boardMan.getNumberOfMultipliers())
-                            .getTileType();
-                    
-                    int randomIndex = openIndexList.remove();                    
-                    
-                    // The tile is an item.
-                    tileDropList.add(boardMan.createTile(randomIndex, row, type));                                  
-                }
-                else if (totalDropAmount <= maximumParallelDropAmount
-                       && (boardMan.getNumberOfItems() < itemMan.getMaximumItems()
-                       || boardMan.getNumberOfMultipliers() < itemMan.getMaximumMultipliers()))
+                else if (
+                          totalDropAmount <= openIndexList.size()
+                       && totalDropAmount <= maximumParallelDropAmount
+                       && (items < maxItems || multipliers < maxMultipliers))                            
                 {
                     //LogManager.recordWarning("B, totalDropAmount = " + totalDropAmount);                    
                     
@@ -180,9 +172,7 @@ public class TileDropper
                                 TileType.NORMAL)); 
                     }
                     
-                    TileType type = itemMan.getItem(
-                                boardMan.getNumberOfItems(),
-                                boardMan.getNumberOfMultipliers()).getTileType();
+                    TileType type = itemMan.getItem(items, multipliers).getTileType();
                     
                     // Drop in the item tile.
                     int randomIndex = openIndexList.remove();
