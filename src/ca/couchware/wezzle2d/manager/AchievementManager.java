@@ -9,7 +9,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import java.util.ArrayList;
@@ -135,11 +135,11 @@ public class AchievementManager implements ICollisionListener
      */
     public void collisionOccured(CollisionEvent e)
     {
-        List<TileEntity> collisionList =  e.getCollisionList();
+        List<Tile> collisionList =  e.getCollisionList();
 
         StringBuffer buffer = new StringBuffer();
 
-        for (TileEntity t : collisionList)
+        for (Tile t : collisionList)
         {
            buffer.append(t.getType().toString() + " -> ");
         }

@@ -11,7 +11,7 @@ import ca.couchware.wezzle2d.util.Util;
  * @author cdmckay
  */
 
-public class RocketTileEntity extends ItemTileEntity
+public class RocketTile extends ItemTile
 {       
     /**
      * The possible directions for the rocket.
@@ -56,7 +56,7 @@ public class RocketTileEntity extends ItemTileEntity
      * @param x
      * @param y
      */    
-    public RocketTileEntity(final BoardManager boardMan, final TileColor color, 
+    public RocketTile(final BoardManager boardMan, final TileColor color, 
             final int x, final int y)
     {
         // Invoke super.

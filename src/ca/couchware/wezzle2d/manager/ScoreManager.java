@@ -174,7 +174,7 @@ import java.util.Set;
         for (Iterator<Integer> it = indexSet.iterator(); it.hasNext();)
         {
             // Grab the tile.
-            TileEntity t = boardMan.getTile(it.next());
+            Tile t = boardMan.getTile(it.next());
             
             // Count it.
             countMap.put(t.getType(), countMap.get(t.getType()) + 1);

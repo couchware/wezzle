@@ -16,7 +16,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
@@ -100,11 +100,11 @@ public class BasicTutorial extends AbstractTutorial
         game.boardMan.clearBoard();
                 
         // Create bottom row.        
-        TileEntity t = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
+        Tile t = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);
         
         // Set a click action.
-        t.addTileListener(new TileEntity.ITileListener()
+        t.addTileListener(new Tile.ITileListener()
         {           
            public void tileClicked()
            {               

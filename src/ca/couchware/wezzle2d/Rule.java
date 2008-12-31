@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 
 /*
@@ -194,7 +194,7 @@ public class Rule
      * @param tileTypeList
      * @return
      */
-    public boolean evaluateCollision(List<TileEntity> tileList)
+    public boolean evaluateCollision(List<Tile> tileList)
     {
         if (this.type != Type.COLLISION)
             return false;

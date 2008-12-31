@@ -322,7 +322,7 @@ public class PieceManager implements IMouseListener
         
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {
-            final TileEntity t = boardMan.getTile((Integer) it.next());
+            final Tile t = boardMan.getTile((Integer) it.next());
 
             // Skip if this is not a tile.
             if (t == null)
@@ -348,7 +348,7 @@ public class PieceManager implements IMouseListener
         
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {                    
-            final TileEntity t = boardMan.getTile((Integer) it.next());
+            final Tile t = boardMan.getTile((Integer) it.next());
 
             // Skip if this is not a tile.
             if (t == null)                    
@@ -376,7 +376,7 @@ public class PieceManager implements IMouseListener
         
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {                    
-            final TileEntity t = boardMan.getTile((Integer) it.next());
+            final Tile t = boardMan.getTile((Integer) it.next());
 
             // Skip if this is not a tile.
             if (t == null)
@@ -516,7 +516,7 @@ public class PieceManager implements IMouseListener
         // The wezzle fade animation.
         List<IAnimation> wezzleAnimationList = new ArrayList<IAnimation>();
         
-        TileEntity tile = null;
+        Tile tile = null;
         for (Integer index : indexSet)
         {
             tile = boardMan.getTile(index);

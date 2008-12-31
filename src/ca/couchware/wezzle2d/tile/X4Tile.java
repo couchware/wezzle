@@ -4,20 +4,20 @@ import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.Settings;
 
 /**
- * A Wezzle tile.
+ * A 4x tile.
  * 
  * @author cdmckay
  */
 
-public class WezzleTileEntity extends ItemTileEntity
+public class X4Tile extends ItemTile
 {
     
     /**
-     * Path to the tile sprite.
+     * Path to the piece selector sprite.
      */
     final private static String PATH = 
-            Settings.getSpriteResourcesPath() + "/ItemWezzle2.png";
-    
+            Settings.getSpriteResourcesPath() + "/Item4x.png";
+        
     /**
      * The constructor.
      * 
@@ -26,16 +26,14 @@ public class WezzleTileEntity extends ItemTileEntity
      * @param x
      * @param y
      */    
-    public WezzleTileEntity(
-            final BoardManager boardMan, 
-            final TileColor color, 
+    public X4Tile(final BoardManager boardMan, final TileColor color, 
             final int x, final int y)
     {
         // Invoke super.
         super(PATH, boardMan, color, x, y);
         
         // Set the type.
-        this.type = TileType.WEZZLE;
+        this.type = TileType.X4;
     }
     
 }

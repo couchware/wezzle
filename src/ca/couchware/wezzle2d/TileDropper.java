@@ -15,7 +15,7 @@ import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class TileDropper
     final private int maximumTotalDropAmount = 8;
       
     /** The tile currently being dropped. */
-    private List<TileEntity> tileDropList = new ArrayList<TileEntity>();
+    private List<Tile> tileDropList = new ArrayList<Tile>();
     
     /** The percentage of tiles to maintain. */
     final private int tileRatio = 80;
@@ -203,7 +203,7 @@ public class TileDropper
                 List<Integer> initialIndexList = new ArrayList<Integer>();
                 
                 // Get the initial indices.
-                for (TileEntity t : tileDropList)
+                for (Tile t : tileDropList)
                 {
                     initialIndexList.add(boardMan.getIndex(t));
                 }
@@ -221,7 +221,7 @@ public class TileDropper
                     boardMan.findYMatch(matchSet);
                     matchSet.addAll(set);
                    
-                    Set<TileEntity> tileMatchSet = new HashSet<TileEntity>();
+                    Set<Tile> tileMatchSet = new HashSet<Tile>();
                     for (Integer i : matchSet)
                     {
                         tileMatchSet.add(boardMan.getTile(i));
@@ -237,7 +237,7 @@ public class TileDropper
                     }
                     else
                     {
-                        for (TileEntity matchedTile : tileMatchSet)
+                        for (Tile matchedTile : tileMatchSet)
                         {
                             TileColor oldColor = matchedTile.getColor();                         
                             TileColor newColor = TileColor.getRandomColor(
@@ -246,7 +246,7 @@ public class TileDropper
                                 
                             int index = tileDropList.indexOf(matchedTile);
                             assert index != -1;
-                            TileEntity newTile = boardMan.replaceTile(boardMan.getIndex(matchedTile), newColor);
+                            Tile newTile = boardMan.replaceTile(boardMan.getIndex(matchedTile), newColor);
                             tileDropList.set(index, newTile);
                         }                                               
                     } // end if
@@ -254,7 +254,7 @@ public class TileDropper
                 
                 // Remove all the old tiles. this will prevent tiles from
                 // potentially blocking the new tiles.
-                for (TileEntity t : tileDropList)
+                for (Tile t : tileDropList)
                 {                    
                     //LogManager.recordMessage("" + tileDropList);
 
@@ -265,11 +265,11 @@ public class TileDropper
                 }
 
                 // Create a new tile drop list from the old one.
-                List<TileEntity> newTileDropList = new ArrayList<TileEntity>();
+                List<Tile> newTileDropList = new ArrayList<Tile>();
                 
                 // Add the new tiles in the initial indexes.
                 int count = 0;
-                for (TileEntity t : tileDropList)
+                for (Tile t : tileDropList)
                 {
                     // This gives the drop a small chance of getting a line.
                     TileColor color;
@@ -296,7 +296,7 @@ public class TileDropper
                     // Start the animation.
                     game.soundMan.play(Sound.BLEEP);
                     
-                    for (TileEntity tile : tileDropList)
+                    for (Tile tile : tileDropList)
                     {
                         if (tile == null)
                         {
@@ -453,11 +453,11 @@ public class TileDropper
      * @param tiles
      * @return
      */
-    private boolean areAllAnimationsDone(List<TileEntity> tileList)
+    private boolean areAllAnimationsDone(List<Tile> tileList)
     {   
         // Cycle through all the tiles, looking for one that is not done
         // so we can short circuit it.
-        for (TileEntity tile : tileList)
+        for (Tile tile : tileList)
         {            
             if (tile != null && tile.getAnimation().isFinished() == false)
             {

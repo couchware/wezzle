@@ -11,7 +11,7 @@ import ca.couchware.wezzle2d.graphics.GraphicEntity;
  * @author cdmckay
  */
 
-public abstract class ItemTileEntity extends TileEntity
+public abstract class ItemTile extends Tile
 {
     /**
      * The sprite representing the bomb graphic.
@@ -30,7 +30,7 @@ public abstract class ItemTileEntity extends TileEntity
      * @param x
      * @param y
      */    
-    public ItemTileEntity(final String path, 
+    public ItemTile(final String path, 
             final BoardManager boardMan, final TileColor color, 
             final int x, final int y)
     {

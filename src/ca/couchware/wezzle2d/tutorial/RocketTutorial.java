@@ -16,9 +16,9 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.tile.RocketTileEntity;
+import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
@@ -107,7 +107,7 @@ public class RocketTutorial extends AbstractTutorial
         game.boardMan.clearBoard();
          
         // Set a click action.
-        TileEntity.ITileListener listener = new TileEntity.ITileListener()
+        Tile.ITileListener listener = new Tile.ITileListener()
         {           
            public void tileClicked()
            {               
@@ -119,14 +119,14 @@ public class RocketTutorial extends AbstractTutorial
         };                   
         
         // Create bottom row.        
-        TileEntity t1 = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
+        Tile t1 = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);                         
         t1.addTileListener(listener);
                 
         game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.BLUE);
         
-        TileEntity t2 = game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
+        Tile t2 = game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);
         t2.addTileListener(listener);
         
@@ -144,12 +144,12 @@ public class RocketTutorial extends AbstractTutorial
                 TileType.NORMAL, TileColor.BLUE);
         
         // Create the rocket.     
-        RocketTileEntity rocket = (RocketTileEntity) game.boardMan.createTile(
+        RocketTile rocket = (RocketTile) game.boardMan.createTile(
                 1, game.boardMan.getRows() - 2, 
                 TileType.ROCKET, TileColor.BLUE);
-        rocket.setDirection(RocketTileEntity.Direction.RIGHT);
+        rocket.setDirection(RocketTile.Direction.RIGHT);
         
-        TileEntity t3 = game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
+        Tile t3 = game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.RED);
         t3.addTileListener(listener);
         
@@ -166,7 +166,7 @@ public class RocketTutorial extends AbstractTutorial
         game.boardMan.createTile(0, game.boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.BLUE);     
         
-        TileEntity t4 = game.boardMan.createTile(1, game.boardMan.getRows() - 3, 
+        Tile t4 = game.boardMan.createTile(1, game.boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.RED);
         t4.addTileListener(listener);
         

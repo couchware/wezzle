@@ -216,12 +216,12 @@ public class BoardManager implements IManager, IKeyListener
 	/**
 	 * The array representing the game board.
 	 */
-	private TileEntity[] board;
+	private Tile[] board;
     
     /**
      * An array representing the scratch board.
      */
-    private TileEntity[] scratchBoard;
+    private Tile[] scratchBoard;
 	
     //--------------------------------------------------------------------------
     // Constructor
@@ -278,8 +278,8 @@ public class BoardManager implements IManager, IKeyListener
         this.gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
 		
 		// Initialize board.
-		board        = new TileEntity[cells];
-        scratchBoard = new TileEntity[cells];
+		board        = new Tile[cells];
+        scratchBoard = new Tile[cells];
         
         // Create the board background graphic.
         GraphicEntity entity = new GraphicEntity.Builder(x - 12, y - 12, PATH)
@@ -322,7 +322,7 @@ public class BoardManager implements IManager, IKeyListener
      * 
      * @param newBoard
      */
-    public void loadBoard(TileEntity[] newBoard)
+    public void loadBoard(Tile[] newBoard)
     {
         // Make sure the array is the right size.        
         assert newBoard.length == cells;
@@ -423,7 +423,7 @@ public class BoardManager implements IManager, IKeyListener
         {
             for (int i = 0; i < cells; i++)
             {
-                TileEntity tile = board[i];
+                Tile tile = board[i];
                 if (tile == null) continue;
                 
                 int tiles = countTilesInDirection(Direction.DOWN, i);
@@ -441,7 +441,7 @@ public class BoardManager implements IManager, IKeyListener
         {
             for (int i = 0; i < cells; i++)
             {
-                TileEntity tile = board[i];
+                Tile tile = board[i];
                 if (tile == null) continue;
                 
                 int tiles = countTilesInDirection(Direction.UP, i);
@@ -463,7 +463,7 @@ public class BoardManager implements IManager, IKeyListener
         {
             for (int i = 0; i < cells; i++)
             {
-                TileEntity tile = board[i];
+                Tile tile = board[i];
                 if (tile == null) continue;
                 
                 int tiles = countTilesInDirection(Direction.LEFT, i);
@@ -481,7 +481,7 @@ public class BoardManager implements IManager, IKeyListener
         {
             for (int i = 0; i < cells; i++)
             {
-                TileEntity tile = board[i];
+                Tile tile = board[i];
                 if (tile == null) continue;
                 
                 int tiles = countTilesInDirection(Direction.RIGHT, i);
@@ -634,7 +634,7 @@ public class BoardManager implements IManager, IKeyListener
 		{			
 			if (board[i] != null)
 			{
-				TileEntity t = board[i];
+				Tile t = board[i];
 				int column = (t.getX() - x) / cellWidth;
 				int row = (t.getY() - y) / cellHeight;
 												
@@ -656,7 +656,7 @@ public class BoardManager implements IManager, IKeyListener
                     + "Found " + newNumberOfTiles + ".");
         
         // Trade-sies!
-        TileEntity[] swapBoard = board;
+        Tile[] swapBoard = board;
 		board = scratchBoard;
         scratchBoard = swapBoard;
 	}      
@@ -668,7 +668,7 @@ public class BoardManager implements IManager, IKeyListener
      */
     private void layerize()
     {
-        for (TileEntity tile : board)            
+        for (Tile tile : board)            
             if (tile != null && layerMan.exists(tile, Layer.TILE) == false)
             {
                 tile.setVisible(visible);
@@ -955,7 +955,7 @@ public class BoardManager implements IManager, IKeyListener
         }
     }
     
-    public void addTile(final int index, final TileEntity t)
+    public void addTile(final int index, final Tile t)
     {
         // Sanity check.
         assert index >= 0 && index < cells;
@@ -1025,51 +1025,61 @@ public class BoardManager implements IManager, IKeyListener
         setDirty(true);                
     }
     
-    public void addTile(final int column, final int row, final TileEntity t)
+    public void addTile(final int column, final int row, final Tile t)
     {
          addTile(row * columns + column, t);
     }
-	     
-    public TileEntity makeTile(TileType type, TileColor color, int x, int y)
+	
+    /**
+     * Creates a new tile with the given type, color and position and returns
+     * it.
+     * 
+     * @param type
+     * @param color
+     * @param x
+     * @param y
+     * @return
+     */
+    public Tile makeTile(TileType type, TileColor color, int x, int y)
     {
-        TileEntity t;
+        Tile t;
         
         switch (type)
         {
             case NORMAL:
-                t = new TileEntity(this, color, x, y);
+                t = new Tile(this, color, x, y);
                 break;
                 
             case X2:
-                t = new X2TileEntity(this, color, x, y);
+                t = new X2Tile(this, color, x, y);
                 break;
                 
             case X3:
-                t = new X3TileEntity(this, color, x, y);
+                t = new X3Tile(this, color, x, y);
                 break;
                 
             case X4:
-                t = new X4TileEntity(this, color, x, y);
+                t = new X4Tile(this, color, x, y);
                 break;
 
             case ROCKET:
-                t = new RocketTileEntity(this, color, x, y);
+                t = new RocketTile(this, color, x, y);
                 break;
 
             case BOMB:
-                t = new BombTileEntity(this, color, x, y);
+                t = new BombTile(this, color, x, y);
                 break;
 
             case STAR:
-                t = new StarTileEntity(this, color, x, y);
+                t = new StarTile(this, color, x, y);
                 break;
                 
             case GRAVITY:
-                t = new GravityTileEntity(this, color, x, y);
+                t = new GravityTile(this, color, x, y);
                 break;
                 
             case WEZZLE:
-                t = new WezzleTileEntity(this, color, x, y);
+                t = new WezzleTile(this, color, x, y);
                 break;
                 
             default: throw new AssertionError("Unknown type.");
@@ -1087,7 +1097,7 @@ public class BoardManager implements IManager, IKeyListener
      * @param color
      * @return
      */
-	public TileEntity createTile(final int index, final TileType type, 
+	public Tile createTile(final int index, final TileType type, 
             final TileColor color)
 	{
         // Sanity check.
@@ -1097,7 +1107,7 @@ public class BoardManager implements IManager, IKeyListener
         // The new tile.
         int tx = x + (index % columns) * cellWidth;
         int ty = y + (index / columns) * cellHeight;
-        TileEntity t = makeTile(type, color, tx, ty);                                        
+        Tile t = makeTile(type, color, tx, ty);                                        
         
         // Add the tile.
         addTile(index, t);               
@@ -1106,19 +1116,19 @@ public class BoardManager implements IManager, IKeyListener
         return t;
 	}
     
-    public TileEntity createTile(final int column, final int row, 
+    public Tile createTile(final int column, final int row, 
             final TileType type, final TileColor color)
     {
         return createTile(row * columns + column, type, color);
     }
     
-    public TileEntity createTile(final int index, final TileType type)
+    public Tile createTile(final int index, final TileType type)
     {
         return createTile(index, type, 
                 TileColor.getRandomColor(getNumberOfColors()));
     }        
     
-    public TileEntity createTile(final int column, final int row, 
+    public Tile createTile(final int column, final int row, 
             final TileType type)
     {
         return createTile(row * columns + column, type);
@@ -1131,7 +1141,7 @@ public class BoardManager implements IManager, IKeyListener
      * @param type
      * @return The new tile.
      */
-    public TileEntity replaceTile(int index, TileType type)
+    public Tile replaceTile(int index, TileType type)
     {                                                     
         // Remove the old, insert the new.       
         TileColor color = getTile(index).getColor();
@@ -1147,7 +1157,7 @@ public class BoardManager implements IManager, IKeyListener
      * @param type
      * @return The new tile.
      */
-    public TileEntity replaceTile(int index, TileColor color)
+    public Tile replaceTile(int index, TileColor color)
     {                                                     
         // Remove the old, insert the new.       
         TileType type = this.getTile(index).getType();
@@ -1155,7 +1165,7 @@ public class BoardManager implements IManager, IKeyListener
         return this.createTile(index, type, color);    
     }
     
-     public TileEntity replaceTile(TileEntity t, TileColor color)
+     public Tile replaceTile(Tile t, TileColor color)
     {                                                     
         // Remove the old, insert the new.       
         TileType type = t.getType();
@@ -1170,24 +1180,24 @@ public class BoardManager implements IManager, IKeyListener
      * @param index
      * @param tile
      */
-    public void replaceTile(int index, TileEntity tile)
+    public void replaceTile(int index, Tile tile)
     {
         this.removeTile(index);
         this.addTile(index, tile);
     }
     
-    public TileEntity cloneTile(TileEntity tile)
+    public Tile cloneTile(Tile tile)
     {
         assert tile != null;
         
         TileType type = tile.getType();
-        TileEntity clone = makeTile(type, tile.getColor(), tile.getX(), tile.getY());
+        Tile clone = makeTile(type, tile.getColor(), tile.getX(), tile.getY());
         
         switch (type)
         {
             case ROCKET:
-                RocketTileEntity rocketTile  = (RocketTileEntity) tile;
-                RocketTileEntity rocketClone = (RocketTileEntity) clone;                
+                RocketTile rocketTile  = (RocketTile) tile;
+                RocketTile rocketClone = (RocketTile) clone;                
                 rocketClone.setDirection(rocketTile.getDirection());                
                 break;                                
         }        
@@ -1195,11 +1205,11 @@ public class BoardManager implements IManager, IKeyListener
         return clone;
     }
     
-    public int getIndex(TileEntity t)
+    public int getIndex(Tile t)
     {
         for(int i = 0; i < board.length; i++)
         {
-            TileEntity testTile = getTile(i);
+            Tile testTile = getTile(i);
             
             if(testTile != null)
             {
@@ -1213,7 +1223,7 @@ public class BoardManager implements IManager, IKeyListener
        return -1;
     }
     
-    public void removeTile(TileEntity t)
+    public void removeTile(Tile t)
     {
        int i = getIndex(t);
        assert(i != -1);
@@ -1227,7 +1237,7 @@ public class BoardManager implements IManager, IKeyListener
 		assert(index >= 0 && index < cells);
         
         // Get the tile.
-        TileEntity t = getTile(index);
+        Tile t = getTile(index);
               
         // If the tile does not exist, throw an exception.
         if (t == null)
@@ -1305,7 +1315,7 @@ public class BoardManager implements IManager, IKeyListener
 	
 	
     
-    public TileEntity getTile(int index)
+    public Tile getTile(int index)
 	{
 		// Sanity check.
 		assert(index >= 0 && index < cells);
@@ -1314,7 +1324,7 @@ public class BoardManager implements IManager, IKeyListener
 		return board[index];
 	}
 	
-	public TileEntity getTile(int column, int row)
+	public Tile getTile(int column, int row)
 	{
 		// Make sure we're within parameters.                
 		if (column < 0 || column >= columns)
@@ -1363,9 +1373,9 @@ public class BoardManager implements IManager, IKeyListener
     {
         assert indexList != null;
         
-        List<TileEntity> tileList = new ArrayList<TileEntity>();
+        List<Tile> tileList = new ArrayList<Tile>();
         
-        TileEntity t;
+        Tile t;
         for (Integer i : indexList)
         {
             t = getTile(i);
@@ -1381,7 +1391,7 @@ public class BoardManager implements IManager, IKeyListener
 		assert(index1 >= 0 && index1 < cells);
 		assert(index2 >= 0 && index2 < cells);
 		
-		TileEntity t = board[index1];
+		Tile t = board[index1];
 		board[index1] = board[index2];
 		board[index2] = t;
 		
@@ -1419,10 +1429,21 @@ public class BoardManager implements IManager, IKeyListener
             column = rocketIndex % columns;
             row    = rocketIndex / columns;
             
-            // Depending on the direction, collect the appropriate tiles.                                           
-            RocketTileEntity.Direction dir = 
-                    ((RocketTileEntity) getTile(rocketIndex))
-                    .getDirection();
+            // Depending on the direction, collect the appropriate tiles.            
+            Tile t = getTile(rocketIndex);
+            RocketTile rocket = null;
+            
+            if (t.getType() == TileType.ROCKET)
+            {
+                rocket = (RocketTile) t;
+            }
+            else if (t.getType() == TileType.WEZZLE 
+                    && ((WezzleTile) t).getWrappedTile().getType() == TileType.ROCKET)
+            {
+                rocket = (RocketTile) ((WezzleTile) t).getWrappedTile();
+            }
+            
+            RocketTile.Direction dir = rocket.getDirection();
             
             int index;
 
@@ -1636,7 +1657,7 @@ public class BoardManager implements IManager, IKeyListener
         // Add the animations.
         for (int i = 0; i < cells; i++)
 		{
-			TileEntity t = getTile(i);
+			Tile t = getTile(i);
 			
 			if (t != null)		
 			{	                
@@ -1691,7 +1712,7 @@ public class BoardManager implements IManager, IKeyListener
         for (int i = 0; i < cells; i++)
         {
             // Get the tile.
-            final TileEntity tile = getTile(i);                        
+            final Tile tile = getTile(i);                        
             
             // Get the row.
             int row = i / columns;
@@ -1699,7 +1720,7 @@ public class BoardManager implements IManager, IKeyListener
             if (tile != null)		
 			{
                 // Make a copy and hide the original.                
-                final TileEntity t = new TileEntity(tile);
+                final Tile t = new Tile(tile);
                 tile.setVisible(false);
                 layerMan.add(t, Layer.TILE);
                 
@@ -1813,7 +1834,7 @@ public class BoardManager implements IManager, IKeyListener
         // Add the animations.
         for (int i = 0; i < cells; i++)
 		{
-			TileEntity t = getTile(i);
+			Tile t = getTile(i);
 			
 			if (t != null)		
 			{	                
@@ -1869,7 +1890,7 @@ public class BoardManager implements IManager, IKeyListener
         for (int i = 0; i < cells; i++)
         {
             // Get the tile.
-            TileEntity tile = getTile(i);                        
+            Tile tile = getTile(i);                        
             
             // Get the row.
             int row = i / columns;
@@ -1877,7 +1898,7 @@ public class BoardManager implements IManager, IKeyListener
             if (tile != null)		
 			{
                 // Make a copy and hide the original.                
-                final TileEntity t = new TileEntity(tile);
+                final Tile t = new Tile(tile);
                 tile.setVisible(false);
                 layerMan.add(t, Layer.TILE);
                 
@@ -1949,7 +1970,7 @@ public class BoardManager implements IManager, IKeyListener
         // Determine centre of tiles.
         for (Integer index : indexSet)            
         {     
-            TileEntity t = getTile(index); 
+            Tile t = getTile(index); 
             
             if (t == null)
                 LogManager.recordWarning("Tile was null: " + index , 
@@ -2146,7 +2167,7 @@ public class BoardManager implements IManager, IKeyListener
         assert colorFilter != null;
         
         List<Integer> indexList = new ArrayList<Integer>();
-        TileEntity tile;        
+        Tile tile;        
         
         for (int i = 0; i < this.cells; i++)
         {
@@ -2192,7 +2213,7 @@ public class BoardManager implements IManager, IKeyListener
         LogManager.recordMessage("Board visible: " + visible + ".", 
                 "BoardManager#setVisible");
         
-        for (TileEntity tile : board)
+        for (Tile tile : board)
             if (tile != null)
                 tile.setVisible(visible);
             
@@ -2240,14 +2261,14 @@ public class BoardManager implements IManager, IKeyListener
         numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);  
         numberOfMultipliers = (Integer) managerState.get(Keys.NUMBER_OF_MULTS);
         gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
-        scratchBoard = (TileEntity[]) managerState.get(Keys.SCRATCH_BOARD);   
-        board = (TileEntity[]) managerState.get(Keys.BOARD);     
+        scratchBoard = (Tile[]) managerState.get(Keys.SCRATCH_BOARD);   
+        board = (Tile[]) managerState.get(Keys.BOARD);     
                        
         // Make sure that this board is in the layer manager.
         layerize();
         
          // readd the item counts.
-        for (TileEntity t : board)
+        for (Tile t : board)
         {
             if (t == null)
                 continue;
@@ -2371,7 +2392,11 @@ public class BoardManager implements IManager, IKeyListener
                 
             case 's':
                 insertItemRandomly(TileType.STAR);
-                break;            
+                break;    
+                
+            case 'w':
+                insertItemRandomly(TileType.WEZZLE);
+                break;    
         }
     }
 

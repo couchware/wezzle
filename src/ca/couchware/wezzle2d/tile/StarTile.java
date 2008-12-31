@@ -4,19 +4,19 @@ import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.Settings;
 
 /**
- * A 2x tile.
+ * A star tile.
  * 
  * @author cdmckay
  */
 
-public class X2TileEntity extends ItemTileEntity
+public class StarTile extends ItemTile
 {
     
     /**
      * Path to the piece selector sprite.
      */
     final private static String PATH = 
-            Settings.getSpriteResourcesPath() + "/Item2x.png";       
+            Settings.getSpriteResourcesPath() + "/ItemStar.png";
     
     /**
      * The constructor.
@@ -26,14 +26,14 @@ public class X2TileEntity extends ItemTileEntity
      * @param x
      * @param y
      */    
-    public X2TileEntity(final BoardManager boardMan, final TileColor color, 
+    public StarTile(final BoardManager boardMan, final TileColor color, 
             final int x, final int y)
     {
         // Invoke super.
         super(PATH, boardMan, color, x, y);
         
         // Set the type.
-        this.type = TileType.X2;
+        this.type = TileType.STAR;
     }
-      
+    
 }

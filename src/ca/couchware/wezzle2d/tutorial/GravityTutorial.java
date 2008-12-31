@@ -18,7 +18,7 @@ import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
@@ -122,11 +122,11 @@ public class GravityTutorial extends AbstractTutorial
         game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
                 TileType.GRAVITY, TileColor.BLUE);
         
-        TileEntity t = game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
+        Tile t = game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);
         
         // Set a click action.
-        t.addTileListener(new TileEntity.ITileListener()
+        t.addTileListener(new Tile.ITileListener()
         {           
            public void tileClicked()
            {               

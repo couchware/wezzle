@@ -13,7 +13,7 @@ import java.util.List;
  *
  */
 
-public class TileEntity extends GraphicEntity
+public class Tile extends GraphicEntity
 {                                 
 	
 	/** The associated board manager. */
@@ -32,7 +32,7 @@ public class TileEntity extends GraphicEntity
 	 * @param x
 	 * @param y
 	 */
-	public TileEntity(BoardManager boardMan, TileColor color, int x, int y) 
+	public Tile(BoardManager boardMan, TileColor color, int x, int y) 
 	{
 		// Invoke super.		
 		super(new Builder(x, y, 
@@ -56,7 +56,7 @@ public class TileEntity extends GraphicEntity
      * 
      * @param tile
      */
-    public TileEntity(TileEntity tile)
+    public Tile(Tile tile)
     {
         this(tile.boardMan, tile.color, tile.x, tile.y);
     }    	

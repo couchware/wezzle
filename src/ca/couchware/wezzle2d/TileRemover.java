@@ -32,10 +32,10 @@ import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
-import ca.couchware.wezzle2d.tile.RocketTileEntity;
-import ca.couchware.wezzle2d.tile.StarTileEntity;
+import ca.couchware.wezzle2d.tile.RocketTile;
+import ca.couchware.wezzle2d.tile.StarTile;
 import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -361,7 +361,7 @@ public class TileRemover implements ILevelListener
             final SettingsManager settingsMan,
             final LayerManager layerMan,
             final BoardManager boardMan, 
-            final TileEntity tile)
+            final Tile tile)
     {
         assert settingsMan != null;
         assert layerMan    != null;
@@ -369,7 +369,7 @@ public class TileRemover implements ILevelListener
         assert tile        != null;
         
         // The clone of tile, used to make the effect.
-        final TileEntity clone = boardMan.cloneTile(tile);
+        final Tile clone = boardMan.cloneTile(tile);
         
         // Add the clone to the layer man.
         layerMan.add(clone, Layer.EFFECT);
@@ -407,8 +407,8 @@ public class TileRemover implements ILevelListener
     private void followThrough(
             Game game,
             Integer lastItem, 
-            List<TileEntity> itemsSeenList,              
-            List<TileEntity> allSeenList) 
+            List<Tile> itemsSeenList,              
+            List<Tile> allSeenList) 
     {
         // The set to hold the tiles affected by the item.
         Set<Integer> tilesAffected = new HashSet<Integer>();
@@ -440,7 +440,7 @@ public class TileRemover implements ILevelListener
         for (Integer index : tilesAffected)
         {           
             // Get the tile entity.
-            TileEntity t = game.boardMan.getTile(index);
+            Tile t = game.boardMan.getTile(index);
             
             // If we have found another item. Recurse.
             if (t.getType() != TileType.NORMAL)
@@ -453,7 +453,7 @@ public class TileRemover implements ILevelListener
                 allSeenList.add(t);
                 
                 // Add to the temp list.
-                List<TileEntity> list = new ArrayList<TileEntity>(itemsSeenList);
+                List<Tile> list = new ArrayList<Tile>(itemsSeenList);
                 list.add(t);
                 followThrough(game, index, list, allSeenList);
             }
@@ -671,7 +671,7 @@ public class TileRemover implements ILevelListener
             int i = 0;
             for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
             {
-                TileEntity t = boardMan.getTile((Integer) it.next());
+                Tile t = boardMan.getTile((Integer) it.next());
 
                 if (levelUpInProgress == true)
                 {
@@ -733,7 +733,7 @@ public class TileRemover implements ILevelListener
                 for (Integer index : allItemSet)
                 {
                     // Get the tile and make a copy.
-                    final TileEntity tile = boardMan.getTile(index);
+                    final Tile tile = boardMan.getTile(index);
                    
                     // Create and add the animation.                    
                     animationMan.add(animateItemActivation(
@@ -750,7 +750,7 @@ public class TileRemover implements ILevelListener
         {
             for (Integer i : gravityRemovalSet)
             {
-                TileEntity t = boardMan.getTile(i);
+                Tile t = boardMan.getTile(i);
                 IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                         .duration(50)
                         .end();
@@ -791,12 +791,12 @@ public class TileRemover implements ILevelListener
         // Also used below.
         IAnimation a1, a2, a3;
         
-        List<TileEntity> allSeenSet = new ArrayList<TileEntity>();
+        List<Tile> allSeenSet = new ArrayList<Tile>();
           
         // Load the items into the allseen initially.
         for (Integer index : rocketRemovalSet)
         {            
-            TileEntity t = game.boardMan.getTile(index);
+            Tile t = game.boardMan.getTile(index);
             
             if (t.getType() != TileType.NORMAL)
             {
@@ -808,7 +808,7 @@ public class TileRemover implements ILevelListener
         for (Integer index : rocketRemovalSet)
         {            
             // Create a set to hold the current item.
-            List<TileEntity> itemsSeen = new ArrayList<TileEntity>();
+            List<Tile> itemsSeen = new ArrayList<Tile>();
             itemsSeen.add(boardMan.getTile(index));
             
             followThrough(game, index, itemsSeen, allSeenSet);
@@ -824,7 +824,7 @@ public class TileRemover implements ILevelListener
                 continue;
             }
 
-            if (boardMan.getTile(index).getClass() != RocketTileEntity.class)
+            if (boardMan.getTile(index).getClass() != RocketTile.class)
             {
                 tileRemovalSet.remove(index);
             }
@@ -832,7 +832,7 @@ public class TileRemover implements ILevelListener
 
         deltaScore = scoreMan.calculateLineScore(
                 tileRemovalSet,
-                ScoreType.STAR,
+                ScoreType.ROCKET,
                 statMan.getChainCount());       
         
         // Increment the score.
@@ -917,7 +917,7 @@ public class TileRemover implements ILevelListener
         
         for (Integer i : allItemSet)
         {
-            TileEntity t = boardMan.getTile(i);
+            Tile t = boardMan.getTile(i);
             
             if (t == null) continue;
             
@@ -929,7 +929,7 @@ public class TileRemover implements ILevelListener
         int i = 0;
         for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
         {
-            TileEntity t = boardMan.getTile((Integer) it.next());
+            Tile t = boardMan.getTile((Integer) it.next());
 
             // Bring the tile to the front.
             game.layerMan.toFront(t, Layer.TILE);
@@ -937,7 +937,7 @@ public class TileRemover implements ILevelListener
             if (t.getType() == TileType.ROCKET)
             {                
                 // Cast it.
-                RocketTileEntity r = (RocketTileEntity) t;                                
+                RocketTile r = (RocketTile) t;                                
                 
                 a1 = new MoveAnimation.Builder(r)
                         .duration(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_DURATION))
@@ -1001,13 +1001,11 @@ public class TileRemover implements ILevelListener
         // Create shortcuts to all the managers.
         final AnimationManager animationMan = game.animationMan;
         final BoardManager boardMan = game.boardMan;
-        final LayerManager layerMan = game.layerMan;
-        //final ListenerManager listenerMan = game.listenerMan;
+        final LayerManager layerMan = game.layerMan;        
         final ScoreManager scoreMan = game.scoreMan;
         final SettingsManager settingsMan = game.settingsMan;
         final SoundManager soundMan = game.soundMan;
-        final StatManager statMan = game.statMan;                        
-        //final TutorialManager tutorialMan = game.tutorialMan;                
+        final StatManager statMan = game.statMan;                                                
 
         // Shortcut to the set.
         Set<Integer> bombRemovalSet = this.itemSetMap.get(TileType.BOMB);
@@ -1024,12 +1022,12 @@ public class TileRemover implements ILevelListener
         // Also used below.
         IAnimation a1, a2, a3;
 
-        List<TileEntity> allSeen = new ArrayList<TileEntity>();
+        List<Tile> allSeen = new ArrayList<Tile>();
           
         // Load the items into the allseen initially.
         for (Integer index : bombRemovalSet)
         {          
-            TileEntity t = game.boardMan.getTile(index);
+            Tile t = game.boardMan.getTile(index);
             
             if (t.getType() != TileType.NORMAL)
             {
@@ -1041,7 +1039,7 @@ public class TileRemover implements ILevelListener
         for (Integer index : bombRemovalSet)
         {           
             // Create a set to hold the current item.
-            List<TileEntity> itemsSeenList = new ArrayList<TileEntity>();            
+            List<Tile> itemsSeenList = new ArrayList<Tile>();            
             itemsSeenList.add(boardMan.getTile(index));                        
             
             followThrough(game, index, itemsSeenList, allSeen);            
@@ -1052,19 +1050,7 @@ public class TileRemover implements ILevelListener
         deltaScore = scoreMan.calculateLineScore(
                 tileRemovalSet,
                 ScoreType.BOMB,
-                statMan.getChainCount());
-
-        // Fire a score event.
-//        if (tutorialMan.isTutorialInProgress() == true)
-//        {
-//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-//                    IListenerManager.GameType.TUTORIAL);
-//        }
-//        else
-//        {
-//            listenerMan.notifyScoreChanged(new ScoreEvent(this, deltaScore, -1),
-//                    IListenerManager.GameType.GAME);
-//        }
+                statMan.getChainCount());       
 
         // Increment the score.
         if (game.tutorialMan.isTutorialInProgress() == false)       
@@ -1145,7 +1131,7 @@ public class TileRemover implements ILevelListener
         
         for (Integer i : allItemSet)
         {
-            TileEntity t = boardMan.getTile(i);
+            Tile t = boardMan.getTile(i);
             t.setAnimation(animateItemActivation(settingsMan, layerMan, boardMan, t));
             animationMan.add(t.getAnimation());
         }
@@ -1164,7 +1150,7 @@ public class TileRemover implements ILevelListener
         // Start the line removal animations.
         for (Integer i : tileRemovalSet)
         {
-            TileEntity t = boardMan.getTile(i);
+            Tile t = boardMan.getTile(i);
             layerMan.toFront(t, Layer.TILE);
             
             if (boardMan.getTile(i).getType() == TileType.BOMB)
@@ -1290,12 +1276,12 @@ public class TileRemover implements ILevelListener
         IAnimation a1, a2;
         
         
-        List<TileEntity> allSeenSet = new ArrayList<TileEntity>();
+        List<Tile> allSeenSet = new ArrayList<Tile>();
           
         // Load the items into the allseen initially.
         for (Integer index : starRemovalSet)
         {            
-            TileEntity t = game.boardMan.getTile(index);
+            Tile t = game.boardMan.getTile(index);
             
             if (t.getType() != TileType.NORMAL)
             {
@@ -1307,7 +1293,7 @@ public class TileRemover implements ILevelListener
         for (Integer index : starRemovalSet)
         {           
             // Create a set to hold the current item.
-            List<TileEntity> itemsSeenList = new ArrayList<TileEntity>();            
+            List<Tile> itemsSeenList = new ArrayList<Tile>();            
             itemsSeenList.add(boardMan.getTile(index));                        
             
             followThrough(game, index, itemsSeenList, allSeenSet);            
@@ -1323,7 +1309,7 @@ public class TileRemover implements ILevelListener
                 continue;
             }
 
-            if (boardMan.getTile(index).getClass() != StarTileEntity.class)
+            if (boardMan.getTile(index).getClass() != StarTile.class)
             {
                 tileRemovalSet.remove(index);
             }
@@ -1398,7 +1384,7 @@ public class TileRemover implements ILevelListener
         int i = 0;
         for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
         {
-            TileEntity t = boardMan.getTile((Integer) it.next());
+            Tile t = boardMan.getTile((Integer) it.next());
 
             // Bring the entity to the front.
             game.layerMan.toFront(t, Layer.TILE);

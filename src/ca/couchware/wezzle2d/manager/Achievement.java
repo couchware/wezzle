@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
-import ca.couchware.wezzle2d.tile.TileEntity;
+import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import java.util.ArrayList;
@@ -110,7 +110,7 @@ public class Achievement implements IXMLizable
         return true;       
     }
     
-    public boolean evaluateCollision(List<TileEntity> collisionList)
+    public boolean evaluateCollision(List<Tile> collisionList)
     {
         // Use the private helper method to test if all of the fields
         // meet the requirements. any null values are automatically
