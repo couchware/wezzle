@@ -8,7 +8,11 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
@@ -23,7 +27,7 @@ import java.util.Map;
  *
  * @author cdmckay
  */
-public class ItemManager implements IManager, ILevelListener
+public class ItemManager implements IManager, ILevelListener, IMoveListener
 {
 
     /**
@@ -58,6 +62,12 @@ public class ItemManager implements IManager, ILevelListener
      */
     private int maximumMultipliers;           
     
+    
+    /**
+     * The cooldown amounts.
+     */
+    private int starCooldown = -1;
+    
     private ItemManager()
     {
         // Set the max items and mults.
@@ -82,6 +92,8 @@ public class ItemManager implements IManager, ILevelListener
         // Create the rule list.
         currentRuleList = new LinkedList<Rule>();        
         
+        importSettings();
+        assert(starCooldown != -1);
         // Reset the manager to finish the initalization.
         resetState();
     }
@@ -240,6 +252,19 @@ public class ItemManager implements IManager, ILevelListener
         throw new RuntimeException("Attempted to get an item or multiplier that did not exist.");
 	}
        
+        
+    private void importSettings()
+    {
+        SettingsManager settingsMan = SettingsManager.get();
+        
+        
+        // Get the list from the settings manager.
+        //List list = new ArrayList((List) settingsMan.getObject(Key.USER_HIGHSCORE));
+        starCooldown  =  settingsMan.getInt(Key.ITEM_COOLDOWN_STAR);
+        
+ 
+    }
+        
     /**
      * Gets a random item.
      * 
@@ -305,6 +330,10 @@ public class ItemManager implements IManager, ILevelListener
                 // Skip the normal tile.
                 if (item.getTileType() == TileType.NORMAL)
                     continue;
+                
+                // Skip all tiles that have cooldowns.
+                if (item.getCooldown() > 0)
+                    continue;
 
                 if (item.getWeight() > 0)
                     itemList.add(item);
@@ -315,6 +344,10 @@ public class ItemManager implements IManager, ILevelListener
         {  
             for (Item item : multiplierMap.values())
             {
+                // Skip all tiles that have cooldowns.
+                if (item.getCooldown() > 0)
+                    continue;
+                
                 if (item.getWeight() > 0)
                     itemList.add(item);
             }
@@ -350,7 +383,20 @@ public class ItemManager implements IManager, ILevelListener
 		{
 			if (randomNumber < dist[j])
             {
-				return itemList.get(j - 1);
+                            Item returnItem = itemList.get(j-1);
+                            
+                            // Add cooldown code here.
+                            switch(returnItem.getTileType())
+                            {
+                                case STAR:
+                                    returnItem.setCooldown(starCooldown);
+                                    break;
+                                default:
+                                    break;
+                                          
+                            }
+                                
+				return returnItem;
             }
 		}
 		
@@ -452,6 +498,24 @@ public class ItemManager implements IManager, ILevelListener
             Item normalTiles = getItemOrMultiplier(TileType.NORMAL);
             normalTiles.setCurrentAmount((getItemOrMultiplier(TileType.NORMAL).getInitialAmount() + newLevel) - 1);
         }
+    }
+
+    public void moveCommitted(MoveEvent event, GameType gameType) 
+    {
+       // Decrement all the cooldowns if this isnt the tutorial.
+       if(gameType == GameType.TUTORIAL)
+            return;
+       
+       for(Item i : itemMap.values())
+       {
+           i.decrementCooldown();
+          LogManager.recordMessage(i.getTileType() + " cooldown: " + i.getCooldown());
+       }
+    }
+
+    public void moveCompleted(MoveEvent event) 
+    {
+      // Intentionally left blank.
     }
     
 }

@@ -35,6 +35,12 @@ public class Item
 	 */
 	private int weight;
         
+        /**
+         * The number of moves that must elapse before the piece is 
+         * considered for board addition.
+         */
+        private int cooldown;
+        
     /**
      * The maximum number of these items on the screen at once.
      */
@@ -48,13 +54,15 @@ public class Item
 	 * A constructor to construct an item descriptor for the passed in class.
 	 * @param itemClass The class we are describing.
 	 */
-	private Item(TileType tileType, int initialAmount, int probability, int maxOnScreen)
+	private Item(TileType tileType, int initialAmount, int probability,
+                int maxOnScreen, int cooldown)
 	{
 		this.tileType = tileType;
 		this.initialAmount = initialAmount;
 		this.currentAmount = 0;
 		this.weight = probability;
                 this.maxOnScreen = maxOnScreen;
+                this.cooldown = cooldown;
 	}
     
     public static class Builder implements IBuilder<Item>
@@ -66,6 +74,7 @@ public class Item
         private int initialAmount = 0;        
         private int weight = 10;
         private int maxOnScreen = 1;
+        private int cooldown = 0;
         
         public Builder(TileType tileType)
         {            
@@ -80,10 +89,13 @@ public class Item
         
         public Builder maximumOnBoard(int val) 
         { maxOnScreen = val; return this; }
+         
+        public Builder cooldown(int val) 
+        { cooldown = val; return this; }
         
         public Item end()
         {            
-            return new Item(tileType, initialAmount, weight, maxOnScreen);
+            return new Item(tileType, initialAmount, weight, maxOnScreen, cooldown);
         }                
     } 
 	
@@ -120,6 +132,29 @@ public class Item
 	{
 		this.initialAmount = initialAmount;
 	}
+        
+        /**
+         * Decrement the item's cooldown.
+         */
+        public void decrementCooldown()
+        {
+            if(this.cooldown > 0)
+                cooldown--;
+        }
+        
+        /**
+         * Get the cooldown.
+         */
+        
+        public int getCooldown()
+        {
+            return this.cooldown;
+        }
+        
+        public void setCooldown(int cooldown)
+        {
+            this.cooldown = cooldown;
+        }
 	
 	public void incrementInitialAmount()
 	{

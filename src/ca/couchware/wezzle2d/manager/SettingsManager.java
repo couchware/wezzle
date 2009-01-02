@@ -412,7 +412,7 @@ public class SettingsManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public int getInt(Key key)
+	public final int getInt(Key key)
 	{	
         int val = 0;
         

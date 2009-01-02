@@ -157,7 +157,11 @@ public class Settings
         MAIN_MENU_LOGO_FADE_IN_WAIT,
         MAIN_MENU_LOGO_FADE_IN_DURATION,
         MAIN_MENU_LOGO_FADE_OUT_WAIT,
-        MAIN_MENU_LOGO_FADE_OUT_DURATION    
+        MAIN_MENU_LOGO_FADE_OUT_DURATION,
+        
+        // Item values.
+        ITEM_COOLDOWN_STAR
+                
     }
     
     public enum Value

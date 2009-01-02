@@ -349,6 +349,7 @@ public class Game extends Canvas implements IGameWindowCallback
             itemMan = ItemManager.newInstance();  
             
             listenerMan.registerListener(Listener.LEVEL, itemMan);
+            listenerMan.registerListener(Listener.MOVE, itemMan);
         } 
         
         if (set.contains(Manager.STAT))
