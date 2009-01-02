@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
@@ -21,9 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
-import org.apache.commons.pool.KeyedPoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 
 /**
  * Manages the game board.  A replacement for the GameBoard class from
