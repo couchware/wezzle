@@ -109,4 +109,5 @@
   <entry name="Main.Menu.Logo.Fade.In.Duration">2400</entry>
   <entry name="Main.Menu.Logo.Fade.Out.Wait">0</entry>
   <entry name="Main.Menu.Logo.Fade.Out.Duration">1600</entry>
+  <entry name="Item.Cooldown.Star">10</entry>
 </settings>
