@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -798,7 +799,9 @@ public class LWJGLGameWindow implements IGameWindow
     // IKeyListener Attributes
     //--------------------------------------------------------------------------
     
-    List<IKeyListener> keyListenerList = new ArrayList<IKeyListener>();
+    Map<IKeyListener, Object> keyListenerMap = new WeakHashMap<IKeyListener, Object>();
+    final static Object KEY_FILLER = new Object();
+    //List<IKeyListener> keyListenerList = new ArrayList<IKeyListener>();
     
     //--------------------------------------------------------------------------
     // IKeyListener Methods
@@ -811,10 +814,10 @@ public class LWJGLGameWindow implements IGameWindow
         if (l == null)
             throw new NullPointerException();
         
-        if (keyListenerList.contains(l))
+        if (keyListenerMap.containsKey(l))
             throw new IllegalStateException("Listener already registered!");
-        
-        keyListenerList.add(l);
+                
+        keyListenerMap.put(l, KEY_FILLER);
     }
         
     public void removeKeyListener(IKeyListener l)
@@ -824,15 +827,18 @@ public class LWJGLGameWindow implements IGameWindow
         if (l == null)
             throw new NullPointerException();
         
-        if (!keyListenerList.contains(l))
+        if (!keyListenerMap.containsKey(l))
             throw new IllegalStateException("Listener not registered!");
         
-        if (keyListenerList.remove(l) == false)
-            throw new IllegalStateException("Failed to remove listener!");
+        keyListenerMap.remove(l);
     }
     
     public void updateKeyPresses()
-    {         
+    {    
+        // Before we start, make a copy of the listener list in case
+        // one of the listeners modifies their listener status.
+        List<IKeyListener> list = new ArrayList<IKeyListener>(keyListenerMap.keySet());   
+        
         // If non-empty, clear.
         if (this.keyPressSet.isEmpty() == false)
         {
@@ -844,7 +850,7 @@ public class LWJGLGameWindow implements IGameWindow
             char ch = Keyboard.getEventCharacter();
             Ascii a = Ascii.valueOf(ch);
                                     
-            for (IKeyListener l : keyListenerList)
+            for (IKeyListener l : list)
             {
                 // If it equals NUL, then it's actually a key up.
                 if (a != Ascii.NUL)               
@@ -872,7 +878,10 @@ public class LWJGLGameWindow implements IGameWindow
     // IMouseListener Attributes
     //--------------------------------------------------------------------------
     
-    List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();      
+    Map<IMouseListener, Object> mouseListenerMap = new WeakHashMap<IMouseListener, Object>();
+    final static Object MOUSE_FILLER = new Object();
+    
+    //List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();      
     private ImmutablePosition mousePosition = new ImmutablePosition(
             Mouse.getX(), height - Mouse.getY());
         
@@ -936,7 +945,7 @@ public class LWJGLGameWindow implements IGameWindow
     {           
         // Before we start, make a copy of the listener list in case
         // one of the listeners modifies their listener status.
-        List<IMouseListener> list = new ArrayList<IMouseListener>(mouseListenerList);
+        List<IMouseListener> list = new ArrayList<IMouseListener>(mouseListenerMap.keySet());        
         
         // Poll mouse events.
         while (Mouse.next())
@@ -1071,10 +1080,10 @@ public class LWJGLGameWindow implements IGameWindow
         if (l == null)
             throw new NullPointerException();
         
-        if (mouseListenerList.contains(l))
+        if (mouseListenerMap.containsKey(l))
             throw new IllegalStateException("Listener already registered!");
         
-        mouseListenerList.add(l);
+        mouseListenerMap.put(l, MOUSE_FILLER);
     }
         
     public void removeMouseListener(IMouseListener l)
@@ -1082,11 +1091,10 @@ public class LWJGLGameWindow implements IGameWindow
         if (l == null)
             throw new NullPointerException();
         
-        if (!mouseListenerList.contains(l))
+        if (!mouseListenerMap.containsKey(l))
             throw new IllegalStateException("Listener not registered!");
         
-        if (mouseListenerList.remove(l) == false)
-            throw new IllegalStateException("Failed to remove listener!");
+        mouseListenerMap.remove(l);
     }
    
 }

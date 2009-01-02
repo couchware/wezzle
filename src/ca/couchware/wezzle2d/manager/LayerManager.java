@@ -83,7 +83,11 @@ public class LayerManager implements IDrawer, IManager
         this.removeRect = new Rectangle();
     }
         
-    // Public API.
+    /**
+     * Create a new layer manager instance.
+     * 
+     * @return
+     */
     public static LayerManager newInstance()
     {
         return new LayerManager();

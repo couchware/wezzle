@@ -21,6 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 
 /**
  * Manages the game board.  A replacement for the GameBoard class from
@@ -63,8 +66,8 @@ public class BoardManager implements IManager, IKeyListener
      */
     public static enum AnimationType
     {
-        ROW_FADE, SLIDE_FADE
-    
+        ROW_FADE,
+        SLIDE_FADE    
     }
     
     /**
@@ -162,10 +165,10 @@ public class BoardManager implements IManager, IKeyListener
         NUMBER_OF_COLORS,
         NUMBER_OF_TILES,
         NUMBER_OF_ITEMS,
-        NUMBER_OF_MULTS,
+        NUMBER_OF_MULTIPLIERS,
         GRAVITY,
         BOARD,
-        SCRATCH_BOARD
+        SCRATCH_BOARD    
     }
     
     /**
@@ -176,7 +179,7 @@ public class BoardManager implements IManager, IKeyListener
     
     //--------------------------------------------------------------------------
     // Instance Members
-    //--------------------------------------------------------------------------        
+    //--------------------------------------------------------------------------               
     
     /**
      * Whether or not this is visible.
@@ -2239,7 +2242,7 @@ public class BoardManager implements IManager, IKeyListener
     {
         managerState.put(Keys.NUMBER_OF_COLORS, numberOfColors);
         managerState.put(Keys.NUMBER_OF_ITEMS, numberOfItems);
-        managerState.put(Keys.NUMBER_OF_MULTS, numberOfMultipliers);
+        managerState.put(Keys.NUMBER_OF_MULTIPLIERS, numberOfMultipliers);
         managerState.put(Keys.NUMBER_OF_TILES, numberOfTiles);
         managerState.put(Keys.GRAVITY, gravity);
         managerState.put(Keys.BOARD, board.clone());
@@ -2259,7 +2262,7 @@ public class BoardManager implements IManager, IKeyListener
         numberOfColors = (Integer) managerState.get(Keys.NUMBER_OF_COLORS);
         numberOfItems = (Integer) managerState.get(Keys.NUMBER_OF_ITEMS);
         numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);  
-        numberOfMultipliers = (Integer) managerState.get(Keys.NUMBER_OF_MULTS);
+        numberOfMultipliers = (Integer) managerState.get(Keys.NUMBER_OF_MULTIPLIERS);
         gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
         scratchBoard = (Tile[]) managerState.get(Keys.SCRATCH_BOARD);   
         board = (Tile[]) managerState.get(Keys.BOARD);     

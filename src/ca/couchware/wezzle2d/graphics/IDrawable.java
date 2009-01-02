@@ -9,6 +9,7 @@ import java.awt.Rectangle;
  */
 public interface IDrawable
 {
+    
     /**
      * Draw the drawable.
      * 
@@ -56,5 +57,6 @@ public interface IDrawable
      * 
      * @return
      */
-    public boolean isDirty();
+    public boolean isDirty();        
+    
 }

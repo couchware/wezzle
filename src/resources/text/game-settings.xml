@@ -34,6 +34,10 @@
   <entry name="Animation.Jump.Move.Gravity">800</entry>
   <entry name="Animation.Jump.Fade.Wait">0</entry>
   <entry name="Animation.Jump.Fade.Duration">880</entry>
+  <entry name="Animation.Level.Move.Speed">340</entry>
+  <entry name="Animation.Level.Move.Duration">400</entry>  
+  <entry name="Animation.Level.Move.Gravity">0</entry>
+  <entry name="Animation.Level.Fade.Duration">400</entry>
   <entry name="Animation.Line.Remove.Zoom.Speed">50</entry>
   <entry name="Animation.Line.Remove.Fade.Wait">0</entry>
   <entry name="Animation.Line.Remove.Fade.Duration">0</entry>

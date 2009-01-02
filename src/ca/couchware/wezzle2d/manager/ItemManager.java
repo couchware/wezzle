@@ -423,7 +423,7 @@ public class ItemManager implements IManager, ILevelListener
                 .initialAmount(28).weight(5).maximumOnBoard(100).end());
         
         itemMap.put(TileType.WEZZLE, new Item.Builder(TileType.WEZZLE)
-                .initialAmount(0).weight(100).maximumOnBoard(4).end());
+                .initialAmount(0).weight(0).maximumOnBoard(4).end());
         
         itemMap.put(TileType.ROCKET, new Item.Builder(TileType.ROCKET)
                 .initialAmount(0).weight(0).maximumOnBoard(1).end());

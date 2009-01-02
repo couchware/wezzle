@@ -8,7 +8,8 @@ package ca.couchware.wezzle2d.graphics;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 
 /**
- *
+ * An interface for describing any entity that appears in the game.
+ * 
  * @author cdmckay
  */
 public interface IEntity extends IDrawable, IPositionable
@@ -29,7 +30,7 @@ public interface IEntity extends IDrawable, IPositionable
     public int getOpacity();
     
     /**
-     * Rotates the image by theta.
+     * Rotates the entity by theta.
      */
     public void setRotation(double theta);
     
@@ -38,7 +39,19 @@ public interface IEntity extends IDrawable, IPositionable
      */
     public double getRotation();
     
+    /**
+     * Sets the point that the entity should be rotated about.
+     * 
+     * @param tx
+     * @param ty
+     */
     public void setRotationAnchor(int tx, int ty);    
+    
+    /**
+     * Gets the point that entity will be rotated about.
+     * 
+     * @return
+     */
     public ImmutablePosition getRotationAnchor();
     
     /**
@@ -49,6 +62,6 @@ public interface IEntity extends IDrawable, IPositionable
     /**
      * Gets the disabled status of the entity.
      */
-    public boolean isDisabled();
+    public boolean isDisabled();       
     
 }

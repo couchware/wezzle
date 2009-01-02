@@ -16,6 +16,9 @@ import java.util.List;
 public class Tile extends GraphicEntity
 {                                 
 	
+    /** The file extension for tile graphics. */
+    protected static final String FILE_EXT = ".png";
+    
 	/** The associated board manager. */
 	protected final BoardManager boardMan;	    
     
@@ -36,7 +39,7 @@ public class Tile extends GraphicEntity
 	{
 		// Invoke super.		
 		super(new Builder(x, y, 
-                Settings.getSpriteResourcesPath() + "/Tile" + color + ".png"));                
+                Settings.getSpriteResourcesPath() + "/Tile" + color + FILE_EXT));                
         
         // Set the position.
         this.x  = x;
@@ -97,47 +100,7 @@ public class Tile extends GraphicEntity
                 .theta(theta, rotationAnchor).opacity(opacity).end();                          
         
         return true;
-	}   
-    
-//    @Override
-//    public String toString()
-//    {
-//        StringBuffer buffer = new StringBuffer();
-//        buffer.append(String.format
-//    }
-    
-//    //--------------------------------------------------------------------------
-//    // Clickable
-//    //--------------------------------------------------------------------------
-//    
-//    /**
-//     * The stored click action.
-//     */
-//    Runnable clickHook = null;
-//    
-//    /**
-//     * Sets the click runnable.
-//     */
-//    public void setClickRunnable(Runnable r)
-//    { 
-//        this.clickHook = r;
-//    }
-//    
-//    /**
-//     * Gets the click runnable.
-//     */
-//    public Runnable getClickRunnable()
-//    {
-//        return clickHook;
-//    }
-//    
-//    /**
-//     * This method is called when the tile is clicked.
-//     */
-//    public void onClick()
-//    {
-//        if (clickHook != null) clickHook.run();
-//    }
+	}       
     
     /** An interface for listening to tile changes. */
     public static interface ITileListener 

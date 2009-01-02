@@ -949,8 +949,7 @@ public class Game extends Canvas implements IGameWindowCallback
         try
         {
             // Save the properites.
-            if (SettingsManager.get() != null)        
-                SettingsManager.get().saveSettings();
+            if (settingsMan != null) settingsMan.saveSettings();
 
             // Save the log data.            
             LogManager.write();
@@ -1002,17 +1001,7 @@ public class Game extends Canvas implements IGameWindowCallback
 	 *            The arguments that are passed into our game
 	 */
 	public static void main(String argv[])
-	{		        
-//        if (System.getProperty("os.name").toLowerCase().contains("windows"))
-//        {
-//            Util.handleMessage("Windows detected, enabling translaccel.");
-//            System.setProperty("sun.java2d.translaccel", "true");
-//        }
-        
-        // Enable OpenGL.
-        // Can cause the JVM to crash.
-        //System.setProperty("sun.java2d.opengl", "True");
-        
+	{		              
         // Make sure the setting manager is loaded.       
         SettingsManager settingsMan = SettingsManager.get();      
         

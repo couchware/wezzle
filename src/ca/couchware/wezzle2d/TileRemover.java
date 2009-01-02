@@ -14,7 +14,6 @@ import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
-import ca.couchware.wezzle2d.animation.MetaAnimation.RunRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
@@ -22,7 +21,6 @@ import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
-import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.*;
@@ -34,11 +32,9 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.StarTile;
-import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -94,10 +90,7 @@ public class TileRemover implements ILevelListener
     
     /** If true, a wezzle tile infection is in progress. */
     private boolean tileInfectionInProgress = false;
-    
-    /** The tile infection animation. */
-    private IAnimation tileInfectionAnimation = FinishedAnimation.get();
-        
+      
     /** If true, a bomb removal will be activated next loop. */
     private boolean activateBombRemoval = false;    
     
@@ -404,7 +397,7 @@ public class TileRemover implements ILevelListener
     }
 
 
-    private void followThrough(
+    private void trackItem(
             Game game,
             Integer lastItem, 
             List<Tile> itemsSeenList,              
@@ -455,7 +448,7 @@ public class TileRemover implements ILevelListener
                 // Add to the temp list.
                 List<Tile> list = new ArrayList<Tile>(itemsSeenList);
                 list.add(t);
-                followThrough(game, index, list, allSeenList);
+                trackItem(game, index, list, allSeenList);
             }
         }
         
@@ -667,30 +660,33 @@ public class TileRemover implements ILevelListener
         // Start the line removal animations if there are any
         // non-bomb tiles.
         if (tileRemovalSet.isEmpty() == false)
-        {
-            int i = 0;
-            for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
+        {            
+            for (Integer index : tileRemovalSet)
             {
-                Tile t = boardMan.getTile((Integer) it.next());
+                Tile t = boardMan.getTile(index);
 
                 if (levelUpInProgress == true)
                 {
-                    i++;
-                    int angle = i % 2 == 0 ? 70 : 180 - 70;
+                    final int COLUMN = boardMan.asColumn(index);
+                    final int ANGLE  = COLUMN >= boardMan.getColumns() / 2 ? 0 : 180;                    
+                    final int WAIT   = COLUMN >= boardMan.getColumns() / 2
+                            ? (boardMan.getColumns() - 1 - COLUMN) * 100
+                            : COLUMN * 100;
 
                     // Bring this tile to the top.
                     game.layerMan.toFront(t, Layer.TILE);
 
                     IAnimation a1 = new MoveAnimation.Builder(t)
-                            .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
-                            .theta(angle)
-                            .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
-                            .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
+                            .wait(WAIT)
+                            .duration(settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_DURATION))
+                            .theta(ANGLE)
+                            .speed(settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_SPEED))
+                            .gravity(settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_GRAVITY))
                             .end();
                     
                     IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                            .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
-                            .duration(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_DURATION))
+                            .wait(WAIT)
+                            .duration(settingsMan.getInt(Key.ANIMATION_LEVEL_FADE_DURATION))
                             .end();
                     
                     t.setAnimation(a1);
@@ -730,10 +726,10 @@ public class TileRemover implements ILevelListener
                 }
 
                 // Animate their activation.
-                for (Integer index : allItemSet)
+                for (Integer itemIndex : allItemSet)
                 {
                     // Get the tile and make a copy.
-                    final Tile tile = boardMan.getTile(index);
+                    final Tile tile = boardMan.getTile(itemIndex);
                    
                     // Create and add the animation.                    
                     animationMan.add(animateItemActivation(
@@ -811,7 +807,7 @@ public class TileRemover implements ILevelListener
             List<Tile> itemsSeen = new ArrayList<Tile>();
             itemsSeen.add(boardMan.getTile(index));
             
-            followThrough(game, index, itemsSeen, allSeenSet);
+            trackItem(game, index, itemsSeen, allSeenSet);
         }
 
         // Get the tiles the rockets would affect.
@@ -1042,7 +1038,7 @@ public class TileRemover implements ILevelListener
             List<Tile> itemsSeenList = new ArrayList<Tile>();            
             itemsSeenList.add(boardMan.getTile(index));                        
             
-            followThrough(game, index, itemsSeenList, allSeen);            
+            trackItem(game, index, itemsSeenList, allSeen);            
         }
         
         // Get the tiles the bombs would affect.
@@ -1296,7 +1292,7 @@ public class TileRemover implements ILevelListener
             List<Tile> itemsSeenList = new ArrayList<Tile>();            
             itemsSeenList.add(boardMan.getTile(index));                        
             
-            followThrough(game, index, itemsSeenList, allSeenSet);            
+            trackItem(game, index, itemsSeenList, allSeenSet);            
         }
 
         // Get the tiles the bombs would affect.
@@ -1382,9 +1378,9 @@ public class TileRemover implements ILevelListener
 
         // Start the line removal animations.
         int i = 0;
-        for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
+        for (Integer index : tileRemovalSet)
         {
-            Tile t = boardMan.getTile((Integer) it.next());
+            Tile t = boardMan.getTile(index);
 
             // Bring the entity to the front.
             game.layerMan.toFront(t, Layer.TILE);
