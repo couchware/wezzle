@@ -11,7 +11,6 @@ import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.jdom.Element;
 
@@ -56,7 +55,7 @@ public class Achievement implements IXMLizable
     private final String name;
     private final String description;
     private final Difficulty difficulty;   
-    private final Date date;
+    private String date = "";
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -71,20 +70,22 @@ public class Achievement implements IXMLizable
             String title,
             String description, 
             Difficulty difficulty, 
-            Date completed)
+            String completed)
     {
         this.ruleList    = ruleList;
         this.name       = title;
         this.description = description;
         this.difficulty  = difficulty;
-        this.date = completed;
+        
+        if(completed != null)
+            this.date = completed;
     }
         
     public static Achievement newInstance(List<Rule> ruleList, 
             String title,
             String description, 
             Difficulty difficulty, 
-            Date date)
+            String date)
     {
        return new Achievement(ruleList, title, description, difficulty, date);
     }
@@ -108,6 +109,11 @@ public class Achievement implements IXMLizable
         }
        
         return true;       
+    }
+    
+    public void setDate(String date)
+    {
+        this.date = date;
     }
     
     public boolean evaluateCollision(List<Tile> collisionList)
@@ -135,7 +141,11 @@ public class Achievement implements IXMLizable
         return name;
     }    
     
-    public Date getDateCompleted()
+    /**
+     * Get the date completed.
+     * @return the date.
+     */
+    public String getDateCompleted()
     {
         return date;
     }
@@ -161,6 +171,7 @@ public class Achievement implements IXMLizable
         String name = element.getAttributeValue("name");
         String description = element.getAttributeValue("description");
         Difficulty difficulty = Difficulty.valueOf(element.getAttributeValue("difficulty"));
+        String date = element.getAttributeValue("date");
         
         List<Rule> rules = new ArrayList<Rule>();
        
@@ -200,18 +211,7 @@ public class Achievement implements IXMLizable
             rule = element.getChild("rule");
         }
         
-        // get the collisions.
-        
-        
-       
-        
-        // Todo: get dates working
-        Date date = null;
-        
-        
-       
-        
-        
+        // get the collisions.  
         return newInstance(rules, name, description, difficulty, date);
     }
     
@@ -221,6 +221,7 @@ public class Achievement implements IXMLizable
         element.setAttribute("name",  this.name);
         element.setAttribute("description", this.description);
         element.setAttribute("difficulty", String.valueOf(this.difficulty));
+        element.setAttribute("date", this.date);
         
         for(int i = 0; i < this.ruleList.size(); i++)
         {

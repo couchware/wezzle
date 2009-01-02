@@ -12,7 +12,10 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.jdom.Element;
@@ -41,6 +44,9 @@ public class AchievementManager implements ICollisionListener
     
     /** The achieved achievements. */
     private List<Achievement> completeList;
+    
+    /** The current date */
+    private String date = "";
         
     /**
      * The constructor.
@@ -50,6 +56,14 @@ public class AchievementManager implements ICollisionListener
         this.incompleteList = new ArrayList<Achievement>();
         this.completeList   = new ArrayList<Achievement>();
         this.importAchievements();
+        
+        if(date.equals(""))
+        {
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+            date = dateFormat.format(cal.getTime());
+        }
     }
     
     // Public API.
@@ -85,6 +99,8 @@ public class AchievementManager implements ICollisionListener
             
             if (a.evaluate(game) == true)
             {
+                // set the date.
+                a.setDate(date);
                 this.completeList.add(a);
                 it.remove();
                 achieved = true;
@@ -172,7 +188,7 @@ public class AchievementManager implements ICollisionListener
         {
             Achievement achieve = (Achievement)object;
             
-            if(achieve.getDateCompleted() != null)
+            if(achieve.getDateCompleted() != "")
                 this.completeList.add(achieve);
             else
                 this.add(achieve);
