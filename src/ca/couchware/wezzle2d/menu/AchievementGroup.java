@@ -164,8 +164,6 @@ public class AchievementGroup extends AbstractGroup
                 .end();
         this.entityList.add(listBox);  
         
-        System.out.println("************" + achievementList.size());
-        
         // Create the list of titles for the first 5 achievements.
         Scroller.Builder builder = new Scroller.Builder(68, 229)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
