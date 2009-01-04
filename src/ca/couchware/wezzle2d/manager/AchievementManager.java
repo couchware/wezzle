@@ -46,7 +46,7 @@ public class AchievementManager implements ICollisionListener
     private List<Achievement> completeList;
     
     /** The current date */
-    private String date = "";
+    private Date date;
         
     /**
      * The constructor.
@@ -57,12 +57,10 @@ public class AchievementManager implements ICollisionListener
         this.completeList   = new ArrayList<Achievement>();
         this.importAchievements();
         
-        if(date.equals(""))
+        if(date == null)
         {
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-            date = dateFormat.format(cal.getTime());
+            date = Calendar.getInstance().getTime();
+            
         }
     }
     
@@ -188,7 +186,7 @@ public class AchievementManager implements ICollisionListener
         {
             Achievement achieve = (Achievement)object;
             
-            if(achieve.getDateCompleted() != "")
+            if(achieve.getDateCompleted() != null)
                 this.completeList.add(achieve);
             else
                 this.add(achieve);

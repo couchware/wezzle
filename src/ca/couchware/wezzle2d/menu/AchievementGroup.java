@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -46,7 +47,7 @@ public class AchievementGroup extends AbstractGroup
     
     /** The data formatter used for setting the status. */
     final private static DateFormat dateFormatter = 
-            new SimpleDateFormat("dd/MM/yyyy");
+            new SimpleDateFormat("MMM dd yyyy");
     
     /** The color map for the difficulties. */
     final private static Map<Difficulty, Color> difficultyColorMap = 
@@ -115,28 +116,27 @@ public class AchievementGroup extends AbstractGroup
         
         achievementList = new ArrayList<Achievement>();
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster I", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, ""));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Chain Gang", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, ""));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Scoring Wizard", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, ""));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Big Scorer", 
-                "Dummy description.\nLike really dummy.", Achievement.Difficulty.BRONZE, ""));
+                "Dummy description.\nLike really dummy.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Line Driver", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, ""));
+                "Dummy description.", Achievement.Difficulty.BRONZE, null));
         
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster II", 
-                "Dummy description.", Achievement.Difficulty.SILVER, ""));
+                "Dummy description.", Achievement.Difficulty.SILVER, null));
         
         
-       SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
-        
+      
         achievementList.add(Achievement.newInstance(ruleList, "Level Buster III", 
-                "Dummy description.", Achievement.Difficulty.GOLD, dateFormat.format(Calendar.getInstance().getTime())));                                      
+                "Dummy description.", Achievement.Difficulty.GOLD, Calendar.getInstance().getTime()));                                      
                         
         // Create the window.
         box = new Box.Builder(268, 300).width(430).height(470)
@@ -306,14 +306,14 @@ public class AchievementGroup extends AbstractGroup
         }
         
         // Set the status.
-        String date = ach.getDateCompleted();
-        if (date.equals(""))
+        Date date = ach.getDateCompleted();
+        if (date == null)
         {
             achievementStatus.setText("This achievement has not been completed.");            
         }
         else
         {            
-            achievementStatus.setText("This achievement was completed " + date + ".");
+            achievementStatus.setText("This achievement was completed " + dateFormatter.format(date.getTime()) + ".");
         }
     }
     

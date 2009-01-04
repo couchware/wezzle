@@ -11,6 +11,8 @@ import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import org.jdom.Element;
 
@@ -55,7 +57,8 @@ public class Achievement implements IXMLizable
     private final String name;
     private final String description;
     private final Difficulty difficulty;   
-    private String date = "";
+    private Date dateCompleted = null;
+    private static Calendar cal = Calendar.getInstance();
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -70,22 +73,20 @@ public class Achievement implements IXMLizable
             String title,
             String description, 
             Difficulty difficulty, 
-            String completed)
+            Date completed)
     {
         this.ruleList    = ruleList;
         this.name       = title;
         this.description = description;
         this.difficulty  = difficulty;
-        
-        if(completed != null)
-            this.date = completed;
+        dateCompleted = completed;
     }
         
     public static Achievement newInstance(List<Rule> ruleList, 
             String title,
             String description, 
             Difficulty difficulty, 
-            String date)
+            Date date)
     {
        return new Achievement(ruleList, title, description, difficulty, date);
     }
@@ -111,9 +112,9 @@ public class Achievement implements IXMLizable
         return true;       
     }
     
-    public void setDate(String date)
+    public void setDate(Date date)
     {
-        this.date = date;
+        dateCompleted = date;
     }
     
     public boolean evaluateCollision(List<Tile> collisionList)
@@ -145,9 +146,9 @@ public class Achievement implements IXMLizable
      * Get the date completed.
      * @return the date.
      */
-    public String getDateCompleted()
+    public Date getDateCompleted()
     {
-        return date;
+        return dateCompleted;
     }
     
     /**
@@ -171,7 +172,20 @@ public class Achievement implements IXMLizable
         String name = element.getAttributeValue("name");
         String description = element.getAttributeValue("description");
         Difficulty difficulty = Difficulty.valueOf(element.getAttributeValue("difficulty"));
-        String date = element.getAttributeValue("date");
+        Element dateElement = element.getChild("date");
+        Date storedDate = null;
+        
+        if (dateElement != null)
+        {
+            Calendar tempCal = Calendar.getInstance();
+            int month = Integer.parseInt(dateElement.getAttributeValue("month").toString());
+            int day = Integer.parseInt(dateElement.getAttributeValue("day").toString());
+            int year = Integer.parseInt(dateElement.getAttributeValue("year").toString());
+            
+            tempCal.set(year, month, day);
+            
+            storedDate = cal.getTime();
+        }
         
         List<Rule> rules = new ArrayList<Rule>();
        
@@ -212,16 +226,27 @@ public class Achievement implements IXMLizable
         }
         
         // get the collisions.  
-        return newInstance(rules, name, description, difficulty, date);
+        return newInstance(rules, name, description, difficulty, storedDate);
     }
     
     public Element toXMLElement() 
     {
-       Element element = new Element("achievement");
+        Element element = new Element("achievement");
         element.setAttribute("name",  this.name);
         element.setAttribute("description", this.description);
         element.setAttribute("difficulty", String.valueOf(this.difficulty));
-        element.setAttribute("date", this.date);
+       
+        // Date.
+        if(dateCompleted != null)
+        {
+            cal.setTime(dateCompleted);
+            
+            Element insertDate = new Element("date");
+            insertDate.setAttribute("day",  String.valueOf(cal.get(Calendar.DATE)));
+            insertDate.setAttribute("month", String.valueOf(cal.get(Calendar.MONTH)));
+            insertDate.setAttribute("year", String.valueOf(cal.get(Calendar.YEAR)));
+            element.addContent(insertDate);
+        }
         
         for(int i = 0; i < this.ruleList.size(); i++)
         {
