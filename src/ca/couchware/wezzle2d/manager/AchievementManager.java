@@ -15,6 +15,7 @@ import ca.couchware.wezzle2d.util.IXMLizable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +46,9 @@ public class AchievementManager implements ICollisionListener
     /** The achieved achievements. */
     private List<Achievement> completeList;
     
+    /** The master list */
+    private List<Achievement> masterList;
+    
     /** The current date */
     private Date date;
         
@@ -55,6 +59,7 @@ public class AchievementManager implements ICollisionListener
     {
         this.incompleteList = new ArrayList<Achievement>();
         this.completeList   = new ArrayList<Achievement>();
+        this.masterList     = new ArrayList<Achievement>();
         this.importAchievements();
         
         if(date == null)
@@ -190,7 +195,14 @@ public class AchievementManager implements ICollisionListener
                 this.completeList.add(achieve);
             else
                 this.add(achieve);
+            
+            this.masterList.add(achieve);
         }
+    }
+    
+    public List<Achievement> getMasterList()
+    {
+        return Collections.unmodifiableList(this.masterList);
     }
 
  

@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.Achievement.Difficulty;
+import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ITextLabel;
@@ -95,7 +96,7 @@ public class AchievementGroup extends AbstractGroup
            
     public AchievementGroup(IGroup parent, 
             final SettingsManager settingsMan,
-            final LayerManager layerMan)            
+            final LayerManager layerMan, final AchievementManager achievementMan)            
     {
         // Invoke the super.
         super(parent);
@@ -110,33 +111,35 @@ public class AchievementGroup extends AbstractGroup
         // The label color.
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);                
         
+        achievementList = achievementMan.getMasterList();
+        
         // Fill the achievemnt with some dummy achievements.
-        List<Rule> ruleList = new ArrayList<Rule>();
-        ruleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GT, 1));
-        
-        achievementList = new ArrayList<Achievement>();
-        achievementList.add(Achievement.newInstance(ruleList, "Level Buster I", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-        
-        achievementList.add(Achievement.newInstance(ruleList, "Chain Gang", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-        
-        achievementList.add(Achievement.newInstance(ruleList, "Scoring Wizard", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-        
-        achievementList.add(Achievement.newInstance(ruleList, "Big Scorer", 
-                "Dummy description.\nLike really dummy.", Achievement.Difficulty.BRONZE, null));
-        
-        achievementList.add(Achievement.newInstance(ruleList, "Line Driver", 
-                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-        
-        achievementList.add(Achievement.newInstance(ruleList, "Level Buster II", 
-                "Dummy description.", Achievement.Difficulty.SILVER, null));
-        
-        
-      
-        achievementList.add(Achievement.newInstance(ruleList, "Level Buster III", 
-                "Dummy description.", Achievement.Difficulty.GOLD, Calendar.getInstance().getTime()));                                      
+//        List<Rule> ruleList = new ArrayList<Rule>();
+//        ruleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GT, 1));
+//        
+//        achievementList = new ArrayList<Achievement>();
+//        achievementList.add(Achievement.newInstance(ruleList, "Level Buster I", 
+//                "Dummy description.", Achievement.Difficulty.BRONZE, null));
+//        
+//        achievementList.add(Achievement.newInstance(ruleList, "Chain Gang", 
+//                "Dummy description.", Achievement.Difficulty.BRONZE, null));
+//        
+//        achievementList.add(Achievement.newInstance(ruleList, "Scoring Wizard", 
+//                "Dummy description.", Achievement.Difficulty.BRONZE, null));
+//        
+//        achievementList.add(Achievement.newInstance(ruleList, "Big Scorer", 
+//                "Dummy description.\nLike really dummy.", Achievement.Difficulty.BRONZE, null));
+//        
+//        achievementList.add(Achievement.newInstance(ruleList, "Line Driver", 
+//                "Dummy description.", Achievement.Difficulty.BRONZE, null));
+//        
+//        achievementList.add(Achievement.newInstance(ruleList, "Level Buster II", 
+//                "Dummy description.", Achievement.Difficulty.SILVER, null));
+//        
+//        
+//      
+//        achievementList.add(Achievement.newInstance(ruleList, "Level Buster III", 
+//                "Dummy description.", Achievement.Difficulty.GOLD, Calendar.getInstance().getTime()));                                      
                         
         // Create the window.
         box = new Box.Builder(268, 300).width(430).height(470)
@@ -161,11 +164,13 @@ public class AchievementGroup extends AbstractGroup
                 .end();
         this.entityList.add(listBox);  
         
+        System.out.println("************" + achievementList.size());
+        
         // Create the list of titles for the first 5 achievements.
         Scroller.Builder builder = new Scroller.Builder(68, 229)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .padding(Padding.newInstance(12, 30, 12, 12))                
-                .rows(4)
+                .rows(achievementList.size())
                 .visible(false);
         for (Achievement ach : achievementList)
         {            

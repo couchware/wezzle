@@ -20,6 +20,7 @@ import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -120,7 +121,10 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     private MusicManager musicMan;
     
     /** The layer manager. */
-    private LayerManager layerMan;              
+    private LayerManager layerMan; 
+    
+    /** The achievement manager. */
+    private AchievementManager achievementMan;
     
     /**
      * Create a new main menu.
@@ -128,13 +132,14 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     public MainMenuGroup(            
             SettingsManager settingsMan,
             AnimationManager animationMan, 
-            MusicManager musicMan)
+            MusicManager musicMan, AchievementManager achievementMan)
     {                
         // Store the manager references.
         this.settingsMan  = settingsMan;
         this.animationMan = animationMan;                        
         this.musicMan     = musicMan;
         this.layerMan     = LayerManager.newInstance();
+        this.achievementMan = achievementMan;
         
         // Set the main menu as activated.
         this.activated = true;
@@ -273,7 +278,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
          // Create the "Achievements" group.
         group = new AchievementGroup(this,
                 this.settingsMan, 
-                this.layerMan);
+                this.layerMan, this.achievementMan);
         this.groupMap.put(Menu.ACHIEVEMENTS, group);
         
          // Create the "High Scores" group.

@@ -506,7 +506,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 mainMenu = new MainMenuGroup(
                         settingsMan, 
                         animationMan, 
-                        musicMan);
+                        musicMan, achievementMan);
                 
                 setDrawer(mainMenu);
             }   
