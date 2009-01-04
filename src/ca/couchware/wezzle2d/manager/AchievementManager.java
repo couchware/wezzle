@@ -78,10 +78,14 @@ public class AchievementManager implements ICollisionListener
     /**
      * Add an achievement to the manager.
      * @param achieve The achievement.
+     * 
+     * Note: this method adds to the master list as well. Be careful 
+     * that you are not adding to the list twice.
      */
     public void add(Achievement achievement)
     {
         this.incompleteList.add(achievement);
+        this.masterList.add(achievement);
     }
     
     /**
@@ -194,12 +198,20 @@ public class AchievementManager implements ICollisionListener
             if(achieve.getDateCompleted() != null)
                 this.completeList.add(achieve);
             else
-                this.add(achieve);
+                this.incompleteList.add(achieve);
             
+            // Add to master list here so we dont have to rebuild it every 
+            // time we click go to achievements potentially.
             this.masterList.add(achieve);
         }
     }
     
+    /**
+     * Get the master list.
+     * @return The master list.
+     * 
+     * Note: returns an unmodifiable list.
+     */
     public List<Achievement> getMasterList()
     {
         return Collections.unmodifiableList(this.masterList);
