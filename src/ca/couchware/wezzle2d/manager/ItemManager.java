@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
@@ -27,7 +28,7 @@ import java.util.Map;
  * 
  * @author cdmckay
  */
-public class ItemManager implements IResettable, ILevelListener
+public class ItemManager implements IResettable, ILevelListener, IMoveListener
 {
 
     /**
