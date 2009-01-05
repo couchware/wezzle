@@ -370,4 +370,16 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         // Intentionally left blank.
     }
     
+    @Override
+    public void dispose()
+    {
+        // Stop listening to the mouse events.
+        if (this.visible && !this.disabled)
+            window.removeMouseListener(this);
+        
+        // Dispose of the items too.
+        for (RadioItem item : itemList)
+            item.dispose();
+    }
+    
 }

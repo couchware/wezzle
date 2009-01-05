@@ -197,7 +197,7 @@ public class StarTutorial extends AbstractTutorial
     }   
     
     @Override
-    protected void finish(Game game)
+    public void finish(Game game)
     {
         super.finish(game);
         

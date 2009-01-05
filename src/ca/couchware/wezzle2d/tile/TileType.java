@@ -19,6 +19,5 @@ public enum TileType
     ROCKET,
     BOMB,
     STAR,
-    GRAVITY,
-    WEZZLE
+    GRAVITY
 }

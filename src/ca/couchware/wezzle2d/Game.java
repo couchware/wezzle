@@ -47,6 +47,7 @@ import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
 import java.util.Date;
@@ -119,7 +120,7 @@ public class Game extends Canvas implements IGameWindowCallback
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
     
     /** The copyright. */
-    final public static String COPYRIGHT = "\u00A9 2008 Couchware Inc.";
+    final public static String COPYRIGHT = "\u00A9 2009 Couchware Inc.";
     
     //--------------------------------------------------------------------------
     // Public Members
@@ -129,13 +130,10 @@ public class Game extends Canvas implements IGameWindowCallback
     public Loader loader;
     
     /** The main menu. */
-    public MainMenuGroup mainMenu;
+    public MainMenuGroup mainMenu;       
     
-    /**
-     * The main menu transition.  This is the transition animation that is used
-     * to transition from the menu to the game.
-     */
-    public ITransition menuTransition;      
+    /** The resource factory. */
+    public ResourceFactory factory = ResourceFactory.get();
     
     /** The game UI. */
     public GameUI ui;          
@@ -203,6 +201,9 @@ public class Game extends Canvas implements IGameWindowCallback
     /** The manager in charge of running tutorials. */
     public TutorialManager tutorialMan;   
     
+    /** The window that is being used to render the game. */
+    public IGameWindow window;    
+    
     //--------------------------------------------------------------------------
     // Private Members
     //--------------------------------------------------------------------------                                 
@@ -238,10 +239,20 @@ public class Game extends Canvas implements IGameWindowCallback
     private boolean activateGameOver = false;   
     
     /** If true, a game over has been activated. */
-    private boolean gameOverInProgress = false;
-	
-	/** The window that is being used to render the game. */
-    private IGameWindow window;                  
+    private boolean gameOverInProgress = false;		 
+    
+    /** The targets that may be transitioned to. */
+    public enum TransitionTarget
+    { NOTHING, GAME, MENU }
+    
+    /** The transition target. */
+    private TransitionTarget transitionTo = TransitionTarget.NOTHING;    
+          
+    /**
+     * The transition variable.  This is the transition animation that is used
+     * to transition from the menu to the game and vice-versa.
+     */
+    private ITransition transition;      
                 
     //--------------------------------------------------------------------------
     // Constructor
@@ -289,7 +300,7 @@ public class Game extends Canvas implements IGameWindowCallback
     /**
      * Initializes all the passed managers.
      */    
-    private void initializeManagers(Set<Manager> set)
+    public void initializeManagers(Set<Manager> set)
     {               
         if (set.contains(Manager.LISTENER))
         {
@@ -363,23 +374,14 @@ public class Game extends Canvas implements IGameWindowCallback
         if (set.contains(Manager.TUTORIAL))
         {
             // Create the tutorial manager.
-            tutorialMan = TutorialManager.newInstance();
-
-            // Add the tutorials to it.
-            tutorialMan.add(new BasicTutorial(refactorer));
-            tutorialMan.add(new GravityTutorial(refactorer));
-            tutorialMan.add(new RocketTutorial(refactorer));
-            tutorialMan.add(new BombTutorial(refactorer));
-            tutorialMan.add(new StarTutorial(refactorer));
+            tutorialMan = TutorialManager.newInstance();           
         }                           
         
         if (set.contains(Manager.BOARD))
         {
             // Create the board manager.
-            boardMan = BoardManager.newInstance(
-                    animationMan, layerMan, itemMan,
-                    272, 139, 8, 10);    
-            boardMan.setVisible(false);
+            boardMan = BoardManager.newInstance(animationMan, layerMan, itemMan,
+                    272, 139, 8, 10);             
             
             // Listen for key presses.
             window.addKeyListener(boardMan);
@@ -388,9 +390,8 @@ public class Game extends Canvas implements IGameWindowCallback
         if (set.contains(Manager.PIECE))
         {
             // Create the piece manager.
-            pieceMan = PieceManager.newInstance(refactorer, animationMan, boardMan);        
-            pieceMan.getPieceGrid().setVisible(false);
-            layerMan.add(pieceMan.getPieceGrid(), Layer.EFFECT);  
+            pieceMan = PieceManager.newInstance(refactorer, animationMan, boardMan, layerMan);        
+            pieceMan.hidePieceGrid();            
             
             // Listen for the mouse.
             window.addMouseListener(pieceMan);
@@ -405,15 +406,10 @@ public class Game extends Canvas implements IGameWindowCallback
         if (set.contains(Manager.SCORE))
         {
             // Create the score manager.
-            scoreMan = ScoreManager.newInstance(
-                    boardMan, 
-                    highScoreMan, 
-                    listenerMan);
-            
-            //scoreMan.setTargetLevelScore(levelMan.generateTargetLevelScore());
+            scoreMan = ScoreManager.newInstance(boardMan, highScoreMan, listenerMan);
+                        
             listenerMan.registerListener(Listener.GAME,  scoreMan);
-            listenerMan.registerListener(Listener.LEVEL, scoreMan);
-            //listenerMan.registerListener(Listener.SCORE, scoreMan);            
+            listenerMan.registerListener(Listener.LEVEL, scoreMan);           
         }
         
         if (set.contains(Manager.LEVEL))
@@ -426,9 +422,48 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Create the achievement manager.
             achievementMan = AchievementManager.newInstance();
+            
             listenerMan.registerListener(Listener.COLLISION, achievementMan);        
         }              
     }        
+    
+    public void startTransitionTo(TransitionTarget target)
+    {
+        switch (target)
+        {
+            case MENU:
+                
+                // Create the main menu.
+                // Empty the mouse events.
+                window.clearMouseEvents();
+
+                // Shut off the music.
+                musicMan.stop();
+
+                // Create the main menu.
+                mainMenu = new MainMenuGroup(
+                        achievementMan, animationMan, musicMan, settingsMan);                
+                mainMenu.setDisabled(true);
+
+                // Create the layer manager transition animation.
+                transitionTo = TransitionTarget.MENU;
+                this.transition = new CircularTransition.Builder(mainMenu)
+                        .minRadius(10).speed(400).end();
+                setDrawer(transition);
+
+                // When the transition is done, enable the game controls.
+                this.transition.setFinishRunnable(new Runnable()
+                {
+                    public void run()
+                    { mainMenu.setDisabled(false); }
+                });
+
+                // Queue in the animation manager.
+                this.animationMan.add(transition);
+                
+                break;
+        }
+    }
     
     /**
      * Initialize various members.
@@ -451,6 +486,19 @@ public class Game extends Canvas implements IGameWindowCallback
         listenerMan.registerListener(Listener.LEVEL, tileRemover);
     }
     
+    /**
+     * Initialize the tutorials.
+     */
+    public void initializeTutorials()
+    {        
+        // Add the tutorials to it.
+        tutorialMan.add(new BasicTutorial(refactorer));
+        tutorialMan.add(new GravityTutorial(refactorer));
+        tutorialMan.add(new RocketTutorial(refactorer));
+        tutorialMan.add(new BombTutorial(refactorer));
+        tutorialMan.add(new StarTutorial(refactorer));
+    }
+    
 	/**
 	 * Initialize the common elements for the game.
 	 */
@@ -460,28 +508,31 @@ public class Game extends Canvas implements IGameWindowCallback
         executor = Executors.newCachedThreadPool();
                 
         // Make sure the listener and settings managers are ready.
-        initializeManagers(EnumSet.of(Manager.LISTENER, Manager.SETTINGS));
+        initializeManagers(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS));
         
         // Initialize various members.
-        initializeMembers();                        
+        initializeMembers();
         
         // Create the loader.        
-        loader = new Loader(settingsMan);        
+        loader = new Loader("Loading Wezzle...", settingsMan);        
         setDrawer(loader);
-                
+        
+        // Preload the sprites.
+        factory.initialize(loader);                                        
+                                
         // Initialize managers.
         loader.addRunnable(new Runnable()
         {
            public void run() 
            { 
-               initializeManagers(EnumSet.allOf(Manager.class)); 
+               initializeManagers(EnumSet.allOf(Manager.class));                
                layerMan.setDisabled(true);              
            }
         });
                                
         // Initialize UI.       
         ui.initialize(loader, this);                                            
-	}                   
+	}                      
     
     public void update()
     {                
@@ -504,10 +555,7 @@ public class Game extends Canvas implements IGameWindowCallback
                                
                 // Create the main menu.
                 mainMenu = new MainMenuGroup(
-                        settingsMan, 
-                        animationMan, 
-                        musicMan, achievementMan);
-                
+                        achievementMan, animationMan, musicMan, settingsMan);                
                 setDrawer(mainMenu);
             }   
             else return;                        
@@ -528,29 +576,33 @@ public class Game extends Canvas implements IGameWindowCallback
                 window.clearMouseEvents();   
                 
                 // Remove the loader.
+                mainMenu.dispose();
                 mainMenu = null;   
                 
                 // Create the layer manager transition animation.
-                this.menuTransition = new CircularTransition.Builder(layerMan)
+                this.transitionTo = TransitionTarget.GAME;
+                this.transition = new CircularTransition.Builder(layerMan)
                         .minRadius(10).speed(400).end();
-                setDrawer(menuTransition);
+                setDrawer(transition);
                 
                 // When the transition is done, enable the game controls.
-                this.menuTransition.setFinishRunnable(new Runnable()
+                this.transition.setFinishRunnable(new Runnable()
                 {
                     public void run()
                     { layerMan.setDisabled(false); }
                 });
                 
                 // Queue in the animation manager.
-                this.animationMan.add(menuTransition);                
+                this.animationMan.add(transition);                
                 
                 // Start the music.
                 musicMan.play();                
                 
                 // See if the music is off.
-                if (SettingsManager.get().getBoolean(Key.USER_MUSIC) == false)
+                if (settingsMan.getBoolean(Key.USER_MUSIC) == false)
+                {
                     musicMan.setPaused(true);
+                }
             }   
             else
             {      
@@ -564,17 +616,31 @@ public class Game extends Canvas implements IGameWindowCallback
         } // end if
         
         // See if the main menu transition is in progress
-        if (this.getDrawer() == menuTransition)
+        if (this.getDrawer() == transition)
         {
             // Animate all animations.
             if (animationMan != null) animationMan.animate();
             
             // Otherwise see if the transition is over.
-            if (menuTransition.isFinished() == false) return;           
+            if (transition.isFinished() == false) return;           
             else 
             {
-                setDrawer(this.layerMan);
-                menuTransition = null;
+                switch(transitionTo)          
+                {
+                    case GAME:                                        
+                        setDrawer(this.layerMan);
+                        break;
+                        
+                    case MENU:
+                        setDrawer(this.mainMenu);
+                        break;
+                        
+                    case NOTHING:
+                        throw new IllegalStateException("This should not occur.");                        
+                }
+                
+                transitionTo = TransitionTarget.NOTHING;                
+                transition = null;
             }            
         } // end if
                      
@@ -596,14 +662,14 @@ public class Game extends Canvas implements IGameWindowCallback
                     case IN:
                         
                         boardMan.setVisible(true);
-                        pieceMan.getPieceGrid().setVisible(true);
+                        pieceMan.showPieceGrid();
                         pieceMan.startAnimation(timerMan);
                         break;
                         
                     case OUT:
                         
                         boardMan.setVisible(false);
-                        pieceMan.getPieceGrid().setVisible(false);
+                        pieceMan.hidePieceGrid();
                         break;
                         
                     default:
@@ -650,11 +716,11 @@ public class Game extends Canvas implements IGameWindowCallback
         if (activateBoardShowAnimation == true)
         {
             // Hide the piece.            
-            pieceMan.getPieceGrid().setVisible(false);                               
+            pieceMan.hidePieceGrid();
             pieceMan.stopAnimation();
             
             // Start board show animation.            
-            boardAnimation = boardMan.animateShow(boardAnimationType);                 
+            boardAnimation = boardMan.animateShow(boardAnimationType);                   
             boardMan.setDirty(true);            
 
             // Clear flag.
@@ -665,7 +731,7 @@ public class Game extends Canvas implements IGameWindowCallback
         if (activateBoardHideAnimation == true)
         {
             // Hide the piece.
-            pieceMan.getPieceGrid().setVisible(false); 
+            pieceMan.hidePieceGrid();
             pieceMan.stopAnimation();
             
             // Start board hide animation.            
@@ -729,7 +795,7 @@ public class Game extends Canvas implements IGameWindowCallback
             if (scoreMan.getLevelScore() >= scoreMan.getTargetLevelScore())
             {    
                 // Hide piece.                    
-                pieceMan.getPieceGrid().setVisible(false);
+                pieceMan.hidePieceGrid();
                 pieceMan.stopAnimation();
                 timerMan.setPaused(true);
 
@@ -740,11 +806,9 @@ public class Game extends Canvas implements IGameWindowCallback
 
                 soundMan.play(Sound.LEVEL_UP);
 
-                int x = pieceMan.getPieceGrid().getX() 
-                        + boardMan.getCellWidth() / 2;
-
-                int y = pieceMan.getPieceGrid().getY() 
-                        + boardMan.getCellHeight() / 2;
+                ImmutablePosition pos = pieceMan.getPieceGridPosition();
+                int x = pos.getX() + boardMan.getCellWidth()  / 2;
+                int y = pos.getY() + boardMan.getCellHeight() / 2;
                                                 
                 final ITextLabel label = new LabelBuilder(x, y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
@@ -835,10 +899,10 @@ public class Game extends Canvas implements IGameWindowCallback
         // Update piece manager logic and then draw it.
         pieceMan.updateLogic(this);
 
-         // Update the item manager logic.
+        // Update the item manager logic.
         itemMan.updateLogic(this);        
         
-         // Update the tutorial manager logic. This must be done after the world
+        // Update the tutorial manager logic. This must be done after the world
         // manager because it relies on the proper items being in the item list.
         tutorialMan.updateLogic(this);
     

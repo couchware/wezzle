@@ -407,4 +407,9 @@ public abstract class AbstractEntity implements IEntity
         height_ = height;
     }        
     
+    public void dispose()
+    {
+        // Intentionally left blank.
+    }
+    
 }

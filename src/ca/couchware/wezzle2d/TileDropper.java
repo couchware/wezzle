@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.manager.BoardManager;
+import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.manager.ItemManager;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -31,55 +32,69 @@ import java.util.Set;
  * 
  * @author cdmckay
  */
-public class TileDropper 
+public class TileDropper implements IResettable
 {
 
     /** The only instance of the tile dropper. */
     final private static TileDropper SINGLE = new TileDropper();
     
+    /** The percentage of tiles to maintain. */
+    final private int TILE_RATIO = 80;
+    
+    /** The maximum number of tiles to drop in. */
+    final private int MAXIMUM_TOTAL_DROP_AMOUNT = 8;      
+    
+    /** The number of pieces to drop in concurrently. */
+    final private int MAXIMUM_PARALLEL_DROP_AMOUNT = 4;
+    
+    /** The minimum drop. */
+    final private int MINIMUM_DROP = 1;           
+            
+    /** The level at which the difficulty begins to increase. */
+    final private int MINIMUM_LEVEL = 3;
+    
+    /** The number of levels before the difficulty level increases. */
+    final private int LEVEL_INTERVAL = 2;
+    
     /**
      * Should the piece manager drop automatically drop tiles after a 
      * commit?
      */
-    private boolean dropOnCommit = true;
+    private boolean dropOnCommit;
     
     /** Is the board dropping in a tile. */
-    private boolean tileDropping = false;
+    private boolean tileDropping;
     
     /** Is the board animating the tile dropped? */
-    private boolean animationInProgress = false;        
+    private boolean animating;        
     
     /** The number of tiles to drop this turn. */
     private int totalDropAmount = 0;        
-    
-    /** The maximum number of tiles to drop in. */
-    final private int maximumTotalDropAmount = 8;
-      
+              
     /** The tile currently being dropped. */
     private List<Tile> tileDropList = new ArrayList<Tile>();
-    
-    /** The percentage of tiles to maintain. */
-    final private int tileRatio = 80;
-    
-    /** The minimum drop. */
-    final private int minimumDrop = 1;
-    
-    /** The number of pieces to drop in concurrently. */
-    final private int maximumParallelDropAmount = 4;   
             
-    /** The level at which the difficulty begins to increase. */
-    final private int minimumLevel = 3;
-    
-    /** The number of levels before the difficulty level increases. */
-    final private int levelInterval = 2;
-    
     private TileDropper()
-    { }
+    { resetState(); }               
+    
+    public void resetState()
+    {
+        // Reset all the flags.
+        this.dropOnCommit = true;
+        this.tileDropping = false;
+        this.animating = false;
+        
+        // Set the total drop amount to 0.
+        this.totalDropAmount = 0;        
+        
+        // Clear the tile drop list.
+        tileDropList.clear();       
+    }
     
     final public static TileDropper get()
     {
         return SINGLE;
-    }            
+    }  
     
     public void updateLogic(Game game)
     {
@@ -106,10 +121,10 @@ public class TileDropper
         {
             // Is the tile dropped currently being animated?
             // If not, that means we need to drop a new one.            
-            if (animationInProgress == false)
+            if (animating == false)
             {                      
                 // Get the number of parallel tiles to drop this turn.
-                int parallelDropAmount = maximumParallelDropAmount;
+                int parallelDropAmount = MAXIMUM_PARALLEL_DROP_AMOUNT;
                 
                 // Adjust for the pieces left to drop in.
                 parallelDropAmount = Math.min(parallelDropAmount, totalDropAmount);
@@ -152,7 +167,7 @@ public class TileDropper
                 }
                 else if (
                           totalDropAmount <= openIndexList.size()
-                       && totalDropAmount <= maximumParallelDropAmount
+                       && totalDropAmount <= MAXIMUM_PARALLEL_DROP_AMOUNT
                        && (items < maxItems || multipliers < maxMultipliers))                            
                 {
                     //LogManager.recordWarning("B, totalDropAmount = " + totalDropAmount);                    
@@ -199,7 +214,7 @@ public class TileDropper
                 // find all the xmatches. change the colors of the drop in tiles until 
                 // there are no more x matches. do the same for the y matches.
                 // delete the tiles from the board. Add the new tiles back in the
-                // original positions with the new colours. continue.                          
+                // original positions with the new colours. Continue.                          
                 List<Integer> initialIndexList = new ArrayList<Integer>();
                 
                 // Get the initial indices.
@@ -323,7 +338,7 @@ public class TileDropper
                     }
                  
                     // Set the animation flag.
-                    animationInProgress = true;
+                    animating = true;
                 }                                                     
             } 
             // If we got here, the animating is in progress, so we need to check
@@ -331,7 +346,7 @@ public class TileDropper
             else if (areAllAnimationsDone(tileDropList))
             {
                 // Clear the flag.
-                animationInProgress = false;
+                animating = false;
                                
                 // Run refactor.
                 refactorer.startRefactor();
@@ -372,12 +387,12 @@ public class TileDropper
         int level = game.levelMan.getLevel();
         
         // The number of tiles for the current level.
-        int levelDrop = (level / this.levelInterval);
+        int levelDrop = (level / this.LEVEL_INTERVAL);
         
         // Check for difficulty ramp up.
-        if (level > this.minimumLevel)
+        if (level > this.MINIMUM_LEVEL)
         {
-            levelDrop = (this.minimumLevel / this.levelInterval);
+            levelDrop = (this.MINIMUM_LEVEL / this.LEVEL_INTERVAL);
         }
         
         // The percent of the board to readd.
@@ -388,52 +403,52 @@ public class TileDropper
         
         // We are low. drop in a percentage of the tiles, increasing if there 
         // are fewer tiles.
-        if ((numberOfTiles / numberOfCells) * 100 < this.tileRatio)
+        if ((numberOfTiles / numberOfCells) * 100 < this.TILE_RATIO)
         {
             // If we are past the level ramp up point, drop in more.
-            if (level > this.minimumLevel)
+            if (level > this.MINIMUM_LEVEL)
             {
                 dropAmount = pieceSize + levelDrop 
-                        + (level - this.minimumLevel) 
-                        + boardPercentage + this.minimumDrop;
+                        + (level - this.MINIMUM_LEVEL) 
+                        + boardPercentage + this.MINIMUM_DROP;
 
-                if (dropAmount > this.maximumTotalDropAmount + pieceSize)
+                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
                 {
-                    dropAmount = this.maximumTotalDropAmount + pieceSize;
+                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
                 }         
             }
             else
             {
                 dropAmount = pieceSize + levelDrop + boardPercentage 
-                        + this.minimumDrop;
+                        + this.MINIMUM_DROP;
                 
-                if (dropAmount > this.maximumTotalDropAmount + pieceSize)
+                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
                 {
-                    dropAmount = this.maximumTotalDropAmount + pieceSize;
+                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
                 }
             }
         }
         else
         {
             // If we are past the level ramp up point, drop in more.
-            if (level > this.minimumLevel)
+            if (level > this.MINIMUM_LEVEL)
             {
                 dropAmount = pieceSize + levelDrop 
-                        + (level - this.minimumLevel) 
-                        + this.minimumDrop;
+                        + (level - this.MINIMUM_LEVEL) 
+                        + this.MINIMUM_DROP;
 
-                if (dropAmount > this.maximumTotalDropAmount + pieceSize)
+                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
                 {
-                    dropAmount = this.maximumTotalDropAmount + pieceSize;
+                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
                 }
             }
             else
             {
-                dropAmount = pieceSize + levelDrop + this.minimumDrop;
+                dropAmount = pieceSize + levelDrop + this.MINIMUM_DROP;
 
-                if (dropAmount > this.maximumTotalDropAmount + pieceSize)
+                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
                 {
-                    dropAmount = this.maximumTotalDropAmount + pieceSize;
+                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
                 }
             }
         } // end if
@@ -486,6 +501,6 @@ public class TileDropper
     public boolean isTileDropping()
     {
         return tileDropping;
-    }             
+    }              
     
 }

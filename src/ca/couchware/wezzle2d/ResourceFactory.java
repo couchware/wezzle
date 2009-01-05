@@ -8,9 +8,20 @@ import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.lwjgl.LWJGLGameWindow;
 import ca.couchware.wezzle2d.lwjgl.LWJGLTextLabel;
 import ca.couchware.wezzle2d.lwjgl.LWJGLSprite;
+import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 /**
  * A central reference point for creating resources for use in the game. The
@@ -202,6 +213,101 @@ public class ResourceFactory
 		throw new RuntimeException("Unknown rendering type: " + renderer);
 	}      
     
+    /** The variable that indicates whether the sprites have been prelaoded. */
+    private boolean spritesPreloaded = false;
+    
+    /**
+     * This method will preload all the sprites in the sprite directory.  It 
+     * can only be run once.
+     */
+    public void initialize(Loader loader)
+    {
+        // Check to see if the sprites have been preloaded.
+        if (this.spritesPreloaded) 
+        {
+            LogManager.recordWarning("Attempted to preload sprites twice!");
+            System.exit(0);
+        }
+        
+        // Flag the sprites as preloaded.
+        this.spritesPreloaded = true;       
+        
+        // The list of the sprites.
+        List<String> spriteList = new ArrayList<String>();
+        
+        // Detect whether or not we're using a JAR file.
+        URL jarPathUrl = ResourceFactory.class.getProtectionDomain().getCodeSource().getLocation();
+        boolean isJar = jarPathUrl.toString().endsWith(".jar");
+              
+        // If we're running from a JAR, then we need to read the JAR entries to
+        // figure out all the names of the sprites.
+        if (isJar == true)
+        {
+            try
+            {
+                // Open the jar.
+                JarInputStream in = new JarInputStream(jarPathUrl.openStream());
+
+                while (true)
+                {
+                    JarEntry entry = in.getNextJarEntry();
+                   
+                    if (entry == null) 
+                        break;
+                    
+                    if (entry.isDirectory() == true)
+                        continue;                    
+
+                    if (entry.getName().startsWith(Settings.getSpriteResourcesPath()))
+                        spriteList.add(entry.getName());                    
+                }
+            }
+            catch (IOException e)
+            {
+                LogManager.recordException(e);
+            }        
+        }
+        // If we're running from the file system, all we need to do is use
+        // the File class to get a list of the sprites.
+        else
+        {
+            // The directory of sprites.
+            File dir = null;
+
+            try
+            {            
+                // Get a list of all the sprites in the sprites directory.
+                URL url = this.getClass().getClassLoader()
+                        .getResource(Settings.getSpriteResourcesPath());                        
+
+                // Convert to file.
+                dir = new File(url.toURI());
+                
+                // Construct the full URL to the sprite.
+                for (String spriteName : dir.list())
+                    spriteList.add(Settings.getSpriteResourcesPath() + "/" + spriteName);
+            }
+            catch (URISyntaxException e)
+            {            
+                LogManager.recordException(e);
+                
+            } // end try 
+        }
+                                           
+        // Get the contents of the directory.
+        for (final String spriteFilePath : spriteList)
+        {
+            loader.addRunnable(new Runnable()
+            {
+                public void run()
+                {
+                    LogManager.recordMessage("Preloading " + spriteFilePath + "...");
+                    getSprite(spriteFilePath);
+                }                 
+            });                     
+        } // end for
+    }
+    
     public static class LabelBuilder implements IBuilder<ITextLabel>
     {        
         private int x;
@@ -265,6 +371,6 @@ public class ResourceFactory
         {
             return get().getLabel(this);
         }                
-    }
+    }       
     	
 }

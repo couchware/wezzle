@@ -1,22 +1,32 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IGameWindow;
+import ca.couchware.wezzle2d.Refactorer;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.animation.FadeAnimation.Type;
-import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.graphics.PieceGrid;
-import ca.couchware.wezzle2d.util.*;
-import ca.couchware.wezzle2d.tile.*;
-import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.animation.FinishedAnimation;
+import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.animation.MetaAnimation;
+import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
-import ca.couchware.wezzle2d.graphics.EntityGroup;
+import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.graphics.PieceGrid;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.piece.*;
+import ca.couchware.wezzle2d.piece.Piece;
+import ca.couchware.wezzle2d.piece.PieceType;
+import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ITextLabel;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -34,7 +44,7 @@ import java.util.Set;
  *
  */
 
-public class PieceManager implements IMouseListener
+public class PieceManager implements IResettable, IMouseListener
 {	
     private static int SLOW_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_SLOW);
     private static int FAST_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_FAST);
@@ -56,7 +66,7 @@ public class PieceManager implements IMouseListener
     }            
     
     /** A set of buttons that were clicked. */
-    private EnumSet<MouseButton> mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+    private Set<MouseButton> mouseButtonSet = EnumSet.noneOf(MouseButton.class);
         
     /** The animation manager that animations are run with. */
 	private AnimationManager animationMan;
@@ -64,28 +74,7 @@ public class PieceManager implements IMouseListener
 	/** The board manager the piece manager to attached to. */
 	private BoardManager boardMan;    
     
-    /** The current wezzle animation. */
-    private IAnimation wezzleAnimation = FinishedAnimation.get();
-     
-//    /**
-//     * Should the piece manager drop automatically drop tiles after a 
-//     * commit?
-//     */
-//    private boolean tileDropOnCommit = true;
-//    
-//    /** Is the board dropping in a tile. */
-//    private boolean tileDropInProgress = false;
-//    
-//    /** Is the board animating the tile dropped? */
-//    private boolean tileDropAnimationInProgress = false;        
-//    
-//    /** The number of tiles to drop this turn. */
-//    private int totalTileDropAmount = 0;        
-//      
-//    /** The tile currently being dropped. */
-//    private List<TileEntity> tileDropList = new ArrayList<TileEntity>();
-    
-     /** Was the board recently refactored? */
+    /** Was the board recently refactored? */
     private boolean refactored = false;	                  
     
     /** The current piece. */
@@ -115,21 +104,14 @@ public class PieceManager implements IMouseListener
 	private PieceManager(
             Refactorer refactorer,
             AnimationManager animationMan, 
-            BoardManager boardMan)
+            BoardManager boardMan,
+            LayerManager layerMan)
 	{       
 		// Set the reference.
         this.window       = ResourceFactory.get().getGameWindow();
         this.refactorer   = refactorer;
         this.animationMan = animationMan;
-		this.boardMan     = boardMan;                                   
-        
-        // Create the piece map.
-//        pieceMap = new EnumMap<PieceType, Piece>(PieceType.class);
-//        pieceMap.put(PieceType.DASH, new PieceDash());
-//        pieceMap.put(PieceType.DIAGONAL, new PieceDiagonal());
-//        pieceMap.put(PieceType.DOT, new PieceDot());
-//        pieceMap.put(PieceType.L, new PieceL());
-//        pieceMap.put(PieceType.LINE, new PieceLine());
+		this.boardMan     = boardMan;                
         
         // Create new piece entity at the origin of the board.
 		pieceGrid = new PieceGrid(boardMan, 
@@ -137,21 +119,42 @@ public class PieceManager implements IMouseListener
                 boardMan.getY() + boardMan.getCellHeight());        
         
         // Load a random piece.
-        loadPiece();
-        pieceGrid.setPosition(limitPosition(window.getMouseImmutablePosition()));				                               
+        this.loadPiece();
+        this.pieceGrid.setPosition(limitPosition(window.getMouseImmutablePosition()));
+        layerMan.add(pieceGrid, Layer.PIECE_GRID);
         
         // Create the restriction board and fill it with trues.
         restrictionBoard = new boolean[boardMan.getCells()];
-        clearRestrictionBoard();
+        this.clearRestrictionBoard();
 	}	
         
-    // Public API.
+    public void resetState()
+    {
+        // Clear the restriction board.
+        this.clearRestrictionBoard();
+        
+        // Clear the mouse button set.
+        this.clearMouseButtonSet();
+        
+        // Clear the refactored flag.
+        this.refactored = false;                
+    }
+    
+    /**
+     * Create a new piece manager instance.
+     * 
+     * @param refactorer
+     * @param animationMan
+     * @param boardMan
+     * @return
+     */
     public static PieceManager newInstance(
             Refactorer refactorer,
             AnimationManager animationMan, 
-            BoardManager boardMan)
+            BoardManager boardMan,
+            LayerManager layerMan)
     {
-        return new PieceManager(refactorer, animationMan, boardMan);
+        return new PieceManager(refactorer, animationMan, boardMan, layerMan);
     }
     
     //--------------------------------------------------------------------------
@@ -384,8 +387,7 @@ public class PieceManager implements IMouseListener
 
             IAnimation a = t.getAnimation();            
 
-            if (a != null)
-                a.cleanUp();
+            if (a != null) a.cleanUp();
 
             animationMan.remove(a);
             t.setAnimation(null);
@@ -523,45 +525,14 @@ public class PieceManager implements IMouseListener
             
             // Invoke the on-click behaviour.            
             tile.fireTileClickedEvent();
-            
-            // Do something special if it's a wezzle tile.
-            if (tile.getType() == TileType.WEZZLE)
-            {
-                // See if this is the last wezzle tile of that colour.
-                int count = boardMan.getTileIndices(
-                        EnumSet.of(tile.getType()), 
-                        EnumSet.of(tile.getColor())).size();
-                
-                if (count == 1)
-                {
-                    // Unlock the colour.
-                    boardMan.setColorLocked(tile.getColor(), false);
-                    
-                    // Get all tiles of that colour.
-                    EntityGroup e = boardMan.getTiles(boardMan.getTileIndices(
-                            EnumSet.complementOf(EnumSet.of(TileType.WEZZLE)), 
-                            EnumSet.of(tile.getColor())));                    
-                    
-                    // Create a fade animation for fading them back.
-                    wezzleAnimationList.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
-                            .minOpacity(game.settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_MIN_OPACITY))
-                            .wait(game.settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_WAIT))
-                            .duration(game.settingsMan.getInt(Key.ANIMATION_WEZZLE_FADE_DURATION))
-                            .end());
-                }
-            } // end if           
-        } // end for
-        
-        // Set the wezzle animation.
-        this.wezzleAnimation = new MetaAnimation.Builder()
-                .addAll(wezzleAnimationList).end();
-        game.animationMan.add(this.wezzleAnimation);
+                         
+        } // end for                 
         
         // Remove and score the piece.
         int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                    
         
         // Increment the score.
-        if (game.tutorialMan.isTutorialInProgress() == false)       
+        if (game.tutorialMan.isTutorialRunning() == false)       
         {
             game.scoreMan.incrementScore(deltaScore);        
         }
@@ -578,7 +549,7 @@ public class PieceManager implements IMouseListener
         
         SettingsManager settingsMan = SettingsManager.get();
         
-        IAnimation a1 = new FadeAnimation.Builder(Type.OUT, label)
+        IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
                 .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
                 .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
                 .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
@@ -618,7 +589,7 @@ public class PieceManager implements IMouseListener
         game.tileDropper.updateDropAmount(game, this.piece.getSize());
 
         // Increment the moves.
-        if (game.tutorialMan.isTutorialInProgress() == true)
+        if (game.tutorialMan.isTutorialRunning() == true)
         {
             game.listenerMan.notifyMoveCommitted(new MoveEvent(this, 1), 
                     ListenerManager.GameType.TUTORIAL); 
@@ -668,7 +639,7 @@ public class PieceManager implements IMouseListener
     /**
      * Resets the restriction board to only have true values.
      */
-    public void clearRestrictionBoard()
+    final public void clearRestrictionBoard()
     {
         // Fill restriction board with true values.
         Arrays.fill(restrictionBoard, true);
@@ -706,27 +677,27 @@ public class PieceManager implements IMouseListener
             
     //--------------------------------------------------------------------------
     // Getters and Setters
-    //--------------------------------------------------------------------------
-     
-//    public boolean isTileDropInProgress()
-//    {
-//        return tileDropInProgress;
-//    }
+    //--------------------------------------------------------------------------     
 
-    public PieceGrid getPieceGrid()
+//    public PieceGrid getPieceGrid()
+//    {
+//        return pieceGrid;
+//    }
+    
+    public void showPieceGrid()
     {
-        return pieceGrid;
+        this.pieceGrid.setVisible(true);
     }
-
-//    public boolean isTileDropOnCommit()
-//    {
-//        return tileDropOnCommit;
-//    }
-//
-//    public void setTileDropOnCommit(boolean tileDropOnCommit)
-//    {
-//        this.tileDropOnCommit = tileDropOnCommit;
-//    }
+    
+    public void hidePieceGrid()
+    {
+        this.pieceGrid.setVisible(false);
+    }
+    
+    public ImmutablePosition getPieceGridPosition()
+    {
+        return this.pieceGrid.getPosition();
+    }
 
     /**
      * Has the restriction board been clicked?
@@ -834,6 +805,6 @@ public class PieceManager implements IMouseListener
     public void mouseWheel(MouseEvent e)
     {
         //LogManager.recordMessage("Wheeled by: " + e.getDeltaWheel());
-    }
+    }   
     
 }

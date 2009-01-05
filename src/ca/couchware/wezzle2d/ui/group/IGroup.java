@@ -73,5 +73,11 @@ public interface IGroup
      * Resets all the group controls to their starting state.
      */
     void resetControls();
+    
+    /**
+     * Dispose of the group and any entities within it.  Group is unusable
+     * after this.
+     */
+    public void dispose();        
 
 }

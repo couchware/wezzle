@@ -478,7 +478,7 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
             highScoreLabel.setText(String.valueOf(scoreMan.getHighScore()));            
         }                        
 
-        if (tutorialMan.isTutorialInProgress() == false)
+        if (tutorialMan.isTutorialRunning() == false)
         {
             // Set the level text.
             if (!levelLabel.getText().equals(String.valueOf(levelMan.getLevel())))
@@ -503,11 +503,11 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         {
             // Set the level text.
             if (!levelLabel.getText()
-                    .equals(tutorialMan.getTutorialInProgress().getName()))
+                    .equals(tutorialMan.getRunningTutorial().getName()))
             {
                 layerMan.remove(levelLabel, Layer.UI);
                 levelLabel = new LabelBuilder(levelLabel)
-                        .text(tutorialMan.getTutorialInProgress().getName())
+                        .text(tutorialMan.getRunningTutorial().getName())
                         .end();
                 layerMan.add(levelLabel, Layer.UI);
             }

@@ -1,13 +1,11 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.util.Util;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A class to manage writing out to a log file.

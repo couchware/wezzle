@@ -5,6 +5,8 @@
 
 package ca.couchware.wezzle2d.graphics;
 
+import java.awt.Shape;
+
 /**
  * An interface for describing an entity that can draw IDrawables.
  * 
@@ -17,5 +19,7 @@ public interface IDrawer
      * 
      * @return True if something was drawn, false otherwise.
      */
-    public boolean draw();
+    public boolean draw();    
+    public boolean draw(Shape region, boolean exact);
+    public boolean draw(Shape region);
 }

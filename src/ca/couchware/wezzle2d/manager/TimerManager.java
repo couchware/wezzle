@@ -17,7 +17,7 @@ import ca.couchware.wezzle2d.event.LevelEvent;
  * @author Kevin Grad
  *
  */
-public class TimerManager implements ILevelListener
+public class TimerManager implements IResettable, ILevelListener
 {           
    
     /**
@@ -260,6 +260,12 @@ public class TimerManager implements ILevelListener
     public void setMinimumTime(int minimumTime)
     {
         this.minimumTime = minimumTime;
-    }        
+    }  
+    
+    public void resetState()
+    {
+        this.resetInitialTime();
+        this.resetTimer();
+    }
 		
 }

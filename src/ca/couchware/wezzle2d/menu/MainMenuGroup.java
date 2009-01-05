@@ -32,6 +32,7 @@ import ca.couchware.wezzle2d.ui.TextField;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.EmptyGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
+import java.awt.Shape;
 import java.util.EnumMap;
 import java.util.EnumSet;
 
@@ -73,13 +74,10 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     private enum Menu
     {
         NONE(-1),
-        PLAY_NOW(0),
-        TUTORIAL(1),
-        OPTIONS(2),
-        UPGRADE(3),
-        ACHIEVEMENTS(4),
-        HIGH_SCORES(5),
-        EXIT(6);
+        PLAY_NOW(0),                
+        ACHIEVEMENTS(1),
+        HIGH_SCORES(2),
+        UPGRADE(3);
                 
         private int rank;
         
@@ -130,16 +128,17 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
      * Create a new main menu.
      */
     public MainMenuGroup(            
-            SettingsManager settingsMan,
-            AnimationManager animationMan, 
-            MusicManager musicMan, AchievementManager achievementMan)
+            AchievementManager achievementMan,
+            AnimationManager animationMan,
+            MusicManager musicMan,
+            SettingsManager settingsMan)
     {                
         // Store the manager references.
-        this.settingsMan  = settingsMan;
-        this.animationMan = animationMan;                        
-        this.musicMan     = musicMan;
-        this.layerMan     = LayerManager.newInstance();
         this.achievementMan = achievementMan;
+        this.animationMan   = animationMan;    
+        this.musicMan       = musicMan;
+        this.settingsMan    = settingsMan;                                   
+        this.layerMan       = LayerManager.newInstance();        
         
         // Set the main menu as activated.
         this.activated = true;
@@ -223,12 +222,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         button = new Button.Builder((Button) templateButton)
                 .y(222).text("Play Now").end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.PLAY_NOW, button);                        
-        
-//        button = new Button.Builder((Button) templateButton)
-//                .y(251).text("Options").end();
-//        layerMan.add(button, Layer.UI);
-//        buttonMap.put(Menu.OPTIONS, button);               
+        buttonMap.put(Menu.PLAY_NOW, button);                                          
         
         button = new Button.Builder((Button) templateButton)
                 .y(271).text("Achievements").end();
@@ -240,15 +234,10 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         layerMan.add(button, Layer.UI);
         buttonMap.put(Menu.HIGH_SCORES, button);
         
-         button = new Button.Builder((Button) templateButton)
+        button = new Button.Builder((Button) templateButton)
                 .y(369).text("Buy Now").end();
         layerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.UPGRADE, button);     
-                
-//        button = new Button.Builder((Button) templateButton)
-//                .y(447).text("Exit").end();
-//        layerMan.add(button, Layer.UI);
-//        buttonMap.put(Menu.EXIT, button);                                   
+        buttonMap.put(Menu.UPGRADE, button);                                                   
     };
     
     private void initializeGroups()
@@ -266,26 +255,19 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         
         // Create the "Play Now" group.
         group = new PlayNowGroup(this, 
-                this.settingsMan,
-                this.layerMan, 
-                this.musicMan);
+                this.settingsMan, this.layerMan, this.musicMan);
         this.groupMap.put(Menu.PLAY_NOW, group);
-        
-        // Create the "Tutorial" group.
-        group = new TutorialGroup(this.settingsMan, this.layerMan);
-        this.groupMap.put(Menu.TUTORIAL, group);                       
-        
+
          // Create the "Achievements" group.
-        group = new AchievementGroup(this,
-                this.settingsMan, 
-                this.layerMan, this.achievementMan);
+        group = new AchievementGroup(this, 
+                this.achievementMan, this.layerMan, this.settingsMan);
         this.groupMap.put(Menu.ACHIEVEMENTS, group);
         
-         // Create the "High Scores" group.
+        // Create the "High Scores" group.
         group = new TutorialGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.HIGH_SCORES, group);
         
-         // Create the "Upgrade" group.
+         // Create the "Buy Now" group.
         group = new TutorialGroup(this.settingsMan, this.layerMan);
         this.groupMap.put(Menu.UPGRADE, group);
     }
@@ -307,11 +289,11 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 // The button that was clicked.  Null if no button was clicked.
                 IButton clickedButton = null;
                 
-                for (IButton btn : this.buttonMap.values())
+                for (IButton button : this.buttonMap.values())
                 {
-                    if (btn.clicked() == true)
+                    if (button.clicked() == true)
                     {
-                        clickedButton = btn;                        
+                        clickedButton = button;                        
                         // Do not short-circuit!                        
                     }                   
                 } // end for
@@ -323,14 +305,14 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                     for (Menu menu : this.buttonMap.keySet())
                     {
                         // Make sure their clicked flag is clear.
-                        IButton btn = buttonMap.get(menu);
+                        IButton button = buttonMap.get(menu);
                         
                         // Activate the button if it is the clicked button.
-                        if (btn.equals(clickedButton) == true)
+                        if (button.equals(clickedButton) == true)
                         {
                             // Activate the new button.
-                            btn.setActivated(true);
-                            btn.setDisabled(true);
+                            button.setActivated(true);
+                            button.setDisabled(true);
                             
                             // Animate the change.
                             this.currentAnimation = new MetaAnimation.Builder()
@@ -348,8 +330,8 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                         }
                         else
                         {
-                            btn.setActivated(false);
-                            btn.setDisabled(false);
+                            button.setActivated(false);
+                            button.setDisabled(false);
                             
                             // Deactivate the other groups.
                             this.groupMap.get(menu).setActivated(false);
@@ -521,11 +503,32 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     public boolean draw()
     {
         return layerMan.draw();
-    }        
+    }       
+    
+    public boolean draw(Shape region, boolean exact)
+    {
+        return layerMan.draw(region, exact);
+    }
+
+    public boolean draw(Shape region)
+    {
+        return layerMan.draw(region);
+    }
     
     public void forceRedraw()
     {
         layerMan.forceRedraw();
+    }
+    
+    @Override
+    public void dispose()
+    {
+        // Make sure all the groups are disposed.
+        for (IButton button : buttonMap.values())
+            button.dispose();
+        
+        for (IGroup group : groupMap.values())
+            group.dispose();
     }
     
 }

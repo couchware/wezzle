@@ -11,11 +11,7 @@ import java.util.Set;
  *
  * @author Kevin
  */
- public class ScoreManager implements 
-         IManager, 
-         IGameListener, 
-         ILevelListener 
-         //IScoreListener
+ public class ScoreManager implements IResettable, ISaveable, IGameListener, ILevelListener          
  {    
      
     /** The different types of scores. */

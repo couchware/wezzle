@@ -1,16 +1,15 @@
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.ui.IButton.IButtonListener;
-import ca.couchware.wezzle2d.util.*;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * A class for creating a rectangular boolean button.
@@ -152,7 +151,7 @@ public class Button extends AbstractButton
         
         // Assign values based on the values from builder.        
         this.width = builder.autoWidth 
-               ? normalLabel.getWidth() + 30
+               ? normalLabel.getWidth() + 40
                : builder.width;
         
         this.height = middleSprite.getHeight();

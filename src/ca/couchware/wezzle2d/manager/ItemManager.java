@@ -8,7 +8,6 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.event.ILevelListener;
-import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
@@ -24,10 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * The manager that manages the items in the game.
+ * 
  * @author cdmckay
  */
-public class ItemManager implements IManager, ILevelListener, IMoveListener
+public class ItemManager implements IResettable, ILevelListener
 {
 
     /**
@@ -55,12 +55,12 @@ public class ItemManager implements IManager, ILevelListener, IMoveListener
     /**
      * The maximum items on the screen at once.
      */
-    private int maximumItems;
+    final private int maximumItems = 3;
     
     /**
      * The maximum multipliers on the screen at once.
      */
-    private int maximumMultipliers;           
+    final private int maximumMultipliers = 3;
     
     
     /**
@@ -70,10 +70,6 @@ public class ItemManager implements IManager, ILevelListener, IMoveListener
     
     private ItemManager()
     {
-        // Set the max items and mults.
-        this.maximumItems       = 3;
-        this.maximumMultipliers = 3;
-        
         // Create the item list.
         itemMap = new EnumMap<TileType, Item>(TileType.class);                
         
@@ -96,6 +92,33 @@ public class ItemManager implements IManager, ILevelListener, IMoveListener
         assert(starCooldown != -1);
         // Reset the manager to finish the initalization.
         resetState();
+    }
+    
+    /**
+     * Resets the board manager to appropriate settings for the first level.
+     */
+    public void resetState()
+    {       
+        itemMap.clear();
+        
+        itemMap.put(TileType.NORMAL, new Item.Builder(TileType.NORMAL)
+                .initialAmount(28).weight(5).maximumOnBoard(100).end());
+                
+        itemMap.put(TileType.ROCKET, new Item.Builder(TileType.ROCKET)
+                .initialAmount(0).weight(0).maximumOnBoard(1).end());
+        
+        itemMap.put(TileType.BOMB, new Item.Builder(TileType.BOMB)
+                .initialAmount(0).weight(0).maximumOnBoard(1).end());  
+        
+        itemMap.put(TileType.STAR, new Item.Builder(TileType.STAR)
+                .initialAmount(0).weight(0).maximumOnBoard(1).end());
+        
+        itemMap.put(TileType.GRAVITY, new Item.Builder(TileType.GRAVITY)
+                .initialAmount(0).weight(0).maximumOnBoard(1).end());
+        
+        // Reset the rules.
+        currentRuleList.clear();
+        currentRuleList.addAll(masterRuleList);
     }
     
     public static ItemManager newInstance()
@@ -174,16 +197,7 @@ public class ItemManager implements IManager, ILevelListener, IMoveListener
     public int getMaximumItems()
     {
         return maximumItems;
-    }
-    
-    /**
-     * set the maximum number of items.
-     */
-    public void setMaximumItems(int maximum)
-    {
-        this.maximumItems = maximum;
-    }    
-    
+    }       
     
      /**
      * @return the maximum number of mults.
@@ -191,16 +205,7 @@ public class ItemManager implements IManager, ILevelListener, IMoveListener
     public int getMaximumMultipliers()
     {
         return maximumMultipliers;
-    }
-    
-    /**
-     * set the maximum number of mults.
-     */
-    public void setMaximumMultipliers(int maximum)
-    {
-        this.maximumMultipliers = maximum;
-    }                
-    
+    }                        
     
     public void addItem(Item item)
     {
@@ -446,47 +451,7 @@ public class ItemManager implements IManager, ILevelListener, IMoveListener
              return;                    
         
         evaluateRules(game);
-    }
-    
-    public void saveState()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void loadState()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-	
-    /**
-     * Resets the board manager to appropriate settings for the first level.
-     */
-    public void resetState()
-    {       
-        itemMap.clear();
-        
-        itemMap.put(TileType.NORMAL, new Item.Builder(TileType.NORMAL)
-                .initialAmount(28).weight(5).maximumOnBoard(100).end());
-        
-        itemMap.put(TileType.WEZZLE, new Item.Builder(TileType.WEZZLE)
-                .initialAmount(0).weight(0).maximumOnBoard(4).end());
-        
-        itemMap.put(TileType.ROCKET, new Item.Builder(TileType.ROCKET)
-                .initialAmount(0).weight(0).maximumOnBoard(1).end());
-        
-        itemMap.put(TileType.BOMB, new Item.Builder(TileType.BOMB)
-                .initialAmount(0).weight(0).maximumOnBoard(1).end());  
-        
-        itemMap.put(TileType.STAR, new Item.Builder(TileType.STAR)
-                .initialAmount(0).weight(0).maximumOnBoard(1).end());
-        
-        itemMap.put(TileType.GRAVITY, new Item.Builder(TileType.GRAVITY)
-                .initialAmount(0).weight(0).maximumOnBoard(1).end());
-        
-        // Reset the rules.
-        currentRuleList.clear();
-        currentRuleList.addAll(masterRuleList);
-    }
+    }        
 
     public void levelChanged(LevelEvent event)
     {

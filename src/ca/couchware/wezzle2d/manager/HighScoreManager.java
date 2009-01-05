@@ -15,7 +15,7 @@ import java.util.List;
  * 
  * @author Kevin, Cameron
  */
-public class HighScoreManager 
+public class HighScoreManager
 {        
     
     /**
@@ -43,8 +43,7 @@ public class HighScoreManager
         // Initialize.
         this.scoreList = new ArrayList<HighScore>(NUMBER_OF_SCORES);
         this.importSettings();
-    }
-    
+    }       
     
     /**
      * Returns a new instance of the high score manager.
@@ -202,6 +201,6 @@ public class HighScoreManager
     public List<HighScore> getScoreList()
     {
         return new ArrayList<HighScore>(scoreList);
-    }         
+    }    
     
 }

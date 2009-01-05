@@ -5,8 +5,10 @@
 
 package ca.couchware.wezzle2d.tutorial;
 
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
+import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
@@ -92,8 +94,7 @@ public abstract class AbstractTutorial implements ITutorial
         
         // Create repeat button.
         repeatButton = new Button.Builder(400, 330)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                //.type(SpriteButton.Type.THIN)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("Repeat").normalOpacity(70).visible(false).end();
         game.layerMan.add(repeatButton, Layer.EFFECT);
         
@@ -109,7 +110,7 @@ public abstract class AbstractTutorial implements ITutorial
         if (game.statMan.getMoveCount() != 0 && menuShown == false)
         {               
             // Stop the piece animation.
-            game.pieceMan.getPieceGrid().setVisible(false); 
+            game.pieceMan.hidePieceGrid();
             game.pieceMan.stopAnimation();                                            
             
             // Lock the whole board.
@@ -212,7 +213,7 @@ public abstract class AbstractTutorial implements ITutorial
         }
     }       
     
-    protected void finish(final Game game)
+    public void finish(final Game game)
     {   
         // Load the score managers state.
         game.boardMan.loadState();
@@ -222,20 +223,26 @@ public abstract class AbstractTutorial implements ITutorial
         // Remove the repeat button.
         repeatButton.setVisible(false);
         game.layerMan.remove(repeatButton, Layer.EFFECT);
+        repeatButton.dispose();
         repeatButton = null;
         
         // Remove the continue button.
         continueButton.setVisible(false);
         game.layerMan.remove(continueButton, Layer.EFFECT);
+        continueButton.dispose();
         continueButton = null;
         
         // Remove the speech bubble.
         game.layerMan.remove(bubble, Layer.EFFECT);
+        bubble.dispose();
         bubble = null;
         
         // Remove the text label.
         for (ITextLabel label : labelList)
+        {
             game.layerMan.remove(label, Layer.EFFECT);       
+            label.dispose();
+        }
         labelList = null;
         
         // Remove the restriction board.
@@ -281,12 +288,16 @@ public abstract class AbstractTutorial implements ITutorial
         
         // Make sure buttons aren't visible.
         repeatButton.setVisible(false);
-        if (repeatButton.isActivated() == true)
+        if (repeatButton.isActivated())
+        {
             repeatButton.setActivated(false);
+        }
         
         continueButton.setVisible(false);
-        if (continueButton.isActivated() == true)
+        if (continueButton.isActivated())
+        {
             continueButton.setActivated(false);
+        }
         
         // Menu is not shown.
         menuShown = false;
@@ -295,39 +306,11 @@ public abstract class AbstractTutorial implements ITutorial
         bubble.setOpacity(100);            
         
         // Piece is visible.
-        game.pieceMan.getPieceGrid().setVisible(true);
+        game.pieceMan.showPieceGrid();
         game.pieceMan.startAnimation(game.timerMan);
     }    
     
-    protected abstract void createBoard(final Game game);
-    
-//    /**
-//     * The tutorial logic goes here.
-//     * 
-//     * @param game
-//     * @return True if the tutorial is still running, false otherwise.
-//     */
-//    protected abstract boolean update(Game game);
-
-//    /**
-//     * Is run when the tutorial is completed.  Typically deals with resetting 
-//     * the managers to their previous states before the tutorial started.
-//     * 
-//     * @param game
-//     */
-//    protected abstract void finish(Game game);
-    
-//    /**
-//     * Restarts the tutorial at the beginning.  This method can be overwritten
-//     * to optimize it.
-//     * 
-//     * @return
-//     */
-//    protected void repeat(Game game)
-//    {
-//        finish(game);
-//        initialize(game);
-//    }              
+    protected abstract void createBoard(final Game game);       
     
     public boolean isInitialized()
     {

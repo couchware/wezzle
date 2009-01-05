@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
@@ -15,14 +16,14 @@ import java.util.List;
  * A class for handling the board refactoring.  This is a singleton class.
  * @author cdmckay
  */
-public class Refactorer 
+public class Refactorer implements IResettable
 {
     
     /** A shortcut to the settings manager to simplify some code. */
     private static final SettingsManager settingsMan = SettingsManager.get();
     
     /** The single instance of this class to ever exist. */
-	private static final Refactorer single = new Refactorer();        
+	private static final Refactorer SINGLE = new Refactorer();        
     
     /** The refator speeds. */
     public static enum RefactorSpeed
@@ -67,22 +68,22 @@ public class Refactorer
     /**
      * If true, refactor will be activated next loop.
      */
-    private boolean activateRefactor = false;
+    private boolean activateRefactor;
     
     /**
      * If true, the board is currently being refactored downwards.
      */
-    private boolean refactorVerticalInProgress = false;
+    private boolean refactorVerticalInProgress;
     
     /**
      * If true, the board is currently being refactored leftward.
      */
-    private boolean refactorHorizontalInProgress = false;
+    private boolean refactorHorizontalInProgress;
     
     /**
      * The refactor has finished this loop.
      */
-    private boolean finishedRefactor = false;
+    private boolean finishedRefactor;
     
     /**
      * The current refactor animations.
@@ -98,6 +99,17 @@ public class Refactorer
     {
         // Set the refactor speeds to their defaults.           
         this.speed = RefactorSpeed.NORMAL;
+        
+        // Reset the state.
+        this.resetState();
+    }
+    
+    public void resetState()
+    {
+        this.activateRefactor             = false;
+        this.refactorVerticalInProgress   = false;
+        this.refactorHorizontalInProgress = false;
+        this.finishedRefactor             = false;
     }
     
     /**
@@ -107,7 +119,7 @@ public class Refactorer
 	 */
 	static Refactorer get()
 	{
-		return single;
+		return SINGLE;
 	}   
     
     public RefactorSpeed getRefactorSpeed()
@@ -176,7 +188,7 @@ public class Refactorer
         if (activateRefactor == true)
         {            
             // Hide piece.
-            game.pieceMan.getPieceGrid().setVisible(false);
+            game.pieceMan.hidePieceGrid();
 
             // Start down refactor.                           
             this.refactorAnimationList = 

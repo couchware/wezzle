@@ -48,15 +48,12 @@ import java.util.Set;
  * 
  * @author kgrad
  */
-public class TileRemover implements ILevelListener
+public class TileRemover implements IResettable, ILevelListener
 {
 
     /** The only instance of this class to ever exist. */
     private static final TileRemover single = new TileRemover();
-    
-    /** If true, a line removal will be activated next loop. */    
-    private boolean activateLineRemoval = false;
-    
+       
     /**
      * The last line that was matched.  This is used by the "star" item
      * to determine whether a bomb is "in the wild" (i.e. should be removed)
@@ -70,35 +67,35 @@ public class TileRemover implements ILevelListener
     /** The last refactor speed used. */
     private RefactorSpeed refactorSpeed;
     
+    /** If true, a line removal will be activated next loop. */    
+    private boolean activateLineRemoval;    
+    
     /** If true, level up. */
-    private boolean activateLevelUp = false;
+    private boolean activateLevelUp;
     
     /** If true, a line removal is in progress. */
-    private boolean tileRemovalInProgress = false;     
+    private boolean tileRemovalInProgress;     
     
     /** The set of tile indices that will be removed. */
     private Set<Integer> tileRemovalSet;
     
     /** If true, uses jump animation instead of zoom. */
-    private boolean levelUpInProgress = false;
+    private boolean levelUpInProgress;
     
     /** If true, award no points for this tile removal. */
-    private boolean noScore = false;
+    private boolean noScore;
     
     /** If true, do not activate items on this removal. */
-    private boolean noItems = false;
-    
-    /** If true, a wezzle tile infection is in progress. */
-    private boolean tileInfectionInProgress = false;
+    private boolean noItems;
       
     /** If true, a bomb removal will be activated next loop. */
-    private boolean activateBombRemoval = false;    
+    private boolean activateBombRemoval;    
     
     /** If true, a star removal will be activated next loop. */
-    private boolean activateStarRemoval = false;   
+    private boolean activateStarRemoval;   
     
     /** If true, a rocket removal will be activated next loop. */
-    private boolean activateRocketRemoval = false;    
+    private boolean activateRocketRemoval;    
       
     /**
      * The private constructor.
@@ -118,12 +115,40 @@ public class TileRemover implements ILevelListener
         tileTypeSet.remove(TileType.X2);
         tileTypeSet.remove(TileType.X3);
         tileTypeSet.remove(TileType.X4);
-        tileTypeSet.remove(TileType.WEZZLE);
         
         // Now create all the item sets.
         for (TileType t : tileTypeSet)
-            itemSetMap.put(t, new HashSet<Integer>());        
+        {
+            itemSetMap.put(t, new HashSet<Integer>());
+        }
+        
+        // Reset the state.
+        this.resetState();
     }      
+    
+    /**
+     * Reset the tile remover state.
+     */
+    public void resetState()
+    {
+        this.tileRemovalSet.clear();
+        this.lastMatchSet.clear();
+        
+        for (Set<Integer> set : itemSetMap.values())
+        {
+            set.clear();
+        }
+        
+        this.activateLineRemoval   = false;        
+        this.activateLevelUp       = false;        
+        this.tileRemovalInProgress = false;             
+        this.levelUpInProgress     = false;                     
+        this.activateBombRemoval   = false;            
+        this.activateStarRemoval   = false;           
+        this.activateRocketRemoval = false;    
+        this.noScore = false;        
+        this.noItems = false;     
+    }
 
     /**
      * Retrieve the single instance of this class.
@@ -147,14 +172,14 @@ public class TileRemover implements ILevelListener
      */
     public void updateLogic(final Game game)
     {
-        final AnimationManager animationMan = game.animationMan;
-        final BoardManager boardMan         = game.boardMan;
-        final LayerManager layerMan         = game.layerMan;
+        //final AnimationManager animationMan = game.animationMan;
+        //final BoardManager boardMan         = game.boardMan;
+        //final LayerManager layerMan         = game.layerMan;
         final ListenerManager listenerMan   = game.listenerMan;
         final PieceManager pieceMan         = game.pieceMan;
-        final SettingsManager settingsMan   = game.settingsMan;
+        //final SettingsManager settingsMan   = game.settingsMan;
         final TimerManager timerMan         = game.timerMan;
-        final LevelManager levelMan         = game.levelMan;                
+        //final LevelManager levelMan         = game.levelMan;                
         
         if (activateLevelUp == true)
         {
@@ -240,7 +265,7 @@ public class TileRemover implements ILevelListener
     {
         // Load new piece and make it visible.
         pieceMan.loadPiece();
-        pieceMan.getPieceGrid().setVisible(true);    
+        pieceMan.showPieceGrid();
         pieceMan.startAnimation(timerMan);
 
         // Reset the mouse.
@@ -275,7 +300,6 @@ public class TileRemover implements ILevelListener
     public boolean isTileRemoving()
     {
         return this.tileRemovalInProgress
-                || this.tileInfectionInProgress
                 || this.activateLineRemoval 
                 || this.activateBombRemoval 
                 || this.activateStarRemoval 
@@ -332,7 +356,7 @@ public class TileRemover implements ILevelListener
         statMan.incrementCycleLineCount(cycleY);
         
         //  Handle any lines we may have had.       
-        if (game.tutorialMan.isTutorialInProgress() == true)
+        if (game.tutorialMan.isTutorialRunning() == true)
         {
             game.listenerMan.notifyLineConsumed(new LineEvent(
                     game.statMan.getCycleLineCount(), this),
@@ -585,7 +609,7 @@ public class TileRemover implements ILevelListener
 //            }
             
             // Increment the score.
-            if (game.tutorialMan.isTutorialInProgress() == false)       
+            if (game.tutorialMan.isTutorialRunning() == false)       
             {
                 game.scoreMan.incrementScore(deltaScore);        
             }
@@ -832,7 +856,7 @@ public class TileRemover implements ILevelListener
                 statMan.getChainCount());       
         
         // Increment the score.
-        if (game.tutorialMan.isTutorialInProgress() == false)       
+        if (game.tutorialMan.isTutorialRunning() == false)       
         {
             game.scoreMan.incrementScore(deltaScore);        
         }
@@ -1049,7 +1073,7 @@ public class TileRemover implements ILevelListener
                 statMan.getChainCount());       
 
         // Increment the score.
-        if (game.tutorialMan.isTutorialInProgress() == false)       
+        if (game.tutorialMan.isTutorialRunning() == false)       
         {
             game.scoreMan.incrementScore(deltaScore);        
         }
@@ -1317,7 +1341,7 @@ public class TileRemover implements ILevelListener
                 statMan.getChainCount());       
         
         // Increment the score.
-        if (game.tutorialMan.isTutorialInProgress() == false)       
+        if (game.tutorialMan.isTutorialRunning() == false)       
         {
             game.scoreMan.incrementScore(deltaScore);        
         }
@@ -1443,4 +1467,5 @@ public class TileRemover implements ILevelListener
     {                
         this.activateLevelUp = event.isLevelUp();
     }
+   
 }

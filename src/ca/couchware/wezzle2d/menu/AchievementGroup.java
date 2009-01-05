@@ -94,9 +94,10 @@ public class AchievementGroup extends AbstractGroup
     /** The label for the status of the achievement. */
     private ITextLabel achievementStatus;    
            
-    public AchievementGroup(IGroup parent, 
-            final SettingsManager settingsMan,
-            final LayerManager layerMan, final AchievementManager achievementMan)            
+    public AchievementGroup(IGroup parent,
+            final AchievementManager achievementMan,
+            final LayerManager layerMan,
+            final SettingsManager settingsMan)            
     {
         // Invoke the super.
         super(parent);
@@ -111,6 +112,7 @@ public class AchievementGroup extends AbstractGroup
         // The label color.
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);                
         
+        // Set the achievement list.
         achievementList = achievementMan.getMasterList();
         
         // Fill the achievemnt with some dummy achievements.
@@ -168,7 +170,7 @@ public class AchievementGroup extends AbstractGroup
         Scroller.Builder builder = new Scroller.Builder(68, 229)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .padding(Padding.newInstance(12, 30, 12, 12))                
-                .rows(achievementList.size())
+                .rows(4)
                 .visible(false);
         for (Achievement ach : achievementList)
         {            

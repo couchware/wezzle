@@ -515,4 +515,12 @@ public class Box extends AbstractEntity implements IMouseListener
         // Intentionally left blank.
     }
     
+    @Override
+    public void dispose()
+    {
+        // Stop listening to the mouse events.
+        if (this.visible && !this.disabled)
+            window.removeMouseListener(this);
+    }
+    
 }

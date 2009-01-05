@@ -453,5 +453,13 @@ public class Scroller extends AbstractEntity implements IMouseListener
             scrollBar.setVirtualValue(offset);            
         }
     }
+    
+    @Override
+    public void dispose()
+    {
+        // Stop listening to the mouse events.
+        if (this.visible && !this.disabled)
+            window.removeMouseListener(this);
+    }
 
 }

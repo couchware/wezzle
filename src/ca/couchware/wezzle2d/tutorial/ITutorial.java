@@ -53,6 +53,12 @@ public interface ITutorial
     public void initialize(Game game);
     
     /**
+     * Force the tutorial to finish.  This is usually invoked by the tutorial
+     * but can be invoked to finish the tutorial prematurely.
+     */
+    public void finish(Game game);
+    
+    /**
      * Is the tutorial currently activated?
      * 
      * @return

@@ -2,14 +2,14 @@ package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.Game.TransitionTarget;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.menu.MainMenuGroup;
 import ca.couchware.wezzle2d.ui.*;
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
@@ -152,6 +152,7 @@ public class OptionsGroup extends AbstractGroup
             upgradeButton.setActivated(false);
             launcher.openURLinBrowser(Settings.getUpgradeUrl());
         }
+        
         // Check if the back button was pressed.
         if (closeButton.isActivated() == true)
         {            
@@ -167,6 +168,23 @@ public class OptionsGroup extends AbstractGroup
                 GroupManager.Class.OPTIONS,
                 GroupManager.Layer.MIDDLE);
         }             
+        else if (mainMenuButton.isActivated() == true)
+        {
+            // Deactivate the button.
+            mainMenuButton.setActivated(false);              
+            
+            // Stop the tutorial if necessary.
+            if (game.tutorialMan.isTutorialRunning())
+            {
+                game.tutorialMan.finishRunningTutorial(game);
+            }
+            
+            // Disable the layer manager.
+            layerMan.setDisabled(true);
+            
+            // Start the transition.
+            game.startTransitionTo(TransitionTarget.MENU);
+        }
     }
     
 }

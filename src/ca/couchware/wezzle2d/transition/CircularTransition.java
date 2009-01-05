@@ -8,10 +8,12 @@ package ca.couchware.wezzle2d.transition;
 import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.Util;
+import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
 /**
@@ -26,7 +28,7 @@ public class CircularTransition extends AbstractTransition
     /**
      * The layer manager used in the transition.
      */
-    private final LayerManager layerMan;
+    private final IDrawer drawer;
     
     /**
      * The number of milliseconds that have passed in this transition.
@@ -75,7 +77,7 @@ public class CircularTransition extends AbstractTransition
      */    
     private CircularTransition(Builder builder)
     {
-        this.layerMan = builder.layerMan;
+        this.drawer = builder.drawer;
         this.currentRadius = builder.minRadius;
         this.minRadius = builder.minRadius;
         this.maxRadius = builder.maxRadius;
@@ -85,7 +87,7 @@ public class CircularTransition extends AbstractTransition
     
     public static class Builder implements IBuilder<CircularTransition>
     {       
-        private final LayerManager layerMan;
+        private final IDrawer drawer;
         
         private int speed = 500;
         private int minRadius = 10;
@@ -94,9 +96,9 @@ public class CircularTransition extends AbstractTransition
         private int wait = 0;
         //private int duration = 500;
         
-        public Builder(LayerManager layerMan)
+        public Builder(IDrawer drawer)
         { 
-            this.layerMan = layerMan;
+            this.drawer = drawer;
         }       
         
         public Builder wait(int val) { wait = val; return this; }
@@ -158,7 +160,7 @@ public class CircularTransition extends AbstractTransition
         //LogManager.recordMessage("currentRadius = " + currentRadius);
         if (waitFinished == true)
         {
-            this.layerMan.draw(new Ellipse2D.Double(
+            this.drawer.draw(new Ellipse2D.Double(
                     Game.SCREEN_RECTANGLE.getCenterX() - currentRadius,
                     Game.SCREEN_RECTANGLE.getCenterY() - currentRadius,
                     currentRadius * 2,
@@ -167,6 +169,16 @@ public class CircularTransition extends AbstractTransition
         }       
         
         return true;
+    }
+
+    public boolean draw(Shape region, boolean exact)
+    {
+        return draw();
+    }
+
+    public boolean draw(Shape region)
+    {
+        return draw();
     }
 
 }

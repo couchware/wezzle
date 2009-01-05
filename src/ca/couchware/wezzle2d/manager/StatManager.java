@@ -15,7 +15,7 @@ import java.util.EnumMap;
  * @author Kevin, Cameron
  */
 
-public class StatManager implements IManager, IMoveListener, ILineListener
+public class StatManager implements IResettable, ISaveable, IMoveListener, ILineListener
 {	
 	/**
 	 * The current move count.

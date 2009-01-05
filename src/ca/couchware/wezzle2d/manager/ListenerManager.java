@@ -61,7 +61,7 @@ public class ListenerManager
     }
     
     /** The single listener manager. */
-    private final static ListenerManager single = new ListenerManager();            
+    private final static ListenerManager SINGLE = new ListenerManager();            
     
     /** The score listener list. */
     private Map<Listener, List<IListener>> listenerMap;
@@ -88,8 +88,8 @@ public class ListenerManager
      */
     public static ListenerManager get()
     {
-        return single;
-    }    
+        return SINGLE;
+    }            
     
     public void registerListener(Listener listenerType, IListener listener)
     {
@@ -251,6 +251,6 @@ public class ListenerManager
             ((IWezzleListener) listener).wezzleTimerChanged(e);
         }
          
-    }       
+    }   
 
 }

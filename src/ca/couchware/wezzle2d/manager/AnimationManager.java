@@ -12,7 +12,7 @@ import java.util.Iterator;
  * 
  * @author cdmckay
  */
-public class AnimationManager 
+public class AnimationManager implements ISaveable
 {
     /**
      * The animation linked list.
@@ -70,4 +70,21 @@ public class AnimationManager
         
         //Util.handleMessage(animationList.size() + "", "AnimationManager#animate");
     }
+
+    public void saveState()
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    public void loadState()
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    public void resetState()
+    {
+        // Empty the animation list.
+        this.animationList.clear();
+    }
+        
 }

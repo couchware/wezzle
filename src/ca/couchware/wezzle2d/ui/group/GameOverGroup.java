@@ -175,8 +175,8 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         // Notify all listeners of reset.
         game.listenerMan.notifyGameReset(new GameEvent(this, level));
                        
-        game.statMan.resetMoveCount();
-        game.statMan.resetLineCount();
+        // Reset the stat man.
+        game.statMan.resetState();
 
         // Create board and make it invisible.
         game.boardMan.setVisible(false);

@@ -5,9 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.tutorial.*;
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
+import ca.couchware.wezzle2d.tutorial.ITutorial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,23 +16,19 @@ import java.util.List;
  *
  * @author cdmckay
  */
-public class TutorialManager 
+public class TutorialManager
 {
 
-    /**
-     * The tutorial list.
-     */
+    /** The tutorial list. */
     private List<ITutorial> tutorialList;
-    
-    /**
-     * The currently running tutorial.
-     */    
-    private ITutorial currentTutorial;
+       
+    /** The currently running tutorial. */    
+    private ITutorial tutorial;
     
     private TutorialManager()
     {
-        // Initialize animation list.
-        tutorialList = new ArrayList<ITutorial>();                
+        // Initialize tutorial list.
+        tutorialList  = new ArrayList<ITutorial>();        
     }
         
     /**
@@ -50,7 +46,7 @@ public class TutorialManager
      * 
      * @param t
      */
-    public void add(AbstractTutorial t)
+    public void add(ITutorial t)
     {
         tutorialList.add(t);       
     }
@@ -60,7 +56,7 @@ public class TutorialManager
      * 
      * @param t
      */
-    public void remove(AbstractTutorial t)
+    public void remove(ITutorial t)
     {
         if (contains(t) == true)
             tutorialList.remove(t);
@@ -80,7 +76,7 @@ public class TutorialManager
      * @param t
      * @return
      */
-    public boolean contains(AbstractTutorial t)
+    public boolean contains(ITutorial t)
     {
         return tutorialList.contains(t);
     }   
@@ -90,9 +86,9 @@ public class TutorialManager
      * 
      * @return True if a tutorial is running, false otherwise.
      */
-    public boolean isTutorialInProgress()
+    public boolean isTutorialRunning()
     {
-        return currentTutorial != null;
+        return tutorial != null;
     }
 
     /**
@@ -100,9 +96,23 @@ public class TutorialManager
      * 
      * @return The currently running tutorial, or null, if no tutorial is running.
      */
-    public ITutorial getTutorialInProgress()
+    public ITutorial getRunningTutorial()
     {
-        return currentTutorial;
+        return tutorial;
+    }
+    
+    /**
+     * Finishes the currently running tutorial.
+     * 
+     * @param game
+     */
+    public void finishRunningTutorial(Game game)
+    {
+       if (this.tutorial != null)
+       {
+           tutorial.finish(game);
+           tutorial = null;
+       }
     }
     
     public void updateLogic(Game game)
@@ -112,7 +122,7 @@ public class TutorialManager
              return;
         
         // If no tutorial is running, look for a new one to run.
-        if (currentTutorial == null && tutorialList.isEmpty() == false)
+        if (tutorial == null && tutorialList.isEmpty() == false)
         {
             for (Iterator<ITutorial> it = tutorialList.iterator(); it.hasNext(); ) 
             {
@@ -126,12 +136,12 @@ public class TutorialManager
                         // Hide the board nicely.
                         // Make sure the grid doesn't flicker on for a second.
                         game.startBoardHideAnimation(AnimationType.SLIDE_FADE);    
-                        game.pieceMan.getPieceGrid().setVisible(false); 
+                        game.pieceMan.hidePieceGrid();
                         break;
                     }
                     
-                    currentTutorial = t;
-                    currentTutorial.initialize(game);
+                    tutorial = t;
+                    tutorial.initialize(game);
                     it.remove();                    
                     break;
                 }                                                                    
@@ -139,18 +149,27 @@ public class TutorialManager
         }    
         
         // See if there is a tutorial running.
-        if (currentTutorial != null)
+        if (tutorial != null)
         {
-            currentTutorial.updateLogic(game);
-            if (currentTutorial.isDone() == true)
+            tutorial.updateLogic(game);
+            if (tutorial.isDone() == true)
             {
                 game.boardMan.setVisible(false);
                 game.startBoardShowAnimation(AnimationType.SLIDE_FADE);
-                currentTutorial = null;
+                tutorial = null;
             }
-        }
-
-        //Util.handleMessage(animationList.size() + "", "AnimationManager#animate");
+        } // end if       
+    }                 
+    
+    public void resetState()
+    {
+        // Check to see if a tutorial is running, if it is, then we're
+        // trying to reset the tutorial manager while it is running.
+        if (tutorial != null)
+            throw new IllegalStateException("Cannot close tutorial manager while a tutorial is running.");
+        
+        // Clear the tutorial list.
+        this.tutorialList.clear();
     }
     
 }

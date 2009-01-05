@@ -636,4 +636,12 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         this.sliderBarListenerList.remove(listener);
     }
     
+    @Override
+    public void dispose()
+    {
+        // Stop listening to the mouse events.
+        if (this.visible && !this.disabled)
+            window.removeMouseListener(this);
+    }
+    
 }

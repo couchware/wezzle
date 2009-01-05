@@ -1,15 +1,28 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
-import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.tile.*;
-import ca.couchware.wezzle2d.util.*;
+import ca.couchware.wezzle2d.tile.BombTile;
+import ca.couchware.wezzle2d.tile.GravityTile;
+import ca.couchware.wezzle2d.tile.RocketTile;
+import ca.couchware.wezzle2d.tile.StarTile;
+import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileColor;
+import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.tile.X2Tile;
+import ca.couchware.wezzle2d.tile.X3Tile;
+import ca.couchware.wezzle2d.tile.X4Tile;
+import ca.couchware.wezzle2d.util.ImmutablePosition;
+import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +42,7 @@ import java.util.Set;
  * 
  */
 
-public class BoardManager implements IManager, IKeyListener
+public class BoardManager implements IResettable, ISaveable, IKeyListener
 {	
     //--------------------------------------------------------------------------
     // Static Members
@@ -119,7 +132,7 @@ public class BoardManager implements IManager, IKeyListener
 	/**
 	 * The minimum number of tiles in a match.
 	 */
-	final private int minimumMatch;
+	final private int minimumMatch = 3;
 	
 	/**
 	 * The width of the board.
@@ -254,27 +267,15 @@ public class BoardManager implements IManager, IKeyListener
 		
 		// Set columns and rows.
 		this.columns = columns;
-		this.rows = rows;
-		this.cells = columns * rows;
-		
-		// Set the minimum match length.
-		this.minimumMatch = 3;
-		
+		this.rows    = rows;
+		this.cells   = columns * rows;
+						
 		// Set the board width and height.
-		this.width = columns * cellWidth;
-		this.height = rows * cellHeight;
+		this.width  = columns * cellWidth;
+		this.height = rows    * cellHeight;
         
         // Create the shape.
-        this.shape = new ImmutableRectangle(x, y, width, height);
-        
-        // Set the number of various things.
-        this.numberOfColors      = 5;
-        this.numberOfTiles       = 0;   
-        this.numberOfMultipliers = 0;
-        this.numberOfItems       = 0;                        
-        
-        // Set the gravity to be to the bottom left by default.
-        this.gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
+        this.shape = new ImmutableRectangle(x, y, width, height);                                                    
 		
 		// Initialize board.
 		board        = new Tile[cells];
@@ -283,17 +284,115 @@ public class BoardManager implements IManager, IKeyListener
         // Create the board background graphic.
         GraphicEntity entity = new GraphicEntity.Builder(x - 12, y - 12, PATH)
                 .opacity(90).end();        
-        layerMan.add(entity, Layer.BACKGROUND);        
+        layerMan.add(entity, Layer.BACKGROUND);    
         
-        // Fill the locked colour map with falses (enabling all colours to start).
-        for (TileColor c : TileColor.values())
-        {
-            lockedColorMap.put(c, false);
-        }
+        // Reset the state.
+        this.resetState();
 	}
+    
+    /**
+     * Reset the board manager to its starting state.
+     */
+    public void resetState()
+    {
+        // Set the gravity to be to the bottom left by default.
+        this.gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
+        
+        // Set the number of various things.
+        this.numberOfColors      = DEFAULT_NUMBER_OF_COLORS;
+        this.numberOfTiles       = 0;   
+        this.numberOfMultipliers = 0;
+        this.numberOfItems       = 0;    
+        
+        // Reset the color locks.
+        for (TileColor color : TileColor.values())
+        {
+            lockedColorMap.put(color, false);
+        }
+        
+        // Stop all the animations on all the tiles.
+        for (Tile tile : board)
+        {
+            if (tile == null) continue;
+            
+            IAnimation anim = tile.getAnimation();
+            if (anim != null) anim.cleanUp();
+            animationMan.remove(anim);            
+        }
+        
+        // Clear the board and scratch board.
+        Arrays.fill(board, null);
+        Arrays.fill(scratchBoard, null);
+        
+        // Reset visibility.
+        this.visible = true;
+    }
+    
+    /**
+     * Saves the current state of the board.
+     */
+    public void saveState()
+    {
+        managerState.put(Keys.NUMBER_OF_COLORS, numberOfColors);
+        managerState.put(Keys.NUMBER_OF_ITEMS, numberOfItems);
+        managerState.put(Keys.NUMBER_OF_MULTIPLIERS, numberOfMultipliers);
+        managerState.put(Keys.NUMBER_OF_TILES, numberOfTiles);
+        managerState.put(Keys.GRAVITY, gravity);
+        managerState.put(Keys.BOARD, board.clone());
+        managerState.put(Keys.SCRATCH_BOARD, scratchBoard.clone());
+        
+        LogManager.recordMessage("Saved " + numberOfTiles + " tiles.");  
+        LogManager.recordMessage("Saved " + numberOfItems + " items.");
+        LogManager.recordMessage("Saved " + numberOfMultipliers + " mults.");
+    }
+
+    /**
+     * Loads a previously saved state of the board.
+     */
+    @SuppressWarnings("unchecked") 
+    public void loadState()
+    {
+        // Clear the board.
+        clearBoard();
+                
+        numberOfColors = (Integer) managerState.get(Keys.NUMBER_OF_COLORS);
+        numberOfItems = (Integer) managerState.get(Keys.NUMBER_OF_ITEMS);
+        numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);  
+        numberOfMultipliers = (Integer) managerState.get(Keys.NUMBER_OF_MULTIPLIERS);
+        gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
+        scratchBoard = (Tile[]) managerState.get(Keys.SCRATCH_BOARD);   
+        board = (Tile[]) managerState.get(Keys.BOARD);     
+                       
+        // Make sure that this board is in the layer manager.
+        layerize();
+        
+         // readd the item counts.
+        for (Tile t : board)
+        {
+            if (t == null)
+                continue;
+            
+            if (t.getType() != TileType.NORMAL)
+            {
+                for (Item item : itemMan.getItemList())
+                {
+                    if(item.getTileType() == t.getType())
+                    {
+                        item.incrementCurrentAmount();
+                        LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
+                        break;
+                    }
+                } // end for
+            } // end if
+        }
+        
+        LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
+        LogManager.recordMessage("Loaded " + numberOfItems + " items.");
+        LogManager.recordMessage("Loaded " + numberOfMultipliers + " multipliers.");
+    } 
             
     /**
-     * Public API.
+     * Create a new board manager instance.
      * 
      * @param animationMan
      * @param layerMan
@@ -985,8 +1084,7 @@ public class BoardManager implements IManager, IKeyListener
        
         switch (t.getType())
         {
-            case NORMAL:
-            case WEZZLE:                
+            case NORMAL:                     
                 break;
                 
             case X2:
@@ -1076,11 +1174,7 @@ public class BoardManager implements IManager, IKeyListener
             case GRAVITY:
                 t = new GravityTile(this, color, x, y);
                 break;
-                
-            case WEZZLE:
-                t = new WezzleTile(this, color, x, y);
-                break;
-                
+                            
             default: throw new AssertionError("Unknown type.");
         }
         
@@ -1254,7 +1348,6 @@ public class BoardManager implements IManager, IKeyListener
         switch (t.getType())
         {
             case NORMAL:
-            case WEZZLE:                
                 break;
                 
             case X2:
@@ -1435,12 +1528,7 @@ public class BoardManager implements IManager, IKeyListener
             if (t.getType() == TileType.ROCKET)
             {
                 rocket = (RocketTile) t;
-            }
-            else if (t.getType() == TileType.WEZZLE 
-                    && ((WezzleTile) t).getWrappedTile().getType() == TileType.ROCKET)
-            {
-                rocket = (RocketTile) ((WezzleTile) t).getWrappedTile();
-            }
+            }           
             
             RocketTile.Direction dir = rocket.getDirection();
             
@@ -2232,76 +2320,7 @@ public class BoardManager implements IManager, IKeyListener
     public ImmutableRectangle getShape()
     {
         return shape;
-    }        
-
-    public void saveState()
-    {
-        managerState.put(Keys.NUMBER_OF_COLORS, numberOfColors);
-        managerState.put(Keys.NUMBER_OF_ITEMS, numberOfItems);
-        managerState.put(Keys.NUMBER_OF_MULTIPLIERS, numberOfMultipliers);
-        managerState.put(Keys.NUMBER_OF_TILES, numberOfTiles);
-        managerState.put(Keys.GRAVITY, gravity);
-        managerState.put(Keys.BOARD, board.clone());
-        managerState.put(Keys.SCRATCH_BOARD, scratchBoard.clone());
-        
-        LogManager.recordMessage("Saved " + numberOfTiles + " tiles.");  
-        LogManager.recordMessage("Saved " + numberOfItems + " items.");
-        LogManager.recordMessage("Saved " + numberOfMultipliers + " mults.");
-    }
-
-    @SuppressWarnings("unchecked") 
-    public void loadState()
-    {
-        // Clear the board.
-        clearBoard();
-                
-        numberOfColors = (Integer) managerState.get(Keys.NUMBER_OF_COLORS);
-        numberOfItems = (Integer) managerState.get(Keys.NUMBER_OF_ITEMS);
-        numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);  
-        numberOfMultipliers = (Integer) managerState.get(Keys.NUMBER_OF_MULTIPLIERS);
-        gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
-        scratchBoard = (Tile[]) managerState.get(Keys.SCRATCH_BOARD);   
-        board = (Tile[]) managerState.get(Keys.BOARD);     
-                       
-        // Make sure that this board is in the layer manager.
-        layerize();
-        
-         // readd the item counts.
-        for (Tile t : board)
-        {
-            if (t == null)
-                continue;
-            
-            if (t.getType() != TileType.NORMAL)
-            {
-                for (Item item : itemMan.getItemList())
-                {
-                    if(item.getTileType() == t.getType())
-                    {
-                        item.incrementCurrentAmount();
-                        LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
-                        break;
-                    }
-                } // end for
-            } // end if
-        }
-        
-        LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
-        LogManager.recordMessage("Loaded " + numberOfItems + " items.");
-        LogManager.recordMessage("Loaded " + numberOfMultipliers + " multipliers.");
-    }
-
-    public void resetState()
-    {
-        // Reset the number of colours.
-        setNumberOfColors(DEFAULT_NUMBER_OF_COLORS);
-        
-        // Reset the color locks.
-        for (TileColor c : TileColor.values())
-        {
-            lockedColorMap.put(c, false);
-        }
-    }
+    }           
     
     public int asColumn(int index)
     {
@@ -2391,11 +2410,7 @@ public class BoardManager implements IManager, IKeyListener
                 
             case 's':
                 insertItemRandomly(TileType.STAR);
-                break;    
-                
-            case 'w':
-                insertItemRandomly(TileType.WEZZLE);
-                break;    
+                break;                             
         }
     }
 

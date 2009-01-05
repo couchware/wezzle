@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.EntityGroup;

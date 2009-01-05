@@ -1,22 +1,22 @@
 /*
  *  Wezzle
- *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ *  Copyright (c) 2007-2009 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.manager.LayerManager;
-import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.LogManager;
-import ca.couchware.wezzle2d.manager.MusicManager.Theme;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.graphics.IEntity;
+import ca.couchware.wezzle2d.manager.LayerManager;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.MusicManager;
+import ca.couchware.wezzle2d.manager.MusicManager.Theme;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
@@ -351,53 +351,7 @@ public class PlayNowGroup extends AbstractGroup
     }
         
     public void updateLogic(Game game)
-    {
-        // See if the level down button was clicked.
-//        if (this.levelDownButton.clicked() == true)
-//        {
-//            // Reset the level down button.
-//            this.levelDownButton.setActivated(false);
-//            
-//            // Extract the current setting.            
-//            levelNumber = levelNumber - 1 < MIN_LEVEL 
-//                    ? MIN_LEVEL 
-//                    : levelNumber - 1;
-//            
-//            // Remove old label.
-//            this.entityList.remove(this.levelNumberLabel);
-//            this.layerMan.remove(this.levelNumberLabel, Layer.UI);
-//            
-//            // Add new label.
-//            this.levelNumberLabel = new LabelBuilder(this.levelNumberLabel)
-//                    .text(String.valueOf(levelNumber)).end();
-//            
-//            // Add it.
-//            this.entityList.add(this.levelNumberLabel);
-//            this.layerMan.add(this.levelNumberLabel, Layer.UI);                       
-//        }
-//        // See if the level up button was clicked.
-//        else if (this.levelUpButton.clicked() == true)
-//        {
-//            // Reset the level up button.
-//            this.levelUpButton.setActivated(false);
-//            
-//            // Determine new setting.
-//            levelNumber = levelNumber + 1 > MAX_LEVEL 
-//                    ? MAX_LEVEL 
-//                    : levelNumber + 1;
-//            
-//            // Remove old label.
-//            this.entityList.remove(this.levelNumberLabel);
-//            this.layerMan.remove(this.levelNumberLabel, Layer.UI);
-//            
-//            // Add new label.
-//            this.levelNumberLabel = new LabelBuilder(this.levelNumberLabel)
-//                    .text(String.valueOf(levelNumber)).end();
-//            
-//            // Add it.
-//            this.entityList.add(this.levelNumberLabel);
-//            this.layerMan.add(this.levelNumberLabel, Layer.UI);           
-//        }       
+    {      
         if (this.levelSlider.changed() == true)
         {
             levelNumber = (int) levelSlider.getVirtualValue();
@@ -406,6 +360,30 @@ public class PlayNowGroup extends AbstractGroup
         // See if the start button has been pressed.
         else if (this.startButton.clicked() == true)
         {
+            // Make sure no groups are showing if we've come back to the menu
+            // from a previous game.
+            game.groupMan.hideAllGroups();
+            
+            // Reset the core managers.
+            game.refactorer.resetState();
+            game.tileDropper.resetState();
+            game.tileRemover.resetState();
+            
+            // Reset the board manager and remove any tiles (and their effects)             
+            // from the layer manager.
+            game.boardMan.resetState(); 
+            game.boardMan.setVisible(false); // This is done for the fade in.
+            game.layerMan.removeLayer(Layer.TILE);
+            game.layerMan.removeLayer(Layer.EFFECT);
+            
+            // Reset the various other managers.
+            game.levelMan.resetState();
+            game.pieceMan.resetState();
+            game.scoreMan.resetState();
+            game.statMan.resetState();
+            game.timerMan.resetState();
+            game.tutorialMan.resetState();
+                        
             // Set the music.
             Theme theme = null;
             switch (themeRadio.getSelectedIndex())
@@ -429,13 +407,12 @@ public class PlayNowGroup extends AbstractGroup
             game.levelMan.setLevel(levelNumber, false);
             game.timerMan.resetTimer();
             game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
-            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));            
-            //game.progressBar.setProgressMax(game.scoreMan.getTargetLevelScore());
+            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));                        
             
             // Turn off the tutorials if necessary.
-            if (this.tutorialRadio.getSelectedIndex() == TUTORIAL_OFF)
+            if (this.tutorialRadio.getSelectedIndex() == TUTORIAL_ON)
             {
-                game.tutorialMan.clear();
+                game.initializeTutorials();
             }
                                       
             // Stop all the player.

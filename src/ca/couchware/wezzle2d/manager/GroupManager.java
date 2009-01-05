@@ -5,10 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.group.IGroup;
-import ca.couchware.wezzle2d.util.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,8 +19,9 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class GroupManager 
+public class GroupManager implements IResettable
 {
+    
     public enum Class
     {
         GAME_OVER,
@@ -68,9 +68,13 @@ public class GroupManager
         entryList = new LinkedList<Entry>();        
         
         this.layerMan = layerMan;
-        this.pieceMan = pieceMan;
-                
-    }     
+        this.pieceMan = pieceMan;                
+    }             
+
+    public void resetState()
+    {
+        hideAllGroups();
+    }
     
     // Public API.
     public static GroupManager newInstance(LayerManager layerMan, PieceManager pieceMan)
@@ -117,6 +121,7 @@ public class GroupManager
         
         layerMan.hide(LayerManager.Layer.TILE);
         layerMan.hide(LayerManager.Layer.EFFECT);
+        pieceMan.hidePieceGrid();
         
         LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#showGroup");
@@ -138,7 +143,7 @@ public class GroupManager
             entry.getButton().setActivated(false);
     }
     
-    public void hideGroup(Class classNum, Layer layerNum)
+    public void hideGroup(Class cls, Layer layer)
     {
         // Go through the entry list, removing all entries with the
         // passed class name.
@@ -147,7 +152,7 @@ public class GroupManager
             // The entry we are looking at.
             Entry e = it.next();
             
-            if (e.getLayer() == layerNum && e.getGroupClass() == classNum)
+            if (e.getLayer() == layer && e.getGroupClass() == cls)
             {
                 // Deactivate the entry.
                 deactivateEntry(e);     
@@ -161,6 +166,7 @@ public class GroupManager
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
+            pieceMan.showPieceGrid();
             layerMan.show(LayerManager.Layer.TILE);
             layerMan.show(LayerManager.Layer.EFFECT);
         }
@@ -191,6 +197,7 @@ public class GroupManager
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
+            pieceMan.showPieceGrid();
             layerMan.show(LayerManager.Layer.TILE);
             layerMan.show(LayerManager.Layer.EFFECT);
         }
@@ -200,6 +207,25 @@ public class GroupManager
         LogManager.recordMessage("Groups open: " + entryList.size(), 
                 "GroupManager#hideGroup");
     }
+    
+    /**
+     * Hides all currently shown groups.
+     */
+    public void hideAllGroups()
+    {
+        for (Iterator<Entry> it = entryList.iterator(); it.hasNext(); )            
+        {
+            // The entry we are looking at.
+            Entry e = it.next();                       
+            deactivateEntry(e);
+            it.remove();                       
+        }
+        
+        pieceMan.clearMouseButtonSet();
+        pieceMan.hidePieceGrid();
+        layerMan.show(LayerManager.Layer.TILE);
+        layerMan.show(LayerManager.Layer.EFFECT);
+    }        
     
     /**
      * Registers this group with the Group linked list.
@@ -297,6 +323,6 @@ public class GroupManager
         {
             return layer;
         }                                   
-    }
+    }    
     
 }

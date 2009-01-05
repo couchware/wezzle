@@ -12,7 +12,7 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
  * 
  * @author cdmckay
  */
-public interface IEntity extends IDrawable, IPositionable
+public interface IEntity extends IDisposable, IDrawable, IPositionable
 {
     
     /**
@@ -62,6 +62,12 @@ public interface IEntity extends IDrawable, IPositionable
     /**
      * Gets the disabled status of the entity.
      */
-    public boolean isDisabled();       
+    public boolean isDisabled();  
+    
+    /**
+     * Dispose of any resources the entity has.  Call just before 
+     * de-referencing.
+     */
+    public void dispose();
     
 }

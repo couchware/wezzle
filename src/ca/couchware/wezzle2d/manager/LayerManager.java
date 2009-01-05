@@ -18,7 +18,7 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class LayerManager implements IDrawer, IManager
+public class LayerManager implements IDisposable, IDrawer
 {           
     
     /**
@@ -28,6 +28,7 @@ public class LayerManager implements IDrawer, IManager
     {
         BACKGROUND,        
         TILE,
+        PIECE_GRID,
         EFFECT,
         UI
     }        
@@ -143,7 +144,7 @@ public class LayerManager implements IDrawer, IManager
         {
             throw new RuntimeException("Tried to remove non-exist element!");            
         }
-    }    
+    }           
     
     /**
      * Returns a read-only list representing the specified layer.
@@ -154,6 +155,16 @@ public class LayerManager implements IDrawer, IManager
     public List<IDrawable> getLayer(Layer layer)
     {
         return Collections.unmodifiableList(layerList.get(layer.ordinal()));
+    }
+    
+    /**
+     * Clear a layer from the layer manager.
+     * 
+     * @param layer
+     */
+    public void removeLayer(Layer layer)
+    {
+        layerList.get(layer.ordinal()).clear();
     }
     
     /**
@@ -490,28 +501,36 @@ public class LayerManager implements IDrawer, IManager
     {
         // Save the state.
         this.disabled = disabled;
-        
+       
         // Go through all the layers and call their disabled method if they
         // are entities.
-        for (List<IDrawable> l : layerList)
-            for (IDrawable d : l)
-                if (d instanceof IEntity)
-                    ((IEntity) d).setDisabled(disabled);
+        for (List<IDrawable> list : layerList)
+        {
+            for (IDrawable drawable : list)
+            {
+                if (drawable instanceof IEntity)
+                {
+                    ((IEntity) drawable).setDisabled(disabled);
+                }
+            }
+        } // end for
     }
 
-    public void saveState()
+    /**
+     * Empties the contents of the layer manager.
+     */
+    public void dispose()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void loadState()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void resetState()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (List<IDrawable> list : layerList)
+        {
+            for (IDrawable drawable : list)
+            {
+                if (drawable instanceof IDisposable)
+                {
+                    ((IDisposable) drawable).dispose();
+                }
+            }
+        } // end for
     }
     
 }
