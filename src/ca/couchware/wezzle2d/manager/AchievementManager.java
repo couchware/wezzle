@@ -170,7 +170,6 @@ public class AchievementManager implements ICollisionListener
             {
                 setCompleted(a);
                 it.remove();
-                this.achievementCompleted = true;
             }
         } // end for   
     }
@@ -213,6 +212,7 @@ public class AchievementManager implements ICollisionListener
         assert a.getDateCompleted() == null;
         a.setDate(Calendar.getInstance());
         this.completeList.add(a);
+        this.achievementCompleted = true;
     }
 
  
