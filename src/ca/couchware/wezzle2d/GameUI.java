@@ -148,25 +148,25 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     public void initialize(final Loader loader, final Game game)
     {
         // Initialize buttons.    
-        loader.addRunnable(new Runnable()
+        loader.addTask(new Runnable()
         {
            public void run() { initializeButtons(game.layerMan); }
         });                                 
                 
         // Initialize labels.  
-        loader.addRunnable(new Runnable()
+        loader.addTask(new Runnable()
         {
            public void run() { initializeLabels(game.layerMan); }
         });        
         
         // Initialize miscellaneous components.
-        loader.addRunnable(new Runnable()
+        loader.addTask(new Runnable()
         {
            public void run() { initializeComponents(game.layerMan); }
         });        
              
         // Initialize the groups.   
-        loader.addRunnable(new Runnable()
+        loader.addTask(new Runnable()
         {
            public void run() { 
                initializeGroups(

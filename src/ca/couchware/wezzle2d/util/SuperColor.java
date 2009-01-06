@@ -53,5 +53,12 @@ public class SuperColor extends Color implements IXMLizable
     {        
         return Util.scaleInt(0, 100, 0, 255, val);
     }
+    
+    @Override
+    public String toString()
+    {
+        return String.format("SuperColor[r=%d, g=%d, b=%d, a=%d]", 
+                getRed(), getGreen(), getBlue(), getAlpha());
+    }
             
 }

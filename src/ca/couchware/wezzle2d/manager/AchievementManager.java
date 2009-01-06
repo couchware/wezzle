@@ -193,9 +193,9 @@ public class AchievementManager implements ICollisionListener
         
         for (Object object : list)     
         {
-            Achievement achieve = (Achievement)object;
+            Achievement achieve = (Achievement) object;
             
-            if(achieve.getDateCompleted() != null)
+            if (achieve.getDateCompleted() != null)
                 this.completeList.add(achieve);
             else
                 this.incompleteList.add(achieve);

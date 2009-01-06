@@ -37,19 +37,27 @@ public class SettingsManager
     /** The singleton instance of the manager. */
     final private static SettingsManager single = new SettingsManager();
     
+    /** The enum map of the default settings. */
+    final private Map<Key, Object> defaultMap;
+    
     /** The high performance enum map of the settings. */
-    final private Map<Key, Object> map;
+    final private Map<Key, Object> currentMap;
     		
 	/**
 	 * The constructor.
 	 */
 	private SettingsManager() 
 	{		       
-		// Create new enum map.    
-        this.map = new EnumMap<Key, Object>(Key.class);		
+		// Create new enum map. 
+        this.defaultMap = new EnumMap<Key, Object>(Key.class);
+        this.currentMap = new EnumMap<Key, Object>(Key.class);		
 
         // Load defaults settings.                
         loadDefaultSettings();
+        
+        // Copy them into the default map so we can compare them later when 
+        // writing the current map to disk.
+        this.defaultMap.putAll(currentMap);
         
         // Load user-made settings on top of that.
         loadExternalSettings();
@@ -112,6 +120,7 @@ public class SettingsManager
     {
         loadDefaultSettings(Settings.getDefaultGameSettingsFilePath());
         loadDefaultSettings(Settings.getDefaultUserSettingsFilePath());
+        loadDefaultSettings(Settings.getDefaultAchievementsFilePath());
     }        
     
     public void loadExternalSettings(String path, String file)
@@ -147,8 +156,9 @@ public class SettingsManager
     
     public void loadExternalSettings()
     {
-        loadExternalSettings(Settings.getExternalSettingsPath(), Settings.getGameSettingsFilename());
-        loadExternalSettings(Settings.getExternalSettingsPath(), Settings.getUserSettingsFilename());
+        loadExternalSettings(Settings.getExternalSettingsPath(), Settings.getGameSettingsFileName());
+        loadExternalSettings(Settings.getExternalSettingsPath(), Settings.getUserSettingsFileName());
+        loadExternalSettings(Settings.getExternalSettingsPath(), Settings.getAchievementsFileName());
     }
     
     private void loadFromXML(URL url)
@@ -210,7 +220,7 @@ public class SettingsManager
                 try 
                 {
                     Key key = Key.valueOf(name);
-                    map.put(key, value);
+                    currentMap.put(key, value);
                     LogManager.recordMessage(key + " = " + value);    
                 }
                 catch (IllegalArgumentException e)
@@ -250,16 +260,23 @@ public class SettingsManager
         {
             if (!keySet.contains(key))
                 continue;           
-            
-            Element entry = new Element("entry");
-            entry.setAttribute("name", Util.toDotFormat(key.toString()));
-            if (map.containsKey(key))
-            {
-                Object value = map.get(key);
+                        
+            if (currentMap.containsKey(key))
+            {                               
+                Element entry = new Element("entry");
+                entry.setAttribute("name", Util.toDotFormat(key.toString()));                
+                Object currentValue = currentMap.get(key);
                 
-                if (value instanceof List)
+                if (defaultMap.containsKey(key))
                 {
-                    List list = (List) value;
+                    Object defaultValue = defaultMap.get(key);                    
+                    if (defaultValue.equals(currentValue))
+                        continue;
+                }
+                
+                if (currentValue instanceof List)
+                {
+                    List list = (List) currentValue;
                     for (Object object : list)
                     {
                         entry.addContent(createXMLFromInstance(object));
@@ -267,10 +284,12 @@ public class SettingsManager
                 }
                 else
                 {
-                    entry.addContent(createXMLFromInstance(value));
+                    entry.addContent(createXMLFromInstance(currentValue));
                 }                         
-            }
-            root.addContent(entry);
+                
+                // Add it to the XML document.
+                root.addContent(entry);
+            }            
         } // end for
         
         // Make sure the file exists.
@@ -344,12 +363,12 @@ public class SettingsManager
     
     public void setObject(Key key, Object value)
     {
-        map.put(key, value);
+        currentMap.put(key, value);
     }
     
     public void setString(Key key, String value)
     {
-        map.put(key, value);
+        currentMap.put(key, value);
     }       
     
     public void setValue(Key key, Value value)
@@ -390,7 +409,7 @@ public class SettingsManager
      */
     public Object getObject(Key key)
     {
-        return map.get(key);
+        return currentMap.get(key);
     }
     
     /**
@@ -401,7 +420,7 @@ public class SettingsManager
 	 */
 	public String getString(Key key)
 	{		
-		return (String) map.get(key);
+		return (String) currentMap.get(key);
 	}
 	
 	/**

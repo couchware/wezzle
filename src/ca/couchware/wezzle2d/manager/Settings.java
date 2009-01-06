@@ -6,7 +6,6 @@
 package ca.couchware.wezzle2d.manager;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * Contains all the settings keys and values.
@@ -38,8 +37,7 @@ public class Settings
         GAME_TICKS_PER_SECOND,
         GAME_COLOR_PRIMARY,
         GAME_COLOR_SECONDARY,
-        GAME_COLOR_DISABLED,  
-        GAME_COLOR_WEZZLE_TIMER,
+        GAME_COLOR_DISABLED,          
         
         // Debug values.
         
@@ -60,13 +58,7 @@ public class Settings
         // Animation values.
             
         ANIMATION_DROP_ZOOM_OUT_SPEED,
-        
-        ANIMATION_WEZZLE_ZOOM_IN_SPEED,
-        ANIMATION_WEZZLE_ZOOM_OUT_SPEED,
-        ANIMATION_WEZZLE_FADE_MIN_OPACITY,
-        ANIMATION_WEZZLE_FADE_WAIT,
-        ANIMATION_WEZZLE_FADE_DURATION,
-        
+                
         ANIMATION_JUMP_MOVE_SPEED,
         ANIMATION_JUMP_MOVE_DURATION,
         ANIMATION_JUMP_MOVE_GRAVITY,
@@ -201,6 +193,9 @@ public class Settings
     /** The name of the user settings file. */
     final private static String userSettingsFileName = "user-settings.xml";
     
+    /** The name of the achievements file. */
+    final private static String achievementsFileName = "achievements.xml";
+    
     /** The file path of default game settings file. */
     final private static String defaultGameSettingsFilePath = textResourcesPath 
             + "/" + gameSettingsFileName;
@@ -209,17 +204,25 @@ public class Settings
     final private static String defaultUserSettingsFilePath = textResourcesPath 
             + "/" + userSettingsFileName;
     
+    /** The file path of default achievements file. */    
+    final private static String defaultAchievementsFilePath = textResourcesPath 
+            + "/" + achievementsFileName;
+    
     /** The path to the user settings file. */
     final private static String externalSettingsPath = 
             System.getProperty("user.home") + "/.Couchware/Wezzle";
                     
-    /** The file path of default game settings file. */
+    /** The file path of external game settings file. */
     final private static String gameSettingsFilePath = externalSettingsPath 
             + "/" + gameSettingsFileName;
     
-    /** The file path of default user settings file. */
+    /** The file path of external user settings file. */
     final private static String userSettingsFilePath = externalSettingsPath 
             + "/" + userSettingsFileName;
+    
+    /** The file path of external user settings file. */
+    final private static String achievementsFilePath = externalSettingsPath 
+            + "/" + achievementsFileName;
     
     /** The path to the log file. */
     final private static String logPath = externalSettingsPath;
@@ -265,6 +268,11 @@ public class Settings
         return defaultUserSettingsFilePath;
     }
 
+    public static String getDefaultAchievementsFilePath()
+    {
+        return defaultAchievementsFilePath;
+    }    
+    
     public static String getFontResourcesPath()
     {
         return fontResourcesPath;
@@ -295,15 +303,20 @@ public class Settings
         return resourcesPath;
     }
 
-    public static String getGameSettingsFilename()
+    public static String getGameSettingsFileName()
     {
         return gameSettingsFileName;
     }
     
-     public static String getUserSettingsFilename()
+    public static String getUserSettingsFileName()
     {
         return userSettingsFileName;
     }
+
+    public static String getAchievementsFileName()
+    {
+        return achievementsFileName;
+    }        
 
     public static String getTextResourcesPath()
     {
@@ -325,10 +338,15 @@ public class Settings
         return gameSettingsFilePath;
     }
     
-     public static String getUserSettingsFilePath()
+    public static String getUserSettingsFilePath()
     {
         return userSettingsFilePath;
     }
+
+    public static String getAchievementsFilePath()
+    {
+        return achievementsFilePath;
+    }        
 
     public static String getExternalSettingsPath()
     {

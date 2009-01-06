@@ -47,7 +47,7 @@ public class ResourceFactory
     { defaultLabelColor = color; }    
     
 	/** The single instance of this class to ever exist. */
-	private static final ResourceFactory single = new ResourceFactory();
+	private static final ResourceFactory SINGLE = new ResourceFactory();
 
 	/** 
 	 * The choice of rendering engines. 
@@ -64,7 +64,7 @@ public class ResourceFactory
 	/** 
 	 * The type of rendering that we are currently using. 
 	 */
-	private Renderer renderer = Renderer.JAVA2D;
+	private Renderer renderer = Renderer.LWJGL;
 	
 	/** 
      * The window the game should use to render.
@@ -88,7 +88,7 @@ public class ResourceFactory
 	 */
 	public static ResourceFactory get()
 	{
-		return single;
+		return SINGLE;
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class ResourceFactory
      * This method will preload all the sprites in the sprite directory.  It 
      * can only be run once.
      */
-    public void initialize(Loader loader)
+    public void preloadSprites(Loader loader)
     {
         // Check to see if the sprites have been preloaded.
         if (this.spritesPreloaded) 
@@ -297,7 +297,7 @@ public class ResourceFactory
         // Get the contents of the directory.
         for (final String spriteFilePath : spriteList)
         {
-            loader.addRunnable(new Runnable()
+            loader.addTask(new Runnable()
             {
                 public void run()
                 {

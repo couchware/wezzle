@@ -133,7 +133,7 @@ public class Loader implements IDrawer
         this.loaderQueue = new LinkedList<Runnable>();
         
         // Add a blank runnable first.
-        addRunnable(new Runnable()
+        addTask(new Runnable()
         {
            public void run() { } 
         });
@@ -152,7 +152,7 @@ public class Loader implements IDrawer
         progressBar.setProgress(counter);
     }        
     
-    public void addRunnable(Runnable r)
+    public void addTask(Runnable r)
     {
         if (r == null)
             throw new NullPointerException("Runnable must not be null.");

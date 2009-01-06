@@ -10,10 +10,7 @@
   </entry>
   <entry name="Game.Color.Disabled">
     <color red="178" green="178" blue="178" alpha="255" />
-  </entry>
-  <entry name="Game.Color.Wezzle.Timer">
-    <color red="234" green="210" blue="0" alpha="255" />
-  </entry>
+  </entry> 
   <entry name="Debug.Show.Clip.Rect">false</entry>
   <entry name="Refactor.Speed.X.Slower">70</entry>
   <entry name="Refactor.Speed.Y.Slower">70</entry>
@@ -23,12 +20,7 @@
   <entry name="Refactor.Speed.Y.Normal">250</entry>
   <entry name="Refactor.Speed.X.Shift">250</entry>
   <entry name="Refactor.Speed.Y.Shift">250</entry>
-  <entry name="Animation.Drop.Zoom.Out.Speed">50</entry>
-  <entry name="Animation.Wezzle.Zoom.In.Speed">70</entry>
-  <entry name="Animation.Wezzle.Zoom.Out.Speed">70</entry>
-  <entry name="Animation.Wezzle.Fade.Min.Opacity">50</entry>
-  <entry name="Animation.Wezzle.Fade.Wait">0</entry>
-  <entry name="Animation.Wezzle.Fade.Duration">200</entry>
+  <entry name="Animation.Drop.Zoom.Out.Speed">50</entry>  
   <entry name="Animation.Jump.Move.Speed">340</entry>
   <entry name="Animation.Jump.Move.Duration">880</entry>
   <entry name="Animation.Jump.Move.Gravity">800</entry>

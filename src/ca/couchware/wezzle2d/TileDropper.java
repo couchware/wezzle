@@ -319,15 +319,7 @@ public class TileDropper implements IResettable
                                     "A tile was null in the tile drop list.");
                         }
                         else
-                        {                                       
-                            // If the tile is locked, change it's opacity to the
-                            // locked opacity.
-                            if (boardMan.isColorLocked(tile.getColor()) == true)
-                            {
-                                Key key = Key.ANIMATION_WEZZLE_FADE_MIN_OPACITY;
-                                tile.setOpacity(settingsMan.getInt(key));
-                            }
-                            
+                        {                                                                   
                             IAnimation a = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, tile)
                                     .speed(settingsMan.getInt(Key.ANIMATION_DROP_ZOOM_OUT_SPEED))
                                     .end();

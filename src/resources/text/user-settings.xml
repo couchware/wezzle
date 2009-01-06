@@ -10,48 +10,5 @@
     <high-score name="" score="0" level="0" />
     <high-score name="" score="0" level="0" />
     <high-score name="" score="0" level="0" />
-  </entry>
-  <entry name="User.Achievement">
-    <achievement name="Testerer" description="Score even more." difficulty="SILVER">
-      <rule type="SCORE" operation="GT" value="600" />
-    </achievement>
-    <achievement name="A Tale of Two Rockets" description="Rocket into rocket." difficulty="SILVER">
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
-    </achievement>
-    <achievement name="It's Raining Rockets" description="Rocket into rocket." difficulty="SILVER">
-      <rule type="LEVEL" operation="GT" value="3" />
-      <rule type="LEVEL" operation="LT" value="8" />
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
-    </achievement>
-    <achievement name="Rocketeer III" description="Rocket into rocket." difficulty="SILVER">
-      <rule type="LEVEL" operation="GT" value="3" />
-      <rule type="LEVEL" operation="LT" value="8" />
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
-    </achievement>
-    <achievement name="Rocketeer IV" description="Rocket into rocket." difficulty="SILVER">
-      <rule type="LEVEL" operation="GT" value="3" />
-      <rule type="LEVEL" operation="LT" value="8" />
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
-    </achievement>
-    <achievement name="Rocketeer V" description="Rocket into rocket." difficulty="SILVER">
-      <rule type="LEVEL" operation="GT" value="3" />
-      <rule type="LEVEL" operation="LT" value="8" />
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
-    </achievement>
-  </entry>
+  </entry> 
 </settings>

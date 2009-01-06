@@ -518,10 +518,10 @@ public class Game extends Canvas implements IGameWindowCallback
         setDrawer(loader);
         
         // Preload the sprites.
-        factory.initialize(loader);                                        
+        factory.preloadSprites(loader);                                        
                                 
         // Initialize managers.
-        loader.addRunnable(new Runnable()
+        loader.addTask(new Runnable()
         {
            public void run() 
            { 
