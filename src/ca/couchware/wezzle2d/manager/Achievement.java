@@ -54,7 +54,7 @@ public class Achievement implements IXMLizable
     private final String name;
     private final String description;
     private final Difficulty difficulty;   
-    private Date dateCompleted = null;
+    private Calendar dateCompleted = null;
     //private static Calendar cal = Calendar.getInstance();
 
     /**
@@ -70,7 +70,7 @@ public class Achievement implements IXMLizable
             String title,
             String description, 
             Difficulty difficulty, 
-            Date completed)
+            Calendar completed)
     {
         this.ruleList    = ruleList;
         this.name       = title;
@@ -83,7 +83,7 @@ public class Achievement implements IXMLizable
             String title,
             String description, 
             Difficulty difficulty, 
-            Date date)
+            Calendar date)
     {
        return new Achievement(ruleList, title, description, difficulty, date);
     }
@@ -98,19 +98,18 @@ public class Achievement implements IXMLizable
         Difficulty difficulty = Difficulty.valueOf(element.getAttributeValue("difficulty"));
         Element dateElement = element.getChild("date");
         
-        Date storedDate = null;
+        Calendar storedDate = null;
         
         if (dateElement != null)
         {
-            Calendar calendar = Calendar.getInstance();
+            storedDate = Calendar.getInstance();
             
             int month = Integer.parseInt(dateElement.getAttributeValue("month").toString());
             int day = Integer.parseInt(dateElement.getAttributeValue("day").toString());
             int year = Integer.parseInt(dateElement.getAttributeValue("year").toString());
             
-            calendar.set(year, month, day);
-            
-            storedDate = calendar.getTime();
+            storedDate.set(year, month, day);
+        
         }
         
         List<Rule> rules = new ArrayList<Rule>();
@@ -176,7 +175,7 @@ public class Achievement implements IXMLizable
         return true;       
     }
     
-    public void setDate(Date date)
+    public void setDate(Calendar date)
     {
         dateCompleted = date;
     }
@@ -210,7 +209,7 @@ public class Achievement implements IXMLizable
      * Get the date completed.
      * @return the date.
      */
-    public Date getDateCompleted()
+    public Calendar getDateCompleted()
     {
         return dateCompleted;
     }
@@ -244,13 +243,11 @@ public class Achievement implements IXMLizable
         // Date.
         if (dateCompleted != null)
         {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(dateCompleted);
             
             Element dateElement = new Element("date");
-            dateElement.setAttribute("day",   String.valueOf(calendar.get(Calendar.DATE)));
-            dateElement.setAttribute("month", String.valueOf(calendar.get(Calendar.MONTH)));
-            dateElement.setAttribute("year",  String.valueOf(calendar.get(Calendar.YEAR)));
+            dateElement.setAttribute("day",   String.valueOf(dateCompleted.get(Calendar.DATE)));
+            dateElement.setAttribute("month", String.valueOf(dateCompleted.get(Calendar.MONTH)));
+            dateElement.setAttribute("year",  String.valueOf(dateCompleted.get(Calendar.YEAR)));
             element.addContent(dateElement);
         }
         

@@ -107,7 +107,7 @@ public class AchievementManager implements ICollisionListener
             if (a.evaluate(game) == true)
             {
                 // set the date.
-                a.setDate(date);
+                setCompleted(a);
                 this.completeList.add(a);
                 it.remove();
                 achieved = true;
@@ -215,6 +215,12 @@ public class AchievementManager implements ICollisionListener
     public List<Achievement> getMasterList()
     {
         return Collections.unmodifiableList(this.masterList);
+    }
+    
+    private void setCompleted(Achievement a)
+    {
+        assert a.getDateCompleted() == null;
+        a.setDate(Calendar.getInstance());
     }
 
  

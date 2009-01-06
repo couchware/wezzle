@@ -27,6 +27,7 @@ import ca.couchware.wezzle2d.ui.group.IGroup;
 import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
@@ -310,7 +311,7 @@ public class AchievementGroup extends AbstractGroup
         }
         
         // Set the status.
-        Date date = ach.getDateCompleted();
+        Calendar date = ach.getDateCompleted();
         if (date == null)
         {
             achievementStatus.setText("This achievement has not been completed.");            
