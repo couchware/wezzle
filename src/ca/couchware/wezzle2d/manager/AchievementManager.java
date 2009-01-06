@@ -48,9 +48,6 @@ public class AchievementManager implements ICollisionListener
     
     /** The master list */
     private List<Achievement> masterList;
-    
-    /** The current date */
-    private Date date;
         
     /**
      * The constructor.
@@ -61,12 +58,6 @@ public class AchievementManager implements ICollisionListener
         this.completeList   = new ArrayList<Achievement>();
         this.masterList     = new ArrayList<Achievement>();
         this.importAchievements();
-        
-        if(date == null)
-        {
-            date = Calendar.getInstance().getTime();
-            
-        }
     }
     
     // Public API.
