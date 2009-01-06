@@ -175,9 +175,10 @@ public class Achievement implements IXMLizable
         return true;       
     }
     
-    public void setDate(Calendar date)
+    public void setCompleted()
     {
-        dateCompleted = date;
+        assert this.dateCompleted == null;
+        this.dateCompleted = Calendar.getInstance();                
     }
     
     public boolean evaluateCollision(List<Tile> collisionList)

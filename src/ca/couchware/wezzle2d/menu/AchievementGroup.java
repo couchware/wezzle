@@ -111,35 +111,7 @@ public class AchievementGroup extends AbstractGroup
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);                
         
         // Set the achievement list.
-        achievementList = achievementMan.getMasterList();
-        
-        // Fill the achievemnt with some dummy achievements.
-//        List<Rule> ruleList = new ArrayList<Rule>();
-//        ruleList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GT, 1));
-//        
-//        achievementList = new ArrayList<Achievement>();
-//        achievementList.add(Achievement.newInstance(ruleList, "Level Buster I", 
-//                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-//        
-//        achievementList.add(Achievement.newInstance(ruleList, "Chain Gang", 
-//                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-//        
-//        achievementList.add(Achievement.newInstance(ruleList, "Scoring Wizard", 
-//                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-//        
-//        achievementList.add(Achievement.newInstance(ruleList, "Big Scorer", 
-//                "Dummy description.\nLike really dummy.", Achievement.Difficulty.BRONZE, null));
-//        
-//        achievementList.add(Achievement.newInstance(ruleList, "Line Driver", 
-//                "Dummy description.", Achievement.Difficulty.BRONZE, null));
-//        
-//        achievementList.add(Achievement.newInstance(ruleList, "Level Buster II", 
-//                "Dummy description.", Achievement.Difficulty.SILVER, null));
-//        
-//        
-//      
-//        achievementList.add(Achievement.newInstance(ruleList, "Level Buster III", 
-//                "Dummy description.", Achievement.Difficulty.GOLD, Calendar.getInstance().getTime()));                                      
+        achievementList = achievementMan.getMasterList();                                                     
                         
         // Create the window.
         box = new Box.Builder(268, 300).width(430).height(470)
@@ -148,10 +120,16 @@ public class AchievementGroup extends AbstractGroup
                 .visible(false).end();
         this.layerMan.add(box, Layer.UI);                         
              
+        final int numberOfCompletedAchievements = achievementMan.getNumberOfCompletedAchievements();
+        final int numberOfAchievements = achievementMan.getNumberOfAchievements();
+        
         // The title label.
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(LABEL_COLOR).text("Achievements").size(20)                
+                .color(LABEL_COLOR)
+                .text(String.format("Achievements (%d/%d)", 
+                        numberOfCompletedAchievements, numberOfAchievements))
+                .size(20)                
                 .visible(false).end();
         this.entityList.add(titleLabel);
         

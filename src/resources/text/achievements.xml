@@ -8,7 +8,7 @@
       </rule>
     </achievement>
     <achievement name="A Tale of Two Rockets" difficulty="SILVER">
-      <description>Fire a single rocket.</description>
+      <description>Fire a rocket into another rocket.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="ROCKET" />
         <item type="ROCKET" />
@@ -23,23 +23,37 @@
         <item type="ROCKET" />
       </rule>
     </achievement>    
-    <achievement name="Rocketeer IV" difficulty="SILVER">
-      <description>Fire a single rocket.</description>
-      <rule type="LEVEL" operation="GT" value="3" />
-      <rule type="LEVEL" operation="LT" value="8" />
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
+    <achievement name="Score!" difficulty="BRONZE">
+      <description>Get over 1000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="1000" />     
     </achievement>
-    <achievement name="Rocketeer V" difficulty="SILVER">
-      <description>Fire a single rocket.</description>
-      <rule type="LEVEL" operation="GT" value="3" />
-      <rule type="LEVEL" operation="LT" value="8" />
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
+    <achievement name="Score more!" difficulty="SILVER">
+      <description>Get over 10000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="10000" />
+    </achievement>
+    <achievement name="Score even more!" difficulty="GOLD">
+      <description>Get over 50000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="50000" />
+    </achievement>
+    <achievement name="Score Master" difficulty="PLATINUM">
+      <description>Get over 100000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="100000" />
+    </achievement>
+    <achievement name="I Got A Level" difficulty="BRONZE">
+      <description>Starting from level 1, get to level 2.</description>
+      <rule type="LEVEL" operation="EQ" value="2" />
+    </achievement>
+    <achievement name="I Got More Levels" difficulty="SILVER">
+      <description>Starting from level 1, get to level 5.</description>
+      <rule type="LEVEL" operation="EQ" value="5" />
+    </achievement>
+    <achievement name="I Got Even More Levels" difficulty="GOLD">
+      <description>Starting from level 1, get to level 10.</description>
+      <rule type="LEVEL" operation="EQ" value="10" />
+    </achievement>
+    <achievement name="Level Master" difficulty="PLATINUM">
+      <description>Starting from level 1, get to level 15.</description>
+      <rule type="LEVEL" operation="EQ" value="15" />
     </achievement>
   </entry>
 </settings>

@@ -5,21 +5,15 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
-import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.util.IXMLizable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import org.jdom.Element;
 
 /**
  * A class to manage achievements.
@@ -98,7 +92,7 @@ public class AchievementManager implements ICollisionListener
             if (a.evaluate(game) == true)
             {
                 // set the date.
-                setCompleted(a);
+                a.setCompleted();
                 this.completeList.add(a);
                 it.remove();
                 achieved = true;
@@ -168,7 +162,9 @@ public class AchievementManager implements ICollisionListener
 
             if (a.evaluateCollision(collisionList) == true)
             {
-                setCompleted(a);
+                a.setCompleted();
+                this.completeList.add(a);
+                this.achievementCompleted = true;      
                 it.remove();
             }
         } // end for   
@@ -205,15 +201,16 @@ public class AchievementManager implements ICollisionListener
     public List<Achievement> getMasterList()
     {
         return Collections.unmodifiableList(this.masterList);
+    }    
+    
+    public int getNumberOfAchievements()
+    {
+        return this.masterList.size();
     }
     
-    private void setCompleted(Achievement a)
+    public int getNumberOfCompletedAchievements()
     {
-        assert a.getDateCompleted() == null;
-        a.setDate(Calendar.getInstance());
-        this.completeList.add(a);
-        this.achievementCompleted = true;
+        return this.completeList.size();
     }
 
- 
 }
