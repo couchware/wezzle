@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>  
   <entry name="User.Achievement">
-    <achievement name="Testerer" description="Score even more." difficulty="SILVER">
-      <rule type="SCORE" operation="GT" value="600" />
+    <achievement name="Rocketeer" difficulty="BRONZE">
+      <description>Fire a single rocket.</description>      
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET" />        
+      </rule>
     </achievement>
-    <achievement name="A Tale of Two Rockets" description="Rocket into rocket." difficulty="SILVER">
+    <achievement name="A Tale of Two Rockets" difficulty="SILVER">
+      <description>Fire a single rocket.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="ROCKET" />
         <item type="ROCKET" />
       </rule>
     </achievement>
-    <achievement name="It's Raining Rockets" description="Rocket into rocket." difficulty="SILVER">
+    <achievement name="It's Raining Rockets" difficulty="GOLD">
+      <description>Fire a rocket into another rocket 
+      into yet another rocket.</description>      
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET" />
+        <item type="ROCKET" />
+        <item type="ROCKET" />
+      </rule>
+    </achievement>    
+    <achievement name="Rocketeer IV" difficulty="SILVER">
+      <description>Fire a single rocket.</description>
       <rule type="LEVEL" operation="GT" value="3" />
       <rule type="LEVEL" operation="LT" value="8" />
       <rule type="COLLISION" operation="BETWEEN">
@@ -18,23 +32,8 @@
         <item type="ROCKET" />
       </rule>
     </achievement>
-    <achievement name="Rocketeer III" description="Rocket into rocket." difficulty="SILVER">
-      <rule type="LEVEL" operation="GT" value="3" />
-      <rule type="LEVEL" operation="LT" value="8" />
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
-    </achievement>
-    <achievement name="Rocketeer IV" description="Rocket into rocket." difficulty="SILVER">
-      <rule type="LEVEL" operation="GT" value="3" />
-      <rule type="LEVEL" operation="LT" value="8" />
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-      </rule>
-    </achievement>
-    <achievement name="Rocketeer V" description="Rocket into rocket." difficulty="SILVER">
+    <achievement name="Rocketeer V" difficulty="SILVER">
+      <description>Fire a single rocket.</description>
       <rule type="LEVEL" operation="GT" value="3" />
       <rule type="LEVEL" operation="LT" value="8" />
       <rule type="COLLISION" operation="BETWEEN">

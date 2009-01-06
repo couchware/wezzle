@@ -8,7 +8,6 @@ package ca.couchware.wezzle2d.menu;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -28,8 +27,6 @@ import ca.couchware.wezzle2d.ui.group.IGroup;
 import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
@@ -303,11 +300,13 @@ public class AchievementGroup extends AbstractGroup
             lineArray = new String[] { ach.getDescription() };
         }   
         
-        // Set the description.
-        int min = Math.min(achievementDescriptionArray.length, lineArray.length);
-        for (int i = 0; i < min; i++)
+        // Set the description.        
+        for (int i = 0; i < achievementDescriptionArray.length; i++)
         {
-            achievementDescriptionArray[i].setText(lineArray[i]);
+            if (i < lineArray.length)
+                achievementDescriptionArray[i].setText(lineArray[i]);
+            else
+                achievementDescriptionArray[i].setText("");
         }
         
         // Set the status.

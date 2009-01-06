@@ -16,8 +16,6 @@ import java.util.Date;
 import java.util.List;
 import org.jdom.Element;
 
-
-
 /**
  * An achievement will hold all the state information required for that 
  * achievement to be successfully completed. Each field will also hold whether
@@ -51,14 +49,13 @@ public class Achievement implements IXMLizable
         GOLD, 
         PLATINUM
     }
-
        
     private final List<Rule> ruleList;
     private final String name;
     private final String description;
     private final Difficulty difficulty;   
     private Date dateCompleted = null;
-    private static Calendar cal = Calendar.getInstance();
+    //private static Calendar cal = Calendar.getInstance();
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -89,6 +86,73 @@ public class Achievement implements IXMLizable
             Date date)
     {
        return new Achievement(ruleList, title, description, difficulty, date);
+    }
+    
+    public static Achievement newInstanceFromXML(Element element)
+    {
+        String name = element.getAttributeValue("name");
+                
+        Element e = element.getChild("description");
+        String description = e == null ? "" : e.getTextTrim().replaceAll("\n +", "\n");         
+        
+        Difficulty difficulty = Difficulty.valueOf(element.getAttributeValue("difficulty"));
+        Element dateElement = element.getChild("date");
+        
+        Date storedDate = null;
+        
+        if (dateElement != null)
+        {
+            Calendar calendar = Calendar.getInstance();
+            
+            int month = Integer.parseInt(dateElement.getAttributeValue("month").toString());
+            int day = Integer.parseInt(dateElement.getAttributeValue("day").toString());
+            int year = Integer.parseInt(dateElement.getAttributeValue("year").toString());
+            
+            calendar.set(year, month, day);
+            
+            storedDate = calendar.getTime();
+        }
+        
+        List<Rule> rules = new ArrayList<Rule>();
+       
+        Element rule = element.getChild("rule");
+        // Get all the rules.
+        while (rule != null)
+        {
+            Rule.Type type = Rule.Type.valueOf(rule.getAttributeValue("type").toString());
+            Rule.Operation operation = Rule.Operation
+                    .valueOf(rule.getAttributeValue("operation").toString()); 
+            
+            // Get the collisions.
+            if (type == Rule.Type.COLLISION)
+            {
+                Element item = rule.getChild("item");
+                List<TileType> tileTypeList = new ArrayList<TileType>();
+                while( item != null)
+                {
+                    TileType t = TileType.valueOf(item.getAttributeValue("type").toString());
+                    tileTypeList.add(t);
+                    rule.removeChild("item");
+                    item = rule.getChild("item");
+                }
+                
+                // add the rule and continue to get the next rule.
+                rules.add(new Rule(type, operation, tileTypeList));
+                element.removeChild("rule");
+                rule = element.getChild("rule");
+                
+                continue;
+            }
+                         
+            int value = Integer.parseInt(rule.getAttributeValue("value").toString());
+            
+            rules.add(new Rule(type, operation, value));
+            element.removeChild("rule");
+            rule = element.getChild("rule");
+        }
+        
+        // Get the collisions.  
+        return newInstance(rules, name, description, difficulty, storedDate);
     }
     
     /**
@@ -165,90 +229,32 @@ public class Achievement implements IXMLizable
     public String toString()
     {
         return "[" + this.name + " - " + this.difficulty + "] " + this.description;
-    }
-
-     public static Achievement newInstanceFromXML(Element element)
-    {
-        String name = element.getAttributeValue("name");
-        String description = element.getAttributeValue("description");
-        Difficulty difficulty = Difficulty.valueOf(element.getAttributeValue("difficulty"));
-        Element dateElement = element.getChild("date");
-        Date storedDate = null;
-        
-        if (dateElement != null)
-        {
-            Calendar tempCal = Calendar.getInstance();
-            int month = Integer.parseInt(dateElement.getAttributeValue("month").toString());
-            int day = Integer.parseInt(dateElement.getAttributeValue("day").toString());
-            int year = Integer.parseInt(dateElement.getAttributeValue("year").toString());
-            
-            tempCal.set(year, month, day);
-            
-            storedDate = cal.getTime();
-        }
-        
-        List<Rule> rules = new ArrayList<Rule>();
-       
-        Element rule = element.getChild("rule");
-        // Get all the rules.
-        while( rule != null)
-        {
-            Rule.Type type = Rule.Type.valueOf(rule.getAttributeValue("type").toString());
-            Rule.Operation operation = Rule.Operation
-                    .valueOf(rule.getAttributeValue("operation").toString()); 
-            
-            // Get the collisions.
-            if(type == Rule.Type.COLLISION)
-            {
-                Element item = rule.getChild("item");
-                List<TileType> tileTypeList = new ArrayList<TileType>();
-                while( item != null)
-                {
-                    TileType t = TileType.valueOf(item.getAttributeValue("type").toString());
-                    tileTypeList.add(t);
-                    rule.removeChild("item");
-                    item = rule.getChild("item");
-                }
-                
-                // add the rule and continue to get the next rule.
-                rules.add(new Rule(type, operation, tileTypeList));
-                element.removeChild("rule");
-                rule = element.getChild("rule");
-                continue;
-            }
-            
-             
-            int value = Integer.parseInt(rule.getAttributeValue("value").toString());
-            
-            rules.add(new Rule(type, operation, value));
-            element.removeChild("rule");
-            rule = element.getChild("rule");
-        }
-        
-        // get the collisions.  
-        return newInstance(rules, name, description, difficulty, storedDate);
-    }
+    }    
     
     public Element toXMLElement() 
     {
         Element element = new Element("achievement");
-        element.setAttribute("name",  this.name);
-        element.setAttribute("description", this.description);
+        element.setAttribute("name",  this.name);        
         element.setAttribute("difficulty", String.valueOf(this.difficulty));
        
+        Element descriptionElement = new Element("description");
+        descriptionElement.setText(this.description);
+        element.addContent(descriptionElement);
+        
         // Date.
-        if(dateCompleted != null)
+        if (dateCompleted != null)
         {
-            cal.setTime(dateCompleted);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(dateCompleted);
             
-            Element insertDate = new Element("date");
-            insertDate.setAttribute("day",  String.valueOf(cal.get(Calendar.DATE)));
-            insertDate.setAttribute("month", String.valueOf(cal.get(Calendar.MONTH)));
-            insertDate.setAttribute("year", String.valueOf(cal.get(Calendar.YEAR)));
-            element.addContent(insertDate);
+            Element dateElement = new Element("date");
+            dateElement.setAttribute("day",   String.valueOf(calendar.get(Calendar.DATE)));
+            dateElement.setAttribute("month", String.valueOf(calendar.get(Calendar.MONTH)));
+            dateElement.setAttribute("year",  String.valueOf(calendar.get(Calendar.YEAR)));
+            element.addContent(dateElement);
         }
         
-        for(int i = 0; i < this.ruleList.size(); i++)
+        for (int i = 0; i < this.ruleList.size(); i++)
         {
             Element rule = new Element("rule");
             
@@ -257,7 +263,7 @@ public class Achievement implements IXMLizable
             rule.setAttribute("type", type);
             rule.setAttribute("operation", String.valueOf(this.ruleList.get(i).getOperation()));
             
-            if(type.equals("COLLISION"))
+            if (type.equals("COLLISION"))
             {
                 TileType[] itemList = ruleList.get(i).getItemList();
                
@@ -272,11 +278,11 @@ public class Achievement implements IXMLizable
                 continue;
             }
             
-            rule.setAttribute("value", String.valueOf(this.ruleList.get(i).getValue()));
-            
+            rule.setAttribute("value", String.valueOf(this.ruleList.get(i).getValue()));            
             element.addContent(rule);
         }
         
         return element;
     }
+    
 }
