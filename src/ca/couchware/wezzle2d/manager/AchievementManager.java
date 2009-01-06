@@ -177,7 +177,7 @@ public class AchievementManager implements ICollisionListener
 
             if (a.evaluateCollision(collisionList) == true)
             {
-                this.completeList.add(a);
+                setCompleted(a);
                 it.remove();
                 this.achievementCompleted = true;
             }
@@ -221,6 +221,7 @@ public class AchievementManager implements ICollisionListener
     {
         assert a.getDateCompleted() == null;
         a.setDate(Calendar.getInstance());
+        this.completeList.add(a);
     }
 
  
