@@ -5,6 +5,9 @@
 
 package ca.couchware.wezzle2d.animation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A reference implementation of the IAnimation interface.
  * 
@@ -28,15 +31,15 @@ public abstract class AbstractAnimation implements IAnimation
      */
     protected boolean finished = false;        
     
-    /**
-     * The start action.
-     */
-    protected Runnable startRunnable;
-    
-    /**
-     * The finish action.
-     */
-    protected Runnable finishRunnable;       
+//    /**
+//     * The start action.
+//     */
+//    protected Runnable startRunnable;
+//    
+//    /**
+//     * The finish action.
+//     */
+//    protected Runnable finishRunnable;       
     
     /**
      * Advance the frame.
@@ -62,7 +65,8 @@ public abstract class AbstractAnimation implements IAnimation
             this.started = true;
             
             // Run the on-start runnable.
-            onStart();
+            //onStart();
+            this.fireAnimationStartedEvent();
         }
     }
     
@@ -78,7 +82,8 @@ public abstract class AbstractAnimation implements IAnimation
             this.finished = true;
             
             // Run the on-finish runnable.
-            onFinish();
+            //onFinish();
+            this.fireAnimationFinishedEvent();
         }
     }
 
@@ -92,40 +97,71 @@ public abstract class AbstractAnimation implements IAnimation
         this.visible = visible;
     }
     
-    /**
-     * Set the start action.
-     */
-    public void setStartRunnable(Runnable startRunnable)
-    {
-        this.startRunnable = startRunnable;
-    }       
+    /** The button listener list. */
+    private List<IAnimationListener> animationListenerList = new ArrayList<IAnimationListener>();
     
-    public Runnable getStartRunnable()
+    protected void fireAnimationStartedEvent()
     {
-        return this.startRunnable;
+        for (IAnimationListener listener : animationListenerList)
+            listener.animationStarted();
     }
     
-    /**
-     * Set the finish action.
-     */
-    public void setFinishRunnable(Runnable finishRunnable)
+    protected void fireAnimationFinishedEvent()
     {
-        this.finishRunnable = finishRunnable;
-    }    
+        for (IAnimationListener listener : animationListenerList)
+            listener.animationFinished();
+    }
     
-     public Runnable getFinishRunnable()
+    public void addAnimationListener(IAnimationListener listener)
     {
-        return this.finishRunnable;
+        if (this.animationListenerList.contains(listener))
+            throw new IllegalArgumentException("Listener already registered!");
+        
+        this.animationListenerList.add(listener);
     }
-
-    final public void onStart()
+    
+    public void removeAnimationListener(IAnimationListener listener)
     {
-        if (startRunnable != null) startRunnable.run();
+        if (!this.animationListenerList.contains(listener))
+            throw new IllegalArgumentException("Listener is not registered!");
+        
+        this.animationListenerList.remove(listener);
     }
-
-    final public void onFinish()
-    {
-        if (finishRunnable != null) finishRunnable.run();
-    }        
+    
+//    /**
+//     * Set the start action.
+//     */
+//    public void setStartRunnable(Runnable startRunnable)
+//    {
+//        this.startRunnable = startRunnable;
+//    }       
+//    
+//    public Runnable getStartRunnable()
+//    {
+//        return this.startRunnable;
+//    }
+//    
+//    /**
+//     * Set the finish action.
+//     */
+//    public void setFinishRunnable(Runnable finishRunnable)
+//    {
+//        this.finishRunnable = finishRunnable;
+//    }    
+//    
+//     public Runnable getFinishRunnable()
+//    {
+//        return this.finishRunnable;
+//    }
+//
+//    final public void onStart()
+//    {
+//        if (startRunnable != null) startRunnable.run();
+//    }
+//
+//    final public void onFinish()
+//    {
+//        if (finishRunnable != null) finishRunnable.run();
+//    }        
     
 }

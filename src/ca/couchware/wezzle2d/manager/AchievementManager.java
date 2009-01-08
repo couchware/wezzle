@@ -31,14 +31,20 @@ import java.util.List;
 public class AchievementManager implements ICollisionListener
 {
 
+    /** The settings manager. */
+    final private SettingsManager settingsMan;
+    
     /** A flag that is set to true if an achievement has been completed. */
     private boolean achievementCompleted = false;
     
     /** The unachieved achievements. */
     private List<Achievement> incompleteList;
     
-    /** The achieved achievements. */
-    private List<Achievement> completeList;
+    /** 
+     * The newly achieved achievements.  This list holds achievements until
+     * they are asked for by <pre>getNewlyCompletedAchievements()</pre>.
+     */
+    private List<Achievement> newlyCompletedList;
     
     /** The master list */
     private List<Achievement> masterList;
@@ -46,32 +52,51 @@ public class AchievementManager implements ICollisionListener
     /**
      * The constructor.
      */
-    private AchievementManager()
+    private AchievementManager(SettingsManager settingsMan)
     {
-        this.incompleteList = new ArrayList<Achievement>();
-        this.completeList   = new ArrayList<Achievement>();
-        this.masterList     = new ArrayList<Achievement>();
+        this.settingsMan = settingsMan;
+        
+        this.incompleteList     = new ArrayList<Achievement>();
+        this.newlyCompletedList = new ArrayList<Achievement>();
+        this.masterList         = new ArrayList<Achievement>();
+        
         this.importAchievements();
     }
     
-    // Public API.
-    public static AchievementManager newInstance()
+    /**
+     * Return a new AchiementManager instance.
+     * 
+     * @return
+     */
+    public static AchievementManager newInstance(SettingsManager settingsMan)
     {
-        return new AchievementManager();
+        return new AchievementManager(settingsMan);
     }
     
     /**
-     * Add an achievement to the manager.
-     * @param achieve The achievement.
-     * 
-     * Note: this method adds to the master list as well. Be careful 
-     * that you are not adding to the list twice.
+     * Import the achievements from the settings amanager.
      */
-    public void add(Achievement achievement)
-    {
-        this.incompleteList.add(achievement);
-        this.masterList.add(achievement);
-    }
+    final private void importAchievements()
+    {        
+        // Get the list from the settings manager. 
+        List<Object> list = (List<Object>) settingsMan.getObject(Key.USER_ACHIEVEMENT);
+        
+        for (Object object : list)     
+        {
+            Achievement ach = (Achievement) object;
+            
+            // If the achievement has no completed date, then it is 
+            // incomplete.
+            if (ach.getDateCompleted() == null)
+            {
+                this.incompleteList.add(ach);
+            }
+            
+            // Add to master list here so we dont have to rebuild it every 
+            // time we click go to achievements potentially.
+            this.masterList.add(ach);
+        }
+    }   
     
     /**
      * Evaluate each achievement. 
@@ -93,7 +118,7 @@ public class AchievementManager implements ICollisionListener
             {
                 // set the date.
                 a.setCompleted();
-                this.completeList.add(a);
+                this.newlyCompletedList.add(a);
                 it.remove();
                 achieved = true;
                 this.achievementCompleted = true;
@@ -108,7 +133,7 @@ public class AchievementManager implements ICollisionListener
      * 
      * @return
      */
-    public boolean isAchievementCompleted()
+    public boolean isNewAchievementCompleted()
     {
         return achievementCompleted;
     }
@@ -118,21 +143,28 @@ public class AchievementManager implements ICollisionListener
      * 
      * @param achievementCompleted
      */
-    public void clearAchievementCompleted()
+    public void clearNewAchievementCompleted()
     {
         this.achievementCompleted = false;
     }        
     
+    public List<Achievement> getNewlyCompletedAchievementList()
+    {
+        List<Achievement> list = new ArrayList<Achievement>(this.newlyCompletedList);
+        this.newlyCompletedList.clear();
+        return list;
+    }
+    
     /**
      * Report the completed descriptions to the console.
      */
-    public void reportCompleted()
+    public void reportNewlyCompleted()
     {
         // Clear the achievement completed flag.
         this.achievementCompleted = false;
         
-        for (int i = 0; i < completeList.size(); i++)
-            LogManager.recordMessage(completeList.get(i).toString(),
+        for (int i = 0; i < newlyCompletedList.size(); i++)
+            LogManager.recordMessage(newlyCompletedList.get(i).toString(),
                     "AcheivementManager#reportCompleted");
     }     
     
@@ -163,34 +195,12 @@ public class AchievementManager implements ICollisionListener
             if (a.evaluateCollision(collisionList) == true)
             {
                 a.setCompleted();
-                this.completeList.add(a);
+                this.newlyCompletedList.add(a);
                 this.achievementCompleted = true;      
                 it.remove();
             }
         } // end for   
-    }
-    
-    private void importAchievements()
-    {
-        SettingsManager settingsMan = SettingsManager.get();
-        
-        // Get the list from the settings manager. 
-        List list = (List) settingsMan.getObject(Key.USER_ACHIEVEMENT);
-        
-        for (Object object : list)     
-        {
-            Achievement achieve = (Achievement) object;
-            
-            if (achieve.getDateCompleted() != null)
-                this.completeList.add(achieve);
-            else
-                this.incompleteList.add(achieve);
-            
-            // Add to master list here so we dont have to rebuild it every 
-            // time we click go to achievements potentially.
-            this.masterList.add(achieve);
-        }
-    }
+    }        
     
     /**
      * Get the master list.
@@ -210,7 +220,7 @@ public class AchievementManager implements ICollisionListener
     
     public int getNumberOfCompletedAchievements()
     {
-        return this.completeList.size();
+        return this.masterList.size() - this.incompleteList.size();
     }
 
 }

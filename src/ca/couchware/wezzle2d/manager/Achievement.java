@@ -7,13 +7,17 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Rule;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import org.jdom.Element;
 
 /**
@@ -47,13 +51,52 @@ public class Achievement implements IXMLizable
         BRONZE, 
         SILVER, 
         GOLD, 
-        PLATINUM
+        PLATINUM;
+        
+        /** The color map for the difficulties. */
+        final private static Map<Difficulty, Color> difficultyColorMap
+                = new EnumMap<Difficulty, Color>(Difficulty.class);
+
+        /**
+         * Initializes the difficulty colour map.  Can only be called once
+         * or it will raise an exception.
+         * 
+         * @param settingsMan
+         */
+        final public static void initializeDifficultyColorMap(SettingsManager settingsMan)
+        {
+            if (!difficultyColorMap.isEmpty())
+            {
+                throw new IllegalStateException("Color map already created!");
+            }
+            
+            Map<Difficulty, Color> map = difficultyColorMap;
+            map.put(Difficulty.BRONZE,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE));
+            map.put(Difficulty.SILVER,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_SILVER));
+            map.put(Difficulty.GOLD,     settingsMan.getColor(Key.ACHIEVEMENT_COLOR_GOLD));
+            map.put(Difficulty.PLATINUM, settingsMan.getColor(Key.ACHIEVEMENT_COLOR_PLATINUM));             
+        }
+        
+        /**
+         * Returns the colour associated with the difficulty level.
+         * 
+         * @return
+         */
+        public Color getColor()
+        {
+            if (difficultyColorMap.isEmpty())
+            {
+                throw new IllegalStateException("Color map has not been created!");
+            }
+            
+            return difficultyColorMap.get(this);
+        }
     }
        
     private final List<Rule> ruleList;
     private final String name;
     private final String description;
-    private final Difficulty difficulty;   
+    private final Difficulty difficulty;    
     private Calendar dateCompleted = null;
     //private static Calendar cal = Calendar.getInstance();
 
@@ -208,6 +251,7 @@ public class Achievement implements IXMLizable
     
     /**
      * Get the date completed.
+     * 
      * @return the date.
      */
     public Calendar getDateCompleted()

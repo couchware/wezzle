@@ -44,29 +44,48 @@ public interface IAnimation
      */
     public void setVisible(final boolean visible);       
     
-    /**
-     * Set the start action.
-     */
-    public void setStartRunnable(Runnable startRunnable);        
-    
-    public Runnable getStartRunnable();    
-    
-    /**
-     * Set the finish action.
-     */
-    public void setFinishRunnable(Runnable finishRunnable);      
-    
-    public Runnable getFinishRunnable();    
+    /** An interface for listening for animation events. */
+    public static interface IAnimationListener 
+    {
+        public void animationStarted();
+        public void animationFinished();
+    }       
     
     /**
-     * This method is run when the animation is first loaded by the
-     * animation manager.
+     * Registers a button listener.
+     * @param listener
      */
-    public void onStart();
-    
+    public void addAnimationListener(IAnimationListener listener);    
+
     /**
-     * This method is run when the animation is finished running.
+     * Unregisters a button listener.
+     * @param listener
      */
-    public void onFinish();    
+    public void removeAnimationListener(IAnimationListener listener);     
+    
+//    /**
+//     * Set the start action.
+//     */
+//    public void setStartRunnable(Runnable startRunnable);        
+//    
+//    public Runnable getStartRunnable();    
+//    
+//    /**
+//     * Set the finish action.
+//     */
+//    public void setFinishRunnable(Runnable finishRunnable);      
+//    
+//    public Runnable getFinishRunnable();    
+//    
+//    /**
+//     * This method is run when the animation is first loaded by the
+//     * animation manager.
+//     */
+//    public void onStart();
+//    
+//    /**
+//     * This method is run when the animation is finished running.
+//     */
+//    public void onFinish();    
         
 }

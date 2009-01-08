@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
+import java.util.List;
 
 /*
  * A class that holds two associated values.
@@ -20,8 +21,6 @@ import ca.couchware.wezzle2d.tile.TileType;
  * 
  * @author Kevin
  */
-import ca.couchware.wezzle2d.util.Util;
-import java.util.List;
 public class Rule 
 {
            

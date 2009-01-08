@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.menu;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -46,21 +47,7 @@ public class AchievementGroup extends AbstractGroup
     
     /** The data formatter used for setting the status. */
     final private static DateFormat dateFormatter = 
-            new SimpleDateFormat("MMM dd yyyy");
-    
-    /** The color map for the difficulties. */
-    final private static Map<Difficulty, Color> difficultyColorMap = 
-            createDifficultyColorMap();
-    
-    final private static Map<Difficulty, Color> createDifficultyColorMap()
-    {
-        Map<Difficulty, Color> map = new EnumMap<Difficulty, Color>(Difficulty.class);
-        map.put(Difficulty.BRONZE,   new Color(213, 151, 88));
-        map.put(Difficulty.SILVER,   new Color(178, 178, 178));
-        map.put(Difficulty.GOLD,     new Color(255, 191, 0));
-        map.put(Difficulty.PLATINUM, new Color(212, 212, 212)); 
-        return Collections.unmodifiableMap(map);
-    }
+            new SimpleDateFormat("MMM dd yyyy");        
     
     /** The colour of completed achievements. */
     final private Color COLOR_COMPLETED;    
@@ -228,34 +215,48 @@ public class AchievementGroup extends AbstractGroup
         box.setPosition(268, -300);
         box.setVisible(true);        
         
-        IAnimation a = new MoveAnimation.Builder(box).theta(-90).maxY(300)
+        IAnimation anim = new MoveAnimation.Builder(box).theta(-90).maxY(300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
                 .end();   
         
-        a.setFinishRunnable(new Runnable()
-        {
-           public void run()
-           { setVisible(true); }
+//        a.setFinishRunnable(new Runnable()
+//        {
+//           public void run()
+//           { setVisible(true); }
+//        });
+        
+        anim.addAnimationListener(new AnimationAdapter()
+        {          
+            @Override
+            public void animationFinished()
+            { setVisible(true); }
         });
         
-        return a;
+        return anim;
     }
     
     @Override
     public IAnimation animateHide()
     {        
-        IAnimation a = new MoveAnimation.Builder(box).theta(-90)
+        IAnimation anim = new MoveAnimation.Builder(box).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
                 .end();
         
-        a.setStartRunnable(new Runnable()
+//        a.setStartRunnable(new Runnable()
+//        {
+//           public void run()
+//           { setVisible(false); }
+//        });
+        
+        anim.addAnimationListener(new AnimationAdapter()
         {
-           public void run()
-           { setVisible(false); }
+            @Override
+            public void animationStarted()
+            { setVisible(false); }
         });
         
-        return a;
+        return anim;
     }
         
     final private void updateAchievementText(Achievement ach)
@@ -266,7 +267,7 @@ public class AchievementGroup extends AbstractGroup
         // Set the difficulty.
         Difficulty difficulty = ach.getDifficulty();
         achievementDifficulty.setText(difficulty.toString());
-        achievementDifficulty.setColor(difficultyColorMap.get(difficulty));
+        achievementDifficulty.setColor(difficulty.getColor());
         
         // Split description up.
         String[] lineArray;

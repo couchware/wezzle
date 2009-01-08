@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.Rule;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
@@ -118,34 +119,41 @@ public abstract class AbstractTutorial implements ITutorial
             game.pieceMan.reverseRestrictionBoard();
             
             // Fade the board out.            
-            final EntityGroup e = game.boardMan.getTileRange(game.boardMan.getCells() / 2, 
+            final EntityGroup entityGroup = game.boardMan.getTileRange(game.boardMan.getCells() / 2, 
                     game.boardMan.getCells() - 1);  
             
-            IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
+            IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.OUT, entityGroup)
                     .wait(0).duration(500).end();
             
-            a.setFinishRunnable(new Runnable()
-            {
-                public void run()
-                { e.setVisible(false); }
+            anim.addAnimationListener(new AnimationAdapter()
+            {                
+                @Override
+                public void animationFinished()
+                { entityGroup.setVisible(false); }
             });
             
-            game.animationMan.add(a);            
+//            a.setFinishRunnable(new Runnable()
+//            {
+//                public void run()
+//                { e.setVisible(false); }
+//            });
+            
+            game.animationMan.add(anim);            
                                     
             // Fade in two new buttons.
-            FadeAnimation f;                        
+            FadeAnimation fade;                        
              
             //f = new FadeAnimation(FadeType.IN, 100, 500, repeatButton);
             //f.setMaxOpacity(70);
-            f = new FadeAnimation.Builder(FadeAnimation.Type.IN, repeatButton)
+            fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, repeatButton)
                     .wait(100).duration(500).maxOpacity(70).end();            
-            game.animationMan.add(f);
+            game.animationMan.add(fade);
                          
             //f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
             //f.setMaxOpacity(70);
-            f = new FadeAnimation.Builder(FadeAnimation.Type.IN, continueButton)
+            fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, continueButton)
                     .wait(100).duration(500).maxOpacity(70).end();
-            game.animationMan.add(f);
+            game.animationMan.add(fade);
             
             // Menu is now shown.
             menuShown = true;                  

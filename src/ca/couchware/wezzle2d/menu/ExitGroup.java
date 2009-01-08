@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -36,7 +37,7 @@ public class ExitGroup extends AbstractGroup
     final private LayerManager layerMan;
     
     /** The background window. */
-    final private Box win;        
+    final private Box box;        
     
     /** The "Yes" button. */
     final private IButton yesButton;
@@ -57,11 +58,11 @@ public class ExitGroup extends AbstractGroup
         this.layerMan    = layerMan;        
                         
         // Create the window.
-        win = new Box.Builder(268, 300).width(430).height(470)
+        box = new Box.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(settingsMan.getInt(Key.MAIN_MENU_WINDOW_OPACITY))
                 .visible(false).end();
-        this.layerMan.add(win, Layer.UI);               
+        this.layerMan.add(box, Layer.UI);               
                
         // Line 1.
         ITextLabel l1 = new LabelBuilder(266, 155)
@@ -106,38 +107,54 @@ public class ExitGroup extends AbstractGroup
             this.layerMan.add(e, Layer.UI);
     }
     
-    @Override
+     @Override
     public IAnimation animateShow()
     {       
-        win.setPosition(268, -300);
-        win.setVisible(true);        
+        box.setPosition(268, -300);
+        box.setVisible(true);        
         
-        IAnimation a = new MoveAnimation.Builder(win).theta(-90).maxY(300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED)).end();        
+        IAnimation anim = new MoveAnimation.Builder(box).theta(-90).maxY(300)
+                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
+                .end();   
         
-        a.setFinishRunnable(new Runnable()
-        {
-           public void run()
-           { setVisible(true); }
+//        a.setFinishRunnable(new Runnable()
+//        {
+//           public void run()
+//           { setVisible(true); }
+//        });
+        
+        anim.addAnimationListener(new AnimationAdapter()
+        {          
+            @Override
+            public void animationFinished()
+            { setVisible(true); }
         });
-                
-        return a;
+        
+        return anim;
     }
     
     @Override
     public IAnimation animateHide()
     {        
-        IAnimation a = new MoveAnimation.Builder(win).theta(-90)
+        IAnimation anim = new MoveAnimation.Builder(box).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED)).end();
+                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
+                .end();
         
-        a.setStartRunnable(new Runnable()
+//        a.setStartRunnable(new Runnable()
+//        {
+//           public void run()
+//           { setVisible(false); }
+//        });
+        
+        anim.addAnimationListener(new AnimationAdapter()
         {
-           public void run()
-           { setVisible(false); }
+            @Override
+            public void animationStarted()
+            { setVisible(false); }
         });
         
-        return a;
+        return anim;
     }
         
     public void updateLogic(Game game)

@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Music;
@@ -314,40 +315,54 @@ public class PlayNowGroup extends AbstractGroup
         };
     }
     
-    @Override
+     @Override
     public IAnimation animateShow()
     {       
         box.setPosition(268, -300);
         box.setVisible(true);        
         
-        IAnimation a = new MoveAnimation.Builder(box).theta(-90).maxY(300)
+        IAnimation anim = new MoveAnimation.Builder(box).theta(-90).maxY(300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
                 .end();   
         
-        a.setFinishRunnable(new Runnable()
-        {
-           public void run()
-           { setVisible(true); }
+//        a.setFinishRunnable(new Runnable()
+//        {
+//           public void run()
+//           { setVisible(true); }
+//        });
+        
+        anim.addAnimationListener(new AnimationAdapter()
+        {          
+            @Override
+            public void animationFinished()
+            { setVisible(true); }
         });
         
-        return a;
+        return anim;
     }
     
     @Override
     public IAnimation animateHide()
     {        
-        IAnimation a = new MoveAnimation.Builder(box).theta(-90)
+        IAnimation anim = new MoveAnimation.Builder(box).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
                 .end();
         
-        a.setStartRunnable(new Runnable()
+//        a.setStartRunnable(new Runnable()
+//        {
+//           public void run()
+//           { setVisible(false); }
+//        });
+        
+        anim.addAnimationListener(new AnimationAdapter()
         {
-           public void run()
-           { setVisible(false); }
+            @Override
+            public void animationStarted()
+            { setVisible(false); }
         });
         
-        return a;
+        return anim;
     }
         
     public void updateLogic(Game game)

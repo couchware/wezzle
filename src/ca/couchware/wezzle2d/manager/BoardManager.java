@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
@@ -1822,13 +1823,23 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         .wait(fadeWait).duration(fadeDuration).end();
                 
                 // Make the animation remove itself.                
-                a1.setFinishRunnable(new Runnable()
-                {
-                   public void run()
-                   {
-                       layerMan.remove(t, Layer.TILE);
-                       tile.setVisible(true);
-                   }
+//                a1.setFinishRunnable(new Runnable()
+//                {
+//                   public void run()
+//                   {
+//                       layerMan.remove(t, Layer.TILE);
+//                       tile.setVisible(true);
+//                   }
+//                });
+                
+                a1.addAnimationListener(new AnimationAdapter()
+                {                   
+                    @Override
+                    public void animationFinished()
+                    { 
+                        layerMan.remove(t, Layer.TILE);
+                        tile.setVisible(true);
+                    }
                 });
 
                 // Determine the theta.
@@ -2011,12 +2022,19 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         .speed(moveSpeed).end();
                 
                 // Make the animation remove itself.                
-                a1.setFinishRunnable(new Runnable()
-                {
-                   public void run()
-                   {
-                       layerMan.remove(t, Layer.TILE);
-                   }
+//                a1.setFinishRunnable(new Runnable()
+//                {
+//                   public void run()
+//                   {
+//                       layerMan.remove(t, Layer.TILE);
+//                   }
+//                });
+                
+                a1.addAnimationListener(new AnimationAdapter()
+                {                   
+                    @Override
+                    public void animationFinished()
+                    { layerMan.remove(t, Layer.TILE); }
                 });
                 
                 // Add them to the animation manager.
@@ -2385,11 +2403,17 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public Direction relativeRowPosition(int a, int b)
     {
         if (asRow(a) > asRow(b))
+        {
             return Direction.DOWN;
+        }
         else if (asRow(a) < asRow(b))
+        {
             return Direction.UP;
+        }
         else
+        {
             return Direction.NONE;
+        }
     }
 
     public void keyPressed(KeyEvent event)

@@ -68,6 +68,18 @@
   <entry name="Animation.Slidefade.Move.Speed">150</entry>
   <entry name="Animation.Piece.Pulse.Speed.Slow">8</entry>
   <entry name="Animation.Piece.Pulse.Speed.Fast">35</entry>
+  <entry name="Achievement.Color.Bronze">
+    <color red="213" green="151" blue="88" alpha="255" />
+  </entry>
+  <entry name="Achievement.Color.Silver">
+    <color red="178" green="178" blue="178" alpha="255" />
+  </entry>
+  <entry name="Achievement.Color.Gold">
+    <color red="255" green="191" blue="0" alpha="255" />
+  </entry>
+  <entry name="Achievement.Color.Platinum">
+    <color red="212" green="212" blue="212" alpha="255" />
+  </entry>
   <entry name="Sct.Color.Piece">
     <color red="240" green="240" blue="240" alpha="255" />
   </entry>

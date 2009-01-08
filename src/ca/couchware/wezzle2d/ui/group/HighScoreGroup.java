@@ -42,12 +42,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
     /**
      * The "no high score" label, line 1.
      */
-    private ITextLabel noHighScoreLabel1;
-    
-    /**
-     * The "no high score" label, line 2.
-     */
-    private ITextLabel noHighScoreLabel2;    
+    private ITextLabel[] noHighScoreArray;        
     
     /**
      * The player score labels.
@@ -84,17 +79,20 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         this.entityList.add(this.headerLabel);     
         
         // Create the no high score label.
-        this.noHighScoreLabel1 = new LabelBuilder(400, 270)
+        this.noHighScoreArray = new ITextLabel[2];
+        
+        this.noHighScoreArray[0] = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(20).text("There are no")
-                .visible(false).end();        
-        this.entityList.add(this.noHighScoreLabel1);
+                .visible(false).end();                
                 
-        this.noHighScoreLabel2 = new LabelBuilder(400, 300)
+        this.noHighScoreArray[1] = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(20).text("high scores yet.")
-                .visible(false).end();        
-        this.entityList.add(this.noHighScoreLabel2);                
+                .visible(false).end();                
+        
+        for (ITextLabel label : noHighScoreArray)
+            this.entityList.add(label);
         
         // Create the score labels.
         this.scoreLabelList = new ArrayList<ITextLabel>(HighScoreManager.NUMBER_OF_SCORES);
@@ -161,21 +159,15 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
             highScoreExists = true;
               
             // Change the text.
-            label.setText(createScoreLabel(i, highScore));   
+            label.setText(createScoreString(i, highScore));   
             label.setOpacity(100);
         }                       
         
         // If no high scores exist, tell the user.
-        if (highScoreExists == false)
-        {
-            noHighScoreLabel1.setOpacity(100);
-            noHighScoreLabel2.setOpacity(100);
-        }
-        else
-        {
-            noHighScoreLabel1.setOpacity(0);
-            noHighScoreLabel2.setOpacity(0);
-        }
+        int o = highScoreExists ? 0 : 100;
+        
+        for (ITextLabel label : noHighScoreArray)
+            label.setOpacity(o);
     }    
     
     /**
@@ -194,10 +186,10 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         }       
     }
     
-    private String createScoreLabel(int rank, HighScore highScore)
+    private String createScoreString(int rank, HighScore highScore)
     {
         return (rank + 1) + ". " 
-                + highScore.getName() + "  " 
+                //+ highScore.getName() + "  " 
                 + highScore.getScore() + "  "
                 + "L" + highScore.getLevel() + "";
     }

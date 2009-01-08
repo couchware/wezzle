@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.*;
+import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.manager.BoardManager;
@@ -42,6 +43,7 @@ import ca.couchware.wezzle2d.tutorial.BombTutorial;
 import ca.couchware.wezzle2d.tutorial.GravityTutorial;
 import ca.couchware.wezzle2d.tutorial.RocketTutorial;
 import ca.couchware.wezzle2d.tutorial.StarTutorial;
+import ca.couchware.wezzle2d.ui.AchievementNotification;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.RadioItem;
@@ -52,6 +54,7 @@ import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -421,7 +424,7 @@ public class Game extends Canvas implements IGameWindowCallback
         if (set.contains(Manager.ACHIEVEMENT))
         {
             // Create the achievement manager.
-            achievementMan = AchievementManager.newInstance();
+            achievementMan = AchievementManager.newInstance(settingsMan);
             
             listenerMan.registerListener(Listener.COLLISION, achievementMan);        
         }              
@@ -452,10 +455,17 @@ public class Game extends Canvas implements IGameWindowCallback
                 setDrawer(transition);
 
                 // When the transition is done, enable the game controls.
-                this.transition.setFinishRunnable(new Runnable()
-                {
-                    public void run()
-                    { mainMenu.setDisabled(false); }
+//                this.transition.setFinishRunnable(new Runnable()
+//                {
+//                    public void run()
+//                    { mainMenu.setDisabled(false); }
+//                });
+                
+                this.transition.addAnimationListener(new AnimationAdapter()
+                {                    
+                    @Override
+                    public void animationFinished()
+                    { mainMenu.setDisabled(false); }                            
                 });
 
                 // Queue in the animation manager.
@@ -586,10 +596,21 @@ public class Game extends Canvas implements IGameWindowCallback
                 setDrawer(transition);
                 
                 // When the transition is done, enable the game controls.
-                this.transition.setFinishRunnable(new Runnable()
+//                this.transition.setFinishRunnable(new Runnable()
+//                {
+//                    public void run()
+//                    { layerMan.setDisabled(false); }
+//                });
+                
+                this.transition.addAnimationListener(new AnimationAdapter() 
                 {
-                    public void run()
-                    { layerMan.setDisabled(false); }
+                    @Override
+                    public void animationStarted()
+                    { }
+
+                    @Override
+                    public void animationFinished()
+                    { layerMan.setDisabled(false); }                            
                 });
                 
                 // Queue in the animation manager.
@@ -754,15 +775,20 @@ public class Game extends Canvas implements IGameWindowCallback
         // The keys.      
         if (window.isKeyPressed('R'))
         {
-            SettingsManager.get().loadExternalSettings();
+            settingsMan.loadExternalSettings();
             LogManager.recordMessage("Reloaded external settings.");
         }
         
         // Check the achievements.
         achievementMan.evaluate(this);
-        if (achievementMan.isAchievementCompleted() == true)
+        if (achievementMan.isNewAchievementCompleted() == true)
         {
-            achievementMan.reportCompleted();
+            achievementMan.reportNewlyCompleted();
+            
+            List<Achievement> achievementList = achievementMan.getNewlyCompletedAchievementList();
+            AchievementNotification notif = new AchievementNotification.Builder(0, 0, achievementList.get(0))
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .end();                        
         }
     }
     
@@ -829,15 +855,26 @@ public class Game extends Canvas implements IGameWindowCallback
                         .theta(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_THETA))                       
                         .end(); 
 
-                a2.setStartRunnable(new Runnable()
+//                a2.setStartRunnable(new Runnable()
+//                {
+//                    public void run()
+//                    { layerMan.add(label, Layer.EFFECT); }
+//                });
+//
+//                a2.setFinishRunnable(new Runnable()
+//                {
+//                    public void run()
+//                    { layerMan.remove(label, Layer.EFFECT); }
+//                });
+                
+                a2.addAnimationListener(new AnimationAdapter()
                 {
-                    public void run()
+                    @Override
+                    public void animationStarted()
                     { layerMan.add(label, Layer.EFFECT); }
-                });
 
-                a2.setFinishRunnable(new Runnable()
-                {
-                    public void run()
+                    @Override
+                    public void animationFinished()
                     { layerMan.remove(label, Layer.EFFECT); }
                 });
 
@@ -1075,7 +1112,8 @@ public class Game extends Canvas implements IGameWindowCallback
         ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));           
+        Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));       
+        Achievement.Difficulty.initializeDifficultyColorMap(settingsMan);
         
         try
         {

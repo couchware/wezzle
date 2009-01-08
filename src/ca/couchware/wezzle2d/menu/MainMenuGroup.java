@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
@@ -28,7 +29,6 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Button;
-import ca.couchware.wezzle2d.ui.TextField;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
 import ca.couchware.wezzle2d.ui.group.EmptyGroup;
 import ca.couchware.wezzle2d.ui.group.IGroup;
@@ -141,8 +141,8 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         this.layerMan       = LayerManager.newInstance();        
         
         // Set the main menu as activated.
-        this.activated = true;
-                
+        this.activated = true;                       
+        
         // Add the background.
         GraphicEntity backgroundGraphic = 
                 new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
@@ -366,12 +366,19 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                     if (this.activated == false)
                     {                      
                         // Create the hide animation.
-                        final IAnimation a = animateHide();
+                        final IAnimation anim = animateHide();
                         
                         // Attach a runnable setting the state to finished.
-                        a.setFinishRunnable(new Runnable()
-                        {
-                            public void run()
+//                        anim.setFinishRunnable(new Runnable()
+//                        {
+//                            public void run()
+//                            { state = State.FINISHED; }
+//                        });
+                        
+                        anim.addAnimationListener(new AnimationAdapter()
+                        {                            
+                            @Override
+                            public void animationFinished()
                             { state = State.FINISHED; }
                         });
                         
@@ -379,7 +386,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                         this.layerMan.setDisabled(true);
                         
                         // Set the animation.
-                        this.currentAnimation = a;
+                        this.currentAnimation = anim;
                         
                     } // end if
                 } // end if
@@ -421,20 +428,27 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
             if (this.buttonMap.containsKey(m) == false)
                 continue;
             
-            final IButton btn = this.buttonMap.get(m);
+            final IButton button = this.buttonMap.get(m);
             
-            final IAnimation a = new MoveAnimation.Builder(btn).theta(180)
+            final IAnimation anim = new MoveAnimation.Builder(button).theta(180)
                     .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
                     .minX(settingsMan.getInt(Key.MAIN_MENU_SLIDE_MIN_X))
                     .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
                     .end();
             
-            builder.add(a);
+            builder.add(anim);
             
-            a.setFinishRunnable(new Runnable()
-            {
-                public void run()
-                { btn.setDisabled(false); }
+//            a.setFinishRunnable(new Runnable()
+//            {
+//                public void run()
+//                { btn.setDisabled(false); }
+//            });
+            
+            anim.addAnimationListener(new AnimationAdapter()
+            {                
+                @Override
+                public void animationFinished()
+                { button.setDisabled(false); }
             });
         }
         
@@ -453,40 +467,57 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         builder.add(this.groupMap.get(this.currentButton).animateHide());
         
         // Fade out the logo.
-        IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
                 .wait(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_WAIT))
                 .duration(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_DURATION))
                 .end();
         
-        f.setFinishRunnable(new Runnable()
-        {
-            public void run()
+//        fade.setFinishRunnable(new Runnable()
+//        {
+//            public void run()
+//            { 
+//                logoEntity.setVisible(false);
+//                rotateAnimation.setFinished();
+//            }
+//        });
+        
+        fade.addAnimationListener(new AnimationAdapter()
+        {           
+            @Override
+            public void animationFinished()
             { 
                 logoEntity.setVisible(false);
                 rotateAnimation.setFinished();
             }
         });
         
-        builder.add(f);
+        builder.add(fade);
          
         // Slide out the buttons.
         // Animate the buttons coming in.        
         for (Menu m : this.buttonMap.keySet())
         {                        
-            final IButton btn = this.buttonMap.get(m);
+            final IButton button = this.buttonMap.get(m);
             
-            final IAnimation a = new MoveAnimation.Builder(btn).theta(0)
+            final IAnimation anim = new MoveAnimation.Builder(button).theta(0)
                     .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
                     .maxX(910)
                     .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
                     .end();
             
-            builder.add(a);
+            builder.add(anim);
             
-            a.setStartRunnable(new Runnable()
+//            a.setStartRunnable(new Runnable()
+//            {
+//                public void run()
+//                { btn.setDisabled(true); }
+//            });
+            
+            anim.addAnimationListener(new AnimationAdapter()
             {
-                public void run()
-                { btn.setDisabled(true); }
+                @Override
+                public void animationStarted()
+                { button.setDisabled(true); }                                
             });
         }
         

@@ -32,28 +32,32 @@
       <rule type="SCORE" operation="GTEQ" value="10000" />
     </achievement>
     <achievement name="Score even more!" difficulty="GOLD">
-      <description>Get over 50000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="50000" />
+      <description>Get over 60000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="60000" />
     </achievement>
     <achievement name="Score Master" difficulty="PLATINUM">
-      <description>Get over 100000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="100000" />
+      <description>Get over 120000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="120000" />
     </achievement>
     <achievement name="I Got A Level" difficulty="BRONZE">
-      <description>Starting from level 1, get to level 2.</description>
+      <description>Starting from level 1, get to level 2 without
+      getting a game over.</description>
       <rule type="LEVEL" operation="EQ" value="2" />
     </achievement>
     <achievement name="I Got More Levels" difficulty="SILVER">
-      <description>Starting from level 1, get to level 5.</description>
+      <description>Starting from level 1, get to level 5 without
+      getting a game over.</description>
       <rule type="LEVEL" operation="EQ" value="5" />
     </achievement>
     <achievement name="I Got Even More Levels" difficulty="GOLD">
-      <description>Starting from level 1, get to level 10.</description>
+      <description>Starting from level 1, get to level 10 without
+      getting a game over.</description>
       <rule type="LEVEL" operation="EQ" value="10" />
     </achievement>
     <achievement name="Level Master" difficulty="PLATINUM">
-      <description>Starting from level 1, get to level 15.</description>
+      <description>Starting from level 1, get to level 15 without
+      getting a game over.</description>
       <rule type="LEVEL" operation="EQ" value="15" />
-    </achievement>
+    </achievement>    
   </entry>
 </settings>

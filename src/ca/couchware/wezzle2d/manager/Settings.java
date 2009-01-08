@@ -118,6 +118,12 @@ public class Settings
         ANIMATION_PIECE_PULSE_SPEED_SLOW,
         ANIMATION_PIECE_PULSE_SPEED_FAST,
                 
+        // Achievement values.
+        ACHIEVEMENT_COLOR_BRONZE,
+        ACHIEVEMENT_COLOR_SILVER,
+        ACHIEVEMENT_COLOR_GOLD,
+        ACHIEVEMENT_COLOR_PLATINUM,
+        
         // SCT values.
 
         SCT_COLOR_PIECE,

@@ -7,6 +7,8 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.AbstractAnimation;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.event.LevelEvent;
@@ -409,10 +411,17 @@ public class TileRemover implements IResettable, ILevelListener
                 .add(anim2)
                 .end();
 
-        meta.setFinishRunnable(new Runnable()
+//        meta.setFinishRunnable(new Runnable()
+//        {
+//           public void run() 
+//           { layerMan.remove(clone, Layer.EFFECT); }
+//        });  
+        
+        meta.addAnimationListener(new AnimationAdapter()
         {
-           public void run() 
-           { layerMan.remove(clone, Layer.EFFECT); }
+            @Override
+            public void animationFinished()
+            { layerMan.remove(clone, Layer.EFFECT); }
         });
 
         clone.setAnimation(meta);
@@ -632,22 +641,33 @@ public class TileRemover implements IResettable, ILevelListener
             IAnimation a2 = new MoveAnimation.Builder(label)
                 .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
                 .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
-                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
-
-            a2.setStartRunnable(new Runnable()
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();           
+            
+//            a2.setStartRunnable(new Runnable()
+//            {
+//                public void run()
+//                {
+//                    game.layerMan.add(label, Layer.EFFECT);
+//                }
+//            });
+//
+//            a2.setFinishRunnable(new Runnable()
+//            {
+//                public void run()
+//                {
+//                    game.layerMan.remove(label, Layer.EFFECT);
+//                }
+//            });
+            
+            a2.addAnimationListener(new AnimationAdapter()
             {
-                public void run()
-                {
-                    game.layerMan.add(label, Layer.EFFECT);
-                }
-            });
-
-            a2.setFinishRunnable(new Runnable()
-            {
-                public void run()
-                {
-                    game.layerMan.remove(label, Layer.EFFECT);
-                }
+                @Override
+                public void animationStarted()
+                { game.layerMan.add(label, Layer.EFFECT); }
+                
+                @Override
+                public void animationFinished()
+                { game.layerMan.remove(label, Layer.EFFECT); }
             });
 
             animationMan.add(a1);
@@ -884,20 +904,31 @@ public class TileRemover implements IResettable, ILevelListener
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
                 .end();
 
-        a2.setStartRunnable(new Runnable()
+//        a2.setStartRunnable(new Runnable()
+//        {
+//            public void run()
+//            {
+//                game.layerMan.add(label, Layer.EFFECT);
+//            }
+//        });
+//
+//        a2.setFinishRunnable(new Runnable()
+//        {
+//            public void run()
+//            {
+//                game.layerMan.remove(label, Layer.EFFECT);
+//            }
+//        });
+        
+        a2.addAnimationListener(new AnimationAdapter()
         {
-            public void run()
-            {
-                game.layerMan.add(label, Layer.EFFECT);
-            }
-        });
+            @Override
+            public void animationStarted()
+            { game.layerMan.add(label, Layer.EFFECT); }
 
-        a2.setFinishRunnable(new Runnable()
-        {
-            public void run()
-            {
-                game.layerMan.remove(label, Layer.EFFECT);
-            }
+            @Override
+            public void animationFinished()
+            { game.layerMan.remove(label, Layer.EFFECT); }
         });
 
         animationMan.add(a1);
@@ -1098,20 +1129,31 @@ public class TileRemover implements IResettable, ILevelListener
                 .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
-        a2.setStartRunnable(new Runnable()
+//        a2.setStartRunnable(new Runnable()
+//        {
+//            public void run()
+//            {
+//                game.layerMan.add(label, Layer.EFFECT);
+//            }
+//        });
+//
+//        a2.setFinishRunnable(new Runnable()
+//        {
+//            public void run()
+//            {
+//                game.layerMan.remove(label, Layer.EFFECT);
+//            }
+//        });
+        
+        a2.addAnimationListener(new AnimationAdapter()
         {
-            public void run()
-            {
-                game.layerMan.add(label, Layer.EFFECT);
-            }
-        });
+            @Override
+            public void animationStarted()
+            { game.layerMan.add(label, Layer.EFFECT); }
 
-        a2.setFinishRunnable(new Runnable()
-        {
-            public void run()
-            {
-                game.layerMan.remove(label, Layer.EFFECT);
-            }
+            @Override
+            public void animationFinished()
+            { game.layerMan.remove(label, Layer.EFFECT); }
         });
 
         animationMan.add(a1);
@@ -1150,8 +1192,12 @@ public class TileRemover implements IResettable, ILevelListener
         }
         
         for (Integer i : allItemSet)
-        {
+        {            
             Tile t = boardMan.getTile(i);
+            
+            // Make sure the item has not already been removed.
+            if (t == null) continue;
+            
             t.setAnimation(animateItemActivation(settingsMan, layerMan, boardMan, t));
             animationMan.add(t.getAnimation());
         }
@@ -1211,10 +1257,17 @@ public class TileRemover implements IResettable, ILevelListener
                         .add(anim3)
                         .end();
 
-                meta.setFinishRunnable(new Runnable()
-                {
-                   public void run() 
-                   { layerMan.remove(explosion, Layer.EFFECT); }
+//                meta.setFinishRunnable(new Runnable()
+//                {
+//                   public void run() 
+//                   { layerMan.remove(explosion, Layer.EFFECT); }
+//                });
+                
+                meta.addAnimationListener(new AnimationAdapter()
+                {                   
+                    @Override
+                    public void animationFinished()
+                    { layerMan.remove(explosion, Layer.EFFECT); }
                 });
 
                 t.setAnimation(meta);
@@ -1368,29 +1421,35 @@ public class TileRemover implements IResettable, ILevelListener
                 .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
 
-        a2.setStartRunnable(new Runnable()
+//        a2.setStartRunnable(new Runnable()
+//        {
+//            public void run()
+//            {
+//                game.layerMan.add(label, Layer.EFFECT);
+//            }
+//        });
+//
+//        a2.setFinishRunnable(new Runnable()
+//        {
+//            public void run()
+//            {
+//                game.layerMan.remove(label, Layer.EFFECT);
+//            }
+//        });
+        
+        a2.addAnimationListener(new AnimationAdapter()
         {
-            public void run()
-            {
-                game.layerMan.add(label, Layer.EFFECT);
-            }
-        });
+            @Override
+            public void animationStarted()
+            { game.layerMan.add(label, Layer.EFFECT); }
 
-        a2.setFinishRunnable(new Runnable()
-        {
-            public void run()
-            {
-                game.layerMan.remove(label, Layer.EFFECT);
-            }
+            @Override
+            public void animationFinished()
+            { game.layerMan.remove(label, Layer.EFFECT); }
         });
 
         animationMan.add(a1);
-        animationMan.add(a2);
-        a1 = null;
-        a2 = null;
-
-        // Release references.
-        p = null;
+        animationMan.add(a2);       
 
         // Play the sound.
         soundMan.play(Sound.STAR);
@@ -1401,6 +1460,7 @@ public class TileRemover implements IResettable, ILevelListener
         scanFor(boardMan, tileTypeSet);  
 
         // Start the line removal animations.
+        IAnimation rem1, rem2;
         int i = 0;
         for (Integer index : tileRemovalSet)
         {
@@ -1414,23 +1474,20 @@ public class TileRemover implements IResettable, ILevelListener
 
             int angle = i % 2 == 0 ? 70 : 180 - 70;
                                           
-            a1 = new MoveAnimation.Builder(t)
+            rem1 = new MoveAnimation.Builder(t)
                     .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
                     .theta(angle)
                     .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
                     .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
                     .end();
-            a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+            rem2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                     .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
                     .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
                     .end();
             
-            t.setAnimation(a1);
-            animationMan.add(a1);
-            animationMan.add(a2);
-            
-            a1 = null;
-            a2 = null;
+            t.setAnimation(rem1);
+            animationMan.add(rem1);
+            animationMan.add(rem2);           
         }
 
         // Clear the star removal set.

@@ -5,6 +5,7 @@ import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -562,17 +563,28 @@ public class PieceManager implements IResettable, IMouseListener
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
                 .end();
                     
-        a2.setStartRunnable(new Runnable()
+//        a2.setStartRunnable(new Runnable()
+//        {
+//            public void run()
+//            { game.layerMan.add(label, Layer.EFFECT); }
+//        });
+//
+//        a2.setFinishRunnable(new Runnable()
+//        {
+//            public void run()
+//            { game.layerMan.remove(label, Layer.EFFECT); }
+//        });       
+        
+        a2.addAnimationListener(new AnimationAdapter()
         {
-            public void run()
+            @Override
+            public void animationStarted()
             { game.layerMan.add(label, Layer.EFFECT); }
-        });
 
-        a2.setFinishRunnable(new Runnable()
-        {
-            public void run()
+            @Override
+            public void animationFinished()
             { game.layerMan.remove(label, Layer.EFFECT); }
-        });          
+        });
         
         game.animationMan.add(a1);
         game.animationMan.add(a2);
