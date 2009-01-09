@@ -245,15 +245,7 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
         timerLabel = new LabelBuilder(400, 100)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .color(PRIMARY_COLOR).size(50).text("").end();
-        layerMan.add(timerLabel, Layer.UI);
-        
-        // Set up the Wezzle timer text.
-//        wezzleTimerLabel = new LabelBuilder(400, 50)
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .color(WEZZLE_TIMER_COLOR).size(25)
-//                .text("A   will appear in 4 turns!")
-//                .end();
-//        layerMan.add(wezzleTimerLabel, Layer.UI);
+        layerMan.add(timerLabel, Layer.UI);        
         
         // Set up the level header.
         levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                

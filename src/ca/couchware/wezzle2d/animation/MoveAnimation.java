@@ -151,10 +151,7 @@ public class MoveAnimation extends AbstractAnimation
         
         // Determine the components of the launch velocity.
         this.speedX = (int) ((double) builder.speed * Math.cos(Math.toRadians(theta)));
-        this.speedY = (int) ((double) builder.speed * Math.sin(Math.toRadians(theta)));
-        
-        // Set the number of frames to skip.
-//        this.vq = builder.vq;       
+        this.speedY = (int) ((double) builder.speed * Math.sin(Math.toRadians(theta)));          
     }    
     
     public static class Builder implements IBuilder<MoveAnimation>

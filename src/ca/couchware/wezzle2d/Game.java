@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.animation.MetaAnimation.RunRule;
 import ca.couchware.wezzle2d.audio.*;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -52,9 +53,12 @@ import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -242,7 +246,14 @@ public class Game extends Canvas implements IGameWindowCallback
     private boolean activateGameOver = false;   
     
     /** If true, a game over has been activated. */
-    private boolean gameOverInProgress = false;		 
+    private boolean gameOverInProgress = false;	
+    
+    /** The list of notifications to be shown. */
+    private Queue<AchievementNotification> notificationQueue
+            = new LinkedList<AchievementNotification>();
+    
+    /** The current notification animation. */
+    private IAnimation notificationAnimation = FinishedAnimation.get();
     
     /** The targets that may be transitioned to. */
     public enum TransitionTarget
@@ -453,13 +464,6 @@ public class Game extends Canvas implements IGameWindowCallback
                 this.transition = new CircularTransition.Builder(mainMenu)
                         .minRadius(10).speed(400).end();
                 setDrawer(transition);
-
-                // When the transition is done, enable the game controls.
-//                this.transition.setFinishRunnable(new Runnable()
-//                {
-//                    public void run()
-//                    { mainMenu.setDisabled(false); }
-//                });
                 
                 this.transition.addAnimationListener(new AnimationAdapter()
                 {                    
@@ -593,14 +597,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 this.transitionTo = TransitionTarget.GAME;
                 this.transition = new CircularTransition.Builder(layerMan)
                         .minRadius(10).speed(400).end();
-                setDrawer(transition);
-                
-                // When the transition is done, enable the game controls.
-//                this.transition.setFinishRunnable(new Runnable()
-//                {
-//                    public void run()
-//                    { layerMan.setDisabled(false); }
-//                });
+                setDrawer(transition);                
                 
                 this.transition.addAnimationListener(new AnimationAdapter() 
                 {
@@ -780,15 +777,56 @@ public class Game extends Canvas implements IGameWindowCallback
         }
         
         // Check the achievements.
-        achievementMan.evaluate(this);
-        if (achievementMan.isNewAchievementCompleted() == true)
+        this.achievementMan.evaluate(this);
+        if (this.achievementMan.isNewAchievementCompleted() == true)
         {
-            achievementMan.reportNewlyCompleted();
+            // Report to log.
+            this.achievementMan.reportNewlyCompleted();
             
-            List<Achievement> achievementList = achievementMan.getNewlyCompletedAchievementList();
-            AchievementNotification notif = new AchievementNotification.Builder(0, 0, achievementList.get(0))
+            List<Achievement> achievementList = this.achievementMan.getNewlyCompletedAchievementList();
+            for (Achievement ach : achievementList)
+            {
+                AchievementNotification notif = new AchievementNotification.Builder(0, 0, ach)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .end();                        
+                    .end();
+                
+                this.notificationQueue.offer(notif);
+            }                                    
+        }
+        
+        // Check to see if there are any notifications to show.
+        if (!this.notificationQueue.isEmpty() && this.notificationAnimation.isFinished())
+        {                        
+            final AchievementNotification notif = this.notificationQueue.remove();
+            
+            int x = Game.SCREEN_WIDTH + 10 + notif.getWidth() / 2;            
+            notif.setPosition(x, 490);
+            
+            IAnimation slideIn = new MoveAnimation.Builder(notif)
+                    .speed(375).minX(670).duration(4000).theta(180).end();
+            
+            IAnimation fadeOut = new FadeAnimation.Builder(FadeAnimation.Type.OUT, notif)                    
+                    .duration(500).end();                        
+            
+            IAnimation meta = new MetaAnimation.Builder()
+                    .runRule(RunRule.SEQUENCE)
+                    .add(slideIn)                    
+                    .add(fadeOut)
+                    .end();    
+            
+            meta.addAnimationListener(new AnimationAdapter()
+            {
+                @Override
+                public void animationStarted()
+                { layerMan.add(notif, Layer.EFFECT); }
+                
+                @Override
+                public void animationFinished()
+                { layerMan.remove(notif, Layer.EFFECT); }
+            });
+                       
+            this.notificationAnimation = meta;
+            this.animationMan.add(meta);
         }
     }
     
@@ -825,7 +863,7 @@ public class Game extends Canvas implements IGameWindowCallback
                 pieceMan.stopAnimation();
                 timerMan.setPaused(true);
 
-                LogManager.recordMessage("Level up!", "Game#frameRendering");
+                LogManager.recordMessage("Level up!", "Game#updateBoard");
                 //levelMan.levelUp(this);
                
                 levelMan.incrementLevel();                                                           
@@ -854,18 +892,6 @@ public class Game extends Canvas implements IGameWindowCallback
                         .speed(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_SPEED))
                         .theta(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_THETA))                       
                         .end(); 
-
-//                a2.setStartRunnable(new Runnable()
-//                {
-//                    public void run()
-//                    { layerMan.add(label, Layer.EFFECT); }
-//                });
-//
-//                a2.setFinishRunnable(new Runnable()
-//                {
-//                    public void run()
-//                    { layerMan.remove(label, Layer.EFFECT); }
-//                });
                 
                 a2.addAnimationListener(new AnimationAdapter()
                 {

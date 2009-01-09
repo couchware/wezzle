@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.IBuilder;
 import ca.couchware.wezzle2d.IGameWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.ui.Box.Border;
 import java.util.EnumSet;
@@ -54,6 +55,9 @@ public class AchievementNotification extends AbstractEntity
     
     /** The achievement difficulty. */
     final private ITextLabel achDifficulty;
+    
+    /** The entity group representing all the entities in the notification. */
+    final private EntityGroup entityGroup;
     
     private AchievementNotification(Builder builder)
     {
@@ -111,6 +115,9 @@ public class AchievementNotification extends AbstractEntity
                 .text(this.achievement.getDifficulty().toString()).size(12)
                 .color(this.achievement.getDifficulty().getColor())
                 .end();
+        
+        this.entityGroup = new EntityGroup(
+                this.box, this.title, this.achTitle, this.achDifficulty);
     }
     
     public static class Builder implements IBuilder<AchievementNotification>
@@ -134,15 +141,15 @@ public class AchievementNotification extends AbstractEntity
             this.y = y;
         }
         
-        public Builder(AchievementNotification box)
+        public Builder(AchievementNotification notif)
         {            
-            this.window = box.window;
-            this.achievement = box.achievement;
-            this.x = box.x;
-            this.y = box.y;
-            this.alignment = box.alignment.clone();                 
-            this.opacity = box.opacity;                                   
-            this.visible = box.visible;            
+            this.window = notif.window;
+            this.achievement = notif.achievement;
+            this.x = notif.x;
+            this.y = notif.y;
+            this.alignment = notif.alignment.clone();                 
+            this.opacity = notif.opacity;                                   
+            this.visible = notif.visible;            
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -159,9 +166,16 @@ public class AchievementNotification extends AbstractEntity
                 
         public AchievementNotification end()
         {
-            AchievementNotification box = new AchievementNotification(this);                      
-            return box;
+            AchievementNotification notif = new AchievementNotification(this);                      
+            return notif;
         }                
+    }
+    
+    @Override
+    public void setOpacity(int opacity)
+    {
+        super.setOpacity(opacity);
+        this.entityGroup.setOpacity(opacity);
     }
     
     @Override
@@ -169,10 +183,11 @@ public class AchievementNotification extends AbstractEntity
     {
         int dx = x - this.x;
         super.setX(x);
-        this.box.translate(dx, 0);
-        this.title.translate(dx, 0);
-        this.achTitle.translate(dx, 0);
-        this.achDifficulty.translate(dx, 0);
+        this.entityGroup.translate(dx, 0);
+//        this.box.translate(dx, 0);
+//        this.title.translate(dx, 0);
+//        this.achTitle.translate(dx, 0);
+//        this.achDifficulty.translate(dx, 0);
     }
     
     @Override
@@ -180,10 +195,11 @@ public class AchievementNotification extends AbstractEntity
     {
         int dy = y - this.y;
         super.setY(y);
-        this.box.translate(0, dy);
-        this.title.translate(0, dy);
-        this.achTitle.translate(0, dy);
-        this.achDifficulty.translate(0, dy);
+        this.entityGroup.translate(0, dy);
+//        this.box.translate(0, dy);
+//        this.title.translate(0, dy);
+//        this.achTitle.translate(0, dy);
+//        this.achDifficulty.translate(0, dy);
     }
     
     @Override
@@ -204,10 +220,7 @@ public class AchievementNotification extends AbstractEntity
         // Using a | instead of || because we don't want to short circuit.
         // (That is, we don't want it to stop after the box.draw() even if
         // it's true).
-        return this.box.draw() 
-                | this.title.draw()
-                | this.achTitle.draw()
-                | this.achDifficulty.draw();
+        return this.entityGroup.draw();
     }
 
 }

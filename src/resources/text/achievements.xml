@@ -22,22 +22,40 @@
         <item type="ROCKET" />
         <item type="ROCKET" />
       </rule>
+    </achievement>
+    <achievement name="Gravitron" difficulty="BRONZE">
+      <description>Activate a gravity tile.</description>      
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="GRAVITY" />
+      </rule>
+    </achievement>
+    <achievement name="Bomber" difficulty="BRONZE">
+      <description>Activate a bomb tile.</description>      
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB" />
+      </rule>
+    </achievement>    
+    <achievement name="Astronomer" difficulty="BRONZE">
+      <description>Activate a star tile.</description>      
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="STAR" />
+      </rule>
     </achievement>    
     <achievement name="Score!" difficulty="BRONZE">
-      <description>Get over 1000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="1000" />     
+      <description>Get over 10000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="10000" />     
     </achievement>
     <achievement name="Score more!" difficulty="SILVER">
-      <description>Get over 10000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="10000" />
+      <description>Get over 30000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="30000" />
     </achievement>
     <achievement name="Score even more!" difficulty="GOLD">
-      <description>Get over 60000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="60000" />
+      <description>Get over 80000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="80000" />
     </achievement>
     <achievement name="Score Master" difficulty="PLATINUM">
-      <description>Get over 120000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="120000" />
+      <description>Get over 150000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="150000" />
     </achievement>
     <achievement name="I Got A Level" difficulty="BRONZE">
       <description>Starting from level 1, get to level 2 without

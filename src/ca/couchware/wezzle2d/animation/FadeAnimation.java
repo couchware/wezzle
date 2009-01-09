@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.ui.AchievementNotification;
 import ca.couchware.wezzle2d.util.Util;
 
 /**
@@ -59,6 +60,11 @@ public class FadeAnimation extends AbstractAnimation
      * The max time for the animation to run for, in ticks.
      */
     private int duration;
+
+    public FadeAnimation(Type OUT, AchievementNotification notif)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
     
     /**
      * The constructor.
