@@ -41,15 +41,15 @@
         <item type="STAR" />
       </rule>
     </achievement>    
-    <achievement name="Score!" difficulty="BRONZE">
+    <achievement name="Score Some Points" difficulty="BRONZE">
       <description>Get over 10000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="10000" />     
     </achievement>
-    <achievement name="Score more!" difficulty="SILVER">
+    <achievement name="Score More Points" difficulty="SILVER">
       <description>Get over 30000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="30000" />
     </achievement>
-    <achievement name="Score even more!" difficulty="GOLD">
+    <achievement name="Score Even More Points" difficulty="GOLD">
       <description>Get over 80000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="80000" />
     </achievement>
@@ -77,5 +77,5 @@
       getting a game over.</description>
       <rule type="LEVEL" operation="EQ" value="15" />
     </achievement>    
-  </entry>
+  </entry>  
 </settings>

@@ -23,13 +23,14 @@ public class Settings
         CONF_VERSION,                                               
         
         // User values.
-                
+                        
         USER_MUSIC,
         USER_MUSIC_VOLUME,
         USER_SOUND,
         USER_SOUND_VOLUME,
         USER_HIGHSCORE,   
         USER_ACHIEVEMENT,
+        USER_ACHIEVEMENT_COMPLETED,
         
         // Game mechanic values.
         
@@ -119,6 +120,7 @@ public class Settings
         ANIMATION_PIECE_PULSE_SPEED_FAST,
                 
         // Achievement values.
+        
         ACHIEVEMENT_COLOR_BRONZE,
         ACHIEVEMENT_COLOR_SILVER,
         ACHIEVEMENT_COLOR_GOLD,
@@ -239,6 +241,9 @@ public class Settings
     /** A set of all the user keys. */
     final private static EnumSet<Key> userKeys = calculateUserKeys();
     
+    /** A set of all the user keys. */
+    final private static EnumSet<Key> achievementKeys = calculateAchievementKeys();
+    
     /**
      * Determines all the user settings keys and returns them.
      * @return
@@ -248,16 +253,36 @@ public class Settings
         EnumSet<Key> set = EnumSet.noneOf(Key.class);
         
         for (Key key : Key.values())
-            if (key.toString().startsWith("USER_"))
+            if (key.toString().startsWith("USER_") && !key.toString().contains("ACHIEVEMENT"))
                 set.add(key);       
         
         return set;
-    }
+    }     
+            
+    /**
+     * Determines all the user settings keys and returns them.
+     * @return
+     */
+    final private static EnumSet<Key> calculateAchievementKeys()
+    {
+        EnumSet<Key> set = EnumSet.noneOf(Key.class);                       
+        
+        for (Key key : Key.values())
+            if (key.toString().contains("ACHIEVEMENT"))
+                set.add(key); 
+        
+        return set;
+    }   
 
     public static EnumSet<Key> getUserKeys()
     {
         return userKeys;
-    }        
+    }    
+    
+    public static EnumSet<Key> getAchievementKeys()
+    {
+        return achievementKeys;
+    } 
     
     public static String getUpgradeUrl()
     {

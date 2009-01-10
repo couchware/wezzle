@@ -46,7 +46,7 @@ public class SuperColor extends Color implements IXMLizable
         element.setAttribute("green", String.valueOf(getGreen()));
         element.setAttribute("blue", String.valueOf(getBlue()));                    
         element.setAttribute("alpha", String.valueOf(getAlpha()));
-        return element;
+        return element; 
     }
     
     public static int scaleOpacity(int val)

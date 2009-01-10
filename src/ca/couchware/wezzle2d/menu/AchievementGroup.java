@@ -29,12 +29,8 @@ import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The play now group, which holds all the configuration options for playing
@@ -98,7 +94,7 @@ public class AchievementGroup extends AbstractGroup
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);                
         
         // Set the achievement list.
-        achievementList = achievementMan.getMasterList();                                                     
+        achievementList = achievementMan.getAchievementList();                                                     
                         
         // Create the window.
         box = new Box.Builder(268, 300).width(430).height(470)
@@ -217,13 +213,7 @@ public class AchievementGroup extends AbstractGroup
         
         IAnimation anim = new MoveAnimation.Builder(box).theta(-90).maxY(300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();   
-        
-//        a.setFinishRunnable(new Runnable()
-//        {
-//           public void run()
-//           { setVisible(true); }
-//        });
+                .end();           
         
         anim.addAnimationListener(new AnimationAdapter()
         {          
@@ -241,13 +231,7 @@ public class AchievementGroup extends AbstractGroup
         IAnimation anim = new MoveAnimation.Builder(box).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();
-        
-//        a.setStartRunnable(new Runnable()
-//        {
-//           public void run()
-//           { setVisible(false); }
-//        });
+                .end();       
         
         anim.addAnimationListener(new AnimationAdapter()
         {

@@ -10,7 +10,9 @@ import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.util.SuperCalendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +40,10 @@ public class AchievementManager implements ICollisionListener
     private boolean achievementCompleted = false;
     
     /** The unachieved achievements. */
-    private List<Achievement> incompleteList;
+    private List<Achievement> incompletedList;
+    
+    /** The achieved achievements. */
+    private List<Achievement> completedList;
     
     /** 
      * The newly achieved achievements.  This list holds achievements until
@@ -47,7 +52,7 @@ public class AchievementManager implements ICollisionListener
     private List<Achievement> newlyCompletedList;
     
     /** The master list */
-    private List<Achievement> masterList;
+    //private List<Achievement> masterList;
         
     /**
      * The constructor.
@@ -56,9 +61,9 @@ public class AchievementManager implements ICollisionListener
     {
         this.settingsMan = settingsMan;
         
-        this.incompleteList     = new ArrayList<Achievement>();
-        this.newlyCompletedList = new ArrayList<Achievement>();
-        this.masterList         = new ArrayList<Achievement>();
+        this.incompletedList    = new ArrayList<Achievement>();
+        this.completedList      = new ArrayList<Achievement>();
+        this.newlyCompletedList = new ArrayList<Achievement>();        
         
         this.importAchievements();
     }
@@ -78,54 +83,44 @@ public class AchievementManager implements ICollisionListener
      */
     final private void importAchievements()
     {        
-        // Get the list from the settings manager. 
-        List<Object> list = (List<Object>) settingsMan.getObject(Key.USER_ACHIEVEMENT);
+        // Get the master list from the settings manager. 
+        List masterList = this.settingsMan.getList(Key.USER_ACHIEVEMENT);
         
-        for (Object object : list)     
+        // Get the completed list.
+        List storedCompletedList = null;
+        if (this.settingsMan.containsKey(Key.USER_ACHIEVEMENT_COMPLETED))
+        {
+            storedCompletedList = this.settingsMan.getList(Key.USER_ACHIEVEMENT_COMPLETED);
+        }
+        else
+        {
+            storedCompletedList = new ArrayList();
+        }        
+        
+        for (Object object : masterList)
         {
             Achievement ach = (Achievement) object;
             
-            // If the achievement has no completed date, then it is 
-            // incomplete.
-            if (ach.getDateCompleted() == null)
+            if (!storedCompletedList.contains(ach))
             {
-                this.incompleteList.add(ach);
-            }
-            
-            // Add to master list here so we dont have to rebuild it every 
-            // time we click go to achievements potentially.
-            this.masterList.add(ach);
+                this.incompletedList.add(ach);
+            }                            
+        }        
+        
+        for (Object object : storedCompletedList)
+        {
+            Achievement ach = (Achievement) object;
+            this.completedList.add(ach);
         }
-    }   
+    }          
     
     /**
-     * Evaluate each achievement. 
-     * If the achievement is completed transfer from the incomplete to 
-     * the completed lists.
-     * 
-     * @param game The state of the game.
-     * @return True if an achievement was completed, false otherwise.
+     * Export the achievements to the settings manager.
      */
-    public boolean evaluate(Game game)
+    private void exportAchievements()
     {
-        boolean achieved = false;
-        
-        for (Iterator<Achievement> it = incompleteList.iterator(); it.hasNext(); )
-        {
-            Achievement a = it.next();
-            
-            if (a.evaluate(game) == true)
-            {
-                // set the date.
-                a.setCompleted();
-                this.newlyCompletedList.add(a);
-                it.remove();
-                achieved = true;
-                this.achievementCompleted = true;
-            }
-        }
-        
-        return achieved;
+        LogManager.recordMessage("Exported achievements to settings manager.");
+        this.settingsMan.setObject(Key.USER_ACHIEVEMENT_COMPLETED, this.completedList);
     }
 
     /**
@@ -168,6 +163,48 @@ public class AchievementManager implements ICollisionListener
                     "AcheivementManager#reportCompleted");
     }     
     
+    private void completeAchievement(Achievement achievement)
+    {
+        // Set the date.
+        Achievement completedAchievement = 
+                Achievement.newInstance(achievement, SuperCalendar.newInstance());                
+        this.newlyCompletedList.add(completedAchievement);
+        this.completedList.add(completedAchievement);
+        
+        // Set the flag.
+        this.achievementCompleted = true;
+    }
+    
+    /**
+     * Evaluate each achievement. 
+     * If the achievement is completed transfer from the incomplete to 
+     * the completed lists.
+     * 
+     * @param game The state of the game.
+     * @return True if an achievement was completed, false otherwise.
+     */
+    public boolean evaluate(Game game)
+    {
+        boolean achieved = false;
+        
+        for (Iterator<Achievement> it = incompletedList.iterator(); it.hasNext(); )
+        {
+            Achievement achievement = it.next();
+            
+            if (achievement.evaluate(game))
+            {
+                completeAchievement(achievement);                
+                it.remove();
+                achieved = true;
+            }
+        }
+        
+        // Export.
+        if (achieved) exportAchievements();
+        
+        return achieved;
+    }
+    
     /**
      * Listens for collision events.
      * 
@@ -178,49 +215,54 @@ public class AchievementManager implements ICollisionListener
         List<Tile> collisionList =  e.getCollisionList();
 
         StringBuffer buffer = new StringBuffer();
-
         for (Tile t : collisionList)
         {
            buffer.append(t.getType().toString() + " -> ");
         }
-
         buffer.append("END");
 
         LogManager.recordMessage(buffer.toString());
         
-        for (Iterator<Achievement> it = incompleteList.iterator(); it.hasNext(); )
+        // Set to true if an achievement was achieved.
+        boolean achieved = false;
+        
+        for (Iterator<Achievement> it = incompletedList.iterator(); it.hasNext(); )
         {
-            Achievement a = it.next();
+            Achievement achievement = it.next();
 
-            if (a.evaluateCollision(collisionList) == true)
+            if (achievement.evaluateCollision(collisionList))
             {
-                a.setCompleted();
-                this.newlyCompletedList.add(a);
-                this.achievementCompleted = true;      
+                completeAchievement(achievement);                
                 it.remove();
+                achieved = true;
             }
-        } // end for   
-    }        
+        } // end for
+        
+        // Export if achieved.
+        if (achieved) exportAchievements();
+    }               
     
     /**
-     * Get the master list.
-     * @return The master list.
+     * Get the list of all achievements.
      * 
-     * Note: returns an unmodifiable list.
+     * @return The master list.
      */
-    public List<Achievement> getMasterList()
+    public List<Achievement> getAchievementList()
     {
-        return Collections.unmodifiableList(this.masterList);
+        List<Achievement> list = new ArrayList<Achievement>();        
+        list.addAll(completedList);
+        list.addAll(incompletedList);                
+        return list;
     }    
     
     public int getNumberOfAchievements()
     {
-        return this.masterList.size();
+        return this.completedList.size() + this.incompletedList.size();
     }
     
     public int getNumberOfCompletedAchievements()
     {
-        return this.masterList.size() - this.incompleteList.size();
-    }
+        return this.completedList.size();
+    }        
 
 }

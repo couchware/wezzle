@@ -486,9 +486,9 @@ public class TileRemover implements IResettable, ILevelListener
         }
         
         // When we are done.  Return the event.
-        if (itemsSeenList.isEmpty() == false)
+        if (!game.tutorialMan.isTutorialRunning() && !itemsSeenList.isEmpty())
         {
-            game.listenerMan.notifyCollision(new CollisionEvent(this, itemsSeenList));
+            game.listenerMan.notifyCollisionOccured(new CollisionEvent(this, itemsSeenList));
         }
     }
     

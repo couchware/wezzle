@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -181,40 +182,26 @@ public class SettingsManager
                 Object value = null;
                 
                 if (children.isEmpty() == true)                
-                {
-                    value = entry.getTextTrim();
+                {                                        
+                    value = entry.getText();
                 }                
                 else
-                {
-                    // If we have one child, then it's a single bobber.
-                    if (children.size() == 1)
+                {                       
+                    List<Object> list = new ArrayList<Object>();
+
+                    for (Object object : children)
                     {
-                        // Get the single bobber.
-                        Element element = (Element) children.get(0);   
-                        
-                        // Return it as the value.
-                        value = createInstanceFromXML(element);                        
-                    }
-                    // If we have multiple, then we'll be making a list.
-                    else
-                    {       
-                        List<Object> list = new ArrayList<Object>();
-                        
-                        for (Object object : children)
-                        {
-                            Element element = (Element) object;
-                            
-                            Object instance = createInstanceFromXML(element);
-                            if (instance != null) 
-                                list.add(instance);
-                            else
-                                LogManager.recordWarning("Unknown element.");
-                        }      
-                        
-                        // Return the list as the value.
-                        value = list;
-                        
-                    } // end if                                                                                                                
+                        Element element = (Element) object;
+
+                        Object instance = createInstanceFromXML(element);
+                        if (instance != null) 
+                            list.add(instance);
+                        else
+                            LogManager.recordWarning("Unknown element.");
+                    }      
+
+                    // Return the list as the value.
+                    value = list;                                                                                                                                                     
                 } // end if                           
                 
                 try 
@@ -310,8 +297,13 @@ public class SettingsManager
     
     public void saveSettings() throws IOException
     {
-        saveSettings(EnumSet.complementOf(Settings.getUserKeys()), Settings.getGameSettingsFilePath());
+        EnumSet<Key> specialKeys = EnumSet.noneOf(Key.class);
+        specialKeys.addAll(Settings.getUserKeys());
+        specialKeys.addAll(Settings.getAchievementKeys());
+                
+        saveSettings(EnumSet.complementOf(specialKeys), Settings.getGameSettingsFilePath());
         saveSettings(Settings.getUserKeys(), Settings.getUserSettingsFilePath());        
+        saveSettings(Settings.getAchievementKeys(), Settings.getAchievementsFilePath());        
     }
     
     private Object createInstanceFromXML(Element element)
@@ -361,6 +353,11 @@ public class SettingsManager
         }  
     }
     
+    public boolean containsKey(Key key)
+    {
+        return currentMap.containsKey(key);
+    }
+    
     public void setObject(Key key, Object value)
     {
         currentMap.put(key, value);
@@ -399,7 +396,7 @@ public class SettingsManager
     public void setBoolean(Key key, boolean value)
     {
         setString(key, String.valueOf(value));
-    }		                   	
+    }	        
     
     /**
      * Get the raw object.
@@ -495,9 +492,41 @@ public class SettingsManager
             : Boolean.valueOf(getString(key));
 	}      
     
+    /**
+     * Get a color property.
+     * 
+     * @param key
+     * @return
+     */
     public SuperColor getColor(Key key)
     {
-        return (SuperColor) getObject(key);
+        return (SuperColor) getList(key).get(0);
+    }
+    
+    /**
+     * Get a list property.
+     * 
+     * @param key
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List getList(Key key)
+    {
+        // Return an unmodifiable list.
+        Object object = getObject(key);
+        
+        List list = null;
+        
+        if (object instanceof List)
+        {
+            list = (List) object;
+        }
+        else
+        {
+            throw new UnsupportedOperationException("Cannot cast non-list to list.");
+        }
+        
+        return Collections.unmodifiableList(list);
     }
     
 }

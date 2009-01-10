@@ -778,7 +778,7 @@ public class Game extends Canvas implements IGameWindowCallback
         
         // Check the achievements.
         this.achievementMan.evaluate(this);
-        if (this.achievementMan.isNewAchievementCompleted() == true)
+        if (!this.tutorialMan.isTutorialRunning() && this.achievementMan.isNewAchievementCompleted())
         {
             // Report to log.
             this.achievementMan.reportNewlyCompleted();
@@ -1039,10 +1039,10 @@ public class Game extends Canvas implements IGameWindowCallback
     
     public void startGameOver()
     {
-        LogManager.recordMessage("Game over!", "Game#frameRendering");
+        LogManager.recordMessage("Game over!", "Game#startGameOver");
 
         // Add the new score.
-        highScoreMan.offerScore("TEST", scoreMan.getTotalScore(), 
+        highScoreMan.offerScore("Unused", scoreMan.getTotalScore(), 
                 levelMan.getLevel());
         listenerMan.notifyGameOver(new GameEvent(this, levelMan.getLevel()));
         //highScoreGroup.updateLabels();

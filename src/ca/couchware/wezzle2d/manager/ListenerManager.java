@@ -231,7 +231,7 @@ public class ListenerManager
         }
     }   
     
-    public void notifyCollision(CollisionEvent e)
+    public void notifyCollisionOccured(CollisionEvent e)
     {
          List<IListener> list = listenerMap.get(Listener.COLLISION);
          

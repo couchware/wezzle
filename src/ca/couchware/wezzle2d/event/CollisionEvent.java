@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.event;
 
 import ca.couchware.wezzle2d.tile.Tile;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class CollisionEvent extends EventObject
     public CollisionEvent(Object source, List<Tile> collisionList)    
     {
         super(source);
-        this.collisionList = collisionList;
+        this.collisionList = Collections.unmodifiableList(collisionList);
     }
     
     public List<Tile> getCollisionList()

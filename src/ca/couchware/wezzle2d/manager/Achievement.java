@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
+import ca.couchware.wezzle2d.util.SuperCalendar;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -94,10 +95,11 @@ public class Achievement implements IXMLizable
     }
        
     private final List<Rule> ruleList;
-    private final String name;
+    private final String title;
+    private final String formattedDescription;
     private final String description;
     private final Difficulty difficulty;    
-    private Calendar dateCompleted = null;
+    private SuperCalendar dateCompleted = null;
     //private static Calendar cal = Calendar.getInstance();
 
     /**
@@ -111,54 +113,67 @@ public class Achievement implements IXMLizable
      */
     private Achievement(List<Rule> ruleList, 
             String title,
+            String formattedDescription,
             String description, 
             Difficulty difficulty, 
-            Calendar completed)
+            SuperCalendar dateCompleted)
     {
-        this.ruleList    = ruleList;
-        this.name       = title;
-        this.description = description;
-        this.difficulty  = difficulty;
-        dateCompleted = completed;
+        this.ruleList             = ruleList;
+        this.title                = title;
+        this.formattedDescription = formattedDescription;
+        this.description          = description;
+        this.difficulty           = difficulty;
+        this.dateCompleted        = dateCompleted;
     }
         
     public static Achievement newInstance(List<Rule> ruleList, 
             String title,
             String description, 
             Difficulty difficulty, 
-            Calendar date)
+            SuperCalendar dateCompleted)
     {
-       return new Achievement(ruleList, title, description, difficulty, date);
+       return new Achievement(ruleList, 
+               title, 
+               description, 
+               description, 
+               difficulty, 
+               dateCompleted);
+    }
+    
+    public static Achievement newInstance(Achievement achievement, SuperCalendar dateCompleted)
+    {
+        return new Achievement(
+                achievement.ruleList, 
+                achievement.title,
+                achievement.formattedDescription,
+                achievement.description,
+                achievement.difficulty,
+                dateCompleted);
     }
     
     public static Achievement newInstanceFromXML(Element element)
     {
+        // Get the name.
         String name = element.getAttributeValue("name");
                 
-        Element e = element.getChild("description");
-        String description = e == null ? "" : e.getTextTrim().replaceAll("\n +", "\n");         
+        // Get the description.
+        Element descriptionElement = element.getChild("description");
+        String formattedDescription = descriptionElement == null ? "" : descriptionElement.getText();         
+        String description = descriptionElement.getTextTrim().replaceAll("\n +", "\n");
         
-        Difficulty difficulty = Difficulty.valueOf(element.getAttributeValue("difficulty"));
+        // Get the difficulty.
+        Difficulty difficulty = Difficulty.valueOf(element.getAttributeValue("difficulty"));        
+        
+        // Get the date.
         Element dateElement = element.getChild("date");
+        SuperCalendar dateCompleted = dateElement != null
+                ? SuperCalendar.newInstanceFromXML(dateElement)
+                : null;                
         
-        Calendar storedDate = null;
-        
-        if (dateElement != null)
-        {
-            storedDate = Calendar.getInstance();
-            
-            int month = Integer.parseInt(dateElement.getAttributeValue("month").toString());
-            int day = Integer.parseInt(dateElement.getAttributeValue("day").toString());
-            int year = Integer.parseInt(dateElement.getAttributeValue("year").toString());
-            
-            storedDate.set(year, month, day);
-        
-        }
-        
-        List<Rule> rules = new ArrayList<Rule>();
-       
-        Element rule = element.getChild("rule");
         // Get all the rules.
+        Element rule = element.getChild("rule");
+        List<Rule> rules = new ArrayList<Rule>();               
+        
         while (rule != null)
         {
             Rule.Type type = Rule.Type.valueOf(rule.getAttributeValue("type").toString());
@@ -194,7 +209,7 @@ public class Achievement implements IXMLizable
         }
         
         // Get the collisions.  
-        return newInstance(rules, name, description, difficulty, storedDate);
+        return new Achievement(rules, name, formattedDescription, description, difficulty, dateCompleted);
     }
     
     /**
@@ -216,13 +231,7 @@ public class Achievement implements IXMLizable
         }
        
         return true;       
-    }
-    
-    public void setCompleted()
-    {
-        assert this.dateCompleted == null;
-        this.dateCompleted = Calendar.getInstance();                
-    }
+    }   
     
     public boolean evaluateCollision(List<Tile> collisionList)
     {
@@ -246,7 +255,7 @@ public class Achievement implements IXMLizable
     
     public String getTitle()
     {
-        return name;
+        return title;
     }    
     
     /**
@@ -272,28 +281,23 @@ public class Achievement implements IXMLizable
     @Override
     public String toString()
     {
-        return "[" + this.name + " - " + this.difficulty + "] " + this.description;
+        return "[" + this.title + " - " + this.difficulty + "] " + this.description;
     }    
     
     public Element toXMLElement() 
     {
         Element element = new Element("achievement");
-        element.setAttribute("name",  this.name);        
+        element.setAttribute("name",  this.title);        
         element.setAttribute("difficulty", String.valueOf(this.difficulty));
        
         Element descriptionElement = new Element("description");
-        descriptionElement.setText(this.description);
+        descriptionElement.setText(this.formattedDescription);
         element.addContent(descriptionElement);
         
         // Date.
         if (dateCompleted != null)
-        {
-            
-            Element dateElement = new Element("date");
-            dateElement.setAttribute("day",   String.valueOf(dateCompleted.get(Calendar.DATE)));
-            dateElement.setAttribute("month", String.valueOf(dateCompleted.get(Calendar.MONTH)));
-            dateElement.setAttribute("year",  String.valueOf(dateCompleted.get(Calendar.YEAR)));
-            element.addContent(dateElement);
+        {                       
+            element.addContent(dateCompleted.toXMLElement());
         }
         
         for (int i = 0; i < this.ruleList.size(); i++)
@@ -325,6 +329,54 @@ public class Achievement implements IXMLizable
         }
         
         return element;
+    }
+    
+    /**
+     * Read this carefully, as the Acheivement equivalence is probably different
+     * to what you intuitively would think.
+     * 
+     * An Achievement is equal to another Achievement if they both have the same
+     * title and description.  That's it.  If you take two achievements, and
+     * one of them has a completed date, and the other one doesn't, they are
+     * still considered to be the same achievement.
+     * 
+     * Basically, Achievement equivalence ignores whether or not the achievement
+     * has been completed.
+     * 
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this)
+        {
+            return true;            
+        }
+        if (!(o instanceof Achievement))
+        {
+            return false;
+        }
+        
+        Achievement achievement = (Achievement) o;
+        return this.title.equals(achievement.title)
+                && this.description.equals(achievement.description);               
+    }
+    
+    /**
+     * Must override hashcode if you override <pre>equals()</pre>.
+     * 
+     * The method used here is taking from Effective Java (2nd Ed.) pp. 46-48.
+     * 
+     * @return
+     */
+    @Override
+    public int hashCode()
+    {
+        int result = 17;
+        result = 31 * result + title.hashCode();
+        result = 31 * result + description.hashCode();        
+        return result;
     }
     
 }
