@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import java.awt.Rectangle;
 import java.util.Arrays;
@@ -31,17 +30,18 @@ public class PieceGrid extends AbstractEntity
 	 */
 	private Boolean[][] structure;
 	
+    /** The width of one of the cells in the grid. */
+    final private int cellWidth;
+    
+    /** The height of one of the cells in the grid. */
+    final private int cellHeight;
+    
 	/**
 	 * A 2D array of sprites.  Each cell corresponds to a cell in the
 	 * structure.  Each cell is only drawn if the corresponding structure
 	 * cell is true.
 	 */
-	private ISprite[][] sprites;      
-    
-    /**
-     * The board manager reference.
-     */
-    final private BoardManager boardMan;	    
+	private ISprite[][] spriteArray;    
     
 	/**
 	 * The constructor.  Initializes the structure and sprites arrays.
@@ -50,14 +50,11 @@ public class PieceGrid extends AbstractEntity
 	 * @param x
 	 * @param y
 	 */
-	public PieceGrid(BoardManager boardMan, int x, int y)
+	public PieceGrid(int x, int y)
 	{
         // Grid is initially visible.
         this.visible = true;
-        
-        // Set board manager reference.
-        this.boardMan = boardMan;
-        
+       
         // Set x and y.
         this.x = x;
         this.y = y;
@@ -72,15 +69,18 @@ public class PieceGrid extends AbstractEntity
 			Arrays.fill(structure[i], new Boolean(false));
 		
 		// Load in all the sprites.
-		sprites = new ISprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
+		spriteArray = new ISprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 		
-		for (int i = 0; i < sprites.length; i++)
-			for (int j = 0; j < sprites[0].length; j++)
-				sprites[i][j] = ResourceFactory.get().getSprite(PATH);
+		for (int i = 0; i < spriteArray.length; i++)
+			for (int j = 0; j < spriteArray[0].length; j++)
+				spriteArray[i][j] = ResourceFactory.get().getSprite(PATH);
+        
+        this.cellWidth  = spriteArray[0][0].getWidth();
+        this.cellHeight = spriteArray[0][0].getHeight();
         
         // Set the width and height.
-        width = boardMan.getCellWidth() * Piece.MAX_COLUMNS;
-        height = boardMan.getCellHeight() * Piece.MAX_ROWS;                              
+        width =  cellWidth * Piece.MAX_COLUMNS;
+        height =  cellHeight * Piece.MAX_ROWS;                              
 	}	
 	
     /**
@@ -117,8 +117,8 @@ public class PieceGrid extends AbstractEntity
             {
 				if (structure[i][j] == true)
                 {
-                    sprites[i][j].draw(x + (i - 1) * boardMan.getCellWidth(),
-                            y + (j - 1) * boardMan.getCellHeight()).end();
+                    spriteArray[i][j].draw(x + (i - 1) * cellWidth,
+                            y + (j - 1) * cellHeight).end();
                 } // end if
             } // end for
         } // end for	
@@ -137,7 +137,7 @@ public class PieceGrid extends AbstractEntity
             if (x_ != x || y_ != y)
                 rect.add(new Rectangle(x, y, width + 1, height + 1));
 
-            rect.translate(-boardMan.getCellWidth(), -boardMan.getCellHeight());
+            rect.translate(-cellWidth, -cellHeight);
             
             drawRect = rect;
         }

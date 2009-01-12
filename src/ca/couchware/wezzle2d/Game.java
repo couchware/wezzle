@@ -407,8 +407,9 @@ public class Game extends Canvas implements IGameWindowCallback
             pieceMan = PieceManager.newInstance(refactorer, animationMan, boardMan, layerMan);        
             pieceMan.hidePieceGrid();            
             
-            // Listen for the mouse.
-            window.addMouseListener(pieceMan);
+            // Listen for the key and mouse.
+            window.addKeyListener(pieceMan);
+            window.addMouseListener(pieceMan);            
         }
         
         if (set.contains(Manager.GROUP))
@@ -818,11 +819,11 @@ public class Game extends Canvas implements IGameWindowCallback
             {
                 @Override
                 public void animationStarted()
-                { layerMan.add(notif, Layer.EFFECT); }
+                { layerMan.add(notif, Layer.UI); }
                 
                 @Override
                 public void animationFinished()
-                { layerMan.remove(notif, Layer.EFFECT); }
+                { layerMan.remove(notif, Layer.UI); }
             });
                        
             this.notificationAnimation = meta;

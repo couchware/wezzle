@@ -2019,16 +2019,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 a2 = new MoveAnimation.Builder(t).wait(moveWait)
                         .duration(moveDuration)
                         .theta(180 * (row % 2))
-                        .speed(moveSpeed).end();
-                
-                // Make the animation remove itself.                
-//                a1.setFinishRunnable(new Runnable()
-//                {
-//                   public void run()
-//                   {
-//                       layerMan.remove(t, Layer.TILE);
-//                   }
-//                });
+                        .speed(moveSpeed).end();                             
                 
                 a1.addAnimationListener(new AnimationAdapter()
                 {                   

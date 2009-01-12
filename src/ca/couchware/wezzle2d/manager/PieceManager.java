@@ -7,13 +7,13 @@ import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
-import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
-import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.IMouseListener;
+import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -45,7 +45,7 @@ import java.util.Set;
  *
  */
 
-public class PieceManager implements IResettable, IMouseListener
+public class PieceManager implements IResettable, IKeyListener, IMouseListener
 {	
     private static int SLOW_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_SLOW);
     private static int FAST_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_FAST);
@@ -115,7 +115,7 @@ public class PieceManager implements IResettable, IMouseListener
 		this.boardMan     = boardMan;                
         
         // Create new piece entity at the origin of the board.
-		pieceGrid = new PieceGrid(boardMan, 
+		pieceGrid = new PieceGrid( 
                 boardMan.getX() + boardMan.getCellWidth(),
                 boardMan.getY() + boardMan.getCellHeight());        
         
@@ -561,19 +561,7 @@ public class PieceManager implements IResettable, IMouseListener
                 .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
                 .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
                 .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
-                .end();
-                    
-//        a2.setStartRunnable(new Runnable()
-//        {
-//            public void run()
-//            { game.layerMan.add(label, Layer.EFFECT); }
-//        });
-//
-//        a2.setFinishRunnable(new Runnable()
-//        {
-//            public void run()
-//            { game.layerMan.remove(label, Layer.EFFECT); }
-//        });       
+                .end();                      
         
         a2.addAnimationListener(new AnimationAdapter()
         {
@@ -817,6 +805,31 @@ public class PieceManager implements IResettable, IMouseListener
     public void mouseWheel(MouseEvent e)
     {
         //LogManager.recordMessage("Wheeled by: " + e.getDeltaWheel());
-    }   
+    }
+
+    public void keyPressed(KeyEvent event)
+    {
+        switch (event.getModifer())
+        {
+            case LEFT_CTRL:
+            case LEFT_ALT:
+            case RIGHT_ALT:
+            case RIGHT_CTRL:
+                mouseButtonSet.add(MouseButton.RIGHT);
+                return;                                                       
+        }
+        
+        switch (event.getChar())
+        {
+            case ' ':
+                mouseButtonSet.add(MouseButton.LEFT);
+                return;
+        }
+    }
+
+    public void keyReleased(KeyEvent event)
+    {
+        // Intentionally left blank.
+    }
     
 }

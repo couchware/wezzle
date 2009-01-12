@@ -29,7 +29,7 @@ public class LayerManager implements IDisposable, IDrawer
         BACKGROUND,        
         TILE,
         PIECE_GRID,
-        EFFECT,
+        EFFECT,        
         UI
     }        
         

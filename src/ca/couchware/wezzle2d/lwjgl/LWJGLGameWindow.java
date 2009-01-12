@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.IGameWindowCallback;
 import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.KeyEvent;
+import ca.couchware.wezzle2d.event.KeyEvent.Modifier;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MouseEvent.Button;
 import ca.couchware.wezzle2d.manager.LogManager;
@@ -847,16 +848,71 @@ public class LWJGLGameWindow implements IGameWindow
 
         while (org.lwjgl.input.Keyboard.next())
         {
-            char ch = Keyboard.getEventCharacter();
-            Ascii a = Ascii.valueOf(ch);
-                                    
-            for (IKeyListener l : list)
+            boolean state = Keyboard.getEventKeyState();
+            int i = Keyboard.getEventKey();
+            
+            Modifier modifier;           
+            switch (i)
             {
+                case Keyboard.KEY_LSHIFT:
+                    modifier = KeyEvent.Modifier.LEFT_SHIFT;
+                    break;                                    
+                    
+                case Keyboard.KEY_LCONTROL:
+                    modifier = KeyEvent.Modifier.LEFT_CTRL;
+                    break;                                    
+                    
+                case Keyboard.KEY_LMETA:
+                    modifier = KeyEvent.Modifier.LEFT_META;
+                    break;
+                    
+                case Keyboard.KEY_LMENU:
+                    modifier = KeyEvent.Modifier.LEFT_ALT;
+                    break;
+                    
+                case Keyboard.KEY_RMENU:
+                    modifier = KeyEvent.Modifier.RIGHT_ALT;
+                    break;
+                
+                case Keyboard.KEY_RMETA:
+                    modifier = KeyEvent.Modifier.RIGHT_META;
+                    break;
+                    
+                case Keyboard.KEY_APPS:
+                    modifier = KeyEvent.Modifier.APPLICATION;
+                    break;
+                
+                case Keyboard.KEY_RCONTROL:
+                    modifier = KeyEvent.Modifier.RIGHT_CTRL;
+                    break;
+                    
+                case Keyboard.KEY_RSHIFT:
+                    modifier = KeyEvent.Modifier.RIGHT_SHIFT;
+                    break;
+                    
+                default:
+                    modifier = KeyEvent.Modifier.NONE;
+            }
+            
+            
+//            LogManager.recordMessage(Keyboard.getKeyName(i) + " was pressed.");
+//            LogManager.recordMessage("State is " + state + ".");
+            
+            char ch = Keyboard.getEventCharacter();                                                  
+            
+            KeyEvent event = new KeyEvent(this, ch, modifier);
+            
+            for (IKeyListener listener : list)
+            {                                                        
                 // If it equals NUL, then it's actually a key up.
-                if (a != Ascii.NUL)               
+                if (state)               
                 {                    
-                    l.keyPressed(new KeyEvent(this, ch));    
+                    listener.keyPressed(event);    
                 }                
+                else
+                {
+                    listener.keyReleased(event);
+                }
             }
             
             this.keyPressSet.add(ch);

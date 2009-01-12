@@ -14,12 +14,10 @@ import ca.couchware.wezzle2d.event.ILineListener;
 import ca.couchware.wezzle2d.event.IListener;
 import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
-import ca.couchware.wezzle2d.event.IWezzleListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
-import ca.couchware.wezzle2d.event.WezzleEvent;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -56,8 +54,7 @@ public class ListenerManager
         MOVE,
         LINE,
         COLLISION,
-        GAME,
-        WEZZLE
+        GAME
     }
     
     /** The single listener manager. */
@@ -241,16 +238,5 @@ public class ListenerManager
         }
          
     }
-    
-    public void notifyWezzleTimerChanged(WezzleEvent e)
-    {
-         List<IListener> list = listenerMap.get(Listener.WEZZLE);
-         
-        for (IListener listener : list)
-        {
-            ((IWezzleListener) listener).wezzleTimerChanged(e);
-        }
-         
-    }   
-
+       
 }

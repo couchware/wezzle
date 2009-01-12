@@ -8,12 +8,11 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
-import ca.couchware.wezzle2d.event.IWezzleListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
-import ca.couchware.wezzle2d.event.WezzleEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.graphics.PieceGrid;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
@@ -29,6 +28,8 @@ import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.manager.TutorialManager;
 import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.menu.Loader;
+import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.Box.Border;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
@@ -46,7 +47,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
+public class GameUI implements ILevelListener, IScoreListener
 {       
     
     /** The single instance of this class. */
@@ -82,8 +83,8 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     /** The timer text. */
     private ITextLabel timerLabel;
     
-    /** The wezzle timer text. */
-    private ITextLabel wezzleTimerLabel;  
+    /** The piece preview. */
+    private Box piecePreviewBox;
     
     /** The score header graphic. */
     private GraphicEntity scoreHeaderLabel;
@@ -291,46 +292,29 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     private void initializeComponents(LayerManager layerMan)
     {
         // Create the background.
-		background = new GraphicEntity
+		this.background = new GraphicEntity
                 .Builder(0, 0, Settings.getSpriteResourcesPath() + "/Background2.png")
                 .end();
         
-        layerMan.add(background, Layer.BACKGROUND);   
-        layerMan.toBack(background, Layer.BACKGROUND);     
+        layerMan.add(this.background, Layer.BACKGROUND);   
+        layerMan.toBack(this.background, Layer.BACKGROUND);     
         
-        // Use the wezzle icon to indicate some shit.        
-//        EnumSet<Alignment> alignment = EnumSet.of(Alignment.MIDDLE, Alignment.CENTER);
-//        
-//        wezzleList.add(new GraphicEntity                
-//                .Builder(298, 110, Settings.getSpriteResourcesPath() + "/ItemWezzle2.png")
-//                .alignment(alignment)                
-//                .end());
-//        
-//        wezzleList.add(new GraphicEntity
-//                .Builder(366, 110, Settings.getSpriteResourcesPath() + "/ItemWezzle2.png")
-//                .alignment(alignment)   
-//                .end());
-//        
-//        wezzleList.add(new GraphicEntity
-//                .Builder(434, 110, Settings.getSpriteResourcesPath() + "/ItemWezzle2.png")
-//                .alignment(alignment)   
-//                .end());
-//        
-//        wezzleList.add(new GraphicEntity
-//                .Builder(502, 110, Settings.getSpriteResourcesPath() + "/ItemWezzle2.png")
-//                .alignment(alignment)  
-//                .opacity(50)
-//                .end());
-//         
-//        for (IEntity e : wezzleList)
-//            layerMan.add(e, Layer.BACKGROUND);
+        // Create the piece preview window.
+        this.piecePreviewBox = new Box.Builder(670, 120)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .opacity(90)
+                .border(Border.MEDIUM)
+                .width(90).height(90).end();
+        layerMan.add(this.piecePreviewBox, Layer.UI);
+        
+        //PieceGrid grid = new PieceGrid();
         
         // Create the progress bar.
-        progressBar = new ProgressBar.Builder(393, 501)
+        this.progressBar = new ProgressBar.Builder(393, 501)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.progressMax(scoreMan.getTargetLevelScore())
                 .end();
-        layerMan.add(progressBar, Layer.UI);
+        layerMan.add(this.progressBar, Layer.UI);
     }
     
     /**
@@ -534,11 +518,6 @@ public class GameUI implements ILevelListener, IScoreListener, IWezzleListener
     {
         // Update the progress bar.
         progressBar.setProgressMax(event.getScore());
-    }
-
-    public void wezzleTimerChanged(WezzleEvent event)
-    {
-        //this.wezzleTimerLabel.setText(String.valueOf(event.getTimerValue()));   
-    }
+    }   
     
 }
