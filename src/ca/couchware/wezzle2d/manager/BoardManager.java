@@ -78,7 +78,13 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     {
         ROW_FADE,
         SLIDE_FADE    
-    }
+    }        
+    
+    /** The width of a grid cell. */
+	final private int cellWidth;
+	
+	/** The height of a grid cell. */
+	final private int cellHeight;   
     
     /**
      * The path to the board background graphic.
@@ -143,17 +149,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	/**
 	 * The height of the board.
 	 */
-	final private int height;
-    
-    /**
-	 * The width of a grid cell.
-	 */
-	final private int cellWidth;
-	
-	/**
-	 * The height of a grid cell.
-	 */
-	final private int cellHeight;      
+	final private int height;           
     
     /**
      * The shape of the board.
@@ -260,7 +256,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         
 		// Set the cell width and height. Hard-coded to 32x32 for now.
 		this.cellWidth  = 32;
-		this.cellHeight = 32;
+		this.cellHeight = 32;       
 		
 		// Set the x and y coordinates.
 		this.x = x;

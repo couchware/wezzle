@@ -28,6 +28,7 @@ import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.manager.TutorialManager;
 import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.menu.Loader;
+import ca.couchware.wezzle2d.piece.PieceLine;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Box.Border;
 import ca.couchware.wezzle2d.ui.IButton;
@@ -307,12 +308,21 @@ public class GameUI implements ILevelListener, IScoreListener
                 .width(90).height(90).end();
         layerMan.add(this.piecePreviewBox, Layer.UI);
         
-        //PieceGrid grid = new PieceGrid();
+        PieceGrid grid = new PieceGrid.Builder(
+                    this.piecePreviewBox.getX() - 11,
+                    this.piecePreviewBox.getY() - 11,
+                    PieceGrid.RenderMode.VECTOR
+                )
+                .cellWidth(22)
+                .cellHeight(22)
+                .end();
+        
+        grid.loadStructure(new PieceLine().getStructure());
+        layerMan.add(grid, Layer.UI);
         
         // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(393, 501)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                //.progressMax(scoreMan.getTargetLevelScore())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .end();
         layerMan.add(this.progressBar, Layer.UI);
     }
@@ -379,16 +389,16 @@ public class GameUI implements ILevelListener, IScoreListener
     {
         // Make shortcuts to the managers.
         GroupManager groupMan       = game.groupMan;
-        LayerManager layerMan       = game.layerMan;
+        //LayerManager layerMan       = game.layerMan;
         ScoreManager scoreMan       = game.scoreMan;
         TimerManager timerMan       = game.timerMan;
         TutorialManager tutorialMan = game.tutorialMan;
         LevelManager levelMan       = game.levelMan;
         
         // If the high score button was just clicked.
-        if (highScoreButton.clicked() == true)
+        if (highScoreButton.clicked())
         {
-            if (highScoreButton.isActivated() == true)            
+            if (highScoreButton.isActivated())            
             {                           
                 groupMan.showGroup(highScoreButton, highScoreGroup, 
                         GroupManager.Class.HIGH_SCORE,
@@ -403,9 +413,9 @@ public class GameUI implements ILevelListener, IScoreListener
         } // end if
         
         // If the pause button was just clicked.
-        if (pauseButton.clicked() == true)
+        if (pauseButton.clicked())
         {            
-            if (pauseButton.isActivated() == true)            
+            if (pauseButton.isActivated())            
             {                
                 groupMan.showGroup(pauseButton, pauseGroup, 
                         GroupManager.Class.PAUSE,
@@ -420,9 +430,9 @@ public class GameUI implements ILevelListener, IScoreListener
         } // end if
         
         // If the options button was just clicked.
-        if (optionsButton.clicked() == true)
+        if (optionsButton.clicked())
         {                           
-            if (optionsButton.isActivated() == true)  
+            if (optionsButton.isActivated())  
             {                
                 groupMan.showGroup(optionsButton, optionsGroup,
                         GroupManager.Class.OPTIONS,
@@ -475,7 +485,7 @@ public class GameUI implements ILevelListener, IScoreListener
             {
                 scoreLabel.setText("");                
             }
-        }       
+        } // end if      
     }
 
     public void levelChanged(LevelEvent event)

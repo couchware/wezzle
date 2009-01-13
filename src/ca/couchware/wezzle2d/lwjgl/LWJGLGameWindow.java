@@ -452,23 +452,35 @@ public class LWJGLGameWindow implements IGameWindow
     
     public void drawRect(int x, int y, int width, int height)
     {
-        drawRect(x, y, width, height, GL11.GL_LINE_LOOP);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        bindColor();
+                       
+        GL11.glBegin(GL11.GL_LINE_LOOP);
+            GL11.glVertex2f(x, 		   y);
+            GL11.glVertex2f(x + width, y);
+            GL11.glVertex2f(x + width, y + height);
+            GL11.glVertex2f(x, 		   y + height);
+        GL11.glEnd();
+        
+        // This is to fix a bug that exists on some graphics cards where
+        // the top-right corner of a rectangle is not rendered.
+        GL11.glBegin(GL11.GL_POINTS);
+            GL11.glVertex2i(x + width, y);
+        GL11.glEnd();
+
+        GL11.glColor3f(1.0f, 1.0f, 1.0f);
+
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
     public void fillRect(int x, int y, int width, int height)
     {
-        drawRect(x, y, width, height, GL11.GL_QUADS);
-    }
-    
-    private void drawRect(
-            int x, int y, int width, int height,
-            int type) 
-    {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         bindColor();
-
-        GL11.glBegin(type);
+                
+        GL11.glBegin(GL11.GL_QUADS);
             GL11.glVertex2f(x, 		   y);
             GL11.glVertex2f(x + width, y);
             GL11.glVertex2f(x + width, y + height);
@@ -478,7 +490,27 @@ public class LWJGLGameWindow implements IGameWindow
         GL11.glColor3f(1.0f, 1.0f, 1.0f);
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-	}     
+    }
+    
+//    private void drawRect(
+//            int x, int y, int width, int height,
+//            int type) 
+//    {
+//        GL11.glDisable(GL11.GL_TEXTURE_2D);
+//
+//        bindColor();
+//                
+//        GL11.glBegin(type);
+//            GL11.glVertex2f(x, 		   y);
+//            GL11.glVertex2f(x + width, y);
+//            GL11.glVertex2f(x + width, y + height);
+//            GL11.glVertex2f(x, 		   y + height);
+//        GL11.glEnd();
+//
+//        GL11.glColor3f(1.0f, 1.0f, 1.0f);
+//
+//        GL11.glEnable(GL11.GL_TEXTURE_2D);
+//	}     
 
     public void setClip(Shape shape)
     {                

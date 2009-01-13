@@ -872,7 +872,7 @@ public class Game extends Canvas implements IGameWindowCallback
 
                 soundMan.play(Sound.LEVEL_UP);
 
-                ImmutablePosition pos = pieceMan.getPieceGridPosition();
+                ImmutablePosition pos = pieceMan.getCursorPosition();
                 int x = pos.getX() + boardMan.getCellWidth()  / 2;
                 int y = pos.getY() + boardMan.getCellHeight() / 2;
                                                 

@@ -1,13 +1,17 @@
 package ca.couchware.wezzle2d.piece;
 
-import ca.couchware.wezzle2d.graphics.*;
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.IGameWindow;
+import ca.couchware.wezzle2d.ResourceFactory;
+import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import ca.couchware.wezzle2d.piece.Piece;
 
 /**
  * The piece grid is a 3x3 matrix that has each cell selectively
@@ -18,11 +22,31 @@ import ca.couchware.wezzle2d.piece.Piece;
  */
 
 public class PieceGrid extends AbstractEntity
-{
-    /**
-     * Path to the piece selector sprite.
-     */
+{       
+    /** Path to the piece selector sprite. */
     final private String PATH = Settings.getSpriteResourcesPath() + "/Selector.png";        
+    
+    /** The render options. */
+    public enum RenderMode
+    {
+        /** Use the selector sprite to draw the grid. */
+        SPRITE,
+        
+        /** Draw the grid using the drawing methods of the underlying renderer. */
+        VECTOR
+    
+    
+    
+    }
+    
+    /** The current render mode */
+    private RenderMode renderMode;
+    
+    /** The game window. */
+    private IGameWindow window;
+    
+    /** The color of the piece grid, if we're using vector rendering. */
+    private Color color;
     
 	/**
 	 * The current structure of the piece, representing by a 2D 
@@ -51,38 +75,86 @@ public class PieceGrid extends AbstractEntity
 	 * @param x
 	 * @param y
 	 */
-	public PieceGrid(int x, int y)
+	private PieceGrid(Builder builder)
 	{
+        // Shortcut to the resource factory.
+        ResourceFactory factory = ResourceFactory.get();
+        
+        // Grab the game window.
+        this.window = factory.getGameWindow();
+        
         // Grid is initially visible.
         this.visible = true;
        
         // Set x and y.
-        this.x = x;
-        this.y = y;
+        this.x  = builder.x;
+        this.y  = builder.y;        
+        this.x_ = this.x;
+        this.y_ = this.y;
         
-        this.x_ = x;
-        this.y_ = y;
+        // Set the color.
+        this.color = builder.color;
+        
+        // Set the render mode.
+        this.renderMode = builder.renderMode;
                 
 		// Create an blank out the structure.
 		structure = new Boolean[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 		
 		for (int i = 0; i < structure.length; i++)
-			Arrays.fill(structure[i], new Boolean(false));
+			Arrays.fill(structure[i], false);
 		
 		// Load in all the sprites.
-		spriteArray = new ISprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
+        if (renderMode == RenderMode.SPRITE)
+        {
+            spriteArray = new ISprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 		
-		for (int i = 0; i < spriteArray.length; i++)
-			for (int j = 0; j < spriteArray[0].length; j++)
-				spriteArray[i][j] = ResourceFactory.get().getSprite(PATH);
+            for (int i = 0; i < spriteArray.length; i++)
+                for (int j = 0; j < spriteArray[0].length; j++)
+                    spriteArray[i][j] = factory.getSprite(PATH);
+        }		
         
-        this.cellWidth  = spriteArray[0][0].getWidth();
-        this.cellHeight = spriteArray[0][0].getHeight();
+        this.cellWidth  = builder.cellWidth;
+        this.cellHeight = builder.cellHeight;
         
         // Set the width and height.
-        width =  cellWidth * Piece.MAX_COLUMNS;
-        height =  cellHeight * Piece.MAX_ROWS;                              
+        this.width  = cellWidth  * Piece.MAX_COLUMNS;
+        this.height = cellHeight * Piece.MAX_ROWS;                              
 	}	
+    
+    public static class Builder implements IBuilder<PieceGrid>
+    {
+
+        final int x;
+        final int y;
+        final RenderMode renderMode;
+        
+        int cellWidth  = 32;
+        int cellHeight = 32;       
+        Color color = Color.WHITE;
+        
+        public Builder(int x, int y, RenderMode renderMode)
+        {
+            this.x = x;
+            this.y = y;
+            this.renderMode = renderMode;
+        }
+        
+        public Builder cellWidth(int val)
+        { cellWidth = val; return this; }
+        
+        public Builder cellHeight(int val)
+        { cellHeight = val; return this; }
+        
+        public Builder color(Color val)
+        { color = val; return this; }
+        
+        public PieceGrid end()
+        {
+            return new PieceGrid(this);
+        }
+        
+    }
 	
     /**
      * Load in a piece structure.
@@ -111,22 +183,70 @@ public class PieceGrid extends AbstractEntity
         if (isVisible() == false)
             return false;
         
-		// Cycle through, drawing only the sprites that should be shown.
+		switch (renderMode)
+        {
+            case SPRITE:
+                renderSprite();
+                break;
+                
+            case VECTOR:
+                renderVector();
+                break;
+                
+            default: throw new AssertionError();
+        }
+        
+        return true;
+	}   
+    
+    /**
+     * Render the piece grid using a sprite.
+     */
+    private void renderSprite()
+    {
+        // Cycle through, drawing only the sprites that should be shown.
         for (int i = 0; i < structure.length; i++)
         {
             for (int j = 0; j < structure[0].length; j++)
             {
 				if (structure[i][j] == true)
                 {
-                    spriteArray[i][j].draw(x + (i - 1) * cellWidth,
-                            y + (j - 1) * cellHeight).end();
+                    spriteArray[i][j].draw(x + (i) * cellWidth,
+                            y + (j) * cellHeight).end();
+                } // end if
+            } // end for
+        } // end for	
+    }
+
+    /**
+     * Render the piece grid using vectors.
+     */
+    private void renderVector()
+    {
+        // Save the old color and set the new one.
+        Color oldColor = window.getColor();
+        window.setColor(this.color);
+        
+        // Cycle through, drawing only the sprites that should be shown.
+        for (int i = 0; i < structure.length; i++)
+        {
+            for (int j = 0; j < structure[0].length; j++)
+            {
+				if (structure[i][j] == true)
+                {
+                    window.drawRect(
+                            x + (i) * cellWidth, 
+                            y + (j) * cellHeight + 1, 
+                            cellWidth  - 1, 
+                            cellHeight - 1);
                 } // end if
             } // end for
         } // end for	
         
-        return true;
-	}   
-
+        // Restore the old color.
+        window.setColor(oldColor);
+    }
+    
     @Override
     public Rectangle getDrawRect()
     {

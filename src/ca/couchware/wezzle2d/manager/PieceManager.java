@@ -48,7 +48,7 @@ import java.util.Set;
 public class PieceManager implements IResettable, IKeyListener, IMouseListener
 {	
     private static int SLOW_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_SLOW);
-    private static int FAST_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_FAST);
+    private static int FAST_SPEED = SettingsManager.get().getInt(Key.ANIMATION_PIECE_PULSE_SPEED_FAST);        
     
     // -------------------------------------------------------------------------
     // Private Members
@@ -83,6 +83,9 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
 	/** The piece grid. */
 	private PieceGrid pieceGrid;       
+    
+    /** The position of the mouse cursor. */
+    private ImmutablePosition cursorPosition;        
 	
     /**
      * The restriction board.  All the entries that are true are clickable,
@@ -115,14 +118,21 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 		this.boardMan     = boardMan;                
         
         // Create new piece entity at the origin of the board.
-		pieceGrid = new PieceGrid( 
-                boardMan.getX() + boardMan.getCellWidth(),
-                boardMan.getY() + boardMan.getCellHeight());        
+		pieceGrid = new PieceGrid.Builder(
+                        boardMan.getX() + boardMan.getCellWidth(),                
+                        boardMan.getY() + boardMan.getCellHeight(),
+                        PieceGrid.RenderMode.SPRITE)
+                    .end();                
         
         // Load a random piece.
         this.loadPiece();
-        this.pieceGrid.setPosition(limitPosition(window.getMouseImmutablePosition()));
-        layerMan.add(pieceGrid, Layer.PIECE_GRID);
+        
+        // Get the cursor position.
+        this.cursorPosition = limitPosition(window.getMouseImmutablePosition());
+        
+        // Move the piece to the cursor position.
+        this.movePieceGridTo(this.cursorPosition);
+        layerMan.add(this.pieceGrid, Layer.PIECE_GRID);
         
         // Create the restriction board and fill it with trues.
         restrictionBoard = new boolean[boardMan.getCells()];
@@ -193,7 +203,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             piece.rotate();                    
         
         // Adjust the piece grid.
-        pieceGrid.setPosition(limitPosition(pieceGrid.getPosition()));
+        this.cursorPosition = limitPosition(pieceGrid.getPosition());
+        this.movePieceGridTo(this.cursorPosition);
         pieceGrid.setDirty(true);
 	}
     
@@ -221,7 +232,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         }
         
 		int column = convertXToColumn(x);
-		int row = convertYToRow(y);
+		int row    = convertYToRow(y);
 		
 		if (column >= boardMan.getColumns())
 			column = boardMan.getColumns() - 1;
@@ -305,9 +316,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         refactored = true;
         
     }      
-    
-  
-    
+          
     private int convertXToColumn(final int x)
     {
         return (x - boardMan.getX()) / boardMan.getCellWidth();
@@ -341,7 +350,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public void startAnimation(TimerManager timerMan)
     {
-        startAnimationAt(pieceGrid.getPosition(), 
+        startAnimationAt(this.cursorPosition, 
                 getPulseSpeed(timerMan.getInitialTime(), timerMan.getTime()));
     }
     
@@ -369,7 +378,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public void stopAnimation()
     {
-        stopAnimationAt(pieceGrid.getPosition());
+        stopAnimationAt(this.cursorPosition);
     }
     
     private void stopAnimationAt(final ImmutablePosition p)
@@ -400,12 +409,9 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     //--------------------------------------------------------------------------
     
     public void updateLogic(final Game game)
-    {                
-        final SettingsManager settingsMan = game.settingsMan;
-        final ItemManager     itemMan     = game.itemMan;
-        
+    {                        
         // If the board is refactoring, do not logicify.
-        if (game.isBusy() == true) return;                 
+        if (game.isBusy()) return;                 
 
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.
@@ -424,12 +430,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 // Rotate the piece.            
                 stopAnimation();
                 
-                piece.rotate();
-                pieceGrid.setPosition(limitPosition(pieceGrid.getPosition()));
-                pieceGrid.setDirty(true);                                
+                this.piece.rotate();
+                this.cursorPosition = limitPosition(pieceGrid.getPosition());
+                this.movePieceGridTo(this.cursorPosition);
+                this.pieceGrid.setDirty(true);                                
                 
                 if (pieceGrid.isVisible() == true)
-                    startAnimationAt(pieceGrid.getPosition(), SLOW_SPEED);
+                    startAnimationAt(this.cursorPosition, SLOW_SPEED);
 
                 // Reset released buttons.
                 mouseButtonSet = EnumSet.noneOf(MouseButton.class);
@@ -444,26 +451,29 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                         game.timerMan.getTime());                             
                 
                 // If the position changed, or the board was refactored.
-                if (pos.getX() != pieceGrid.getX()
-                        || pos.getY() != pieceGrid.getY()
+                if (pos.getX() != this.cursorPosition.getX()
+                        || pos.getY() != this.cursorPosition.getY()
                         || refactored == true)                    
                 {
                     // Clear refactored flag.
                     refactored = false;
 
                     // Stop the old animations.
-                    stopAnimationAt(pieceGrid.getPosition());
+                    stopAnimationAt(this.cursorPosition);
 
                     // Update piece grid position.
-                    pieceGrid.setPosition(pos);             
+                    this.cursorPosition = pos;
+                    this.movePieceGridTo(this.cursorPosition);
                                         
                     // Start new animation.   
                     if (pieceGrid.isVisible() == true)
+                    {
                         startAnimationAt(pos, speed);
+                    }
                 } 
                 else
                 {                                        
-                    adjustAnimationAt(pieceGrid.getPosition(), speed);
+                    adjustAnimationAt(this.cursorPosition, speed);
                 }
             } // end if
         } // end if
@@ -490,7 +500,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         // Get the indices of the committed pieces.
         Set<Integer> indexSet = new LinkedHashSet<Integer>();
         Set<Integer> blankSet = new LinkedHashSet<Integer>();
-        getSelectedIndexSet(this.pieceGrid.getPosition(), indexSet, blankSet);                                
+        getSelectedIndexSet(this.cursorPosition, indexSet, blankSet);                                
         
         // See if any of the indices are restricted.
         for (Integer index : indexSet)
@@ -694,9 +704,17 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         this.pieceGrid.setVisible(false);
     }
     
-    public ImmutablePosition getPieceGridPosition()
+    private void movePieceGridTo(ImmutablePosition position)
     {
-        return this.pieceGrid.getPosition();
+        this.pieceGrid.setPosition(position.minus(
+                this.boardMan.getCellWidth(), 
+                this.boardMan.getCellHeight())
+            );
+    }
+    
+    public ImmutablePosition getCursorPosition()
+    {
+        return this.cursorPosition;
     }
 
     /**

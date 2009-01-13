@@ -57,19 +57,19 @@
       <description>Get over 150000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="150000" />
     </achievement>
-    <achievement name="I Got A Level" difficulty="BRONZE">
+    <achievement name="Get A Level" difficulty="BRONZE">
       <description>Starting from level 1, get to level 2 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="2" />
     </achievement>
-    <achievement name="I Got More Levels" difficulty="SILVER">
+    <achievement name="Get 5 Levels" difficulty="SILVER">
       <description>Starting from level 1, get to level 5 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="5" />
     </achievement>
-    <achievement name="I Got Even More Levels" difficulty="GOLD">
+    <achievement name="Get 10 Levels" difficulty="GOLD">
       <description>Starting from level 1, get to level 10 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
