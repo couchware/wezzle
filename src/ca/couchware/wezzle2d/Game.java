@@ -381,8 +381,9 @@ public class Game extends Canvas implements IGameWindowCallback
         {
             // Create the move manager.
             statMan = StatManager.newInstance();
-            listenerMan.registerListener(Listener.MOVE, statMan);
+            listenerMan.registerListener(Listener.GAME, statMan);
             listenerMan.registerListener(Listener.LINE, statMan);
+            listenerMan.registerListener(Listener.MOVE, statMan);            
         }
         
         if (set.contains(Manager.TUTORIAL))

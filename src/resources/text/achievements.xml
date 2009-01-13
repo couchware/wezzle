@@ -60,21 +60,25 @@
     <achievement name="I Got A Level" difficulty="BRONZE">
       <description>Starting from level 1, get to level 2 without
       getting a game over.</description>
+      <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="2" />
     </achievement>
     <achievement name="I Got More Levels" difficulty="SILVER">
       <description>Starting from level 1, get to level 5 without
       getting a game over.</description>
+      <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="5" />
     </achievement>
     <achievement name="I Got Even More Levels" difficulty="GOLD">
       <description>Starting from level 1, get to level 10 without
       getting a game over.</description>
+      <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="10" />
     </achievement>
     <achievement name="Level Master" difficulty="PLATINUM">
       <description>Starting from level 1, get to level 15 without
       getting a game over.</description>
+      <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="15" />
     </achievement>    
   </entry>  

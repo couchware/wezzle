@@ -17,7 +17,7 @@ import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.graphics.PieceGrid;
+import ca.couchware.wezzle2d.piece.PieceGrid;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.piece.Piece;

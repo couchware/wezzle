@@ -12,7 +12,7 @@ import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.graphics.PieceGrid;
+import ca.couchware.wezzle2d.piece.PieceGrid;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
@@ -440,13 +440,7 @@ public class GameUI implements ILevelListener, IScoreListener
         if (!timerLabel.getText().equals(String.valueOf(timerMan.getTime())))            
         {
             timerLabel.setText(String.valueOf(timerMan.getTime()));            
-        }
-        
-        // Set the wezzle timer text.
-//        if (!wezzleTimerLabel.getText().equals(String.valueOf(levelMan.getWezzleTime())))            
-//        {
-//            //wezzleTimerLabel.setText(String.valueOf(levelMan.getWezzleTime()));                                 
-//        }
+        }       
 
         // Draw the high score text.
         if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
@@ -454,46 +448,32 @@ public class GameUI implements ILevelListener, IScoreListener
             highScoreLabel.setText(String.valueOf(scoreMan.getHighScore()));            
         }                        
 
-        if (tutorialMan.isTutorialRunning() == false)
+        if (!tutorialMan.isTutorialRunning())
         {
             // Set the level text.
             if (!levelLabel.getText().equals(String.valueOf(levelMan.getLevel())))
             {
-                layerMan.remove(levelLabel, Layer.UI);
-                levelLabel = new LabelBuilder(levelLabel)
-                        .text(String.valueOf(levelMan.getLevel())).end();
-                layerMan.add(levelLabel, Layer.UI);
+                levelLabel.setText(String.valueOf(levelMan.getLevel()));                
             }
 
             // Set the score text.
             if (!scoreLabel.getText().equals(String.valueOf(scoreMan.getTotalScore())))
             {
-                layerMan.remove(scoreLabel, Layer.UI);
-                scoreLabel = new LabelBuilder(scoreLabel)
-                        .text(String.valueOf(scoreMan.getTotalScore()))
-                        .end();
-                layerMan.add(scoreLabel, Layer.UI);
+                scoreLabel.setText(String.valueOf(scoreMan.getTotalScore()));                
             }
         }
         else
         {
             // Set the level text.
-            if (!levelLabel.getText()
-                    .equals(tutorialMan.getRunningTutorial().getName()))
-            {
-                layerMan.remove(levelLabel, Layer.UI);
-                levelLabel = new LabelBuilder(levelLabel)
-                        .text(tutorialMan.getRunningTutorial().getName())
-                        .end();
-                layerMan.add(levelLabel, Layer.UI);
+            if (!levelLabel.getText().equals(tutorialMan.getRunningTutorial().getName()))
+            {                
+                levelLabel.setText(tutorialMan.getRunningTutorial().getName());
             }
 
             // Set the score text.
             if (!scoreLabel.getText().equals(""))
             {
-                layerMan.remove(scoreLabel, Layer.UI);
-                scoreLabel = new LabelBuilder(scoreLabel).text("").end();
-                layerMan.add(scoreLabel, Layer.UI);
+                scoreLabel.setText("");                
             }
         }       
     }

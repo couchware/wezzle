@@ -1,5 +1,6 @@
-package ca.couchware.wezzle2d.graphics;
+package ca.couchware.wezzle2d.piece;
 
+import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.Settings;
 import java.awt.Rectangle;

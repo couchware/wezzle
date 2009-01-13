@@ -28,9 +28,10 @@ public class Rule
     public static enum Type
     {
         SCORE, 
-        LEVEL, 
+        LEVEL,         
         MOVES, 
         LINES,
+        START_LEVEL,
         COLLISION
     };       
     
@@ -145,6 +146,10 @@ public class Rule
                 
             case LINES:
                 x = game.statMan.getLineCount();
+                break;
+                
+            case START_LEVEL:
+                x = game.statMan.getStartLevel();
                 break;
                 
             default:

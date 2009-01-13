@@ -15,7 +15,7 @@ import java.util.EnumMap;
  * @author Kevin, Cameron
  */
 
-public class StatManager implements IResettable, ISaveable, IMoveListener, ILineListener
+public class StatManager implements IResettable, ISaveable, IGameListener, ILineListener, IMoveListener
 {	
 	/**
 	 * The current move count.
@@ -38,6 +38,11 @@ public class StatManager implements IResettable, ISaveable, IMoveListener, ILine
     private int chainCount;
     
     /**
+     * The starting level.
+     */
+    private int startLevel;
+    
+    /**
      * The current line chain count.  This is different from the normal chain
      * count in that it only counts lines made, and not items activated.
      * 
@@ -57,7 +62,8 @@ public class StatManager implements IResettable, ISaveable, IMoveListener, ILine
         LINE_COUNT,
         CYCLE_LINE_COUNT,
         CHAIN_COUNT,
-        LINE_CHAIN_COUNT
+        LINE_CHAIN_COUNT,
+        START_LEVEL
     }
     
     /**
@@ -195,6 +201,7 @@ public class StatManager implements IResettable, ISaveable, IMoveListener, ILine
 
     public void setCycleLineCount(int cycleLineCount)
     {
+        assert cycleLineCount >= 0;
         this.cycleLineCount = cycleLineCount;
     }        
     
@@ -212,6 +219,17 @@ public class StatManager implements IResettable, ISaveable, IMoveListener, ILine
     {
         setCycleLineCount(0);
     }
+
+    public int getStartLevel()
+    {
+        return startLevel;
+    }
+
+    public void setStartLevel(int startLevel)
+    {
+        assert startLevel > 0;
+        this.startLevel = startLevel;
+    }        
     
     /**
      * Determine the average number of lines that have occured per move.
@@ -269,11 +287,12 @@ public class StatManager implements IResettable, ISaveable, IMoveListener, ILine
      */
     public void saveState()
     {
-        managerState.put(Keys.MOVE_COUNT, moveCount);
-        managerState.put(Keys.LINE_COUNT, lineCount);
-        managerState.put(Keys.CYCLE_LINE_COUNT, cycleLineCount);
-        managerState.put(Keys.CHAIN_COUNT, chainCount);
-        managerState.put(Keys.LINE_CHAIN_COUNT, lineChainCount);
+        managerState.put(Keys.MOVE_COUNT, this.moveCount);
+        managerState.put(Keys.LINE_COUNT, this.lineCount);
+        managerState.put(Keys.CYCLE_LINE_COUNT, this.cycleLineCount);
+        managerState.put(Keys.CHAIN_COUNT, this.chainCount);
+        managerState.put(Keys.LINE_CHAIN_COUNT, this.lineChainCount);
+        managerState.put(Keys.START_LEVEL, this.startLevel);
     }
 
     /**
@@ -288,20 +307,37 @@ public class StatManager implements IResettable, ISaveable, IMoveListener, ILine
             return;
         }
         
-        moveCount = (Integer) managerState.get(Keys.MOVE_COUNT); 
-        lineCount = (Integer) managerState.get(Keys.LINE_COUNT); 
-        cycleLineCount = (Integer) managerState.get(Keys.CYCLE_LINE_COUNT); 
-        chainCount = (Integer) managerState.get(Keys.CHAIN_COUNT); 
-        lineChainCount = (Integer) managerState.get(Keys.LINE_CHAIN_COUNT); 
+        this.moveCount = (Integer) managerState.get(Keys.MOVE_COUNT); 
+        this.lineCount = (Integer) managerState.get(Keys.LINE_COUNT); 
+        this.cycleLineCount = (Integer) managerState.get(Keys.CYCLE_LINE_COUNT); 
+        this.chainCount = (Integer) managerState.get(Keys.CHAIN_COUNT); 
+        this.lineChainCount = (Integer) managerState.get(Keys.LINE_CHAIN_COUNT); 
+        this.startLevel = (Integer) managerState.get(Keys.START_LEVEL); 
     }
 
     public void resetState()
     {
-        moveCount = 0;
-        lineCount = 0;
-        cycleLineCount = 0;
-        chainCount = 0;
-        lineChainCount = 0;
-    }    
+        this.moveCount = 0;
+        this.lineCount = 0;
+        this.cycleLineCount = 0;
+        this.chainCount = 0;
+        this.lineChainCount = 0;
+        this.startLevel = 1;
+    }
+
+    public void gameStarted(GameEvent event)
+    {
+        this.startLevel = event.getLevel();
+    }
+
+    public void gameReset(GameEvent event)
+    {
+        this.startLevel = event.getLevel();
+    }
+
+    public void gameOver(GameEvent event)
+    {
+        // Intentionally left blank.
+    }
     
 }

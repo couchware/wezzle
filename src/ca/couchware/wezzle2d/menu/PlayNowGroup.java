@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
+import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -422,7 +423,10 @@ public class PlayNowGroup extends AbstractGroup
             game.levelMan.setLevel(levelNumber, false);
             game.timerMan.resetTimer();
             game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
-            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber));                        
+            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber)); 
+            
+            // Notify that the game started.
+            game.listenerMan.notifyGameStarted(new GameEvent(this, levelNumber));
             
             // Turn off the tutorials if necessary.
             if (this.tutorialRadio.getSelectedIndex() == TUTORIAL_ON)
