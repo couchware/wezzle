@@ -103,7 +103,16 @@ public interface IGameWindow
      */
     public void fillRect(int x, int y, int width, int height);
     
-    public void fillRoundRect(int x, int y, int width, int height, int cornerRadius);            
+    public void drawRoundRect(
+            int x, int y, 
+            int width, int height,
+			int cornerRadius, 
+            int segments);
+    
+    public void fillRoundRect(
+            int x, int y, 
+            int width, int height, 
+            int cornerRadius);            
     
     //--------------------------------------------------------------------------
     // Clip

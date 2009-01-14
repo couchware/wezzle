@@ -11,16 +11,13 @@ import ca.couchware.wezzle2d.util.Util;
 public class PieceLine extends Piece
 {
 	public PieceLine()
-	{
-		// Run the super's contructor.
-		super();
-		
+	{		
 		// Set the name.
 		this.name = "Line";
 		this.structure = new Boolean[][] 
 		{ 
 				{ false, false, false },
-				{ true,  true,  true },				
+				{ true,  true,  true  },				
 				{ false, false, false }
 		};
 		

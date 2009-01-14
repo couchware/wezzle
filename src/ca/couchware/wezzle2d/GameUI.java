@@ -28,6 +28,7 @@ import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.manager.TutorialManager;
 import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.menu.Loader;
+import ca.couchware.wezzle2d.piece.PieceL;
 import ca.couchware.wezzle2d.piece.PieceLine;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Box.Border;
@@ -309,15 +310,17 @@ public class GameUI implements ILevelListener, IScoreListener
         layerMan.add(this.piecePreviewBox, Layer.UI);
         
         PieceGrid grid = new PieceGrid.Builder(
-                    this.piecePreviewBox.getX() - 11,
-                    this.piecePreviewBox.getY() - 11,
+                    this.piecePreviewBox.getX(),
+                    this.piecePreviewBox.getY(),
                     PieceGrid.RenderMode.VECTOR
                 )
+                .alignmentMode(PieceGrid.AlignmentMode.TO_PIECE)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .cellWidth(22)
                 .cellHeight(22)
                 .end();
         
-        grid.loadStructure(new PieceLine().getStructure());
+        grid.loadStructure(new PieceL().getStructure());
         layerMan.add(grid, Layer.UI);
         
         // Create the progress bar.

@@ -7,10 +7,13 @@ import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Set;
 
 
 /**
@@ -33,14 +36,47 @@ public class PieceGrid extends AbstractEntity
         SPRITE,
         
         /** Draw the grid using the drawing methods of the underlying renderer. */
-        VECTOR
-    
-    
-    
+        VECTOR            
     }
     
     /** The current render mode */
     private RenderMode renderMode;
+    
+    public enum AlignmentMode
+    {
+        /** 
+         * Align the piece grid to the full size of the grid.  For example,
+         * if we had:
+         * <pre>
+         * ---
+         * -XX
+         * -X-
+         * </pre>
+         * ...and we wanted to align to the MIDDLE | CENTER then the alignment
+         * point would be right in the centre of the top-left X.
+         */
+        TO_FULL_GRID,
+        
+        /**
+         * Align the piece grid to the piece, ignoring empty cells.  For example,
+         * if we had:
+         * <pre>
+         * ---
+         * -XX
+         * -X-
+         * </pre> 
+         * ... and we wanted to align to the MIDDLE | CENTER then the alignment
+         * point would be in the centre of:
+         * <pre>
+         * XX
+         * X-
+         * </pre>
+         */
+        TO_PIECE
+    }
+    
+    /** The current alignment mode. */
+    private AlignmentMode alignmentMode;
     
     /** The game window. */
     private IGameWindow window;
@@ -93,18 +129,12 @@ public class PieceGrid extends AbstractEntity
         this.y_ = this.y;
         
         // Set the color.
-        this.color = builder.color;
+        this.color = builder.color;               
         
         // Set the render mode.
         this.renderMode = builder.renderMode;
                 
-		// Create an blank out the structure.
-		structure = new Boolean[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
-		
-		for (int i = 0; i < structure.length; i++)
-			Arrays.fill(structure[i], false);
-		
-		// Load in all the sprites.
+        // Load in all the sprites.
         if (renderMode == RenderMode.SPRITE)
         {
             spriteArray = new ISprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
@@ -114,12 +144,29 @@ public class PieceGrid extends AbstractEntity
                     spriteArray[i][j] = factory.getSprite(PATH);
         }		
         
+		// Create an blank out the structure.
+		structure = new Boolean[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
+		
+		for (int i = 0; i < structure.length; i++)
+			Arrays.fill(structure[i], false);				
+        
         this.cellWidth  = builder.cellWidth;
         this.cellHeight = builder.cellHeight;
         
         // Set the width and height.
         this.width  = cellWidth  * Piece.MAX_COLUMNS;
-        this.height = cellHeight * Piece.MAX_ROWS;                              
+        this.height = cellHeight * Piece.MAX_ROWS;           
+        
+        // Set the alignment mode.
+        this.alignment = builder.alignment;
+        this.alignmentMode = builder.alignmentMode;
+        
+        // Calculate the offsets right now if we're aligning to the full grid.
+        if (alignmentMode == AlignmentMode.TO_FULL_GRID)
+        {
+            this.offsetX = determineOffsetX(this.alignment, width);
+            this.offsetY = determineOffsetY(this.alignment, height);
+        }
 	}	
     
     public static class Builder implements IBuilder<PieceGrid>
@@ -127,11 +174,14 @@ public class PieceGrid extends AbstractEntity
 
         final int x;
         final int y;
-        final RenderMode renderMode;
+        final RenderMode renderMode;        
+        
+        AlignmentMode alignmentMode = AlignmentMode.TO_FULL_GRID;
+        EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
         
         int cellWidth  = 32;
         int cellHeight = 32;       
-        Color color = Color.WHITE;
+        Color color = Color.WHITE;        
         
         public Builder(int x, int y, RenderMode renderMode)
         {
@@ -149,6 +199,12 @@ public class PieceGrid extends AbstractEntity
         public Builder color(Color val)
         { color = val; return this; }
         
+        public Builder alignmentMode(AlignmentMode val)
+        { alignmentMode = val; return this; }
+        
+        public Builder alignment(EnumSet<Alignment> val)
+        { alignment = val; return this; }
+        
         public PieceGrid end()
         {
             return new PieceGrid(this);
@@ -164,6 +220,83 @@ public class PieceGrid extends AbstractEntity
 	{
 		// Save the new array.
 		this.structure = structure;
+        
+        // If the alignment mode is relative to the piece, then
+        // calculate the new offsets.
+        if (this.alignmentMode == AlignmentMode.TO_PIECE)
+        {
+            int[] wx = new int[structure.length];
+            int[] hx = new int[structure[0].length];
+            
+            for (int i = 0; i < structure.length; i++)
+            {
+                for (int j = 0; j < structure[0].length; j++)
+                {
+                    if (structure[i][j])
+                    {
+                        wx[i] = 1;
+                        hx[j] = 1;
+                    }
+                }
+            }                        
+                        
+            int w = Util.sumIntArray(wx) * cellWidth;
+            int h = Util.sumIntArray(hx) * cellHeight;
+            
+            if (alignment.contains(Alignment.LEFT)
+                    || alignment.contains(Alignment.RIGHT)
+                    || alignment.contains(Alignment.CENTER))
+            {
+                this.offsetX = 0;
+                
+                for (int wi : wx)
+                {
+                    if (wi == 1) break;
+                    this.offsetX -= this.cellWidth;
+                }
+                
+                if (alignment.contains(Alignment.RIGHT))
+                {
+                    this.offsetX -= w;
+                }
+                else if (alignment.contains(Alignment.CENTER))
+                {
+                    this.offsetX -= w / 2;
+                }
+            }                       
+            else
+            {
+                throw new IllegalStateException("No horizontal alignment assigned!");
+            }
+            
+            if (alignment.contains(Alignment.TOP)
+                    || alignment.contains(Alignment.BOTTOM)
+                    || alignment.contains(Alignment.MIDDLE))
+            {
+                this.offsetY = 0;
+                
+                for (int hi : hx)
+                {
+                    if (hi == 1) break;
+                    this.offsetY -= this.cellHeight;
+                }
+                
+                if (alignment.contains(Alignment.BOTTOM))
+                {
+                    this.offsetY -= h;
+                }
+                else if (alignment.contains(Alignment.MIDDLE))
+                {
+                    this.offsetY -= h / 2;
+                }
+            }                       
+            else
+            {
+                throw new IllegalStateException("No vertical alignment assigned!");
+            }
+            
+            
+        }
         
         // Set dirty so it will be drawn.        
         setDirty(true);
@@ -211,8 +344,10 @@ public class PieceGrid extends AbstractEntity
             {
 				if (structure[i][j] == true)
                 {
-                    spriteArray[i][j].draw(x + (i) * cellWidth,
-                            y + (j) * cellHeight).end();
+                    spriteArray[i][j].draw(
+                                x + offsetX + (i) * cellWidth,
+                                y + offsetY + (j) * cellHeight
+                            ).end();
                 } // end if
             } // end for
         } // end for	
@@ -234,11 +369,11 @@ public class PieceGrid extends AbstractEntity
             {
 				if (structure[i][j] == true)
                 {
-                    window.drawRect(
-                            x + (i) * cellWidth, 
-                            y + (j) * cellHeight + 1, 
-                            cellWidth  - 1, 
-                            cellHeight - 1);
+                    window.drawRoundRect(
+                            x + offsetX + i * cellWidth, 
+                            y + offsetY + j * cellHeight + 1, 
+                            cellWidth  - 1, cellHeight - 1,
+                            5, 50);
                 } // end if
             } // end for
         } // end for	
@@ -269,19 +404,13 @@ public class PieceGrid extends AbstractEntity
     @Override
     public void setWidth(int width)
     {
-        throw new UnsupportedOperationException("Not supported..");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public void setHeight(int height)
     {
-        throw new UnsupportedOperationException("Not supported..");
-    }
-
-    @Override
-    public EnumSet<Alignment> getAlignment()
-    {
         throw new UnsupportedOperationException("Not supported.");
-    }
+    }   
     
 }

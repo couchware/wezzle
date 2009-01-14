@@ -77,6 +77,13 @@ public class Util
 		array[c2][r2] = swap;
 	}
     
+    public static int sumIntArray(int[] array)
+    {
+        int sum = 0;
+        for (int i : array) sum += i;
+        return sum;
+    }
+    
     /**
      * Scales a value.
      *  

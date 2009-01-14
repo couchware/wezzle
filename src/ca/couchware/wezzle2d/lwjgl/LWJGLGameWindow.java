@@ -490,27 +490,7 @@ public class LWJGLGameWindow implements IGameWindow
         GL11.glColor3f(1.0f, 1.0f, 1.0f);
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-    }
-    
-//    private void drawRect(
-//            int x, int y, int width, int height,
-//            int type) 
-//    {
-//        GL11.glDisable(GL11.GL_TEXTURE_2D);
-//
-//        bindColor();
-//                
-//        GL11.glBegin(type);
-//            GL11.glVertex2f(x, 		   y);
-//            GL11.glVertex2f(x + width, y);
-//            GL11.glVertex2f(x + width, y + height);
-//            GL11.glVertex2f(x, 		   y + height);
-//        GL11.glEnd();
-//
-//        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-//
-//        GL11.glEnable(GL11.GL_TEXTURE_2D);
-//	}     
+    }    
 
     public void setClip(Shape shape)
     {                
@@ -631,7 +611,45 @@ public class LWJGLGameWindow implements IGameWindow
     public Shape getClip()
     {
        return null;
-    }       
+    }               
+    
+    public void drawLine(int x1, int y1, int x2, int y2) 
+    {        
+		if (x1 == x2) 
+        {
+            // Swap them if necessary.
+			if (y1 > y2) 
+            {
+				int temp = y2;
+				y2 = y1;
+				y1 = temp;
+			}
+            
+			int step = 1;
+			fillRect(x1, y1, step, (y2 - y1) + step);
+			return;
+		} 
+        else if (y1 == y2) 
+        {
+			if (x1 > x2) 
+            {
+				int temp = x2;
+				x2 = x1;
+				x1 = temp;
+			}
+            
+			int step = 1;			
+			fillRect(x1, y1, (x2 - x1) + step, step);
+			return;
+		}
+		
+		bindColor();		
+
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glVertex2f(x1, y1);
+		GL11.glVertex2f(x2, y2);
+		GL11.glEnd();		
+	}
     
     private void drawRect(int x, int y, int width, int height, boolean filled)
     {
@@ -669,6 +687,54 @@ public class LWJGLGameWindow implements IGameWindow
     }      
        
     /**
+     * Draws an arc.
+     * 
+     * Code adapted from Slick2D.
+     * 
+     * @param x1
+     * @param y1
+     * @param width
+     * @param height
+     * @param segments
+     * @param start
+     * @param end
+     */
+    public void drawArc(
+            float x1, float y1, 
+            float width, float height,
+			int segments, 
+            float start, float end) 
+    {			
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        
+		bindColor();
+
+		while (end < start) end += 360;		
+
+		float cx = x1 + (width  / 2.0f);
+		float cy = y1 + (height / 2.0f);
+
+        int step = 360 / segments;
+        
+		GL11.glBegin(GL11.GL_LINE_STRIP);		
+
+		for (int a = (int) start; a < (int) (end + step); a += step) 
+        {
+			float angle = a;
+			if (angle > end) angle = end;
+            
+			float x = (float) (cx + (Math.cos(Math.toRadians(angle)) * width  / 2.0f));
+			float y = (float) (cy + (Math.sin(Math.toRadians(angle)) * height / 2.0f));
+
+			GL11.glVertex2f(x, y);
+		}
+		
+        GL11.glEnd();       
+        
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+	}
+    
+    /**
 	 * Fill an arc.
 	 * 
 	 * @param x1
@@ -695,10 +761,7 @@ public class LWJGLGameWindow implements IGameWindow
             float start, float end) 
     {		
 
-		while (end < start) 
-        {
-			end += 360;
-		}
+		while (end < start) end += 360;		
 
 		float cx = x1 + (width / 2.0f);
 		float cy = y1 + (height / 2.0f);
@@ -731,9 +794,7 @@ public class LWJGLGameWindow implements IGameWindow
         // Anti-alias code.
         GL11.glBegin(GL11.GL_TRIANGLE_FAN);
         GL11.glVertex2f(cx, cy);
-        if (end != 360) {
-            end -= 10;
-        }
+        if (end != 360) { end -= 10; }
 
         for (int a = (int) start; a < (int) (end + step); a += step) 
         {
@@ -753,6 +814,44 @@ public class LWJGLGameWindow implements IGameWindow
         GL11.glEnd();			
         
         GL11.glEnable(GL11.GL_TEXTURE_2D);	
+	}
+    
+    public void drawRoundRect(
+            int x, int y, 
+            int width, int height,
+			int cornerRadius, 
+            int segments) 
+    {
+		if (cornerRadius < 0)
+        {
+			throw new IllegalArgumentException("Corner radius must be > 0.");
+        }
+        
+		if (cornerRadius == 0) 
+        {
+			drawRect(x, y, width, height);
+			return;
+		}
+
+		int mr = (int) Math.min(width, height) / 2;
+		
+        // Make sure that w & h are larger than 2 * cornerRadius.
+		if (cornerRadius > mr) cornerRadius = mr;		
+
+		drawLine(x + cornerRadius, y, x + width + 1 - cornerRadius, y);
+		drawLine(x, y + cornerRadius, x, y + height + 1 - cornerRadius);
+		drawLine(x + width, y + cornerRadius, x + width, y + height - cornerRadius);
+		drawLine(x + cornerRadius, y + height, x + width + 1 - cornerRadius, y + height);
+
+		int d = cornerRadius * 2;
+		// bottom right - 0, 90
+		drawArc(x + width + 1 - d, y + height + 1 - d, d, d, segments, 0, 90);
+		// bottom left - 90, 180
+		drawArc(x, y + height + 1 - d, d, d, segments, 90, 180);
+		// top right - 270, 360
+		drawArc(x + width + 1 - d, y, d, d, segments, 270, 360);
+		// top left - 180, 270
+		drawArc(x, y, d, d, segments, 180, 270);
 	}
         
     public void fillRoundRect(int x, int y, int width, int height, int cornerRadius)
@@ -783,7 +882,7 @@ public class LWJGLGameWindow implements IGameWindow
     {
 		if (cornerRadius < 0)
         {
-			throw new IllegalArgumentException("corner radius must be > 0");
+			throw new IllegalArgumentException("Corner radius must be > 0.");
         }
         
 		if (cornerRadius == 0) 
