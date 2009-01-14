@@ -7,17 +7,41 @@ package ca.couchware.wezzle2d.util;
 
 import java.awt.Color;
 import org.jdom.Element;
+import org.lwjgl.opengl.GL11;
 
 /**
  *
  * @author cdmckay
  */
-public class SuperColor extends Color implements IXMLizable
+public class SuperColor implements IXMLizable
 {
 
+    /** The instance of color this instance is wrapping. */
+    private Color color;    
+    
+    private SuperColor(Color color)
+    {
+        this.color = color;
+    }
+    
+    private SuperColor(int red, int green, int blue)
+    {
+        this.color = new Color(red, green, blue);
+    }
+    
     private SuperColor(int red, int green, int blue, int alpha)
     {
-        super(red, green, blue, alpha);
+        this.color = new Color(red, green, blue, alpha);
+    }
+    
+    public static SuperColor newInstance(Color color)
+    {
+        return new SuperColor(color);
+    }
+    
+    public static SuperColor newInstance(int red, int green, int blue)
+    {
+        return new SuperColor(red, green, blue);
     }
     
     public static SuperColor newInstance(int red, int green, int blue, int alpha)
@@ -42,10 +66,10 @@ public class SuperColor extends Color implements IXMLizable
     public Element toXMLElement()
     {
         Element element = new Element("color");
-        element.setAttribute("red", String.valueOf(getRed()));
-        element.setAttribute("green", String.valueOf(getGreen()));
-        element.setAttribute("blue", String.valueOf(getBlue()));                    
-        element.setAttribute("alpha", String.valueOf(getAlpha()));
+        element.setAttribute("red", String.valueOf(color.getRed()));
+        element.setAttribute("green", String.valueOf(color.getGreen()));
+        element.setAttribute("blue", String.valueOf(color.getBlue()));                    
+        element.setAttribute("alpha", String.valueOf(color.getAlpha()));
         return element; 
     }
     
@@ -54,11 +78,32 @@ public class SuperColor extends Color implements IXMLizable
         return Util.scaleInt(0, 100, 0, 255, val);
     }
     
+    /**
+     * Bind the colour to the current GL context.
+     */
+    public void bind()
+    {
+        GL11.glColor4f((float) color.getRed()   / 255f,
+                       (float) color.getGreen() / 255f,
+                       (float) color.getBlue()  / 255f,
+                       (float) color.getAlpha() / 255f);        
+    }   
+    
+    /**
+     * Returns the underlying color instance.
+     * 
+     * @return
+     */
+    public Color toColor()
+    {
+        return color;
+    }
+    
     @Override
     public String toString()
     {
         return String.format("SuperColor[r=%d, g=%d, b=%d, a=%d]", 
-                getRed(), getGreen(), getBlue(), getAlpha());
+                color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
             
 }

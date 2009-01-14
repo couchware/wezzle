@@ -15,7 +15,6 @@ import ca.couchware.wezzle2d.util.SuperCalendar;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;

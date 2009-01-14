@@ -49,9 +49,9 @@ public class LayerManager implements IDisposable, IDrawer
     private boolean[] isHidden;
     
     /**
-     * The game window.  Used when drawing regions of the screen.
+     * The graphics instance.  Used when drawing regions of the screen.
      */
-    private IGameWindow window;   
+    private IGraphics gfx;   
     
     /**
      * The remove clip.  This clip is used to make sure that things that are
@@ -65,7 +65,7 @@ public class LayerManager implements IDisposable, IDrawer
     private LayerManager()
     {
         // Set the window reference.
-        this.window = ResourceFactory.get().getGameWindow();          
+        this.gfx = ResourceFactory.get().getGraphics();          
         
         // Initialize layer arraylist.
         layerList = new ArrayList<ArrayList<IDrawable>>(Layer.values().length);
@@ -265,8 +265,8 @@ public class LayerManager implements IDisposable, IDrawer
         // The clipping area.        
         Rectangle clip;
         
-        if (window.getClip() !=  null)
-            clip = window.getClip().getBounds();
+        if (gfx.getClip() !=  null)
+            clip = gfx.getClip().getBounds();
         else
             clip = null;
                 
@@ -318,9 +318,9 @@ public class LayerManager implements IDisposable, IDrawer
                 // If we want the exact region, then we must clip.
                 if (exact == true) 
                 {
-                    window.setClip(region);
+                    gfx.setClip(region);
                     drawAll();
-                    window.setClip(null);
+                    gfx.setClip(null);
                     return true;
                 }
                 
@@ -387,18 +387,18 @@ public class LayerManager implements IDisposable, IDrawer
         {
             //Util.handleMessage(clip.toString(), Thread.currentThread());
                         
-            window.setClip(exact == true ? region : clip);                
+            gfx.setClip(exact == true ? region : clip);                
             drawAll();
 
             // Show the clip rect if required.
             if (SettingsManager.get().getBoolean(Key.DEBUG_SHOW_CLIP_RECT) == true)
             {
-                Rectangle r = window.getClip().getBounds();
+                Rectangle r = gfx.getClip().getBounds();
                 LogManager.recordMessage("Bounds are " + r);
-                window.drawRect(r.x, r.y, r.width - 1, r.height - 1);
+                gfx.drawRect(r.x, r.y, r.width - 1, r.height - 1);
             }
                         
-            window.setClip(null);          
+            gfx.setClip(null);          
                
             // Reset the remove clip.
             resetRemoveRect();

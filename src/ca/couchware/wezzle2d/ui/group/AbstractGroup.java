@@ -38,7 +38,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     /**
      * A reference to the game window.
      */
-    final protected IGameWindow window;
+    final protected IWindow window;
 
     /**
      * An linked list of all the entities in this screen.
@@ -62,7 +62,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
 
         // Store the references.
         this.parent = parent;
-        this.window = ResourceFactory.get().getGameWindow();        
+        this.window = ResourceFactory.get().getWindow();        
 
         // Create the entity list.
         this.entityList = new LinkedList<IEntity>();

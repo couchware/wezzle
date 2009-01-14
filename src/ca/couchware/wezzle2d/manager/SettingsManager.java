@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.Settings.Value;
 import ca.couchware.wezzle2d.util.SuperColor;
 import ca.couchware.wezzle2d.util.Util;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -498,9 +499,9 @@ public class SettingsManager
      * @param key
      * @return
      */
-    public SuperColor getColor(Key key)
+    public Color getColor(Key key)
     {
-        return (SuperColor) getList(key).get(0);
+        return ((SuperColor) getList(key).get(0)).toColor();
     }
     
     /**

@@ -5,8 +5,8 @@
 
 package ca.couchware.wezzle2d.lwjgl;
 
-import ca.couchware.wezzle2d.IGameWindow;
-import ca.couchware.wezzle2d.IGameWindowCallback;
+import ca.couchware.wezzle2d.IWindow;
+import ca.couchware.wezzle2d.IWindowCallback;
 import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.KeyEvent;
@@ -14,7 +14,6 @@ import ca.couchware.wezzle2d.event.KeyEvent.Modifier;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MouseEvent.Button;
 import ca.couchware.wezzle2d.manager.LogManager;
-import ca.couchware.wezzle2d.util.Ascii;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -27,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -45,13 +43,13 @@ import org.lwjgl.opengl.PixelFormat;
  * @author Brian Matzon
  * @author Cameron McKay
  */
-public class LWJGLGameWindow implements IGameWindow 
+public class LWJGLWindow implements IWindow 
 {
   
 	/** 
      * The callback which should be notified of window events 
      */
-	private IGameWindowCallback callback;
+	private IWindowCallback callback;
   
     /**
      * The key presses.
@@ -96,7 +94,7 @@ public class LWJGLGameWindow implements IGameWindow
 	 * Create a new game window that will use OpenGL to 
 	 * render our game.
 	 */
-	public LWJGLGameWindow() 
+	public LWJGLWindow() 
     {
         this.keyPressSet = new HashSet<Character>();
         
@@ -267,7 +265,6 @@ public class LWJGLGameWindow implements IGameWindow
         }				
 	}
 
-
 	/**
 	 * Start the rendering process. This method will cause the 
 	 * display to redraw as fast as possible.
@@ -319,7 +316,7 @@ public class LWJGLGameWindow implements IGameWindow
 	 * @param callback The callback that should be notified of game
 	 * window events. 
 	 */
-	public void setGameWindowCallback(IGameWindowCallback callback) 
+	public void setGameWindowCallback(IWindowCallback callback) 
     {
 		this.callback = callback;
 	}	    
@@ -428,494 +425,7 @@ public class LWJGLGameWindow implements IGameWindow
     // Color & clip code.
     //--------------------------------------------------------------------------
        
-    /** The current colour. */
-    private Color color = Color.BLACK;
-    
-    public void setColor(Color color)
-    {
-        this.color = color;
-    }
-    
-    public Color getColor()
-    {
-        return color;
-    }    
-
-    private void bindColor()
-    {
-        GL11.glColor4f((float) color.getRed()   / 255f,
-                       (float) color.getGreen() / 255f,
-                       (float) color.getBlue()  / 255f,
-                       (float) color.getAlpha() / 255f);
-        GL11.glLineWidth(1.0f);
-    }    
-    
-    public void drawRect(int x, int y, int width, int height)
-    {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-        bindColor();
-                       
-        GL11.glBegin(GL11.GL_LINE_LOOP);
-            GL11.glVertex2f(x, 		   y);
-            GL11.glVertex2f(x + width, y);
-            GL11.glVertex2f(x + width, y + height);
-            GL11.glVertex2f(x, 		   y + height);
-        GL11.glEnd();
-        
-        // This is to fix a bug that exists on some graphics cards where
-        // the top-right corner of a rectangle is not rendered.
-        GL11.glBegin(GL11.GL_POINTS);
-            GL11.glVertex2i(x + width, y);
-        GL11.glEnd();
-
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-    }
-
-    public void fillRect(int x, int y, int width, int height)
-    {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-        bindColor();
-                
-        GL11.glBegin(GL11.GL_QUADS);
-            GL11.glVertex2f(x, 		   y);
-            GL11.glVertex2f(x + width, y);
-            GL11.glVertex2f(x + width, y + height);
-            GL11.glVertex2f(x, 		   y + height);
-        GL11.glEnd();
-
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-    }    
-
-    public void setClip(Shape shape)
-    {                
-        // See if the shape is null, if it is, then disable the clip.
-        if (shape == null)
-        {            
-            //GL11.glDisable(GL11.GL_SCISSOR_TEST);
-            GL11.glDisable(GL11.GL_STENCIL_TEST); 
-//            copyBuffer();
-            return;
-        }
-        
-        // Stencil out the shape.
-//        if (shape instanceof Rectangle)
-//            scissorClip((Rectangle) shape);
-//        else
-//            scissorClip(shape.getBounds());
-        stencilClip(shape);                        
-    }       
-    
-//    private static IntBuffer viewport = BufferUtils.createIntBuffer(16);
-//    private static FloatBuffer rasterPosition = BufferUtils.createFloatBuffer(16);     
-//    
-//    /**
-//     * Copies front buffer to the back buffer.
-//     * Taken from:
-//     *   http://anirudhs.chaosnet.org/blog/2006.03.04.html
-//     */
-//    private void copyBuffer()
-//    {
-//        /* Get the viewport. */
-//        GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
-//        
-//        /* Set source buffer. */
-//        GL11.glReadBuffer(GL11.GL_FRONT);
-//
-//        /* Set projection matrix. */
-//        GL11.glMatrixMode(GL11.GL_PROJECTION);
-//        GL11.glPushMatrix();
-//        GL11.glLoadIdentity() ;
-//        GL11.glOrtho(0, viewport.get(2), viewport.get(3), 0, -1, 1);
-//
-//        /* Set modelview matrix. */
-//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//        GL11.glPushMatrix();
-//        GL11.glLoadIdentity();
-//
-//        /* Save old raster position. */
-//        GL11.glGetFloat(GL11.GL_CURRENT_RASTER_POSITION, rasterPosition);
-//
-//        /* Set raster position. */
-//        GL11.glRasterPos4f(0f, 0f, 0f, 1f);
-//
-//        /* Copy buffer. */
-//        GL11.glCopyPixels(0, 0, viewport.get(2), viewport.get(3), GL11.GL_COLOR);
-//
-//        /* Restore old raster position. */        
-//        GL11.glRasterPos4f(
-//                rasterPosition.get(0), 
-//                rasterPosition.get(1),
-//                rasterPosition.get(2),
-//                rasterPosition.get(3));
-//
-//        /* Restore old matrices. */
-//        GL11.glPopMatrix();
-//        GL11.glMatrixMode(GL11.GL_PROJECTION);
-//        GL11.glPopMatrix();
-//        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//
-//        /* Restore source buffer. */
-//        GL11.glReadBuffer(GL11.GL_BACK); 
-//    }
-    
-    private void scissorClip(Rectangle rect)
-    {       
-        //copyBuffer();
-		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor(
-                rect.x, this.height - rect.y - rect.height, 
-                rect.width, rect.height);
-        //GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
-        
-    }
-    
-    private void stencilClip(Shape shape)
-    {               
-        // Disable colour modification.
-        GL11.glColorMask(false, false, false, false);
-                
-        // Enable the stencil buffer.
-        GL11.glEnable(GL11.GL_STENCIL_TEST);
-        
-        // Make it so we can set the stencil buffer to whatever
-        // we draw.
-        GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 1);
-        GL11.glStencilOp(GL11.GL_REPLACE, GL11.GL_REPLACE, GL11.GL_REPLACE);        
-        
-        // Carve a rectangle into the stencil buffer.
-        if (shape instanceof Ellipse2D)
-        {
-            Ellipse2D e = (Ellipse2D) shape;
-            drawEllipse(e.getX(), e.getY(), e.getWidth(), e.getHeight(), true);
-        }
-        else
-        {
-            Rectangle rect = shape.getBounds();
-            drawRect(rect.x, rect.y, rect.width, rect.height, true);
-        }
-        
-        // Re-enable colours.
-        GL11.glColorMask(true, true, true, true);
-        
-        // Now change the stencil buffer so we can use it as a clip.
-        GL11.glStencilFunc(GL11.GL_EQUAL, 1, 1);
-        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);        
-    }        
-
-    public Shape getClip()
-    {
-       return null;
-    }               
-    
-    public void drawLine(int x1, int y1, int x2, int y2) 
-    {        
-		if (x1 == x2) 
-        {
-            // Swap them if necessary.
-			if (y1 > y2) 
-            {
-				int temp = y2;
-				y2 = y1;
-				y1 = temp;
-			}
-            
-			int step = 1;
-			fillRect(x1, y1, step, (y2 - y1) + step);
-			return;
-		} 
-        else if (y1 == y2) 
-        {
-			if (x1 > x2) 
-            {
-				int temp = x2;
-				x2 = x1;
-				x1 = temp;
-			}
-            
-			int step = 1;			
-			fillRect(x1, y1, (x2 - x1) + step, step);
-			return;
-		}
-		
-		bindColor();		
-
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex2f(x1, y1);
-		GL11.glVertex2f(x2, y2);
-		GL11.glEnd();		
-	}
-    
-    private void drawRect(int x, int y, int width, int height, boolean filled)
-    {
-        int mode = filled ? GL11.GL_POLYGON : GL11.GL_LINE_LOOP;
-        
-        GL11.glBegin(mode);
-            GL11.glVertex2f(x, y);
-            GL11.glVertex2f(x + width, y);
-            GL11.glVertex2f(x + width, y + height);
-            GL11.glVertex2f(x, y + height);
-        GL11.glEnd();        
-    }
-    
-    /** The value of two times PI. */
-    final private static double TWO_PI = 2.0 * Math.PI;
-    
-    /** The number of points in an ellipse. */
-    final private static double ELLIPSE_POINTS = 50;
-    
-    private void drawEllipse(double x, double y, double width, double height, boolean filled)
-    {        
-        float xf = (float) (x + width  / 2);
-        float yf = (float) (y + height / 2);
-        float wf = (float) width;
-        float hf = (float) height;                
-        
-        int mode = filled ? GL11.GL_POLYGON : GL11.GL_LINE_LOOP;
-                
-        GL11.glBegin(mode);
-            for (double t = 0; t <= TWO_PI; t += TWO_PI / ELLIPSE_POINTS)
-                GL11.glVertex2f(
-                        wf * (float) Math.cos(t) + xf, 
-                        hf * (float) Math.sin(t) + yf);
-        GL11.glEnd();        
-    }      
-       
-    /**
-     * Draws an arc.
-     * 
-     * Code adapted from Slick2D.
-     * 
-     * @param x1
-     * @param y1
-     * @param width
-     * @param height
-     * @param segments
-     * @param start
-     * @param end
-     */
-    public void drawArc(
-            float x1, float y1, 
-            float width, float height,
-			int segments, 
-            float start, float end) 
-    {			
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        
-		bindColor();
-
-		while (end < start) end += 360;		
-
-		float cx = x1 + (width  / 2.0f);
-		float cy = y1 + (height / 2.0f);
-
-        int step = 360 / segments;
-        
-		GL11.glBegin(GL11.GL_LINE_STRIP);		
-
-		for (int a = (int) start; a < (int) (end + step); a += step) 
-        {
-			float angle = a;
-			if (angle > end) angle = end;
-            
-			float x = (float) (cx + (Math.cos(Math.toRadians(angle)) * width  / 2.0f));
-			float y = (float) (cy + (Math.sin(Math.toRadians(angle)) * height / 2.0f));
-
-			GL11.glVertex2f(x, y);
-		}
-		
-        GL11.glEnd();       
-        
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-	}
-    
-    /**
-	 * Fill an arc.
-	 * 
-	 * @param x1
-	 *            The x coordinate of the top left corner of a box containing
-	 *            the arc
-	 * @param y1
-	 *            The y coordinate of the top left corner of a box containing
-	 *            the arc
-	 * @param width
-	 *            The width of the arc
-	 * @param height
-	 *            The height of the arc
-	 * @param segments
-	 *            The number of line segments to use when filling the arc
-	 * @param start
-	 *            The angle the arc starts at
-	 * @param end
-	 *            The angle the arc ends at
-	 */
-	public void fillArc(
-            float x1, float y1, 
-            float width, float height,
-			int segments, 
-            float start, float end) 
-    {		
-
-		while (end < start) end += 360;		
-
-		float cx = x1 + (width / 2.0f);
-		float cy = y1 + (height / 2.0f);
-
-        int step = 360 / segments;
-        
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_POLYGON_SMOOTH);
-        
-        bindColor();
-        
-		GL11.glBegin(GL11.GL_TRIANGLE_FAN);		        
-		GL11.glVertex2f(cx, cy);
-
-		for (int a = (int) start; a < (int) (end + step); a += step) 
-        {			
-            float angle = a;			
-            if (angle > end) 
-            {
-				angle = end;
-			}
-
-			float x = (float) (cx + (Math.cos(Math.toRadians(angle)) * width / 2.0f));
-			float y = (float) (cy + (Math.sin(Math.toRadians(angle)) * height / 2.0f));
-
-			GL11.glVertex2f(x, y);
-		}
-		GL11.glEnd();
-        
-        // Anti-alias code.
-        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-        GL11.glVertex2f(cx, cy);
-        if (end != 360) { end -= 10; }
-
-        for (int a = (int) start; a < (int) (end + step); a += step) 
-        {
-            float angle = a;
-            if (angle > end) 
-            {
-                angle = end;
-            }
-
-            float x = (float) (cx + (Math.cos(Math.toRadians(angle + 10))
-                    * width  / 2.0f));
-            float y = (float) (cy + (Math.sin(Math.toRadians(angle + 10))
-                    * height / 2.0f));
-
-            GL11.glVertex2f(x, y);
-        }
-        GL11.glEnd();			
-        
-        GL11.glEnable(GL11.GL_TEXTURE_2D);	
-	}
-    
-    public void drawRoundRect(
-            int x, int y, 
-            int width, int height,
-			int cornerRadius, 
-            int segments) 
-    {
-		if (cornerRadius < 0)
-        {
-			throw new IllegalArgumentException("Corner radius must be > 0.");
-        }
-        
-		if (cornerRadius == 0) 
-        {
-			drawRect(x, y, width, height);
-			return;
-		}
-
-		int mr = (int) Math.min(width, height) / 2;
-		
-        // Make sure that w & h are larger than 2 * cornerRadius.
-		if (cornerRadius > mr) cornerRadius = mr;		
-
-		drawLine(x + cornerRadius, y, x + width + 1 - cornerRadius, y);
-		drawLine(x, y + cornerRadius, x, y + height + 1 - cornerRadius);
-		drawLine(x + width, y + cornerRadius, x + width, y + height - cornerRadius);
-		drawLine(x + cornerRadius, y + height, x + width + 1 - cornerRadius, y + height);
-
-		int d = cornerRadius * 2;
-		// bottom right - 0, 90
-		drawArc(x + width + 1 - d, y + height + 1 - d, d, d, segments, 0, 90);
-		// bottom left - 90, 180
-		drawArc(x, y + height + 1 - d, d, d, segments, 90, 180);
-		// top right - 270, 360
-		drawArc(x + width + 1 - d, y, d, d, segments, 270, 360);
-		// top left - 180, 270
-		drawArc(x, y, d, d, segments, 180, 270);
-	}
-        
-    public void fillRoundRect(int x, int y, int width, int height, int cornerRadius)
-    {
-        fillRoundRect(x, y, width, height, cornerRadius, 30);
-    }
-
-    /**
-	 * Fill a rounded rectangle
-	 * 
-	 * @param x
-	 *            The x coordinate of the top left corner of the rectangle
-	 * @param y
-	 *            The y coordinate of the top left corner of the rectangle
-	 * @param width
-	 *            The width of the rectangle
-	 * @param height
-	 *            The height of the rectangle
-	 * @param cornerRadius
-	 *            The radius of the rounded edges on the corners
-	 * @param segments
-	 *            The number of segments to make the corners out of
-	 */
-	public void fillRoundRect(
-            int x, int y, 
-            int width, int height,
-			int cornerRadius, int segments) 
-    {
-		if (cornerRadius < 0)
-        {
-			throw new IllegalArgumentException("Corner radius must be > 0.");
-        }
-        
-		if (cornerRadius == 0) 
-        {
-			fillRect(x, y, width, height);
-			return;
-		}
-
-		int minRadius = (int) Math.min(width, height) / 2;
-		
-        // Make sure that w & h are larger than 2 * cornerRadius.
-		if (cornerRadius > minRadius) 
-        {
-			cornerRadius = minRadius;
-		}
-
-		int d = cornerRadius * 2;
-
-		fillRect(x + cornerRadius, y, width - d, cornerRadius);
-		fillRect(x, y + cornerRadius, cornerRadius, height - d);
-		fillRect(x + width - cornerRadius, y + cornerRadius, cornerRadius, height - d);
-		fillRect(x + cornerRadius, y + height - cornerRadius, width - d, cornerRadius);
-		fillRect(x + cornerRadius, y + cornerRadius, width - d, height - d);
-
-		// Bottom right - 0, 90.
-		fillArc(x + width - d, y + height - d, d, d, segments, 0, 90);
-		// Bottom left - 90, 180.
-		fillArc(x, y + height - d, d, d, segments, 90, 180);
-		// Top right - 270, 360.
-		fillArc(x + width - d, y, d, d, segments, 270, 360);
-		// Top left - 180, 270.
-		fillArc(x, y, d, d, segments, 180, 270);
-	}
+   
     
     public void setCursor(int type)
     {

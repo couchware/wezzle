@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.IBuilder;
-import ca.couchware.wezzle2d.IGameWindow;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
@@ -39,7 +39,7 @@ public class AchievementNotification extends AbstractEntity
      * The window that box is in.  This is for adding and removing
      * the certain listeners.
      */
-    final private IGameWindow window;
+    final private IWindow window;
     
     /** The achievement that we're creating the notification box for. */
     final private Achievement achievement;
@@ -123,7 +123,7 @@ public class AchievementNotification extends AbstractEntity
     public static class Builder implements IBuilder<AchievementNotification>
     {
         // Required values.  
-        private final IGameWindow window;
+        private final IWindow window;
         private final Achievement achievement;
         private int x;
         private int y;     
@@ -135,7 +135,7 @@ public class AchievementNotification extends AbstractEntity
         
         public Builder(int x, int y, Achievement achievement)
         {            
-            this.window = ResourceFactory.get().getGameWindow();
+            this.window = ResourceFactory.get().getWindow();
             this.achievement = achievement;
             this.x = x;
             this.y = y;

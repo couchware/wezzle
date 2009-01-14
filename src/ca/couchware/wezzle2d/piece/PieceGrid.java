@@ -1,12 +1,14 @@
 package ca.couchware.wezzle2d.piece;
 
 import ca.couchware.wezzle2d.IBuilder;
-import ca.couchware.wezzle2d.IGameWindow;
+import ca.couchware.wezzle2d.IGraphics;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.util.SuperColor;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -79,7 +81,7 @@ public class PieceGrid extends AbstractEntity
     private AlignmentMode alignmentMode;
     
     /** The game window. */
-    private IGameWindow window;
+    private IGraphics gfx;
     
     /** The color of the piece grid, if we're using vector rendering. */
     private Color color;
@@ -117,7 +119,7 @@ public class PieceGrid extends AbstractEntity
         ResourceFactory factory = ResourceFactory.get();
         
         // Grab the game window.
-        this.window = factory.getGameWindow();
+        this.gfx = factory.getGraphics();
         
         // Grid is initially visible.
         this.visible = true;
@@ -359,8 +361,8 @@ public class PieceGrid extends AbstractEntity
     private void renderVector()
     {
         // Save the old color and set the new one.
-        Color oldColor = window.getColor();
-        window.setColor(this.color);
+        SuperColor oldColor = gfx.getColor();
+        gfx.setColor(this.color);
         
         // Cycle through, drawing only the sprites that should be shown.
         for (int i = 0; i < structure.length; i++)
@@ -369,7 +371,7 @@ public class PieceGrid extends AbstractEntity
             {
 				if (structure[i][j] == true)
                 {
-                    window.drawRoundRect(
+                    gfx.drawRoundRect(
                             x + offsetX + i * cellWidth, 
                             y + offsetY + j * cellHeight + 1, 
                             cellWidth  - 1, cellHeight - 1,
@@ -379,7 +381,7 @@ public class PieceGrid extends AbstractEntity
         } // end for	
         
         // Restore the old color.
-        window.setColor(oldColor);
+        gfx.setColor(oldColor);
     }
     
     @Override

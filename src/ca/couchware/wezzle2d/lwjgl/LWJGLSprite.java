@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.lwjgl;
 
+import ca.couchware.wezzle2d.IGraphics;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.ISpriteDrawer;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
@@ -17,6 +18,7 @@ import org.lwjgl.opengl.GL11;
  * Implementation of sprite that uses an OpenGL quad and a texture
  * to render a given image to the screen.
  * 
+ * @author Cameron McKay
  * @author Kevin Glass
  * @author Brian Matzon
  */
@@ -24,9 +26,14 @@ public class LWJGLSprite implements ISprite
 {
 
     /**
-     * A reference to the LWJGL window.
+     * A reference to the LWJGL window implemtation.
      */
-    private LWJGLGameWindow window;
+    private LWJGLWindow window;
+    
+    /**
+     * A reference to the LWJGL graphics implementation.
+     */
+    private LWJGLGraphics gfx;
     
     /** 
      * The texture that stores the image for this sprite.
@@ -49,9 +56,10 @@ public class LWJGLSprite implements ISprite
      * @param window The window in which the sprite will be displayed
      * @param ref A reference to the image on which this sprite should be based
      */
-    public LWJGLSprite(LWJGLGameWindow window, String path)
+    public LWJGLSprite(LWJGLWindow window, LWJGLGraphics gfx, String path)
     {
         this.window = window;
+        this.gfx    = gfx;
         
         try
         {
@@ -164,9 +172,9 @@ public class LWJGLSprite implements ISprite
             double theta, int tx, int ty,
             int opacity)
     {
-        window.setClip(new Rectangle(x, y, regionWidth, regionHeight));        
+        gfx.setClip(new Rectangle(x, y, regionWidth, regionHeight));        
         draw(x - regionX, y - regionY, width, height, theta, tx, ty, opacity);        
-        window.setClip(null);
+        gfx.setClip(null);
     }
     
     /**

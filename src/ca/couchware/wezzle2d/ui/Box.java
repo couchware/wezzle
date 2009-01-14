@@ -6,7 +6,8 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.IBuilder;
-import ca.couchware.wezzle2d.IGameWindow;
+import ca.couchware.wezzle2d.IGraphics;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
@@ -71,9 +72,14 @@ public class Box extends AbstractEntity implements IMouseListener
     final  protected String pathVertical;
     
     /**
-     * The reference to the game window.
+     * The reference to the window.
      */
-    protected IGameWindow window;     
+    protected IWindow window;     
+    
+    /**
+     * The reference to the graphics instance.
+     */
+    protected IGraphics gfx;
     
     /**
      * The shape of the window.
@@ -117,7 +123,8 @@ public class Box extends AbstractEntity implements IMouseListener
     private Box(Builder builder)
     {
         // Set window reference.
-        this.window = ResourceFactory.get().getGameWindow();
+        this.window = ResourceFactory.get().getWindow();
+        this.gfx = ResourceFactory.get().getGraphics();
         
         // Set the position.
         this.x = builder.x;
@@ -269,8 +276,8 @@ public class Box extends AbstractEntity implements IMouseListener
             return false;
         
         // Draw the inside of the window.
-        window.setColor(color);
-        window.fillRect(
+        gfx.setColor(color);
+        gfx.fillRect(
                 x + cornerSprite.getWidth() + offsetX, 
                 y + cornerSprite.getHeight() + offsetY, 
                 width - cornerSprite.getWidth() * 2, 

@@ -5,7 +5,8 @@ import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 //import ca.couchware.wezzle2d.java2d.Java2DGameWindow;
 //import ca.couchware.wezzle2d.java2d.Java2DLabel;
 //import ca.couchware.wezzle2d.java2d.SpriteStore;
-import ca.couchware.wezzle2d.lwjgl.LWJGLGameWindow;
+import ca.couchware.wezzle2d.lwjgl.LWJGLWindow;
+import ca.couchware.wezzle2d.lwjgl.LWJGLGraphics;
 import ca.couchware.wezzle2d.lwjgl.LWJGLTextLabel;
 import ca.couchware.wezzle2d.lwjgl.LWJGLSprite;
 import ca.couchware.wezzle2d.manager.LogManager;
@@ -69,7 +70,12 @@ public class ResourceFactory
 	/** 
      * The window the game should use to render.
      */
-	private IGameWindow window;    
+	private IWindow window;   
+    
+    /**
+     * The graphics the game should use to draw.
+     */
+    private IGraphics gfx;
 
 	/**
 	 * The default contructor has been made private to prevent construction of
@@ -122,7 +128,7 @@ public class ResourceFactory
 	 * 
 	 * @return The game window in which the game should be rendered
 	 */
-	public IGameWindow getGameWindow()
+	public IWindow getWindow()
 	{
 		// if we've yet to create the game window, create the appropriate one
 		// now
@@ -135,13 +141,34 @@ public class ResourceFactory
 //					break;
 				
                 case LWJGL:
-                    window = new LWJGLGameWindow();
+                    window = new LWJGLWindow();
                     break;
 			}
 		}
 
 		return window;
 	}
+    
+    public IGraphics getGraphics()
+    {
+        // if we've yet to create the game window, create the appropriate one
+		// now
+		if (gfx == null)
+		{
+			switch (renderer)
+			{
+//				case JAVA2D:				
+//					gfx = new Java2DGraphics();
+//					break;
+				
+                case LWJGL:
+                    gfx = new LWJGLGraphics();
+                    break;
+			}
+		}
+
+		return gfx;
+    }
     
 	/**
 	 * Create or get a sprite which displays the image that is pointed to in the
@@ -165,7 +192,10 @@ public class ResourceFactory
 //				return SpriteStore.get().getSprite((Java2DGameWindow) window, path);                
                 
             case LWJGL:
-                return new LWJGLSprite((LWJGLGameWindow) window, path);					
+                return new LWJGLSprite(
+                        (LWJGLWindow) window, 
+                        (LWJGLGraphics) gfx,
+                        path);					
 		}
 
 		throw new RuntimeException("Unknown rendering type: " + renderer);
@@ -199,7 +229,7 @@ public class ResourceFactory
 //                        builder.cached);
 			
             case LWJGL:
-                return new LWJGLTextLabel((LWJGLGameWindow) window,
+                return new LWJGLTextLabel((LWJGLWindow) window,
                         builder.x,
                         builder.y,
                         builder.alignment,                       

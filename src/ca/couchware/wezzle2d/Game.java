@@ -79,7 +79,7 @@ import java.util.concurrent.Executors;
  * @author Kevin Grad 
  * @author Kevin Glass
  */
-public class Game extends Canvas implements IGameWindowCallback
+public class Game extends Canvas implements IWindowCallback
 {	  
     //--------------------------------------------------------------------------
     // Static Members
@@ -209,7 +209,7 @@ public class Game extends Canvas implements IGameWindowCallback
     public TutorialManager tutorialMan;   
     
     /** The window that is being used to render the game. */
-    public IGameWindow window;    
+    public IWindow window;    
     
     //--------------------------------------------------------------------------
     // Private Members
@@ -294,7 +294,7 @@ public class Game extends Canvas implements IGameWindowCallback
 		// Create a window based on a chosen rendering method.
 		ResourceFactory.get().setRenderer(renderer);		        
         		                      
-        window = ResourceFactory.get().getGameWindow();
+        window = ResourceFactory.get().getWindow();
         window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
         window.setGameWindowCallback(Game.this);
         window.setTitle(windowTitle);

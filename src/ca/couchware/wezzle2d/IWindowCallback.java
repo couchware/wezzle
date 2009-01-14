@@ -6,7 +6,7 @@ package ca.couchware.wezzle2d;
  * 
  * @author Kevin Glass
  */
-public interface IGameWindowCallback
+public interface IWindowCallback
 {
 	/**
 	 * Notification that game should initialise any resources it needs to use.

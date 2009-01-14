@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.IBuilder;
-import ca.couchware.wezzle2d.IGameWindow;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
@@ -27,7 +27,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
 {
 
     /** The game window. */
-    final private IGameWindow window;
+    final private IWindow window;
     
     /** The shape of the group. */
     private ImmutableRectangle shape;
@@ -150,7 +150,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     public static class Builder implements IBuilder<Scroller>
     {
         // Required values.  
-        private final IGameWindow window;
+        private final IWindow window;
         private int x;
         private int y;     
         
@@ -168,7 +168,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         
         public Builder(int x, int y)
         {            
-            this.window = ResourceFactory.get().getGameWindow();
+            this.window = ResourceFactory.get().getWindow();
             this.x = x;
             this.y = y;
         }

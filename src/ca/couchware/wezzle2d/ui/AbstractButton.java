@@ -43,7 +43,13 @@ public abstract class AbstractButton extends AbstractEntity implements
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    final protected IGameWindow window;    
+    final protected IWindow window;    
+    
+     /**
+     * The window that button is in.  This is for adding and removing
+     * the mouse listeners.
+     */
+    final protected IGraphics gfx;    
     
     /**
      * The current state of the button.
@@ -72,7 +78,8 @@ public abstract class AbstractButton extends AbstractEntity implements
     protected AbstractButton(final int x, final int y)
     {      
         // Grab the window reference.
-        this.window = ResourceFactory.get().getGameWindow();
+        this.window = ResourceFactory.get().getWindow();
+        this.gfx = ResourceFactory.get().getGraphics();
         
         // Set the initial state.
         this.state = EnumSet.noneOf(State.class);

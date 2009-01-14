@@ -73,7 +73,12 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    private final IGameWindow window;
+    private final IWindow window;
+    
+    /**
+     * The graphics instance.
+     */
+    private final IGraphics gfx;
     
     /**
      * The shape of the button.
@@ -142,7 +147,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         this.visible = builder.visible;
         
         // Store the window reference.
-        this.window = builder.window;                       
+        this.window = ResourceFactory.get().getWindow();
+        this.gfx = ResourceFactory.get().getGraphics();
         
         // Set the position.
         this.x = builder.x;
@@ -210,8 +216,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     
     public static class Builder implements IBuilder<SliderBar>
     {
-        // Required values.  
-        private final IGameWindow window;
+        // Required values.         
         private int x;
         private int y;     
         
@@ -227,15 +232,13 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         private int virtualValue = 0;
         
         public Builder(int x, int y)
-        {            
-            this.window = ResourceFactory.get().getGameWindow();
+        {                      
             this.x = x;
             this.y = y;
         }
         
         public Builder(SliderBar sliderBar)
-        {            
-            this.window = sliderBar.window;
+        {                        
             this.x = sliderBar.x;
             this.y = sliderBar.y;
             this.alignment = sliderBar.alignment.clone();     
@@ -292,15 +295,15 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     
     private void drawRail(int x, int y, int width, int height, int border)
     {
-        window.setColor(SuperColor.newInstance( 
+        gfx.setColor(SuperColor.newInstance( 
                 Color.BLACK, 
                 SuperColor.scaleOpacity(opacity)));
-        window.fillRect(x, y, width + border * 2, height + border * 2);
+        gfx.fillRect(x, y, width + border * 2, height + border * 2);
         
-        window.setColor(SuperColor.newInstance(
+        gfx.setColor(SuperColor.newInstance(
                 Color.DARK_GRAY, 
                 SuperColor.scaleOpacity(opacity)));
-        window.fillRect(x + border, y + border, width, height);
+        gfx.fillRect(x + border, y + border, width, height);
     }
     
     @Override

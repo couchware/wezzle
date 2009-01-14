@@ -12,7 +12,6 @@ import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.ISprite;
-import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.Ascii;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
@@ -319,15 +318,15 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     
     private void drawUnderline(int x, int y, int width, int height, int border)
     {                
-        window.setColor(SuperColor.newInstance( 
+        gfx.setColor(SuperColor.newInstance( 
                 Color.BLACK, 
                 SuperColor.scaleOpacity(opacity)));
-        window.fillRect(x, y, width + border * 2, height + border * 2);
+        gfx.fillRect(x, y, width + border * 2, height + border * 2);
         
-        window.setColor(SuperColor.newInstance(
+        gfx.setColor(SuperColor.newInstance(
                 Color.DARK_GRAY, 
                 SuperColor.scaleOpacity(opacity)));
-        window.fillRect(x + border, y + border, width, height);
+        gfx.fillRect(x + border, y + border, width, height);
     }
     
     protected void drawNormal()

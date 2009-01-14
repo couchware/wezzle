@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.IGameWindow;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
@@ -55,7 +55,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     // -------------------------------------------------------------------------       
     
     /** A reference to the game window. */
-    private IGameWindow window;
+    private IWindow window;
     
     /** A reference to the refactorer. */
     private Refactorer refactorer;
@@ -112,7 +112,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             LayerManager layerMan)
 	{       
 		// Set the reference.
-        this.window       = ResourceFactory.get().getGameWindow();
+        this.window       = ResourceFactory.get().getWindow();
         this.refactorer   = refactorer;
         this.animationMan = animationMan;
 		this.boardMan     = boardMan;                

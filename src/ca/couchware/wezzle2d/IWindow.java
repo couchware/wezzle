@@ -16,7 +16,7 @@ import java.awt.Shape;
  * @author Kevin Glass
  */
 
-public interface IGameWindow
+public interface IWindow
 {
 
 	/**
@@ -54,7 +54,7 @@ public interface IGameWindow
 	 * @param callback
 	 *            The callback that should be notified of game window events.
 	 */
-	public void setGameWindowCallback(IGameWindowCallback callback);
+	public void setGameWindowCallback(IWindowCallback callback);
 
 	/**
 	 * Check if a particular key is pressed
@@ -63,75 +63,7 @@ public interface IGameWindow
 	 *            The code associate with the key to check
 	 * @return True if the particular key is pressed
 	 */
-	public boolean isKeyPressed(int keyCode);
-    
-    //--------------------------------------------------------------------------
-    // Draw
-    //--------------------------------------------------------------------------
-    
-    /**
-     * Set the drawing color.
-     * 
-     * @param c
-     */
-    public void setColor(Color c);
-    
-    /**
-     * Get the drawing color.
-     * 
-     * @return The current color.
-     */
-    public Color getColor();
-    
-    /**
-     * Draws the outline of the specified rectangle.
-     * 
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     */
-    public void drawRect(int x, int y, int width, int height);            
-    
-    /**
-     * Fills the specified rectangle.
-     * 
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     */
-    public void fillRect(int x, int y, int width, int height);
-    
-    public void drawRoundRect(
-            int x, int y, 
-            int width, int height,
-			int cornerRadius, 
-            int segments);
-    
-    public void fillRoundRect(
-            int x, int y, 
-            int width, int height, 
-            int cornerRadius);            
-    
-    //--------------------------------------------------------------------------
-    // Clip
-    //--------------------------------------------------------------------------	   
-    
-    /**
-     * Sets the current clip rectangle.  Only drawables within the clip area are
-     * drawn to the screen.
-     * 
-     * @param r
-     */
-    public void setClip(Shape s);
-    
-    /**
-     * Gets the current clip rectangle.
-     * 
-     * @return
-     */
-    public Shape getClip();
+	public boolean isKeyPressed(int keyCode);        
     
     //--------------------------------------------------------------------------
     // Keyboard

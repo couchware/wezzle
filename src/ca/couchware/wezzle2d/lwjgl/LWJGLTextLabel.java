@@ -22,7 +22,7 @@ public class LWJGLTextLabel extends AbstractEntity implements ITextLabel
     /** 
      * The game window to which this text is going to be drawn 
      */
-	final private LWJGLGameWindow window;	            
+	final private LWJGLWindow window;	            
     
     /**
      * The size of the label.
@@ -45,7 +45,7 @@ public class LWJGLTextLabel extends AbstractEntity implements ITextLabel
 	final private TrueTypeFont font;         
     
     public LWJGLTextLabel(
-            LWJGLGameWindow window,
+            LWJGLWindow window,
             int x, int y,
             EnumSet<Alignment> alignment,
             Color color,
