@@ -11,9 +11,10 @@ import ca.couchware.wezzle2d.util.Util;
 public class PieceLine extends Piece
 {
 	public PieceLine()
-	{		
-		// Set the name.
-		this.name = "Line";
+	{
+        super("Line", PieceType.LINE, 3);
+        
+		// Set the name.		
 		this.structure = new Boolean[][] 
 		{ 
 				{ false, false, false },
@@ -23,10 +24,7 @@ public class PieceLine extends Piece
 		
 		// Set the dimensions.
 		this.columns = 1;
-		this.rows = 3;
-		
-		// Set the size.
-		this.size = 3;
+		this.rows = 3;		
 	}
 	
     @Override

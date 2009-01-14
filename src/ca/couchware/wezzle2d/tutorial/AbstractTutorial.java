@@ -292,7 +292,7 @@ public abstract class AbstractTutorial implements ITutorial
         game.animationMan.add(a);
         
         // Change the piece to the dot.
-        game.pieceMan.loadPiece(PieceType.DOT);    
+        game.pieceMan.loadPiece(PieceType.DOT.getPiece());    
         
         // Make sure buttons aren't visible.
         repeatButton.setVisible(false);

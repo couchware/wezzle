@@ -11,10 +11,9 @@ public class PieceDot extends Piece
 	public PieceDot()
 	{
 		// Run the super's contructor.
-		super();
+		super("Dot", PieceType.DOT, 1);
 		
-		// Set the name.
-		this.name = "Dot";
+		// Set the name.		
 		this.structure = new Boolean[][] 
 		{ 
 				{ false, false, false },
@@ -24,9 +23,6 @@ public class PieceDot extends Piece
 		
 		// Set the dimensions.
 		this.columns = 1;
-		this.rows = 1;
-		
-		// Set the size.
-		this.size = 1;
+		this.rows = 1;		
 	}
 }

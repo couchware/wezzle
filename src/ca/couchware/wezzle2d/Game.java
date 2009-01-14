@@ -405,7 +405,8 @@ public class Game extends Canvas implements IWindowCallback
         if (set.contains(Manager.PIECE))
         {
             // Create the piece manager.
-            pieceMan = PieceManager.newInstance(refactorer, animationMan, boardMan, layerMan);        
+            pieceMan = PieceManager.newInstance(refactorer, 
+                    animationMan, boardMan, layerMan, listenerMan);        
             pieceMan.hidePieceGrid();            
             
             // Listen for the key and mouse.

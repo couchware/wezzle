@@ -7,8 +7,10 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.IPieceListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.event.PieceEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -28,8 +30,6 @@ import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.manager.TutorialManager;
 import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.menu.Loader;
-import ca.couchware.wezzle2d.piece.PieceL;
-import ca.couchware.wezzle2d.piece.PieceLine;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Box.Border;
 import ca.couchware.wezzle2d.ui.IButton;
@@ -49,7 +49,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class GameUI implements ILevelListener, IScoreListener
+public class GameUI implements ILevelListener, IPieceListener, IScoreListener
 {       
     
     /** The single instance of this class. */
@@ -85,8 +85,11 @@ public class GameUI implements ILevelListener, IScoreListener
     /** The timer text. */
     private ITextLabel timerLabel;
     
-    /** The piece preview. */
-    private Box piecePreviewBox;
+    /** The next piece preview. */
+    private Box nextPieceBox;
+    
+    /** The next piece preview grid. */
+    private PieceGrid nextPieceGrid;
     
     /** The score header graphic. */
     private GraphicEntity scoreHeaderLabel;
@@ -181,10 +184,11 @@ public class GameUI implements ILevelListener, IScoreListener
                    game.statMan,  
                    game.listenerMan); 
            }
-        });     
+        });                     
         
         // Add the listeners.
         game.listenerMan.registerListener(Listener.LEVEL,  this);
+        game.listenerMan.registerListener(Listener.PIECE,  this);
         game.listenerMan.registerListener(Listener.SCORE,  this);       
     }
     
@@ -302,26 +306,24 @@ public class GameUI implements ILevelListener, IScoreListener
         layerMan.toBack(this.background, Layer.BACKGROUND);     
         
         // Create the piece preview window.
-        this.piecePreviewBox = new Box.Builder(670, 120)
+        this.nextPieceBox = new Box.Builder(670, 120)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(90)
                 .border(Border.MEDIUM)
                 .width(90).height(90).end();
-        layerMan.add(this.piecePreviewBox, Layer.UI);
+        layerMan.add(this.nextPieceBox, Layer.UI);
         
-        PieceGrid grid = new PieceGrid.Builder(
-                    this.piecePreviewBox.getX(),
-                    this.piecePreviewBox.getY(),
+        this.nextPieceGrid = new PieceGrid.Builder(
+                    this.nextPieceBox.getX(),
+                    this.nextPieceBox.getY() - 1,
                     PieceGrid.RenderMode.VECTOR
                 )
                 .alignmentMode(PieceGrid.AlignmentMode.TO_PIECE)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .cellWidth(22)
                 .cellHeight(22)
-                .end();
-        
-        grid.loadStructure(new PieceL().getStructure());
-        layerMan.add(grid, Layer.UI);
+                .end();                
+        layerMan.add(this.nextPieceGrid, Layer.UI);
         
         // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(393, 501)
@@ -493,7 +495,7 @@ public class GameUI implements ILevelListener, IScoreListener
 
     public void levelChanged(LevelEvent event)
     {
-        progressBar.setProgressMax(event.getNextTargetLevelScore());
+        this.progressBar.setProgressMax(event.getNextTargetLevelScore());
     }
 
     public void scoreIncreased(ScoreEvent event)
@@ -504,13 +506,20 @@ public class GameUI implements ILevelListener, IScoreListener
     public void scoreChanged(ScoreEvent event)
     {       
         // Update the progress bar.
-        progressBar.setProgress(event.getScore());       
+        this.progressBar.setProgress(event.getScore());       
     }
 
     public void targetScoreChanged(ScoreEvent event)
     {
         // Update the progress bar.
-        progressBar.setProgressMax(event.getScore());
-    }   
+        this.progressBar.setProgressMax(event.getScore());
+    }
+
+    public void pieceAdded(PieceEvent event)
+    {
+        // Update the piece preview.
+        this.nextPieceGrid.loadStructure(event.getNextPiece().getStructure());
+        this.nextPieceGrid.setColor(event.getNextPiece().getType().getColor());
+    }
     
 }

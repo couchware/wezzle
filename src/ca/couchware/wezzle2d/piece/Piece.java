@@ -1,7 +1,10 @@
 package ca.couchware.wezzle2d.piece;
 
+import ca.couchware.wezzle2d.util.Util;
+
 public abstract class Piece
 {
+    
 	// ---------------------------------------------------------------------------
 	// Constants
 	// ---------------------------------------------------------------------------	    
@@ -16,7 +19,12 @@ public abstract class Piece
 	/**
 	 * The internal name for the piece.
 	 */
-	protected String name;
+	final protected String name;
+    
+    /**
+     * The type of the piece.
+     */
+    final protected PieceType type;
 	
 	/**
 	 * The 3x3 array of what the piece fills up.
@@ -36,9 +44,20 @@ public abstract class Piece
 	/**
 	 * The size of the piece, in tiles.
 	 */
-	protected int size;
+	final protected int size;
 	
+    // ---------------------------------------------------------------------------
+	// Constructor
 	// ---------------------------------------------------------------------------
+
+    Piece(String name, PieceType type, int size)
+    {
+        this.name = name;
+        this.type = type;
+        this.size = size;
+    }
+    
+    // ---------------------------------------------------------------------------
 	// Instance Methods
 	// ---------------------------------------------------------------------------
 
@@ -49,6 +68,16 @@ public abstract class Piece
 	{
 		// Intentionally blank.  Meant to be overridden by subclass.
 	}
+    
+    /**
+     * Rotate the piece randomly.
+     */
+    public void rotateRandomly()
+    {
+        int numberOfRotations = Util.random.nextInt(4);        
+        for (int i = 0; i <= numberOfRotations; i++)        
+            this.rotate();   
+    }
 	
 	// ---------------------------------------------------------------------------
 	// Getters and Setters
@@ -93,4 +122,10 @@ public abstract class Piece
 	{
 		return size;
 	}
+
+    public PieceType getType()
+    {
+        return type;
+    }        
+    
 }

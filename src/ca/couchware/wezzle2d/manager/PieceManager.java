@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.event.PieceEvent;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.piece.PieceGrid;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -34,7 +35,9 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -75,8 +78,17 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 	/** The board manager the piece manager to attached to. */
 	private BoardManager boardMan;    
     
+    /** The listener manager, used to send out the piece events. */
+    private ListenerManager listenerMan;
+    
     /** Was the board recently refactored? */
     private boolean refactored = false;	                  
+    
+    /** The size of the piece queue. */
+    final private static int PIECE_QUEUE_SIZE = 1;
+    
+    /** The piece queue. */
+    final private Queue<Piece> pieceQueue;
     
     /** The current piece. */
     private Piece piece;
@@ -109,13 +121,15 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             Refactorer refactorer,
             AnimationManager animationMan, 
             BoardManager boardMan,
-            LayerManager layerMan)
+            LayerManager layerMan,
+            ListenerManager listenerMan)
 	{       
 		// Set the reference.
         this.window       = ResourceFactory.get().getWindow();
         this.refactorer   = refactorer;
         this.animationMan = animationMan;
-		this.boardMan     = boardMan;                
+		this.boardMan     = boardMan;         
+        this.listenerMan  = listenerMan;
         
         // Create new piece entity at the origin of the board.
 		pieceGrid = new PieceGrid.Builder(
@@ -124,8 +138,18 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                         PieceGrid.RenderMode.SPRITE)
                     .end();                
         
-        // Load a random piece.
-        this.loadPiece();
+        // Create the piece queue and load it up.
+        this.pieceQueue = new LinkedList<Piece>();
+        
+        for (int i = 0; i < PIECE_QUEUE_SIZE; i++)
+        {
+            Piece futurePiece = PieceType.getRandom().getPiece();  
+            futurePiece.rotateRandomly();
+            this.pieceQueue.offer(futurePiece);
+        }
+        
+        // Load a piece from the top of the queue.
+        //this.loadPiece();
         
         // Get the cursor position.
         this.cursorPosition = limitPosition(window.getMouseImmutablePosition());
@@ -163,9 +187,10 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             Refactorer refactorer,
             AnimationManager animationMan, 
             BoardManager boardMan,
-            LayerManager layerMan)
+            LayerManager layerMan,
+            ListenerManager listenerMan)
     {
-        return new PieceManager(refactorer, animationMan, boardMan, layerMan);
+        return new PieceManager(refactorer, animationMan, boardMan, layerMan, listenerMan);
     }
     
     //--------------------------------------------------------------------------
@@ -177,30 +202,30 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
      * 
 	 * @param piece The piece to set.
 	 */
-	public void loadPiece(final PieceType type)
+	public void loadPiece(final Piece piece)
 	{
         // Remember which piece it is for rotating.
-        this.piece = type.getPiece();
+        this.piece = piece;
         
         // Load the piece into the piece grid.
 		pieceGrid.loadStructure(piece.getStructure());
 	}	
     
     /**
-     * Loads a random piece into the piece grid.
+     * Loads the piece from the top of the piece queue.
      */
     public void loadPiece()
-    {
-        // Get an array of all the types.
-        PieceType[] pt = PieceType.values();
+    {                  
+        // Get a piece from the queue.
+        loadPiece(pieceQueue.remove());
         
-        // Load a random one.
-		loadPiece(pt[Util.random.nextInt(pt.length)]);		
-		        
-        // Rotate it up to 3 times.
-        int numberOfRotations = Util.random.nextInt(4);        
-        for (int i = 0; i <= numberOfRotations; i++)        
-            piece.rotate();                    
+        // Add one to replace it.
+        Piece nextPiece = PieceType.getRandom().getPiece();  
+        nextPiece.rotateRandomly();
+        this.pieceQueue.offer(nextPiece);
+        
+        // Fire new piece event.
+        this.listenerMan.notifyPieceAdded(new PieceEvent(this, this.piece, nextPiece));
         
         // Adjust the piece grid.
         this.cursorPosition = limitPosition(pieceGrid.getPosition());
@@ -241,27 +266,30 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 			row = boardMan.getRows() - 1;
 		
 		// Get the piece structure.
-		Boolean[][] structure = piece.getStructure();
+        if (piece != null)
+        {
+            Boolean[][] structure = piece.getStructure();
 		
-		// Cycle through the structure.
-		for (int j = 0; j < structure[0].length; j++)
-		{
-			for (int i = 0; i < structure.length; i++)
-			{	
-				if (structure[i][j] == true)
-				{					
-					if (column - 1 + i < 0)
-						column++;					
-					else if (column - 1 + i >= boardMan.getColumns())
-						column--;
-						
-					if (row - 1 + j < 0)
-						row++;
-					else if (row - 1 + j >= boardMan.getRows())
-						row--;										
-				}										
-			} // end for				
-		} // end for
+            // Cycle through the structure.
+            for (int j = 0; j < structure[0].length; j++)
+            {
+                for (int i = 0; i < structure.length; i++)
+                {	
+                    if (structure[i][j] == true)
+                    {					
+                        if (column - 1 + i < 0)
+                            column++;					
+                        else if (column - 1 + i >= boardMan.getColumns())
+                            column--;
+
+                        if (row - 1 + j < 0)
+                            row++;
+                        else if (row - 1 + j >= boardMan.getRows())
+                            row--;										
+                    }										
+                } // end for				
+            } // end for
+        } // end if		
 		
 		return new ImmutablePosition(
                 boardMan.getX() + (column * boardMan.getCellWidth()), 

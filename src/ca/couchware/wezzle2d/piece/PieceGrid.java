@@ -183,7 +183,7 @@ public class PieceGrid extends AbstractEntity
         
         int cellWidth  = 32;
         int cellHeight = 32;       
-        Color color = Color.WHITE;        
+        Color color = Color.ORANGE;        
         
         public Builder(int x, int y, RenderMode renderMode)
         {
@@ -413,6 +413,17 @@ public class PieceGrid extends AbstractEntity
     public void setHeight(int height)
     {
         throw new UnsupportedOperationException("Not supported.");
-    }   
+    }
+
+    public Color getColor()
+    {
+        return color;
+    }
+
+    public void setColor(Color color)
+    {
+        assert color != null;
+        this.color = color;
+    }  
     
 }

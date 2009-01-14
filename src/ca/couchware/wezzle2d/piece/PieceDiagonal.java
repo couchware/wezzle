@@ -13,10 +13,9 @@ public class PieceDiagonal extends Piece
 	public PieceDiagonal()
 	{
 		// Run the super's contructor.
-		super();
+		super("Diagonal", PieceType.DIAGONAL, 2);
 		
-		// Set the name.
-		this.name = "Diagonal";
+		// Set the name.		
 		this.structure = new Boolean[][] 
 		{ 
 				{ false, false, false },
@@ -26,10 +25,7 @@ public class PieceDiagonal extends Piece
 		
 		// Set the dimensions.
 		this.columns = 2;
-		this.rows = 2;
-		
-		// Set the size.
-		this.size = 2;
+		this.rows = 2;				
 	}
 	
     @Override

@@ -8,13 +8,13 @@ package ca.couchware.wezzle2d.event;
 import java.util.EventObject;
 
 /**
- *  A custom move event.
+ * The move event.
  * 
  * @author kgrad
  */
 public class MoveEvent extends EventObject
 {
-    private int moveCount;
+    final private int moveCount;
     
     public MoveEvent(Object source, int moveCount)
     {

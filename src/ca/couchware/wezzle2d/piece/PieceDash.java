@@ -13,10 +13,9 @@ public class PieceDash extends Piece
 	public PieceDash()
 	{
 		// Run the super's contructor.
-		super();
+		super("Dash", PieceType.DASH, 2);
 		
-		// Set the name.
-		this.name = "Dash";
+		// Set the name.		
 		this.structure = new Boolean[][]
 		{ 
 			{ false, false, false },
@@ -26,10 +25,7 @@ public class PieceDash extends Piece
 		
 		// Set the dimensions.
 		this.columns = 1;
-		this.rows = 2;
-		
-		// Set the size.
-		this.size = 2;
+		this.rows = 2;				
 	}
 	
     @Override

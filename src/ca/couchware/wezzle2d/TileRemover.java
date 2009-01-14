@@ -213,11 +213,11 @@ public class TileRemover implements IResettable, ILevelListener
                         listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));                                                       
                     }
                     
-                    // Clear the level up in progress flag.
-                    levelUpInProgress = false;      
-                    
                     // Start the next move.
-                    startNextMove(pieceMan, timerMan);
+                    startNextMove(pieceMan, timerMan, !this.levelUpInProgress);
+                    
+                    // Clear the level up in progress flag.
+                    this.levelUpInProgress = false;                                             
                                                                                                   
                 } // end if                                                                               
             } // end if
@@ -263,10 +263,13 @@ public class TileRemover implements IResettable, ILevelListener
         this.refactorSpeed = refactorer.getRefactorSpeed();
     }   
     
-    private void startNextMove(PieceManager pieceMan, TimerManager timerMan)
+    private void startNextMove(
+            PieceManager pieceMan, 
+            TimerManager timerMan,
+            boolean newPiece)
     {
         // Load new piece and make it visible.
-        pieceMan.loadPiece();
+        if (newPiece) { pieceMan.loadPiece(); }
         pieceMan.showPieceGrid();
         pieceMan.startAnimation(timerMan);
 

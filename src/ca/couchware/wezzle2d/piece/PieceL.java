@@ -13,10 +13,9 @@ public class PieceL extends Piece
 	public PieceL()
 	{
 		// Run the super's contructor.
-		super();
+		super("L", PieceType.L, 3);
 		
-		// Set the name.
-		this.name = "L";
+		// Set the name.		
 		this.structure = new Boolean[][] 
 		{ 
 				{ false, false, false },
@@ -26,10 +25,7 @@ public class PieceL extends Piece
 		
 		// Set the dimensions.
 		this.columns = 2;
-		this.rows = 2;
-		
-		// Set the size.
-		this.size = 3;
+		this.rows = 2;				
 	}
 	
     @Override

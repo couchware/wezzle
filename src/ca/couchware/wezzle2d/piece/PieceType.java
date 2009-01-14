@@ -5,6 +5,9 @@
 
 package ca.couchware.wezzle2d.piece;
 
+import ca.couchware.wezzle2d.util.Util;
+import java.awt.Color;
+
 /**
  * The different kinds of Wezzle pieces.
  * 
@@ -12,17 +15,53 @@ package ca.couchware.wezzle2d.piece;
  */
 public enum PieceType
 {
-    DOT(new PieceDot()), 
-    DASH(new PieceDash()), 
-    LINE(new PieceLine()), 
-    DIAGONAL(new PieceDiagonal()), 
-    L(new PieceL());
     
-    private Piece piece;
+    DOT(Color.RED), 
+    DASH(Color.CYAN), 
+    LINE(Color.YELLOW), 
+    DIAGONAL(Color.LIGHT_GRAY), 
+    L(Color.GREEN);
     
-    PieceType(Piece piece)
-    { this.piece = piece; }
+    private Color color;
+    
+    PieceType(Color color)
+    { this.color = color; }
+
+    public Color getColor()
+    {
+        return color;
+    }        
     
     public Piece getPiece()
-    { return piece; }
+    { 
+        switch(this)
+        {
+            case DOT:
+                return new PieceDot();                
+                
+            case DASH:
+                return new PieceDash();   
+                
+            case LINE:
+                return new PieceLine();   
+                
+            case DIAGONAL:
+                return new PieceDiagonal();   
+                
+            case L:
+                return new PieceL();   
+                
+            default: throw new AssertionError();
+        }
+    }
+    
+    public static PieceType getRandom()
+    {
+        // Get an array of all the types.
+        PieceType[] pt = PieceType.values();
+        
+        // Load a random one.
+		return pt[Util.random.nextInt(pt.length)];
+    }
+    
 }    

@@ -13,10 +13,12 @@ import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.ILineListener;
 import ca.couchware.wezzle2d.event.IListener;
 import ca.couchware.wezzle2d.event.IMoveListener;
+import ca.couchware.wezzle2d.event.IPieceListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.event.PieceEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -49,12 +51,13 @@ public class ListenerManager
     /** The different classes of listener. */
     public enum Listener
     {
-        SCORE,
-        LEVEL,
-        MOVE,
-        LINE,
         COLLISION,
-        GAME
+        GAME,
+        LEVEL,
+        LINE,
+        MOVE,
+        PIECE,
+        SCORE        
     }
     
     /** The single listener manager. */
@@ -230,13 +233,23 @@ public class ListenerManager
     
     public void notifyCollisionOccured(CollisionEvent e)
     {
-         List<IListener> list = listenerMap.get(Listener.COLLISION);
+        List<IListener> list = listenerMap.get(Listener.COLLISION);
          
         for (IListener listener : list)
         {
             ((ICollisionListener) listener).collisionOccured(e);
         }
          
+    }
+    
+    public void notifyPieceAdded(PieceEvent e)
+    {
+        List<IListener> list = listenerMap.get(Listener.PIECE);
+         
+        for (IListener listener : list)
+        {
+            ((IPieceListener) listener).pieceAdded(e);
+        }
     }
        
 }

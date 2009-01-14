@@ -440,7 +440,8 @@ public class PlayNowGroup extends AbstractGroup
                 p.stopAtGain(0.0);
             }        
             
-            game.startBoard();                          
+            game.startBoard();  
+            game.pieceMan.loadPiece();
             
             // Notify the main menu.
             this.parent.setActivated(false);
