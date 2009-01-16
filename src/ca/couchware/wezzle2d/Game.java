@@ -766,7 +766,9 @@ public class Game extends Canvas implements IWindowCallback
         // If the pause button is not on, then we proceed with the
         // normal game loop.
         if (groupMan.isActivated() == false)
+        {
             updateBoard();
+        }
                         
         // Fire all the queued mouse events.
         window.fireMouseEvents();                
@@ -856,7 +858,7 @@ public class Game extends Canvas implements IWindowCallback
     private void updateBoard()
     {
         // See if it's time to level-up.
-        if (!this.tileDropper.isTileDropping() && !this.isBusy())
+        if (!this.isCompletelyBusy())
         {
             // Handle Level up.
             if (scoreMan.getLevelScore() >= scoreMan.getTargetLevelScore())
@@ -943,10 +945,12 @@ public class Game extends Canvas implements IWindowCallback
         }
 
         // Animation all animations.
-        animationMan.animate();
-
+        animationMan.animate();       
+        
         // Handle the timer.
-        if (boardMan.isVisible() && !isBusy())
+        if (boardMan.isVisible() 
+                && !tutorialMan.isTutorialRunning()             
+                && !isContextManipulating() && !isTileManipulating())
         {
             timerMan.updateLogic(this);
         }
@@ -966,12 +970,12 @@ public class Game extends Canvas implements IWindowCallback
         pieceMan.updateLogic(this);
 
         // Update the item manager logic.
-        itemMan.updateLogic(this);        
-        
+        itemMan.updateLogic(this);                       
+    
         // Update the tutorial manager logic. This must be done after the world
         // manager because it relies on the proper items being in the item list.
         tutorialMan.updateLogic(this);
-    
+        
         // Reset the line count.
         //statMan.incrementLineCount(statMan.getCycleLineCount());               
         statMan.resetCycleLineCount();
@@ -979,19 +983,32 @@ public class Game extends Canvas implements IWindowCallback
       
     /**
      * A method to check whether the board is busy.
+     * Note: This method does NOT check to see if the tiles are dropping.
      * 
      * @return True if it is, false otherwise.
      */
-    public boolean isBusy()
+    public boolean isContextManipulating()
     {
-       return (refactorer.isRefactoring()               
-               || tileRemover.isTileRemoving()      
-               || activateGameOver == true
+       return      
+               activateGameOver == true
                || gameOverInProgress == true
                || activateBoardShowAnimation == true
                || activateBoardHideAnimation == true               
-               || this.boardAnimation != null);
+               || this.boardAnimation != null;
     }       
+    
+    public boolean isTileManipulating()
+    {
+        return 
+               refactorer.isRefactoring()               
+               || tileRemover.isTileRemoving() 
+               || tileDropper.isTileDropping();
+    }        
+    
+    public boolean isCompletelyBusy()
+    {
+        return isContextManipulating() || isTileManipulating();
+    }
     
     /**
      * Checks whether tiles are, or are about to be, removed.

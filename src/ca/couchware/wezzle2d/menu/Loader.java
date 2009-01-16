@@ -149,7 +149,7 @@ public class Loader implements IDrawer
         counter++;
         
         // Update the progress.
-        progressBar.setProgress(counter);
+        progressBar.setProgressValue(counter);
     }        
     
     public void addTask(Runnable r)

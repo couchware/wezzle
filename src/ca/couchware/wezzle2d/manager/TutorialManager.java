@@ -118,8 +118,7 @@ public class TutorialManager
     public void updateLogic(Game game)
     {
         // If the board is refactoring, do not logicify.
-        if (game.isBusy() == true)
-             return;
+        if (game.isCompletelyBusy()) return;
         
         // If no tutorial is running, look for a new one to run.
         if (tutorial == null && tutorialList.isEmpty() == false)

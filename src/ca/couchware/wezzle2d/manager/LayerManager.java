@@ -282,15 +282,16 @@ public class LayerManager implements IDisposable, IDrawer
             
             // Draw its contents.
             for (IDrawable d : layer)
-            {                                
-                if (clip == null 
-                        || (d.getDrawRect() != null 
-                            && d.getDrawRect().intersects(clip) == true))
-                {                   
-                    //count++;
-                    d.draw();                
-                }
-                //total++;
+            {             
+                d.draw();
+//                if (clip == null 
+//                        || (d.getDrawRect() != null 
+//                            && d.getDrawRect().intersects(clip) == true))
+//                {                   
+//                    //count++;
+//                    d.draw();                
+//                }
+//                //total++;
             }           
         } // end for
         

@@ -438,8 +438,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public void updateLogic(final Game game)
     {                        
-        // If the board is refactoring, do not logicify.
-        if (game.isBusy()) return;                 
+        // If the game is busy, do not logicify.
+        if (game.isCompletelyBusy()) return;                 
 
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.

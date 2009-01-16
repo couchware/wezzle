@@ -71,16 +71,19 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
     private GraphicEntity background;    
     
     /** The pause button. */
-    public IButton pauseButton;
+    private IButton pauseButton;
        
     /** The options button. */
-    public IButton optionsButton;
+    private IButton optionsButton;
     
     /** The help button. */
-    public IButton helpButton;
+    private IButton helpButton;
+    
+    /** The timer bar. */
+    private ProgressBar timerBar;
     
     /** The progress bar. */
-    public ProgressBar progressBar; 
+    private ProgressBar progressBar; 
     
     /** The timer text. */
     private ITextLabel timerLabel;
@@ -168,7 +171,9 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
         // Initialize miscellaneous components.
         loader.addTask(new Runnable()
         {
-           public void run() { initializeComponents(game.layerMan); }
+           public void run() { initializeEntities(
+                   game.layerMan, 
+                   game.timerMan); }
         });        
              
         // Initialize the groups.   
@@ -252,7 +257,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
         timerLabel = new LabelBuilder(400, 100)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .color(PRIMARY_COLOR).size(50).text("").end();
-        layerMan.add(timerLabel, Layer.UI);        
+        //layerMan.add(timerLabel, Layer.UI);        
         
         // Set up the level header.
         levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                
@@ -295,7 +300,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
     /**
      * Initializes miscellaneous components.
      */
-    private void initializeComponents(LayerManager layerMan)
+    private void initializeEntities(LayerManager layerMan, TimerManager timerMan)
     {
         // Create the background.
 		this.background = new GraphicEntity
@@ -325,8 +330,17 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
                 .end();                
         layerMan.add(this.nextPieceGrid, Layer.UI);
         
+        // Create the timer bar.
+        this.timerBar = new ProgressBar.Builder(400, 98)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
+                .progress(timerMan.getInitialTime())
+                .progressMax(timerMan.getInitialTime())
+                .useLabel(false)
+                .end();
+        layerMan.add(this.timerBar, Layer.UI);
+        
         // Create the progress bar.
-        this.progressBar = new ProgressBar.Builder(393, 501)
+        this.progressBar = new ProgressBar.Builder(400, 501)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .end();
         layerMan.add(this.progressBar, Layer.UI);
@@ -451,11 +465,8 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
             }
         } // end if  
         
-        // Draw the timer text.
-        if (!timerLabel.getText().equals(String.valueOf(timerMan.getTime())))            
-        {
-            timerLabel.setText(String.valueOf(timerMan.getTime()));            
-        }       
+        // Update the timer bar.
+        this.timerBar.setProgressValue(timerMan.getTime());
 
         // Draw the high score text.
         if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
@@ -506,7 +517,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
     public void scoreChanged(ScoreEvent event)
     {       
         // Update the progress bar.
-        this.progressBar.setProgress(event.getScore());       
+        this.progressBar.setProgressValue(event.getScore());       
     }
 
     public void targetScoreChanged(ScoreEvent event)

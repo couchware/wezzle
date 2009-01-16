@@ -448,9 +448,9 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
     public void updateLogic(final Game game)
     {       
         // If the board is refactoring, do not logicify.
-        if (game.isBusy() == true)
-             return;                    
+        if (game.isCompletelyBusy()) return;
         
+        // Evaluate the rules.
         evaluateRules(game);
     }        
 

@@ -99,7 +99,12 @@ public class TileDropper implements IResettable
     public void updateLogic(Game game)
     {
         // If the board is refactoring, do not logicify.
-        if (game.isBusy() == true) return;                 
+        if (game.isContextManipulating()
+                || game.refactorer.isRefactoring()
+                || game.tileRemover.isTileRemoving())
+        {
+            return;
+        }
         
         // Some convenience variables.
         final AnimationManager animationMan = game.animationMan;
