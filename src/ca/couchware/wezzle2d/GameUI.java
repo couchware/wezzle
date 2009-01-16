@@ -53,7 +53,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
 {       
     
     /** The single instance of this class. */
-    final private static GameUI single = new GameUI();
+    final private static GameUI SINGLE = new GameUI();
     
     /** The level header path. */
     final private static String LEVEL_HEADER_PATH = Settings.getSpriteResourcesPath()
@@ -143,7 +143,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
      */
     static GameUI get()
     {
-        return single;
+        return SINGLE;
     }
     
     /**

@@ -946,7 +946,7 @@ public class Game extends Canvas implements IWindowCallback
         animationMan.animate();
 
         // Handle the timer.
-        if (boardMan.isVisible() == true)
+        if (boardMan.isVisible() && !isBusy())
         {
             timerMan.updateLogic(this);
         }
@@ -989,7 +989,7 @@ public class Game extends Canvas implements IWindowCallback
                || activateGameOver == true
                || gameOverInProgress == true
                || activateBoardShowAnimation == true
-               || activateBoardHideAnimation == true
+               || activateBoardHideAnimation == true               
                || this.boardAnimation != null);
     }       
     
@@ -1104,7 +1104,10 @@ public class Game extends Canvas implements IWindowCallback
             ui.showPauseGroup(groupMan);
         }
                         
-        if (layerMan != null) layerMan.forceRedraw();                
+        if (layerMan != null)
+        {
+            layerMan.forceRedraw();        
+        }                
     }
     
      /**
@@ -1114,10 +1117,14 @@ public class Game extends Canvas implements IWindowCallback
     {                
         // Force redraw.
         if (loader != null)
+        {
             loader.forceRedraw();
-        
+        }
+            
         if (layerMan != null)
+        {
             layerMan.forceRedraw();        
+        }
     }        
     
     //--------------------------------------------------------------------------

@@ -1,8 +1,6 @@
 package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.manager.GroupManager;
-import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
@@ -116,12 +114,13 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
     
     public void setScore(final int score)
     {
-        layerMan.remove(scoreLabel, Layer.UI);
-        entityList.remove(scoreLabel);
-        scoreLabel = new LabelBuilder(scoreLabel)
-                .text(String.valueOf(score)).end();
-        layerMan.add(scoreLabel, Layer.UI);
-        entityList.add(scoreLabel);
+        this.scoreLabel.setText(String.valueOf(score));
+//        layerMan.remove(scoreLabel, Layer.UI);
+//        entityList.remove(scoreLabel);
+//        scoreLabel = new LabelBuilder(scoreLabel)
+//                .text(String.valueOf(score)).end();
+//        layerMan.add(scoreLabel, Layer.UI);
+//        entityList.add(scoreLabel);
     }
     
     public int getScore()
@@ -129,15 +128,15 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         return Integer.valueOf(scoreLabel.getText());
     }
     
-    public boolean isRestartActivated()
-    {
-        return restartButton.isActivated();
-    }
-    
-    public boolean isContinueActiavted()
-    {
-        return continueButton.isActivated();
-    }       
+//    public boolean isRestartActivated()
+//    {
+//        return restartButton.isActivated();
+//    }
+//    
+//    public boolean isContinueActiavted()
+//    {
+//        return continueButton.isActivated();
+//    }       
     
     /**
      * Override the update logic method.
@@ -155,8 +154,8 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         int level = game.levelMan.getLevel();
         
         // Reset a bunch of stuff.
-        if (isRestartActivated() == true)
-        {
+        if (this.restartButton.isActivated())
+        {           
             // Reset the board manager.
             game.boardMan.resetState();
             
@@ -171,7 +170,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
             // Reset the timer to the initial.
             game.timerMan.resetInitialTime();
         }
-        
+                        
         // Notify all listeners of reset.
         game.listenerMan.notifyGameReset(new GameEvent(this, level));
                        
@@ -195,6 +194,10 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         // Start the board show animation.  This will
         // make the board visible when it's done.
         game.startBoardShowAnimation(AnimationType.ROW_FADE);        
+        
+        // Deactivate button.
+        this.restartButton.setActivated(false);
+        this.continueButton.setActivated(false);        
     }
 
     public void gameStarted(GameEvent event)

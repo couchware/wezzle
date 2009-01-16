@@ -26,19 +26,14 @@ public class TimerManager implements IResettable, ILevelListener
     private static final TimerManager single = new TimerManager();
     
     /**
-     * The default time.
+     * The default time, in milliseconds.
      */
-    private int maximumTime = 10;
+    private int maximumTime = 10000;
    
     /** 
-     * The minimum time.
+     * The minimum time, im ms.
      */
-    private int minimumTime = 1;
-    
-	/** 
-     * The current time on the timer. 
-     */
-	private int currentTime;	    
+    private int minimumTime = 1000;    	    
     
 	/** 
      * The initial time for this timer. 
@@ -65,12 +60,7 @@ public class TimerManager implements IResettable, ILevelListener
      * if a tutorial is running, sometime we want the timer off regardless
      * of how many turns have taken place (more permanent).
      */
-    private boolean stopped;
-    
-    /**
-     * Has the time changed since this value was checked?
-     */
-    private boolean changed;
+    private boolean stopped;    
 	
 	/**
 	 * The overloaded constructor created a timer manager with a passed in 
@@ -80,9 +70,8 @@ public class TimerManager implements IResettable, ILevelListener
 	 */
 	private TimerManager()
 	{				
-		this.initialTime  = maximumTime;
-        this.currentTime  = initialTime;
-		this.internalTime = 0;
+		this.initialTime  = maximumTime;        
+		this.internalTime = initialTime;
         this.paused       = false;
         this.stopped      = false;
 	}
@@ -114,54 +103,57 @@ public class TimerManager implements IResettable, ILevelListener
         if (paused == true || stopped == true)
             return;                        		
 		
-		this.internalTime += Settings.getMillisecondsPerTick();
+		this.internalTime -= Settings.getMillisecondsPerTick();
 		
-		// Check to see if it has been a second.
-		if (this.internalTime >= 1000)
-		{
-			// A second has elapsed, decrement the current time and the
-            // internal time by 1000 (a second).
-			this.currentTime--;
-			this.internalTime -= 1000;          
-            
-            // Notify that it has changed.
-            changed = true;
-		}
-		else
-		{
-			// Purposefully left blank. 
-            // In this scenario nothing should be done.
-		}
+//		// Check to see if it has been a second.
+//		if (this.internalTime >= 1000)
+//		{
+//			// A second has elapsed, decrement the current time and the
+//            // internal time by 1000 (a second).			
+//			this.internalTime -= 1000;          
+//            
+//            // Notify that it has changed.
+//            changed = true;
+//		}
+//		else
+//		{
+//			// Purposefully left blank. 
+//            // In this scenario nothing should be done.
+//		}
 	}
     
 	/**
 	 * A method to set the time on the timer.
 	 * 
-	 * @param time The new time.
+	 * @param time The new time, in ms.
 	 */
 	public void setTime(int time)
 	{
-		assert time >= 0;
-		
-		this.currentTime = time;
+		assert time >= 0;		
+		this.internalTime = time;
 	}
 
 	/**
 	 * Get the timer time.
+     * 
 	 * @return The time.
 	 */
 	public int getTime()
 	{
-		return this.currentTime;
+		return this.internalTime;
 	}
+    
+    public int getTimeInSeconds()
+    {
+        return (int) Math.round((double) this.internalTime / 1000.0);
+    }
 		
 	/**
 	 * Reset the timer.
 	 */
 	public void resetTimer()
-	{
-		this.currentTime  = this.initialTime;
-        this.internalTime = 0;
+	{		
+        this.internalTime = this.initialTime;
 	}        
     
 	/**
@@ -222,16 +214,16 @@ public class TimerManager implements IResettable, ILevelListener
         this.stopped = stopped;
     }
 
-    public boolean isChanged()
-    {
-        boolean c = changed;
-        changed = false;
-        return c;
-    }
+//    public boolean isChanged()
+//    {
+//        boolean c = changed;
+//        changed = false;
+//        return c;
+//    }
 
     public void levelChanged(LevelEvent event)
     {
-        int time = maximumTime - event.getNewLevel() + 1;
+        int time = maximumTime - (event.getNewLevel() - 1) * 1000;
         
         if (time < minimumTime)
             time = minimumTime;
