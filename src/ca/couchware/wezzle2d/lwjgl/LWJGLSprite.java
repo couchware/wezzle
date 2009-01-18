@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.graphics.ISpriteDrawer;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.io.IOException;
 import org.lwjgl.opengl.GL11;
 
@@ -172,9 +173,10 @@ public class LWJGLSprite implements ISprite
             double theta, int tx, int ty,
             int opacity)
     {
+        Shape clip = gfx.getClip();
         gfx.setClip(new Rectangle(x, y, regionWidth, regionHeight));        
         draw(x - regionX, y - regionY, width, height, theta, tx, ty, opacity);        
-        gfx.setClip(null);
+        gfx.setClip(clip);
     }
     
     /**

@@ -285,8 +285,10 @@ public class ProgressBar extends AbstractEntity
         y_ = y;
         
         // Check visibility.
-        if (visible == false)
+        if (!visible)
+        {
             return false;
+        }
         
         // Draw the container.
         containerSprite.draw(x + offsetX, y + offsetY)                                

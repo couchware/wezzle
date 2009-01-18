@@ -5,14 +5,18 @@
 
 package ca.couchware.wezzle2d.ui.group;
 
+import ca.couchware.wezzle2d.IWindow;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.IEntity;
-import ca.couchware.wezzle2d.ui.*;
-import java.util.LinkedList;
+import ca.couchware.wezzle2d.ui.IButton;
+import ca.couchware.wezzle2d.ui.RadioGroup;
+import ca.couchware.wezzle2d.ui.SliderBar;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The group class is a way for controlling a bunch of entities at once.
@@ -43,7 +47,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     /**
      * An linked list of all the entities in this screen.
      */
-    final protected LinkedList<IEntity> entityList;
+    final protected List<IEntity> entityList;
 
     //--------------------------------------------------------------------------
     // Constructor
@@ -65,7 +69,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
         this.window = ResourceFactory.get().getWindow();        
 
         // Create the entity list.
-        this.entityList = new LinkedList<IEntity>();
+        this.entityList = new ArrayList<IEntity>();
     }
     
     public AbstractGroup()

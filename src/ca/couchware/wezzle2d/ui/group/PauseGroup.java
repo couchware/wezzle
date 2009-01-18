@@ -6,19 +6,22 @@
 
 package ca.couchware.wezzle2d.ui.group;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.LayerManager;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.event.GameEvent;
+import ca.couchware.wezzle2d.event.IGameListener;
+import ca.couchware.wezzle2d.event.ILineListener;
+import ca.couchware.wezzle2d.event.IMoveListener;
+import ca.couchware.wezzle2d.event.LineEvent;
+import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.ui.ITextLabel;
-import ca.couchware.wezzle2d.event.*;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
-import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.util.NumUtil;
-import ca.couchware.wezzle2d.util.Util;
 import java.util.EnumSet;
 
 /**

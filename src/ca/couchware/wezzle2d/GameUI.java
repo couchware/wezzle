@@ -189,9 +189,9 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
         });                     
         
         // Add the listeners.
-        game.listenerMan.registerListener(Listener.LEVEL,  this);
-        game.listenerMan.registerListener(Listener.PIECE,  this);
-        game.listenerMan.registerListener(Listener.SCORE,  this);       
+        game.listenerMan.registerListener(Listener.LEVEL, this);
+        game.listenerMan.registerListener(Listener.PIECE, this);
+        game.listenerMan.registerListener(Listener.SCORE, this);       
     }
     
     /**
@@ -330,14 +330,14 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
                 .textPosition(ProgressBar.TextPosition.NONE)
                 .barColor(ProgressBar.BarColor.BLUE)
                 .end();
-        layerMan.add(this.timerBar, Layer.UI);
-        
+        layerMan.add(this.timerBar, Layer.UI);        
+                
          // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(400, 501)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
                 .textPosition(ProgressBar.TextPosition.BOTTOM)
                 .end();
-        layerMan.add(this.progressBar, Layer.UI);        
+        layerMan.add(this.progressBar, Layer.UI);           
     }
     
     /**

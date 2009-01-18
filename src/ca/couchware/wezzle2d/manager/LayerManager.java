@@ -104,9 +104,7 @@ public class LayerManager implements IDisposable, IDrawer
     {         
         // The drawable cannot be null.
         assert drawable != null;
-        
-        if (layer == null)
-            throw new NullPointerException("Layer does not exist!");
+        assert layer    != null;      
 
         // Set disabledness.
         if (disabled == true && drawable instanceof IEntity)
@@ -167,24 +165,7 @@ public class LayerManager implements IDisposable, IDrawer
     public void removeLayer(Layer layer)
     {
         layerList.get(layer.ordinal()).clear();
-    }
-    
-    /**
-     * Gets all the entities in the layer manager as a list.
-     * 
-     * @return
-     */
-    public List<IEntity> getEntities()
-    {
-        List<IEntity> entityList = new ArrayList<IEntity>();
-        
-        for (Layer l : Layer.values())
-            for (IDrawable d : layerList.get(l.ordinal()))
-                if (d instanceof IEntity)
-                    entityList.add((IEntity) d);
-        
-        return entityList;
-    }
+    }        
     
     public boolean exists(final IDrawable drawable, Layer layer)
     {
@@ -285,7 +266,7 @@ public class LayerManager implements IDisposable, IDrawer
             // Draw its contents.
             for (IDrawable d : layer)
             {             
-                d.draw();
+                d.draw();               
 //                if (clip == null 
 //                        || (d.getDrawRect() != null 
 //                            && d.getDrawRect().intersects(clip) == true))
@@ -319,7 +300,7 @@ public class LayerManager implements IDisposable, IDrawer
             case LWJGL:
                
                 // If we want the exact region, then we must clip.
-                if (exact == true) 
+                if (exact) 
                 {
                     gfx.setClip(region);
                     drawAll();
