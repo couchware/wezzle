@@ -6,12 +6,17 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.animation.*;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
+import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.animation.FinishedAnimation;
+import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation.RunRule;
-import ca.couchware.wezzle2d.audio.*;
+import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.GameEvent;
+import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.manager.AnimationManager;
@@ -53,7 +58,6 @@ import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -112,6 +116,11 @@ public class Game extends Canvas implements IWindowCallback
     
     /** The height of the screen  */
     final public static int SCREEN_HEIGHT = 600;
+    
+    final static int BOARD_MANAGER_X = 272;
+    final static int BOARD_MANAGER_Y = 139;
+    final static int BOARD_MANAGER_COLUMNS = 8;
+    final static int BOARD_MANAGER_ROWS = 10;
     
     /** A rectangle the size of the screen. */
     final public static ImmutableRectangle SCREEN_RECTANGLE = 
@@ -319,105 +328,112 @@ public class Game extends Canvas implements IWindowCallback
         if (set.contains(Manager.LISTENER))
         {
             // Get the singleton.
-            listenerMan = ListenerManager.get();                        
+            this.listenerMan = ListenerManager.get();                        
         }
         
         if (set.contains(Manager.SETTINGS))
         {
             // Get the singleton.
-            settingsMan = SettingsManager.get();
+            this.settingsMan = SettingsManager.get();
         }
         
         if (set.contains(Manager.TIMER))
         {
             // Get the singleton.
-            timerMan = TimerManager.get();
+            this.timerMan = TimerManager.newInstance(this.listenerMan);
             
             // Initialize some parameters.
-            timerMan.resetTimer(); 
-            listenerMan.registerListener(Listener.LEVEL, timerMan);
+            this.timerMan.resetCurrentTime(); 
+            this.listenerMan.registerListener(Listener.LEVEL, timerMan);
         }
         
         if (set.contains(Manager.SOUND))
         {
             // Create the sound manager.
-            soundMan = SoundManager.newInstance(executor, settingsMan);
+            this.soundMan = SoundManager.newInstance(executor, settingsMan);
         }
         
         if (set.contains(Manager.MUSIC))
         {
             // Create the music manager.            
-            musicMan = MusicManager.newInstance(executor, settingsMan);  
+            this.musicMan = MusicManager.newInstance(executor, settingsMan);  
         }   
         
         if (set.contains(Manager.LAYER))
         {
             // Create the layer manager.   
-            layerMan = LayerManager.newInstance();  
+            this.layerMan = LayerManager.newInstance();  
         }                
         
         if (set.contains(Manager.ANIMATION))
         {
             // Create the animation manager.
-            animationMan = AnimationManager.newInstance();                
+            this.animationMan = AnimationManager.newInstance();                
         }
         
         if (set.contains(Manager.HIGHSCORE))
         {
             // Create the high score manager.
-            highScoreMan = HighScoreManager.newInstance();  
+            this.highScoreMan = HighScoreManager.newInstance();  
         }      
         
         if (set.contains(Manager.ITEM))
         {
             // Create the manager.
-            itemMan = ItemManager.newInstance();  
+            this.itemMan = ItemManager.newInstance();  
             
-            listenerMan.registerListener(Listener.LEVEL, itemMan);
-            listenerMan.registerListener(Listener.MOVE, itemMan);
+            this.listenerMan.registerListener(Listener.LEVEL, this.itemMan);
+            this.listenerMan.registerListener(Listener.MOVE,  this.itemMan);
         } 
         
         if (set.contains(Manager.STAT))
         {
             // Create the move manager.
-            statMan = StatManager.newInstance();
-            listenerMan.registerListener(Listener.GAME, statMan);
-            listenerMan.registerListener(Listener.LINE, statMan);
-            listenerMan.registerListener(Listener.MOVE, statMan);            
+            this.statMan = StatManager.newInstance();
+            this.listenerMan.registerListener(Listener.GAME, this.statMan);
+            this.listenerMan.registerListener(Listener.LINE, this.statMan);
+            this.listenerMan.registerListener(Listener.MOVE, this.statMan);            
         }
         
         if (set.contains(Manager.TUTORIAL))
         {
             // Create the tutorial manager.
-            tutorialMan = TutorialManager.newInstance();           
+            this.tutorialMan = TutorialManager.newInstance();           
         }                           
         
         if (set.contains(Manager.BOARD))
-        {
+        {            
             // Create the board manager.
-            boardMan = BoardManager.newInstance(animationMan, layerMan, itemMan,
-                    272, 139, 8, 10);             
+            this.boardMan = BoardManager.newInstance(
+                    this.animationMan, 
+                    this.layerMan, 
+                    this.itemMan,
+                    BOARD_MANAGER_X,       BOARD_MANAGER_Y,
+                    BOARD_MANAGER_COLUMNS, BOARD_MANAGER_ROWS);             
             
             // Listen for key presses.
-            window.addKeyListener(boardMan);
+            this.window.addKeyListener(boardMan);
         }
         
         if (set.contains(Manager.PIECE))
         {
             // Create the piece manager.
-            pieceMan = PieceManager.newInstance(refactorer, 
-                    animationMan, boardMan, layerMan, listenerMan);        
-            pieceMan.hidePieceGrid();            
+            this.pieceMan = PieceManager.newInstance(this.refactorer, 
+                    this.animationMan, 
+                    this.boardMan, 
+                    this.layerMan, 
+                    this.listenerMan);        
+            this.pieceMan.hidePieceGrid();            
             
             // Listen for the key and mouse.
-            window.addKeyListener(pieceMan);
-            window.addMouseListener(pieceMan);            
+            this.window.addKeyListener(pieceMan);
+            this.window.addMouseListener(pieceMan);            
         }
         
         if (set.contains(Manager.GROUP))
         {
             // Create group manager.
-            groupMan = GroupManager.newInstance(layerMan, pieceMan);
+            this.groupMan = GroupManager.newInstance(this.layerMan, this.pieceMan);
         }
 	        
         if (set.contains(Manager.SCORE))
@@ -956,10 +972,10 @@ public class Game extends Canvas implements IWindowCallback
         }
 
         // Check to see if we should force a piece commit.
-        if (timerMan.getTime() < 0)
+        if (timerMan.getCurrrentTime() < 0)
         {
             // Commit the piece.
-            timerMan.setTime(0);
+            timerMan.setCurrentTime(0);
             pieceMan.initiateCommit(this);            
         }
 

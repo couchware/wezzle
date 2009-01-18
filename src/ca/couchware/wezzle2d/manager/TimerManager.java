@@ -3,47 +3,40 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.event.TimerEvent;
 
 /**
- * The TimeManager is a class that manages the time for the Timer.
+ * A class for managing a timer.
  * 
- * Internals: *** SUBJECT TO CHANGE, DO NOT RELY ON THIS INFORMATION ***
- * The class works as follows: 
- * An internal count is held starting at 0.
- * An offset is passed in every update with an increment. 
- * When the internal count goes above 1000 ms (or 1 second) the timer 
- * is decremented.
- * 
+ * @author Cameron McKay
  * @author Kevin Grad
  *
  */
 public class TimerManager implements IResettable, ILevelListener
-{           
-   
-    /**
-     * The single instance of the manager.
-     */
-    private static final TimerManager single = new TimerManager();
+{                 
+    
+    /** The listener manager used to fire timer events. */
+    final private ListenerManager listenerMan;
     
     /**
-     * The default time, in milliseconds.
+     * The timer upper bound, in ms.
      */
-    private int maximumTime = 10000;
+    final private int timeUpper = 10000;
    
     /** 
-     * The minimum time, im ms.
+     * The timer lower bound, im ms.
      */
-    private int minimumTime = 1000;    	    
+    final private int timeLower = 1000;    	    
     
 	/** 
-     * The initial time for this timer. 
+     * The start time for this timer. 
      */
-	private int initialTime;
+	private int startTime;
 	
 	/** 
-     * Holds the internal time for comparison to time increments.
+     * The current time, in ms.
      */
-	private int internalTime;
+	private int currentTime;
     
     /** 
      * Is the timer paused? 
@@ -68,27 +61,24 @@ public class TimerManager implements IResettable, ILevelListener
 	 * 
 	 * @param initialTime The initial time on the timer.
 	 */
-	private TimerManager()
-	{				
-		this.initialTime  = maximumTime;        
-		this.internalTime = initialTime;
-        this.paused       = false;
-        this.stopped      = false;
+	private TimerManager(ListenerManager listenerMan)
+	{			
+        this.listenerMan = listenerMan;
+		this.startTime   = timeUpper;        
+		this.currentTime = startTime;
+        this.paused      = false;
+        this.stopped     = false;
 	}
         
-    /**
-     * Get the one and only timer instance.
-     * 
-     * @return
-     */
-    public static TimerManager get()
+    public static TimerManager newInstance(ListenerManager listenerMan)        
     {
-        return single;
-    }                
+        return new TimerManager(listenerMan);
+    }
 
     public void updateLogic(Game game)
     {
-        incrementInternalTime();
+        // Tick the timer.
+        tick();
     }
     
     /**
@@ -97,29 +87,17 @@ public class TimerManager implements IResettable, ILevelListener
 	 * 
 	 * @param offset The elapsed time.
 	 */
-	private void incrementInternalTime()
+	private void tick()
 	{                
         // If the timer is paused, don't do anything.
         if (paused == true || stopped == true)
             return;                        		
-		
-		this.internalTime -= Settings.getMillisecondsPerTick();
-		
-//		// Check to see if it has been a second.
-//		if (this.internalTime >= 1000)
-//		{
-//			// A second has elapsed, decrement the current time and the
-//            // internal time by 1000 (a second).			
-//			this.internalTime -= 1000;          
-//            
-//            // Notify that it has changed.
-//            changed = true;
-//		}
-//		else
-//		{
-//			// Purposefully left blank. 
-//            // In this scenario nothing should be done.
-//		}
+		        
+        // Tick.
+		this.currentTime -= Settings.getMillisecondsPerTick();		
+        
+        // Notify all listeners of the tick.
+        this.listenerMan.notifyTickOccurred(new TimerEvent(this, this.startTime, this.currentTime));
 	}
     
 	/**
@@ -127,10 +105,10 @@ public class TimerManager implements IResettable, ILevelListener
 	 * 
 	 * @param time The new time, in ms.
 	 */
-	public void setTime(int time)
+	public void setCurrentTime(int time)
 	{
 		assert time >= 0;		
-		this.internalTime = time;
+		this.currentTime = time;
 	}
 
 	/**
@@ -138,31 +116,34 @@ public class TimerManager implements IResettable, ILevelListener
      * 
 	 * @return The time.
 	 */
-	public int getTime()
+	public int getCurrrentTime()
 	{
-		return this.internalTime;
+		return this.currentTime;
 	}
     
-    public int getTimeInSeconds()
+    public int getCurrentTimeInSeconds()
     {
-        return (int) Math.round((double) this.internalTime / 1000.0);
+        return this.currentTime / 1000;
     }
 		
 	/**
-	 * Reset the timer.
+	 * Reset the timer to the start time.
 	 */
-	public void resetTimer()
+	public void resetCurrentTime()
 	{		
-        this.internalTime = this.initialTime;
+        this.currentTime = this.startTime;
+        
+        // Notify all listeners of the tick.
+        this.listenerMan.notifyCurrentTimeReset(new TimerEvent(this, this.startTime, this.currentTime));
 	}        
     
 	/**
 	 * Get the initial time.
 	 * @return The initial time.
 	 */
-	public int getInitialTime()
+	public int getStartTime()
 	{
-		return this.initialTime;
+		return this.startTime;
 	}
 
 	/**
@@ -170,18 +151,21 @@ public class TimerManager implements IResettable, ILevelListener
      * 
 	 * @param time The new time.
 	 */
-	public void setInitialTime(int time)
+	public void setStartTime(int time)
 	{
-		this.initialTime = time;
+		this.startTime = time;
         LogManager.recordMessage("Initial time changed to " + time);
+        
+        // Notify all listeners of the tick.
+        this.listenerMan.notifyStartTimeChanged(new TimerEvent(this, this.startTime, this.currentTime));
 	}
     
     /**
      * Reset the initial time to it's maximum amount.
      */
-    public void resetInitialTime()
+    public void setStartTimeToUpper()
     {
-        setInitialTime(maximumTime);
+        setStartTime(timeUpper);
     }
 		    
     /**
@@ -214,50 +198,23 @@ public class TimerManager implements IResettable, ILevelListener
         this.stopped = stopped;
     }
 
-//    public boolean isChanged()
-//    {
-//        boolean c = changed;
-//        changed = false;
-//        return c;
-//    }
-
     public void levelChanged(LevelEvent event)
     {
-        int time = maximumTime - (event.getNewLevel() - 1) * 1000;
+        int time = timeUpper - (event.getNewLevel() - 1) * 1000;
         
-        if (time < minimumTime)
-            time = minimumTime;
+        if (time < timeLower)
+            time = timeLower;
         
-        setInitialTime(time);
+        setStartTime(time);
         //resetTimer();
         
         LogManager.recordMessage("Level changed.");
-    }
-
-    public int getMaximumTime()
-    {
-        return maximumTime;
-    }
-
-    public void setMaximumTime(int maximumTime)
-    {
-        this.maximumTime = maximumTime;
-    }
-
-    public int getMinimumTime()
-    {
-        return minimumTime;
-    }
-
-    public void setMinimumTime(int minimumTime)
-    {
-        this.minimumTime = minimumTime;
-    }  
+    }   
     
     public void resetState()
     {
-        this.resetInitialTime();
-        this.resetTimer();
+        this.setStartTimeToUpper();
+        this.resetCurrentTime();
     }
 		
 }

@@ -277,7 +277,7 @@ public class TileRemover implements IResettable, ILevelListener
         pieceMan.clearMouseButtonSet();
 
         // Unpause the timer.
-        timerMan.resetTimer();
+        timerMan.resetCurrentTime();
         timerMan.setPaused(false);
     }
     

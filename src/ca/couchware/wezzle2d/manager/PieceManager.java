@@ -380,7 +380,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     public void startAnimation(TimerManager timerMan)
     {
         startAnimationAt(this.cursorPosition, 
-                getPulseSpeed(timerMan.getInitialTime(), timerMan.getTime()));
+                getPulseSpeed(timerMan.getStartTime(), timerMan.getCurrrentTime()));
     }
     
     private void adjustAnimationAt(final ImmutablePosition p, int speed)
@@ -476,8 +476,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 // Filter the current position.
                 ImmutablePosition pos = limitPosition(p);
 
-                int speed = getPulseSpeed(game.timerMan.getInitialTime(), 
-                        game.timerMan.getTime());                             
+                int speed = getPulseSpeed(game.timerMan.getStartTime(), 
+                        game.timerMan.getCurrrentTime());                             
                 
                 // If the position changed, or the board was refactored.
                 if (pos.getX() != this.cursorPosition.getX()

@@ -421,7 +421,7 @@ public class PlayNowGroup extends AbstractGroup
             
             // Set the target score.
             game.levelMan.setLevel(levelNumber, false);
-            game.timerMan.resetTimer();
+            game.timerMan.resetCurrentTime();
             game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
             game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber)); 
             

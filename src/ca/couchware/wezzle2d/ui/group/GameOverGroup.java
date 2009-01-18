@@ -168,7 +168,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
             game.itemMan.evaluateRules(game);
 
             // Reset the timer to the initial.
-            game.timerMan.resetInitialTime();
+            game.timerMan.setStartTimeToUpper();
         }
                         
         // Notify all listeners of reset.
@@ -189,7 +189,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         game.timerMan.setPaused(false);
 
         // Reset the timer.
-        game.timerMan.resetTimer();
+        game.timerMan.resetCurrentTime();
 
         // Start the board show animation.  This will
         // make the board visible when it's done.

@@ -15,11 +15,13 @@ import ca.couchware.wezzle2d.event.IListener;
 import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.IPieceListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
+import ca.couchware.wezzle2d.event.ITimerListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.event.PieceEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.event.TimerEvent;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -57,7 +59,8 @@ public class ListenerManager
         LINE,
         MOVE,
         PIECE,
-        SCORE        
+        SCORE,
+        TIMER
     }
     
     /** The single listener manager. */
@@ -249,6 +252,36 @@ public class ListenerManager
         for (IListener listener : list)
         {
             ((IPieceListener) listener).pieceAdded(e);
+        }
+    }
+    
+    public void notifyTickOccurred(TimerEvent e)
+    {
+        List<IListener> list = listenerMap.get(Listener.TIMER);
+         
+        for (IListener listener : list)
+        {
+            ((ITimerListener) listener).tickOccurred(e);
+        }
+    }
+    
+    public void notifyCurrentTimeReset(TimerEvent e)
+    {
+        List<IListener> list = listenerMap.get(Listener.TIMER);
+         
+        for (IListener listener : list)
+        {
+            ((ITimerListener) listener).currentTimeReset(e);
+        }
+    }
+    
+    public void notifyStartTimeChanged(TimerEvent e)
+    {
+        List<IListener> list = listenerMap.get(Listener.TIMER);
+         
+        for (IListener listener : list)
+        {
+            ((ITimerListener) listener).startTimeChanged(e);
         }
     }
        

@@ -325,8 +325,8 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
         // Create the timer bar.
         this.timerBar = new ProgressBar.Builder(400, 98)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
-                .progressValue(timerMan.getInitialTime())
-                .progressUpper(timerMan.getInitialTime())
+                .progressValue(timerMan.getStartTime())
+                .progressUpper(timerMan.getStartTime())
                 .textPosition(ProgressBar.TextPosition.NONE)
                 .barColor(ProgressBar.BarColor.BLUE)
                 .end();
@@ -460,7 +460,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
         } // end if  
         
         // Update the timer bar.
-        this.timerBar.setProgressValue(timerMan.getTime());
+        this.timerBar.setProgressValue(timerMan.getCurrrentTime());
 
         // Draw the high score text.
         if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
