@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.util.AtomicDouble;
+import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.util.Map;
@@ -182,7 +183,7 @@ public class MusicPlayer
                 double n = normalizedGain.get();
                 double delta = 0.05;                
 
-                if (Util.equalsDouble(n, targetNormalizedGain, 0.02))
+                if (NumUtil.equalsDouble(n, targetNormalizedGain, 0.02))
                 {
                     //LogManager.recordMessage("Fade completed.");                    
                     
@@ -263,7 +264,7 @@ public class MusicPlayer
             {
                 LogManager.recordMessage("Checking...");
                 
-                if (Util.equalsDouble(targetGain, normalizedGain.get(), 0.02))
+                if (NumUtil.equalsDouble(targetGain, normalizedGain.get(), 0.02))
                 {                                        
                     synchronized (player)
                     {                        

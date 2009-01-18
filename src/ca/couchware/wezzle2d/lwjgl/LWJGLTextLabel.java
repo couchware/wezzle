@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.lwjgl;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.ui.ITextLabel;
+import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -165,7 +166,7 @@ public class LWJGLTextLabel extends AbstractEntity implements ITextLabel
     public void setOpacity(int opacity)
     {
         super.setOpacity(opacity);
-        int alpha = Util.scaleInt(0, 100, 0, 255, opacity);
+        int alpha = NumUtil.scaleInt(0, 100, 0, 255, opacity);
         this.colorBlack = new Color(0, 0, 0, alpha);
         this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }

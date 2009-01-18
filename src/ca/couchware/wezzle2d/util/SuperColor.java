@@ -75,7 +75,7 @@ public class SuperColor implements IXMLizable
     
     public static int scaleOpacity(int val)
     {        
-        return Util.scaleInt(0, 100, 0, 255, val);
+        return NumUtil.scaleInt(0, 100, 0, 255, val);
     }
     
     /**

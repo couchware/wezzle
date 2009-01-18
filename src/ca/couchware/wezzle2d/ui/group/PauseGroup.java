@@ -17,6 +17,7 @@ import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.StatManager;
+import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.EnumSet;
 
@@ -127,7 +128,7 @@ public class PauseGroup extends AbstractGroup implements
     
     private void setLinesPerMove(double linesPerMove)
     {
-        if (Util.equalsDouble(this.linesPerMove, linesPerMove)) return;
+        if (NumUtil.equalsDouble(this.linesPerMove, linesPerMove)) return;
         
         // Record the current lpm.
         this.linesPerMove = linesPerMove;

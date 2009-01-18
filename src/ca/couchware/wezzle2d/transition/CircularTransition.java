@@ -5,14 +5,11 @@
 
 package ca.couchware.wezzle2d.transition;
 
-import ca.couchware.wezzle2d.animation.*;
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.graphics.IDrawer;
-import ca.couchware.wezzle2d.manager.LayerManager;
-import ca.couchware.wezzle2d.manager.LogManager;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.NumUtil;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
@@ -91,8 +88,8 @@ public class CircularTransition extends AbstractTransition
         
         private int speed = 500;
         private int minRadius = 10;
-        private int maxRadius = (int) Math.sqrt(Util.sq(Game.SCREEN_HEIGHT / 2) 
-                + Util.sq(Game.SCREEN_WIDTH / 2)) + 10;
+        private int maxRadius = (int) Math.sqrt(NumUtil.sqInt(Game.SCREEN_HEIGHT / 2) 
+                + NumUtil.sqInt(Game.SCREEN_WIDTH / 2)) + 10;
         private int wait = 0;
         //private int duration = 500;
         

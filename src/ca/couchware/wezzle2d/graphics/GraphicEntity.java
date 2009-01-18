@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.graphics;
 
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import java.util.EnumSet;

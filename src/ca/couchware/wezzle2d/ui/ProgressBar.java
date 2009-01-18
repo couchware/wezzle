@@ -1,14 +1,13 @@
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.graphics.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.NumUtil;
+import ca.couchware.wezzle2d.util.StringUtil;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.EnumSet;
@@ -33,40 +32,61 @@ public class ProgressBar extends AbstractEntity
     public static void setDefaultColor(Color color)
     { defaultColor = color; }    
     
-    /** The different types of progress bars. */
-    public static enum Type
+    /** The different widths of progress bars. */
+    public enum BarWidth
     {
-        MEDIUM, LARGE
+        MEDIUM, 
+        LARGE
     }
+    
+    /** The different positions for the text. */
+    public enum TextPosition
+    {
+        NONE,
+        BOTTOM
+    }
+    
+    /** The different colours fo the bar. */
+    public enum BarColor
+    {
+        YELLOW,
+        BLUE
+    }
+    
+    /** The file extension for graphics files. */
+    final private static String FILE_EXT = ".png";
     
     /** The path to the progress bar container for 200 pixel bar. */    
     final private static String PATH_CONTAINER_200 =            
-            Settings.getSpriteResourcesPath() + "/ProgressBarContainer_200.png";
+            Settings.getSpriteResourcesPath() + "/ProgressBar_Container_200" + FILE_EXT;
     
     /** The path to the progress bar container for 400 pixel bar. */    
     final private static String PATH_CONTAINER_400 =
-            Settings.getSpriteResourcesPath() + "/ProgressBarContainer_400.png";        
+            Settings.getSpriteResourcesPath() + "/ProgressBar_Container_400" + FILE_EXT;        
     
     /** The path to the left sprite. */
-    final private static String PATH_SPRITE_LEFT = 
-            Settings.getSpriteResourcesPath() + "/ProgressBar_LeftEnd.png";
+    final private static String PATH_SPRITE_LEFT_PREFIX =             
+            Settings.getSpriteResourcesPath() + "/ProgressBar_Left_";
     
     /** The path to the right sprite. */
-    final private static String PATH_SPRITE_RIGHT =
-            Settings.getSpriteResourcesPath() + "/ProgressBar_RightEnd.png";
+    final private static String PATH_SPRITE_RIGHT_PREFIX =
+            Settings.getSpriteResourcesPath() + "/ProgressBar_Right_";
     
     /** The path to the middle sprite. */
-    final private static String PATH_SPRITE_MIDDLE =
-            Settings.getSpriteResourcesPath() + "/ProgressBar_Middle2.png";
-     
+    final private static String PATH_SPRITE_MIDDLE_PREFIX =
+            Settings.getSpriteResourcesPath() + "/ProgressBar_Middle_";
+   
+    /** The progress bar color. */
+    final private BarColor barColor;
+    
     /** The color of the progress bar text. */
-    final private Color color;
+    final private Color textColor;
     
     /** The type of progress bar. */
-    final private Type type;
+    final private BarWidth barWidth;
     
-    /** Does the progress bar have text */
-    final private boolean showLabel;
+    /** The position of the bar text. */
+    final private TextPosition textPosition;
     
     /** The progress text. */
     private ITextLabel progressLabel;
@@ -86,20 +106,20 @@ public class ProgressBar extends AbstractEntity
 	/** The current progress. */
 	private int progressValue;
     
-    /** The progress max. */
-	private int progressMax;
+    /** The progress lower bound. */
+    private int progressLower;
+    
+    /** The progress upper bound. */
+	private int progressUpper;
 	
 	/** The current progress  */
 	private int progressWidth;
     
     /** The width at which the element is at maximum progress. */
-	private int progressMaxWidth;   
+	private int maxProgressWidth;   
     
-    /** The inner x padding of the progress bar container. */
-    private int padX;
-    
-    /** The inner y padding of the progress bar container. */
-    private int padY;
+    /** The inner padding of the progress bar container. */
+    private Padding padding;        
     
     /**
      * Create a progress bar with the top-left coordinate at the position
@@ -109,42 +129,54 @@ public class ProgressBar extends AbstractEntity
      */    
     public ProgressBar(Builder builder)
     {            
-        // Save the color.
-        this.color = builder.color;
+        // Save opacity and visiblity.
+        this.visible = builder.visible;
+        this.opacity = builder.opacity;
         
-        // Save the type.
-        this.type = builder.type;
+        // Save the color.
+        this.barColor  = builder.barColor;
+        this.textColor = builder.textColor;
+        
+        // Save the width.
+        this.barWidth = builder.barWidth;                
         
         // Set progress to 0.
         // Set progressMax to 100.
         this.progressValue = builder.progressValue;
-        this.progressMax = builder.progressMax;                                  
+        this.progressLower = builder.progressLower;
+        this.progressUpper = builder.progressUpper;                                  
+        
+        assert progressUpper >= progressLower;
+        assert progressLower <= progressUpper;
+        assert progressValue >= progressLower;
+        assert progressValue <= progressUpper;
         
          // Load the container sprite.
-        switch (type)
+        switch (barWidth)
         {
             case MEDIUM:
                 // Set width max.
-                this.progressMaxWidth = 200 - 14;
+                this.maxProgressWidth = 200 - 14;
                 this.containerSprite = ResourceFactory.get().getSprite(PATH_CONTAINER_200);
                 break;
                 
             case LARGE:
                 // Set width max.
-                this.progressMaxWidth = 400 - 14;
-                containerSprite = ResourceFactory.get().getSprite(PATH_CONTAINER_400);
+                this.maxProgressWidth = 400 - 14;
+                this.containerSprite = ResourceFactory.get().getSprite(PATH_CONTAINER_400);
                 break;
                 
             default: throw new AssertionError();
         }
         
-        padX = 7;
-        padY = 7;
+        // Set the padding.
+        this.padding = Padding.newInstance(7);
                
         // Load the sprites.
-        leftSprite = ResourceFactory.get().getSprite(PATH_SPRITE_LEFT);
-        rightSprite = ResourceFactory.get().getSprite(PATH_SPRITE_RIGHT);
-        middleSprite = ResourceFactory.get().getSprite(PATH_SPRITE_MIDDLE);     
+        final String SUFFIX = StringUtil.capitalizeFirst(barColor.toString()) + FILE_EXT;
+        leftSprite   = ResourceFactory.get().getSprite(PATH_SPRITE_LEFT_PREFIX   + SUFFIX);        
+        rightSprite  = ResourceFactory.get().getSprite(PATH_SPRITE_RIGHT_PREFIX  + SUFFIX);
+        middleSprite = ResourceFactory.get().getSprite(PATH_SPRITE_MIDDLE_PREFIX + SUFFIX);     
                
         // Set coordinates.
         this.x = builder.x;
@@ -159,18 +191,22 @@ public class ProgressBar extends AbstractEntity
         this.offsetY = determineOffsetY(alignment, getHeight());
         
         // Add text if specified.
-        this.showLabel = builder.showLabel;
-		if (showLabel == true)
+        this.textPosition = builder.textPosition;
+		switch (this.textPosition)
 		{
-            // Set the label.
-            progressLabel = new LabelBuilder(x + getWidth() / 2, y + 47)
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(builder.color).size(14)
-                    .text(progressValue + "/" + progressMax).cached(false).end();   
-            
-            // Update the text if necessary.        
-            progressLabel.setX(progressLabel.getX() + offsetX);
-            progressLabel.setY(progressLabel.getY() + offsetY);
+            case BOTTOM:
+                
+                // Set the label.
+                progressLabel = new LabelBuilder(x + getWidth() / 2, y + 47)
+                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                        .color(builder.textColor).size(14)
+                        .text(progressValue + "/" + progressUpper).cached(false).end();   
+
+                // Update the text if necessary.        
+                progressLabel.setX(progressLabel.getX() + offsetX);
+                progressLabel.setY(progressLabel.getY() + offsetY);
+                
+                break;
         }                                                
         
         // Initialize.
@@ -188,11 +224,13 @@ public class ProgressBar extends AbstractEntity
         
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);
-        private Color color = defaultColor;
-        private Type type = Type.MEDIUM;        
-        private boolean showLabel = true;
+        private Color textColor = defaultColor;
+        private BarWidth barWidth = BarWidth.MEDIUM;        
+        private TextPosition textPosition = TextPosition.NONE;
+        private BarColor barColor = BarColor.YELLOW;
         private int progressValue = 0;
-        private int progressMax = 100;        
+        private int progressLower = 0;
+        private int progressUpper = 100;        
         private int opacity = 100;
         private boolean visible = true;
         
@@ -200,21 +238,7 @@ public class ProgressBar extends AbstractEntity
         {            
             this.x = x;
             this.y = y;
-        }
-        
-        public Builder(ProgressBar progressBar)
-        {            
-            this.x = progressBar.x;
-            this.y = progressBar.y;
-            this.alignment = progressBar.alignment.clone();
-            this.color = progressBar.color;
-            this.type = progressBar.type;
-            this.showLabel = progressBar.showLabel;
-            this.progressValue = progressBar.progressValue;
-            this.progressMax = progressBar.progressMax;
-            this.opacity = progressBar.opacity;                        
-            this.visible = progressBar.visible;
-        }
+        }               
         
         public Builder x(int val) { x = val; return this; }        
         public Builder y(int val) { y = val; return this; }
@@ -222,20 +246,26 @@ public class ProgressBar extends AbstractEntity
         public Builder alignment(EnumSet<Alignment> val) 
         { alignment = val; return this; }
         
-        public Builder color(Color val)
-        { color = val; return this; }
+        public Builder textColor(Color val)
+        { textColor = val; return this; }
         
-        public Builder type(Type val)
-        { type = val; return this; }
+        public Builder barColor(BarColor val)
+        { barColor = val; return this; }
         
-        public Builder useLabel(boolean val)
-        { showLabel = val; return this; }
+        public Builder barWidth(BarWidth val)
+        { barWidth = val; return this; }
         
-        public Builder progress(int val)
+        public Builder textPosition(TextPosition val)
+        { textPosition = val; return this; }
+        
+        public Builder progressValue(int val)
         { progressValue = val; return this; }
         
-        public Builder progressMax(int val)
-        { progressMax = val; return this; }
+        public Builder progressLower(int val)
+        { progressLower = val; return this; }
+        
+        public Builder progressUpper(int val)
+        { progressUpper = val; return this; }
         
         public Builder opacity(int val)
         { opacity = val; return this; }
@@ -260,14 +290,17 @@ public class ProgressBar extends AbstractEntity
         
         // Draw the container.
         containerSprite.draw(x + offsetX, y + offsetY)                                
-                .opacity(Util.scaleInt(0, 100, 0, 90, opacity)).end();
+                .opacity(NumUtil.scaleInt(0, 100, 0, 90, opacity)).end();
         
         // Draw the text.
-        if (showLabel == true) progressLabel.draw();
+        if (textPosition != TextPosition.NONE) 
+        {
+            progressLabel.draw();
+        }
         
         // Adjust the local x and y.
-        int alignedX = x + padX + offsetX;
-        int alignedY = y + padY + offsetY;
+        int alignedX = x + padding.getLeft() + offsetX;
+        int alignedY = y + padding.getTop()  + offsetY;
         
         // Draw the bar.        
         if (progressValue == 0)
@@ -288,6 +321,17 @@ public class ProgressBar extends AbstractEntity
             
             for (int i = 4; i < progressWidth - 4; i += 2)
             {
+                // Look at the case of the last piece.  If it's exactly equal
+                // to the desired width, then draw normally.  Otherwise
+                // draw only half of it.
+                if (i + 2 > progressWidth - 4)
+                {
+                    middleSprite.draw(alignedX + i, alignedY).opacity(opacity)
+                            .region(0, 0, 1, middleSprite.getHeight())
+                            .end();
+                    continue;
+                }
+                                
                 middleSprite.draw(alignedX + i, alignedY)
                         .opacity(opacity).end();                        
             }            
@@ -304,24 +348,25 @@ public class ProgressBar extends AbstractEntity
 	 */
 	public int getProgressMax()
 	{
-		return progressMax;
+		return progressUpper;
 	}
 
 	/**
 	 * @param progressMax The progressMax to set.
 	 */
-	public void setProgressMax(int progressMax)
+	public void setProgressUpper(int progressUpper)
 	{
 		// Update the text, if needed.
-		if (showLabel == true)
-        {
-			//progressText.setText(progress + "/" + progressMax);
-            progressLabel = new LabelBuilder(progressLabel)
-                    .text(progressValue + "/" + progressMax).end();
+		if (textPosition != TextPosition.NONE)
+        {			
+            progressLabel.setText(progressValue + "/" + progressUpper);
         }
 		
-		// Update the progress.
-		this.progressMax = progressMax;
+		// Update the progress upper bound.
+		this.progressUpper = progressUpper;
+        
+        // Recalculate the width.
+        this.setProgressValue(this.progressValue);
         
         // Set dirty so it will be drawn.        
         this.dirty = true;
@@ -341,24 +386,32 @@ public class ProgressBar extends AbstractEntity
 	final public void setProgressValue(int progressValue)
 	{
         // Make sure progress is positive.
-        assert progressValue >= 0;        
+        assert progressValue >= this.progressLower;        
         
         // Don't do anything if it's the same.
         if (this.progressValue == progressValue)
+        {
             return;
+        }
         
 		// Update the text, if needed.
-		if (showLabel == true)
+		if (textPosition != TextPosition.NONE)
         {            
-			progressLabel = new LabelBuilder(progressLabel)
-                    .text(progressValue + "/" + progressMax).end();
+			progressLabel.setText(progressValue + "/" + progressUpper);
         }
 		
+        // Save the progress value.
         this.progressValue = progressValue;
-		this.progressWidth = (int) ((double) progressMaxWidth 
-                * ((double) progressValue / (double) progressMax));
-		this.progressWidth = progressWidth > progressMaxWidth ? progressMaxWidth : progressWidth;         
-        //if (this.progressWidth / 2 != 0) this.progressWidth++;        
+        		
+        // Determine the progress width.
+        this.progressWidth = ((progressValue - progressLower) * maxProgressWidth) 
+                / (progressUpper - progressLower);
+        
+        // This code ensures that the progress width does not exceed the
+        // maximum progress width.
+		this.progressWidth = progressWidth > maxProgressWidth 
+                ? maxProgressWidth 
+                : progressWidth;                 
         
         // Set dirty so it will be drawn.        
         this.dirty = true;
@@ -374,20 +427,7 @@ public class ProgressBar extends AbstractEntity
     public int getWidth()
     {
         return containerSprite.getWidth();
-    }  
-    
-    public int getProgressWidth()
-    {
-        return progressWidth;
-    }
-
-    public void setProgressWidth(int progressWidth)
-    {
-        this.progressWidth = progressWidth;
-        
-        // Set dirty so it will be drawn.        
-        this.dirty = true;
-    }    
+    }          
 
     @Override
     public int getHeight()
@@ -418,8 +458,10 @@ public class ProgressBar extends AbstractEntity
             rect.translate(offsetX, offsetY);
 
             // Add the text too.
-            if (showLabel == true)
+            if (textPosition != TextPosition.NONE)
+            {
                 rect.add(progressLabel.getDrawRect());
+            }
             
             drawRect = rect;
         }

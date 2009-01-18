@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.manager.LogManager;
 import java.util.ArrayList;
 import java.util.List;

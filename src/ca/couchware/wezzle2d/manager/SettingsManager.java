@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.Settings.Value;
+import ca.couchware.wezzle2d.util.StringUtil;
 import ca.couchware.wezzle2d.util.SuperColor;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
@@ -176,7 +177,7 @@ public class SettingsManager
             {
                 Element entry = (Element) o;
                                 
-                String name = Util.toUnderScoreFormat(entry.getAttributeValue("name"));
+                String name = toUnderScoreFormat(entry.getAttributeValue("name"));
                 
                 // Check for children.
                 List children = entry.getChildren();
@@ -252,7 +253,7 @@ public class SettingsManager
             if (currentMap.containsKey(key))
             {                               
                 Element entry = new Element("entry");
-                entry.setAttribute("name", Util.toDotFormat(key.toString()));                
+                entry.setAttribute("name", toDotFormat(key.toString()));                
                 Object currentValue = currentMap.get(key);
                 
                 if (defaultMap.containsKey(key))
@@ -528,6 +529,51 @@ public class SettingsManager
         }
         
         return Collections.unmodifiableList(list);
+    }
+    
+    /**
+     * Converts a string passed in with the format "THE_SWIFT_RED_FOX" to
+     * the format "The.Swift.Red.Fox".  Used mainly for the settings file.
+     * 
+     * @param str
+     * @return
+     */
+    public static String toDotFormat(String str)
+    {
+        StringBuffer buffer = new StringBuffer();
+        
+        for (int i = 0; i < str.length(); i++)
+        {
+            char ch = str.charAt(i);
+            
+            if (i == 0) 
+                buffer.append(Character.toUpperCase(ch));
+            else if (ch == '_') 
+            {                               
+                buffer.append('.');
+            }  
+            else
+            {
+                if (buffer.charAt(i - 1) == '.')
+                    buffer.append(Character.toUpperCase(ch));                          
+                else
+                    buffer.append(Character.toLowerCase(ch));                          
+            }
+        }
+        
+        return buffer.toString();
+    }
+    
+     /**
+     * Converts a string passed in with the format "The.Swift.Red.Fox" to
+     * the format "THE_SWIFT_RED_FOX".  Used mainly for the settings file.
+     * 
+     * @param str
+     * @return
+     */
+    public static String toUnderScoreFormat(String str)
+    {
+        return str.replace('.', '_').toUpperCase();
     }
     
 }

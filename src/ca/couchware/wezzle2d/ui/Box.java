@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.IGraphics;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;

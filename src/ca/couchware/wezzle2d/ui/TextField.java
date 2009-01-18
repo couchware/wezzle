@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.IKeyListener;
@@ -15,6 +15,8 @@ import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.Ascii;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import ca.couchware.wezzle2d.util.NumUtil;
+import ca.couchware.wezzle2d.util.StringUtil;
 import ca.couchware.wezzle2d.util.SuperColor;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
@@ -175,7 +177,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         // an underscore at the end.
         this.activeLabel = new LabelBuilder(normalLabel)
                 .color(activeColor)
-                .text(Util.padString("", EDIT_CHARACTER, maximumLength)).end();
+                .text(StringUtil.padString("", EDIT_CHARACTER, maximumLength)).end();
     }
     
     public static class Builder implements IBuilder<TextField>
@@ -397,7 +399,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     
     private int opacitize(int targetOpacity)
     {
-        return Util.scaleInt(0, 100, 0, targetOpacity, this.opacity);
+        return NumUtil.scaleInt(0, 100, 0, targetOpacity, this.opacity);
     }
 
     public int getActiveOpacity()

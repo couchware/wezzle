@@ -58,7 +58,7 @@ public final class ImmutablePosition
     
     public double distanceTo(ImmutablePosition p)
     {
-        return Math.sqrt(Util.sq(p.x - x) + Util.sq(p.y - y));
+        return Math.sqrt(NumUtil.sqInt(p.x - x) + NumUtil.sqInt(p.y - y));
     }        
     
     public ImmutablePosition plus(int x, int y)

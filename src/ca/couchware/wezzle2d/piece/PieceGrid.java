@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.piece;
 
-import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.IGraphics;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
@@ -8,6 +8,7 @@ import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.SuperColor;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
@@ -242,8 +243,8 @@ public class PieceGrid extends AbstractEntity
                 }
             }                        
                         
-            int w = Util.sumIntArray(wx) * cellWidth;
-            int h = Util.sumIntArray(hx) * cellHeight;
+            int w = NumUtil.sumIntArray(wx) * cellWidth;
+            int h = NumUtil.sumIntArray(hx) * cellHeight;
             
             if (alignment.contains(Alignment.LEFT)
                     || alignment.contains(Alignment.RIGHT)

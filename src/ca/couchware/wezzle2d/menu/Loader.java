@@ -115,7 +115,8 @@ public class Loader implements IDrawer
         // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(400, 326)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .type(ProgressBar.Type.LARGE).useLabel(false).end();
+                .barWidth(ProgressBar.BarWidth.LARGE)
+                .textPosition(ProgressBar.TextPosition.NONE).end();
         layerMan.add(progressBar, Layer.UI);
         
         // Create an entity group that will be used by the transition
@@ -165,7 +166,7 @@ public class Loader implements IDrawer
         state = State.READY;
         
         // Adjust progress bar.
-        progressBar.setProgressMax(loaderQueue.size());
+        progressBar.setProgressUpper(loaderQueue.size());
     }        
         
     public void updateLogic(Game game)

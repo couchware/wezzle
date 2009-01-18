@@ -28,6 +28,7 @@ import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -516,7 +517,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
      */
     private int getPulseSpeed(int initialTime, int time)
     {
-        return Util.scaleInt(0, initialTime, SLOW_SPEED, FAST_SPEED, initialTime - time);
+        return NumUtil.scaleInt(0, initialTime, SLOW_SPEED, FAST_SPEED, initialTime - time);
     }
     
     public void initiateCommit(final Game game)

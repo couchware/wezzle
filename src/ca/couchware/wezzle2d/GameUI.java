@@ -84,10 +84,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
     
     /** The progress bar. */
     private ProgressBar progressBar; 
-    
-    /** The timer text. */
-    private ITextLabel timerLabel;
-    
+       
     /** The next piece preview. */
     private Box nextPieceBox;
     
@@ -252,12 +249,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
                 .text(Game.TITLE)
                 .end();                        
         layerMan.add(versionLabel, Layer.UI);
-        
-		// Set up the timer text.
-        timerLabel = new LabelBuilder(400, 100)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
-                .color(PRIMARY_COLOR).size(50).text("").end();
-        //layerMan.add(timerLabel, Layer.UI);        
+        		  
         
         // Set up the level header.
         levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                
@@ -298,7 +290,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
     }
     
     /**
-     * Initializes miscellaneous components.
+     * Initializes miscellaneous entities.
      */
     private void initializeEntities(LayerManager layerMan, TimerManager timerMan)
     {
@@ -328,22 +320,24 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
                 .cellWidth(22)
                 .cellHeight(22)
                 .end();                
-        layerMan.add(this.nextPieceGrid, Layer.UI);
+        layerMan.add(this.nextPieceGrid, Layer.UI);               
         
         // Create the timer bar.
         this.timerBar = new ProgressBar.Builder(400, 98)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
-                .progress(timerMan.getInitialTime())
-                .progressMax(timerMan.getInitialTime())
-                .useLabel(false)
+                .progressValue(timerMan.getInitialTime())
+                .progressUpper(timerMan.getInitialTime())
+                .textPosition(ProgressBar.TextPosition.NONE)
+                .barColor(ProgressBar.BarColor.BLUE)
                 .end();
         layerMan.add(this.timerBar, Layer.UI);
         
-        // Create the progress bar.
+         // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(400, 501)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
+                .textPosition(ProgressBar.TextPosition.BOTTOM)
                 .end();
-        layerMan.add(this.progressBar, Layer.UI);
+        layerMan.add(this.progressBar, Layer.UI);        
     }
     
     /**
@@ -506,7 +500,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
 
     public void levelChanged(LevelEvent event)
     {
-        this.progressBar.setProgressMax(event.getNextTargetLevelScore());
+        this.progressBar.setProgressUpper(event.getNextTargetLevelScore());
     }
 
     public void scoreIncreased(ScoreEvent event)
@@ -523,7 +517,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
     public void targetScoreChanged(ScoreEvent event)
     {
         // Update the progress bar.
-        this.progressBar.setProgressMax(event.getScore());
+        this.progressBar.setProgressUpper(event.getScore());
     }
 
     public void pieceAdded(PieceEvent event)

@@ -20,17 +20,17 @@ public class TallButton extends Button
     /** The left sprite. */
     final private static String LEFT_SPRITE_PATH = Settings.getSpriteResourcesPath() 
             + "/Button_Tall_Left" 
-            + FILE_TYPE;
+            + FILE_EXT;
     
     /** The middle sprite. */
     final private static String MIDDLE_SPRITE_PATH = Settings.getSpriteResourcesPath() 
             + "/Button_Tall_Middle" 
-            + FILE_TYPE;
+            + FILE_EXT;
     
     /** The right sprite. */
     final private static String RIGHT_SPRITE_PATH = Settings.getSpriteResourcesPath() 
             + "/Button_Tall_Right" 
-            + FILE_TYPE;
+            + FILE_EXT;
     
     private TallButton(Builder builder)
     {

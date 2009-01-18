@@ -1,11 +1,11 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.ui.AchievementNotification;
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.NumUtil;
 
 /**
  * An animation that slowly changes the opacity of an entity.
@@ -156,7 +156,7 @@ public class FadeAnimation extends AbstractAnimation
                 case IN:      
                 case LOOP_IN:
                    
-                    int i = Util.scaleInt(0, duration, 
+                    int i = NumUtil.scaleInt(0, duration, 
                             minOpacity, maxOpacity, ms - wait);
                     entity.setOpacity(i);
                             
@@ -165,7 +165,7 @@ public class FadeAnimation extends AbstractAnimation
                 case OUT:
                 case LOOP_OUT:
                     
-                    int o = Util.scaleInt(0, duration, 
+                    int o = NumUtil.scaleInt(0, duration, 
                             minOpacity, maxOpacity, ms - wait);
                     entity.setOpacity(maxOpacity - o + minOpacity);                        
                     

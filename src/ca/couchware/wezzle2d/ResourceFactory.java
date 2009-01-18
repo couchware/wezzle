@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 //import ca.couchware.wezzle2d.java2d.Java2DGameWindow;

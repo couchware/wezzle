@@ -1,10 +1,12 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.graphics.*;
-import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.ui.ITextLabel;
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IGraphics;
+import ca.couchware.wezzle2d.ResourceFactory;
+import ca.couchware.wezzle2d.graphics.IDisposable;
+import ca.couchware.wezzle2d.graphics.IDrawable;
+import ca.couchware.wezzle2d.graphics.IDrawer;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class LayerManager implements IDisposable, IDrawer
     /**
      * The list of hidden layers.
      */
-    private boolean[] isHidden;
+    private boolean[] hiddenArray;
     
     /**
      * The graphics instance.  Used when drawing regions of the screen.
@@ -71,13 +73,13 @@ public class LayerManager implements IDisposable, IDrawer
         layerList = new ArrayList<ArrayList<IDrawable>>(Layer.values().length);
         
         // Initialize hidden layer map.
-        isHidden = new boolean[Layer.values().length];
+        hiddenArray = new boolean[Layer.values().length];
         
         // Create layers.
         for (int i = 0; i < Layer.values().length; i++)
         {
             layerList.add(new ArrayList<IDrawable>());
-            isHidden[i] = false;
+            hiddenArray[i] = false;
         }        
         
         // Initialize remove clip.
@@ -136,8 +138,8 @@ public class LayerManager implements IDisposable, IDrawer
         // If the index is -1, the element is not in this layer.
         if (index != -1)
         {
-            Rectangle r = list.get(index).getDrawRect();
-            if (r != null) addRemoveRect(r);
+//            Rectangle r = list.get(index).getDrawRect();
+//            if (r != null) addRemoveRect(r);
             list.remove(index);            
         }
         else        
@@ -205,10 +207,10 @@ public class LayerManager implements IDisposable, IDrawer
         if (layer == null)
             throw new NullPointerException("Layer does not exist!");
         
-        if (isHidden[layer.ordinal()] == false)
+        if (hiddenArray[layer.ordinal()] == false)
             return;
         
-        isHidden[layer.ordinal()] = false;
+        hiddenArray[layer.ordinal()] = false;
         
         // Grab the layer.
         final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
@@ -222,10 +224,10 @@ public class LayerManager implements IDisposable, IDrawer
         if (layer == null)
             throw new RuntimeException("Layer does not exist!");
         
-        if (isHidden[layer.ordinal()] == true)
+        if (hiddenArray[layer.ordinal()] == true)
             return;
         
-        isHidden[layer.ordinal()] = true;
+        hiddenArray[layer.ordinal()] = true;
         
         // Grab the layer.
         final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
@@ -262,23 +264,23 @@ public class LayerManager implements IDisposable, IDrawer
         //int count = 0;
         //int total = 0;
         
-        // The clipping area.        
-        Rectangle clip;
-        
-        if (gfx.getClip() !=  null)
-            clip = gfx.getClip().getBounds();
-        else
-            clip = null;
+//        // The clipping area.        
+//        Rectangle clip;
+//        
+//        if (gfx.getClip() !=  null)
+//            clip = gfx.getClip().getBounds();
+//        else
+//            clip = null;
                 
         // Cycle through all the layers, drawing them.
         for (int i = 0; i < Layer.values().length; i++)
         {                        
             // Check if layer exists, if it doesn't, skip this iteration.
-            if (isHidden[i] == true)                 
+            if (hiddenArray[i] == true)                 
                 continue;
             
             // Grab this layer.
-            final ArrayList<IDrawable> layer = layerList.get(i);
+            final List<IDrawable> layer = layerList.get(i);
             
             // Draw its contents.
             for (IDrawable d : layer)
@@ -311,8 +313,8 @@ public class LayerManager implements IDisposable, IDrawer
         // Draw the screen differently, depending on the renderer.
         switch(ResourceFactory.get().getRenderer())
         {
-            case JAVA2D:
-                return drawMinimal(region, exact);
+//            case JAVA2D:
+//                return drawMinimal(region, exact);
                 
             case LWJGL:
                
@@ -343,93 +345,93 @@ public class LayerManager implements IDisposable, IDrawer
         return draw(Game.SCREEN_RECTANGLE, false);
     }
     
-    private boolean drawMinimal(Shape region, boolean exact)
-    {
-        Rectangle clip = null;
-        
-        // Cycle through all the layers, drawing them.
-        for (int i = 0; i < Layer.values().length; i++)
-        {                                             
-            // Grab this layer.
-            ArrayList<IDrawable> layer = layerList.get(i);
-            
-            // See if it's in the region.
-            for (IDrawable d : layer)
-            {
-                if (d.isDirty() == false)
-                    continue;                                
-                
-                // Clear dirtiness.                
-                //LogManager.recordMessage(d + " is dirty.");
-                d.setDirty(false);
-                
-                Rectangle r = d.getDrawRect();                                
-                               
-                if (r != null && region.intersects(r) == true)
-                {                                          
-                    if (clip == null) clip = new Rectangle(r);
-                    else clip.add(r);
-                }
-            } // end for                       
-        }     
-        
-        // If the remove clip is not empty.
-        if (getRemoveRect() != null)
-        {
-            // See if there's a clip to add to, or if we need to make one.
-            if (clip == null)
-                clip = getRemoveRect();
-            else
-                clip.add(getRemoveRect());
-        }
-             
-        // Check to see if we're doing an exact area or a minimal clip.
-        if (exact == true || clip != null)
-        {
-            //Util.handleMessage(clip.toString(), Thread.currentThread());
-                        
-            gfx.setClip(exact == true ? region : clip);                
-            drawAll();
-
-            // Show the clip rect if required.
-            if (SettingsManager.get().getBoolean(Key.DEBUG_SHOW_CLIP_RECT) == true)
-            {
-                Rectangle r = gfx.getClip().getBounds();
-                LogManager.recordMessage("Bounds are " + r);
-                gfx.drawRect(r.x, r.y, r.width - 1, r.height - 1);
-            }
-                        
-            gfx.setClip(null);          
-               
-            // Reset the remove clip.
-            resetRemoveRect();
-            
-            return true;
-        }        
-        else
-        {
-            // Nothing changed, so don't bother rendering this frame.
-            return false;
-        }
-    }        
+//    private boolean drawMinimal(Shape region, boolean exact)
+//    {
+//        Rectangle clip = null;
+//        
+//        // Cycle through all the layers, drawing them.
+//        for (int i = 0; i < Layer.values().length; i++)
+//        {                                             
+//            // Grab this layer.
+//            ArrayList<IDrawable> layer = layerList.get(i);
+//            
+//            // See if it's in the region.
+//            for (IDrawable d : layer)
+//            {
+//                if (d.isDirty() == false)
+//                    continue;                                
+//                
+//                // Clear dirtiness.                
+//                //LogManager.recordMessage(d + " is dirty.");
+//                d.setDirty(false);
+//                
+//                Rectangle r = d.getDrawRect();                                
+//                               
+//                if (r != null && region.intersects(r) == true)
+//                {                                          
+//                    if (clip == null) clip = new Rectangle(r);
+//                    else clip.add(r);
+//                }
+//            } // end for                       
+//        }     
+//        
+//        // If the remove clip is not empty.
+//        if (getRemoveRect() != null)
+//        {
+//            // See if there's a clip to add to, or if we need to make one.
+//            if (clip == null)
+//                clip = getRemoveRect();
+//            else
+//                clip.add(getRemoveRect());
+//        }
+//             
+//        // Check to see if we're doing an exact area or a minimal clip.
+//        if (exact == true || clip != null)
+//        {
+//            //Util.handleMessage(clip.toString(), Thread.currentThread());
+//                        
+//            gfx.setClip(exact == true ? region : clip);                
+//            drawAll();
+//
+//            // Show the clip rect if required.
+//            if (SettingsManager.get().getBoolean(Key.DEBUG_SHOW_CLIP_RECT) == true)
+//            {
+//                Rectangle r = gfx.getClip().getBounds();
+//                LogManager.recordMessage("Bounds are " + r);
+//                gfx.drawRect(r.x, r.y, r.width - 1, r.height - 1);
+//            }
+//                        
+//            gfx.setClip(null);          
+//               
+//            // Reset the remove clip.
+//            resetRemoveRect();
+//            
+//            return true;
+//        }        
+//        else
+//        {
+//            // Nothing changed, so don't bother rendering this frame.
+//            return false;
+//        }
+//    }        
     
-    private void addRemoveRect(Rectangle r)
-    {
-        if (removeRect == null)
-            removeRect = new Rectangle(r);
-        else
-            removeRect.add(r);
-    }
-    
-    private Rectangle getRemoveRect()
-    {
-        return removeRect;
-    }   
-    
-    private void resetRemoveRect()
-    {       
-        removeRect = null;
-    }
+//    private void addRemoveRect(Rectangle r)
+//    {
+//        if (removeRect == null)
+//            removeRect = new Rectangle(r);
+//        else
+//            removeRect.add(r);
+//    }
+//    
+//    private Rectangle getRemoveRect()
+//    {
+//        return removeRect;
+//    }   
+//    
+//    private void resetRemoveRect()
+//    {       
+//        removeRect = null;
+//    }
     
     public void forceRedraw()
     {

@@ -1,12 +1,13 @@
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.IBuilder;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.util.EnumSet;
@@ -31,22 +32,22 @@ public class Button extends AbstractButton
     { defaultColor = color; }    
     
     /** The graphic file type. */
-    final protected static String FILE_TYPE = ".png";
+    final protected static String FILE_EXT = ".png";
     
     /** The left sprite. */
     final private static String LEFT_SPRITE_PATH = Settings.getSpriteResourcesPath() 
             + "/Button_Thin_Left" 
-            + FILE_TYPE;
+            + FILE_EXT;
     
     /** The middle sprite. */
     final private static String MIDDLE_SPRITE_PATH = Settings.getSpriteResourcesPath() 
             + "/Button_Thin_Middle" 
-            + FILE_TYPE;
+            + FILE_EXT;
     
     /** The right sprite. */
     final private static String RIGHT_SPRITE_PATH = Settings.getSpriteResourcesPath() 
             + "/Button_Thin_Right" 
-            + FILE_TYPE;
+            + FILE_EXT;
            
     /** The color of the button. */
     protected Color textColor;   
@@ -387,7 +388,7 @@ public class Button extends AbstractButton
     
     private int opacitize(int targetOpacity)
     {
-        return Util.scaleInt(0, 100, 0, targetOpacity, this.opacity);
+        return NumUtil.scaleInt(0, 100, 0, targetOpacity, this.opacity);
     }
 
     public int getActiveOpacity()

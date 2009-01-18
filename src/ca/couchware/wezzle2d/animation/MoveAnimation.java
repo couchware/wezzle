@@ -1,11 +1,11 @@
 package ca.couchware.wezzle2d.animation;
 
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.manager.LogManager;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.util.Util;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
+import ca.couchware.wezzle2d.util.NumUtil;
 
 /**
  * An animation that starts an explosion in the middle of the entity.
@@ -241,7 +241,7 @@ public class MoveAnimation extends AbstractAnimation
             // d = speed * ticks
             //   = pixels/sec * ticks * ms/tick * sec/ms
             //   = pixels
-            int g = (gravity * Util.sq(ms)) / (2 * Util.sq(1000));
+            int g = (gravity * NumUtil.sqInt(ms)) / (2 * NumUtil.sqInt(1000));
             int x = ((speedX * ms)) / 1000;
             int y = ((speedY * ms)) / 1000 - g;
 
