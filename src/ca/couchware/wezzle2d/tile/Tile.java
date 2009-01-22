@@ -133,4 +133,9 @@ public class Tile extends GraphicEntity
         this.tileListenerList.remove(listener);
     }
     
+    public String toString()
+    {
+        return this.getType().toString();
+    }
+    
 }

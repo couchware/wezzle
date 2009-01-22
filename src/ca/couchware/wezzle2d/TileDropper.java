@@ -237,8 +237,8 @@ public class TileDropper implements IResettable
                     // The number of found matches. Also puts the matches into match set.
                     Set<Integer> set = new HashSet<Integer>();
                     Set<Integer> matchSet = new HashSet<Integer>();
-                    boardMan.findXMatch(set);
-                    boardMan.findYMatch(matchSet);
+                    boardMan.findXMatch(set, null);
+                    boardMan.findYMatch(matchSet, null);
                     matchSet.addAll(set);
                    
                     Set<Tile> tileMatchSet = new HashSet<Tile>();

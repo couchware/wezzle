@@ -172,7 +172,7 @@ public class TileRemover implements IResettable, ILevelListener
      * 
      * @param game The game instance.
      */
-    public void updateLogic(final Game game)
+    public void updateLogic(final Game game, List<Chain> chains)
     {
         //final AnimationManager animationMan = game.animationMan;
         //final BoardManager boardMan         = game.boardMan;
@@ -192,7 +192,8 @@ public class TileRemover implements IResettable, ILevelListener
         // See if it just finished.
         if (game.refactorer.isFinished() && areItemSetsEmpty())
         {
-            findMatches(game);
+           
+            findMatches(game, chains);
             
             // If there are matches, score them, remove 
             // them and then refactor again.
@@ -210,7 +211,15 @@ public class TileRemover implements IResettable, ILevelListener
                     if (!levelUpInProgress)
                     {
                         // Fire the move completed event.
-                        listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));                                                       
+                        listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));
+                        
+                        // The move is completed. Build the move.
+                        Move move = Move.newInstance(chains);
+                        LogManager.recordMessage(move.toString());
+                        
+                        // Reset chains tracking.
+                        chains.clear();
+                        
                     }
                     
                     // Start the next move.
@@ -345,7 +354,7 @@ public class TileRemover implements IResettable, ILevelListener
         }
     }
 
-    public void findMatches(final Game game)
+    public void findMatches(final Game game, List<Chain> chains)
     {
         // Shortcuts to the managers.
         BoardManager boardMan       = game.boardMan;        
@@ -354,8 +363,15 @@ public class TileRemover implements IResettable, ILevelListener
         // Look for matches.
         tileRemovalSet.clear();
 
-        int cycleX = boardMan.findXMatch(tileRemovalSet);
-        int cycleY = boardMan.findYMatch(tileRemovalSet);
+        // The lines in the chain
+        ArrayList<Line> lines = new ArrayList<Line>();
+        
+        int cycleX = boardMan.findXMatch(tileRemovalSet, lines);
+        int cycleY = boardMan.findYMatch(tileRemovalSet, lines);
+        
+        // Build up the chains, if they exist.
+        if(lines.size() > 0)
+            chains.add(Chain.newInstance(lines));
         
         statMan.incrementCycleLineCount(cycleX);
         statMan.incrementCycleLineCount(cycleY);

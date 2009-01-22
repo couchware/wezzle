@@ -1,5 +1,8 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.Chain;
+import ca.couchware.wezzle2d.Line;
+import ca.couchware.wezzle2d.Move;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -461,11 +464,16 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 		instantRefactorBoard();
 		
 		HashSet<Integer> set = new HashSet<Integer>();		
-
+                
+                
+                
 		while (true)
 		{
-			findXMatch(set);
-			findYMatch(set);
+                   
+			findXMatch(set, null);
+			findYMatch(set, null);
+                        
+                        
 			
 			if (set.size() > 0)
 			{
@@ -481,6 +489,8 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 			else
 				break;
 		} // end while	
+                
+
 	}
 	    
     /**
@@ -598,16 +608,21 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	 * with the indices of the matches.
      * 
 	 * @param set The linked list that will be filled with indices.
+         * @param chain The chain that is passed through
      * @return The number of matches found.
 	 */
-	public int findXMatch(Set<Integer> set)
+	public int findXMatch(Set<Integer> set, List<Line> chain)
 	{
         // The line count.
         int lineCount = 0;
         
+        
 		// Cycle through the board looking for a match in the X-direction.
 		for (int i = 0; i < cells; i++)
 		{
+                    // Build up the tiles to build up lines.
+                     ArrayList<Tile> tiles = new ArrayList<Tile>();
+                    
 			// Check to see if there's even enough room for an X-match.
 			if (columns - (i % columns) < minimumMatch)
 				continue;
@@ -640,11 +655,22 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 lineCount++;
 				
 				// Copy all matched locations to the linked list.
-				for (int k = i; k < i + j; k++)				
-					set.add(new Integer(k));				
+				for (int k = i; k < i + j; k++)
+                                {
+					set.add(new Integer(k));
+                                        
+                                        // Build up the line of tiles.
+                                        if(chain != null)
+                                            tiles.add(board[k]);
+                                }
 				
 				i += j - 1;
+                                
+                                 // If the set is non-empty, add the line to the chain.
+                                 if(chain != null)
+                                    chain.add(Line.newInstance(tiles));
 			}
+                        
 		} // end for
         
         // Return the line count.
@@ -658,7 +684,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	 * @param set The linked list that will be filled with indices.
      * @return The number of matches found.
 	 */
-	public int findYMatch(Set<Integer> set)
+	public int findYMatch(Set<Integer> set, List<Line> chain)
 	{
         // The number of matches found.
         int lineCount = 0;
@@ -666,6 +692,9 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 		// Cycle through the board looking for a match in the Y-direction.
 		for (int i = 0; i < cells; i++)
 		{
+                      // Build up the tiles to build up lines.
+                    ArrayList<Tile> tiles = new ArrayList<Tile>();
+                    
 			// Transpose i.
 			int ti = Util.pseudoTranspose(i, columns, rows);
 			
@@ -705,11 +734,26 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 lineCount++;
                 
 				// Copy all matched locations to the linked list.
-				for (int k = i; k < i + j; k++)				
-					set.add(new Integer(Util.pseudoTranspose(k, columns, rows)));				
+				for (int k = i; k < i + j; k++)		
+                                {
+                                        int index = Util.pseudoTranspose(k, columns, rows);
+					set.add(new Integer(index));
+                                         
+                                        // Build up the line of tiles.
+                                         if(chain != null)
+                                            tiles.add(board[index]);
+                                }
+                
+                        // If the set is non-empty, add the line to the chain.
+                 if(chain != null)
+                        chain.add(Line.newInstance(tiles));
 				
 				i += j - 1;
 			}
+                        
+                         
+                       
+                        
 		}
         
         // Return the number of matches found.

@@ -58,6 +58,7 @@ import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -263,6 +264,12 @@ public class Game extends Canvas implements IWindowCallback
     
     /** The current notification animation. */
     private IAnimation notificationAnimation = FinishedAnimation.get();
+    
+    /**
+     * A list that keeps track of the chains in moves.
+     */
+    
+    ArrayList<Chain> chainTracker = new ArrayList<Chain>();
     
     /** The targets that may be transitioned to. */
     public enum TransitionTarget
@@ -949,7 +956,7 @@ public class Game extends Canvas implements IWindowCallback
         refactorer.updateLogic(this);
       
         // Update the tile remover.
-        tileRemover.updateLogic(this);
+        tileRemover.updateLogic(this, chainTracker);
       
         // See if we should clear the cascade count.
         if (refactorer.isRefactoring() == false 
