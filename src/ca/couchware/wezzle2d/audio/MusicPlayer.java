@@ -5,10 +5,9 @@
 
 package ca.couchware.wezzle2d.audio;
 
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
 import ca.couchware.wezzle2d.util.NumUtil;
-import ca.couchware.wezzle2d.util.Util;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -16,8 +15,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicController;
 import javazoom.jlgui.basicplayer.BasicPlayer;
 import javazoom.jlgui.basicplayer.BasicPlayerEvent;
@@ -40,12 +37,12 @@ public class MusicPlayer
     /**
      * The basic player that this wraps.
      */
-    private BasicPlayer player;
+    final private BasicPlayer player;
     
     /**
      * The player lock.
      */
-    private Object playerLock = new Object();        
+    final private Object playerLock = new Object();
     
     /**
      * The future reference for the fader.
@@ -55,7 +52,7 @@ public class MusicPlayer
     /**
      * The future reference lock.
      */
-    private Object fadeFutureLock = new Object();
+    final private Object fadeFutureLock = new Object();
     
     /**
      * The future reference for the stop at gain thing.
@@ -65,7 +62,7 @@ public class MusicPlayer
      /**
      * The future reference lock.
      */
-    private Object stopFutureLock = new Object();
+    final private Object stopFutureLock = new Object();
     
     /**
      * The current normalizedGain.
@@ -114,7 +111,7 @@ public class MusicPlayer
     {
         if (finished.get() == true)
         {
-            LogManager.recordWarning("Attempted to play a track that was finished.");
+            CouchLogger.get().recordWarning(this.getClass(), "Attempted to play a track that was finished.");
             return;
         }
         
@@ -185,7 +182,7 @@ public class MusicPlayer
 
                 if (NumUtil.equalsDouble(n, targetNormalizedGain, 0.02))
                 {
-                    //LogManager.recordMessage("Fade completed.");                    
+                    //LogManager.get().recordMessage("Fade completed.");
                     
                     // Cancel this runnable.          
                     synchronized (fadeFutureLock)
@@ -205,12 +202,12 @@ public class MusicPlayer
                 
                 try
                 {           
-                    //LogManager.recordMessage("Fade gain set to " + (n + delta));
+                    //LogManager.get().recordMessage("Fade gain set to " + (n + delta));
                     setNormalizedGain(n + delta);
                 }
                 catch (BasicPlayerException e)
                 {
-                    LogManager.recordException(e);
+                    CouchLogger.get().recordException(this.getClass(), e);
                 }
             }            
         };
@@ -262,7 +259,7 @@ public class MusicPlayer
             
             public void run()
             {
-                LogManager.recordMessage("Checking...");
+                CouchLogger.get().recordMessage(MusicPlayer.class, "Checking...");
                 
                 if (NumUtil.equalsDouble(targetGain, normalizedGain.get(), 0.02))
                 {                                        
@@ -281,7 +278,7 @@ public class MusicPlayer
                         }
                         catch (BasicPlayerException e)
                         {
-                            LogManager.recordException(e);
+                            CouchLogger.get().recordException(this.getClass(), e);
                         }
                     } // end sync
                 } // end if
@@ -339,7 +336,7 @@ public class MusicPlayer
                     }
                     catch (BasicPlayerException e)
                     {
-                        LogManager.recordException(e);
+                        CouchLogger.get().recordException(this.getClass(), e);
                     }
                     break;
             } // end switch

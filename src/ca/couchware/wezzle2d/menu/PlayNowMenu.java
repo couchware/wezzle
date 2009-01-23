@@ -6,17 +6,16 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.animation.AnimationAdapter;
-import ca.couchware.wezzle2d.animation.IAnimation;
-import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IEntity;
+import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.MusicManager.Theme;
 import ca.couchware.wezzle2d.manager.Settings;
@@ -29,8 +28,6 @@ import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.SliderBar;
-import ca.couchware.wezzle2d.ui.group.AbstractGroup;
-import ca.couchware.wezzle2d.ui.group.IGroup;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,28 +43,14 @@ import javazoom.jlgui.basicplayer.BasicPlayerException;
  * 
  * @author cdmckay
  */
-public class PlayNowGroup extends AbstractGroup
+public class PlayNowMenu extends AbstractMenu
 {
     
-    /**
-     * The minimum level the user can select.
-     */
+    /** The minimum level the user can select. */
     final private static int MIN_LEVEL = 1;
     
-    /*
-     * The maximum level the user can select.
-     */
-    final private static int MAX_LEVEL = 15;      
-    
-    /**
-     * The layer manager.
-     */
-    final private LayerManager layerMan;
-    
-    /**
-     * The music manager.
-     */
-    final private MusicManager musicMan;       
+    /** The maximum level the user can select. */
+    final private static int MAX_LEVEL = 15;             
     
     /** The level label. */
     private final ITextLabel levelNumberLabel;    
@@ -101,39 +84,17 @@ public class PlayNowGroup extends AbstractGroup
     /**
      * The start button.
      */
-    final private IButton startButton;
+    final private IButton startButton;       
     
-    /**
-     * The background window.
-     */
-    private Box box;
-    
-    public PlayNowGroup(IGroup parent, 
-            final SettingsManager settingsMan,
-            final LayerManager layerMan, 
-            final MusicManager musicMan)
-    {
+    public PlayNowMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)
+    {                
         // Invoke the super.
-        super(parent);
+        super(parentMenu, hub, menuLayerMan);
                
-        // Set the managers.
-        this.layerMan = layerMan;
-        this.musicMan = musicMan;
-        
         // The colors.
-        final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
-        final Color OPTION_COLOR = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
-        
-        // Create the window.
-        box = new Box.Builder(268, 300).width(430).height(470)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
-                .visible(false).end();
-        this.layerMan.add(box, Layer.UI);         
-        
-        // The label spacing.
-        final int SPACING = 60;
-        
+        final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
+        final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);                    
+               
         // The title label.
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
@@ -161,7 +122,7 @@ public class PlayNowGroup extends AbstractGroup
                     levelLabel.getX() + levelLabel.getWidth() + 20, 
                     levelLabel.getY())                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
                 .size(20).visible(false)
                 .text(String.valueOf(levelNumber))
                 .end();
@@ -255,7 +216,7 @@ public class PlayNowGroup extends AbstractGroup
         // Create the start button.
         this.startButton = new Button.Builder(268, 450)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .normalOpacity(90)                
                 .visible(false)                
                 .text("Start")
@@ -263,8 +224,10 @@ public class PlayNowGroup extends AbstractGroup
         this.entityList.add(this.startButton);
                 
         // Add them all to the layer manager.
-        for (IEntity e : this.entityList)
-            this.layerMan.add(e, Layer.UI);        
+        for (IEntity entity : this.entityList)
+        {
+            this.menuLayerMan.add(entity, Layer.UI);
+        }
     }
     
     private void createPlayers()
@@ -289,7 +252,7 @@ public class PlayNowGroup extends AbstractGroup
         catch (BasicPlayerException e)
         {
             // TODO Should try to do more than this, but this is OK for now.
-            LogManager.recordException(e);               
+            CouchLogger.get().recordException(this.getClass(), e);
         }             
     }
     
@@ -314,59 +277,9 @@ public class PlayNowGroup extends AbstractGroup
                 playerMap.get(playerIndex).fadeToGain(0.0);
             }
         };
-    }
-    
-     @Override
-    public IAnimation animateShow()
-    {       
-        box.setPosition(268, -300);
-        box.setVisible(true);        
+    }                   
         
-        IAnimation anim = new MoveAnimation.Builder(box).theta(-90).maxY(300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();   
-        
-//        a.setFinishRunnable(new Runnable()
-//        {
-//           public void run()
-//           { setVisible(true); }
-//        });
-        
-        anim.addAnimationListener(new AnimationAdapter()
-        {          
-            @Override
-            public void animationFinished()
-            { setVisible(true); }
-        });
-        
-        return anim;
-    }
-    
-    @Override
-    public IAnimation animateHide()
-    {        
-        IAnimation anim = new MoveAnimation.Builder(box).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();
-        
-//        a.setStartRunnable(new Runnable()
-//        {
-//           public void run()
-//           { setVisible(false); }
-//        });
-        
-        anim.addAnimationListener(new AnimationAdapter()
-        {
-            @Override
-            public void animationStarted()
-            { setVisible(false); }
-        });
-        
-        return anim;
-    }
-        
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {      
         if (this.levelSlider.changed() == true)
         {
@@ -378,27 +291,43 @@ public class PlayNowGroup extends AbstractGroup
         {
             // Make sure no groups are showing if we've come back to the menu
             // from a previous game.
-            game.groupMan.hideAllGroups();
+            hub.groupMan.hideAllGroups();
             
             // Reset the core managers.
-            game.refactorer.resetState();
-            game.tileDropper.resetState();
-            game.tileRemover.resetState();
+            IResettable coreArray[] = new IResettable[]
+            {
+                game.getRefactorer(),
+                game.getTileDropper(),
+                game.getTileRemover()
+            };
             
+            for (IResettable core : coreArray)
+            {
+                core.resetState();
+            }
+                       
             // Reset the board manager and remove any tiles (and their effects)             
-            // from the layer manager.
-            game.boardMan.resetState(); 
-            game.boardMan.setVisible(false); // This is done for the fade in.
-            game.layerMan.removeLayer(Layer.TILE);
-            game.layerMan.removeLayer(Layer.EFFECT);
+            // from the layer manager.          
+            hub.boardMan.resetState(); 
+            hub.boardMan.setVisible(false); // This is done for the fade in.
+            hub.layerMan.clearLayer(Layer.TILE);
+            hub.layerMan.clearLayer(Layer.EFFECT);
             
             // Reset the various other managers.
-            game.levelMan.resetState();
-            game.pieceMan.resetState();
-            game.scoreMan.resetState();
-            game.statMan.resetState();
-            game.timerMan.resetState();
-            game.tutorialMan.resetState();
+            IResettable[] manArray = new IResettable[]
+            {
+                hub.levelMan,
+                hub.pieceMan,
+                hub.scoreMan,
+                hub.statMan,
+                hub.timerMan,
+                hub.tutorialMan
+            };
+            
+            for (IResettable man : manArray)
+            {
+                man.resetState();
+            }
                         
             // Set the music.
             Theme theme = null;
@@ -417,16 +346,18 @@ public class PlayNowGroup extends AbstractGroup
                 default: throw new AssertionError();
             }
             
-            this.musicMan.setTheme(theme);
+            hub.musicMan.setTheme(theme);
             
             // Set the target score.
-            game.levelMan.setLevel(levelNumber, false);
-            game.timerMan.resetCurrentTime();
-            game.scoreMan.setTargetLevelScore(game.scoreMan.generateTargetLevelScore(levelNumber));
-            game.scoreMan.setTargetTotalScore(game.scoreMan.generateTargetLevelScore(levelNumber)); 
+            hub.levelMan.setLevel(levelNumber, false);
+            //hub.timerMan.resetCurrentTime();
+            hub.scoreMan.setTargetLevelScore(hub.scoreMan.generateTargetLevelScore(levelNumber));
+            hub.scoreMan.setTargetTotalScore(hub.scoreMan.generateTargetLevelScore(levelNumber)); 
             
             // Notify that the game started.
-            game.listenerMan.notifyGameStarted(new GameEvent(this, levelNumber));
+            hub.listenerMan.notifyGameStarted(new GameEvent(this, 
+                    hub.levelMan.getLevel(),
+                    hub.scoreMan.getTotalScore()));
             
             // Turn off the tutorials if necessary.
             if (this.tutorialRadio.getSelectedIndex() == TUTORIAL_ON)
@@ -441,7 +372,7 @@ public class PlayNowGroup extends AbstractGroup
             }        
             
             game.startBoard();  
-            game.pieceMan.loadPiece();
+            hub.pieceMan.loadPiece();
             
             // Notify the main menu.
             this.parent.setActivated(false);

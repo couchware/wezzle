@@ -1,10 +1,9 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.Settings.Value;
-import ca.couchware.wezzle2d.util.StringUtil;
 import ca.couchware.wezzle2d.util.SuperColor;
-import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -90,9 +89,8 @@ public class SettingsManager
         }
         catch(Exception e)
         {
-            LogManager.recordWarning("Could not create file with path: " + f.getAbsolutePath(), 
-                    "SettingsManager");
-            LogManager.recordException(e);            
+            CouchLogger.get().recordWarning(this.getClass(), "Could not create file with path: " + f.getAbsolutePath());
+            CouchLogger.get().recordException(this.getClass(), e);
         }
     }   
     
@@ -109,9 +107,8 @@ public class SettingsManager
 
         if (url == null)
         {
-            LogManager.recordWarning(
-                    "Can't find required resource: " + path, 
-                    "SettingsManager#loadDefaultSettings");
+            CouchLogger.get().recordWarning(this.getClass(),
+                    "Can't find required resource: " + path);
             System.exit(0);
         }
 
@@ -148,12 +145,12 @@ public class SettingsManager
             }
             catch (MalformedURLException ex)
             {
-                LogManager.recordException(ex);
+                CouchLogger.get().recordException(this.getClass(), ex);
             }           
         } // end if  
         else
         {
-            LogManager.recordWarning("Could not load external settings.");
+            CouchLogger.get().recordWarning(this.getClass(), "Could not load external settings.");
         }
     }
     
@@ -199,7 +196,7 @@ public class SettingsManager
                         if (instance != null) 
                             list.add(instance);
                         else
-                            LogManager.recordWarning("Unknown element.");
+                            CouchLogger.get().recordWarning(this.getClass(), "Unknown element.");
                     }      
 
                     // Return the list as the value.
@@ -210,21 +207,21 @@ public class SettingsManager
                 {
                     Key key = Key.valueOf(name);
                     currentMap.put(key, value);
-                    LogManager.recordMessage(key + " = " + value);    
+                    CouchLogger.get().recordMessage(this.getClass(), key + " = " + value);
                 }
                 catch (IllegalArgumentException e)
                 {
-                    LogManager.recordMessage("Unknown key: " + name); 
+                    CouchLogger.get().recordMessage(this.getClass(), "Unknown key: " + name);
                 }
             }
         }
         catch (JDOMException ex)
         {
-            LogManager.recordException(ex);
+            CouchLogger.get().recordException(this.getClass(), ex);
         }
         catch (IOException ex)
         {
-            LogManager.recordException(ex);
+            CouchLogger.get().recordException(this.getClass(), ex);
         }               
     }       
     
@@ -445,7 +442,8 @@ public class SettingsManager
         }
         catch (NumberFormatException e)
         {
-            LogManager.recordWarning("Could not convert " + key + ": " + getString(key));
+            CouchLogger.get().recordWarning(this.getClass(),
+                    "Could not convert " + key + ": " + getString(key));
             throw e;
         }
         

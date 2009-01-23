@@ -9,27 +9,21 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.IPieceListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
+import ca.couchware.wezzle2d.event.ITimerListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.PieceEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.event.TimerEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.piece.PieceGrid;
 import ca.couchware.wezzle2d.manager.GroupManager;
-import ca.couchware.wezzle2d.manager.HighScoreManager;
-import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.ListenerManager;
 import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
-import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.manager.StatManager;
-import ca.couchware.wezzle2d.manager.TimerManager;
-import ca.couchware.wezzle2d.manager.TutorialManager;
-import ca.couchware.wezzle2d.manager.LevelManager;
-import ca.couchware.wezzle2d.menu.Loader;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Box.Border;
 import ca.couchware.wezzle2d.ui.IButton;
@@ -49,23 +43,30 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class GameUI implements ILevelListener, IPieceListener, IScoreListener
+public class UI implements 
+        ILevelListener, 
+        IPieceListener, 
+        IScoreListener,
+        ITimerListener
 {       
-    
-    /** The single instance of this class. */
-    final private static GameUI SINGLE = new GameUI();
+     
+    /** The graphics file extension. */
+    final private static String FILE_EXT = ".png";
     
     /** The level header path. */
-    final private static String LEVEL_HEADER_PATH = Settings.getSpriteResourcesPath()
-            + "/Header_Level.png";
+    final private static String LEVEL_HEADER_PATH = 
+            Settings.getSpriteResourcesPath()
+            + "/Header_Level" + FILE_EXT;
     
     /** The score header path. */
-    final private static String SCORE_HEADER_PATH = Settings.getSpriteResourcesPath()
-            + "/Header_Score.png";
+    final private static String SCORE_HEADER_PATH = 
+            Settings.getSpriteResourcesPath()
+            + "/Header_Score" + FILE_EXT;
     
     /** The high score header path. */
-    final private static String HIGH_SCORE_HEADER_PATH = Settings.getSpriteResourcesPath()
-            + "/Header_HighScore.png";          
+    final private static String HIGH_SCORE_HEADER_PATH = 
+            Settings.getSpriteResourcesPath()
+            + "/Header_HighScore" + FILE_EXT;          
     
     /** The background sprite. */
     private GraphicEntity background;    
@@ -133,78 +134,46 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
     /**
      * Private constructor to ensure singletonness.
      */
-    private GameUI()
-    { }
+    private UI(ManagerHub hub)
+    {        
+        // Initialize the buttons.
+        initializeButtons(hub);
+        
+        // Initialize the labels.
+        initializeLabels(hub);
+        
+        // Initialize the background.
+        initializeBackground(hub);
+        
+        // Initialize piece box.
+        initializePieceBox(hub);
+        
+        // Initialize the progress bars.
+        initializeBars(hub);
+        
+        // Initialize the groups.
+        initializeGroups(hub);        
+    }        
     
     /**
-     * Get the only instance of this clas.
-     * 
-     * @return
+     * Create a new UI instance.
      */
-    static GameUI get()
+    public static UI newInstance(ManagerHub hub)
     {
-        return SINGLE;
-    }
-    
-    /**
-     * Adds UI-specific initialization tasks into the loader.
-     * 
-     * @param loader
-     */
-    public void initialize(final Loader loader, final Game game)
-    {
-        // Initialize buttons.    
-        loader.addTask(new Runnable()
-        {
-           public void run() { initializeButtons(game.layerMan); }
-        });                                 
-                
-        // Initialize labels.  
-        loader.addTask(new Runnable()
-        {
-           public void run() { initializeLabels(game.layerMan); }
-        });        
-        
-        // Initialize miscellaneous components.
-        loader.addTask(new Runnable()
-        {
-           public void run() { initializeEntities(
-                   game.layerMan, 
-                   game.timerMan); }
-        });        
-             
-        // Initialize the groups.   
-        loader.addTask(new Runnable()
-        {
-           public void run() { 
-               initializeGroups(
-                   game.settingsMan,
-                   game.layerMan, 
-                   game.scoreMan,
-                   game.groupMan, 
-                   game.highScoreMan, 
-                   game.statMan,  
-                   game.listenerMan); 
-           }
-        });                     
-        
-        // Add the listeners.
-        game.listenerMan.registerListener(Listener.LEVEL, this);
-        game.listenerMan.registerListener(Listener.PIECE, this);
-        game.listenerMan.registerListener(Listener.SCORE, this);       
-    }
+        return new UI(hub);
+    }       
     
     /**
      * Initializes all the buttons that appear on the main game screen.
      */
-    private void initializeButtons(LayerManager layerMan)
+    private void initializeButtons(ManagerHub hub)
     {        
         // The high score button.
         highScoreButton = new MammothButton.Builder(128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("")
                 .normalOpacity(0).hoverOpacity(70).activeOpacity(95).end();
-        layerMan.add(highScoreButton, Layer.UI);
+        hub.layerMan.add(highScoreButton, Layer.UI);
                 
         // Create pause button.        
         pauseButton = new Button.Builder(668, 211)
@@ -213,23 +182,23 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
                 .width(170)
                 .text("Pause").activeText("Resume")
                 .normalOpacity(70).end();
-        layerMan.add(pauseButton, Layer.UI);    
+        hub.layerMan.add(pauseButton, Layer.UI);    
         
         // Create the options button, using pause button as a template.
         optionsButton = new Button.Builder((Button) pauseButton)
                 .y(299).text("Options").end();
-        layerMan.add(optionsButton, Layer.UI);                
+        hub.layerMan.add(optionsButton, Layer.UI);                
         
         // Create the help buttton, using pause button as a template.
         helpButton = new Button.Builder((Button) optionsButton)
                 .y(387).text("Help").end();               
-        layerMan.add(helpButton, Layer.UI);     
+        hub.layerMan.add(helpButton, Layer.UI);     
     }
     
     /**
-     * Initializes all the labesl that appear on the main game screen.
+     * Initializes all the labels.
      */
-    private void initializeLabels(LayerManager layerMan)
+    private void initializeLabels(ManagerHub hub)
     {          
         // Shortcut to the primary color.
         final Color PRIMARY_COLOR = 
@@ -240,7 +209,7 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false).color(PRIMARY_COLOR).size(12)                
                 .text(Game.COPYRIGHT).end();
-        layerMan.add(copyrightLabel, Layer.UI);
+        hub.layerMan.add(copyrightLabel, Layer.UI);
         
         // Set up the version label.	
         versionLabel = new LabelBuilder(800 - 10, 600 - 10)
@@ -248,67 +217,74 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
                 .cached(false).color(PRIMARY_COLOR).size(12)                
                 .text(Game.TITLE)
                 .end();                        
-        layerMan.add(versionLabel, Layer.UI);
+        hub.layerMan.add(versionLabel, Layer.UI);
         		  
         
         // Set up the level header.
         levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();        
-        layerMan.add(levelHeader, Layer.UI);
+        hub.layerMan.add(levelHeader, Layer.UI);
         
         // Set up the level text.
         levelLabel = new LabelBuilder(126, 210)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
                 .color(PRIMARY_COLOR).size(20).text("").end();                
-        layerMan.add(levelLabel, Layer.UI);        
+        hub.layerMan.add(levelLabel, Layer.UI);        
         
         // Set up the score header.
         highScoreHeaderLabel = 
                 new GraphicEntity.Builder(127, 278, HIGH_SCORE_HEADER_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(highScoreHeaderLabel, Layer.UI);
+        hub.layerMan.add(highScoreHeaderLabel, Layer.UI);
                         
         // Set up the high score text.
         highScoreLabel = new LabelBuilder(126, 337)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
                 .color(PRIMARY_COLOR).size(20).text("").end();
-        layerMan.add(highScoreLabel, Layer.UI);
+        hub.layerMan.add(highScoreLabel, Layer.UI);
         
         // Set up the score header.
         scoreHeaderLabel = new GraphicEntity.Builder(128, 403, SCORE_HEADER_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(scoreHeaderLabel, Layer.UI);
+        hub.layerMan.add(scoreHeaderLabel, Layer.UI);
         
         // Set up the score text.
         scoreLabel = new LabelBuilder(126, 460)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
                 .color(PRIMARY_COLOR).size(20).text("").end();
-        layerMan.add(scoreLabel, Layer.UI);
+        hub.layerMan.add(scoreLabel, Layer.UI);
     }
     
     /**
-     * Initializes miscellaneous entities.
+     * Initializes the background.
      */
-    private void initializeEntities(LayerManager layerMan, TimerManager timerMan)
+    private void initializeBackground(ManagerHub hub)
     {
         // Create the background.
 		this.background = new GraphicEntity
                 .Builder(0, 0, Settings.getSpriteResourcesPath() + "/Background2.png")
                 .end();
         
-        layerMan.add(this.background, Layer.BACKGROUND);   
-        layerMan.toBack(this.background, Layer.BACKGROUND);     
-        
+        hub.layerMan.add(this.background, Layer.BACKGROUND);   
+        hub.layerMan.toBack(this.background, Layer.BACKGROUND);     
+    }
+    
+    /**
+     * Initialize the piece box.
+     * @param hub
+     */
+    private void initializePieceBox(ManagerHub hub)
+    {                        
         // Create the piece preview window.
         this.nextPieceBox = new Box.Builder(670, 120)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(90)
                 .border(Border.MEDIUM)
                 .width(90).height(90).end();
-        layerMan.add(this.nextPieceBox, Layer.UI);
+        hub.layerMan.add(this.nextPieceBox, Layer.UI);
         
         this.nextPieceGrid = new PieceGrid.Builder(
                     this.nextPieceBox.getX(),
@@ -320,61 +296,59 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
                 .cellWidth(22)
                 .cellHeight(22)
                 .end();                
-        layerMan.add(this.nextPieceGrid, Layer.UI);               
-        
+        hub.layerMan.add(this.nextPieceGrid, Layer.UI);               
+    }
+    
+    /**
+     * Initialize the bars.
+     * @param hub
+     */
+    private void initializeBars(ManagerHub hub)
+    {        
         // Create the timer bar.
         this.timerBar = new ProgressBar.Builder(400, 98)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
-                .progressValue(timerMan.getStartTime())
-                .progressUpper(timerMan.getStartTime())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))               
                 .textPosition(ProgressBar.TextPosition.NONE)
                 .barColor(ProgressBar.BarColor.BLUE)
                 .end();
-        layerMan.add(this.timerBar, Layer.UI);        
+        hub.layerMan.add(this.timerBar, Layer.UI);        
                 
          // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(400, 501)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
                 .textPosition(ProgressBar.TextPosition.BOTTOM)
                 .end();
-        layerMan.add(this.progressBar, Layer.UI);           
+        hub.layerMan.add(this.progressBar, Layer.UI);           
     }
     
     /**
      * Initialize the various groups.
      */
-    private void initializeGroups(
-            SettingsManager  settingsMan,
-            LayerManager     layerMan,
-            ScoreManager     scoreMan,
-            GroupManager     groupMan,
-            HighScoreManager highScoreMan,            
-            StatManager      statMan,
-            ListenerManager  listenerMan)
+    private void initializeGroups(ManagerHub hub)
     {        
         // Initialize pause group.                
-        this.pauseGroup = new PauseGroup(settingsMan, layerMan, statMan);
-        groupMan.register(pauseGroup);
+        this.pauseGroup = new PauseGroup(hub);
+        hub.groupMan.register(pauseGroup);
         
-        listenerMan.registerListener(Listener.MOVE, this.pauseGroup);
-        listenerMan.registerListener(Listener.LINE, this.pauseGroup);
-        listenerMan.registerListener(Listener.GAME, this.pauseGroup);
+        hub.listenerMan.registerListener(Listener.MOVE, this.pauseGroup);
+        hub.listenerMan.registerListener(Listener.LINE, this.pauseGroup);
+        hub.listenerMan.registerListener(Listener.GAME, this.pauseGroup);
              
         // Initialize game over group.
-        this.gameOverGroup = new GameOverGroup(settingsMan, layerMan, scoreMan);    
-        groupMan.register(this.gameOverGroup);
+        this.gameOverGroup = new GameOverGroup(hub);    
+        hub.groupMan.register(this.gameOverGroup);
         
-        listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
+        hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
         
         // Initialize options group.
-        this.optionsGroup = new OptionsGroup(settingsMan, layerMan, groupMan);
-        groupMan.register(this.optionsGroup);
+        this.optionsGroup = new OptionsGroup(hub);
+        hub.groupMan.register(this.optionsGroup);
         
         // Initialize high score group.
-        this.highScoreGroup = new HighScoreGroup(settingsMan, layerMan, highScoreMan); 
-        groupMan.register(this.highScoreGroup);
+        this.highScoreGroup = new HighScoreGroup(hub); 
+        hub.groupMan.register(this.highScoreGroup);
         
-        listenerMan.registerListener(Listener.GAME, this.highScoreGroup);                
+        hub.listenerMan.registerListener(Listener.GAME, this.highScoreGroup);                
     }
     
     public void showGameOverGroup(GroupManager groupMan)
@@ -398,28 +372,20 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
      * 
      * @param game The current game state.
      */
-    public void updateLogic(Game game)
-    {
-        // Make shortcuts to the managers.
-        GroupManager groupMan       = game.groupMan;
-        //LayerManager layerMan       = game.layerMan;
-        ScoreManager scoreMan       = game.scoreMan;
-        TimerManager timerMan       = game.timerMan;
-        TutorialManager tutorialMan = game.tutorialMan;
-        LevelManager levelMan       = game.levelMan;
-        
+    public void updateLogic(Game game, ManagerHub hub)
+    {              
         // If the high score button was just clicked.
         if (highScoreButton.clicked())
         {
             if (highScoreButton.isActivated())            
             {                           
-                groupMan.showGroup(highScoreButton, highScoreGroup, 
+                hub.groupMan.showGroup(highScoreButton, highScoreGroup, 
                         GroupManager.Class.HIGH_SCORE,
                         GroupManager.Layer.MIDDLE);            
             }
             else
             {
-                groupMan.hideGroup(
+                hub.groupMan.hideGroup(
                         GroupManager.Class.HIGH_SCORE,
                         GroupManager.Layer.MIDDLE);
             }
@@ -430,13 +396,13 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
         {            
             if (pauseButton.isActivated())            
             {                
-                groupMan.showGroup(pauseButton, pauseGroup, 
+                hub.groupMan.showGroup(pauseButton, pauseGroup, 
                         GroupManager.Class.PAUSE,
                         GroupManager.Layer.MIDDLE);            
             }
             else
             {
-                groupMan.hideGroup(
+                hub.groupMan.hideGroup(
                         GroupManager.Class.PAUSE,
                         GroupManager.Layer.MIDDLE);            
             }
@@ -447,47 +413,47 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
         {                           
             if (optionsButton.isActivated())  
             {                
-                groupMan.showGroup(optionsButton, optionsGroup,
+                hub.groupMan.showGroup(optionsButton, optionsGroup,
                         GroupManager.Class.OPTIONS,
                         GroupManager.Layer.MIDDLE);            
             }
             else     
             {
-                groupMan.hideGroup(
+                hub.groupMan.hideGroup(
                         GroupManager.Class.OPTIONS,
                         GroupManager.Layer.MIDDLE);
             }
         } // end if  
         
         // Update the timer bar.
-        this.timerBar.setProgressValue(timerMan.getCurrrentTime());
+        //this.timerBar.setProgressValue(timerMan.getCurrrentTime());
 
         // Draw the high score text.
-        if (!highScoreLabel.getText().equals(String.valueOf(scoreMan.getHighScore())))
+        if (!highScoreLabel.getText().equals(String.valueOf(hub.scoreMan.getHighScore())))
         {
-            highScoreLabel.setText(String.valueOf(scoreMan.getHighScore()));            
+            highScoreLabel.setText(String.valueOf(hub.scoreMan.getHighScore()));            
         }                        
 
-        if (!tutorialMan.isTutorialRunning())
+        if (!hub.tutorialMan.isTutorialRunning())
         {
             // Set the level text.
-            if (!levelLabel.getText().equals(String.valueOf(levelMan.getLevel())))
+            if (!levelLabel.getText().equals(String.valueOf(hub.levelMan.getLevel())))
             {
-                levelLabel.setText(String.valueOf(levelMan.getLevel()));                
+                levelLabel.setText(String.valueOf(hub.levelMan.getLevel()));                
             }
 
             // Set the score text.
-            if (!scoreLabel.getText().equals(String.valueOf(scoreMan.getTotalScore())))
+            if (!scoreLabel.getText().equals(String.valueOf(hub.scoreMan.getTotalScore())))
             {
-                scoreLabel.setText(String.valueOf(scoreMan.getTotalScore()));                
+                scoreLabel.setText(String.valueOf(hub.scoreMan.getTotalScore()));                
             }
         }
         else
         {
             // Set the level text.
-            if (!levelLabel.getText().equals(tutorialMan.getRunningTutorial().getName()))
+            if (!levelLabel.getText().equals(hub.tutorialMan.getRunningTutorial().getName()))
             {                
-                levelLabel.setText(tutorialMan.getRunningTutorial().getName());
+                levelLabel.setText(hub.tutorialMan.getRunningTutorial().getName());
             }
 
             // Set the score text.
@@ -525,6 +491,27 @@ public class GameUI implements ILevelListener, IPieceListener, IScoreListener
         // Update the piece preview.
         this.nextPieceGrid.loadStructure(event.getNextPiece().getStructure());
         this.nextPieceGrid.setColor(event.getNextPiece().getType().getColor());
+    }
+
+    public void tickOccurred(TimerEvent event)
+    {
+        //LogManager.recordMessage("Tick! Current time is " + event.getCurrentTime() + ".");
+        this.timerBar.setProgressValue(event.getCurrentTime());
+    }
+
+    public void currentTimeReset(TimerEvent event)
+    {
+        CouchLogger.get().recordMessage(this.getClass(),
+                "Time Reset! Current time is " + event.getCurrentTime() + ".");
+        this.timerBar.setProgressValue(event.getCurrentTime());
+    }
+
+    public void startTimeChanged(TimerEvent event)
+    {
+        CouchLogger.get().recordMessage(this.getClass(),
+                "Start time changed! Start time is " + event.getStartTime() + ".");
+        this.timerBar.setProgressValue(event.getStartTime());
+        this.timerBar.setProgressUpper(event.getStartTime());        
     }
     
 }

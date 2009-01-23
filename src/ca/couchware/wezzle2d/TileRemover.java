@@ -36,6 +36,7 @@ import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.StarTile;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -172,54 +173,52 @@ public class TileRemover implements IResettable, ILevelListener
      * 
      * @param game The game instance.
      */
-    public void updateLogic(final Game game, List<Chain> chains)
+    public void updateLogic(final Game game, ManagerHub hub)
     {
-        //final AnimationManager animationMan = game.animationMan;
-        //final BoardManager boardMan         = game.boardMan;
-        //final LayerManager layerMan         = game.layerMan;
-        final ListenerManager listenerMan   = game.listenerMan;
-        final PieceManager pieceMan         = game.pieceMan;
-        //final SettingsManager settingsMan   = game.settingsMan;
-        final TimerManager timerMan         = game.timerMan;
-        //final LevelManager levelMan         = game.levelMan;                
+        // Sanity check.
+        assert game != null;
+        assert hub  != null;
+
+        final ListenerManager listenerMan   = hub.listenerMan;
+        final PieceManager pieceMan         = hub.pieceMan;
+        final TimerManager timerMan         = hub.timerMan;           
         
         if (activateLevelUp == true)
         {
             activateLevelUp = false;
-            levelUp(game);
+            levelUp(hub.boardMan);
         }
 
         // See if it just finished.
-        if (game.refactorer.isFinished() && areItemSetsEmpty())
+        if (game.getRefactorer().isFinished() && areItemSetsEmpty())
         {
-           
-            findMatches(game, chains);
+            findMatches(hub, game.getChainList());
             
             // If there are matches, score them, remove 
             // them and then refactor again.
             if (!tileRemovalSet.isEmpty())
             {
-                startLineRemoval(game.refactorer);
+                startLineRemoval(game.getRefactorer());
             }
             else
             {
                 // Make sure the tiles are not still dropping.
-                if (!game.tileDropper.isTileDropping())
+                if (!game.getTileDropper().isTileDropping())
                 {      
                     // Don't fire a move completed event if we're just
                     // doing the level up line removal.
-                    if (!levelUpInProgress)
+                    if (!this.levelUpInProgress)
                     {
                         // Fire the move completed event.
                         listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));
                         
                         // The move is completed. Build the move.
-                        Move move = Move.newInstance(chains);
-                        LogManager.recordMessage(move.toString());
+                        Move move = Move.newInstance(game.getChainList());
+                        CouchLogger.get().recordMessage(this.getClass(),
+                                "\n" + move.toString());
                         
                         // Reset chains tracking.
-                        chains.clear();
-                        
+                        game.getChainList().clear();
                     }
                     
                     // Start the next move.
@@ -235,31 +234,31 @@ public class TileRemover implements IResettable, ILevelListener
         // If a line removal was activated.
         if (this.activateLineRemoval == true)
         {            
-            removeLines(game);
+            removeLines(game, hub);
         }                 
 
         // If the star removal is in progress.
         if (this.activateRocketRemoval == true)
         {
-            removeRockets(game);
+            removeRockets(game, hub);
         }
 
         // If the star removal is in progress.
         if (this.activateStarRemoval == true)
         {
-            removeStars(game);
+            removeStars(game, hub);
         }
 
         // If a bomb removal is in progress.
         if (this.activateBombRemoval == true)
         {
-            removeBombs(game);
+            removeBombs(game, hub);
         }
                        
         // If a line removal is in progress.        
         if (this.tileRemovalInProgress == true)
         {            
-            processRemoval(game);
+            processRemoval(game, hub);
         }
     }
     
@@ -286,7 +285,7 @@ public class TileRemover implements IResettable, ILevelListener
         pieceMan.clearMouseButtonSet();
 
         // Unpause the timer.
-        timerMan.resetCurrentTime();
+        //timerMan.resetCurrentTime();
         timerMan.setPaused(false);
     }
     
@@ -320,20 +319,17 @@ public class TileRemover implements IResettable, ILevelListener
                 || this.activateRocketRemoval;
     }
 
-    private void levelUp(final Game game)
+    private void levelUp(BoardManager boardMan)
     {
         // Set some flags for the level up.
         this.activateLineRemoval = true;
-        this.levelUpInProgress = true;
+        this.levelUpInProgress   = true;
         this.noScore = true;
         this.noItems = true;
         
         // Clear the tile removal set.        
         this.tileRemovalSet.clear();
-
-        // Make a shortcut to the board manager.
-        BoardManager boardMan = game.boardMan;
-
+        
         int j;
         if (boardMan.getGravity().contains(Direction.UP))
         {
@@ -354,39 +350,41 @@ public class TileRemover implements IResettable, ILevelListener
         }
     }
 
-    public void findMatches(final Game game, List<Chain> chains)
+    public void findMatches(ManagerHub hub, List<Chain> chainList)
     {
         // Shortcuts to the managers.
-        BoardManager boardMan       = game.boardMan;        
-        StatManager  statMan        = game.statMan;                       
+        BoardManager boardMan       = hub.boardMan;
+        StatManager  statMan        = hub.statMan;
         
         // Look for matches.
         tileRemovalSet.clear();
 
         // The lines in the chain
-        ArrayList<Line> lines = new ArrayList<Line>();
+        List<Line> lineList = new ArrayList<Line>();
         
-        int cycleX = boardMan.findXMatch(tileRemovalSet, lines);
-        int cycleY = boardMan.findYMatch(tileRemovalSet, lines);
+        int cycleX = boardMan.findXMatch(tileRemovalSet, lineList);
+        int cycleY = boardMan.findYMatch(tileRemovalSet, lineList);
         
         // Build up the chains, if they exist.
-        if(lines.size() > 0)
-            chains.add(Chain.newInstance(lines));
+        if (!lineList.isEmpty())
+        {
+            chainList.add(Chain.newInstance(lineList));
+        }
         
         statMan.incrementCycleLineCount(cycleX);
         statMan.incrementCycleLineCount(cycleY);
         
         //  Handle any lines we may have had.       
-        if (game.tutorialMan.isTutorialRunning() == true)
+        if (hub.tutorialMan.isTutorialRunning() == true)
         {
-            game.listenerMan.notifyLineConsumed(new LineEvent(
-                    game.statMan.getCycleLineCount(), this),
+            hub.listenerMan.notifyLineConsumed(new LineEvent(
+                    hub.statMan.getCycleLineCount(), this),
                     GameType.TUTORIAL);
         }
         else
         {
-            game.listenerMan.notifyLineConsumed(new LineEvent(
-                    game.statMan.getCycleLineCount(), this),
+            hub.listenerMan.notifyLineConsumed(new LineEvent(
+                    hub.statMan.getCycleLineCount(), this),
                     GameType.GAME);
         }                
 
@@ -396,51 +394,41 @@ public class TileRemover implements IResettable, ILevelListener
     }
 
     private IAnimation animateItemActivation(
-            final SettingsManager settingsMan,
-            final LayerManager layerMan,
-            final BoardManager boardMan, 
+            final ManagerHub hub,
             final Tile tile)
     {
-        assert settingsMan != null;
-        assert layerMan    != null;
-        assert boardMan    != null;
-        assert tile        != null;
+        assert hub  != null;
+        assert tile != null;
         
         // The clone of tile, used to make the effect.
-        final Tile clone = boardMan.cloneTile(tile);
+        final Tile clone = hub.boardMan.cloneTile(tile);
         
         // Add the clone to the layer man.
-        layerMan.add(clone, Layer.EFFECT);
+        hub.layerMan.add(clone, Layer.EFFECT);
         
         // Make the animation.
         IAnimation anim1 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, clone)
                 .minWidth(clone.getWidth())                                
                 .maxWidth(Integer.MAX_VALUE)
-                .speed(settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED))
-                .duration(settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION))
+                .speed(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION))
                 .end();
 
         IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, clone)
-                .wait(settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_WAIT))
-                .duration(settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_DURATION))
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_DURATION))
                 .end();
 
         MetaAnimation meta = new MetaAnimation.Builder()
                 .add(anim1)
                 .add(anim2)
                 .end();
-
-//        meta.setFinishRunnable(new Runnable()
-//        {
-//           public void run() 
-//           { layerMan.remove(clone, Layer.EFFECT); }
-//        });  
         
         meta.addAnimationListener(new AnimationAdapter()
         {
             @Override
             public void animationFinished()
-            { layerMan.remove(clone, Layer.EFFECT); }
+            { hub.layerMan.remove(clone, Layer.EFFECT); }
         });
 
         clone.setAnimation(meta);
@@ -449,8 +437,8 @@ public class TileRemover implements IResettable, ILevelListener
     }
 
 
-    private void trackItem(
-            Game game,
+    private void followItem(
+            ManagerHub hub,
             Integer lastItem, 
             List<Tile> itemsSeenList,              
             List<Tile> allSeenList) 
@@ -463,18 +451,18 @@ public class TileRemover implements IResettable, ILevelListener
         currentItem.add(lastItem);                      
         
         // Determine the type and get the affected tiles accordingly.
-        switch (game.boardMan.getTile(lastItem).getType())
+        switch (hub.boardMan.getTile(lastItem).getType())
         {
             case ROCKET:
-                game.boardMan.processRockets(currentItem, tilesAffected);
+                hub.boardMan.processRockets(currentItem, tilesAffected);
                 break;
             
             case BOMB:
-                game.boardMan.processBombs(currentItem, tilesAffected);
+                hub.boardMan.processBombs(currentItem, tilesAffected);
                 break;
             
             case STAR:
-                game.boardMan.processStars(currentItem, tilesAffected);
+                hub.boardMan.processStars(currentItem, tilesAffected);
                 break;
             
             default:
@@ -485,7 +473,7 @@ public class TileRemover implements IResettable, ILevelListener
         for (Integer index : tilesAffected)
         {           
             // Get the tile entity.
-            Tile t = game.boardMan.getTile(index);
+            Tile t = hub.boardMan.getTile(index);
             
             // If we have found another item. Recurse.
             if (t.getType() != TileType.NORMAL)
@@ -500,29 +488,27 @@ public class TileRemover implements IResettable, ILevelListener
                 // Add to the temp list.
                 List<Tile> list = new ArrayList<Tile>(itemsSeenList);
                 list.add(t);
-                trackItem(game, index, list, allSeenList);
+                followItem(hub, index, list, allSeenList);
             }
         }
         
         // When we are done.  Return the event.
-        if (!game.tutorialMan.isTutorialRunning() && !itemsSeenList.isEmpty())
+        if (!hub.tutorialMan.isTutorialRunning() && !itemsSeenList.isEmpty())
         {
-            game.listenerMan.notifyCollisionOccured(new CollisionEvent(this, itemsSeenList));
+            hub.listenerMan.notifyCollisionOccured(
+                    new CollisionEvent(this, itemsSeenList));
         }
     }
     
-    private void processRemoval(final Game game)
-    {
-        // Shortcut to board manager.
-        BoardManager boardMan = game.boardMan;
-        
+    private void processRemoval(Game game, ManagerHub hub)
+    {        
         // Animation completed flag.
         boolean animationInProgress = false;
 
         // Check to see if they're all done.
         for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
         {
-            if (boardMan.getTile((Integer) it.next()).getAnimation().isFinished() == false)
+            if (hub.boardMan.getTile((Integer) it.next()).getAnimation().isFinished() == false)
             {
                 animationInProgress = true;
                 break;
@@ -532,14 +518,13 @@ public class TileRemover implements IResettable, ILevelListener
         if (animationInProgress == false)
         {
             // Remove the tiles from the board.
-            boardMan.removeTiles(tileRemovalSet);
+            hub.boardMan.removeTiles(tileRemovalSet);
 
             // Bomb removal is completed.
             this.tileRemovalInProgress = false;
 
             // See if there are any bombs in the bomb set.
-            // If there are, activate the bomb removal.  
-            
+            // If there are, activate the bomb removal.              
             if (this.itemSetMap.get(TileType.ROCKET).isEmpty() == false)
             {
                 this.activateRocketRemoval = true;
@@ -554,15 +539,15 @@ public class TileRemover implements IResettable, ILevelListener
             }
             else if (this.itemSetMap.get(TileType.GRAVITY).isEmpty() == false)
             {                
-                shiftGravity(game); 
-                game.refactorer
+                shiftGravity(hub.boardMan); 
+                game.getRefactorer()
                         .setRefactorSpeed(RefactorSpeed.SHIFT)
                         .startRefactor();
             }
             // Otherwise, start a new refactor.
             else
             {
-                game.refactorer
+                game.getRefactorer()
                         .setRefactorSpeed(refactorSpeed)
                         .startRefactor();
             }
@@ -597,17 +582,21 @@ public class TileRemover implements IResettable, ILevelListener
         scanFor(boardMan, tileTypeSet, false);
     }
 
-    private void removeLines(final Game game)
+    private void removeLines(final Game game, ManagerHub hub)
     {
+        // Sanity check.
+        assert game != null;
+        assert hub  != null;
+        
         // Shortcuts to managers.
-        AnimationManager animationMan = game.animationMan;
-        BoardManager boardMan = game.boardMan;
-        //ListenerManager listenerMan = game.listenerMan;
-        ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = game.settingsMan;
-        SoundManager soundMan = game.soundMan;
-        StatManager statMan = game.statMan;                        
-        //TutorialManager tutorialMan = game.tutorialMan;                
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager boardMan         = hub.boardMan;
+        final LayerManager layerMan         = hub.layerMan;
+        final ScoreManager scoreMan         = hub.scoreMan;
+        final SettingsManager settingsMan   = hub.settingsMan;
+        final SoundManager soundMan         = hub.soundMan;
+        final StatManager statMan           = hub.statMan;     
+        final TutorialManager tutorialMan   = hub.tutorialMan;
 
         // Clear flag.
         activateLineRemoval = false;
@@ -625,9 +614,9 @@ public class TileRemover implements IResettable, ILevelListener
                     statMan.getChainCount());           
             
             // Increment the score.
-            if (!game.tutorialMan.isTutorialRunning())       
+            if (!tutorialMan.isTutorialRunning())       
             {
-                game.scoreMan.incrementScore(deltaScore);        
+                scoreMan.incrementScore(deltaScore);        
             }
 
             // Show the SCT.
@@ -654,11 +643,11 @@ public class TileRemover implements IResettable, ILevelListener
             {
                 @Override
                 public void animationStarted()
-                { game.layerMan.add(label, Layer.EFFECT); }
+                { layerMan.add(label, Layer.EFFECT); }
                 
                 @Override
                 public void animationFinished()
-                { game.layerMan.remove(label, Layer.EFFECT); }
+                { layerMan.remove(label, Layer.EFFECT); }
             });
 
             animationMan.add(a1);
@@ -704,7 +693,7 @@ public class TileRemover implements IResettable, ILevelListener
                             : COLUMN * 100;
 
                     // Bring this tile to the top.
-                    game.layerMan.toFront(t, Layer.TILE);
+                    layerMan.toFront(t, Layer.TILE);
 
                     IAnimation a1 = new MoveAnimation.Builder(t)
                             .wait(WAIT)
@@ -762,11 +751,7 @@ public class TileRemover implements IResettable, ILevelListener
                     final Tile tile = boardMan.getTile(itemIndex);
                    
                     // Create and add the animation.                    
-                    animationMan.add(animateItemActivation(
-                            game.settingsMan,
-                            game.layerMan,
-                            game.boardMan,
-                            tile));
+                    animationMan.add(animateItemActivation(hub, tile));
                 }
             }           
         } // end if    
@@ -789,19 +774,21 @@ public class TileRemover implements IResettable, ILevelListener
         tileRemovalInProgress = true;
     }    
         
-    private void removeRockets(final Game game)
+    private void removeRockets(final Game game, ManagerHub hub)
     {        
-        // Shortcuts to managers.
-        AnimationManager animationMan = game.animationMan;
-        BoardManager boardMan = game.boardMan;
-        LayerManager layerMan = game.layerMan;
-        //ListenerManager listenerMan = game.listenerMan;
-        ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = game.settingsMan;
-        SoundManager soundMan = game.soundMan;
-        StatManager statMan = game.statMan;                        
-        //TutorialManager tutorialMan = game.tutorialMan;  
-
+        // Sanity check.
+        assert game != null;
+        assert hub  != null;
+        
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager     boardMan     = hub.boardMan;
+        final LayerManager     layerMan     = hub.layerMan;
+        final ScoreManager     scoreMan     = hub.scoreMan;
+        final SettingsManager  settingsMan  = hub.settingsMan;
+        final SoundManager     soundMan     = hub.soundMan;
+        final StatManager      statMan      = hub.statMan;                        
+        final TutorialManager  tutorialMan  = hub.tutorialMan;
+        
         // Shortcut to the set.
         Set<Integer> rocketRemovalSet = this.itemSetMap.get(TileType.ROCKET);
         
@@ -819,7 +806,7 @@ public class TileRemover implements IResettable, ILevelListener
         // Load the items into the allseen initially.
         for (Integer index : rocketRemovalSet)
         {            
-            Tile t = game.boardMan.getTile(index);
+            Tile t = boardMan.getTile(index);
             
             if (t.getType() != TileType.NORMAL)
             {
@@ -834,7 +821,7 @@ public class TileRemover implements IResettable, ILevelListener
             List<Tile> itemsSeen = new ArrayList<Tile>();
             itemsSeen.add(boardMan.getTile(index));
             
-            trackItem(game, index, itemsSeen, allSeenSet);
+            followItem(hub, index, itemsSeen, allSeenSet);
         }
 
         // Get the tiles the rockets would affect.
@@ -859,9 +846,9 @@ public class TileRemover implements IResettable, ILevelListener
                 statMan.getChainCount());       
         
         // Increment the score.
-        if (game.tutorialMan.isTutorialRunning() == false)       
+        if (tutorialMan.isTutorialRunning() == false)       
         {
-            game.scoreMan.incrementScore(deltaScore);        
+            scoreMan.incrementScore(deltaScore);        
         }
 
         // Show the SCT.
@@ -892,11 +879,11 @@ public class TileRemover implements IResettable, ILevelListener
             {
                 @Override
                 public void animationStarted()
-                { game.layerMan.add(label, Layer.EFFECT); }
+                { layerMan.add(label, Layer.EFFECT); }
 
                 @Override
                 public void animationFinished()
-                { game.layerMan.remove(label, Layer.EFFECT); }
+                { layerMan.remove(label, Layer.EFFECT); }
             });
 
             animationMan.add(anim1);
@@ -936,7 +923,7 @@ public class TileRemover implements IResettable, ILevelListener
             
             if (t == null) continue;
             
-            t.setAnimation(animateItemActivation(settingsMan, layerMan, boardMan, t));
+            t.setAnimation(animateItemActivation(hub, t));
             animationMan.add(t.getAnimation());
         }
 
@@ -947,7 +934,7 @@ public class TileRemover implements IResettable, ILevelListener
             Tile t = boardMan.getTile((Integer) it.next());
 
             // Bring the tile to the front.
-            game.layerMan.toFront(t, Layer.TILE);
+            layerMan.toFront(t, Layer.TILE);
 
             if (t.getType() == TileType.ROCKET)
             {                
@@ -1005,16 +992,21 @@ public class TileRemover implements IResettable, ILevelListener
         tileRemovalInProgress = true;
     }
     
-    private void removeBombs(final Game game)
-    {
+    private void removeBombs(final Game game, final ManagerHub hub)
+    {        
+        // Sanity check.
+        assert game != null;
+        assert hub  != null;
+        
         // Create shortcuts to all the managers.
-        final AnimationManager animationMan = game.animationMan;
-        final BoardManager boardMan = game.boardMan;
-        final LayerManager layerMan = game.layerMan;        
-        final ScoreManager scoreMan = game.scoreMan;
-        final SettingsManager settingsMan = game.settingsMan;
-        final SoundManager soundMan = game.soundMan;
-        final StatManager statMan = game.statMan;                                                
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager     boardMan     = hub.boardMan;
+        final LayerManager     layerMan     = hub.layerMan;
+        final ScoreManager     scoreMan     = hub.scoreMan;
+        final SettingsManager  settingsMan  = hub.settingsMan;
+        final SoundManager     soundMan     = hub.soundMan;
+        final StatManager      statMan      = hub.statMan;                        
+        final TutorialManager  tutorialMan  = hub.tutorialMan;                                              
 
         // Shortcut to the set.
         Set<Integer> bombRemovalSet = this.itemSetMap.get(TileType.BOMB);
@@ -1033,7 +1025,7 @@ public class TileRemover implements IResettable, ILevelListener
         // Load the items into the allseen initially.
         for (Integer index : bombRemovalSet)
         {          
-            Tile t = game.boardMan.getTile(index);
+            Tile t = boardMan.getTile(index);
             
             if (t.getType() != TileType.NORMAL)
             {
@@ -1048,7 +1040,7 @@ public class TileRemover implements IResettable, ILevelListener
             List<Tile> itemsSeenList = new ArrayList<Tile>();            
             itemsSeenList.add(boardMan.getTile(index));                        
             
-            trackItem(game, index, itemsSeenList, allSeenList);            
+            followItem(hub, index, itemsSeenList, allSeenList);            
         }
         
         // Get the tiles the bombs would affect.
@@ -1059,9 +1051,9 @@ public class TileRemover implements IResettable, ILevelListener
                 statMan.getChainCount());       
 
         // Increment the score.
-        if (game.tutorialMan.isTutorialRunning() == false)       
+        if (tutorialMan.isTutorialRunning() == false)       
         {
-            game.scoreMan.incrementScore(deltaScore);        
+            scoreMan.incrementScore(deltaScore);        
         }
 
         // Show the SCT.
@@ -1089,11 +1081,11 @@ public class TileRemover implements IResettable, ILevelListener
             {
                 @Override
                 public void animationStarted()
-                { game.layerMan.add(label, Layer.EFFECT); }
+                { layerMan.add(label, Layer.EFFECT); }
 
                 @Override
                 public void animationFinished()
-                { game.layerMan.remove(label, Layer.EFFECT); }
+                { layerMan.remove(label, Layer.EFFECT); }
             });
 
             animationMan.add(anim1);
@@ -1134,7 +1126,7 @@ public class TileRemover implements IResettable, ILevelListener
             // Make sure the item has not already been removed.
             if (t == null) continue;
             
-            t.setAnimation(animateItemActivation(settingsMan, layerMan, boardMan, t));
+            t.setAnimation(animateItemActivation(hub, t));
             animationMan.add(t.getAnimation());
         }
 
@@ -1254,17 +1246,21 @@ public class TileRemover implements IResettable, ILevelListener
         tileRemovalInProgress = true;
     }   
 
-    private void removeStars(final Game game)
-    {
-        // Shortcuts to managers.
-        AnimationManager animationMan = game.animationMan;
-        BoardManager boardMan = game.boardMan;
-        //ListenerManager listenerMan = game.listenerMan;
-        ScoreManager scoreMan = game.scoreMan;
-        SettingsManager settingsMan = game.settingsMan;
-        SoundManager soundMan = game.soundMan;
-        StatManager statMan = game.statMan;                        
-        //TutorialManager tutorialMan = game.tutorialMan;  
+    private void removeStars(final Game game, final ManagerHub hub)
+    {        
+        // Sanity check.
+        assert game != null;
+        assert hub  != null;
+        
+        // Create shortcuts to all the managers.
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager     boardMan     = hub.boardMan;
+        final LayerManager     layerMan     = hub.layerMan;
+        final ScoreManager     scoreMan     = hub.scoreMan;
+        final SettingsManager  settingsMan  = hub.settingsMan;
+        final SoundManager     soundMan     = hub.soundMan;
+        final StatManager      statMan      = hub.statMan;                        
+        final TutorialManager  tutorialMan  = hub.tutorialMan;
         
         // Shortcut to the set.
         Set<Integer> starRemovalSet = this.itemSetMap.get(TileType.STAR);
@@ -1286,7 +1282,7 @@ public class TileRemover implements IResettable, ILevelListener
         // Load the items into the allseen initially.
         for (Integer index : starRemovalSet)
         {            
-            Tile t = game.boardMan.getTile(index);
+            Tile t = boardMan.getTile(index);
             
             if (t.getType() != TileType.NORMAL)
             {
@@ -1301,7 +1297,7 @@ public class TileRemover implements IResettable, ILevelListener
             List<Tile> itemsSeenList = new ArrayList<Tile>();            
             itemsSeenList.add(boardMan.getTile(index));                        
             
-            trackItem(game, index, itemsSeenList, allSeenList);            
+            followItem(hub, index, itemsSeenList, allSeenList);            
         }
 
         // Get the tiles the bombs would affect.
@@ -1326,9 +1322,9 @@ public class TileRemover implements IResettable, ILevelListener
                 statMan.getChainCount());       
         
         // Increment the score.
-        if (game.tutorialMan.isTutorialRunning() == false)       
+        if (tutorialMan.isTutorialRunning() == false)       
         {
-            game.scoreMan.incrementScore(deltaScore);        
+            scoreMan.incrementScore(deltaScore);        
         }
 
         // Show the SCT.
@@ -1357,11 +1353,11 @@ public class TileRemover implements IResettable, ILevelListener
         {
             @Override
             public void animationStarted()
-            { game.layerMan.add(label, Layer.EFFECT); }
+            { layerMan.add(label, Layer.EFFECT); }
 
             @Override
             public void animationFinished()
-            { game.layerMan.remove(label, Layer.EFFECT); }
+            { layerMan.remove(label, Layer.EFFECT); }
         });
 
         animationMan.add(a1);
@@ -1383,7 +1379,7 @@ public class TileRemover implements IResettable, ILevelListener
             Tile t = boardMan.getTile(index);
 
             // Bring the entity to the front.
-            game.layerMan.toFront(t, Layer.TILE);
+            layerMan.toFront(t, Layer.TILE);
 
             // Increment counter.
             i++;
@@ -1413,14 +1409,14 @@ public class TileRemover implements IResettable, ILevelListener
         tileRemovalInProgress = true;
     }
     
-    private void shiftGravity(Game game)
+    private void shiftGravity(BoardManager boardMan)
     {
         // Shortcut to the set.
         Set<Integer> gravityRemovalSet = this.itemSetMap.get(TileType.GRAVITY);
         
         // Determine the new gravity.
         EnumSet<Direction> gravity = null;
-        if (game.boardMan.getGravity().contains(Direction.LEFT))
+        if (boardMan.getGravity().contains(Direction.LEFT))
         {
             gravity = EnumSet.of(Direction.DOWN, Direction.RIGHT);
         }
@@ -1430,7 +1426,7 @@ public class TileRemover implements IResettable, ILevelListener
         }
 
         // Set the new gravity.
-        game.boardMan.setGravity(gravity);
+        boardMan.setGravity(gravity);
         
         // Clear the gravity tiles.
         gravityRemovalSet.clear();

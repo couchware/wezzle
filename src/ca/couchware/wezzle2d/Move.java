@@ -18,18 +18,16 @@ import java.util.List;
 public class Move
 {
     
-    /**
-     * The list of lines.
-     */
-    private List<Chain> move;
+    /** The list of chains. */
+    private List<Chain> chainList;
     
     /**
      * Constructor private to ensure immutability.
      * @param cascades The cascades.
      */
-    private Move(List<Chain> cascades)
+    private Move(List<Chain> chainList)
     {
-        this.move = cascades;
+        this.chainList = chainList;
     }
     
     /**
@@ -37,37 +35,37 @@ public class Move
      * @param cascades  The cascades in the move.
      * @return The immutable move.
      */
-    public static Move newInstance(List<Chain> cascades)
+    public static Move newInstance(List<Chain> chainList)
     {
-       return new Move(cascades);
-    }
-    
+       return new Move(chainList);
+    }    
         
-    /**
-     * Public interface.
-     */
+    // -------------------------------------------------------------------------
+    // Public Members
+    // -------------------------------------------------------------------------
     
     /**
      * Get the cascades. To ensure immutability returns an unmodifiable list.
      * @return The list of cascades.
      */
-    public List getCascades()
+    public List getChainList()
     {
-        return Collections.unmodifiableList(this.move);
+        return Collections.unmodifiableList(this.chainList);
     }
-    
-    
+        
+    @Override
     public String toString()
     {
-        String out = "";
+        StringBuffer buffer = new StringBuffer();
         int count = 1;
         
-        for(Chain i : move)
+        for (Chain chain : chainList)
         {
-            out += "Chain " + count + ":\n" + i.toString();
+            buffer.append(String.format("(Chain %d)\n%s", count, chain.toString()));
             count++;
         }
         
-        return out;
+        return buffer.toString();
     }
+    
 }

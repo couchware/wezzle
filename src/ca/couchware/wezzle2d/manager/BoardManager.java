@@ -24,6 +24,7 @@ import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.tile.X2Tile;
 import ca.couchware.wezzle2d.tile.X3Tile;
 import ca.couchware.wezzle2d.tile.X4Tile;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import ca.couchware.wezzle2d.util.Util;
@@ -82,6 +83,11 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         ROW_FADE,
         SLIDE_FADE    
     }        
+    
+    final private static int BOARD_X = 272;
+    final private static int BOARD_Y = 139;
+    final private static int BOARD_COLUMNS = 8;
+    final private static int BOARD_ROWS    = 10;
     
     /** The width of a grid cell. */
 	final private int cellWidth;
@@ -245,9 +251,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	private BoardManager(
             final AnimationManager animationMan,
             final LayerManager     layerMan,
-            final ItemManager      itemMan,
-            final int x, final int y, 
-            final int columns, final int rows)
+            final ItemManager      itemMan)            
 	{
         // Board is initially visible.
         this.visible = true;
@@ -262,12 +266,12 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 		this.cellHeight = 32;       
 		
 		// Set the x and y coordinates.
-		this.x = x;
-		this.y = y;
+		this.x = BOARD_X;
+		this.y = BOARD_Y;
 		
 		// Set columns and rows.
-		this.columns = columns;
-		this.rows    = rows;
+		this.columns = BOARD_COLUMNS;
+		this.rows    = BOARD_ROWS;
 		this.cells   = columns * rows;
 						
 		// Set the board width and height.
@@ -341,9 +345,9 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         managerState.put(Keys.BOARD, board.clone());
         managerState.put(Keys.SCRATCH_BOARD, scratchBoard.clone());
         
-        LogManager.recordMessage("Saved " + numberOfTiles + " tiles.");  
-        LogManager.recordMessage("Saved " + numberOfItems + " items.");
-        LogManager.recordMessage("Saved " + numberOfMultipliers + " mults.");
+        CouchLogger.get().recordMessage(this.getClass(), "Saved " + numberOfTiles + " tiles.");
+        CouchLogger.get().recordMessage(this.getClass(), "Saved " + numberOfItems + " items.");
+        CouchLogger.get().recordMessage(this.getClass(), "Saved " + numberOfMultipliers + " mults.");
     }
 
     /**
@@ -379,16 +383,16 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                     if(item.getTileType() == t.getType())
                     {
                         item.incrementCurrentAmount();
-                        LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
+                        CouchLogger.get().recordMessage(this.getClass(), item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
                         break;
                     }
                 } // end for
             } // end if
         }
         
-        LogManager.recordMessage("Loaded " + numberOfTiles + " tiles.");
-        LogManager.recordMessage("Loaded " + numberOfItems + " items.");
-        LogManager.recordMessage("Loaded " + numberOfMultipliers + " multipliers.");
+        CouchLogger.get().recordMessage(this.getClass(), "Loaded " + numberOfTiles + " tiles.");
+        CouchLogger.get().recordMessage(this.getClass(), "Loaded " + numberOfItems + " items.");
+        CouchLogger.get().recordMessage(this.getClass(), "Loaded " + numberOfMultipliers + " multipliers.");
     } 
             
     /**
@@ -404,11 +408,9 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      */    
     public static BoardManager newInstance(final AnimationManager animationMan,
         final LayerManager layerMan,
-        final ItemManager itemMan,
-        final int x, final int y, 
-        final int columns, final int rows)
+        final ItemManager itemMan)
     {
-        return new BoardManager(animationMan, layerMan, itemMan, x, y, columns, rows);
+        return new BoardManager(animationMan, layerMan, itemMan);
     }
     
     //--------------------------------------------------------------------------
@@ -611,17 +613,16 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
          * @param chain The chain that is passed through
      * @return The number of matches found.
 	 */
-	public int findXMatch(Set<Integer> set, List<Line> chain)
+	public int findXMatch(Set<Integer> set, List<Line> chainList)
 	{
         // The line count.
-        int lineCount = 0;
-        
+        int lineCount = 0;        
         
 		// Cycle through the board looking for a match in the X-direction.
 		for (int i = 0; i < cells; i++)
 		{
-                    // Build up the tiles to build up lines.
-                     ArrayList<Tile> tiles = new ArrayList<Tile>();
+            // Build up the tiles to build up lines.
+            List<Tile> tileList = new ArrayList<Tile>();
                     
 			// Check to see if there's even enough room for an X-match.
 			if (columns - (i % columns) < minimumMatch)
@@ -646,32 +647,35 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 					break;
 			}
 			
-			// Check if we have a match.
-			if (j >= minimumMatch)
-			{
-				LogManager.recordMessage("XMatch of length " + j + " found.",
-                        "BoardManager#findXMatch");
-                
+		          // Check if we have a match.
+            if (j >= minimumMatch)
+            {
+                CouchLogger.get().recordMessage(this.getClass(), "XMatch of length " + j + " found.");
+
                 lineCount++;
-				
-				// Copy all matched locations to the linked list.
-				for (int k = i; k < i + j; k++)
-                                {
-					set.add(new Integer(k));
-                                        
-                                        // Build up the line of tiles.
-                                        if(chain != null)
-                                            tiles.add(board[k]);
-                                }
-				
-				i += j - 1;
-                                
-                                 // If the set is non-empty, add the line to the chain.
-                                 if(chain != null)
-                                    chain.add(Line.newInstance(tiles));
-			}
-                        
-		} // end for
+
+                // Copy all matched locations to the linked list.
+                for (int k = i; k < i + j; k++)
+                {
+                    set.add(new Integer(k));
+
+                    // Build up the line of tiles.
+                    if (chainList != null)
+                    {
+                        tileList.add(board[k]);
+                    }
+                }
+
+                i += j - 1;
+
+                // If the set is non-empty, add the line to the chain.
+                if (chainList != null)
+                {
+                    chainList.add(Line.newInstance(tileList));
+                }
+            }
+
+        } // end for
         
         // Return the line count.
         return lineCount;
@@ -728,8 +732,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 			// Check if we have a match.
 			if (j >= minimumMatch)
 			{
-				LogManager.recordMessage("YMatch of length " + j + " found.", 
-                        "BoardManager#findYMatch");
+				CouchLogger.get().recordMessage(this.getClass(), "YMatch of length " + j + " found.");
 				
                 lineCount++;
                 
@@ -1114,10 +1117,15 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         // Increment the item count.
         if (t.getType() != TileType.NORMAL)
         {
-            Item item = itemMan.getItemOrMultiplier(t.getType()); 
-            if (item == null) LogManager.recordMessage("Missing type was " + t.getType());
+            Item item = itemMan.getItemOrMultiplier(t.getType());
+            
+            if (item == null)
+            {
+                CouchLogger.get().recordMessage(this.getClass(), "Missing type was " + t.getType());
+            }
+            
             item.incrementCurrentAmount();
-            LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");                        
+            CouchLogger.get().recordMessage(this.getClass(), item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
         }
         
 		// Set the tile.
@@ -1132,7 +1140,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             case X3:
             case X4:
                 
-                LogManager.recordMessage("Multiplier added.", "BoardManager#addMult");
+                CouchLogger.get().recordMessage(this.getClass(), "Multiplier added.");
                 this.incrementNumberOfMultipliers();
                 
                 break;
@@ -1142,7 +1150,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             case BOMB:
             case STAR:
                 
-                LogManager.recordMessage("Item added.", "BoardManager#addTile");
+                CouchLogger.get().recordMessage(this.getClass(), "Item added.");
                 this.incrementNumberOfItems();
                 
                 break;
@@ -1383,7 +1391,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         {
             Item item = itemMan.getItemOrMultiplier(t.getType());            
             item.decrementCurrentAmount();
-            LogManager.recordMessage(item.getTileType() + " has " + item.getCurrentAmount() + " instances.");                        
+            CouchLogger.get().recordMessage(this.getClass(), item.getTileType() + " has " + item.getCurrentAmount() + " instances.");
         }
         
         switch (t.getType())
@@ -1395,7 +1403,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             case X3:
             case X4:
                 
-                LogManager.recordMessage("Multiplier removed.", "BoardManager#addMult");
+                CouchLogger.get().recordMessage(this.getClass(), "Multiplier removed.");
                 this.decrementNumberOfMultipliers();
                 
                 break;
@@ -1405,7 +1413,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             case BOMB:
             case STAR:
                 
-                LogManager.recordMessage("Item removed.", "BoardManager#addTile");
+                CouchLogger.get().recordMessage(this.getClass(), "Item removed.");
                 this.decrementNumberOfItems();
                 
                 break;
@@ -2109,8 +2117,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             Tile t = getTile(index); 
             
             if (t == null)
-                LogManager.recordWarning("Tile was null: " + index , 
-                        "BoardManager#determineCenterPoint");
+                CouchLogger.get().recordWarning(this.getClass(), "Tile was null: " + index);
 
             if (t.getX() < l) 
                 l = t.getX();
@@ -2218,7 +2225,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         return rows;
     }
 
-    public int getCells()
+    public int getNumberOfCells()
     {
         return cells;
     }
@@ -2346,8 +2353,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     
     public void setVisible(boolean visible)
     {        
-        LogManager.recordMessage("Board visible: " + visible + ".", 
-                "BoardManager#setVisible");
+        CouchLogger.get().recordMessage(this.getClass(), "Board visible: " + visible + ".");
         
         for (Tile tile : board)
             if (tile != null)

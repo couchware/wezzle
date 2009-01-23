@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.tutorial.ITutorial;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
  *
  * @author cdmckay
  */
-public class TutorialManager
+public class TutorialManager implements IResettable
 {
 
     /** The tutorial list. */
@@ -106,16 +107,16 @@ public class TutorialManager
      * 
      * @param game
      */
-    public void finishRunningTutorial(Game game)
+    public void finishRunningTutorial(Game game, ManagerHub hub)
     {
        if (this.tutorial != null)
        {
-           tutorial.finish(game);
+           tutorial.finish(game, hub);
            tutorial = null;
        }
     }
     
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         // If the board is refactoring, do not logicify.
         if (game.isCompletelyBusy()) return;
@@ -128,19 +129,19 @@ public class TutorialManager
                 ITutorial t = it.next();
                 
                 // Check to see if the tutorial is activated.                
-                if (t.evaluateRules(game) == true)
+                if (t.evaluateRules(game, hub) == true)
                 {       
-                    if (game.boardMan.isVisible() == true)                    
+                    if (hub.boardMan.isVisible() == true)                    
                     {
                         // Hide the board nicely.
                         // Make sure the grid doesn't flicker on for a second.
                         game.startBoardHideAnimation(AnimationType.SLIDE_FADE);    
-                        game.pieceMan.hidePieceGrid();
+                        hub.pieceMan.hidePieceGrid();
                         break;
                     }
                     
                     tutorial = t;
-                    tutorial.initialize(game);
+                    tutorial.initialize(game, hub);
                     it.remove();                    
                     break;
                 }                                                                    
@@ -150,10 +151,10 @@ public class TutorialManager
         // See if there is a tutorial running.
         if (tutorial != null)
         {
-            tutorial.updateLogic(game);
+            tutorial.updateLogic(game, hub);
             if (tutorial.isDone() == true)
             {
-                game.boardMan.setVisible(false);
+                hub.boardMan.setVisible(false);
                 game.startBoardShowAnimation(AnimationType.SLIDE_FADE);
                 tutorial = null;
             }

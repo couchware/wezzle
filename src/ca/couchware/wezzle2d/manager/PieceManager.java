@@ -1,8 +1,9 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IWindow;
-import ca.couchware.wezzle2d.Refactorer;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
@@ -29,15 +30,12 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import ca.couchware.wezzle2d.util.NumUtil;
-import ca.couchware.wezzle2d.util.Util;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -60,10 +58,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     /** A reference to the game window. */
     private IWindow window;
-    
-    /** A reference to the refactorer. */
-    private Refactorer refactorer;
-    
+      
     /** The possible buttons that may be clicked. */
     private static enum MouseButton
     {
@@ -73,14 +68,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     /** A set of buttons that were clicked. */
     private Set<MouseButton> mouseButtonSet = EnumSet.noneOf(MouseButton.class);
         
-    /** The animation manager that animations are run with. */
-	private AnimationManager animationMan;
-    
-	/** The board manager the piece manager to attached to. */
-	private BoardManager boardMan;    
-    
-    /** The listener manager, used to send out the piece events. */
-    private ListenerManager listenerMan;
+    /** The manager hub. */
+    final private ManagerHub hub;
     
     /** Was the board recently refactored? */
     private boolean refactored = false;	                  
@@ -118,20 +107,18 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 	 * 
 	 * @param boardMan The board manager.
 	 */
-	private PieceManager(
-            Refactorer refactorer,
-            AnimationManager animationMan, 
-            BoardManager boardMan,
-            LayerManager layerMan,
-            ListenerManager listenerMan)
+	private PieceManager(ManagerHub hub)
 	{       
 		// Set the reference.
-        this.window       = ResourceFactory.get().getWindow();
-        this.refactorer   = refactorer;
-        this.animationMan = animationMan;
-		this.boardMan     = boardMan;         
-        this.listenerMan  = listenerMan;
-        
+        this.window = ResourceFactory.get().getWindow();
+
+        // Sanity check and assignment.
+        assert hub != null; this.hub = hub;
+
+        // Create manager convenience variables.
+        final BoardManager boardMan = hub.boardMan;
+        final LayerManager layerMan = hub.layerMan;
+
         // Create new piece entity at the origin of the board.
 		pieceGrid = new PieceGrid.Builder(
                         boardMan.getX() + boardMan.getCellWidth(),                
@@ -160,7 +147,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         layerMan.add(this.pieceGrid, Layer.PIECE_GRID);
         
         // Create the restriction board and fill it with trues.
-        restrictionBoard = new boolean[boardMan.getCells()];
+        restrictionBoard = new boolean[boardMan.getNumberOfCells()];
         this.clearRestrictionBoard();
 	}	
         
@@ -184,14 +171,9 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
      * @param boardMan
      * @return
      */
-    public static PieceManager newInstance(
-            Refactorer refactorer,
-            AnimationManager animationMan, 
-            BoardManager boardMan,
-            LayerManager layerMan,
-            ListenerManager listenerMan)
+    public static PieceManager newInstance(ManagerHub hub)
     {
-        return new PieceManager(refactorer, animationMan, boardMan, layerMan, listenerMan);
+        return new PieceManager(hub);
     }
     
     //--------------------------------------------------------------------------
@@ -226,7 +208,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         this.pieceQueue.offer(nextPiece);
         
         // Fire new piece event.
-        this.listenerMan.notifyPieceAdded(new PieceEvent(this, this.piece, nextPiece));
+        hub.listenerMan.notifyPieceAdded(new PieceEvent(this, this.piece, nextPiece));
         
         // Adjust the piece grid.
         this.cursorPosition = limitPosition(pieceGrid.getPosition());
@@ -245,7 +227,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 	{
         int x = p.getX();
         int y = p.getY();
-        
+
+        final BoardManager boardMan = hub.boardMan;
         ImmutableRectangle shape = boardMan.getShape();
         
         if (shape.contains(p) == false)        
@@ -257,8 +240,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             else if (y > shape.getMaxY()) y = shape.getMaxY();
         }
         
-		int column = convertXToColumn(x);
-		int row    = convertYToRow(y);
+		int column = toColumn(x);
+		int row    = toRow(y);
 		
 		if (column >= boardMan.getColumns())
 			column = boardMan.getColumns() - 1;
@@ -309,11 +292,14 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     public void getSelectedIndexSet(ImmutablePosition p, 
             Set<Integer> tileSet, 
             Set<Integer> blankSet)
-    {                
+    {
+        // Create convenience variable.
+        final BoardManager boardMan = hub.boardMan;
+
         // Convert to rows and columns.
         ImmutablePosition ap = limitPosition(p);
-        int column = convertXToColumn(ap.getX());
-		int row = convertYToRow(ap.getY());
+        int column = toColumn(ap.getX());
+		int row = toRow(ap.getY());
         
         // Get the piece struture.
         Boolean[][] structure = piece.getStructure();
@@ -346,13 +332,17 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         
     }      
           
-    private int convertXToColumn(final int x)
+    private int toColumn(final int x)
     {
+        // Create convenience variable.
+        final BoardManager boardMan = hub.boardMan;
         return (x - boardMan.getX()) / boardMan.getCellWidth();
     }    
     
-    private int convertYToRow(final int y)
+    private int toRow(final int y)
     {
+       // Create convenience variable.
+       final BoardManager boardMan = hub.boardMan;
        return (y - boardMan.getY()) / boardMan.getCellHeight(); 
     }
     
@@ -361,6 +351,10 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         // Add new animations.
         Set<Integer> indexSet = new HashSet<Integer>();
         getSelectedIndexSet(p, indexSet, null);
+
+        // Create convenience variables.
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager boardMan = hub.boardMan;
         
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {
@@ -387,6 +381,9 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     {
         Set<Integer> indexSet = new HashSet<Integer>();
         getSelectedIndexSet(p, indexSet, null);
+
+        // Create convenience variable.
+        final BoardManager boardMan = hub.boardMan;
         
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {                    
@@ -415,7 +412,11 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         // Remove old animations.
         Set<Integer> indexSet = new HashSet<Integer>();
         getSelectedIndexSet(p, indexSet, null);
-        
+
+        // Create convenience variable.
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager boardMan = hub.boardMan;
+
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
         {                    
             final Tile t = boardMan.getTile((Integer) it.next());
@@ -437,14 +438,14 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     // Logic
     //--------------------------------------------------------------------------
     
-    public void updateLogic(final Game game)
+    public void updateLogic(final Game game, ManagerHub hub)
     {                        
         // If the game is busy, do not logicify.
         if (game.isCompletelyBusy()) return;                 
 
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.
-        if (!game.tileDropper.isTileDropping())
+        if (!game.getTileDropper().isTileDropping())
         {      
             // Grab the current mouse position.
             final ImmutablePosition p = window.getMouseImmutablePosition();             
@@ -452,7 +453,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             if (mouseButtonSet.contains(MouseButton.LEFT) == true)
             {          
                mouseButtonSet.remove(MouseButton.LEFT);
-               initiateCommit(game);
+               initiateCommit(game, hub);
             }
             else if (mouseButtonSet.contains(MouseButton.RIGHT) == true)
             {                                
@@ -476,8 +477,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 // Filter the current position.
                 ImmutablePosition pos = limitPosition(p);
 
-                int speed = getPulseSpeed(game.timerMan.getStartTime(), 
-                        game.timerMan.getCurrrentTime());                             
+                int speed = getPulseSpeed(hub.timerMan.getStartTime(), 
+                        hub.timerMan.getCurrrentTime());                             
                 
                 // If the position changed, or the board was refactored.
                 if (pos.getX() != this.cursorPosition.getX()
@@ -520,11 +521,14 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         return NumUtil.scaleInt(0, initialTime, SLOW_SPEED, FAST_SPEED, initialTime - time);
     }
     
-    public void initiateCommit(final Game game)
+    public void initiateCommit(final Game game, final ManagerHub hub)
     {
         // If a tile drop is already in progress, then return.
-        if (game.tileDropper.isTileDropping() == true)
+        if (game.getTileDropper().isTileDropping() == true)
             return;
+
+        // Create convenience variable.
+        final BoardManager boardMan = hub.boardMan;
         
         // Get the indices of the committed pieces.
         Set<Integer> indexSet = new LinkedHashSet<Integer>();
@@ -553,11 +557,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         } // end for
         
         // Play the sound.
-        game.soundMan.play(Sound.CLICK);
-        
-        // The wezzle fade animation.
-        List<IAnimation> wezzleAnimationList = new ArrayList<IAnimation>();
-        
+        hub.soundMan.play(Sound.CLICK);
+              
         Tile tile = null;
         for (Integer index : indexSet)
         {
@@ -569,25 +570,25 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         } // end for                 
         
         // Remove and score the piece.
-        int deltaScore = game.scoreMan.calculatePieceScore(indexSet);                    
+        int deltaScore = hub.scoreMan.calculatePieceScore(indexSet);                    
         
         // Increment the score.
-        if (game.tutorialMan.isTutorialRunning() == false)       
+        if (hub.tutorialMan.isTutorialRunning() == false)       
         {
-            game.scoreMan.incrementScore(deltaScore);        
+            hub.scoreMan.incrementScore(deltaScore);        
         }
         
         // Add score SCT.
         ImmutablePosition p = boardMan.determineCenterPoint(indexSet);
+               
+        SettingsManager settingsMan = SettingsManager.get();
         
         final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(game.settingsMan.getColor(Key.SCT_COLOR_PIECE))
-                .size(game.scoreMan.determineFontSize(deltaScore))
+                .color(settingsMan.getColor(Key.SCT_COLOR_PIECE))
+                .size(hub.scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore))
-                .end();
-        
-        SettingsManager settingsMan = SettingsManager.get();
+                .end();                
         
         IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
                 .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
@@ -606,15 +607,15 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         {
             @Override
             public void animationStarted()
-            { game.layerMan.add(label, Layer.EFFECT); }
+            { hub.layerMan.add(label, Layer.EFFECT); }
 
             @Override
             public void animationFinished()
-            { game.layerMan.remove(label, Layer.EFFECT); }
+            { hub.layerMan.remove(label, Layer.EFFECT); }
         });
         
-        game.animationMan.add(a1);
-        game.animationMan.add(a2);
+        hub.animationMan.add(a1);
+        hub.animationMan.add(a2);
         a1 = null;
         a2 = null;
         
@@ -622,37 +623,44 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         p = null;       
         
         // Remove the tiles.
-        game.boardMan.removeTiles(indexSet);
+        hub.boardMan.removeTiles(indexSet);
 
         // Set the count to the piece size.
-        game.tileDropper.updateDropAmount(game, this.piece.getSize());
+        game.getTileDropper().updateDropAmount(
+                hub.boardMan.getNumberOfTiles(),
+                hub.boardMan.getNumberOfCells(),
+                hub.levelMan.getLevel(),
+                this.piece.getSize());
 
         // Increment the moves.
-        if (game.tutorialMan.isTutorialRunning() == true)
+        if (hub.tutorialMan.isTutorialRunning() == true)
         {
-            game.listenerMan.notifyMoveCommitted(new MoveEvent(this, 1), 
+            hub.listenerMan.notifyMoveCommitted(new MoveEvent(this, 1), 
                     ListenerManager.GameType.TUTORIAL); 
         }
         else
         {
-             game.listenerMan.notifyMoveCommitted(new MoveEvent(this, 1), 
+             hub.listenerMan.notifyMoveCommitted(new MoveEvent(this, 1), 
                     ListenerManager.GameType.GAME); 
         }
                 
         // Start a tile drop.
-        if (game.tileDropper.isDropOnCommit()) game.tileDropper.startDrop();        
+        if (game.getTileDropper().isDropOnCommit()) 
+        {
+            game.getTileDropper().startDrop();
+        }        
 
         // Make visible.
         pieceGrid.setVisible(false);        
         
         // Run a refactor.       
-        refactorer.startRefactor();
+        game.getRefactorer().startRefactor();
 
         // Reset mouse buttons.
         mouseButtonSet = EnumSet.noneOf(MouseButton.class);
 
         // Pause timer.
-        game.timerMan.setPaused(true);
+        hub.timerMan.setPaused(true);
     }              
 
     /**
@@ -701,6 +709,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public boolean getRestrictionCell(int column, int row)
     {
+        // Create convenience variable.
+        final BoardManager boardMan = hub.boardMan;
         return getRestrictionCell(row * boardMan.getColumns() + column);
     }
     
@@ -711,6 +721,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public void setRestrictionCell(int column, int row, boolean value)
     {
+        // Create convenience variable.
+        final BoardManager boardMan = hub.boardMan;
         setRestrictionCell(row * boardMan.getColumns() + column, value);
     }
             
@@ -735,9 +747,12 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     private void movePieceGridTo(ImmutablePosition position)
     {
+        // Create convenience variable.
+        final BoardManager boardMan = hub.boardMan;
+        
         this.pieceGrid.setPosition(position.minus(
-                this.boardMan.getCellWidth(), 
-                this.boardMan.getCellHeight())
+                boardMan.getCellWidth(), 
+                boardMan.getCellHeight())
             );
     }
     
@@ -810,7 +825,10 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         
         // Retrieve the mouse position.
         final ImmutablePosition p = window.getMouseImmutablePosition();
-        
+
+        // Create convenience variable.
+        final BoardManager boardMan = hub.boardMan;
+
         // Ignore click if we're outside the board.
         if (boardMan.getShape().contains(p) == false)
             return;                    
@@ -834,8 +852,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 break;
                 
             default:
-                LogManager.recordMessage("No recognized button pressed.", 
-                        "PieceManager#mouseReleased");
+                CouchLogger.get().recordMessage(this.getClass(), "No recognized button pressed.");
         }
 	}
 

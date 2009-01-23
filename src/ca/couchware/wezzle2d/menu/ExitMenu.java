@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.manager.LayerManager;
@@ -27,7 +28,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class ExitGroup extends AbstractGroup
+public class ExitMenu extends AbstractGroup
 {
 
     /** The settings manager. */
@@ -49,7 +50,7 @@ public class ExitGroup extends AbstractGroup
      * The constructor.
      * @param layerMan
      */    
-    public ExitGroup(
+    public ExitMenu(
             SettingsManager settingsMan,
             LayerManager layerMan)
     {
@@ -157,7 +158,7 @@ public class ExitGroup extends AbstractGroup
         return anim;
     }
         
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         // See if any control was touched.
         if (controlChanged() == true)

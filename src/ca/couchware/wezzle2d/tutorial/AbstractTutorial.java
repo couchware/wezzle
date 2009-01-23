@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.Rule;
@@ -14,8 +15,15 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.AnimationManager;
+import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
+import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.PieceManager;
+import ca.couchware.wezzle2d.manager.ScoreManager;
+import ca.couchware.wezzle2d.manager.StatManager;
+import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ITextLabel;
@@ -77,50 +85,64 @@ public abstract class AbstractTutorial implements ITutorial
         this.name = name;
     }
     
-    public void initialize(final Game game)
+    public void initialize(final Game game, final ManagerHub hub)
     {
         // Set the activataed variable.
         this.initialized = true;
         
+        // Make convenience variables for the managers used.
+        final BoardManager boardMan = hub.boardMan;
+        final LayerManager layerMan = hub.layerMan;
+        final ScoreManager scoreMan = hub.scoreMan;
+        final StatManager statMan = hub.statMan;        
+        final TimerManager timerMan = hub.timerMan;
+
         // Save the manager states.
-        game.boardMan.saveState();
-        game.statMan.saveState();
-        game.scoreMan.saveState();
+        boardMan.saveState();
+        statMan.saveState();
+        scoreMan.saveState();
              
         // Stop the piece manager from dropping.
-        game.tileDropper.setDropOnCommit(false);
+        game.getTileDropper().setDropOnCommit(false);
         
         // Stop the timer.
-        game.timerMan.setStopped(true);       
+        timerMan.setStopped(true);       
         
         // Create repeat button.
         repeatButton = new Button.Builder(400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .text("Repeat").normalOpacity(70).visible(false).end();
-        game.layerMan.add(repeatButton, Layer.EFFECT);
+                .text("Repeat").visible(false).end();
+        layerMan.add(repeatButton, Layer.EFFECT);
         
          // Create continue button, using the repeat button as a template.
         continueButton = new Button.Builder((Button) repeatButton)
                 .y(390).text("Continue").end();
-        game.layerMan.add(continueButton, Layer.EFFECT);          
+        layerMan.add(continueButton, Layer.EFFECT);          
     }
        
-    protected boolean update(final Game game)
-    {        
+    protected boolean update(final Game game, final ManagerHub hub)
+    {
+        // Make convenience variables for the managers used.
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager boardMan = hub.boardMan;
+        final PieceManager pieceMan = hub.pieceMan;
+        final StatManager statMan = hub.statMan;
+
         // If the move count is not 0, then the tutorial is over.
-        if (game.statMan.getMoveCount() != 0 && menuShown == false)
+        if (statMan.getMoveCount() != 0 && menuShown == false)
         {               
             // Stop the piece animation.
-            game.pieceMan.hidePieceGrid();
-            game.pieceMan.stopAnimation();                                            
+            pieceMan.hidePieceGrid();
+            pieceMan.stopAnimation();                                            
             
             // Lock the whole board.
-            game.pieceMan.clearRestrictionBoard();
-            game.pieceMan.reverseRestrictionBoard();
+            pieceMan.clearRestrictionBoard();
+            pieceMan.reverseRestrictionBoard();
             
             // Fade the board out.            
-            final EntityGroup entityGroup = game.boardMan.getTileRange(game.boardMan.getCells() / 2, 
-                    game.boardMan.getCells() - 1);  
+            final EntityGroup entityGroup = boardMan.getTileRange(
+                    boardMan.getNumberOfCells() / 2,
+                    boardMan.getNumberOfCells() - 1);
             
             IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.OUT, entityGroup)
                     .wait(0).duration(500).end();
@@ -130,15 +152,9 @@ public abstract class AbstractTutorial implements ITutorial
                 @Override
                 public void animationFinished()
                 { entityGroup.setVisible(false); }
-            });
+            });           
             
-//            a.setFinishRunnable(new Runnable()
-//            {
-//                public void run()
-//                { e.setVisible(false); }
-//            });
-            
-            game.animationMan.add(anim);            
+            animationMan.add(anim);            
                                     
             // Fade in two new buttons.
             FadeAnimation fade;                        
@@ -147,13 +163,13 @@ public abstract class AbstractTutorial implements ITutorial
             //f.setMaxOpacity(70);
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, repeatButton)
                     .wait(100).duration(500).maxOpacity(70).end();            
-            game.animationMan.add(fade);
+            animationMan.add(fade);
                          
             //f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
             //f.setMaxOpacity(70);
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, continueButton)
                     .wait(100).duration(500).maxOpacity(70).end();
-            game.animationMan.add(fade);
+            animationMan.add(fade);
             
             // Menu is now shown.
             menuShown = true;                  
@@ -164,7 +180,7 @@ public abstract class AbstractTutorial implements ITutorial
         {
             if (repeatButton.isActivated() == true)
             {
-                repeat(game);                
+                repeat(game, hub);
             }
             else if (continueButton.isActivated() == true)
             {
@@ -192,11 +208,11 @@ public abstract class AbstractTutorial implements ITutorial
      * @param game
      * @return
      */
-    public boolean evaluateRules(Game game)
+    public boolean evaluateRules(Game game, ManagerHub hub)
     {
         // Check all the rules.  If any of them are false, return false.
         for (Rule rule : ruleList)
-            if (rule.evaluate(game) == false)
+            if (rule.evaluate(game, hub) == false)
                 return false;
         
         // If all the rules are true, then return true.        
@@ -210,89 +226,106 @@ public abstract class AbstractTutorial implements ITutorial
      * 
      * @param game
      */
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {                
         // If we're activated, run the tutorial logic.
-        if (initialized == true && update(game) == false)
+        if (initialized == true && update(game, hub) == false)
         {
             initialized = false;
-            finish(game);
+            finish(game, hub);
             done = true;
         }
     }       
     
-    public void finish(final Game game)
-    {   
+    public void finish(final Game game, ManagerHub hub)
+    {
+        // Make convenience variables for the managers used.
+        final BoardManager boardMan = hub.boardMan;
+        final LayerManager layerMan = hub.layerMan;
+        final PieceManager pieceMan = hub.pieceMan;
+        final ScoreManager scoreMan = hub.scoreMan;
+        final StatManager statMan = hub.statMan;
+        final TimerManager timerMan = hub.timerMan;
+
         // Load the score managers state.
-        game.boardMan.loadState();
-        game.statMan.loadState();
-        game.scoreMan.loadState();                                                
+        boardMan.loadState();
+        statMan.loadState();
+        scoreMan.loadState();                                                
         
         // Remove the repeat button.
         repeatButton.setVisible(false);
-        game.layerMan.remove(repeatButton, Layer.EFFECT);
+        layerMan.remove(repeatButton, Layer.EFFECT);
         repeatButton.dispose();
         repeatButton = null;
         
         // Remove the continue button.
         continueButton.setVisible(false);
-        game.layerMan.remove(continueButton, Layer.EFFECT);
+        layerMan.remove(continueButton, Layer.EFFECT);
         continueButton.dispose();
         continueButton = null;
         
         // Remove the speech bubble.
-        game.layerMan.remove(bubble, Layer.EFFECT);
+        layerMan.remove(bubble, Layer.EFFECT);
         bubble.dispose();
         bubble = null;
         
         // Remove the text label.
         for (ITextLabel label : labelList)
         {
-            game.layerMan.remove(label, Layer.EFFECT);       
+            layerMan.remove(label, Layer.EFFECT);       
             label.dispose();
         }
         labelList = null;
         
         // Remove the restriction board.
-        game.pieceMan.clearRestrictionBoard();
+        pieceMan.clearRestrictionBoard();
         
         // Turn on tile drops.
-        game.tileDropper.setDropOnCommit(true);   
+        game.getTileDropper().setDropOnCommit(true);
         
         // Start the timer.        
-        game.timerMan.setStopped(false);  
+        timerMan.setStopped(false);  
         
         // Reset the refactor speed.
         refactorer.setRefactorSpeed(RefactorSpeed.NORMAL);
     }
         
-    protected void repeat(final Game game)
-    {                
+    protected void repeat(final Game game, ManagerHub hub)
+    {
+        // Make convenience variables for the managers used.
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager boardMan = hub.boardMan;
+        final PieceManager pieceMan = hub.pieceMan;
+        final ScoreManager scoreMan = hub.scoreMan;
+        final StatManager statMan = hub.statMan;
+        final TimerManager timerMan = hub.timerMan;
+
         // Make sure to reset the gravity.
-        game.boardMan.setGravity(EnumSet.of(Direction.DOWN, Direction.LEFT));
+        boardMan.setGravity(EnumSet.of(Direction.DOWN, Direction.LEFT));
         
         // Reset move counter.
-        game.statMan.resetMoveCount();      
+        statMan.resetMoveCount();      
         
         // Reset the scores.
-        game.scoreMan.resetScore();
+        scoreMan.resetScore();
         
         // Create the fake board.
-        createBoard(game);
+        createBoard(game, hub);
         
         // Fade board in.
-        final EntityGroup e = game.boardMan.getTileRange(game.boardMan.getCells() / 2, 
-                game.boardMan.getCells() - 1);        
+        final EntityGroup e = boardMan.getTileRange(
+                boardMan.getNumberOfCells() / 2,
+                boardMan.getNumberOfCells() - 1);
         
         e.setVisible(false);
         
         IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
                 .wait(0).duration(300).end();               
         
-        game.animationMan.add(a);
+        animationMan.add(a);
         
         // Change the piece to the dot.
-        game.pieceMan.loadPiece(PieceType.DOT.getPiece());    
+        pieceMan.loadPiece(PieceType.DOT.getPiece());    
         
         // Make sure buttons aren't visible.
         repeatButton.setVisible(false);
@@ -314,11 +347,11 @@ public abstract class AbstractTutorial implements ITutorial
         bubble.setOpacity(100);            
         
         // Piece is visible.
-        game.pieceMan.showPieceGrid();
-        game.pieceMan.startAnimation(game.timerMan);
+        pieceMan.showPieceGrid();
+        pieceMan.startAnimation(timerMan);
     }    
     
-    protected abstract void createBoard(final Game game);       
+    protected abstract void createBoard(final Game game, final ManagerHub hub);
     
     public boolean isInitialized()
     {

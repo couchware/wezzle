@@ -10,7 +10,7 @@ import ca.couchware.wezzle2d.lwjgl.LWJGLWindow;
 import ca.couchware.wezzle2d.lwjgl.LWJGLGraphics;
 import ca.couchware.wezzle2d.lwjgl.LWJGLTextLabel;
 import ca.couchware.wezzle2d.lwjgl.LWJGLSprite;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.ui.ITextLabel;
@@ -256,7 +256,7 @@ public class ResourceFactory
         // Check to see if the sprites have been preloaded.
         if (this.spritesPreloaded) 
         {
-            LogManager.recordWarning("Attempted to preload sprites twice!");
+            CouchLogger.get().recordWarning(this.getClass(), "Attempted to preload sprites twice!");
             System.exit(0);
         }
         
@@ -295,7 +295,7 @@ public class ResourceFactory
             }
             catch (IOException e)
             {
-                LogManager.recordException(e);
+                CouchLogger.get().recordException(this.getClass(), e);
             }        
         }
         // If we're running from the file system, all we need to do is use
@@ -320,7 +320,7 @@ public class ResourceFactory
             }
             catch (URISyntaxException e)
             {            
-                LogManager.recordException(e);
+                CouchLogger.get().recordException(this.getClass(), e);
                 
             } // end try 
         }
@@ -332,7 +332,7 @@ public class ResourceFactory
             {
                 public void run()
                 {
-                    LogManager.recordMessage("Preloading " + spriteFilePath + "...");
+                    CouchLogger.get().recordMessage(ResourceFactory.class, "Preloading " + spriteFilePath + "...");
                     getSprite(spriteFilePath);
                 }                 
             });                     

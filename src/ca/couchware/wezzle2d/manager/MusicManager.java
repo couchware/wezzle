@@ -5,9 +5,11 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.audio.*;
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.util.CouchLogger;
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.audio.Music;
+import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import java.net.URL;
 import java.util.ArrayList;
@@ -123,7 +125,7 @@ public class MusicManager
         this.theme = theme;       
         
         // Record what it was changed to.
-        LogManager.recordMessage("Theme set to " + theme + ".");               
+        CouchLogger.get().recordMessage(this.getClass(), "Theme set to " + theme + ".");
         
         // Stop and discard the player.
         stop();        
@@ -237,7 +239,7 @@ public class MusicManager
         }
         catch (BasicPlayerException e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(this.getClass(), e);
         }
     }
     
@@ -254,7 +256,7 @@ public class MusicManager
         }
         catch (BasicPlayerException e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(this.getClass(), e);
         }
     }
     
@@ -311,7 +313,7 @@ public class MusicManager
             }
             catch (BasicPlayerException e)
             {
-                LogManager.recordException(e);
+                CouchLogger.get().recordException(this.getClass(), e);
             }
         } // end if
     }   
@@ -349,11 +351,11 @@ public class MusicManager
         }
         catch (BasicPlayerException e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(this.getClass(), e);
         }
     }
     
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         // See if there's even something playing.  
         // If there is, then check to see if it's done playing.
@@ -392,7 +394,7 @@ public class MusicManager
         }
         catch (BasicPlayerException e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(MusicPlayer.class, e);
         }
         
         // Return the player.

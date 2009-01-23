@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
-import ca.couchware.wezzle2d.manager.Item;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -15,10 +15,14 @@ import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.AnimationManager;
+import ca.couchware.wezzle2d.manager.BoardManager;
+import ca.couchware.wezzle2d.manager.LayerManager;
+import ca.couchware.wezzle2d.manager.PieceManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.Tile;
-import ca.couchware.wezzle2d.tile.Tile.ITileListener;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
@@ -47,11 +51,16 @@ public class BombTutorial extends AbstractTutorial
     }
     
     @Override
-    public void initialize(final Game game)
+    public void initialize(final Game game, ManagerHub hub)
     {
         // Invoke the super.
-        super.initialize(game);   
-        
+        super.initialize(game, hub);
+
+        // Make convenience variables for the managers used.
+        final BoardManager boardMan = hub.boardMan;
+        final LayerManager layerMan = hub.layerMan;
+        final SettingsManager settingsMan = hub.settingsMan;
+
         // Add this item to the world manager.
         //game.levelMan.addItem(new Item.Builder(TileType.BOMB)
         //        .initialAmount(0).maximumOnBoard(1).weight(0).end());
@@ -67,49 +76,53 @@ public class BombTutorial extends AbstractTutorial
         label = new LabelBuilder(280, 166)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false)
-                .color(game.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(16).text("Bombs destroy all tiles").end();
-        game.layerMan.add(label, Layer.EFFECT);   
+        layerMan.add(label, Layer.EFFECT);   
         this.labelList.add(label);
         
         // Line 2.
         label = new LabelBuilder(label).y(166 + 24)
                 .text("surrounding them.").end();
-        game.layerMan.add(label, Layer.EFFECT);                 
+        layerMan.add(label, Layer.EFFECT);                 
         this.labelList.add(label);
         
         // Line 3.
         label = new LabelBuilder(label).y(166 + 24 + 24 + 24)
                 .text("Get one in a line to").end();
-        game.layerMan.add(label, Layer.EFFECT);                                 
+        layerMan.add(label, Layer.EFFECT);                                 
         this.labelList.add(label);
         
         label = new LabelBuilder(label).y(166 + 24 + 24 + 24 + 24)
                 .text("explode it.").end();
-        game.layerMan.add(label, Layer.EFFECT);                                 
+        layerMan.add(label, Layer.EFFECT);                                 
         this.labelList.add(label);
                 
         // Create the speech bubble and add it to the layer manaager.
         // The speech bubble will be positioned over the button right
         // corner of the board.
         this.bubble = new SpeechBubble.Builder(
-                    game.boardMan.getX() + game.boardMan.getCellWidth()
-                        + game.boardMan.getCellWidth() / 2,
-                    game.boardMan.getY() + game.boardMan.getHeight() 
-                        - game.boardMan.getCellHeight() * 3)
+                    boardMan.getX() + boardMan.getCellWidth()
+                        + boardMan.getCellWidth() / 2,
+                    boardMan.getY() + boardMan.getHeight() 
+                        - boardMan.getCellHeight() * 3)
                 .type(BubbleType.VERTICAL).text("Click here").end();                
-        game.layerMan.add(bubble, Layer.EFFECT);   
-        game.layerMan.toFront(bubble, Layer.EFFECT);                        
+        layerMan.add(bubble, Layer.EFFECT);   
+        layerMan.toFront(bubble, Layer.EFFECT);                        
         
         // Run the repeat tutorial method, that sets up the things that must
         // be reset each time the tutorial is run.
-        repeat(game);                                                                                                                                     
+        repeat(game, hub);
     }
        
-    protected void createBoard(final Game game)
-    {        
+    protected void createBoard(final Game game, ManagerHub hub)
+    {
+        // Make convenience variables for the managers used.
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager boardMan = hub.boardMan;
+        
         // Clear it first.
-        game.boardMan.clearBoard();
+        boardMan.clearBoard();
          
         // Set a click action.
         Tile.ITileListener listener = new Tile.ITileListener()
@@ -119,93 +132,97 @@ public class BombTutorial extends AbstractTutorial
                // Fade out the bubble.            
                IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
                        .wait(0).duration(500).end();
-               game.animationMan.add(f);       
+               animationMan.add(f);       
            }
         };                   
         
         // Create bottom row.        
-        game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
+        boardMan.createTile(0, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.GREEN);                                 
                 
-        game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
+        boardMan.createTile(1, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.YELLOW);
         
-        Tile t2 = game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
+        Tile t2 = boardMan.createTile(2, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);
         t2.addTileListener(listener);
         
-        game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
+        boardMan.createTile(3, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.YELLOW);
         
-        game.boardMan.createTile(4, game.boardMan.getRows() - 1, 
+        boardMan.createTile(4, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.GREEN);
         
-        game.boardMan.createTile(5, game.boardMan.getRows() - 1, 
+        boardMan.createTile(5, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.YELLOW);
         
         // Create second-from-bottom row.
-        game.boardMan.createTile(0, game.boardMan.getRows() - 2, 
+        boardMan.createTile(0, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.YELLOW);
         
         // Create the bomb.     
-        game.boardMan.createTile(1, game.boardMan.getRows() - 2, 
+        boardMan.createTile(1, boardMan.getRows() - 2, 
                 TileType.BOMB, TileColor.YELLOW);        
         
-        Tile t3 = game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
+        Tile t3 = boardMan.createTile(2, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.RED);
         t3.addTileListener(listener);
         
-        game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
+        boardMan.createTile(3, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.YELLOW);
         
-        game.boardMan.createTile(4, game.boardMan.getRows() - 2, 
+        boardMan.createTile(4, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.GREEN);
         
-        game.boardMan.createTile(5, game.boardMan.getRows() - 2, 
+        boardMan.createTile(5, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.BLUE);
         
         // Create third-from-bottom row.
-        game.boardMan.createTile(0, game.boardMan.getRows() - 3, 
+        boardMan.createTile(0, boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.YELLOW);     
         
-        Tile t4 = game.boardMan.createTile(1, game.boardMan.getRows() - 3, 
+        Tile t4 = boardMan.createTile(1, boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.RED);
         t4.addTileListener(listener);
         
-        game.boardMan.createTile(2, game.boardMan.getRows() - 3, 
+        boardMan.createTile(2, boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.YELLOW);
         
-        game.boardMan.createTile(3, game.boardMan.getRows() - 3, 
+        boardMan.createTile(3, boardMan.getRows() - 3, 
                 TileType.NORMAL, TileColor.GREEN);
         
         // Create fourth-from-bottom row.
-        game.boardMan.createTile(0, game.boardMan.getRows() - 4, 
+        boardMan.createTile(0, boardMan.getRows() - 4, 
                 TileType.NORMAL, TileColor.BLUE); 
         
-        game.boardMan.setVisible(true);
+        boardMan.setVisible(true);
     }   
     
     @Override
-    public void finish(Game game)
+    public void finish(Game game, ManagerHub hub)
     {
-        super.finish(game);
+        super.finish(game, hub);
         
         // Add this item to the world manager.
         //game.levelMan.removeItem(TileType.BOMB);
     }
     
     @Override
-    protected void repeat(Game game)
+    protected void repeat(Game game, ManagerHub hub)
     {
-        super.repeat(game);
-        
+        super.repeat(game, hub);
+
+        // Make convenience variables for the managers used.
+        final BoardManager boardMan = hub.boardMan;
+        final PieceManager pieceMan = hub.pieceMan;
+
         // Set restriction board so that only the bottom left corner is
         // clickable.
-        game.pieceMan.clearRestrictionBoard();
-        game.pieceMan.reverseRestrictionBoard();       
-        game.pieceMan.setRestrictionCell(1, game.boardMan.getRows() - 3, true);
-        game.pieceMan.setRestrictionCell(2, game.boardMan.getRows() - 1, true);
-        game.pieceMan.setRestrictionCell(2, game.boardMan.getRows() - 2, true);
+        pieceMan.clearRestrictionBoard();
+        pieceMan.reverseRestrictionBoard();       
+        pieceMan.setRestrictionCell(1, boardMan.getRows() - 3, true);
+        pieceMan.setRestrictionCell(2, boardMan.getRows() - 1, true);
+        pieceMan.setRestrictionCell(2, boardMan.getRows() - 2, true);
     }
 
 }

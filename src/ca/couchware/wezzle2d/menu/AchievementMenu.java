@@ -6,13 +6,11 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.animation.IAnimation;
-import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.Achievement.Difficulty;
@@ -23,8 +21,6 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.ui.Scroller;
-import ca.couchware.wezzle2d.ui.group.AbstractGroup;
-import ca.couchware.wezzle2d.ui.group.IGroup;
 import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -38,7 +34,7 @@ import java.util.List;
  * 
  * @author cdmckay
  */
-public class AchievementGroup extends AbstractGroup
+public class AchievementMenu extends AbstractMenu
 {       
     
     /** The data formatter used for setting the status. */
@@ -50,13 +46,7 @@ public class AchievementGroup extends AbstractGroup
     
     /** The colour of not completed achievements. */
     final private Color COLOR_NOT_COMPLETED;
-    
-    /** The layer manager. */
-    final private LayerManager layerMan;
-    
-    /** The background window. */
-    private Box box;
-    
+   
     /** The slider bar used to scroll the achievements. */
     private Scroller scroller;
         
@@ -75,17 +65,16 @@ public class AchievementGroup extends AbstractGroup
     /** The label for the status of the achievement. */
     private ITextLabel achievementStatus;    
            
-    public AchievementGroup(IGroup parent,
-            final AchievementManager achievementMan,
-            final LayerManager layerMan,
-            final SettingsManager settingsMan)            
+    public AchievementMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
     {
         // Invoke the super.
-        super(parent);
-               
-        // Set the managers.
-        this.layerMan = layerMan;
-        
+        super(parent, hub, menuLayerMan);
+
+        // Make convenience variables for the managers used.
+        final AchievementManager achievementMan = hub.achievementMan;
+        final LayerManager layerMan = this.menuLayerMan;
+        final SettingsManager settingsMan = hub.settingsMan;
+
         // Set the completed/not completed colors.
         this.COLOR_COMPLETED = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
         this.COLOR_NOT_COMPLETED = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
@@ -94,14 +83,7 @@ public class AchievementGroup extends AbstractGroup
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);                
         
         // Set the achievement list.
-        achievementList = achievementMan.getAchievementList();                                                     
-                        
-        // Create the window.
-        box = new Box.Builder(268, 300).width(430).height(470)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
-                .visible(false).end();
-        this.layerMan.add(box, Layer.UI);                         
+        achievementList = achievementMan.getAchievementList();                                                                                                 
              
         final int numberOfCompletedAchievements = achievementMan.getNumberOfCompletedAchievements();
         final int numberOfAchievements = achievementMan.getNumberOfAchievements();
@@ -201,47 +183,9 @@ public class AchievementGroup extends AbstractGroup
         // Add them all to the layer manager.
         for (IEntity e : this.entityList)
         {
-            this.layerMan.add(e, Layer.UI);        
+            layerMan.add(e, Layer.UI);        
         }                    
-    }       
-    
-    @Override
-    public IAnimation animateShow()
-    {       
-        box.setPosition(268, -300);
-        box.setVisible(true);        
-        
-        IAnimation anim = new MoveAnimation.Builder(box).theta(-90).maxY(300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();           
-        
-        anim.addAnimationListener(new AnimationAdapter()
-        {          
-            @Override
-            public void animationFinished()
-            { setVisible(true); }
-        });
-        
-        return anim;
-    }
-    
-    @Override
-    public IAnimation animateHide()
-    {        
-        IAnimation anim = new MoveAnimation.Builder(box).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();       
-        
-        anim.addAnimationListener(new AnimationAdapter()
-        {
-            @Override
-            public void animationStarted()
-            { setVisible(false); }
-        });
-        
-        return anim;
-    }
+    }               
         
     final private void updateAchievementText(Achievement ach)
     {
@@ -285,7 +229,7 @@ public class AchievementGroup extends AbstractGroup
         }
     }
     
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {    
         if (scroller.changed() == true)
         {

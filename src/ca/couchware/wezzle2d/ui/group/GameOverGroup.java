@@ -19,19 +19,7 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class GameOverGroup extends AbstractGroup implements IGameListener
-{     
-    
-    /**
-     * A reference to the layer manager.  This is used by groups to add
-     * and remove things like buttons and sliders.
-     */
-    final private LayerManager layerMan;     
-    
-    /**
-     * A reference to the score manager.  This is used by the group
-     * to pull down the score when a game over event is fired.
-     */
-    final private ScoreManager scoreMan;
+{         
     
     /**
      * The header label.
@@ -60,41 +48,36 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
     
     /**
      * The constructor.
-     * 
      * @param layerMan
      */    
-    public GameOverGroup(
-            final SettingsManager settingsMan,
-            final LayerManager layerMan,
-            final ScoreManager scoreMan)
+    public GameOverGroup(ManagerHub hub)
     {    
-        // Set the manager references.
-        this.layerMan = layerMan;
-        this.scoreMan = scoreMan;
+        // Sanity check.
+        assert hub != null;       
         
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Game over :(")
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Game over :(")
                 .visible(false).end();
-        layerMan.add(headerLabel, Layer.UI);
+        hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
         // Create the final score header.
         scoreHeaderLabel = new LabelBuilder(400, 234)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(14)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(14)
                 .text("Your final score was")
                 .visible(false).end();
-        layerMan.add(scoreHeaderLabel, Layer.UI); 
+        hub.layerMan.add(scoreHeaderLabel, Layer.UI); 
         entityList.add(scoreHeaderLabel);
         
         // Create the final score label.
         scoreLabel = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(30)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(30)
                 .text("0").visible(false).end();
-        layerMan.add(scoreLabel, Layer.UI); 
+        hub.layerMan.add(scoreLabel, Layer.UI); 
         entityList.add(scoreLabel);
         
         // Create restart button.
@@ -102,94 +85,78 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Restart").normalOpacity(70).visible(false).end();
-        layerMan.add(restartButton, Layer.UI);
+        hub.layerMan.add(restartButton, Layer.UI);
         entityList.add(restartButton);
         
         // Create continue button, using the restart button as a template.
         continueButton = new Button.Builder((Button) restartButton)
                 .y(405).text("Continue").end();
-        layerMan.add(continueButton, Layer.UI);
+        hub.layerMan.add(continueButton, Layer.UI);
         entityList.add(continueButton);
     }        
     
     public void setScore(final int score)
     {
         this.scoreLabel.setText(String.valueOf(score));
-//        layerMan.remove(scoreLabel, Layer.UI);
-//        entityList.remove(scoreLabel);
-//        scoreLabel = new LabelBuilder(scoreLabel)
-//                .text(String.valueOf(score)).end();
-//        layerMan.add(scoreLabel, Layer.UI);
-//        entityList.add(scoreLabel);
     }
     
     public int getScore()
     {
         return Integer.valueOf(scoreLabel.getText());
-    }
-    
-//    public boolean isRestartActivated()
-//    {
-//        return restartButton.isActivated();
-//    }
-//    
-//    public boolean isContinueActiavted()
-//    {
-//        return continueButton.isActivated();
-//    }       
+    }    
     
     /**
      * Override the update logic method.
-     * 
      * @param game The game state.
      */    
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         // Hide the screen.
-        game.groupMan.hideGroup(
+        hub.groupMan.hideGroup(
                 GroupManager.Class.GAME_OVER,
                 GroupManager.Layer.BOTTOM);
         
         // The level we reset to.
-        int level = game.levelMan.getLevel();
+        int level = hub.levelMan.getLevel();
         
         // Reset a bunch of stuff.
         if (this.restartButton.isActivated())
         {           
             // Reset the board manager.
-            game.boardMan.resetState();
+            hub.boardMan.resetState();
             
             // Reset the world manager.
-            game.levelMan.resetState();  
-            level = game.levelMan.getLevel();
+            hub.levelMan.resetState();  
+            level = hub.levelMan.getLevel();
             
             // Reset the item manager.
-            game.itemMan.resetState();
-            game.itemMan.evaluateRules(game);
+            hub.itemMan.resetState();
+            hub.itemMan.evaluateRules(game, hub);
 
             // Reset the timer to the initial.
-            game.timerMan.setStartTimeToUpper();
+            //hub.timerMan.setStartTimeToUpper();
         }
                         
         // Notify all listeners of reset.
-        game.listenerMan.notifyGameReset(new GameEvent(this, level));
+        hub.listenerMan.notifyGameReset(new GameEvent(this, 
+                level, hub.scoreMan.getLevelScore()));
                        
         // Reset the stat man.
-        game.statMan.resetState();
+        hub.statMan.resetState();
 
         // Create board and make it invisible.
-        game.boardMan.setVisible(false);
-        game.boardMan.generateBoard(game.itemMan.getItemList(), game.levelMan.getLevel());                    
+        hub.boardMan.setVisible(false);
+        hub.boardMan.generateBoard(hub.itemMan.getItemList(), hub.levelMan.getLevel());                    
 
         // Unpause the game.
         // Don't worry! The game won't pass updates to the 
         // timer unless the board is shown.  In hindsight, this
         // is kind of crappy, but whatever, we'll make it prettier
         // one day.
-        game.timerMan.setPaused(false);
+        hub.timerMan.setPaused(false);
 
         // Reset the timer.
-        game.timerMan.resetCurrentTime();
+        //hub.timerMan.resetCurrentTime();
 
         // Start the board show animation.  This will
         // make the board visible when it's done.
@@ -213,7 +180,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
     public void gameOver(GameEvent event)
     {
         // Set the score to whatever the score manager has now.
-        this.setScore(this.scoreMan.getTotalScore());
+        this.setScore(event.getTotalScore());
     }
             
 }

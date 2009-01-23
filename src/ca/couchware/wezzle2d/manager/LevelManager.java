@@ -102,7 +102,7 @@ public class LevelManager implements IResettable
 	 * Increment the level.
 	 */
 	public void incrementLevel()
-        {	
+    {	
 		// Increment the level.
 		setLevel(level + 1, true);
 	}		            	                   

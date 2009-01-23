@@ -1,16 +1,16 @@
 package ca.couchware.wezzle2d.ui.group;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.GroupManager;
-import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.manager.LayerManager;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.Game.TransitionTarget;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.menu.MainMenuGroup;
-import ca.couchware.wezzle2d.ui.*;
+import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.IButton;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
@@ -28,8 +28,8 @@ public class OptionsGroup extends AbstractGroup
     /** The browser launcher. */
     BrowserLauncher launcher;
     
-    /** The layer manager. */
-    final private LayerManager layerMan;
+    /** The manager hub. */
+    final private ManagerHub hub;
     
     /** The header label. */
     private ITextLabel headerLabel;
@@ -55,20 +55,19 @@ public class OptionsGroup extends AbstractGroup
      * @param window
      * @param layerMan
      */    
-    public OptionsGroup(
-            final SettingsManager settingsMan,
-            final LayerManager layerMan,     
-            final GroupManager groupMan)
+    public OptionsGroup(ManagerHub hub)
     {
-        // Invoke super.
-        this.layerMan = layerMan;
+        // Check the hub instance and save it.
+        assert hub != null;
+        this.hub = hub;
         
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Options")
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .size(26).text("Options")
                 .visible(false).end();
-        layerMan.add(headerLabel, Layer.UI);
+        hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
         // Create upgrade button.
@@ -76,30 +75,31 @@ public class OptionsGroup extends AbstractGroup
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Buy Now").normalOpacity(80).visible(false).end();        
-        layerMan.add(upgradeButton, Layer.UI);
+        hub.layerMan.add(upgradeButton, Layer.UI);
         entityList.add(upgradeButton);
         
         // Create audio button.
         audioButton = new Button.Builder((Button) upgradeButton).y(300)
             .text("Sound/Music").end();
-        layerMan.add(audioButton, Layer.UI);
+        hub.layerMan.add(audioButton, Layer.UI);
         entityList.add(audioButton);
         
         // Create the audio group.
-        audioGroup = new AudioGroup(settingsMan, layerMan);
-        groupMan.register(audioGroup);
+        audioGroup = new AudioGroup(hub);
+        hub.groupMan.register(audioGroup);
         
         // Create main menu button.
         mainMenuButton = new Button.Builder((Button) upgradeButton).y(354)
             .text("Main Menu").end();
-        layerMan.add(mainMenuButton, Layer.UI);
+        hub.layerMan.add(mainMenuButton, Layer.UI);
         entityList.add(mainMenuButton);
         
         // Create back button.
         closeButton = new Button.Builder((Button) upgradeButton).y(420)
             .text("Close").end();
-        layerMan.add(closeButton, Layer.UI);     
+        hub.layerMan.add(closeButton, Layer.UI);     
         entityList.add(closeButton);
+        
         try
         {
             // Create the browser launcher.
@@ -144,7 +144,7 @@ public class OptionsGroup extends AbstractGroup
      * 
      * @param game The game state.
      */    
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         // See if Buy Now was pressed.
         if (upgradeButton.clicked() == true)
@@ -158,13 +158,13 @@ public class OptionsGroup extends AbstractGroup
         {            
             // Hide all side triggered menues.
             closeButton.setActivated(false);
-            game.groupMan.hideGroup(this);
+            hub.groupMan.hideGroup(this);
         }
         // Check if the sound/music button was pressed.
         else if (audioButton.isActivated() == true)
         {                        
             // Show the sound/music group.            
-            game.groupMan.showGroup(audioButton, audioGroup, 
+            hub.groupMan.showGroup(audioButton, audioGroup, 
                 GroupManager.Class.OPTIONS,
                 GroupManager.Layer.MIDDLE);
         }             
@@ -174,13 +174,13 @@ public class OptionsGroup extends AbstractGroup
             mainMenuButton.setActivated(false);              
             
             // Stop the tutorial if necessary.
-            if (game.tutorialMan.isTutorialRunning())
+            if (hub.tutorialMan.isTutorialRunning())
             {
-                game.tutorialMan.finishRunningTutorial(game);
+                hub.tutorialMan.finishRunningTutorial(game, hub);
             }
             
             // Disable the layer manager.
-            layerMan.setDisabled(true);
+            hub.layerMan.setDisabled(true);
             
             // Start the transition.
             game.startTransitionTo(TransitionTarget.MENU);

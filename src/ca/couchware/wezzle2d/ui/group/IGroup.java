@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.animation.IAnimation;
 
 /**
@@ -67,7 +68,7 @@ public interface IGroup
      *
      * @param game The game state.
      */
-    void updateLogic(Game game);
+    void updateLogic(Game game, ManagerHub hub);
     
     /**
      * Resets all the group controls to their starting state.

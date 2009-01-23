@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -61,13 +61,13 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
      */
     public AbstractGroup(IGroup parent)
     {       
-        // Make all groups start invisible.
-        super.setVisible(false);
-
         // Store the references.
         this.parent = parent;
         this.window = ResourceFactory.get().getWindow();        
 
+        // Make all groups start invisible.
+        super.setVisible(false);
+        
         // Create the entity list.
         this.entityList = new ArrayList<IEntity>();
     }
@@ -108,7 +108,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
      */
     public void clearChanged()
     {
-        LogManager.recordMessage("Cleared by a group.", "Group#clearChanged");
+        CouchLogger.get().recordMessage(this.getClass(), "Cleared by a group.");
 
         for (IEntity e : entityList)
             if (e instanceof IButton)

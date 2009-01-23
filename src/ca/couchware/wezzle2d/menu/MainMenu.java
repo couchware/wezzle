@@ -6,11 +6,11 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
-import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -21,8 +21,6 @@ import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.manager.AchievementManager;
-import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
@@ -40,7 +38,7 @@ import java.util.EnumSet;
  *
  * @author cdmckay
  */
-public class MainMenuGroup extends AbstractGroup implements IDrawer
+public class MainMenu extends AbstractGroup implements IDrawer, IMenu
 {       
     
     /** The standard menu background path. */
@@ -89,10 +87,16 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     }                       
     
     /** The wezzle logo. */
-    final private EntityGroup logoEntity;
+    private EntityGroup logoEntity;
     
     /** The logo spinner animation. */
-    final private IAnimation rotateAnimation;
+    private IAnimation rotateAnimation;
+    
+    /** The manager hub */
+    final private ManagerHub hub;
+
+    /** The private layer manager. */
+    final private LayerManager menuLayerMan;
     
     /** A map containing all the buttons in the main menu. */
     private EnumMap<Menu, IButton> buttonMap;
@@ -102,91 +106,41 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     
     /** The current button that is activated. */
     private Menu currentButton = Menu.NONE;    
-    
-    /** The animation manager. */
-    private AnimationManager animationMan;
-        
+      
     /** The animation that slides in the options when the menu is first shown. */        
     private IAnimation slideAnimation = FinishedAnimation.get();    
     
     /** The animation that is currently being run. */        
     private IAnimation currentAnimation = FinishedAnimation.get();    
     
-    /** The music manager. */
-    private SettingsManager settingsMan;
     
-    /** The music manager. */
-    private MusicManager musicMan;
-    
-    /** The layer manager. */
-    private LayerManager layerMan; 
-    
-    /** The achievement manager. */
-    private AchievementManager achievementMan;
     
     /**
      * Create a new main menu.
      */
-    public MainMenuGroup(            
-            AchievementManager achievementMan,
-            AnimationManager animationMan,
-            MusicManager musicMan,
-            SettingsManager settingsMan)
-    {                
-        // Store the manager references.
-        this.achievementMan = achievementMan;
-        this.animationMan   = animationMan;    
-        this.musicMan       = musicMan;
-        this.settingsMan    = settingsMan;                                   
-        this.layerMan       = LayerManager.newInstance();        
-        
-        // Set the main menu as activated.
-        this.activated = true;                       
-        
-        // Add the background.
-        GraphicEntity backgroundGraphic = 
-                new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
-        layerMan.add(backgroundGraphic, Layer.BACKGROUND);                       
+    public MainMenu(ManagerHub hub)
+    {               
+        // Invoke super.
+        assert hub != null;
+        this.hub = hub;
                 
-        // Set up the copyright label.               
-        ITextLabel l1 = new LabelBuilder(10, 600 - 10)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED))
-                .size(12)                
-                .text(Game.COPYRIGHT).end();
-        layerMan.add(l1, Layer.UI);
+        // Set the main menu as activated.
+        this.activated = true;
+
+        // Create the menu's layer manager.
+        this.menuLayerMan = LayerManager.newInstance();
+              
+        // Create the background.
+        initializeBackground(hub);
         
-        // Set up the version label.	
-        ITextLabel l2 = new LabelBuilder(800 - 10, 600 - 10)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED))
-                .size(12)                
-                .text(Game.TITLE).end();                        
-        layerMan.add(l2, Layer.UI);
-        
-        // Create the wezzle logo.
-        IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        e1.setRotationAnchor(e1.getWidth() / 2, e1.getHeight() / 2);
-        
-        layerMan.add(e1, Layer.BACKGROUND);      
-        this.rotateAnimation = new MoveAnimation.Builder(e1)
-                .gravity(0).speed(0)
-                .omega(SettingsManager.get().getDouble(Key.MAIN_MENU_STARBURST_OMEGA))
-                .end();
-        animationMan.add(this.rotateAnimation);
-        
-        IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
-        layerMan.add(e2, Layer.BACKGROUND);                         
-        
-        logoEntity = new EntityGroup(e1, e2);
+        // Create the logo.
+        initializeLogo(hub);
                
         // Create the buttons.
-        initializeButtons();
+        initializeButtons(hub);
         
         // Create the groups.
-        initializeGroups();
+        initializeGroups(hub);
                 
         // Create the slide animation.
         this.slideAnimation = new MetaAnimation.Builder()
@@ -195,10 +149,55 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 .end();
         
         // Add it to the manager.
-        this.animationMan.add(this.slideAnimation);
+        hub.animationMan.add(this.slideAnimation);
     };
     
-    private void initializeButtons() 
+    private void initializeBackground(ManagerHub hub)
+    {
+        // Add the background.
+        GraphicEntity backgroundGraphic = 
+                new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
+        this.menuLayerMan.add(backgroundGraphic, Layer.BACKGROUND);
+                
+        // Set up the copyright label.               
+        ITextLabel l1 = new LabelBuilder(10, 600 - 10)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_DISABLED))
+                .size(12)                
+                .text(Game.COPYRIGHT).end();
+        this.menuLayerMan.add(l1, Layer.UI);
+        
+        // Set up the version label.	
+        ITextLabel l2 = new LabelBuilder(800 - 10, 600 - 10)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_DISABLED))
+                .size(12)                
+                .text(Game.TITLE).end();                        
+        this.menuLayerMan.add(l2, Layer.UI);
+    }
+    
+    private void initializeLogo(ManagerHub hub)
+    {
+        // Create the wezzle logo.
+        IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
+        e1.setRotationAnchor(e1.getWidth() / 2, e1.getHeight() / 2);
+        
+        this.menuLayerMan.add(e1, Layer.BACKGROUND);
+        this.rotateAnimation = new MoveAnimation.Builder(e1)
+                .gravity(0).speed(0)
+                .omega(SettingsManager.get().getDouble(Key.MAIN_MENU_STARBURST_OMEGA))
+                .end();
+        hub.animationMan.add(this.rotateAnimation);
+        
+        IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
+        this.menuLayerMan.add(e2, Layer.BACKGROUND);
+        
+        this.logoEntity = new EntityGroup(e1, e2);
+    }
+    
+    private void initializeButtons(ManagerHub hub) 
     {                
         // Create the button list.
         this.buttonMap = new EnumMap<Menu, IButton>(Menu.class);
@@ -221,26 +220,26 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                    
         button = new Button.Builder((Button) templateButton)
                 .y(222).text("Play Now").end();
-        layerMan.add(button, Layer.UI);
+        this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.PLAY_NOW, button);                                          
         
         button = new Button.Builder((Button) templateButton)
                 .y(271).text("Achievements").end();
-        layerMan.add(button, Layer.UI);
+        this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.ACHIEVEMENTS, button);
         
         button = new Button.Builder((Button) templateButton)
                 .y(320).text("High Scores").end();
-        layerMan.add(button, Layer.UI);
+        this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.HIGH_SCORES, button);
         
         button = new Button.Builder((Button) templateButton)
                 .y(369).text("Buy Now").end();
-        layerMan.add(button, Layer.UI);
+        this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.UPGRADE, button);                                                   
     };
     
-    private void initializeGroups()
+    private void initializeGroups(ManagerHub hub)
     {
         // Create the group map.
         this.groupMap = new EnumMap<Menu, IGroup>(Menu.class);
@@ -254,25 +253,23 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         this.groupMap.put(Menu.NONE, group);
         
         // Create the "Play Now" group.
-        group = new PlayNowGroup(this, 
-                this.settingsMan, this.layerMan, this.musicMan);
+        group = new PlayNowMenu(this, hub, this.menuLayerMan);
         this.groupMap.put(Menu.PLAY_NOW, group);
 
          // Create the "Achievements" group.
-        group = new AchievementGroup(this, 
-                this.achievementMan, this.layerMan, this.settingsMan);
+        group = new AchievementMenu(this, hub, this.menuLayerMan);
         this.groupMap.put(Menu.ACHIEVEMENTS, group);
         
         // Create the "High Scores" group.
-        group = new TutorialGroup(this.settingsMan, this.layerMan);
+        group = new HighScoreMenu(this, hub, this.menuLayerMan);
         this.groupMap.put(Menu.HIGH_SCORES, group);
         
          // Create the "Buy Now" group.
-        group = new TutorialGroup(this.settingsMan, this.layerMan);
+        group = new HighScoreMenu(this, hub, this.menuLayerMan);
         this.groupMap.put(Menu.UPGRADE, group);
     }
     
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {       
         switch (state)
         {
@@ -281,7 +278,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 // Check for a new animation to load.
                 if (this.currentAnimation.isFinished() == false)
                 {
-                    this.animationMan.add(this.currentAnimation);
+                    hub.animationMan.add(this.currentAnimation);
                     this.state = State.ANIMATING;
                     break;
                 }
@@ -359,21 +356,15 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                 // Otherwise, update the logic.
                 else
                 {                       
-                    group.updateLogic(game);
+                    // Update the group logic.
+                    group.updateLogic(game, hub);
                     
                     // See if the group deactivated the main menu.  If the main
                     // menu is deactivated, then we need to start the game.                    
                     if (this.activated == false)
                     {                      
                         // Create the hide animation.
-                        final IAnimation anim = animateHide();
-                        
-                        // Attach a runnable setting the state to finished.
-//                        anim.setFinishRunnable(new Runnable()
-//                        {
-//                            public void run()
-//                            { state = State.FINISHED; }
-//                        });
+                        final IAnimation anim = animateHide();                        
                         
                         anim.addAnimationListener(new AnimationAdapter()
                         {                            
@@ -383,7 +374,7 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
                         });
                         
                         // Disable the layer manager so nothing can be pressed.
-                        this.layerMan.setDisabled(true);
+                        this.menuLayerMan.setDisabled(true);
                         
                         // Set the animation.
                         this.currentAnimation = anim;
@@ -419,30 +410,24 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         
         // Add the wezzle logo fade in.
         builder.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, logoEntity)
-                .wait(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_WAIT))
-                .duration(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_DURATION)).end());
+                .wait(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_WAIT))
+                .duration(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_DURATION)).end());
         
         // Animate the buttons coming in.        
-        for (Menu m : this.buttonMap.keySet())
+        for (Menu menu : this.buttonMap.keySet())
         {
-            if (this.buttonMap.containsKey(m) == false)
+            if (this.buttonMap.containsKey(menu) == false)
                 continue;
             
-            final IButton button = this.buttonMap.get(m);
+            final IButton button = this.buttonMap.get(menu);
             
             final IAnimation anim = new MoveAnimation.Builder(button).theta(180)
-                    .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
-                    .minX(settingsMan.getInt(Key.MAIN_MENU_SLIDE_MIN_X))
-                    .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
+                    .speed(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
+                    .minX(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_MIN_X))
+                    .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * menu.getRank())
                     .end();
             
             builder.add(anim);
-            
-//            a.setFinishRunnable(new Runnable()
-//            {
-//                public void run()
-//                { btn.setDisabled(false); }
-//            });
             
             anim.addAnimationListener(new AnimationAdapter()
             {                
@@ -468,18 +453,9 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
         
         // Fade out the logo.
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
-                .wait(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_WAIT))
-                .duration(settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_DURATION))
-                .end();
-        
-//        fade.setFinishRunnable(new Runnable()
-//        {
-//            public void run()
-//            { 
-//                logoEntity.setVisible(false);
-//                rotateAnimation.setFinished();
-//            }
-//        });
+                .wait(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_WAIT))
+                .duration(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_DURATION))
+                .end();        
         
         fade.addAnimationListener(new AnimationAdapter()
         {           
@@ -500,18 +476,12 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
             final IButton button = this.buttonMap.get(m);
             
             final IAnimation anim = new MoveAnimation.Builder(button).theta(0)
-                    .speed(settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
+                    .speed(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
                     .maxX(910)
-                    .wait(settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
+                    .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
                     .end();
             
             builder.add(anim);
-            
-//            a.setStartRunnable(new Runnable()
-//            {
-//                public void run()
-//                { btn.setDisabled(true); }
-//            });
             
             anim.addAnimationListener(new AnimationAdapter()
             {
@@ -533,22 +503,22 @@ public class MainMenuGroup extends AbstractGroup implements IDrawer
     @Override
     public boolean draw()
     {
-        return layerMan.draw();
+        return this.menuLayerMan.draw();
     }       
     
     public boolean draw(Shape region, boolean exact)
     {
-        return layerMan.draw(region, exact);
+        return this.menuLayerMan.draw(region, exact);
     }
 
     public boolean draw(Shape region)
     {
-        return layerMan.draw(region);
+        return this.menuLayerMan.draw(region);
     }
     
     public void forceRedraw()
     {
-        layerMan.forceRedraw();
+        this.menuLayerMan.forceRedraw();
     }
     
     @Override

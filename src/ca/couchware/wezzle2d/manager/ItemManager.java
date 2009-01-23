@@ -5,7 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.IMoveListener;
@@ -152,7 +154,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
             @Override
             public void onMatch()
             {
-                LogManager.recordMessage("Gravity item enabled.");
+                CouchLogger.get().recordMessage(this.getClass(), "Gravity item enabled.");
                 
                 // Add the bomb.
                 itemMap.put(TileType.GRAVITY,
@@ -167,7 +169,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
             @Override
             public void onMatch()
             {
-                LogManager.recordMessage("Bomb item enabled.");
+                CouchLogger.get().recordMessage(this.getClass(), "Bomb item enabled.");
                 
                 // Add the bomb.
                 itemMap.put(TileType.BOMB,
@@ -407,9 +409,8 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 		}
 		
 		// We should never get here.
-		LogManager.recordWarning(
-                "Random number out of range! (" + randomNumber + ").", 
-                "WorldManager#getItem");
+		CouchLogger.get().recordWarning(this.getClass(),
+                "Random number out of range! (" + randomNumber + ").");
         
 		return itemList.get(0);
 	}
@@ -431,13 +432,13 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
     // Logic
     //--------------------------------------------------------------------------
     
-    public void evaluateRules(Game game)
+    public void evaluateRules(Game game, ManagerHub hub)
     {
         for (Iterator<Rule> it = currentRuleList.iterator(); it.hasNext(); )
         {
             Rule rule = it.next();
             
-            if (rule.evaluate(game) == true)
+            if (rule.evaluate(game, hub) == true)
             {                
                 rule.onMatch();
                 it.remove();
@@ -445,13 +446,13 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         } // end for
     }
     
-    public void updateLogic(final Game game)
+    public void updateLogic(final Game game, ManagerHub hub)
     {       
         // If the board is refactoring, do not logicify.
         if (game.isCompletelyBusy()) return;
         
         // Evaluate the rules.
-        evaluateRules(game);
+        evaluateRules(game, hub);
     }        
 
     public void levelChanged(LevelEvent event)
@@ -475,7 +476,8 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
        for(Item i : itemMap.values())
        {
            i.decrementCooldown();
-          LogManager.recordMessage(i.getTileType() + " cooldown: " + i.getCooldown());
+          CouchLogger.get().recordMessage(this.getClass(),
+                  String.format("%s's cooldown is %d.", i.getTileType(), i.getCooldown()));
        }
     }
 

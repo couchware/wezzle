@@ -120,8 +120,12 @@ public class Rule
      * 
      * @param game The game state.
      */
-    public boolean evaluate(Game game)
+    public boolean evaluate(Game game, ManagerHub hub)
     {        
+        // Sanity check.
+        assert game != null;
+        assert hub  != null;
+        
         // Make sure we're not a COLLISION-type.
         if (this.type == Type.COLLISION)
             return false;
@@ -133,23 +137,23 @@ public class Rule
         switch (getType())
         {
             case SCORE:
-                x = game.scoreMan.getTotalScore();
+                x = hub.scoreMan.getTotalScore();
                 break;
                 
             case LEVEL:
-                x = game.levelMan.getLevel();
+                x = hub.levelMan.getLevel();
                 break;
                 
             case MOVES:
-                x = game.statMan.getMoveCount();
+                x = hub.statMan.getMoveCount();
                 break;
                 
             case LINES:
-                x = game.statMan.getLineCount();
+                x = hub.statMan.getLineCount();
                 break;
                 
             case START_LEVEL:
-                x = game.statMan.getStartLevel();
+                x = hub.statMan.getStartLevel();
                 break;
                 
             default:

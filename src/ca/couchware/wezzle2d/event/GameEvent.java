@@ -14,17 +14,30 @@ import java.util.EventObject;
  */
 public class GameEvent extends EventObject
 {
-    private int level;
+    /** The level at the time the event was fired. */
+    final private int level;
     
-    public GameEvent(Object source, int level)    
+    /** 
+     * The total score at the time the event was fired... this is used mostly
+     * with game over.
+     */
+    final private int totalScore;
+    
+    public GameEvent(Object source, int level, int totalScore)
     {
         super(source);
         this.level = level;
+        this.totalScore = totalScore;
     }
 
     public int getLevel()
     {
         return level;
+    }
+
+    public int getTotalScore()
+    {
+        return totalScore;
     }
         
 }

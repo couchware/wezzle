@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.audio;
 
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.net.URL;
 import java.io.*;
 import javax.sound.sampled.*;
@@ -81,7 +81,7 @@ public class SoundPlayer
     
     public void play()
     {
-        //LogManager.recordMessage("Playing in clip-mode.", "AudioPlayer#playClip");                
+        //LogManager.get().recordMessage("Playing in clip-mode.", "AudioPlayer#playClip");
         
         // Play clip from the start.
         clip.setFramePosition(0);
@@ -93,7 +93,7 @@ public class SoundPlayer
         }
         catch (InterruptedException e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(this.getClass(), e);
         }
     }
        
@@ -121,15 +121,15 @@ public class SoundPlayer
         }
         catch (LineUnavailableException e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(this.getClass(), e);
         }        
         catch (UnsupportedAudioFileException e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(this.getClass(), e);
         }
         catch (IOException e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(this.getClass(), e);
         }
         finally
         {
@@ -139,7 +139,7 @@ public class SoundPlayer
             }
             catch (IOException e)
             {
-                LogManager.recordException(e);
+                CouchLogger.get().recordException(this.getClass(), e);
             }
         } // end try
     }        

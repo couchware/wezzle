@@ -5,15 +5,15 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.util.SuperCalendar;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -119,7 +119,7 @@ public class AchievementManager implements ICollisionListener
      */
     private void exportAchievements()
     {
-        LogManager.recordMessage("Exported achievements to settings manager.");
+        CouchLogger.get().recordMessage(this.getClass(), "Exported achievements to settings manager.");
         this.settingsMan.setObject(Key.USER_ACHIEVEMENT_COMPLETED, this.completedList);
     }
 
@@ -159,8 +159,7 @@ public class AchievementManager implements ICollisionListener
         this.achievementCompleted = false;
         
         for (int i = 0; i < newlyCompletedList.size(); i++)
-            LogManager.recordMessage(newlyCompletedList.get(i).toString(),
-                    "AcheivementManager#reportCompleted");
+            CouchLogger.get().recordMessage(this.getClass(), newlyCompletedList.get(i).toString());
     }     
     
     private void completeAchievement(Achievement achievement)
@@ -183,7 +182,7 @@ public class AchievementManager implements ICollisionListener
      * @param game The state of the game.
      * @return True if an achievement was completed, false otherwise.
      */
-    public boolean evaluate(Game game)
+    public boolean evaluate(Game game, ManagerHub hub)
     {
         boolean achieved = false;
         
@@ -191,7 +190,7 @@ public class AchievementManager implements ICollisionListener
         {
             Achievement achievement = it.next();
             
-            if (achievement.evaluate(game))
+            if (achievement.evaluate(game, hub))
             {
                 completeAchievement(achievement);                
                 it.remove();
@@ -221,7 +220,7 @@ public class AchievementManager implements ICollisionListener
         }
         buffer.append("END");
 
-        LogManager.recordMessage(buffer.toString());
+        CouchLogger.get().recordMessage(this.getClass(), buffer.toString());
         
         // Set to true if an achievement was achieved.
         boolean achieved = false;

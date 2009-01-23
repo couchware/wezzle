@@ -1,5 +1,6 @@
-package ca.couchware.wezzle2d.manager;
+package ca.couchware.wezzle2d.util;
 
+import ca.couchware.wezzle2d.manager.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,57 +13,59 @@ import java.util.Calendar;
  * @author Kevin
  *
  */
-public class LogManager 
+public class CouchLogger
 {
 	// ---------------------------------------------------------------------------
 	// Static Attributes
 	// ---------------------------------------------------------------------------
-	         
+
+    /** The only instance of the log manager. */
+    final private static CouchLogger SINGLE = new CouchLogger();
+
     /**
 	 * Write out to the log. If this is set to true, all messages and
 	 * errors will be written out to the log file.
 	 */
-	private static final boolean USE_LOG = true;
+	private final boolean OUTPUT_TO_FILE = true;
     
     /**
      * Is the writer opened?
      */
-    private static boolean opened = false;;
+    private boolean opened = false;;
     
 	/**
 	 * The file path to the log file.
 	 */
-	private static File logFile;
+	private File logFile;
 	
     /**
      * A string buffer to store the log information in before writing it.
      */
-    private static StringBuilder buffer = new StringBuilder();
+    private StringBuilder buffer = new StringBuilder();
     
 	/**
 	 * The file writer to write to the log.
 	 */
-	private static BufferedWriter writer;
+	private BufferedWriter writer;
 	
 	// ---------------------------------------------------------------------------
-	// Static Constructor
+	// Constructor
 	// ---------------------------------------------------------------------------
 	
-	/**
-	 * The static constructor will create or write to a log file
-	 * named "log.txt".
-	 * 
-	 * The method first checks if the Wezzle directory exists. Then checks if
-	 * the log file already exists. If it does not exist, it will create the director
-	 * and or the file.
-	 * 
-	 * @param file_name The name of the log file.
-	 */
-	static
-	{
-		
-	}
-	
+	private CouchLogger()
+    {
+
+    }
+
+    /**
+     * Get the single instance of log manager.
+     * @return
+     */
+    public static CouchLogger get()
+    {
+        return SINGLE;
+    }
+
 	// ---------------------------------------------------------------------------
 	// Static Methods
 	// ---------------------------------------------------------------------------
@@ -75,7 +78,7 @@ public class LogManager
 	 * 
 	 * @param text The text to append.
 	 */
-	private static void append(String text)
+	private void append(String text)
 	{	
         buffer.append(text + Settings.getLineSeparator());		
 	}
@@ -83,7 +86,7 @@ public class LogManager
     /**
      * A method to write the contexts of the buffer to the log file.
      */
-    public static void write()
+    public void write()
     {
         try
         {
@@ -102,18 +105,20 @@ public class LogManager
         }
         catch (Exception e)
         {
-            recordException(e);
+            recordException(this.getClass(), e);
         }
     }
 	
-    private static void open()
+    private void open()
     {
         // See if we already opened it.
         if (opened == true)
+        {
             return;
+        }
         
         // Set the opened variable.
-        opened = true;
+        this.opened = true;
         
         // Check if the directory exists.
 		File dir = new File(Settings.getLogPath());
@@ -136,7 +141,7 @@ public class LogManager
 		}
 		catch (Exception e)
 		{
-			recordException(e);
+			recordException(this.getClass(), e);
 		}
     }
     
@@ -144,7 +149,7 @@ public class LogManager
 	 * A method to close the log. This method closes the bufferedWriter
 	 * and flushes the buffer. 
 	 */
-	private static void close()
+	private void close()
 	{
 		try
 		{
@@ -153,7 +158,7 @@ public class LogManager
 		}
 		catch(Exception e)
 		{
-			recordException(e);
+			recordException(this.getClass(), e);
 		}
 	}
     
@@ -164,10 +169,10 @@ public class LogManager
 	 * @param message The error message.
 	 * @param t The current thread, usually Thread.currentThread().
 	 */
-	public static void recordException(Exception e, String method)
+	public void recordException(Class cls, Exception e)
 	{
-		if (method == null)
-			method = "...";                
+		assert cls != null;
+        String method = extractClassName(cls);
 		
         StringWriter out = new StringWriter();
         
@@ -179,66 +184,57 @@ public class LogManager
         
 		System.err.println(out.toString());
 		
-		if (USE_LOG == true)
-			append(out.toString());			
-               
-        // Kill the game.
-        //System.exit(0);
-	}
-    
-    public static void recordException(Exception e)
-    {
-        recordException(e, null);
-    }
+		if (OUTPUT_TO_FILE)
+        {
+			append(out.toString());
+        }
+	}        
 	
 	/**
 	 * Prints a warning to standard error.  Does not dump the stack.
 	 * @param message The error message.
 	 * @param t The current thread, usually Thread.currentThread().
 	 */
-	public static void recordWarning(String message, String method)
+	public void recordWarning(Class cls, String message)
 	{
-		if (method == null)
-			method = "...";
+		assert cls != null;
+        String method = extractClassName(cls);
 		
 		String output = "W. (" + getTimeStamp() + ") " 
                 + method + " - \"" + message + "\"";        
 		
 		System.err.println(output);
 		
-		if (USE_LOG == true)
+		if (OUTPUT_TO_FILE)
+        {
 			append(output);
-	}
-    
-    public static void recordWarning(String message)
-    {
-        recordWarning(message, null);
-    }
+        }
+	}       
 	
 	/**
 	 * Prints a message to standard out.  Does not dump the stack.
 	 * @param message The error message.
 	 * @param t The current thread, usually Thread.currentThread().
 	 */
-	public static void recordMessage(String message, String method)
+	public void recordMessage(Class cls, String message)
 	{				
-		if (method == null)
-			method = "...";
+		assert cls != null;
+        String method = extractClassName(cls);
 		
 		String output = "M. (" + getTimeStamp() + ") " 
                 + method + " - \"" + message + "\"";
 		
 		System.out.println(output);	
 		
-		if (USE_LOG == true)
+		if (OUTPUT_TO_FILE == true)
 			append(output);
-	}
-    
-    public static void recordMessage(String message)
+	}    
+
+    private static String extractClassName(Class cls)
     {
-        recordMessage(message, null);
+        return cls.getSimpleName();
     }
-    
+
     private static String getTimeStamp()
     {
         Calendar now = Calendar.getInstance();

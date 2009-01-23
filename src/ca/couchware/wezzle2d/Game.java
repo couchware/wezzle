@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.ManagerHub.Manager;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
@@ -18,30 +19,13 @@ import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.Achievement;
-import ca.couchware.wezzle2d.manager.AchievementManager;
-import ca.couchware.wezzle2d.manager.AnimationManager;
-import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
-import ca.couchware.wezzle2d.manager.GroupManager;
-import ca.couchware.wezzle2d.manager.HighScoreManager;
-import ca.couchware.wezzle2d.manager.ItemManager;
-import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.ListenerManager;
 import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
-import ca.couchware.wezzle2d.manager.LogManager;
-import ca.couchware.wezzle2d.manager.MusicManager;
-import ca.couchware.wezzle2d.manager.PieceManager;
-import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.manager.SoundManager;
-import ca.couchware.wezzle2d.manager.StatManager;
-import ca.couchware.wezzle2d.manager.TimerManager;
-import ca.couchware.wezzle2d.manager.TutorialManager;
-import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.menu.Loader;
-import ca.couchware.wezzle2d.menu.MainMenuGroup;
+import ca.couchware.wezzle2d.menu.MainMenu;
 import ca.couchware.wezzle2d.transition.CircularTransition;
 import ca.couchware.wezzle2d.transition.ITransition;
 import ca.couchware.wezzle2d.tutorial.BasicTutorial;
@@ -55,6 +39,7 @@ import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
@@ -64,9 +49,11 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javazoom.jlgui.basicplayer.BasicPlayer;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -88,40 +75,16 @@ public class Game extends Canvas implements IWindowCallback
 {	  
     //--------------------------------------------------------------------------
     // Static Members
-    //--------------------------------------------------------------------------                            
-            
-    /** An enum of the manager types. */
-    public static enum Manager
-    {       
-        ACHIEVEMENT, 
-        ANIMATION,
-        BOARD, 
-        GROUP, 
-        HIGHSCORE,
-        ITEM,
-        LAYER, 
-        LEVEL,
-        LISTENER,
-        MUSIC, 
-        PIECE,         
-        SCORE,
-        SETTINGS,
-        SOUND,
-        STAT, 
-        TIMER, 
-        TUTORIAL                        
-    }       
+    //--------------------------------------------------------------------------                                           
+    
+    /** The manager hub. */
+    final private ManagerHub hub = ManagerHub.get();
           
     /** The width of the screen. */
     final public static int SCREEN_WIDTH = 800;
     
     /** The height of the screen  */
-    final public static int SCREEN_HEIGHT = 600;
-    
-    final static int BOARD_MANAGER_X = 272;
-    final static int BOARD_MANAGER_Y = 139;
-    final static int BOARD_MANAGER_COLUMNS = 8;
-    final static int BOARD_MANAGER_ROWS = 10;
+    final public static int SCREEN_HEIGHT = 600;      
     
     /** A rectangle the size of the screen. */
     final public static ImmutableRectangle SCREEN_RECTANGLE = 
@@ -147,79 +110,25 @@ public class Game extends Canvas implements IWindowCallback
     public Loader loader;
     
     /** The main menu. */
-    public MainMenuGroup mainMenu;       
+    public MainMenu mainMenu;
     
     /** The resource factory. */
-    public ResourceFactory factory = ResourceFactory.get();
+    private ResourceFactory resourceFactory = ResourceFactory.get();
     
     /** The game UI. */
-    public GameUI ui;          
+    private UI ui;          
     
     /** The refactorer. */
-    public Refactorer refactorer;
+    private Refactorer refactorer;
     
     /** The tile dropper. */
-    public TileDropper tileDropper;
+    private TileDropper tileDropper;
     
     /** The tile remover. */
-    public TileRemover tileRemover;
-    
-     /** The manager in charge of achievements */
-    public AchievementManager achievementMan;	
-    
-    /** The animation manager in charge of animations. */
-    public AnimationManager animationMan;
-    
-    /** The manager in charge of maintaining the board. */
-    public BoardManager boardMan;
-    
-    /** The menu manager. */
-    public GroupManager groupMan;
-       
-    /** The high score manager. */    
-    public HighScoreManager highScoreMan;
-    
-    /** The item manager. */
-    public ItemManager itemMan;
-    	
-    /** The game layer manager. */
-    public LayerManager layerMan;     
-    
-    /** The manager in charge of the level. */
-    public LevelManager levelMan;    
-    
-    /** The maanger in charge of (most) listeners. */
-    public ListenerManager listenerMan;     
-    
-    /** The manager in charge of music. */
-    public MusicManager musicMan;  
-
-    /**
-     * The manager in charge of moving the piece around with the
-     * pointer and drawing the piece to the board.
-     */
-    public PieceManager pieceMan;	   
-    
-    /** The settings manager. */
-    public SettingsManager settingsMan;
-    
-    /** The manager in charge of score. */
-    public ScoreManager scoreMan;        
-    
-    /** The manager in charge of sound. */
-    public SoundManager soundMan;      
-    
-    /** The manager in charge of the moves. */
-    public StatManager statMan;	    
-    
-    /** The manager in charge of keeping track of the time. */
-    public TimerManager timerMan;
-    
-    /** The manager in charge of running tutorials. */
-    public TutorialManager tutorialMan;   
+    private TileRemover tileRemover;        
     
     /** The window that is being used to render the game. */
-    public IWindow window;    
+    private IWindow window;    
     
     //--------------------------------------------------------------------------
     // Private Members
@@ -265,11 +174,8 @@ public class Game extends Canvas implements IWindowCallback
     /** The current notification animation. */
     private IAnimation notificationAnimation = FinishedAnimation.get();
     
-    /**
-     * A list that keeps track of the chains in moves.
-     */
-    
-    ArrayList<Chain> chainTracker = new ArrayList<Chain>();
+    /** A list that keeps track of the chains in moves. */
+    List<Chain> chainList = new ArrayList<Chain>();
     
     /** The targets that may be transitioned to. */
     public enum TransitionTarget
@@ -299,13 +205,14 @@ public class Game extends Canvas implements IWindowCallback
 	{
        
         // Print the build number.
-        LogManager.recordMessage("Date: " + (new Date()));   
-        LogManager.recordMessage("Wezzle Build: " + BUILD_NUMBER);
-        LogManager.recordMessage("Wezzle Version: " + APPLICATION_VERSION);
-        LogManager.recordMessage("Java Version: " + System.getProperty("java.version"));
-        LogManager.recordMessage("OS Name: " + System.getProperty("os.name"));
-        LogManager.recordMessage("OS Architecture: " + System.getProperty("os.arch"));
-        LogManager.recordMessage("OS Version: " + System.getProperty("os.version"));
+        Class cls = this.getClass();
+        CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
+        CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
+        CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
+        CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
+        CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
+        CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
+        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
         
 		// Create a window based on a chosen rendering method.
 		ResourceFactory.get().setRenderer(renderer);		        
@@ -323,149 +230,9 @@ public class Game extends Canvas implements IWindowCallback
             
     public void startBoard()
     {
-        boardMan.generateBoard(itemMan.getItemList(), levelMan.getLevel());          
+        hub.boardMan.generateBoard(hub.itemMan.getItemList(), hub.levelMan.getLevel());          
         startBoardShowAnimation(AnimationType.ROW_FADE);
-    }           
-    
-    /**
-     * Initializes all the passed managers.
-     */    
-    public void initializeManagers(Set<Manager> set)
-    {               
-        if (set.contains(Manager.LISTENER))
-        {
-            // Get the singleton.
-            this.listenerMan = ListenerManager.get();                        
-        }
-        
-        if (set.contains(Manager.SETTINGS))
-        {
-            // Get the singleton.
-            this.settingsMan = SettingsManager.get();
-        }
-        
-        if (set.contains(Manager.TIMER))
-        {
-            // Get the singleton.
-            this.timerMan = TimerManager.newInstance(this.listenerMan);
-            
-            // Initialize some parameters.
-            this.timerMan.resetCurrentTime(); 
-            this.listenerMan.registerListener(Listener.LEVEL, timerMan);
-        }
-        
-        if (set.contains(Manager.SOUND))
-        {
-            // Create the sound manager.
-            this.soundMan = SoundManager.newInstance(executor, settingsMan);
-        }
-        
-        if (set.contains(Manager.MUSIC))
-        {
-            // Create the music manager.            
-            this.musicMan = MusicManager.newInstance(executor, settingsMan);  
-        }   
-        
-        if (set.contains(Manager.LAYER))
-        {
-            // Create the layer manager.   
-            this.layerMan = LayerManager.newInstance();  
-        }                
-        
-        if (set.contains(Manager.ANIMATION))
-        {
-            // Create the animation manager.
-            this.animationMan = AnimationManager.newInstance();                
-        }
-        
-        if (set.contains(Manager.HIGHSCORE))
-        {
-            // Create the high score manager.
-            this.highScoreMan = HighScoreManager.newInstance();  
-        }      
-        
-        if (set.contains(Manager.ITEM))
-        {
-            // Create the manager.
-            this.itemMan = ItemManager.newInstance();  
-            
-            this.listenerMan.registerListener(Listener.LEVEL, this.itemMan);
-            this.listenerMan.registerListener(Listener.MOVE,  this.itemMan);
-        } 
-        
-        if (set.contains(Manager.STAT))
-        {
-            // Create the move manager.
-            this.statMan = StatManager.newInstance();
-            this.listenerMan.registerListener(Listener.GAME, this.statMan);
-            this.listenerMan.registerListener(Listener.LINE, this.statMan);
-            this.listenerMan.registerListener(Listener.MOVE, this.statMan);            
-        }
-        
-        if (set.contains(Manager.TUTORIAL))
-        {
-            // Create the tutorial manager.
-            this.tutorialMan = TutorialManager.newInstance();           
-        }                           
-        
-        if (set.contains(Manager.BOARD))
-        {            
-            // Create the board manager.
-            this.boardMan = BoardManager.newInstance(
-                    this.animationMan, 
-                    this.layerMan, 
-                    this.itemMan,
-                    BOARD_MANAGER_X,       BOARD_MANAGER_Y,
-                    BOARD_MANAGER_COLUMNS, BOARD_MANAGER_ROWS);             
-            
-            // Listen for key presses.
-            this.window.addKeyListener(boardMan);
-        }
-        
-        if (set.contains(Manager.PIECE))
-        {
-            // Create the piece manager.
-            this.pieceMan = PieceManager.newInstance(this.refactorer, 
-                    this.animationMan, 
-                    this.boardMan, 
-                    this.layerMan, 
-                    this.listenerMan);        
-            this.pieceMan.hidePieceGrid();            
-            
-            // Listen for the key and mouse.
-            this.window.addKeyListener(pieceMan);
-            this.window.addMouseListener(pieceMan);            
-        }
-        
-        if (set.contains(Manager.GROUP))
-        {
-            // Create group manager.
-            this.groupMan = GroupManager.newInstance(this.layerMan, this.pieceMan);
-        }
-	        
-        if (set.contains(Manager.SCORE))
-        {
-            // Create the score manager.
-            scoreMan = ScoreManager.newInstance(boardMan, highScoreMan, listenerMan);
-                        
-            listenerMan.registerListener(Listener.GAME,  scoreMan);
-            listenerMan.registerListener(Listener.LEVEL, scoreMan);           
-        }
-        
-        if (set.contains(Manager.LEVEL))
-        {
-            // Create the world manager.
-            levelMan = LevelManager.newInstance(listenerMan, scoreMan);                  
-        }                                         
-        
-        if (set.contains(Manager.ACHIEVEMENT))
-        {
-            // Create the achievement manager.
-            achievementMan = AchievementManager.newInstance(settingsMan);
-            
-            listenerMan.registerListener(Listener.COLLISION, achievementMan);        
-        }              
-    }        
+    }                   
     
     public void startTransitionTo(TransitionTarget target)
     {
@@ -478,11 +245,10 @@ public class Game extends Canvas implements IWindowCallback
                 window.clearMouseEvents();
 
                 // Shut off the music.
-                musicMan.stop();
+                hub.musicMan.stop();
 
                 // Create the main menu.
-                mainMenu = new MainMenuGroup(
-                        achievementMan, animationMan, musicMan, settingsMan);                
+                mainMenu = new MainMenu(hub);
                 mainMenu.setDisabled(true);
 
                 // Create the layer manager transition animation.
@@ -499,7 +265,7 @@ public class Game extends Canvas implements IWindowCallback
                 });
 
                 // Queue in the animation manager.
-                this.animationMan.add(transition);
+                hub.animationMan.add(transition);
                 
                 break;
         }
@@ -508,11 +274,15 @@ public class Game extends Canvas implements IWindowCallback
     /**
      * Initialize various members.
      */
-    private void initializeMembers()
+    private void initializeCoreManagers()
     {
-        // Get the singleton.
-        ui = GameUI.get();                
-
+        // Create the UI.
+        ui = UI.newInstance(hub);        
+        hub.listenerMan.registerListener(Listener.LEVEL, this.ui);
+        hub.listenerMan.registerListener(Listener.PIECE, this.ui);
+        hub.listenerMan.registerListener(Listener.SCORE, this.ui);       
+        hub.listenerMan.registerListener(Listener.TIMER, this.ui);
+        
         // Get the singleton.
         refactorer = Refactorer.get();
 
@@ -523,7 +293,7 @@ public class Game extends Canvas implements IWindowCallback
         tileRemover = TileRemover.get();                  
         
         // Make the tile remover listen for level events.
-        listenerMan.registerListener(Listener.LEVEL, tileRemover);
+        hub.listenerMan.registerListener(Listener.LEVEL, this.tileRemover);
     }
     
     /**
@@ -532,11 +302,11 @@ public class Game extends Canvas implements IWindowCallback
     public void initializeTutorials()
     {        
         // Add the tutorials to it.
-        tutorialMan.add(new BasicTutorial(refactorer));
-        tutorialMan.add(new GravityTutorial(refactorer));
-        tutorialMan.add(new RocketTutorial(refactorer));
-        tutorialMan.add(new BombTutorial(refactorer));
-        tutorialMan.add(new StarTutorial(refactorer));
+        hub.tutorialMan.add(new BasicTutorial(refactorer));
+        hub.tutorialMan.add(new GravityTutorial(refactorer));
+        hub.tutorialMan.add(new RocketTutorial(refactorer));
+        hub.tutorialMan.add(new BombTutorial(refactorer));
+        hub.tutorialMan.add(new StarTutorial(refactorer));
     }
     
 	/**
@@ -548,42 +318,43 @@ public class Game extends Canvas implements IWindowCallback
         executor = Executors.newCachedThreadPool();
                 
         // Make sure the listener and settings managers are ready.
-        initializeManagers(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS));
-        
-        // Initialize various members.
-        initializeMembers();
-        
+        hub.initialize(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS), this);       
+
         // Create the loader.        
-        loader = new Loader("Loading Wezzle...", settingsMan);        
+        loader = new Loader("Loading Wezzle...", hub.settingsMan);
         setDrawer(loader);
         
         // Preload the sprites.
-        factory.preloadSprites(loader);                                        
+        resourceFactory.preloadSprites(loader);                                        
                                 
         // Initialize managers.
         loader.addTask(new Runnable()
         {
            public void run() 
            { 
-               initializeManagers(EnumSet.allOf(Manager.class));                
-               layerMan.setDisabled(true);              
+               hub.initialize(EnumSet.allOf(Manager.class), Game.this);               
+               hub.layerMan.setDisabled(true);
            }
         });
                                
-        // Initialize UI.       
-        ui.initialize(loader, this);                                            
+        // Initialize the core managers.
+        loader.addTask(new Runnable()
+        {
+           public void run()
+           { initializeCoreManagers(); }
+        });
 	}                      
     
     public void update()
     {                
         // If the loader is running, bypass all the rendering to show it.        
-        if (this.getDrawer() == loader)
+        if (this.drawer == loader)
         {   
             // Animate all animations.
-            if (animationMan != null) animationMan.animate();            
+            if (hub.animationMan != null) hub.animationMan.animate();
             
             // Update the logic.
-            loader.updateLogic(this);
+            loader.updateLogic(this, hub);
             
             if (loader.getState() == Loader.State.FINISHED)
             {
@@ -594,23 +365,22 @@ public class Game extends Canvas implements IWindowCallback
                 window.clearMouseEvents();
                                
                 // Create the main menu.
-                mainMenu = new MainMenuGroup(
-                        achievementMan, animationMan, musicMan, settingsMan);                
+                mainMenu = new MainMenu(hub);
                 setDrawer(mainMenu);
             }   
             else return;                        
         }
         
         // If the main menu is running, bypass all rendering to show it.
-        if (this.getDrawer() == mainMenu)
+        if (this.drawer == mainMenu)
         {
             // Animate all animations.
-            if (animationMan != null) animationMan.animate();
+            if (hub.animationMan != null) hub.animationMan.animate();
             
             // Update the main menu logic.
-            mainMenu.updateLogic(this);
+            mainMenu.updateLogic(this, hub);
             
-            if (mainMenu.getState() == MainMenuGroup.State.FINISHED)
+            if (mainMenu.getState() == MainMenu.State.FINISHED)
             {                                
                 // Empty the mouse events.
                 window.clearMouseEvents();   
@@ -621,31 +391,27 @@ public class Game extends Canvas implements IWindowCallback
                 
                 // Create the layer manager transition animation.
                 this.transitionTo = TransitionTarget.GAME;
-                this.transition = new CircularTransition.Builder(layerMan)
+                this.transition = new CircularTransition.Builder(hub.layerMan)
                         .minRadius(10).speed(400).end();
                 setDrawer(transition);                
                 
                 this.transition.addAnimationListener(new AnimationAdapter() 
                 {
                     @Override
-                    public void animationStarted()
-                    { }
-
-                    @Override
                     public void animationFinished()
-                    { layerMan.setDisabled(false); }                            
+                    { hub.layerMan.setDisabled(false); }
                 });
                 
                 // Queue in the animation manager.
-                this.animationMan.add(transition);                
+                hub.animationMan.add(transition);
                 
                 // Start the music.
-                musicMan.play();                
+                hub.musicMan.play();
                 
                 // See if the music is off.
-                if (settingsMan.getBoolean(Key.USER_MUSIC) == false)
+                if (hub.settingsMan.getBoolean(Key.USER_MUSIC) == false)
                 {
-                    musicMan.setPaused(true);
+                    hub.musicMan.setPaused(true);
                 }
             }   
             else
@@ -660,10 +426,10 @@ public class Game extends Canvas implements IWindowCallback
         } // end if
         
         // See if the main menu transition is in progress
-        if (this.getDrawer() == transition)
+        if (this.drawer == transition)
         {
             // Animate all animations.
-            if (animationMan != null) animationMan.animate();
+            if (hub.animationMan != null) hub.animationMan.animate();
             
             // Otherwise see if the transition is over.
             if (transition.isFinished() == false) return;           
@@ -672,11 +438,11 @@ public class Game extends Canvas implements IWindowCallback
                 switch(transitionTo)          
                 {
                     case GAME:                                        
-                        setDrawer(this.layerMan);
+                        setDrawer(hub.layerMan);
                         break;
                         
                     case MENU:
-                        setDrawer(this.mainMenu);
+                        setDrawer(mainMenu);
                         break;
                         
                     case NOTHING:
@@ -689,7 +455,7 @@ public class Game extends Canvas implements IWindowCallback
         } // end if
                      
         // Update UI.
-        ui.updateLogic(this);
+        ui.updateLogic(this, hub);
         
         // Check on board animation.
         if (boardAnimation != null && boardAnimation.isFinished() == true)
@@ -705,15 +471,15 @@ public class Game extends Canvas implements IWindowCallback
                 {
                     case IN:
                         
-                        boardMan.setVisible(true);
-                        pieceMan.showPieceGrid();
-                        pieceMan.startAnimation(timerMan);
+                        hub.boardMan.setVisible(true);
+                        hub.pieceMan.showPieceGrid();
+                        hub.pieceMan.startAnimation(hub.timerMan);
                         break;
                         
                     case OUT:
                         
-                        boardMan.setVisible(false);
-                        pieceMan.hidePieceGrid();
+                        hub.boardMan.setVisible(false);
+                        hub.pieceMan.hidePieceGrid();
                         break;
                         
                     default:
@@ -732,13 +498,13 @@ public class Game extends Canvas implements IWindowCallback
             boardAnimation = null;
 
             // Clear mouse button presses.
-            pieceMan.clearMouseButtonSet();
+            hub.pieceMan.clearMouseButtonSet();
 
             // If game over is in progress, make a new board and start.
             if (gameOverInProgress == true)
             {
                 // Show the game over screen.
-                ui.showGameOverGroup(groupMan);      
+                ui.showGameOverGroup(hub.groupMan);
                 
                 // Clear the flag.
                 gameOverInProgress = false;
@@ -747,25 +513,25 @@ public class Game extends Canvas implements IWindowCallback
         else if (boardAnimation != null && boardAnimation.isFinished() == false)
         {
             // Board is still dirty due to animation.
-            boardMan.setDirty(true);
+            hub.boardMan.setDirty(true);
         }
         
         // Update all the group logic.
-        groupMan.updateLogic(this);
+        hub.groupMan.updateLogic(this, hub);
         
         // Uphdate the music manager logic.
-        musicMan.updateLogic(this);
+        hub.musicMan.updateLogic(this, hub);
 
         // Check to see if we should be showing the board.
         if (activateBoardShowAnimation == true)
         {
             // Hide the piece.            
-            pieceMan.hidePieceGrid();
-            pieceMan.stopAnimation();
+            hub.pieceMan.hidePieceGrid();
+            hub.pieceMan.stopAnimation();
             
             // Start board show animation.            
-            boardAnimation = boardMan.animateShow(boardAnimationType);                   
-            boardMan.setDirty(true);            
+            boardAnimation = hub.boardMan.animateShow(boardAnimationType);
+            hub.boardMan.setDirty(true);
 
             // Clear flag.
             clearBoardShowAnimation();                                
@@ -775,12 +541,12 @@ public class Game extends Canvas implements IWindowCallback
         if (activateBoardHideAnimation == true)
         {
             // Hide the piece.
-            pieceMan.hidePieceGrid();
-            pieceMan.stopAnimation();
+            hub.pieceMan.hidePieceGrid();
+            hub.pieceMan.stopAnimation();
             
             // Start board hide animation.            
-            boardAnimation = boardMan.animateHide(boardAnimationType); 
-            boardMan.setDirty(true);
+            boardAnimation = hub.boardMan.animateHide(boardAnimationType);
+            hub.boardMan.setDirty(true);
                                           
             // Clear flag.
             clearBoardHideAnimation();                                
@@ -788,7 +554,7 @@ public class Game extends Canvas implements IWindowCallback
         
         // If the pause button is not on, then we proceed with the
         // normal game loop.
-        if (groupMan.isActivated() == false)
+        if (hub.groupMan.isActivated() == false)
         {
             updateBoard();
         }
@@ -800,18 +566,19 @@ public class Game extends Canvas implements IWindowCallback
         // The keys.      
         if (window.isKeyPressed('R'))
         {
-            settingsMan.loadExternalSettings();
-            LogManager.recordMessage("Reloaded external settings.");
+            hub.settingsMan.loadExternalSettings();
+            CouchLogger.get().recordMessage(this.getClass(), "Reloaded external settings.");
         }
         
         // Check the achievements.
-        this.achievementMan.evaluate(this);
-        if (!this.tutorialMan.isTutorialRunning() && this.achievementMan.isNewAchievementCompleted())
+        hub.achievementMan.evaluate(this, hub);
+        if (!hub.tutorialMan.isTutorialRunning()
+                && hub.achievementMan.isNewAchievementCompleted())
         {
             // Report to log.
-            this.achievementMan.reportNewlyCompleted();
+            hub.achievementMan.reportNewlyCompleted();
             
-            List<Achievement> achievementList = this.achievementMan.getNewlyCompletedAchievementList();
+            List<Achievement> achievementList = hub.achievementMan.getNewlyCompletedAchievementList();
             for (Achievement ach : achievementList)
             {
                 AchievementNotification notif = new AchievementNotification.Builder(0, 0, ach)
@@ -846,15 +613,15 @@ public class Game extends Canvas implements IWindowCallback
             {
                 @Override
                 public void animationStarted()
-                { layerMan.add(notif, Layer.UI); }
+                { hub.layerMan.add(notif, Layer.UI); }
                 
                 @Override
                 public void animationFinished()
-                { layerMan.remove(notif, Layer.UI); }
+                { hub.layerMan.remove(notif, Layer.UI); }
             });
                        
             this.notificationAnimation = meta;
-            this.animationMan.add(meta);
+            hub.animationMan.add(meta);
         }
     }
     
@@ -868,8 +635,14 @@ public class Game extends Canvas implements IWindowCallback
 	public boolean draw()
 	{		      
         // If the background is dirty, then redraw everything.
-        if (getDrawer() != null) return getDrawer().draw();
-        else return false;
+        if (this.drawer != null)
+        {
+            return this.drawer.draw();
+        }
+        else 
+        {
+            return false;
+        }
 	}  
     
     /**
@@ -884,56 +657,56 @@ public class Game extends Canvas implements IWindowCallback
         if (!this.isCompletelyBusy())
         {
             // Handle Level up.
-            if (scoreMan.getLevelScore() >= scoreMan.getTargetLevelScore())
+            if (hub.scoreMan.getLevelScore() >= hub.scoreMan.getTargetLevelScore())
             {    
                 // Hide piece.                    
-                pieceMan.hidePieceGrid();
-                pieceMan.stopAnimation();
-                timerMan.setPaused(true);
+                hub.pieceMan.hidePieceGrid();
+                hub.pieceMan.stopAnimation();
+                hub.timerMan.setPaused(true);
 
-                LogManager.recordMessage("Level up!", "Game#updateBoard");
+                CouchLogger.get().recordMessage(this.getClass(), "Level up!");
                 //levelMan.levelUp(this);
                
-                levelMan.incrementLevel();                                                           
+                hub.levelMan.incrementLevel();
 
-                soundMan.play(Sound.LEVEL_UP);
+                hub.soundMan.play(Sound.LEVEL_UP);
 
-                ImmutablePosition pos = pieceMan.getCursorPosition();
-                int x = pos.getX() + boardMan.getCellWidth()  / 2;
-                int y = pos.getY() + boardMan.getCellHeight() / 2;
+                ImmutablePosition pos = hub.pieceMan.getCursorPosition();
+                int x = pos.getX() + hub.boardMan.getCellWidth()  / 2;
+                int y = pos.getY() + hub.boardMan.getCellHeight() / 2;
                                                 
                 final ITextLabel label = new LabelBuilder(x, y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                        .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                        .size(settingsMan.getInt(Key.SCT_LEVELUP_TEXT_SIZE))
-                        .text(settingsMan.getString(Key.SCT_LEVELUP_TEXT)).end();
+                        .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                        .size(hub.settingsMan.getInt(Key.SCT_LEVELUP_TEXT_SIZE))
+                        .text(hub.settingsMan.getString(Key.SCT_LEVELUP_TEXT)).end();
 
                 IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                        .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
-                        .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
-                        .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
+                        .wait(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                        .duration(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                        .minOpacity(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                        .maxOpacity(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
                         .end();                 
                 
                 IAnimation a2 = new MoveAnimation.Builder(label)
-                        .duration(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_DURATION))
-                        .speed(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_SPEED))
-                        .theta(settingsMan.getInt(Key.SCT_LEVELUP_MOVE_THETA))                       
+                        .duration(hub.settingsMan.getInt(Key.SCT_LEVELUP_MOVE_DURATION))
+                        .speed(hub.settingsMan.getInt(Key.SCT_LEVELUP_MOVE_SPEED))
+                        .theta(hub.settingsMan.getInt(Key.SCT_LEVELUP_MOVE_THETA))
                         .end(); 
                 
                 a2.addAnimationListener(new AnimationAdapter()
                 {
                     @Override
                     public void animationStarted()
-                    { layerMan.add(label, Layer.EFFECT); }
+                    { hub.layerMan.add(label, Layer.EFFECT); }
 
                     @Override
                     public void animationFinished()
-                    { layerMan.remove(label, Layer.EFFECT); }
+                    { hub.layerMan.remove(label, Layer.EFFECT); }
                 });
 
-                animationMan.add(a1);
-                animationMan.add(a2);
+                hub.animationMan.add(a1);
+                hub.animationMan.add(a2);
                 a1 = null;
                 a2 = null;                    
             }
@@ -953,55 +726,53 @@ public class Game extends Canvas implements IWindowCallback
         }                                                                  
 
         // Run the refactorer.
-        refactorer.updateLogic(this);
+        this.refactorer.updateLogic(this, hub);
       
         // Update the tile remover.
-        tileRemover.updateLogic(this, chainTracker);
+        this.tileRemover.updateLogic(this, hub);
       
         // See if we should clear the cascade count.
-        if (refactorer.isRefactoring() == false 
-                && tileRemover.isTileRemoving() == false
-                && tileDropper.isTileDropping() == false)
+        if (!this.refactorer.isRefactoring()
+                && !this.tileRemover.isTileRemoving()
+                && !this.tileDropper.isTileDropping())
         {
-            statMan.resetChainCount(); 
-            statMan.resetLineChainCount();
+            hub.statMan.resetChainCount();
+            hub.statMan.resetLineChainCount();
         }
 
         // Animation all animations.
-        animationMan.animate();       
-        
-        // Handle the timer.
-        if (boardMan.isVisible() 
-                && !tutorialMan.isTutorialRunning()             
-                && !isContextManipulating() && !isTileManipulating())
-        {
-            timerMan.updateLogic(this);
-        }
+        hub.animationMan.animate();
 
-        // Check to see if we should force a piece commit.
-        if (timerMan.getCurrrentTime() < 0)
+        // Update the tutorial manager logic. This must be done after the world
+        // manager because it relies on the proper items being in the item list.
+        hub.tutorialMan.updateLogic(this, hub);
+
+        // Handle the timer.
+        if (hub.boardMan.isVisible()                
+                && !hub.tutorialMan.isTutorialRunning()
+                && !this.isContextManipulating()
+                && !this.isTileManipulating())
         {
-            // Commit the piece.
-            timerMan.setCurrentTime(0);
-            pieceMan.initiateCommit(this);            
+            hub.timerMan.updateLogic(this);
+
+            if (hub.timerMan.getCurrrentTime() <= 0)
+            {
+                hub.pieceMan.initiateCommit(this, hub);
+            }
         }
 
         // Update tile dropper.
-        tileDropper.updateLogic(this);
+        this.tileDropper.updateLogic(this, hub);
         
         // Update piece manager logic and then draw it.
-        pieceMan.updateLogic(this);
+        hub.pieceMan.updateLogic(this, hub);
 
         // Update the item manager logic.
-        itemMan.updateLogic(this);                       
-    
-        // Update the tutorial manager logic. This must be done after the world
-        // manager because it relies on the proper items being in the item list.
-        tutorialMan.updateLogic(this);
+        hub.itemMan.updateLogic(this, hub);            
         
         // Reset the line count.
         //statMan.incrementLineCount(statMan.getCycleLineCount());               
-        statMan.resetCycleLineCount();
+        hub.statMan.resetCycleLineCount();
     }       
       
     /**
@@ -1082,16 +853,21 @@ public class Game extends Canvas implements IWindowCallback
     
     public void startGameOver()
     {
-        LogManager.recordMessage("Game over!", "Game#startGameOver");
+        CouchLogger.get().recordMessage(this.getClass(), "Game over!");
 
         // Add the new score.
-        highScoreMan.offerScore("Unused", scoreMan.getTotalScore(), 
-                levelMan.getLevel());
-        listenerMan.notifyGameOver(new GameEvent(this, levelMan.getLevel()));
-        //highScoreGroup.updateLabels();
+        hub.highScoreMan.offerScore(
+                "Unused",
+                hub.scoreMan.getTotalScore(),
+                hub.levelMan.getLevel());
+
+        // Notify of game over.
+        hub.listenerMan.notifyGameOver(new GameEvent(this, 
+                hub.levelMan.getLevel(),
+                hub.scoreMan.getTotalScore()));
         
         // Activate the game over process.
-        activateGameOver = true;
+        this.activateGameOver = true;
     }       
     
     //--------------------------------------------------------------------------
@@ -1120,14 +896,17 @@ public class Game extends Canvas implements IWindowCallback
         try
         {
             // Save the properites.
-            if (settingsMan != null) settingsMan.saveSettings();
+            if (hub.settingsMan != null)
+            {
+                hub.settingsMan.saveSettings();
+            }
 
             // Save the log data.            
-            LogManager.write();
+            CouchLogger.get().write();
         }
         catch(Exception e)
         {
-            LogManager.recordException(e);
+            CouchLogger.get().recordException(this.getClass(), e);
         }        
         
      	System.exit(0);
@@ -1139,14 +918,14 @@ public class Game extends Canvas implements IWindowCallback
     public void windowDeactivated()
     {
         // Don't pause game if we're showing the game over screen.
-        if (groupMan != null && groupMan.isActivated() == false)
+        if (hub.groupMan != null && !hub.groupMan.isActivated())
         {
-            ui.showPauseGroup(groupMan);
+            ui.showPauseGroup(hub.groupMan);
         }
                         
-        if (layerMan != null)
+        if (hub.layerMan != null)
         {
-            layerMan.forceRedraw();        
+            hub.layerMan.forceRedraw();
         }                
     }
     
@@ -1161,11 +940,56 @@ public class Game extends Canvas implements IWindowCallback
             loader.forceRedraw();
         }
             
-        if (layerMan != null)
+        if (hub.layerMan != null)
         {
-            layerMan.forceRedraw();        
+            hub.layerMan.forceRedraw();
         }
-    }        
+    }
+    
+    public Executor getExecutor()
+    {
+        return executor;
+    }
+
+    public ManagerHub getManagerHub()
+    {
+        return hub;
+    }
+    
+    public Refactorer getRefactorer()
+    {
+        return refactorer;
+    }
+    
+    public ResourceFactory getResourceFactory()
+    {
+        return resourceFactory;
+    }
+       
+    public TileDropper getTileDropper()
+    {
+        return tileDropper;
+    }
+
+    public TileRemover getTileRemover()
+    {
+        return tileRemover;
+    }
+
+    public UI getUI()
+    {
+        return ui;
+    }
+
+    public IWindow getWindow()
+    {
+        return window;
+    }
+
+    public List<Chain> getChainList()
+    {
+        return chainList;
+    }
     
     //--------------------------------------------------------------------------
     // Main method
@@ -1190,6 +1014,9 @@ public class Game extends Canvas implements IWindowCallback
         SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));       
         Achievement.Difficulty.initializeDifficultyColorMap(settingsMan);
+
+        // Set the BasicPlayer logger level.
+        Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
         
         try
         {
@@ -1199,8 +1026,8 @@ public class Game extends Canvas implements IWindowCallback
         }
         catch (Exception e)
         {
-            LogManager.recordException(e);
-            LogManager.write();
+            CouchLogger.get().recordException(Game.class, e);
+            CouchLogger.get().write();
         }
 	}
   

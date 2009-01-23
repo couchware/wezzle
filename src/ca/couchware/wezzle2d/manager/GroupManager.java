@@ -5,7 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.group.IGroup;
 import java.util.ArrayList;
@@ -123,8 +125,7 @@ public class GroupManager implements IResettable
         layerMan.hide(LayerManager.Layer.EFFECT);
         pieceMan.hidePieceGrid();
         
-        LogManager.recordMessage("Groups open: " + entryList.size(), 
-                "GroupManager#showGroup");
+        CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }    
     
     /**
@@ -173,8 +174,7 @@ public class GroupManager implements IResettable
         else
             entryList.get(0).getGroup().setVisible(true);
         
-        LogManager.recordMessage("Groups open: " + entryList.size(), 
-                "GroupManager#hideGroup");
+        CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }   
     
     public void hideGroup(IGroup group)
@@ -204,8 +204,7 @@ public class GroupManager implements IResettable
         else
             entryList.get(0).getGroup().setVisible(true);
         
-        LogManager.recordMessage("Groups open: " + entryList.size(), 
-                "GroupManager#hideGroup");
+        CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }
     
     /**
@@ -243,14 +242,14 @@ public class GroupManager implements IResettable
      * 
      * @param game The game state.
      */
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         for (IGroup group : groupList)
         {
             if (group.isActivated() == true
                     && group.controlChanged() == true)
             {
-                group.updateLogic(game);
+                group.updateLogic(game, hub);
                 group.clearChanged();
             }
         } // end for

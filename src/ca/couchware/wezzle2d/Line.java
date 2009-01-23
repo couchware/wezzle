@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.util.StringUtil;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,15 +20,15 @@ public class Line
     /**
      * The list of tiles.
      */
-    private List<Tile> line;
+    private List<Tile> tileList;
     
     /**
      * Constructor private to ensure immutability.
      * @param line The tiles.
      */
-    private Line(List<Tile> tiles)
+    private Line(List<Tile> tileList)
     {
-        this.line = tiles;
+        this.tileList = tileList;
     }
     
     /**
@@ -40,28 +41,22 @@ public class Line
        return new Line(tiles);
     }
     
-    /**
-     * Public interface.
-     */
+    // -------------------------------------------------------------------------
+    // Public Members
+    // -------------------------------------------------------------------------
     
     /**
      * Get the tiles. To ensure immutability returns an unmodifiable list.
      * @return The list of tiles.
      */
-    public List getTiles()
+    public List getTileList()
     {
-        return Collections.unmodifiableList(this.line);
+        return Collections.unmodifiableList(this.tileList);
     }
     
+    @Override
     public String toString()
     {
-        String out = "";
-        for (Tile i : line)
-        {
-            out += i.toString() + ", ";
-        }
-        // delete the last comma
-        out = out.substring(0, out.length()-2);
-        return out;
+        return StringUtil.join(tileList, ", ");
     }
 }

@@ -1,7 +1,7 @@
 package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.util.IBuilder;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
@@ -130,7 +130,7 @@ public class MoveAnimation extends AbstractAnimation
         // If the duration is 0, warn and end now.
         if (builder.duration == 0)
         {
-            LogManager.recordWarning("Animation had a zero duration!");
+            CouchLogger.get().recordWarning(this.getClass(), "Animation had a zero duration!");
             setFinished();
             return;
         }

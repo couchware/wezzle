@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.lwjgl;
 
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings;
 import java.awt.Font;
 import java.io.InputStream;
@@ -74,14 +74,13 @@ public class FontStore
             }
             catch(Exception e)
             {
-                LogManager.recordException(e);
+                CouchLogger.get().recordException(this.getClass(), e);
             }
         }
         // Otherwise, derive all other fonts from the size 1.        
         else
         {
-            LogManager.recordMessage("Font size " + size + " created.", 
-                    "Java2DFontStore#getFont");   
+            CouchLogger.get().recordMessage(this.getClass(), "Font size " + size + " created.");
             
             // Create the base font if it doesn't exist.
             if (baseFont == null)

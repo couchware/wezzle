@@ -12,9 +12,10 @@ import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.manager.ItemManager;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
+import ca.couchware.wezzle2d.manager.SoundManager;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
@@ -82,7 +83,7 @@ public class TileDropper implements IResettable
         // Reset all the flags.
         this.dropOnCommit = true;
         this.tileDropping = false;
-        this.animating = false;
+        this.animating    = false;
         
         // Set the total drop amount to 0.
         this.totalDropAmount = 0;        
@@ -96,22 +97,23 @@ public class TileDropper implements IResettable
         return SINGLE;
     }  
     
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         // If the board is refactoring, do not logicify.
         if (game.isContextManipulating()
-                || game.refactorer.isRefactoring()
-                || game.tileRemover.isTileRemoving())
+                || game.getRefactorer().isRefactoring()
+                || game.getTileRemover().isTileRemoving())
         {
             return;
         }
         
         // Some convenience variables.
-        final AnimationManager animationMan = game.animationMan;
-        final BoardManager     boardMan     = game.boardMan;
-        final ItemManager      itemMan      = game.itemMan;
-        final SettingsManager  settingsMan  = game.settingsMan;      
-        final Refactorer       refactorer   = game.refactorer;       
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager     boardMan     = hub.boardMan;
+        final ItemManager      itemMan      = hub.itemMan;
+        final SettingsManager  settingsMan  = hub.settingsMan;      
+        final SoundManager     soundMan     = hub.soundMan;
+        final Refactorer       refactorer   = game.getRefactorer();       
                  
         // Which row should we be dropping tiles into?
         int row = boardMan.getGravity().contains(BoardManager.Direction.UP)
@@ -314,7 +316,7 @@ public class TileDropper implements IResettable
                 if (tileDropping == true)
                 {        
                     // Start the animation.
-                    game.soundMan.play(Sound.BLEEP);
+                    soundMan.play(Sound.BLEEP);
                     
                     for (Tile tile : tileDropList)
                     {
@@ -377,12 +379,12 @@ public class TileDropper implements IResettable
      * @param pieceSize The size of the piece consumed.
      * @return The number of tiles do drop.
      */
-    public void updateDropAmount(final Game game, int pieceSize)
-    {
-        int numberOfTiles = game.boardMan.getNumberOfTiles();
-        int numberOfCells = game.boardMan.getCells();
-        int level = game.levelMan.getLevel();
-        
+    public void updateDropAmount(
+            int numberOfTiles,
+            int numberOfCells,
+            int level,
+            int pieceSize)
+    {        
         // The number of tiles for the current level.
         int levelDrop = (level / this.LEVEL_INTERVAL);
         
@@ -482,6 +484,7 @@ public class TileDropper implements IResettable
        
     public void startDrop()
     {
+        CouchLogger.get().recordMessage(this.getClass(), "Starting the tile drop.");
         this.tileDropping = true;
     }
       

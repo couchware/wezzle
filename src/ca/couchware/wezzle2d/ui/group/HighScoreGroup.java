@@ -1,17 +1,18 @@
 package ca.couchware.wezzle2d.ui.group;
 
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.HighScore;
-import ca.couchware.wezzle2d.manager.LayerManager;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.ui.*;
+import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.IButton;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -27,12 +28,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
      * A reference to the layer manager.  This is used by groups to add
      * and remove things like buttons and sliders.
      */
-    final protected LayerManager layerMan;       
-    
-    /**
-     * A reference to the high score manager.
-     */
-    private HighScoreManager highScoreMan;
+    final private ManagerHub hub;          
     
     /**
      * The header label.
@@ -60,21 +56,16 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
      * @param window
      * @param layerMan
      */    
-    public HighScoreGroup(
-            final SettingsManager settingsMan,
-            final LayerManager layerMan,             
-            final HighScoreManager highScoreMan)
+    public HighScoreGroup(ManagerHub hub)
     {
-        // Set the layer man.
-        this.layerMan = layerMan;
-         
-        // Save the reference.
-        this.highScoreMan = highScoreMan;
-        
+        // Save a reference to the hub.
+        assert hub != null;
+        this.hub = hub;
+                 
         // Create the high score header.
         this.headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("High Scores")
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("High Scores")
                 .visible(false).end();        
         this.entityList.add(this.headerLabel);     
         
@@ -83,12 +74,14 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         
         this.noHighScoreArray[0] = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(20).text("There are no")
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .size(20).text("There are no")
                 .visible(false).end();                
                 
         this.noHighScoreArray[1] = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(20).text("high scores yet.")
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .size(20).text("high scores yet.")
                 .visible(false).end();                
         
         for (ITextLabel label : noHighScoreArray)
@@ -102,7 +95,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         {                      
             ITextLabel label = new LabelBuilder(400, 225 + (35 * i))
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).opacity(0).size(16).text(" ")
+                    .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).opacity(0).size(16).text(" ")
                     .visible(false).end();
             this.scoreLabelList.add(label);            
             this.entityList.add(label);
@@ -120,7 +113,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         // Add them all to the layer man.
         for (IEntity e : this.entityList)
         {
-            this.layerMan.add(e, Layer.UI);
+            hub.layerMan.add(e, Layer.UI);
         }
     }
     
@@ -144,7 +137,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         boolean highScoreExists = false;
         
         // Get the high score list.
-        List<HighScore> highScoreList = highScoreMan.getScoreList();
+        List<HighScore> highScoreList = hub.highScoreMan.getScoreList();
         
         for (int i = 0; i < scoreLabelList.size(); i++)
         {                        
@@ -175,14 +168,14 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
      * 
      * @param game The game state.
      */    
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         // Check if the back button was pressed.
         if (closeButton.isActivated() == true)
         {            
             // Hide all side triggered menues.
             closeButton.setActivated(false);
-            game.groupMan.hideGroup(this);
+            hub.groupMan.hideGroup(this);
         }       
     }
     

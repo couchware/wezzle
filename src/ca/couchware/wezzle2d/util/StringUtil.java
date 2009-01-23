@@ -5,6 +5,9 @@
 
 package ca.couchware.wezzle2d.util;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 /**
  * A collection of string utility methods.
  * 
@@ -13,7 +16,34 @@ package ca.couchware.wezzle2d.util;
 public class StringUtil 
 {
 
-     /**
+    /**
+     * A method for joing together a collection of strings using a specified
+     * delimiter.
+     * 
+     * @param collection
+     * @param delimiter
+     * @return
+     */
+    public static <T> String join(final Collection<T> collection, final String delimiter)
+    {
+        if (collection == null || collection.isEmpty())
+        {
+            return "";
+        }
+
+        Iterator<T> it = collection.iterator();
+        StringBuffer buffer = new StringBuffer(it.next().toString());
+
+        while (it.hasNext())
+        {
+            buffer.append(delimiter).append(it.next().toString());
+        }
+
+        return buffer.toString();
+    }
+
+
+    /**
      * Extracts the file extension from a file with the name.ext format.
      * 
      * @param path

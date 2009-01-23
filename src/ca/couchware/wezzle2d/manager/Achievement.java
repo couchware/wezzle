@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
@@ -217,7 +218,7 @@ public class Achievement implements IXMLizable
      * @param game The state of the game.
      * @return Whether or not the achievement has been completed.
      */
-    public boolean evaluate(Game game)
+    public boolean evaluate(Game game, ManagerHub hub)
     {
         // Use the private helper method to test if all of the fields
         // meet the requirements. any null values are automatically
@@ -225,7 +226,7 @@ public class Achievement implements IXMLizable
         
         for (Rule rule : ruleList)
         {
-           if (rule.evaluate(game) == false)
+           if (rule.evaluate(game, hub) == false)
                return false;
         }
        

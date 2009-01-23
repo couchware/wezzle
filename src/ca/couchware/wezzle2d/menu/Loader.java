@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -22,6 +23,7 @@ import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import java.awt.Shape;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -38,9 +40,7 @@ public class Loader implements IDrawer
     final private static String BACKGROUND_PATH = Settings.getSpriteResourcesPath()
             + "/MenuBackground.png"; 
     
-    /**
-     * An enum containing the possible states for the loader to be in.
-     */
+    /** An enum containing the possible states for the loader to be in. */
     public enum State
     {                       
         /** 
@@ -134,14 +134,14 @@ public class Loader implements IDrawer
         this.loaderQueue = new LinkedList<Runnable>();
         
         // Add a blank runnable first.
-        addTask(new Runnable()
+        this.addTask(new Runnable()
         {
            public void run() { } 
         });
                 
     }
             
-    private void loadNextRunnable()
+    private void executeNextTask()
     {
         // Run the next loader runnable.
         loaderQueue.remove().run();
@@ -153,36 +153,43 @@ public class Loader implements IDrawer
         progressBar.setProgressValue(counter);
     }        
     
-    public void addTask(Runnable r)
+    public void addTask(Runnable task)
     {
-        if (r == null)
-            throw new NullPointerException("Runnable must not be null.");
-     
-        
+        // Make sure task is not null.
+        assert task != null;
+             
         // Add it to the queue.
-        loaderQueue.add(r);
+        loaderQueue.add(task);
         
         // The loader is now ready.
         state = State.READY;
         
         // Adjust progress bar.
         progressBar.setProgressUpper(loaderQueue.size());
-    }        
+    }   
+    
+    public void addTasks(Collection<Runnable> collection)
+    {
+        for (Runnable task : collection)
+        {
+            this.addTask(task);
+        }
+    }
         
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {       
         switch (state)
         {
             case READY:
                
                 // Load the next runnable.
-                loadNextRunnable();
+                this.executeNextTask();
                 
                 // See if the queue is empty.  If it is, then switch
                 // to the animation.
                 if (loaderQueue.isEmpty() == true)
                 {                    
-                    game.animationMan.add(animation);
+                    hub.animationMan.add(animation);
                     state = state.ANIMATING;
                 }
                 

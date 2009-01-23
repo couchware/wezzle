@@ -1,7 +1,13 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.tile.*;
-import ca.couchware.wezzle2d.event.*;
+import ca.couchware.wezzle2d.util.CouchLogger;
+import ca.couchware.wezzle2d.event.GameEvent;
+import ca.couchware.wezzle2d.event.IGameListener;
+import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileType;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -184,8 +190,7 @@ import java.util.Set;
                 * Math.pow(4, countMap.get(TileType.X4))
                 * chainCount);
 
-        LogManager.recordMessage("chainCount = " + chainCount, 
-                "ScoreManager#calculateLineScore");
+        CouchLogger.get().recordMessage(this.getClass(), "chainCount = " + chainCount);
         
         // Return the delta score.
         return deltaScore;
@@ -471,7 +476,7 @@ import java.util.Set;
         // See if there is a save state.
         if (managerState.isEmpty() == true)
         {
-            LogManager.recordWarning("No save state exists.", "ScoreManager#load");
+            CouchLogger.get().recordWarning(this.getClass(), "No save state exists.");
             return;
         }
         

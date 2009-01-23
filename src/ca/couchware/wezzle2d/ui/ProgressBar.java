@@ -145,9 +145,9 @@ public class ProgressBar extends AbstractEntity
         this.progressValue = builder.progressValue;
         this.progressLower = builder.progressLower;
         this.progressUpper = builder.progressUpper;                                  
-        
-        assert progressUpper >= progressLower;
-        assert progressLower <= progressUpper;
+
+        assert progressUpper > progressLower;
+        assert progressLower < progressUpper;
         assert progressValue >= progressLower;
         assert progressValue <= progressUpper;
         
@@ -388,7 +388,8 @@ public class ProgressBar extends AbstractEntity
 	final public void setProgressValue(int progressValue)
 	{
         // Make sure progress is positive.
-        assert progressValue >= this.progressLower;        
+//        assert progressValue >= this.progressLower
+//                : String.format("%d was >= %d", progressValue, this.progressLower);
         
         // Don't do anything if it's the same.
         if (this.progressValue == progressValue)
@@ -405,16 +406,15 @@ public class ProgressBar extends AbstractEntity
         // Save the progress value.
         this.progressValue = progressValue;
         		
-        // Determine the progress width.
+        // Determine the progress width.        
         this.progressWidth = ((progressValue - progressLower) * maxProgressWidth) 
                 / (progressUpper - progressLower);
         
         // This code ensures that the progress width does not exceed the
-        // maximum progress width.
-		this.progressWidth = progressWidth > maxProgressWidth 
-                ? maxProgressWidth 
-                : progressWidth;                 
-        
+        // maximum progress width.        
+        this.progressWidth = Math.max(0, progressWidth);
+        this.progressWidth = Math.min(progressWidth, maxProgressWidth);
+		
         // Set dirty so it will be drawn.        
         this.dirty = true;
 	}

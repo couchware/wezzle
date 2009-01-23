@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IGraphics;
 import ca.couchware.wezzle2d.ResourceFactory;
@@ -26,7 +27,7 @@ public class LayerManager implements IDisposable, IDrawer
     /**
      * The different layers supported by the layer manager.
      */
-    public static enum Layer
+    public enum Layer
     {
         BACKGROUND,        
         TILE,
@@ -162,8 +163,12 @@ public class LayerManager implements IDisposable, IDrawer
      * 
      * @param layer
      */
-    public void removeLayer(Layer layer)
+    public void clearLayer(Layer layer)
     {
+        CouchLogger.get().recordMessage(this.getClass(),
+                String.format("Layer %s cleared of %d entities.",
+                    layer.toString(), layerList.get(layer.ordinal()).size()));
+        
         layerList.get(layer.ordinal()).clear();
     }        
     

@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.event.*;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import java.util.EnumMap;
@@ -303,7 +304,7 @@ public class StatManager implements IResettable, ISaveable, IGameListener, ILine
         // See if there is a save state.
         if (managerState.isEmpty() == true)
         {
-            LogManager.recordWarning("No save state exists.", "MoveManager#load");
+            CouchLogger.get().recordWarning(this.getClass(), "No save state exists.");
             return;
         }
         

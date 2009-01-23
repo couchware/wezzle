@@ -5,9 +5,10 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.audio.*;
+import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.audio.SoundPlayer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -213,7 +214,7 @@ public class SoundManager
                 }
                 catch (Exception e) 
                 { 
-                    LogManager.recordException(e); 
+                    CouchLogger.get().recordException(this.getClass(), e);
                 }
             }
         });

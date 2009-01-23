@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
 
 /**
@@ -36,7 +37,7 @@ public interface ITutorial
      * @param game
      * @return
      */
-    public boolean evaluateRules(Game game);
+    public boolean evaluateRules(Game game, ManagerHub hub);
     
     /**
      * Gets the name of tutorial, suitable for showing on the screen.
@@ -50,13 +51,13 @@ public interface ITutorial
      * Initializes the tutorial.  Once a tutorial has been initialized,
      * it will cause <pre>isActivated</pre> to return true.
      */
-    public void initialize(Game game);
+    public void initialize(Game game, ManagerHub hub);
     
     /**
      * Force the tutorial to finish.  This is usually invoked by the tutorial
      * but can be invoked to finish the tutorial prematurely.
      */
-    public void finish(Game game);
+    public void finish(Game game, ManagerHub hub);
     
     /**
      * Is the tutorial currently activated?
@@ -79,6 +80,6 @@ public interface ITutorial
      *
      * @param game
      */
-    public void updateLogic(Game game);
+    public void updateLogic(Game game, ManagerHub hub);
 
 }

@@ -7,6 +7,7 @@
 package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
@@ -16,10 +17,10 @@ import ca.couchware.wezzle2d.event.ILineListener;
 import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.EnumSet;
@@ -34,15 +35,9 @@ public class PauseGroup extends AbstractGroup implements
         ILineListener
 {      
     
-    /**
-     * A reference to the layer manager.  This is used by groups to add
-     * and remove things like buttons and sliders.
-     */
-    final private LayerManager layerMan;      
-    
-    /** A reference to the stats manager.  Used to grab the latest stats. */
-    final private StatManager statMan;
-    
+    /** A reference to the manager hub. */
+    final private ManagerHub hub;
+       
     /** The main label showing the paused text. */
     private ITextLabel mainLabel;
     
@@ -62,47 +57,46 @@ public class PauseGroup extends AbstractGroup implements
     /**
      * The constructor.    
      */    
-    public PauseGroup(
-            SettingsManager settingsMan,
-            LayerManager layerMan, 
-            StatManager statMan)
+    public PauseGroup(ManagerHub hub)
     {
-        // Remember the managers.
-        this.layerMan = layerMan;
-        this.statMan  = statMan;
+        // Sanity check and assignment.
+        assert hub != null;
+        this.hub = hub;
                
         // Create the "Paused" text.
         mainLabel = new LabelBuilder(400, 245)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(38)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(38)
                 .text("Paused")
-                .visible(false).end();
-        layerMan.add(mainLabel, Layer.UI);
+                .visible(false).end();       
         entityList.add(mainLabel);
 
         movesLabel = new LabelBuilder(400, 310)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
                 .text("0 moves")
-                .visible(false).end();
-        layerMan.add(movesLabel, Layer.UI);
+                .visible(false).end();        
         entityList.add(movesLabel);
 
         linesLabel = new LabelBuilder(400, 340)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
                 .text("0 lines")
-                .visible(false).end();
-        layerMan.add(linesLabel, Layer.UI);
+                .visible(false).end();        
         entityList.add(linesLabel);
 
         linesPerMoveLabel = new LabelBuilder(400, 370)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(18)
                 .text("0.0 lines/move")
-                .visible(false).end();
-        layerMan.add(linesPerMoveLabel, Layer.UI);
+                .visible(false).end();        
         entityList.add(linesPerMoveLabel);
+
+        // Add all entities to the layer manager.
+        for (IEntity entity : entityList)
+        {
+            hub.layerMan.add(entity, Layer.UI);
+        }
     }
         
     private void setMoves(int moves)
@@ -160,7 +154,7 @@ public class PauseGroup extends AbstractGroup implements
         super.setActivated(activated);               
     }
     
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
         // Intentionally left blank.
     }
@@ -169,8 +163,8 @@ public class PauseGroup extends AbstractGroup implements
     {        
         if (gameType == GameType.GAME)
         {                     
-            this.setMoves(statMan.getMoveCount());
-            this.setLinesPerMove(statMan.getLinesPerMove());
+            this.setMoves(hub.statMan.getMoveCount());
+            this.setLinesPerMove(hub.statMan.getLinesPerMove());
         }
     }
     
@@ -183,8 +177,8 @@ public class PauseGroup extends AbstractGroup implements
     {                
         if (gameType == GameType.GAME)
         {            
-            this.setLines(statMan.getLineCount());
-            this.setLinesPerMove(statMan.getLinesPerMove());
+            this.setLines(hub.statMan.getLineCount());
+            this.setLinesPerMove(hub.statMan.getLinesPerMove());
         }
     }       
 

@@ -5,8 +5,6 @@
 
 package ca.couchware.wezzle2d.util;
 
-import ca.couchware.wezzle2d.manager.LogManager;
-
 /**
  * Contains all the ASCII values.
  * 

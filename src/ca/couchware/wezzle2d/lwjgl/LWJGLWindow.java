@@ -13,7 +13,7 @@ import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.event.KeyEvent.Modifier;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MouseEvent.Button;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -447,7 +447,7 @@ public class LWJGLWindow implements IWindow
     
     public void addKeyListener(IKeyListener l)
     {
-        LogManager.recordMessage("Added key listener for " + l);
+        CouchLogger.get().recordMessage(this.getClass(), "Added key listener for " + l);
         
         if (l == null)
             throw new NullPointerException();
@@ -460,7 +460,7 @@ public class LWJGLWindow implements IWindow
         
     public void removeKeyListener(IKeyListener l)
     {
-        LogManager.recordMessage("Removed key listener for " + l);        
+        CouchLogger.get().recordMessage(this.getClass(), "Removed key listener for " + l);
         
         if (l == null)
             throw new NullPointerException();

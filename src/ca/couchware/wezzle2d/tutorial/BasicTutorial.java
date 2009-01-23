@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -14,7 +15,11 @@ import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.AnimationManager;
+import ca.couchware.wezzle2d.manager.BoardManager;
+import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
@@ -45,11 +50,16 @@ public class BasicTutorial extends AbstractTutorial
     }
     
     @Override
-    public void initialize(final Game game)
+    public void initialize(final Game game, ManagerHub hub)
     {
         // Invoke the super.
-        super.initialize(game);            
-        
+        super.initialize(game, hub);
+
+        // Make convenience variables for the managers used.
+        final BoardManager boardMan = hub.boardMan;
+        final SettingsManager settingsMan = hub.settingsMan;
+        final LayerManager layerMan = hub.layerMan;
+
         // Slow down refactor so the user can see more clearly what happens.
         refactorer.setRefactorSpeed(RefactorSpeed.SLOWER);                
         
@@ -61,46 +71,50 @@ public class BasicTutorial extends AbstractTutorial
         label = new LabelBuilder(280, 166)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false)
-                .color(game.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(16).text("Lines are made by lining").end();
-        game.layerMan.add(label, Layer.EFFECT);   
+        layerMan.add(label, Layer.EFFECT);   
         this.labelList.add(label);
         
         // Line 2.
         label = new LabelBuilder(label).y(166 + 24)
                 .text("up 3 tiles of the same").end();
-        game.layerMan.add(label, Layer.EFFECT);                 
+        layerMan.add(label, Layer.EFFECT);                 
         this.labelList.add(label);
         
         // Line 3.
         label = new LabelBuilder(label).y(166 + 24 + 24)
                 .text("colour.").end();
-        game.layerMan.add(label, Layer.EFFECT);                                 
+        layerMan.add(label, Layer.EFFECT);                                 
         this.labelList.add(label);              
         
         // Create the speech bubble and add it to the layer manaager.
         // The speech bubble will be positioned over the button right
         // corner of the board.
         this.bubble = new SpeechBubble.Builder(
-                    game.boardMan.getX() + game.boardMan.getCellWidth() / 2,
-                    game.boardMan.getY() + game.boardMan.getHeight() 
-                        - game.boardMan.getCellHeight())
+                    boardMan.getX() + boardMan.getCellWidth() / 2,
+                    boardMan.getY() + boardMan.getHeight() 
+                        - boardMan.getCellHeight())
                 .type(BubbleType.VERTICAL).text("Click here").end();                
-        game.layerMan.add(bubble, Layer.EFFECT);   
-        game.layerMan.toFront(bubble, Layer.EFFECT);                         
+        layerMan.add(bubble, Layer.EFFECT);   
+        layerMan.toFront(bubble, Layer.EFFECT);                         
         
         // Run the repeat tutorial method, that sets up the things that must
         // be reset each time the tutorial is run.
-        repeat(game);                                                                                                                                     
+        repeat(game, hub);
     }  
         
-    protected void createBoard(final Game game)
-    {        
+    protected void createBoard(final Game game, ManagerHub hub)
+    {
+        // Make convenience variables for the managers used.
+        final AnimationManager animationMan = hub.animationMan;
+        final BoardManager boardMan = hub.boardMan;
+
         // Clear it first.
-        game.boardMan.clearBoard();
+        boardMan.clearBoard();
                 
         // Create bottom row.        
-        Tile t = game.boardMan.createTile(0, game.boardMan.getRows() - 1, 
+        Tile t = boardMan.createTile(0, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.RED);
         
         // Set a click action.
@@ -111,45 +125,45 @@ public class BasicTutorial extends AbstractTutorial
                // Fade out the bubble.            
                IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
                        .wait(0).duration(500).end();
-               game.animationMan.add(f);       
+               animationMan.add(f);       
            }
         });                
                 
-        game.boardMan.createTile(1, game.boardMan.getRows() - 1, 
+        boardMan.createTile(1, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.BLUE);
         
-        game.boardMan.createTile(2, game.boardMan.getRows() - 1, 
+        boardMan.createTile(2, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.BLUE);
         
-        game.boardMan.createTile(3, game.boardMan.getRows() - 1, 
+        boardMan.createTile(3, boardMan.getRows() - 1, 
                 TileType.NORMAL, TileColor.YELLOW);
         
         // Create second-from-bottom row.
-        game.boardMan.createTile(0, game.boardMan.getRows() - 2, 
+        boardMan.createTile(0, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.BLUE);
         
-        game.boardMan.createTile(1, game.boardMan.getRows() - 2, 
+        boardMan.createTile(1, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.BLUE);
         
-        game.boardMan.createTile(2, game.boardMan.getRows() - 2, 
+        boardMan.createTile(2, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.PURPLE);
         
-        game.boardMan.createTile(3, game.boardMan.getRows() - 2, 
+        boardMan.createTile(3, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.YELLOW);
         
-        game.boardMan.setVisible(true);
+        boardMan.setVisible(true);
     }   
     
     @Override
-    protected void repeat(Game game)
+    protected void repeat(Game game, ManagerHub hub)
     {
-        super.repeat(game);
+        super.repeat(game, hub);
         
         // Set restriction board so that only the bottom left corner is
         // clickable.
-        game.pieceMan.clearRestrictionBoard();
-        game.pieceMan.reverseRestrictionBoard();
-        game.pieceMan.setRestrictionCell(0, game.boardMan.getRows() - 1, true);
+        hub.pieceMan.clearRestrictionBoard();
+        hub.pieceMan.reverseRestrictionBoard();
+        hub.pieceMan.setRestrictionCell(0, hub.boardMan.getRows() - 1, true);
     }
 
 }

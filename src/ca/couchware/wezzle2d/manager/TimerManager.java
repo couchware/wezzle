@@ -1,9 +1,15 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.event.GameEvent;
+import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.event.ILevelListener;
+import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.event.TimerEvent;
+import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 
 /**
  * A class for managing a timer.
@@ -12,7 +18,11 @@ import ca.couchware.wezzle2d.event.TimerEvent;
  * @author Kevin Grad
  *
  */
-public class TimerManager implements IResettable, ILevelListener
+public class TimerManager implements 
+        IResettable,
+        IGameListener,
+        IMoveListener,
+        ILevelListener
 {                 
     
     /** The listener manager used to fire timer events. */
@@ -75,6 +85,30 @@ public class TimerManager implements IResettable, ILevelListener
         return new TimerManager(listenerMan);
     }
 
+    /**
+	 * Get the timer time.
+     *
+	 * @return The time.
+	 */
+	public int getCurrrentTime()
+	{
+		return this.currentTime;
+	}
+
+    public int getCurrentTimeInSeconds()
+    {
+        return this.currentTime / 1000;
+    }
+
+    /**
+	 * Get the initial time.
+	 * @return The initial time.
+	 */
+	public int getStartTime()
+	{
+		return this.startTime;
+	}
+
     public void updateLogic(Game game)
     {
         // Tick the timer.
@@ -98,72 +132,41 @@ public class TimerManager implements IResettable, ILevelListener
         
         // Notify all listeners of the tick.
         this.listenerMan.notifyTickOccurred(new TimerEvent(this, this.startTime, this.currentTime));
-	}
-    
-	/**
-	 * A method to set the time on the timer.
-	 * 
-	 * @param time The new time, in ms.
-	 */
-	public void setCurrentTime(int time)
-	{
-		assert time >= 0;		
-		this.currentTime = time;
-	}
-
-	/**
-	 * Get the timer time.
-     * 
-	 * @return The time.
-	 */
-	public int getCurrrentTime()
-	{
-		return this.currentTime;
-	}
-    
-    public int getCurrentTimeInSeconds()
-    {
-        return this.currentTime / 1000;
-    }
+	}   	
 		
 	/**
 	 * Reset the timer to the start time.
 	 */
-	public void resetCurrentTime()
+	private void resetCurrentTime()
 	{		
         this.currentTime = this.startTime;
+        CouchLogger.get().recordMessage(this.getClass(), "Current time reset to " + this.currentTime);
         
         // Notify all listeners of the tick.
         this.listenerMan.notifyCurrentTimeReset(new TimerEvent(this, this.startTime, this.currentTime));
-	}        
-    
-	/**
-	 * Get the initial time.
-	 * @return The initial time.
-	 */
-	public int getStartTime()
-	{
-		return this.startTime;
-	}
+	}            	
 
 	/**
-	 * Set the initial time.
+	 * Set the initial time.  Everytime the start time is changed, the current time will also reset.
      * 
 	 * @param time The new time.
 	 */
-	public void setStartTime(int time)
+	private void setStartTime(int time)
 	{
 		this.startTime = time;
-        LogManager.recordMessage("Initial time changed to " + time);
+        CouchLogger.get().recordMessage(this.getClass(), "Initial time changed to " + time);
         
         // Notify all listeners of the tick.
         this.listenerMan.notifyStartTimeChanged(new TimerEvent(this, this.startTime, this.currentTime));
+
+        // Reset the current time.
+        this.resetCurrentTime();
 	}
     
     /**
      * Reset the initial time to it's maximum amount.
      */
-    public void setStartTimeToUpper()
+    private void setStartTimeToUpper()
     {
         setStartTime(timeUpper);
     }
@@ -200,21 +203,45 @@ public class TimerManager implements IResettable, ILevelListener
 
     public void levelChanged(LevelEvent event)
     {
-        int time = timeUpper - (event.getNewLevel() - 1) * 1000;
+        int time = Math.max(timeUpper - (event.getNewLevel() - 1) * 1000, timeLower);
+                
+        this.setStartTime(time);        
         
-        if (time < timeLower)
-            time = timeLower;
-        
-        setStartTime(time);
-        //resetTimer();
-        
-        LogManager.recordMessage("Level changed.");
+        CouchLogger.get().recordMessage(this.getClass(), "Level changed.");
     }   
     
     public void resetState()
     {
         this.setStartTimeToUpper();
         this.resetCurrentTime();
+    }
+
+    public void moveCommitted(MoveEvent event, GameType gameType)
+    {
+        // Nothing right now.
+    }
+
+    public void moveCompleted(MoveEvent event)
+    {
+        // Reset the counter.
+        this.resetCurrentTime();
+    }
+
+    public void gameStarted(GameEvent event)
+    {
+        // Reset the counter.
+        this.resetCurrentTime();
+    }
+
+    public void gameReset(GameEvent event)
+    {
+        // Reset the counter.
+        this.resetCurrentTime();
+    }
+
+    public void gameOver(GameEvent event)
+    {
+        // Nothing right now.
     }
 		
 }

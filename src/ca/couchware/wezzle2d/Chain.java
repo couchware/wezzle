@@ -17,18 +17,16 @@ import java.util.List;
 public class Chain
 {
     
-    /**
-     * The list of lines.
-     */
-    private List<Line> chain;
+    /** The list of lines. */
+    private List<Line> lineList;
     
     /**
      * Constructor private to ensure immutability.
      * @param lines The lines.
      */
-    private Chain(List<Line> lines)
+    private Chain(List<Line> lineList)
     {
-        this.chain = lines;
+        this.lineList = lineList;
     }
     
     /**
@@ -41,33 +39,32 @@ public class Chain
        return new Chain(lines);
     }
     
-        
-    /**
-     * Public interface.
-     */
+    // -------------------------------------------------------------------------
+    // Public Members
+    // -------------------------------------------------------------------------
     
     /**
      * Get the lines. To ensure immutability returns an unmodifiable list.
      * @return The list of lines.
      */
-    public List getLines()
+    public List getLineList()
     {
-        return Collections.unmodifiableList(this.chain);
+        return Collections.unmodifiableList(this.lineList);
     }
     
+    @Override
     public String toString()
     {
-        String out = "";
+        StringBuffer buffer = new StringBuffer();
         int count = 1;
-        for(Line i : chain)
+
+        for (Line line : lineList)
         {
-            out += "Line " + count + ": [ " + i.toString() + " ]\n";
+            buffer.append(String.format("  (Line %d) [ %s ]\n", count, line.toString()));
+            count++;
         }
-        
-        count++;
-        
-        return out;
-        
+                        
+        return buffer.toString();
     }
     
 }

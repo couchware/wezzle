@@ -7,7 +7,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.manager.IResettable;
-import ca.couchware.wezzle2d.manager.LogManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import java.util.List;
@@ -131,7 +131,7 @@ public class Refactorer implements IResettable
     {        
         assert speed != null;        
         
-        LogManager.recordMessage("Speed set to " + speed.toString());
+        CouchLogger.get().recordMessage(this.getClass(), String.format("Speed set to %s.", speed.toString()));
         
         this.speed = speed;
         return this;
@@ -177,9 +177,11 @@ public class Refactorer implements IResettable
                 || this.refactorHorizontalInProgress;
     }
     
-    public void updateLogic(Game game)
+    public void updateLogic(Game game, ManagerHub hub)
     {
+        // Make sure game is not null.
         assert game != null;
+        assert hub  != null;
         
         // Reset the finished flag.
         this.finishedRefactor = false;
@@ -188,16 +190,16 @@ public class Refactorer implements IResettable
         if (activateRefactor == true)
         {            
             // Hide piece.
-            game.pieceMan.hidePieceGrid();
+            hub.pieceMan.hidePieceGrid();
 
             // Start down refactor.                           
             this.refactorAnimationList = 
-                    game.boardMan.startVerticalShift(speed.getVerticalSpeed());              
+                    hub.boardMan.startVerticalShift(speed.getVerticalSpeed());              
 
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
             // automatically when they are done.
-            game.animationMan.addAll(refactorAnimationList);
+            hub.animationMan.addAll(refactorAnimationList);
 
             // Set the refactor in progress flag.
             this.refactorVerticalInProgress = true;
@@ -209,13 +211,13 @@ public class Refactorer implements IResettable
         // See if we're down refactoring.
         if (this.refactorVerticalInProgress == true)
         {
-            handleVerticalRefactor(game);
+            handleVerticalRefactor(hub);
         } 
         
         // See if we're left refactoring.
         if (this.refactorHorizontalInProgress == true)
         {
-            handleHorizontalRefactor(game);
+            handleHorizontalRefactor(hub);
         }
         
     }
@@ -225,16 +227,18 @@ public class Refactorer implements IResettable
      * 
      * @param game
      */
-    private void handleVerticalRefactor(Game game)
+    private void handleVerticalRefactor(ManagerHub hub)
     {
-        assert game != null;
+        // Sanity check.
+        assert hub != null;
         
         boolean done = true;
         for (IAnimation a : refactorAnimationList)
         {
-            if (a.isFinished() == false)
+            if (!a.isFinished()) 
             {
                 done = false;
+                break;
             }
         }
 
@@ -247,21 +251,20 @@ public class Refactorer implements IResettable
             refactorVerticalInProgress = false;
 
             // Synchronize board.
-            game.boardMan.synchronize();							
+            hub.boardMan.synchronize();							
 
             // Start left refactor.
             refactorAnimationList = 
-                    game.boardMan.startHorizontalShift(speed.getHorizontalSpeed());
+                    hub.boardMan.startHorizontalShift(speed.getHorizontalSpeed());
             
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
             // automatically when they are done.
-            game.animationMan.addAll(refactorAnimationList);
+            hub.animationMan.addAll(refactorAnimationList);
 
             // Set the refactor in progress flag.
-            refactorHorizontalInProgress = true;
-            
-        } // end if
+            refactorHorizontalInProgress = true;            
+        }
     }
     
     /**
@@ -269,16 +272,18 @@ public class Refactorer implements IResettable
      * 
      * @param game
      */
-    private void handleHorizontalRefactor(Game game)
+    private void handleHorizontalRefactor(ManagerHub hub)
     {        
-        assert game != null;
+        // Sanity check.
+        assert hub != null;
         
         boolean done = true;
         for (IAnimation a : refactorAnimationList)
         {
-            if (a.isFinished() == false)
+            if (!a.isFinished()) 
             {
                 done = false;
+                break;
             }
         }
 
@@ -291,14 +296,14 @@ public class Refactorer implements IResettable
             refactorHorizontalInProgress = false;
 
             // Synchronize board.
-            game.boardMan.synchronize();
+            hub.boardMan.synchronize();
             
             // Set the finished flag.
             this.finishedRefactor = true;
         }
 
         // Notify piece manager.
-        game.pieceMan.notifyRefactored();                            
+        hub.pieceMan.notifyRefactored();                            
     }
     
 }
