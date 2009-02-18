@@ -918,7 +918,9 @@ public class Game extends Canvas implements IWindowCallback
     public void windowDeactivated()
     {
         // Don't pause game if we're showing the game over screen.
-        if (hub.groupMan != null && !hub.groupMan.isActivated())
+        if (this.drawer == hub.layerMan
+                && (hub.groupMan != null && !hub.groupMan.isActivated())
+                && (hub.tutorialMan != null && !hub.tutorialMan.isTutorialRunning()))
         {
             ui.showPauseGroup(hub.groupMan);
         }
