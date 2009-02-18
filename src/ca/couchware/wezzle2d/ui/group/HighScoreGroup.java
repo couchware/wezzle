@@ -36,7 +36,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
     private ITextLabel headerLabel;
     
     /**
-     * The "no high score" label, line 1.
+     * The "no high score" array.
      */
     private ITextLabel[] noHighScoreArray;        
     
