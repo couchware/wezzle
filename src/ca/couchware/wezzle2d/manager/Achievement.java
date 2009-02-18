@@ -177,6 +177,43 @@ public class Achievement implements IXMLizable
         while (rule != null)
         {
             Rule.Type type = Rule.Type.valueOf(rule.getAttributeValue("type").toString());
+
+            if(type == Rule.Type.META)
+            {
+                Element amount = rule.getChild("amount");
+                Rule.MetaType metaType = Rule.MetaType.valueOf(amount.getAttributeValue("metatype").toString());
+                int value = Integer.parseInt(amount.getAttributeValue("value").toString());
+                Rule.Operation operation = Rule.Operation.valueOf(amount.getAttributeValue("operation"));
+
+                Element achieve = rule.getChild("achievement");
+                List<String> achievementNamesList = new ArrayList<String>();
+
+                // If there are no specified achievement names...
+                if(achieve == null)
+                {
+                    rules.add(new Rule(type, operation, value));
+                    element.removeChild("rule");
+                    rule = element.getChild("rule");
+                    continue;
+                }
+                else
+                {
+
+                    while(achieve != null)
+                    {
+                        achievementNamesList.add(achieve.getAttributeValue("name").toString());
+                        rule.removeChild("achievement");
+                        achieve = rule.getChild("achievement");
+                    }
+
+                    rules.add(new Rule(type, operation, value, achievementNamesList, metaType));
+                    element.removeChild("rule");
+                    rule = element.getChild("rule");
+                }
+
+                continue;
+            }
+
             Rule.Operation operation = Rule.Operation
                     .valueOf(rule.getAttributeValue("operation").toString()); 
             
@@ -200,8 +237,12 @@ public class Achievement implements IXMLizable
                 
                 continue;
             }
+
+
+
+
                          
-            int value = Integer.parseInt(rule.getAttributeValue("value").toString());
+             int value = Integer.parseInt(rule.getAttributeValue("value").toString());
             
             rules.add(new Rule(type, operation, value));
             element.removeChild("rule");
@@ -246,6 +287,21 @@ public class Achievement implements IXMLizable
         }
        
         return true;       
+    }
+
+    public boolean evaluateMeta()
+    {
+        // Use the private helper method to test if all of the fields
+        // meet the requirements. any null values are automatically
+        // accepted.
+
+        for (Rule rule : ruleList)
+        {
+           if (rule.evaluateMeta() == false)
+               return false;
+        }
+
+        return true;
     }
 
     public Difficulty getDifficulty()
@@ -307,6 +363,31 @@ public class Achievement implements IXMLizable
             String type = String.valueOf(this.ruleList.get(i).getType());
             
             rule.setAttribute("type", type);
+
+            if (type.equals("META"))
+            {
+                Element amount = new Element("amount");
+                amount.setAttribute("metatype", ruleList.get(i).getMetaType().toString());
+                amount.setAttribute("value", String.valueOf(ruleList.get(i).getValue()));
+                amount.setAttribute("operation", String.valueOf(this.ruleList.get(i).getOperation()));
+                rule.addContent(amount);
+
+                List<String> achievementNamesList = ruleList.get(i).getAchievementNamesList();
+                if(achievementNamesList != null)
+                {
+                    for(String str : achievementNamesList)
+                    {
+                        Element achieve = new Element("achievement");
+
+                        achieve.setAttribute("name", str);
+                        rule.addContent(achieve);
+                    }
+                }
+
+                element.addContent(rule);
+                continue;
+            }
+
             rule.setAttribute("operation", String.valueOf(this.ruleList.get(i).getOperation()));
             
             if (type.equals("COLLISION"))
@@ -323,6 +404,8 @@ public class Achievement implements IXMLizable
                 element.addContent(rule);
                 continue;
             }
+
+
             
             rule.setAttribute("value", String.valueOf(this.ruleList.get(i).getValue()));            
             element.addContent(rule);

@@ -10,7 +10,7 @@
     <achievement name="Meta1" difficulty="BRONZE">
       <description>Finish 1 achievement</description>      
       <rule type="META">
-	  <amount metatype="COMPLETE" value="1" operation="GTEQ" />
+	  <amount metatype="COMPLETE" value="1" operation="GTEQ">
       </rule>
     </achievement>
     <achievement name="Meta2" difficulty="BRONZE">

@@ -166,12 +166,14 @@ public class AchievementManager implements ICollisionListener
     {
         // Set the date.
         Achievement completedAchievement = 
-                Achievement.newInstance(achievement, SuperCalendar.newInstance());                
+            Achievement.newInstance(achievement, SuperCalendar.newInstance());
         this.newlyCompletedList.add(completedAchievement);
         this.completedList.add(completedAchievement);
-        
+
         // Set the flag.
         this.achievementCompleted = true;
+
+ 
     }
     
     /**
@@ -192,12 +194,30 @@ public class AchievementManager implements ICollisionListener
             
             if (achievement.evaluate(game, hub))
             {
-                completeAchievement(achievement);                
+                completeAchievement(achievement);
                 it.remove();
                 achieved = true;
+
+
+
             }
         }
-        
+
+        // If we have achieved something, check meta achievements.
+        if(achieved == true)
+        {
+            for (Iterator<Achievement> itr = incompletedList.iterator(); itr.hasNext(); )
+            {
+                Achievement ach = itr.next();
+
+                if (ach.evaluateMeta())
+                {
+                    completeAchievement(ach);
+                    itr.remove();
+                }
+            } // end for
+
+        }
         // Export.
         if (achieved) exportAchievements();
         
@@ -231,11 +251,27 @@ public class AchievementManager implements ICollisionListener
 
             if (achievement.evaluateCollision(collisionList))
             {
-                completeAchievement(achievement);                
+                completeAchievement(achievement);
                 it.remove();
                 achieved = true;
             }
         } // end for
+
+         // If we have achieved something, check meta achievements.
+        if(achieved == true)
+        {
+            for (Iterator<Achievement> itr = incompletedList.iterator(); itr.hasNext(); )
+            {
+                Achievement ach = itr.next();
+
+                if (ach.evaluateMeta())
+                {
+                    completeAchievement(ach);
+                    itr.remove();
+                }
+            } // end for
+
+        }
         
         // Export if achieved.
         if (achieved) exportAchievements();
@@ -262,6 +298,16 @@ public class AchievementManager implements ICollisionListener
     public int getNumberOfCompletedAchievements()
     {
         return this.completedList.size();
-    }        
+    }
+
+    public List<Achievement> getIncompletedAchievementList()
+    {
+        return this.incompletedList;
+    }
+
+    public List<Achievement> getCompletedAchievementList()
+    {
+        return this.completedList;
+    }
 
 }

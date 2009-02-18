@@ -5,8 +5,11 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.util.CouchLogger;
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -32,7 +35,8 @@ public class Rule
         MOVES, 
         LINES,
         START_LEVEL,
-        COLLISION
+        COLLISION,
+        META
     };       
     
     /**
@@ -47,6 +51,15 @@ public class Rule
         GT,
         BETWEEN
     }
+
+     /**
+     * The meta types.
+     */
+    public static enum MetaType
+    {
+      COMPLETE,
+      INCOMPLETE
+    }
     
     /** 
      * An achievement tuple contains a value and an associated test. 
@@ -55,6 +68,8 @@ public class Rule
     protected final Operation operation;
     protected final int value;    
     protected final TileType[] tileTypes;
+    protected final List<String> achievementNames;
+    protected final MetaType mType;
     
     //--------------------------------------------------------------------------
     // Constructor
@@ -78,6 +93,8 @@ public class Rule
         this.operation = operation;
         this.value     = value;
         this.tileTypes = new TileType[0];
+        this.achievementNames = null;
+        mType = MetaType.COMPLETE;
     }
     
     public Rule(Type type, Operation operation, TileType ... tileTypes)
@@ -90,6 +107,8 @@ public class Rule
         this.operation = operation;
         this.tileTypes = tileTypes;
         this.value     = -1;
+        this.achievementNames = null;
+        mType = MetaType.COMPLETE;
     }
     
      public Rule(Type type, Operation operation, List<TileType> tileTypes)
@@ -102,7 +121,23 @@ public class Rule
         this.operation = operation;
         this.tileTypes = tileTypes.toArray(new TileType[0]);
         this.value     = -1;
+        this.achievementNames = null;
+        mType = MetaType.COMPLETE;
     }
+
+     public Rule (Type type, Operation operation, int value, List<String> achievementNames, MetaType mType)
+     {
+        assert type      != null;
+        assert operation != null;
+        assert value > 0;
+
+        this.type      = type;
+        this.operation = operation;
+        this.value     = value;
+        this.tileTypes = new TileType[0];
+        this.achievementNames = achievementNames;
+        this.mType = mType;
+     }
     
     public void onMatch()
     {
@@ -129,10 +164,13 @@ public class Rule
         // Make sure we're not a COLLISION-type.
         if (this.type == Type.COLLISION)
             return false;
+
+        // Make sure we're not a META-type.
+        if (this.type == Type.META)
+            return false;
         
         // Find the appropriate field value from the type.
         int x = -1;          
-        
         // Check the type.
         switch (getType())
         {
@@ -221,6 +259,80 @@ public class Rule
         return true;
     }
 
+    /**
+     * A special evaluate for meta acheivements. Will always return false for
+     * non-collision achievements.
+     *
+     * @param achieveMentNameList The list of the achievementNames.
+     * @return true or false.
+     */
+    public boolean evaluateMeta()
+    {
+        if(this.type != Type.META)
+            return false;
+        List<Achievement> achieveList = new ArrayList<Achievement>();
+        ManagerHub hub = ManagerHub.get();
+
+        if(getMetaType() == MetaType.COMPLETE)
+            achieveList = hub.achievementMan.getCompletedAchievementList();
+        else if(getMetaType() == MetaType.INCOMPLETE)
+            achieveList = hub.achievementMan.getIncompletedAchievementList();
+        else
+        {
+            CouchLogger.get().recordMessage(this.getClass(), "undefined meta type");
+            System.exit(-1);
+        }
+        // Count the achievements in the achievement list that match the
+        // names list.
+
+         int x = 0;
+         if (this.getAchievementNamesList() != null)
+         {
+            for(Achievement a : achieveList)
+            {
+                if(this.getAchievementNamesList().contains(a.getTitle()))
+                    x++;
+            }
+         }
+         // If there is no list, implicitly count the number of achievements.
+         else
+             x = achieveList.size();
+
+        switch (getOperation())
+        {
+            case GT:
+               if(x > this.getValue())
+                   return true;
+                break;
+
+            case LT:
+                 if (x < getValue())
+                    return true;
+                break;
+
+            case EQ:
+                 if (x == getValue())
+                    return true;
+                break;
+
+            case GTEQ:
+                if (x >= getValue())
+                    return true;
+                break;
+
+            case LTEQ:
+                 if (x <= getValue())
+                    return true;
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown operation.");
+        }
+
+        return false;
+
+    }
+
     //--------------------------------------------------------------------------
     // Getters and Setters
     //--------------------------------------------------------------------------
@@ -240,9 +352,19 @@ public class Rule
         return this.tileTypes;
     }
 
+    public List<String> getAchievementNamesList()
+    {
+        return this.achievementNames;
+    }
+
     public Type getType() 
     {
         return type;
-    }   
+    }
+
+    public MetaType getMetaType()
+    {
+        return this.mType;
+    }
     
 }
