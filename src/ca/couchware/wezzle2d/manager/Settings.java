@@ -31,6 +31,9 @@ public class Settings
         USER_HIGHSCORE,   
         USER_ACHIEVEMENT,
         USER_ACHIEVEMENT_COMPLETED,
+        USER_LEVEL_DEFAULT,
+        USER_TUTORIAL_DEFAULT,
+        USER_MUSIC_DEFAULT,
         
         // Game mechanic values.
         

@@ -110,7 +110,12 @@ public class PlayNowMenu extends AbstractMenu
                 .visible(false)
                 .end();
         this.entityList.add(optionBox);
-        
+
+        // Get the user set level and make sure it's within range.
+        this.levelNumber = hub.settingsMan.getInt(Key.USER_LEVEL_DEFAULT);
+        this.levelNumber = Math.max(MIN_LEVEL, this.levelNumber);
+        this.levelNumber = Math.min(MAX_LEVEL, this.levelNumber);
+
         ITextLabel levelLabel = new LabelBuilder(110, 180)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Level").size(20)
@@ -134,7 +139,7 @@ public class PlayNowMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .width(340)
                 .virtualRange(MIN_LEVEL, MAX_LEVEL)
-                .virtualValue(MIN_LEVEL)
+                .virtualValue(this.levelNumber)
                 .visible(false)
                 .end();
         this.entityList.add(levelSlider);
@@ -155,13 +160,14 @@ public class PlayNowMenu extends AbstractMenu
         RadioItem tutorialOff = new RadioItem.Builder()
                 .color(OPTION_COLOR)
                 .text("Off").end();
-        
+
+        final boolean tutorialDefault = hub.settingsMan.getBoolean(Key.USER_TUTORIAL_DEFAULT);
         this.tutorialRadio = new RadioGroup.Builder(
                     268,
                     tutorialLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .add(tutorialOn,  true)
-                .add(tutorialOff, false)
+                .add(tutorialOn,  tutorialDefault)
+                .add(tutorialOff, !tutorialDefault)
                 .visible(false)
                 .end();
         this.entityList.add(tutorialRadio);                
@@ -198,10 +204,34 @@ public class PlayNowMenu extends AbstractMenu
         themeMap.put(Theme.TRON, false);
         themeMap.put(Theme.ELECTRONIC, false);
         themeMap.put(Theme.HIPPOP, false);
+                        
+        // Attempt to get the user's music preference.
+        final String musicDefault = hub.settingsMan.getString(Key.USER_MUSIC_DEFAULT);
+        Theme musicTheme = Theme.NONE;
         
-        List<Theme> themeList = new ArrayList<Theme>(themeMap.keySet());
-        Collections.shuffle(themeList);
-        themeMap.put(themeList.get(0), true);
+        // Try to convert the string we got from the settings file into
+        // an enum.
+        try
+        {
+            musicTheme = Enum.valueOf(Theme.class, musicDefault);            
+        }
+        catch (IllegalArgumentException e)
+        {
+            musicTheme = Theme.NONE;
+        }
+        
+        // If the user set theme was successful, use it.
+        if (musicTheme != Theme.NONE)
+        {
+            themeMap.put(musicTheme, true);
+        }
+        // Otherwise, use a random one.
+        else
+        {
+            List<Theme> themeList = new ArrayList<Theme>(themeMap.keySet());
+            Collections.shuffle(themeList);
+            themeMap.put(themeList.get(0), true);
+        }
                
         this.themeRadio = new RadioGroup.Builder(
                     268, 
@@ -285,6 +315,7 @@ public class PlayNowMenu extends AbstractMenu
         {
             levelNumber = (int) levelSlider.getVirtualValue();
             this.levelNumberLabel.setText("" + levelNumber);
+            hub.settingsMan.setInt(Key.USER_LEVEL_DEFAULT, this.levelNumber);
         }
         // See if the start button has been pressed.
         else if (this.startButton.clicked() == true)
@@ -345,7 +376,9 @@ public class PlayNowMenu extends AbstractMenu
                     
                 default: throw new AssertionError();
             }
-            
+
+            // Save the theme preference and set it in the music manager.
+            hub.settingsMan.setString(Key.USER_MUSIC_DEFAULT, theme.toString());
             hub.musicMan.setTheme(theme);
             
             // Set the target score.
@@ -362,7 +395,12 @@ public class PlayNowMenu extends AbstractMenu
             // Turn off the tutorials if necessary.
             if (this.tutorialRadio.getSelectedIndex() == TUTORIAL_ON)
             {
+                hub.settingsMan.setBoolean(Key.USER_TUTORIAL_DEFAULT, true);
                 game.initializeTutorials();
+            }
+            else
+            {
+                hub.settingsMan.setBoolean(Key.USER_TUTORIAL_DEFAULT, false);
             }
                                       
             // Stop all the player.

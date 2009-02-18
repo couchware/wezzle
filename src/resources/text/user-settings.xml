@@ -10,5 +10,8 @@
     <high-score name="" score="0" level="0" />
     <high-score name="" score="0" level="0" />
     <high-score name="" score="0" level="0" />
-  </entry> 
+  </entry>
+  <entry name="User.Level.Default">1</entry>
+  <entry name="User.Tutorial.Default">true</entry>
+  <entry name="User.Music.Default">TRON</entry>
 </settings>
