@@ -200,7 +200,15 @@ public class HighScoreManager
      */
     public List<HighScore> getScoreList()
     {
-        return new ArrayList<HighScore>(scoreList);
+        List<HighScore> returnList = new ArrayList<HighScore>(this.scoreList.size());
+
+        for ( HighScore highScore : this.scoreList )
+        {
+            if (highScore.getName().length() == 0) continue;
+            returnList.add(highScore);
+        }
+
+        return returnList;
     }    
     
 }

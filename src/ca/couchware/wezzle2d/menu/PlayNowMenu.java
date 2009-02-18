@@ -76,14 +76,10 @@ public class PlayNowMenu extends AbstractMenu
     final private static int THEME_ELECTRONIC = 1;
     final private static int THEME_HIPPOP = 2;
     
-    /**
-     * The music player map.
-     */
+    /** The music player map. */
     private List<MusicPlayer> playerMap;   
     
-    /**
-     * The start button.
-     */
+    /** The start button. */
     final private IButton startButton;       
     
     public PlayNowMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)

@@ -431,7 +431,7 @@ public class UI implements
         // Draw the high score text.
         if (!highScoreLabel.getText().equals(String.valueOf(hub.scoreMan.getHighScore())))
         {
-            highScoreLabel.setText(String.valueOf(hub.scoreMan.getHighScore()));            
+            highScoreLabel.setText(String.format("%,d", hub.scoreMan.getHighScore()));
         }                        
 
         if (!hub.tutorialMan.isTutorialRunning())
@@ -445,7 +445,7 @@ public class UI implements
             // Set the score text.
             if (!scoreLabel.getText().equals(String.valueOf(hub.scoreMan.getTotalScore())))
             {
-                scoreLabel.setText(String.valueOf(hub.scoreMan.getTotalScore()));                
+                scoreLabel.setText(String.format("%,d", hub.scoreMan.getTotalScore()));
             }
         }
         else

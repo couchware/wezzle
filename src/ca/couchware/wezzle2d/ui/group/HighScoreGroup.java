@@ -30,29 +30,20 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
      */
     final private ManagerHub hub;          
     
-    /**
-     * The header label.
-     */
+    /** The header label. */
     private ITextLabel headerLabel;
     
-    /**
-     * The "no high score" array.
-     */
-    private ITextLabel[] noHighScoreArray;        
+    /** The "no high score" array... contains text labels saying that. */
+    private ITextLabel[] noHighScore;
     
-    /**
-     * The player score labels.
-     */
+    /** The player score labels. */
     private List<ITextLabel> scoreLabelList;
     
-    /**
-     * The close button.
-     */
+    /** The close button. */
     private IButton closeButton;
     
     /**
      * The constructor.
-     * 
      * @param window
      * @param layerMan
      */    
@@ -70,22 +61,24 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         this.entityList.add(this.headerLabel);     
         
         // Create the no high score label.
-        this.noHighScoreArray = new ITextLabel[2];
+        this.noHighScore = new ITextLabel[2];
         
-        this.noHighScoreArray[0] = new LabelBuilder(400, 270)
+        this.noHighScore[0] = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(20).text("There are no")
                 .visible(false).end();                
                 
-        this.noHighScoreArray[1] = new LabelBuilder(400, 300)
+        this.noHighScore[1] = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(20).text("high scores yet.")
                 .visible(false).end();                
         
-        for (ITextLabel label : noHighScoreArray)
+        for (ITextLabel label : noHighScore)
+        {
             this.entityList.add(label);
+        }
         
         // Create the score labels.
         this.scoreLabelList = new ArrayList<ITextLabel>(HighScoreManager.NUMBER_OF_SCORES);
@@ -133,45 +126,35 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
     
     private void updateScoreLabels()
     {
-        // This variable is set to true if there is a high score.
-        boolean highScoreExists = false;
-        
         // Get the high score list.
-        List<HighScore> highScoreList = hub.highScoreMan.getScoreList();
+        List<HighScore> list = hub.highScoreMan.getScoreList();
         
         for (int i = 0; i < scoreLabelList.size(); i++)
         {                        
             ITextLabel label = scoreLabelList.get(i);
-            HighScore highScore = highScoreList.get(i);
-            
-            // Skip if empty.
-            if (highScore.getName().length() == 0)
-                continue;
-            
-            // A high score must exist then.
-            highScoreExists = true;
-              
+            HighScore highScore = list.get(i);
+                        
             // Change the text.
-            label.setText(createScoreString(i, highScore));   
+            label.setText(format(i, highScore));
             label.setOpacity(100);
         }                       
         
         // If no high scores exist, tell the user.
-        int o = highScoreExists ? 0 : 100;
-        
-        for (ITextLabel label : noHighScoreArray)
-            label.setOpacity(o);
+        final int op = list.isEmpty() ? 100 : 0;
+        for ( ITextLabel label : this.noHighScore )
+        {
+            label.setOpacity(op);
+        }
     }    
     
     /**
-     * Override the update logic method.
-     * 
+     * Controls the group's logic.
      * @param game The game state.
      */    
     public void updateLogic(Game game, ManagerHub hub)
     {
         // Check if the back button was pressed.
-        if (closeButton.isActivated() == true)
+        if (closeButton.isActivated())
         {            
             // Hide all side triggered menues.
             closeButton.setActivated(false);
@@ -179,7 +162,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         }       
     }
     
-    private String createScoreString(int rank, HighScore highScore)
+    private String format(int rank, HighScore highScore)
     {
         return (rank + 1) + ". " 
                 //+ highScore.getName() + "  " 
