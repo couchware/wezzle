@@ -113,6 +113,12 @@ public class HighScoreMenu extends AbstractMenu
                 .end();
         this.entityList.add(this.resetButton);
 
+        if (hub.highScoreMan.getScoreList().isEmpty())
+        {
+            this.resetButton.setOpacity(0);
+            this.resetButton.setDisabled(true);
+        }
+
         // Add them all to the layer manager.
         for (IEntity entity : this.entityList)
         {
@@ -133,12 +139,20 @@ public class HighScoreMenu extends AbstractMenu
         for (int i = 0; i < labelList.size(); i++)
         {
             ITextLabel label = labelList.get(i);
-            HighScore highScore = scoreList.get(i);
 
-            // Change the text.
-            label.setText(format(i, highScore));
-            label.setOpacity(100);
-        }
+            if (i < scoreList.size())
+            {
+                HighScore highScore = scoreList.get(i);
+
+                // Change the text.
+                label.setText(format(i, highScore));
+                label.setOpacity(100);
+            }
+            else
+            {
+                label.setText("");
+            }
+        } // end for
 
         // If no high scores exist, tell the user.
         final int op = scoreList.isEmpty() ? 100 : 0;

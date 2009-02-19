@@ -95,7 +95,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         }       
         
         // Update the labels.
-        this.updateScoreLabels();
+        this.updateScoreLabels(this.scoreLabelList, hub.highScoreMan.getScoreList());
         
         // Create close button.
         this.closeButton = new Button.Builder(400, 420)
@@ -124,28 +124,38 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         super.setVisible(visible);
     }
     
-    private void updateScoreLabels()
+    /**
+     * Update a label list using a high score list.
+     * @param labelList
+     * @param scoreList
+     */
+    private void updateScoreLabels(List<ITextLabel> labelList, List<HighScore> scoreList)
     {
-        // Get the high score list.
-        List<HighScore> list = hub.highScoreMan.getScoreList();
-        
-        for (int i = 0; i < scoreLabelList.size(); i++)
-        {                        
-            ITextLabel label = scoreLabelList.get(i);
-            HighScore highScore = list.get(i);
-                        
-            // Change the text.
-            label.setText(format(i, highScore));
-            label.setOpacity(100);
-        }                       
-        
+        for (int i = 0; i < labelList.size(); i++)
+        {
+            ITextLabel label = labelList.get(i);
+
+            if (i < scoreList.size())
+            {
+                HighScore highScore = scoreList.get(i);
+
+                // Change the text.
+                label.setText(format(i, highScore));
+                label.setOpacity(100);
+            }
+            else
+            {
+                label.setText("");
+            }
+        } // end for
+
         // If no high scores exist, tell the user.
-        final int op = list.isEmpty() ? 100 : 0;
+        final int op = scoreList.isEmpty() ? 100 : 0;
         for ( ITextLabel label : this.noHighScore )
         {
             label.setOpacity(op);
         }
-    }    
+    }
     
     /**
      * Controls the group's logic.
@@ -183,7 +193,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
     public void gameOver(GameEvent event)
     {
         // Update all the labels.
-        updateScoreLabels();
+        this.updateScoreLabels(this.scoreLabelList, hub.highScoreMan.getScoreList());
     }
     
 }
