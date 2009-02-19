@@ -174,10 +174,8 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
     
     private String format(int rank, HighScore highScore)
     {
-        return (rank + 1) + ". " 
-                //+ highScore.getName() + "  " 
-                + highScore.getScore() + "  "
-                + "L" + highScore.getLevel() + "";
+        return String.format("%d.  %,d  L%,d",
+                rank + 1, highScore.getScore(), highScore.getLevel());
     }
 
     public void gameStarted(GameEvent event)

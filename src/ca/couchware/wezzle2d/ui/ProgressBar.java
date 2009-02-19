@@ -361,7 +361,8 @@ public class ProgressBar extends AbstractEntity
 		// Update the text, if needed.
 		if (textPosition != TextPosition.NONE)
         {			
-            progressLabel.setText(progressValue + "/" + progressUpper);
+            progressLabel.setText(
+                    String.format("%,d/%,d", progressValue, progressUpper));
         }
 		
 		// Update the progress upper bound.
@@ -400,7 +401,8 @@ public class ProgressBar extends AbstractEntity
 		// Update the text, if needed.
 		if (textPosition != TextPosition.NONE)
         {            
-			progressLabel.setText(progressValue + "/" + progressUpper);
+			progressLabel.setText(
+                    String.format("%,d/%,d", progressValue, progressUpper));
         }
 		
         // Save the progress value.

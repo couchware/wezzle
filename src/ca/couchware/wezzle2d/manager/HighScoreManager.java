@@ -191,8 +191,13 @@ public class HighScoreManager
         scoreList.clear();
         
         // Load with dummy scores.
-        for (int i = 0; i < NUMBER_OF_SCORES; i++)        
-            scoreList.add(score);               
+        for (int i = 0; i < NUMBER_OF_SCORES; i++)
+        {
+            scoreList.add(score);
+        }
+
+        // Export the empty lsit.
+        this.exportSettings();
     }
     
     /**

@@ -36,6 +36,9 @@ public class HighScoreMenu extends AbstractMenu
     /** The "no high score" array. */
     private ITextLabel[] noHighScore;
 
+    /** The high score label list. */
+    final private List<ITextLabel> scoreLabelList;
+
     /** The reset button. */
     final private IButton resetButton;
 
@@ -85,7 +88,7 @@ public class HighScoreMenu extends AbstractMenu
         }
 
         // Create the score labels.
-        List<ITextLabel> labelList = new ArrayList<ITextLabel>(HighScoreManager.NUMBER_OF_SCORES);
+        this.scoreLabelList = new ArrayList<ITextLabel>(HighScoreManager.NUMBER_OF_SCORES);
 
         // Create all the labels.
         for (int i = 0; i < HighScoreManager.NUMBER_OF_SCORES; i++)
@@ -95,13 +98,13 @@ public class HighScoreMenu extends AbstractMenu
                     .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                     .opacity(0).size(20).text(" ")
                     .visible(false).end();
-            labelList.add(label);
+            scoreLabelList.add(label);
            
             this.entityList.add(label);
         }
 
         // Update the labels.
-        this.updateScoreLabels(labelList, hub.highScoreMan.getScoreList());
+        this.updateScoreLabels(scoreLabelList, hub.highScoreMan.getScoreList());
 
         // Create the reset button.
         this.resetButton = new Button.Builder(268, 445)
@@ -127,7 +130,21 @@ public class HighScoreMenu extends AbstractMenu
     }
 
     public void updateLogic(Game game, ManagerHub hub)
-    { }
+    { 
+        if (this.resetButton.clicked())
+        {
+            // Reset the scores.
+            hub.highScoreMan.resetScoreList();
+            
+            // Update the labels.
+            this.updateScoreLabels(this.scoreLabelList, hub.highScoreMan.getScoreList());
+
+            // Reset the button state.
+            this.resetButton.setActivated(false);
+            this.resetButton.setOpacity(0);
+            this.resetButton.setDisabled(true);
+        }
+    }
 
     /**
      * Update a label list using a high score list.

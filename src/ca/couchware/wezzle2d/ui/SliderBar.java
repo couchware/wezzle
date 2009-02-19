@@ -142,8 +142,12 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      * The constructor.
      * @param shape The shape of the button.
      */
-    public SliderBar(Builder builder)
+    private SliderBar(Builder builder)
     {
+        // Check the arguments.
+        if (builder == null)
+            throw new NullPointerException("Builder cannot be null");
+
         // Set to visible.
         this.visible = builder.visible;
         
@@ -340,9 +344,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
                 break;
                 
             default: throw new AssertionError();
-        }
-        
-        
+        }                
         
         return true;
     }

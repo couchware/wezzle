@@ -97,13 +97,8 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
     
     public void setScore(final int score)
     {
-        this.scoreLabel.setText(String.valueOf(score));
-    }
-    
-    public int getScore()
-    {
-        return Integer.valueOf(scoreLabel.getText());
-    }    
+        this.scoreLabel.setText(String.format("%,d", score));
+    }      
     
     /**
      * Override the update logic method.

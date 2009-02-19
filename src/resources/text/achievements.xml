@@ -6,20 +6,7 @@
       <rule type="COLLISION" operation="BETWEEN">
         <item type="ROCKET" />        
       </rule>
-    </achievement>
-    <achievement name="Meta1" difficulty="BRONZE">
-      <description>Finish 1 achievement</description>      
-      <rule type="META">
-	  <amount metatype="COMPLETE" value="1" operation="GTEQ" />
-      </rule>
-    </achievement>
-    <achievement name="Meta2" difficulty="BRONZE">
-      <description>Finish Score Some Points</description>      
-      <rule type="META">
-	  <amount metatype="COMPLETE" value="1" operation="GTEQ" />
-	  <achievement name="Score Some Points" />
-      </rule>
-    </achievement>
+    </achievement>    
     <achievement name="A Tale of Two Rockets" difficulty="SILVER">
       <description>Fire a rocket into another rocket.</description>
       <rule type="COLLISION" operation="BETWEEN">
@@ -34,6 +21,15 @@
         <item type="ROCKET" />
         <item type="ROCKET" />
         <item type="ROCKET" />
+      </rule>
+    </achievement>
+    <achievement name="Rocket Specialist" difficulty="GOLD">
+      <description>Finish three rocket-related achievements.</description>
+      <rule type="META">
+        <amount metatype="COMPLETE" value="3" operation="GTEQ" />
+        <achievement name="Rocketeer" />
+        <achievement name="A Tale of Two Rockets" />
+        <achievement name="It's Raining Rockets" />
       </rule>
     </achievement>
     <achievement name="Gravitron" difficulty="BRONZE">
@@ -54,21 +50,31 @@
         <item type="STAR" />
       </rule>
     </achievement>    
-    <achievement name="Score Some Points" difficulty="BRONZE">
-      <description>Get over 10000 points in a game.</description>
+    <achievement name="Score 10,000 Points" difficulty="BRONZE">
+      <description>Get over 10,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="10000" />     
     </achievement>
-    <achievement name="Score More Points" difficulty="SILVER">
-      <description>Get over 30000 points in a game.</description>
+    <achievement name="Score 30,000 Points" difficulty="SILVER">
+      <description>Get over 30,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="30000" />
     </achievement>
-    <achievement name="Score Even More Points" difficulty="GOLD">
-      <description>Get over 80000 points in a game.</description>
+    <achievement name="Score 80,000 Points" difficulty="GOLD">
+      <description>Get over 80,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="80000" />
     </achievement>
     <achievement name="Score Master" difficulty="PLATINUM">
-      <description>Get over 150000 points in a game.</description>
+      <description>Get over 150,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="150000" />
+    </achievement>
+    <achievement name="Score Specialist" difficulty="GOLD">
+        <description>Complete 3 score-related achievements.</description>
+        <rule type="META">
+            <amount metatype="COMPLETE" value="3" operation="GTEQ" />
+            <achievement name="Score 10,000 Points" />
+            <achievement name="Score 30,000 Points" />
+            <achievement name="Score 80,000 Points" />
+            <achievement name="Score Master" />
+        </rule>
     </achievement>
     <achievement name="Get A Level" difficulty="BRONZE">
       <description>Starting from level 1, get to level 2 without
