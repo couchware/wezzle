@@ -124,6 +124,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                         boardMan.getX() + boardMan.getCellWidth(),                
                         boardMan.getY() + boardMan.getCellHeight(),
                         PieceGrid.RenderMode.SPRITE)
+                    .visible(false)
                     .end();                
         
         // Create the piece queue and load it up.
@@ -730,10 +731,10 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     // Getters and Setters
     //--------------------------------------------------------------------------     
 
-//    public PieceGrid getPieceGrid()
-//    {
-//        return pieceGrid;
-//    }
+    public boolean isPieceGridVisible()
+    {
+        return pieceGrid.isVisible();
+    }
     
     public void showPieceGrid()
     {

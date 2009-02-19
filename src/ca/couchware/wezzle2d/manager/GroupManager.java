@@ -46,23 +46,25 @@ public class GroupManager implements IResettable
      */
     protected List<IGroup> groupList;       
     
-    /**
-     * The list of groups currently being shown.
-     */
+    /** The list of groups currently being shown. */
     protected List<Entry> entryList;    
           
-    /**
-     * A reference to the layer manager.
-     */
+    /** A reference to the layer manager. */
     protected LayerManager layerMan;
     
-    /**
-     * A reference to the piece manager.
-     */
+    /** A reference to the piece manager. */
     protected PieceManager pieceMan;
-    
+
     /**
-     * The constructor.
+     * Holds the visiblility of the piece grid before the board was hidden so
+     * that the proper visibility may be restored when the board is reshown.
+     */
+    private boolean lastPieceGridVisible;
+
+    /**
+     * Private constructor.
+     * @param layerMan
+     * @param pieceMan
      */
     private GroupManager(LayerManager layerMan, PieceManager pieceMan)
     {
@@ -70,7 +72,8 @@ public class GroupManager implements IResettable
         entryList = new LinkedList<Entry>();        
         
         this.layerMan = layerMan;
-        this.pieceMan = pieceMan;                
+        this.pieceMan = pieceMan;
+        this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
     }             
 
     public void resetState()
@@ -78,12 +81,25 @@ public class GroupManager implements IResettable
         hideAllGroups();
     }
     
-    // Public API.
+    /**
+     * Create a new GroupManager instance.
+     * @param layerMan
+     * @param pieceMan
+     * @return
+     */
     public static GroupManager newInstance(LayerManager layerMan, PieceManager pieceMan)
     {
         return new GroupManager(layerMan, pieceMan);
     }
-    
+
+    /**
+     * Show the that passed group and modify the button's state to indicate that
+     * it is activated.
+     * @param button
+     * @param showGroup
+     * @param groupClass
+     * @param layer
+     */
     public void showGroup(IButton button, IGroup showGroup, 
             Class groupClass, Layer layer)
     {
@@ -97,17 +113,19 @@ public class GroupManager implements IResettable
             if (e.getLayer() == layer)
             {
                 if (e.getGroupClass() == groupClass)
+                {
                     e.getGroup().setVisible(false);
+                }
                 else
                 {
                     deactivateEntry(e);
                     it.remove();
                 }
+
+                continue;
             }
-            else
-            {
-                e.getGroup().setVisible(false);
-            }                
+            
+            e.getGroup().setVisible(false);                            
         }
        
         // Add the group on top.
@@ -119,11 +137,13 @@ public class GroupManager implements IResettable
         
         // Make the button activated.
         if (button != null)
+        {
             button.setActivated(true);
-        
-        layerMan.hide(LayerManager.Layer.TILE);
-        layerMan.hide(LayerManager.Layer.EFFECT);
-        pieceMan.hidePieceGrid();
+        }
+
+        // Hide the board and associated layers.
+        pieceMan.clearMouseButtonSet();
+        hideBoard();
         
         CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }    
@@ -167,12 +187,12 @@ public class GroupManager implements IResettable
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
-            pieceMan.showPieceGrid();
-            layerMan.show(LayerManager.Layer.TILE);
-            layerMan.show(LayerManager.Layer.EFFECT);
+            showBoard();
         }
         else
+        {
             entryList.get(0).getGroup().setVisible(true);
+        }
         
         CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }   
@@ -197,12 +217,12 @@ public class GroupManager implements IResettable
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
-            pieceMan.showPieceGrid();
-            layerMan.show(LayerManager.Layer.TILE);
-            layerMan.show(LayerManager.Layer.EFFECT);
+            showBoard();
         }
         else
+        {
             entryList.get(0).getGroup().setVisible(true);
+        }
         
         CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }
@@ -221,10 +241,34 @@ public class GroupManager implements IResettable
         }
         
         pieceMan.clearMouseButtonSet();
-        pieceMan.hidePieceGrid();
+        showBoard();
+    }   
+
+    /**
+     * Show the board.
+     */
+    private void showBoard()
+    {
+        // Make piece grid visible contingent on the saved visibility.
+        if (lastPieceGridVisible) pieceMan.showPieceGrid();
+        else pieceMan.hidePieceGrid();
+
         layerMan.show(LayerManager.Layer.TILE);
         layerMan.show(LayerManager.Layer.EFFECT);
-    }        
+    }
+
+    /**
+     * Hide the board.
+     */
+    private void hideBoard()
+    {
+        // Remember the old visibility.
+        this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
+
+        pieceMan.hidePieceGrid();
+        layerMan.hide(LayerManager.Layer.TILE);
+        layerMan.hide(LayerManager.Layer.EFFECT);
+    }
     
     /**
      * Registers this group with the Group linked list.
@@ -263,8 +307,7 @@ public class GroupManager implements IResettable
     }  
 
     /**
-     * This is an inner class represented an entry in 
-     * the the group linked list.
+     * This is an inner class represented an entry in the the group linked list.
      */
     protected static class Entry
     {               
@@ -322,6 +365,6 @@ public class GroupManager implements IResettable
         {
             return layer;
         }                                   
-    }    
+    } // end class
     
 }

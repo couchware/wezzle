@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d.piece;
 
 import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.IGraphics;
-import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -10,14 +9,10 @@ import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.SuperColor;
-import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Set;
-
 
 /**
  * The piece grid is a 3x3 matrix that has each cell selectively
@@ -26,7 +21,6 @@ import java.util.Set;
  * @author cdmckay
  *
  */
-
 public class PieceGrid extends AbstractEntity
 {       
     /** Path to the piece selector sprite. */
@@ -123,7 +117,7 @@ public class PieceGrid extends AbstractEntity
         this.gfx = factory.getGraphics();
         
         // Grid is initially visible.
-        this.visible = true;
+        this.visible = builder.visible;
        
         // Set x and y.
         this.x  = builder.x;
@@ -184,7 +178,8 @@ public class PieceGrid extends AbstractEntity
         
         int cellWidth  = 32;
         int cellHeight = 32;       
-        Color color = Color.ORANGE;        
+        Color color = Color.ORANGE;
+        boolean visible = true;
         
         public Builder(int x, int y, RenderMode renderMode)
         {
@@ -207,6 +202,9 @@ public class PieceGrid extends AbstractEntity
         
         public Builder alignment(EnumSet<Alignment> val)
         { alignment = val; return this; }
+
+        public Builder visible(boolean val)
+        { visible = val; return this; }
         
         public PieceGrid end()
         {
