@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.manager.LevelManager;
 import ca.couchware.wezzle2d.manager.ListenerManager;
 import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
 import ca.couchware.wezzle2d.manager.MusicManager;
+import ca.couchware.wezzle2d.manager.NotificationManager;
 import ca.couchware.wezzle2d.manager.PieceManager;
 import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.SettingsManager;
@@ -48,7 +49,8 @@ public class ManagerHub
         LAYER, 
         LEVEL,
         LISTENER,
-        MUSIC, 
+        MUSIC,
+        NOTIFICATION,
         PIECE,         
         SCORE,
         SETTINGS,
@@ -87,6 +89,9 @@ public class ManagerHub
     
     /** The manager in charge of music. */
     public MusicManager musicMan;  
+
+    /** The notification manager. */
+    public NotificationManager notificationMan;
 
     /**
      * The manager in charge of moving the piece around with the
@@ -165,7 +170,13 @@ public class ManagerHub
         {
             // Create the music manager.            
             this.musicMan = MusicManager.newInstance(game.getExecutor(), this.settingsMan);  
-        }   
+        }
+
+        if (set.contains(Manager.NOTIFICATION))
+        {
+            // Create the notification manager.
+            this.notificationMan = NotificationManager.newInstance();
+        }
         
         if (set.contains(Manager.LAYER))
         {
@@ -188,7 +199,7 @@ public class ManagerHub
         if (set.contains(Manager.ITEM))
         {
             // Create the manager.
-            this.itemMan = ItemManager.newInstance();  
+            this.itemMan = ItemManager.newInstance(this);
             
             this.listenerMan.registerListener(Listener.LEVEL, this.itemMan);
             this.listenerMan.registerListener(Listener.MOVE,  this.itemMan);

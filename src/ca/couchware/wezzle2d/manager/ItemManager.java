@@ -13,13 +13,16 @@ import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.ui.TileNotification;
 import ca.couchware.wezzle2d.util.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +74,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
      */
     private int starCooldown = -1;
     
-    private ItemManager()
+    private ItemManager(ManagerHub hub)
     {
         // Create the item list.
         itemMap = new EnumMap<TileType, Item>(TileType.class);                
@@ -86,7 +89,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 .initialAmount(0).weight(10).maximumOnBoard(1).end());                
                           
         // Make the mutable list the master list.
-        masterRuleList = createMasterRuleList();
+        masterRuleList = createMasterRuleList(hub);
                         
         // Create the rule list.
         currentRuleList = new LinkedList<Rule>();        
@@ -124,12 +127,12 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         currentRuleList.addAll(masterRuleList);
     }
     
-    public static ItemManager newInstance()
+    public static ItemManager newInstance(ManagerHub hub)
     {
-        return new ItemManager();
+        return new ItemManager(hub);
     }
     
-    private List<Rule> createMasterRuleList()
+    private List<Rule> createMasterRuleList(final ManagerHub hub)
     {
         // Set the rules.
         List<Rule> mutableList = new ArrayList<Rule>();
@@ -144,7 +147,14 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 // Add the rocket.
                 itemMap.put(TileType.ROCKET, 
                         new Item.Builder(TileType.ROCKET)
-                        .initialAmount(1).weight(55).maximumOnBoard(3).end());                
+                        .initialAmount(1).weight(55).maximumOnBoard(3).end());
+
+                // Notify the user.
+                TileNotification notif = new TileNotification.Builder(0, 0, TileType.ROCKET)
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .end();
+
+                hub.notificationMan.offer(notif);
             }            
         });  
         
@@ -159,7 +169,14 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 // Add the bomb.
                 itemMap.put(TileType.GRAVITY,
                         new Item.Builder(TileType.GRAVITY)
-                        .initialAmount(1).weight(50).maximumOnBoard(1).end());                
+                        .initialAmount(1).weight(50).maximumOnBoard(1).end());
+
+                // Notify the user.
+                TileNotification notif = new TileNotification.Builder(0, 0, TileType.BOMB)
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .end();
+
+                hub.notificationMan.offer(notif);
             }            
         });  
         

@@ -20,6 +20,7 @@ import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.StarTile;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
+import ca.couchware.wezzle2d.tile.TileFactory;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.tile.X2Tile;
 import ca.couchware.wezzle2d.tile.X3Tile;
@@ -1174,61 +1175,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public void addTile(final int column, final int row, final Tile t)
     {
          addTile(row * columns + column, t);
-    }
-	
-    /**
-     * Creates a new tile with the given type, color and position and returns
-     * it.
-     * 
-     * @param type
-     * @param color
-     * @param x
-     * @param y
-     * @return
-     */
-    public Tile makeTile(TileType type, TileColor color, int x, int y)
-    {
-        Tile t;
-        
-        switch (type)
-        {
-            case NORMAL:
-                t = new Tile(this, color, x, y);
-                break;
-                
-            case X2:
-                t = new X2Tile(this, color, x, y);
-                break;
-                
-            case X3:
-                t = new X3Tile(this, color, x, y);
-                break;
-                
-            case X4:
-                t = new X4Tile(this, color, x, y);
-                break;
-
-            case ROCKET:
-                t = new RocketTile(this, color, x, y);
-                break;
-
-            case BOMB:
-                t = new BombTile(this, color, x, y);
-                break;
-
-            case STAR:
-                t = new StarTile(this, color, x, y);
-                break;
-                
-            case GRAVITY:
-                t = new GravityTile(this, color, x, y);
-                break;
-                            
-            default: throw new AssertionError("Unknown type.");
-        }
-        
-        return t;
-    }
+    }	    
     
     /**
      * Create a new a tile at the specified index using the given class and
@@ -1249,7 +1196,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         // The new tile.
         int tx = x + (index % columns) * cellWidth;
         int ty = y + (index / columns) * cellHeight;
-        Tile t = makeTile(type, color, tx, ty);                                        
+        Tile t = TileFactory.makeTile(type, color, tx, ty);
         
         // Add the tile.
         addTile(index, t);               
@@ -1326,26 +1273,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     {
         this.removeTile(index);
         this.addTile(index, tile);
-    }
-    
-    public Tile cloneTile(Tile tile)
-    {
-        assert tile != null;
-        
-        TileType type = tile.getType();
-        Tile clone = makeTile(type, tile.getColor(), tile.getX(), tile.getY());
-        
-        switch (type)
-        {
-            case ROCKET:
-                RocketTile rocketTile  = (RocketTile) tile;
-                RocketTile rocketClone = (RocketTile) clone;                
-                rocketClone.setDirection(rocketTile.getDirection());                
-                break;                                
-        }        
-        
-        return clone;
-    }
+    }        
     
     public int getIndex(Tile t)
     {

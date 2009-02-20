@@ -27,11 +27,10 @@ public class BombTile extends ItemTile
      * @param x
      * @param y
      */    
-    public BombTile(final BoardManager boardMan, final TileColor color, 
-            final int x, final int y)
+    public BombTile(final TileColor color, final int x, final int y)
     {
         // Invoke super.
-        super(PATH, boardMan, color, x, y);
+        super(PATH, color, x, y);
         
         // Set the type.
         this.type = TileType.BOMB;

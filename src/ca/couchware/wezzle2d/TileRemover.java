@@ -35,6 +35,7 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.StarTile;
 import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileFactory;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
@@ -401,7 +402,7 @@ public class TileRemover implements IResettable, ILevelListener
         assert tile != null;
         
         // The clone of tile, used to make the effect.
-        final Tile clone = hub.boardMan.cloneTile(tile);
+        final Tile clone = TileFactory.cloneTile(tile);
         
         // Add the clone to the layer man.
         hub.layerMan.add(clone, Layer.EFFECT);

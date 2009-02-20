@@ -26,11 +26,10 @@ public class StarTile extends ItemTile
      * @param x
      * @param y
      */    
-    public StarTile(final BoardManager boardMan, final TileColor color, 
-            final int x, final int y)
+    public StarTile(final TileColor color, final int x, final int y)
     {
         // Invoke super.
-        super(PATH, boardMan, color, x, y);
+        super(PATH, color, x, y);
         
         // Set the type.
         this.type = TileType.STAR;

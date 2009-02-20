@@ -8,10 +8,8 @@ package ca.couchware.wezzle2d.ui;
 import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Achievement;
-import ca.couchware.wezzle2d.ui.Box.Border;
 import java.util.EnumSet;
 
 /**
@@ -49,37 +47,8 @@ public class AchievementNotification extends AbstractNotification
         super(builder.window, builder.x, builder.y,
                 builder.opacity, builder.visible, builder.alignment);
 
-        // Save the reference.
-        //this.window = builder.window;
-        this.achievement = builder.achievement;               
-        
-        // Set the x and y.
-//        this.x  = builder.x;
-//        this.y  = builder.y;
-//        this.x_ = x;
-//        this.y_ = y;
-//
-//        // Set the width and height.
-//        this.width   = WIDTH;
-//        this.height  = HEIGHT;
-//        this.width_  = this.width;
-//        this.height_ = this.height;
-//
-//        // Set various other values.
-//        this.opacity = builder.opacity;
-//        this.visible = builder.visible;
-//
-//        // Set default anchor.
-//        this.alignment = builder.alignment;
-//        this.offsetX = determineOffsetX(alignment, width);
-//        this.offsetY = determineOffsetY(alignment, height);
-        
-//         // Create the box.
-//        this.box = new Box.Builder(x + offsetX, y + offsetY)
-//                .border(Border.MEDIUM)
-//                .width(this.width).height(this.height)
-//                .opacity(this.opacity)
-//                .end();
+        // Save the reference.       
+        this.achievement = builder.achievement;                       
         
         // Create the title text.
         this.title = new ResourceFactory.LabelBuilder(

@@ -27,11 +27,10 @@ public class GravityTile extends ItemTile
      * @param x
      * @param y
      */    
-    public GravityTile(final BoardManager boardMan, final TileColor color, 
-            final int x, final int y)
+    public GravityTile(final TileColor color, final int x, final int y)
     {
         // Invoke super.
-        super(PATH, boardMan, color, x, y);
+        super(PATH, color, x, y);
         
         // Set the type.
         this.type = TileType.GRAVITY;

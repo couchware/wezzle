@@ -25,13 +25,11 @@ public abstract class ItemTile extends Tile
      * @param x
      * @param y
      */    
-    public ItemTile(final String path, 
-            final BoardManager boardMan, 
-            final TileColor color, 
+    public ItemTile(final String path, final TileColor color, 
             final int x, final int y)
     {
         // Invoke super.
-        super(boardMan, color, x, y);
+        super(color, x, y);
         
         // Load bomb sprite.
         itemSprite = ResourceFactory.get().getSprite(path);

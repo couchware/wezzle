@@ -56,11 +56,10 @@ public class RocketTile extends ItemTile
      * @param x
      * @param y
      */    
-    public RocketTile(final BoardManager boardMan, final TileColor color, 
-            final int x, final int y)
+    public RocketTile(final TileColor color, final int x, final int y)
     {
         // Invoke super.
-        super(PATH, boardMan, color, x, y);
+        super(PATH, color, x, y);
                                
         // Determine a random rotation.
         Direction[] values = Direction.values();

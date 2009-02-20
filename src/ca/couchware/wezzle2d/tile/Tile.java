@@ -19,9 +19,6 @@ public class Tile extends GraphicEntity
     /** The file extension for tile graphics. */
     protected static final String FILE_EXT = ".png";
     
-	/** The associated board manager. */
-	protected final BoardManager boardMan;	    
-    
 	/** The colour of the tile. */
 	protected final TileColor color;	
     
@@ -35,7 +32,7 @@ public class Tile extends GraphicEntity
 	 * @param x
 	 * @param y
 	 */
-	public Tile(BoardManager boardMan, TileColor color, int x, int y) 
+	public Tile(TileColor color, int x, int y) 
 	{
 		// Invoke super.		
 		super(new Builder(x, y, 
@@ -47,8 +44,7 @@ public class Tile extends GraphicEntity
         this.x_ = x;
         this.y_ = y;
         
-		// Set board manager and color reference.
-		this.boardMan = boardMan;	
+		// Set color reference.		
 		this.color = color;                
         this.type = TileType.NORMAL;
 	}
@@ -61,7 +57,7 @@ public class Tile extends GraphicEntity
      */
     public Tile(Tile tile)
     {
-        this(tile.boardMan, tile.color, tile.x, tile.y);
+        this(tile.color, tile.x, tile.y);
     }    	
     
 	/**
@@ -133,6 +129,7 @@ public class Tile extends GraphicEntity
         this.tileListenerList.remove(listener);
     }
     
+    @Override
     public String toString()
     {
         return this.getType().toString();

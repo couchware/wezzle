@@ -9,10 +9,7 @@ import ca.couchware.wezzle2d.ManagerHub.Manager;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
-import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
-import ca.couchware.wezzle2d.animation.MetaAnimation;
-import ca.couchware.wezzle2d.animation.MetaAnimation.RunRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.GameEvent;
@@ -46,9 +43,7 @@ import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -165,14 +160,7 @@ public class Game extends Canvas implements IWindowCallback
     private boolean activateGameOver = false;   
     
     /** If true, a game over has been activated. */
-    private boolean gameOverInProgress = false;	
-    
-    /** The list of notifications to be shown. */
-    private Queue<AchievementNotification> notificationQueue
-            = new LinkedList<AchievementNotification>();
-    
-    /** The current notification animation. */
-    private IAnimation notificationAnimation = FinishedAnimation.get();
+    private boolean gameOverInProgress = false;	       
     
     /** A list that keeps track of the chains in moves. */
     List<Chain> chainList = new ArrayList<Chain>();
@@ -572,57 +560,27 @@ public class Game extends Canvas implements IWindowCallback
         
         // Check the achievements.
         hub.achievementMan.evaluate(this, hub);
+
         if (!hub.tutorialMan.isTutorialRunning()
                 && hub.achievementMan.isNewAchievementCompleted())
         {
             // Report to log.
             hub.achievementMan.reportNewlyCompleted();
-            
+
             List<Achievement> achievementList = hub.achievementMan.getNewlyCompletedAchievementList();
             for (Achievement ach : achievementList)
             {
                 AchievementNotification notif = new AchievementNotification.Builder(0, 0, ach)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .end();
-                
-                this.notificationQueue.offer(notif);
-            }                                    
+
+                hub.notificationMan.offer(notif);
+            }
         }
+
+        // Handle notifications.
+        hub.notificationMan.updateLogic(this, hub);
         
-        // Check to see if there are any notifications to show.
-        if (!this.notificationQueue.isEmpty() && this.notificationAnimation.isFinished())
-        {                        
-            final AchievementNotification notif = this.notificationQueue.remove();
-            
-            int x = Game.SCREEN_WIDTH + 10 + notif.getWidth() / 2;
-            notif.setPosition(x, 490);
-            
-            IAnimation slideIn = new MoveAnimation.Builder(notif)
-                    .speed(375).minX(670).duration(4000).theta(180).end();
-            
-            IAnimation fadeOut = new FadeAnimation.Builder(FadeAnimation.Type.OUT, notif)                    
-                    .duration(500).end();                        
-            
-            IAnimation meta = new MetaAnimation.Builder()
-                    .runRule(RunRule.SEQUENCE)
-                    .add(slideIn)                    
-                    .add(fadeOut)
-                    .end();    
-            
-            meta.addAnimationListener(new AnimationAdapter()
-            {
-                @Override
-                public void animationStarted()
-                { hub.layerMan.add(notif, Layer.UI); }
-                
-                @Override
-                public void animationFinished()
-                { hub.layerMan.remove(notif, Layer.UI); }
-            });
-                       
-            this.notificationAnimation = meta;
-            hub.animationMan.add(meta);
-        }
     }
     
 	/**

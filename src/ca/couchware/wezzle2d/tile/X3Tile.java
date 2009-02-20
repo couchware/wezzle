@@ -27,11 +27,10 @@ public class X3Tile extends ItemTile
      * @param x
      * @param y
      */    
-    public X3Tile(final BoardManager boardMan, final TileColor color, 
-            final int x, final int y)
+    public X3Tile(final TileColor color, final int x, final int y)
     {
         // Invoke super.
-        super(PATH, boardMan, color, x, y);  
+        super(PATH, color, x, y);
         
         // Set the type.
         this.type = TileType.X3;
