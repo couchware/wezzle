@@ -594,7 +594,7 @@ public class Game extends Canvas implements IWindowCallback
         {                        
             final AchievementNotification notif = this.notificationQueue.remove();
             
-            int x = Game.SCREEN_WIDTH + 10 + notif.getWidth() / 2;            
+            int x = Game.SCREEN_WIDTH + 10 + notif.getWidth() / 2;
             notif.setPosition(x, 490);
             
             IAnimation slideIn = new MoveAnimation.Builder(notif)

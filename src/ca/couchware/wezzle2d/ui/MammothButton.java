@@ -62,13 +62,13 @@ public class MammothButton extends Button
         {
             super(x, y);            
         }
-        
+                
         @Override
-        public MammothButton end()
+        public Button end()
         {
             MammothButton button = new MammothButton(this);
             
-            if (visible == true && disabled == false)
+            if (visible && !disabled)
                 button.window.addMouseListener(button);           
             
             return button;

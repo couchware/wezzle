@@ -26,27 +26,12 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class AchievementNotification extends AbstractEntity
-{           
-    
-    /** The width of the notification. */
-    final private static int WIDTH = 230;
-    
-    /** The height of the noticiation. */
-    final private static int HEIGHT = 104;
-    
-    /**
-     * The window that box is in.  This is for adding and removing
-     * the certain listeners.
-     */
-    final private IWindow window;
+public class AchievementNotification extends AbstractNotification
+{                   
     
     /** The achievement that we're creating the notification box for. */
     final private Achievement achievement;
-    
-    /** The box part of the notification. */
-    final private Box box;
-    
+       
     /** The notification title. */
     final private ITextLabel title;
     
@@ -61,37 +46,40 @@ public class AchievementNotification extends AbstractEntity
     
     private AchievementNotification(Builder builder)
     {
+        super(builder.window, builder.x, builder.y,
+                builder.opacity, builder.visible, builder.alignment);
+
         // Save the reference.
-        this.window = builder.window;
+        //this.window = builder.window;
         this.achievement = builder.achievement;               
         
         // Set the x and y.
-        this.x  = builder.x;
-        this.y  = builder.y;
-        this.x_ = x;
-        this.y_ = y;
+//        this.x  = builder.x;
+//        this.y  = builder.y;
+//        this.x_ = x;
+//        this.y_ = y;
+//
+//        // Set the width and height.
+//        this.width   = WIDTH;
+//        this.height  = HEIGHT;
+//        this.width_  = this.width;
+//        this.height_ = this.height;
+//
+//        // Set various other values.
+//        this.opacity = builder.opacity;
+//        this.visible = builder.visible;
+//
+//        // Set default anchor.
+//        this.alignment = builder.alignment;
+//        this.offsetX = determineOffsetX(alignment, width);
+//        this.offsetY = determineOffsetY(alignment, height);
         
-        // Set the width and height.
-        this.width   = WIDTH;
-        this.height  = HEIGHT;
-        this.width_  = this.width;
-        this.height_ = this.height;
-        
-        // Set various other values.
-        this.opacity = builder.opacity;
-        this.visible = builder.visible;               
-        
-        // Set default anchor.
-        this.alignment = builder.alignment;
-        this.offsetX = determineOffsetX(alignment, width);
-        this.offsetY = determineOffsetY(alignment, height);
-        
-         // Create the box.
-        this.box = new Box.Builder(x + offsetX, y + offsetY)
-                .border(Border.MEDIUM)
-                .width(this.width).height(this.height)
-                .opacity(this.opacity)
-                .end();
+//         // Create the box.
+//        this.box = new Box.Builder(x + offsetX, y + offsetY)
+//                .border(Border.MEDIUM)
+//                .width(this.width).height(this.height)
+//                .opacity(this.opacity)
+//                .end();
         
         // Create the title text.
         this.title = new ResourceFactory.LabelBuilder(
@@ -116,8 +104,8 @@ public class AchievementNotification extends AbstractEntity
                 .color(this.achievement.getDifficulty().getColor())
                 .end();
         
-        this.entityGroup = new EntityGroup(
-                this.box, this.title, this.achTitle, this.achDifficulty);
+        this.entityGroup = new EntityGroup(this.title, this.achTitle, this.achDifficulty);
+        this.entityList.add(this.entityGroup);
     }
     
     public static class Builder implements IBuilder<AchievementNotification>
@@ -169,58 +157,6 @@ public class AchievementNotification extends AbstractEntity
             AchievementNotification notif = new AchievementNotification(this);                      
             return notif;
         }                
-    }
-    
-    @Override
-    public void setOpacity(int opacity)
-    {
-        super.setOpacity(opacity);
-        this.entityGroup.setOpacity(opacity);
-    }
-    
-    @Override
-    public void setX(int x)
-    {
-        int dx = x - this.x;
-        super.setX(x);
-        this.entityGroup.translate(dx, 0);
-//        this.box.translate(dx, 0);
-//        this.title.translate(dx, 0);
-//        this.achTitle.translate(dx, 0);
-//        this.achDifficulty.translate(dx, 0);
-    }
-    
-    @Override
-    public void setY(int y)
-    {
-        int dy = y - this.y;
-        super.setY(y);
-        this.entityGroup.translate(0, dy);
-//        this.box.translate(0, dy);
-//        this.title.translate(0, dy);
-//        this.achTitle.translate(0, dy);
-//        this.achDifficulty.translate(0, dy);
-    }
-    
-    @Override
-    public void setWidth(int width)
-    {
-        throw new UnsupportedOperationException("Achievement notification width is immutable.");
-    }
-    
-    @Override
-    public void setHeight(int height)
-    {
-        throw new UnsupportedOperationException("Achievement notification width is immutable.");
-    }
-    
-    @Override
-    public boolean draw()
-    {
-        // Using a | instead of || because we don't want to short circuit.
-        // (That is, we don't want it to stop after the box.draw() even if
-        // it's true).
-        return this.entityGroup.draw();
-    }
+    }     
 
 }

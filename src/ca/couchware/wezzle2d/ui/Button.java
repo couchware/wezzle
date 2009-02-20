@@ -1,14 +1,13 @@
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import ca.couchware.wezzle2d.util.NumUtil;
-import ca.couchware.wezzle2d.util.Util;
 import java.awt.Color;
 import java.util.EnumSet;
 
@@ -25,7 +24,6 @@ public class Button extends AbstractButton
     
     /**
      * Change the default color for all sprite buttons.
-     * 
      * @param The new color.
      */
     public static void setDefaultColor(Color color)

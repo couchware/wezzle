@@ -64,7 +64,7 @@ public class TallButton extends Button
         }
         
         @Override
-        public TallButton end()
+        public Button end()
         {
             TallButton button = new TallButton(this);
             
