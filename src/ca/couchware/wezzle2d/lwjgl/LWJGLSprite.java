@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.Area;
 import java.io.IOException;
 import org.lwjgl.opengl.GL11;
 
@@ -174,7 +175,16 @@ public class LWJGLSprite implements ISprite
             int opacity)
     {
         Shape clip = gfx.getClip();
-        gfx.setClip(new Rectangle(x, y, regionWidth, regionHeight));        
+        
+        // Intersect the clip with the region.
+        Area regionArea = new Area(new Rectangle(x, y, regionWidth, regionHeight));
+        if (clip != null)
+        {
+            Area clipArea = new Area(clip);
+            regionArea.intersect(clipArea);
+        }
+
+        gfx.setClip(regionArea);
         draw(x - regionX, y - regionY, width, height, theta, tx, ty, opacity);        
         gfx.setClip(clip);
     }
