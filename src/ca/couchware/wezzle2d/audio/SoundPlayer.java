@@ -73,8 +73,6 @@ public class SoundPlayer
         // Open the clip.
         open();
         
-        
-         
         // Set the current volumne.
         this.volume = 0.0f;                    
     }               

@@ -26,11 +26,6 @@ import java.util.concurrent.Executor;
 
 public class SoundManager 
 {               
-    
-    /** 
-     * The number of buffers for the effect. 
-     */
-    private static int NUM_BUFFERS = 4;
       
     /**
      * A link to the executor that the manager uses to play sounds.
@@ -87,27 +82,6 @@ public class SoundManager
         {
             this.create(sound, path + "/" + sound.toString() + ".wav");
         }
-        
-//        this.create(Sound.LINE,
-//                path + "/SoundLine.wav");
-//        
-//        this.create(Sound.BOMB,
-//                path + "/SoundExplosion.wav");
-//        
-//        this.create(Sound.BLEEP,
-//                path + "/SoundBleep.wav");
-//        
-//        this.create(Sound.CLICK,
-//                path + "/SoundClick.wav");
-//        
-//        this.create(Sound.LEVEL_UP,
-//                path + "/SoundLevelUp.wav");
-//        
-//        this.create(Sound.STAR,
-//                path + "/SoundDing.wav");
-//        
-//        this.create(Sound.ROCKET,
-//                path + "/SoundRocket.wav");
              
         // Get the default volume.
         setNormalizedGain((double) settingsMan.getInt(Key.USER_SOUND_VOLUME) / 100.0);
@@ -125,7 +99,6 @@ public class SoundManager
     
     /**
      * Static constructor.
-     * 
      * @param executor
      * @param userProperties
      * @return
@@ -137,13 +110,13 @@ public class SoundManager
     
     /**
      * A method to add a new effect to the player.
-     * 
      * @param effect The new effect.
      */
     public void create(Sound track, String path)
     {
-        List<SoundPlayer> buffer = new ArrayList<SoundPlayer>(NUM_BUFFERS);
-        for (int i = 0; i < NUM_BUFFERS; i++)
+        final int numBuffers = track.getNumberOfBuffers();
+        List<SoundPlayer> buffer = new ArrayList<SoundPlayer>(numBuffers);
+        for (int i = 0; i < numBuffers; i++)
             buffer.add(new SoundPlayer(track, path, true));
         
         // Add the effect.
@@ -158,7 +131,6 @@ public class SoundManager
      * Note: This method does not remove the effect from the list.
      * Note: returns null if the key was not found.
      * Note: returns the sound effect of the proper buffer.
-     * 
      * @param key The associated key.
      * @return The effect or null if the key was not found.
      */
@@ -173,7 +145,7 @@ public class SoundManager
                 int bufferNum = bufferPointerList.get(i);
 
                 // The next buffer
-                int nextBufferNum = (bufferNum + 1) % NUM_BUFFERS;
+                int nextBufferNum = (bufferNum + 1) % track.getNumberOfBuffers();
 
                 // Set the next buffer to be used.
                 bufferPointerList.set(i, new Integer(nextBufferNum));
