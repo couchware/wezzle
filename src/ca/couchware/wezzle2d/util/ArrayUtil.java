@@ -13,7 +13,7 @@ import java.util.Random;
  * 
  * @author cdmckay
  */
-public class Util
+public class ArrayUtil
 {	    	
 	
 	/**

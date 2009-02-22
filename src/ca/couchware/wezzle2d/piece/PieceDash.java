@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.piece;
 
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.ArrayUtil;
 
 /**
  * A piece class representing the Dash piece.
@@ -32,7 +32,7 @@ public class PieceDash extends Piece
 	public void rotate()
 	{
 		// Transpose the structure.		
-		Util.transpose2d(structure);
+		ArrayUtil.transpose2d(structure);
 //		Util.swap2d(structure, 1, 0, 2, 1);
 //		Util.swap2d(structure, 1, 0, 1, 2);
 //		Util.swap2d(structure, 1, 0, 0, 1);

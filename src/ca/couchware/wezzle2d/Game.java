@@ -498,7 +498,7 @@ public class Game extends Canvas implements IWindowCallback
                 gameOverInProgress = false;
             }
         }
-        else if (boardAnimation != null && boardAnimation.isFinished() == false)
+        else if (boardAnimation != null && !boardAnimation.isFinished())
         {
             // Board is still dirty due to animation.
             hub.boardMan.setDirty(true);
@@ -511,7 +511,7 @@ public class Game extends Canvas implements IWindowCallback
         hub.musicMan.updateLogic(this, hub);
 
         // Check to see if we should be showing the board.
-        if (activateBoardShowAnimation == true)
+        if (activateBoardShowAnimation)
         {
             // Hide the piece.            
             hub.pieceMan.hidePieceGrid();
@@ -526,7 +526,7 @@ public class Game extends Canvas implements IWindowCallback
         }
 
         // Check to see if we should be hiding the board.
-        if (activateBoardHideAnimation == true)
+        if (activateBoardHideAnimation)
         {
             // Hide the piece.
             hub.pieceMan.hidePieceGrid();

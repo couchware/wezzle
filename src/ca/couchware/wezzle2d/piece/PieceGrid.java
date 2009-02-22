@@ -314,8 +314,7 @@ public class PieceGrid extends AbstractEntity
         y_ = y;
         
         // Don't draw if we're not visible.
-        if (isVisible() == false)
-            return false;
+        if (!this.visible) return false;
         
 		switch (renderMode)
         {

@@ -19,7 +19,7 @@ import ca.couchware.wezzle2d.manager.SoundManager;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.ArrayUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -153,7 +153,7 @@ public class TileDropper implements IResettable
                 
                 // Create a queue holding all the open columns in a randomized
                 // order.                
-                Collections.shuffle(openIndexList, Util.random);
+                Collections.shuffle(openIndexList, ArrayUtil.random);
                               
                 // The current number of items and multipliers.
                 int items          = boardMan.getNumberOfItems();

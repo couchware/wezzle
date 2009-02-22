@@ -130,7 +130,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                         boardMan.getY() + boardMan.getCellHeight(),
                         PieceGrid.RenderMode.SPRITE)
                     .visible(false)
-                    .end();                
+                    .end();             
         
         // Create the piece queue and load it up.
         this.pieceQueue = new LinkedList<Piece>();
@@ -166,7 +166,10 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         this.clearMouseButtonSet();
         
         // Clear the refactored flag.
-        this.refactored = false;                
+        this.refactored = false;
+
+        // Rehide piece grid.
+        this.hidePieceGrid();
     }
     
     /**
@@ -743,11 +746,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public void showPieceGrid()
     {
+        CouchLogger.get().recordWarning(this.getClass(), "Grid is shown");
         this.pieceGrid.setVisible(true);
     }
     
     public void hidePieceGrid()
     {
+        CouchLogger.get().recordWarning(this.getClass(), "Grid is hidden");
         this.pieceGrid.setVisible(false);
     }
     

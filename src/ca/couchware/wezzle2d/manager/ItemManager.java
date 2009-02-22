@@ -18,7 +18,7 @@ import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.TileNotification;
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.ArrayUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -95,8 +95,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         currentRuleList = new LinkedList<Rule>();        
         
         importSettings();
-        if(starCooldown == -1)
-            throw new IllegalStateException("startCooldown == -1.");
+        assert(starCooldown != -1);
         // Reset the manager to finish the initalization.
         resetState();
     }
@@ -300,7 +299,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 	{	        
         // Check if we do not return  a normal tile. There is
         // a flat 5% chance of this.
-        int test = Util.random.nextInt(100);
+        int test = ArrayUtil.random.nextInt(100);
         if (test <= 5)
         {
             return itemMap.get(TileType.NORMAL);
@@ -324,7 +323,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
             probItems = 0;
 
         // Select a number from 1 - 100.
-        int pick = Util.random.nextInt(100);
+        int pick = ArrayUtil.random.nextInt(100);
 
 
         if (numberOfMultipliers < maximumMultipliers && numberOfItems < maximumItems)
@@ -403,7 +402,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 		}
 		               
 		// Pick a random number between 0 and dist[dist.length - 1].
-		int randomNumber = Util.random.nextInt(dist[dist.length - 1]);
+		int randomNumber = ArrayUtil.random.nextInt(dist[dist.length - 1]);
 		
 		for (int j = 1; j < dist.length; j++)
 		{

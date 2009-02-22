@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.piece;
 
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.ArrayUtil;
 
 /**
  * A piece class representing the Line piece.
@@ -31,7 +31,7 @@ public class PieceLine extends Piece
 	public void rotate()
 	{
 		// Transpose the structure.		
-		Util.transpose2d(structure);
+		ArrayUtil.transpose2d(structure);
 		
 		// Update the dimensions.
 		int swap = this.columns;

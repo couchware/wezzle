@@ -177,7 +177,7 @@ public class OptionsGroup extends AbstractGroup
             // Stop the tutorial if necessary.
             if (hub.tutorialMan.isTutorialRunning())
             {
-                hub.tutorialMan.finishRunningTutorial(game, hub);
+                hub.tutorialMan.finishTutorial(game, hub);
             }
             
             // Disable the layer manager.

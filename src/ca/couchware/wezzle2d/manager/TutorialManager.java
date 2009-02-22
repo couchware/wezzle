@@ -107,7 +107,7 @@ public class TutorialManager implements IResettable
      * 
      * @param game
      */
-    public void finishRunningTutorial(Game game, ManagerHub hub)
+    public void finishTutorial(Game game, ManagerHub hub)
     {
        if (this.tutorial != null)
        {

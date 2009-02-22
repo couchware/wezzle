@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.piece;
 
-import ca.couchware.wezzle2d.util.Util;
+import ca.couchware.wezzle2d.util.ArrayUtil;
 
 /**
  * A piece class representing the Diagonal piece.
@@ -31,9 +31,9 @@ public class PieceL extends Piece
     @Override
 	public void rotate()
 	{
-		Util.swap2d(structure, 1, 0, 2, 1);
-		Util.swap2d(structure, 1, 0, 1, 2);
-		Util.swap2d(structure, 1, 0, 0, 1);
+		ArrayUtil.swap2d(structure, 1, 0, 2, 1);
+		ArrayUtil.swap2d(structure, 1, 0, 1, 2);
+		ArrayUtil.swap2d(structure, 1, 0, 0, 1);
 	}
 
 }
