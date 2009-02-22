@@ -588,8 +588,9 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      */
     final public void setVirtualValue(int value)
     {
-        assert value >= virtualLower;
-        assert value <= virtualUpper;
+        if(value < virtualLower || value > virtualUpper)
+            throw new IllegalArgumentException("value out of range.");
+       
         this.virtualValue = value;
         
         setSlideOffset(((virtualValue - virtualLower) * maxOffset) / (virtualUpper - virtualLower));

@@ -121,7 +121,10 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     public MainMenu(ManagerHub hub)
     {               
         // Invoke super.
-        assert hub != null;
+        if(hub == null)
+        {
+           throw new IllegalArgumentException("hub must not be null.");
+        }
         this.hub = hub;
                 
         // Set the main menu as activated.

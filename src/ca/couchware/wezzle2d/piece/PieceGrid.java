@@ -421,7 +421,10 @@ public class PieceGrid extends AbstractEntity
 
     public void setColor(Color color)
     {
-        assert color != null;
+        if(color == null)
+        {
+           throw new IllegalArgumentException("color must not be null.");
+        }
         this.color = color;
     }  
     

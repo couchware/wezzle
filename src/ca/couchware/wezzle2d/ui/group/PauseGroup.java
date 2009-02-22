@@ -60,7 +60,8 @@ public class PauseGroup extends AbstractGroup implements
     public PauseGroup(ManagerHub hub)
     {
         // Sanity check and assignment.
-        assert hub != null;
+        if(hub == null)
+            throw new IllegalArgumentException("hub must not be null.");
         this.hub = hub;
                
         // Create the "Paused" text.

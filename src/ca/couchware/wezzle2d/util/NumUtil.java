@@ -71,9 +71,12 @@ public class NumUtil
      */
     public static int scaleInt(int fromLower, int fromUpper,
             int toLower, int toUpper, int fromNumber)
-    {        
-        assert fromUpper >= fromLower;
-        assert toUpper   >= toLower;
+    {
+        if(fromUpper < fromLower)
+            throw new IllegalArgumentException("fromUpper < fromLower.");
+        if(toUpper < toLower)
+            throw new IllegalArgumentException("toUpper < toLower");
+       
         
         if (fromNumber < fromLower)
         {
@@ -99,8 +102,10 @@ public class NumUtil
     public static double scaleDouble(double fromLower, double fromUpper,
             double toLower, double toUpper, double fromNumber)
     {
-        assert(fromUpper > fromLower);
-        assert(toUpper > toLower);
+        if(fromUpper < fromLower)
+            throw new IllegalArgumentException("fromUpper < fromLower.");
+        if(toUpper < toLower)
+            throw new IllegalArgumentException("toUpper < toLower");
         
         if (fromNumber < fromLower)
             return toLower;

@@ -139,8 +139,8 @@ public class AudioGroup extends AbstractGroup
     public void updateLogic(Game game, ManagerHub hub)
     {                
         // Sanity check.
-        assert game != null;
-        assert hub  != null;
+        if(game == null || hub == null)
+            throw new IllegalArgumentException("game and hub must not be null.");
         
         // Check if the back button was pressed.
         if (backButton.isActivated() == true)

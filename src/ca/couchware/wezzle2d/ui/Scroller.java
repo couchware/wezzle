@@ -262,7 +262,9 @@ public class Scroller extends AbstractEntity implements IMouseListener
     private void updateButtonPositions()
     {
         // Make sure the offset isn't too high.
-        assert scrollOffset <= buttonList.size() - rows;
+        if ( scrollOffset > (buttonList.size() - rows) )
+            throw new IllegalStateException("Offset too high.");
+        
             
         // Make all labels invisible.
         for (IButton button : buttonList)
@@ -340,8 +342,8 @@ public class Scroller extends AbstractEntity implements IMouseListener
     
     public Color getColor(int index)
     {
-        assert index >= 0;
-        assert index < buttonList.size();
+        if(index < 0 || index >= buttonList.size())
+            throw new IllegalArgumentException("index out of range.");
         
         IButton button = buttonList.get(index);
         
@@ -357,8 +359,8 @@ public class Scroller extends AbstractEntity implements IMouseListener
     
     public void setColor(int index, Color color)
     {
-        assert index >= 0;
-        assert index < buttonList.size();
+        if(index < 0 || index >= buttonList.size())
+            throw new IllegalArgumentException("index out of range.");
         
         IButton button = buttonList.get(index);
         

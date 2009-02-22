@@ -171,7 +171,8 @@ public class CouchLogger
 	 */
 	public void recordException(Class cls, Exception e)
 	{
-		assert cls != null;
+		if(cls == null)
+            throw new IllegalArgumentException("cls must not be null.");
         String method = extractClassName(cls);
 		
         StringWriter out = new StringWriter();
@@ -197,7 +198,8 @@ public class CouchLogger
 	 */
 	public void recordWarning(Class cls, String message)
 	{
-		assert cls != null;
+		if(cls == null)
+            throw new IllegalArgumentException("cls must not be null.");
         String method = extractClassName(cls);
 		
 		String output = "W. (" + getTimeStamp() + ") " 
@@ -218,7 +220,8 @@ public class CouchLogger
 	 */
 	public void recordMessage(Class cls, String message)
 	{				
-		assert cls != null;
+		if(cls == null)
+            throw new IllegalArgumentException("cls must not be null.");
         String method = extractClassName(cls);
 		
 		String output = "M. (" + getTimeStamp() + ") " 

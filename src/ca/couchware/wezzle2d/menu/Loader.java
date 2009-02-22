@@ -156,7 +156,10 @@ public class Loader implements IDrawer
     public void addTask(Runnable task)
     {
         // Make sure task is not null.
-        assert task != null;
+        if(task == null)
+        {
+           throw new IllegalArgumentException("task must not be null.");
+        }
              
         // Add it to the queue.
         loaderQueue.add(task);

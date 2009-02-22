@@ -44,11 +44,14 @@ public enum TileColor
     
     public static TileColor getRandomColor(int max, Set<TileColor> filterSet)
 	{
+
+
         TileColor[] colors = values();
         List<TileColor> colorList = new ArrayList<TileColor>(Arrays.asList(colors));
         
-        assert max > 0;
-        assert max <= colorList.size();                   
+        if ( max <= 0 || max > colorList.size())
+               throw new IllegalArgumentException("invalid value for max.");
+                       
         
         colorList.removeAll(EnumSet.range(colors[max], colors[colors.length - 1]));
         colorList.removeAll(filterSet);

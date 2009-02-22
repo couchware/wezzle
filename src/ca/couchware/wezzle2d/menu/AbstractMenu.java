@@ -36,8 +36,10 @@ public abstract class AbstractMenu extends AbstractGroup
         super(parentMenu);
 
         // Sanity checks and assigments.
-        assert hub != null;
-        assert menuLayerMan != null;
+        if(hub == null || menuLayerMan == null)
+        {
+           throw new IllegalArgumentException("hub and menuLayerMan must not be null.");
+        }
 
         this.hub = hub;
         this.menuLayerMan = menuLayerMan;

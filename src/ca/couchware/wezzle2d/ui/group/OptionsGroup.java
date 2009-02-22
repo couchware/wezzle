@@ -58,7 +58,8 @@ public class OptionsGroup extends AbstractGroup
     public OptionsGroup(ManagerHub hub)
     {
         // Check the hub instance and save it.
-        assert hub != null;
+        if(hub == null)
+            throw new IllegalArgumentException("hub must not be null.");
         this.hub = hub;
         
         // Create the options header.

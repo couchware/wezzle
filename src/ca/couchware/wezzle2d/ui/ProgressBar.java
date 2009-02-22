@@ -146,10 +146,13 @@ public class ProgressBar extends AbstractEntity
         this.progressLower = builder.progressLower;
         this.progressUpper = builder.progressUpper;                                  
 
-        assert progressUpper > progressLower;
-        assert progressLower < progressUpper;
-        assert progressValue >= progressLower;
-        assert progressValue <= progressUpper;
+        if (progressUpper <= progressLower)
+            throw new IllegalStateException("progressUpper <= progressLower.");
+        if (progressValue < progressLower)
+            throw new IllegalStateException("progressValue < progressLower.");
+        if (progressValue > progressUpper)
+            throw new IllegalStateException("progressValue > progressUpper.");
+
         
          // Load the container sprite.
         switch (barWidth)

@@ -53,7 +53,8 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
     public GameOverGroup(ManagerHub hub)
     {    
         // Sanity check.
-        assert hub != null;       
+        if( hub == null)
+            throw new IllegalArgumentException("hub must not be null.");
         
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)

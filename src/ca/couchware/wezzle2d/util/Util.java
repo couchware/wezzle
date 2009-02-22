@@ -26,8 +26,9 @@ public class Util
 	 */
 	public static void transpose2d(Object[][] array)
 	{
-		assert array != null;
-		
+		if(array == null)
+            throw new IllegalArgumentException("array must not be null.");
+
 		for (int j = 0; j < array[0].length; j++)		
 			for (int i = j + 0; i < array.length; i++)			
 				swap2d(array, i, j, j, i);						
@@ -56,7 +57,8 @@ public class Util
 	 */
 	public static void swap2d(Object[][] array, int c1, int r1, int c2, int r2)
 	{
-		assert array != null;
+		if(array == null)
+            throw new IllegalArgumentException("array must not be null.");
 		
 		Object swap = null;
 		swap = array[c1][r1];
