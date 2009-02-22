@@ -202,7 +202,10 @@ public class StatManager implements IResettable, ISaveable, IGameListener, ILine
 
     public void setCycleLineCount(int cycleLineCount)
     {
-        assert cycleLineCount >= 0;
+        if(cycleLineCount < 0)
+        {
+           throw new IllegalArgumentException("cycleLineCount must be non-negative.");
+        }
         this.cycleLineCount = cycleLineCount;
     }        
     
@@ -228,7 +231,10 @@ public class StatManager implements IResettable, ISaveable, IGameListener, ILine
 
     public void setStartLevel(int startLevel)
     {
-        assert startLevel > 0;
+        if(startLevel <= 0)
+        {
+           throw new IllegalArgumentException("startLevel must be greater than 0.");
+        }
         this.startLevel = startLevel;
     }        
     

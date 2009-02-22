@@ -113,7 +113,12 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         this.window = ResourceFactory.get().getWindow();
 
         // Sanity check and assignment.
-        assert hub != null; this.hub = hub;
+       if(hub == null)
+       {
+           throw new IllegalArgumentException("hub must not be null.");
+       }
+
+        this.hub = hub;
 
         // Create manager convenience variables.
         final BoardManager boardMan = hub.boardMan;

@@ -426,7 +426,9 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public void loadBoard(Tile[] newBoard)
     {
         // Make sure the array is the right size.        
-        assert newBoard.length == cells;
+        if (newBoard.length != cells)
+            throw new IllegalArgumentException("The size of the new board must" +
+                    " match the number of cells.");
         
         // Set the current board to the passed board.
         board = newBoard;
@@ -936,7 +938,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      */
     public List<IAnimation> startVerticalShift(final int speed)
     {
-        assert speed != 0;
+        if(speed == 0)
+        {
+            throw new IllegalArgumentException("speed must be non-zero.");
+        }
         
         if (gravity.contains(Direction.DOWN))
             return startShift(Direction.DOWN, speed);
@@ -952,7 +957,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      */
     public List<IAnimation> startHorizontalShift(final int speed)
     {
-        assert speed != 0;
+        if(speed == 0)
+        {
+            throw new IllegalArgumentException("speed must be non-zero.");
+        }
         
         if (gravity.contains(Direction.LEFT))
             return startShift(Direction.LEFT, speed);
@@ -1003,7 +1011,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public int countTilesInDirection(Direction direction, int index)
     {
         // Sanity check.
-		assert(index >= 0 && index < cells);
+		if(index < 0 || index >= cells)
+        {
+            throw new IllegalArgumentException("Invalid index.");
+        }
 		
 		// The current column and row.
 		int column = index % columns;
@@ -1101,8 +1112,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public void addTile(final int index, final Tile t)
     {
         // Sanity check.
-        assert index >= 0 && index < cells;
-        assert t != null;
+        if(index < 0 || index >= cells)
+            throw new IllegalArgumentException("Invalid index.");
+        if(t == null)
+            throw new IllegalArgumentException("t must be non-null.");
         
         // Make sure the tile is located properly.
         t.setPosition(x + (index % columns) * cellWidth, 
@@ -1190,8 +1203,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             final TileColor color)
 	{
         // Sanity check.
-        assert (index >= 0 && index < cells);
-        assert (type != null);      
+        if(index < 0 || index >= cells)
+            throw new IllegalArgumentException("Invalid index.");
+        if(type == null)
+            throw new IllegalArgumentException("type must be non-null.");
         
         // The new tile.
         int tx = x + (index % columns) * cellWidth;
@@ -1296,7 +1311,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public void removeTile(Tile t)
     {
        int i = getIndex(t);
-       assert(i != -1);
+       if(i == -1)
+       {
+           throw new IllegalStateException("Tile does not exists.");
+       }
       
        removeTile(i);
     }
@@ -1304,8 +1322,9 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public void removeTile(final int index)
     {
         // Sanity check.
-		assert(index >= 0 && index < cells);
-        
+		if(index < 0 || index >= cells)
+            throw new IllegalArgumentException("Invalid index.");
+
         // Get the tile.
         Tile t = getTile(index);
               
@@ -1369,8 +1388,14 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public void removeTile(final int column, final int row)
     {
         // Sanity check.
-		assert(column >= 0 && column < columns);
-        assert(row >= 0 && row < rows);
+        if(column < 0 || column >= columns)
+        {
+            throw new IllegalArgumentException("column out of range.");
+        }
+        if(row < 0 || row >= rows)
+        {
+            throw new IllegalArgumentException("row out of range.");
+        }
         
         // Passthrough.
         removeTile(column + (row * columns));
@@ -1387,7 +1412,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public Tile getTile(int index)
 	{
 		// Sanity check.
-		assert(index >= 0 && index < cells);
+		if(index < 0 || index >= cells)
+        {
+            throw new IllegalArgumentException("index out of range.");
+        }
 		
 		// Set the tile.
 		return board[index];
@@ -1408,11 +1436,13 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	}
     
     public EntityGroup getTileRange(int index1, int index2)
-    {
-        assert index1 >= 0 && index1 < cells;
-        assert index2 >= index1 && index2 < cells;               
-        
-        // Calculate the number of possible tiles in the range.
+    {              
+         if(index1 < 0 || index1 >= cells)
+            throw new IllegalArgumentException("Invalid index1.");
+         if(index2 < 0 || index2 >= cells)
+            throw new IllegalArgumentException("Invalid index2.");
+
+         // Calculate the number of possible tiles in the range.
         int length = index2 - index1 + 1;
         
         // Count the number of tiles in that range.
@@ -1440,7 +1470,8 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     
     public EntityGroup getTiles(List<Integer> indexList)
     {
-        assert indexList != null;
+         if(indexList == null)
+            throw new IllegalArgumentException("indexList cannot be null.");
         
         List<Tile> tileList = new ArrayList<Tile>();
         
@@ -1457,8 +1488,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	public void swapTile(int index1, int index2)
 	{
 		// Validate parameters.
-		assert(index1 >= 0 && index1 < cells);
-		assert(index2 >= 0 && index2 < cells);
+		 if(index1 < 0 || index1 >= cells)
+            throw new IllegalArgumentException("Invalid index1.");
+         if(index2 < 0 || index2 >= cells)
+            throw new IllegalArgumentException("Invalid index2.");
 		
 		Tile t = board[index1];
 		board[index1] = board[index2];
@@ -1665,8 +1698,8 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             Set<Integer> tileSet, 
             Set<Integer> foundSet)
     {        
-        assert tileType != null;
-        assert tileSet  != null;        
+         if(tileType == null || tileSet == null)
+            throw new IllegalArgumentException("tileType and tileSet cannot be null.");
         
         // The number of items found.
         int count = 0;
@@ -2234,8 +2267,9 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             Set<TileType>  typeFilter, 
             Set<TileColor> colorFilter)
     {         
-        assert typeFilter  != null;
-        assert colorFilter != null;
+        if(typeFilter == null || colorFilter == null)
+            throw new IllegalArgumentException("typeFilter and colorFilter" +
+                    " cannot be null.");
         
         List<Integer> indexList = new ArrayList<Integer>();
         Tile tile;        

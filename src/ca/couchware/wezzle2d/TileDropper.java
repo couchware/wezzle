@@ -267,7 +267,9 @@ public class TileDropper implements IResettable
                                     EnumSet.of(oldColor));
                                 
                             int index = tileDropList.indexOf(matchedTile);
-                            assert index != -1;
+                            if (index == -1)
+                                throw new IllegalStateException("matched tile " +
+                                        "is not in the tildDropList");
                             Tile newTile = boardMan.replaceTile(boardMan.getIndex(matchedTile), newColor);
                             tileDropList.set(index, newTile);
                         }                                               

@@ -95,7 +95,8 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         currentRuleList = new LinkedList<Rule>();        
         
         importSettings();
-        assert(starCooldown != -1);
+        if(starCooldown == -1)
+            throw new IllegalStateException("startCooldown == -1.");
         // Reset the manager to finish the initalization.
         resetState();
     }

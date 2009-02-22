@@ -104,8 +104,8 @@ public class LayerManager implements IDisposable, IDrawer
     public void add(final IDrawable drawable, Layer layer)
     {         
         // The drawable cannot be null.
-        assert drawable != null;
-        assert layer    != null;      
+         if(drawable == null || layer == null)
+            throw new IllegalArgumentException("drawable and layer cannot be null.");
 
         // Set disabledness.
         if (disabled == true && drawable instanceof IEntity)

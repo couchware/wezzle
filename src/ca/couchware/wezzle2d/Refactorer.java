@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
+
 import java.util.List;
 
 /**
@@ -52,8 +53,11 @@ public class Refactorer implements IResettable
                                 
         RefactorSpeed(int horizontal, int vertical)
         { 
-            assert horizontal != 0;
-            assert vertical   != 0;
+            if (horizontal == 0 || vertical == 0)
+            {
+                throw new IllegalArgumentException("horizontal and vertical must" +
+                        " both be non-zero.");
+            }
             this.horizontal = horizontal; 
             this.vertical   = vertical; 
         }
@@ -129,7 +133,10 @@ public class Refactorer implements IResettable
 
     public Refactorer setRefactorSpeed(RefactorSpeed speed)
     {        
-        assert speed != null;        
+        if(speed == null)
+        {
+            throw new IllegalArgumentException("speed cannot be null.");
+        }
         
         CouchLogger.get().recordMessage(this.getClass(), String.format("Speed set to %s.", speed.toString()));
         
@@ -180,8 +187,10 @@ public class Refactorer implements IResettable
     public void updateLogic(Game game, ManagerHub hub)
     {
         // Make sure game is not null.
-        assert game != null;
-        assert hub  != null;
+       if (game == null || hub == null)
+       {
+           throw new IllegalArgumentException("game and hub must not be null");
+       }
         
         // Reset the finished flag.
         this.finishedRefactor = false;
@@ -230,7 +239,10 @@ public class Refactorer implements IResettable
     private void handleVerticalRefactor(ManagerHub hub)
     {
         // Sanity check.
-        assert hub != null;
+        if(hub == null)
+        {
+            throw new IllegalArgumentException("hub cannot be null.");
+        }
         
         boolean done = true;
         for (IAnimation a : refactorAnimationList)
@@ -275,7 +287,10 @@ public class Refactorer implements IResettable
     private void handleHorizontalRefactor(ManagerHub hub)
     {        
         // Sanity check.
-        assert hub != null;
+        if(hub == null)
+        {
+            throw new IllegalArgumentException("hub cannot be null.");
+        }
         
         boolean done = true;
         for (IAnimation a : refactorAnimationList)

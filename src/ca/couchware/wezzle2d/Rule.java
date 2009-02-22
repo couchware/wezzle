@@ -85,9 +85,14 @@ public class Rule
      */
     public Rule(Type type, Operation operation, int value)
     {   
-        assert type      != null;
-        assert operation != null;
-        assert value > 0;
+        if(type == null || operation == null)
+        {
+            throw new IllegalArgumentException("type and operation cannot be null.");
+        }
+        if(value < 0)
+        {
+            throw new IllegalArgumentException("value must be >= 0.");
+        }
         
         this.type      = type;
         this.operation = operation;
@@ -99,9 +104,14 @@ public class Rule
     
     public Rule(Type type, Operation operation, TileType ... tileTypes)
     {
-        assert type      != null;
-        assert operation != null;
-        assert tileTypes.length > 0;
+        if(type == null || operation == null)
+        {
+            throw new IllegalArgumentException("type and operation cannot be null.");
+        }
+        if(tileTypes.length <= 0)
+        {
+            throw new IllegalArgumentException("there must be at least one tileType.");
+        }
         
         this.type      = type;
         this.operation = operation;
@@ -113,9 +123,14 @@ public class Rule
     
      public Rule(Type type, Operation operation, List<TileType> tileTypes)
     {
-        assert type      != null;
-        assert operation != null;
-        assert tileTypes.size() > 0;
+       if(type == null || operation == null)
+        {
+            throw new IllegalArgumentException("type and operation cannot be null.");
+        }
+        if(tileTypes.size() <= 0)
+        {
+            throw new IllegalArgumentException("there must be at least one tileType.");
+        }
         
         this.type      = type;
         this.operation = operation;
@@ -127,9 +142,14 @@ public class Rule
 
      public Rule (Type type, Operation operation, int value, List<String> achievementNames, MetaType mType)
      {
-        assert type      != null;
-        assert operation != null;
-        assert value > 0;
+        if(type == null || operation == null)
+        {
+            throw new IllegalArgumentException("type and operation cannot be null.");
+        }
+        if(value < 0)
+        {
+            throw new IllegalArgumentException("value cannot be negative.");
+        }
 
         this.type      = type;
         this.operation = operation;
@@ -158,8 +178,11 @@ public class Rule
     public boolean evaluate(Game game, ManagerHub hub)
     {        
         // Sanity check.
-        assert game != null;
-        assert hub  != null;
+        if(game == null || hub == null)
+        {
+            throw new IllegalArgumentException("game and hub cannot be null.");
+        }
+
         
         // Make sure we're not a COLLISION-type.
         if (this.type == Type.COLLISION)
@@ -248,7 +271,11 @@ public class Rule
         if (tileList.size() < tileTypes.length)
             return false;
         
-        assert tileList.size() >= tileTypes.length;
+        if(tileList.size() < tileTypes.length)
+        {
+            throw new IllegalStateException("The tile list is smaller than the" +
+                    " number of tile types.");
+        }
         
         for (int i = 0; i < tileTypes.length; i++)
         {

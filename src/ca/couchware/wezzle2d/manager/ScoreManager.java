@@ -121,9 +121,11 @@ import java.util.Set;
             HighScoreManager highScoreMan,
             ListenerManager  listenerMan)
     {
-        assert boardMan     != null;        
-        assert highScoreMan != null;
-        assert listenerMan  != null;
+       if(boardMan == null || highScoreMan == null || listenerMan == null)
+       {
+           throw new IllegalArgumentException("boardMan, highScoreMan and listenerMan" +
+                   " must not be null.");
+       }
         
         // Create the save state.
         managerState = new EnumMap<Keys, Object>(Keys.class);
@@ -164,9 +166,14 @@ import java.util.Set;
      */
     public int calculateLineScore(Set<Integer> indexSet, ScoreType type, int chainCount)
     {
-        assert indexSet != null;
-        assert type != null;
-        assert chainCount >= 0;
+       if(indexSet == null || type == null)
+       {
+           throw new IllegalArgumentException("indexSet and type not be null.");
+       }
+       if(chainCount < 0)
+       {
+           throw new IllegalArgumentException("chainCount must be non-negative.");
+       }
         
         // Reset the count map.
         for (TileType tt : TileType.values())
@@ -205,8 +212,14 @@ import java.util.Set;
      */
     private int calculateLineTilePoints(int numTotal, ScoreType type)
     {        
-        assert numTotal > 0;
-        assert type != null;
+       if(numTotal <= 0)
+       {
+           throw new IllegalArgumentException("numTotal must be greater than 0.");
+       }
+       if(type == null)
+       {
+           throw new IllegalArgumentException("type must not be null.");
+       }
         
         // If we have a line with a star tile, then the line is worth half.
         if (type == ScoreType.STAR)
@@ -239,8 +252,10 @@ import java.util.Set;
     public int calculatePieceScore(Set indexSet)
     {                
         // Sanity check.
-        assert indexSet != null;
-        
+        if(indexSet == null)
+        {
+           throw new IllegalArgumentException("indexSet must not be null.");
+        }
         // Initilize deltaScore variable.
         int deltaScore = 0;
 
@@ -266,7 +281,10 @@ import java.util.Set;
 	public int generateTargetLevelScore(int level)
 	{
         // Level is at least 1.
-        assert level > 0;
+        if(level <= 0)
+        {
+           throw new IllegalArgumentException("level must be greater than 0.");
+        }
         
 		return level * 1200;
 	}
@@ -313,7 +331,10 @@ import java.util.Set;
 
     public void setTotalScore(int totalScore)
     {
-        assert totalScore >= 0;
+        if(totalScore < 0)
+        {
+           throw new IllegalArgumentException("totalScore must be non-negative.");
+        }
         this.totalScore = totalScore;
     }
     
@@ -358,7 +379,10 @@ import java.util.Set;
      */
     public void setTargetTotalScore(int targetTotalScore)
     {
-        assert targetTotalScore >= 0;
+        if(targetTotalScore < 0)
+        {
+           throw new IllegalArgumentException("targetTotalScore must be non-negative.");
+        }
         this.targetTotalScore = targetTotalScore;
     }  
     
