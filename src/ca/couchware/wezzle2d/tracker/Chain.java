@@ -3,8 +3,9 @@
  * Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.tracker;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,25 +19,25 @@ public class Chain
 {
     
     /** The list of lines. */
-    private List<Line> lineList;
+    private List<? extends TileGroup> tileGroupList;
     
     /**
      * Constructor private to ensure immutability.
      * @param lines The lines.
      */
-    private Chain(List<Line> lineList)
+    private Chain(List<? extends TileGroup> tileGroupList)
     {
-        this.lineList = lineList;
+        this.tileGroupList = new ArrayList<TileGroup>(tileGroupList);
     }
     
     /**
-     * Static factory returns an immutible cascade object.
+     * Create a new a chain instance.
      * @param lines  The lines in the cascade.
      * @return The immutable cascade.
      */
-    public static Chain newInstance(List<Line> lines)
+    public static Chain newInstance(List<? extends TileGroup> tileGroupList)
     {
-       return new Chain(lines);
+       return new Chain(tileGroupList);
     }
     
     // -------------------------------------------------------------------------
@@ -49,7 +50,7 @@ public class Chain
      */
     public List getLineList()
     {
-        return Collections.unmodifiableList(this.lineList);
+        return Collections.unmodifiableList(this.tileGroupList);
     }
     
     @Override
@@ -58,13 +59,18 @@ public class Chain
         StringBuffer buffer = new StringBuffer();
         int count = 1;
 
-        for (Line line : lineList)
+        for (TileGroup grp : tileGroupList)
         {
-            buffer.append(String.format("  (Line %d) [ %s ]\n", count, line.toString()));
+            buffer.append(String.format("  (Line %d) [ %s ]\n", count, grp.toString()));
             count++;
         }
                         
         return buffer.toString();
+    }
+
+    public int size()
+    {
+        return this.tileGroupList.size();
     }
     
 }

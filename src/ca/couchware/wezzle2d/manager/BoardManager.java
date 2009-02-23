@@ -1,8 +1,8 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.Chain;
-import ca.couchware.wezzle2d.Line;
-import ca.couchware.wezzle2d.Move;
+import ca.couchware.wezzle2d.tracker.Chain;
+import ca.couchware.wezzle2d.tracker.Line;
+import ca.couchware.wezzle2d.tracker.Move;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -25,6 +25,7 @@ import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.tile.X2Tile;
 import ca.couchware.wezzle2d.tile.X3Tile;
 import ca.couchware.wezzle2d.tile.X4Tile;
+import ca.couchware.wezzle2d.tracker.TileEffect;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
@@ -1480,20 +1481,24 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     /**
      * Finds all the tiles between the rocket and the wall that is in the
      * direction the rocket is pointing.
-     * 
      * @param rocketSet
      * @param affectedSet
+     * @param trackerList
      */
-    public void processRockets(Set<Integer> rocketSet, Set<Integer> affectedSet)
+    public void processRockets(Set<Integer> rocketSet, Set<Integer> affectedSet, List<TileEffect> trackerList)
     {        
         // Clear the set.
         affectedSet.clear();
-                
+       
         int column;
-        int row;        
+        int row;
+
+        // The list to store the effect tiles in.
+        List<Tile> list = new ArrayList<Tile>();
         
         for (Integer rocketIndex : rocketSet)
-        {
+        {            
+
             // Extract column and row.
             column = rocketIndex % columns;
             row    = rocketIndex / columns;
@@ -1522,7 +1527,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         index = column + j * columns;
                         
                         if (getTile(index) != null)
+                        {
                             affectedSet.add(index);
+                            list.add(getTile(index));
+                        }
                     }
 
                     break;
@@ -1536,7 +1544,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         index = column + j * columns;
                         
                         if (getTile(index) != null)
+                        {
                             affectedSet.add(index);
+                            list.add(getTile(index));
+                        }
                     }
 
                     break;
@@ -1548,9 +1559,12 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                     for (int j = 0; j <= column; j++)
                     {
                         index = j + row * columns;
-                        
+
                         if (getTile(index) != null)
+                        {
                             affectedSet.add(index);
+                            list.add(getTile(index));
+                        }
                     }   
 
                     break;
@@ -1564,12 +1578,21 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         index = j + row * columns;
                         
                         if (getTile(index) != null)
+                        {
                             affectedSet.add(index);
+                            list.add(getTile(index));
+                        }
                     }  
 
                     break;
-            }                  
-        }               
+            } // end switch
+
+            // Remove the rocket's instance.
+            list.remove(rocket);
+            trackerList.add(TileEffect.newInstance(getTile(rocketIndex), list));
+            list.clear();
+
+        } // end for
     } 
     
     /**

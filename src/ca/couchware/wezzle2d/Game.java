@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.tracker.Chain;
 import ca.couchware.wezzle2d.ManagerHub.Manager;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
@@ -41,6 +42,7 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -951,7 +953,17 @@ public class Game extends Canvas implements IWindowCallback
 
     public List<Chain> getChainList()
     {
-        return chainList;
+        return Collections.unmodifiableList(this.chainList);
+    }
+
+    public void addToChainList(Chain chain)
+    {
+        if (chain != null) this.chainList.add(chain);
+    }
+
+    public void clearChainList()
+    {
+        this.chainList.clear();
     }
     
     //--------------------------------------------------------------------------

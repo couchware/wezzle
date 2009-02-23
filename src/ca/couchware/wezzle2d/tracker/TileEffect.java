@@ -1,50 +1,53 @@
 /*
  * Wezzle
- * Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ * Copyright (c) 2007-2009 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.tracker;
 
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.util.StringUtil;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * An immutable class that holds a line of tiles.
- * @author kgrad
+ * A class for holding the tiles affected by a tile effect like a rocket
+ * or a bomb explosion.
+ * @author Cameron McKay
  */
-public class Line 
+public class TileEffect implements TileGroup
 {
-    
-    /**
-     * The list of tiles.
-     */
+    /** The tile that caused the effect. */
+    private Tile causeTile;
+
+    /** The list of tiles. */
     private List<Tile> tileList;
-    
+
     /**
      * Constructor private to ensure immutability.
      * @param line The tiles.
      */
-    private Line(List<Tile> tileList)
+    private TileEffect(Tile causeTile, List<Tile> tileList)
     {
-        this.tileList = tileList;
+        this.causeTile = causeTile;
+        this.tileList = new ArrayList<Tile>(tileList);
     }
-    
+
     /**
      * Static factory returns an immutible line object.
      * @param tiles  The tiles in the line.
      * @return The immutable line.
      */
-    public static Line newInstance(List<Tile> tiles)
+    public static TileEffect newInstance(Tile causeTile, List<Tile> tileList)
     {
-       return new Line(tiles);
+       return new TileEffect(causeTile, tileList);
     }
-    
+
     // -------------------------------------------------------------------------
     // Public Members
     // -------------------------------------------------------------------------
-    
+
     /**
      * Get the tiles. To ensure immutability returns an unmodifiable list.
      * @return The list of tiles.
@@ -53,10 +56,11 @@ public class Line
     {
         return Collections.unmodifiableList(this.tileList);
     }
-    
+
     @Override
     public String toString()
     {
-        return StringUtil.join(tileList, ", ");
+        return this.causeTile.getType().toString() + " => "
+                + (tileList.isEmpty() ? "*Nothing*" : StringUtil.join(tileList, ", "));
     }
 }

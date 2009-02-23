@@ -5,12 +5,13 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.tracker.Line;
+import ca.couchware.wezzle2d.tracker.Move;
+import ca.couchware.wezzle2d.tracker.Chain;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.animation.AbstractAnimation;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
-import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -19,7 +20,6 @@ import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
@@ -37,6 +37,7 @@ import ca.couchware.wezzle2d.tile.StarTile;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileFactory;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.tracker.TileEffect;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -177,14 +178,15 @@ public class TileRemover implements IResettable, ILevelListener
     public void updateLogic(final Game game, ManagerHub hub)
     {
         // Sanity check.
-       if(game == null || hub == null)
-        {
-            throw new IllegalArgumentException("game and hub cannot be null.");
-        }
-
-        final ListenerManager listenerMan   = hub.listenerMan;
-        final PieceManager pieceMan         = hub.pieceMan;
-        final TimerManager timerMan         = hub.timerMan;           
+        if (game == null)
+            throw new IllegalArgumentException("Hub cannot be null.");
+        
+        if (hub == null)
+            throw new IllegalArgumentException("Game cannot be null.");
+        
+        final ListenerManager listenerMan = hub.listenerMan;
+        final PieceManager pieceMan       = hub.pieceMan;
+        final TimerManager timerMan       = hub.timerMan;           
         
         if (activateLevelUp == true)
         {
@@ -195,7 +197,9 @@ public class TileRemover implements IResettable, ILevelListener
         // See if it just finished.
         if (game.getRefactorer().isFinished() && areItemSetsEmpty())
         {
-            findMatches(hub, game.getChainList());
+            // Keep track of chains.
+            Chain chain = findMatches(hub);
+            if (chain.size() != 0) game.addToChainList(chain);
             
             // If there are matches, score them, remove 
             // them and then refactor again.
@@ -221,7 +225,7 @@ public class TileRemover implements IResettable, ILevelListener
                                 "\n" + move.toString());
                         
                         // Reset chains tracking.
-                        game.getChainList().clear();
+                        game.clearChainList();
                     }
                     
                     // Start the next move.
@@ -243,7 +247,7 @@ public class TileRemover implements IResettable, ILevelListener
         // If the star removal is in progress.
         if (this.activateRocketRemoval == true)
         {
-            removeRockets(game, hub);
+            game.addToChainList(Chain.newInstance(removeRockets(game, hub)));
         }
 
         // If the star removal is in progress.
@@ -354,8 +358,8 @@ public class TileRemover implements IResettable, ILevelListener
         }
     }
 
-    public void findMatches(ManagerHub hub, List<Chain> chainList)
-    {
+    public Chain findMatches(ManagerHub hub)
+    {        
         // Shortcuts to the managers.
         BoardManager boardMan       = hub.boardMan;
         StatManager  statMan        = hub.statMan;
@@ -367,13 +371,7 @@ public class TileRemover implements IResettable, ILevelListener
         List<Line> lineList = new ArrayList<Line>();
         
         int cycleX = boardMan.findXMatch(tileRemovalSet, lineList);
-        int cycleY = boardMan.findYMatch(tileRemovalSet, lineList);
-        
-        // Build up the chains, if they exist.
-        if (!lineList.isEmpty())
-        {
-            chainList.add(Chain.newInstance(lineList));
-        }
+        int cycleY = boardMan.findYMatch(tileRemovalSet, lineList);                
         
         statMan.incrementCycleLineCount(cycleX);
         statMan.incrementCycleLineCount(cycleY);
@@ -394,17 +392,22 @@ public class TileRemover implements IResettable, ILevelListener
 
         // Copy the match into the last line match holder.
         lastMatchSet.clear();
-        lastMatchSet.addAll(tileRemovalSet);                
+        lastMatchSet.addAll(tileRemovalSet);
+
+        // Return the chain list.        
+        return Chain.newInstance(lineList);
     }
 
     private IAnimation animateItemActivation(
             final ManagerHub hub,
             final Tile tile)
     {
-        if(tile == null || hub == null)
-        {
-            throw new IllegalArgumentException("tile and hub cannot be null.");
-        }
+        // Sanity check.
+        if (hub == null)
+            throw new IllegalArgumentException("Hub cannot be null.");
+
+        if (tile == null)
+            throw new IllegalArgumentException("Tile cannot be null.");
         
         // The clone of tile, used to make the effect.
         final Tile clone = TileFactory.cloneTile(tile);
@@ -442,69 +445,68 @@ public class TileRemover implements IResettable, ILevelListener
         return meta;
     }
 
-
-    private void followItem(
-            ManagerHub hub,
-            Integer lastItem, 
-            List<Tile> itemsSeenList,              
-            List<Tile> allSeenList) 
-    {
-        // The set to hold the tiles affected by the item.
-        Set<Integer> tilesAffected = new HashSet<Integer>();
-       
-        // Build a set with the current item as its only member.
-        Set<Integer> currentItem = new HashSet<Integer>();
-        currentItem.add(lastItem);                      
-        
-        // Determine the type and get the affected tiles accordingly.
-        switch (hub.boardMan.getTile(lastItem).getType())
-        {
-            case ROCKET:
-                hub.boardMan.processRockets(currentItem, tilesAffected);
-                break;
-            
-            case BOMB:
-                hub.boardMan.processBombs(currentItem, tilesAffected);
-                break;
-            
-            case STAR:
-                hub.boardMan.processStars(currentItem, tilesAffected);
-                break;
-            
-            default:
-                break;               
-        }
-        
-        // Go through the affected tiles set looking for an item.
-        for (Integer index : tilesAffected)
-        {           
-            // Get the tile entity.
-            Tile t = hub.boardMan.getTile(index);
-            
-            // If we have found another item. Recurse.
-            if (t.getType() != TileType.NORMAL)
-            {
-                // We've found another item. Add it to the list and recurse.
-                if (allSeenList.contains(t) == true)
-                    continue;
-                
-                // Add to the list of all things seen.
-                allSeenList.add(t);
-                
-                // Add to the temp list.
-                List<Tile> list = new ArrayList<Tile>(itemsSeenList);
-                list.add(t);
-                followItem(hub, index, list, allSeenList);
-            }
-        }
-        
-        // When we are done.  Return the event.
-        if (!hub.tutorialMan.isTutorialRunning() && !itemsSeenList.isEmpty())
-        {
-            hub.listenerMan.notifyCollisionOccured(
-                    new CollisionEvent(this, itemsSeenList));
-        }
-    }
+//    private void followItem(
+//            ManagerHub hub,
+//            Integer lastItem,
+//            List<Tile> itemsSeenList,
+//            List<Tile> allSeenList)
+//    {
+//        // The set to hold the tiles affected by the item.
+//        Set<Integer> tilesAffected = new HashSet<Integer>();
+//
+//        // Build a set with the current item as its only member.
+//        Set<Integer> currentItem = new HashSet<Integer>();
+//        currentItem.add(lastItem);
+//
+//        // Determine the type and get the affected tiles accordingly.
+//        switch (hub.boardMan.getTile(lastItem).getType())
+//        {
+//            case ROCKET:
+//                hub.boardMan.processRockets(currentItem, tilesAffected);
+//                break;
+//
+//            case BOMB:
+//                hub.boardMan.processBombs(currentItem, tilesAffected);
+//                break;
+//
+//            case STAR:
+//                hub.boardMan.processStars(currentItem, tilesAffected);
+//                break;
+//
+//            default:
+//                break;
+//        }
+//
+//        // Go through the affected tiles set looking for an item.
+//        for (Integer index : tilesAffected)
+//        {
+//            // Get the tile entity.
+//            Tile t = hub.boardMan.getTile(index);
+//
+//            // If we have found another item. Recurse.
+//            if (t.getType() != TileType.NORMAL)
+//            {
+//                // We've found another item. Add it to the list and recurse.
+//                if (allSeenList.contains(t) == true)
+//                    continue;
+//
+//                // Add to the list of all things seen.
+//                allSeenList.add(t);
+//
+//                // Add to the temp list.
+//                List<Tile> list = new ArrayList<Tile>(itemsSeenList);
+//                list.add(t);
+//                followItem(hub, index, list, allSeenList);
+//            }
+//        }
+//
+//        // When we are done.  Return the event.
+//        if (!hub.tutorialMan.isTutorialRunning() && !itemsSeenList.isEmpty())
+//        {
+//            hub.listenerMan.notifyCollisionOccured(
+//                    new CollisionEvent(this, itemsSeenList));
+//        }
+//    }
     
     private void processRemoval(Game game, ManagerHub hub)
     {        
@@ -591,10 +593,11 @@ public class TileRemover implements IResettable, ILevelListener
     private void removeLines(final Game game, ManagerHub hub)
     {
         // Sanity check.
-        if(game == null || hub == null)
-        {
-            throw new IllegalArgumentException("game and hub cannot be null.");
-        }
+        if (game == null)
+            throw new IllegalArgumentException("Game cannot be null.");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub cannot be null.");
         
         // Shortcuts to managers.
         final AnimationManager animationMan = hub.animationMan;
@@ -782,13 +785,14 @@ public class TileRemover implements IResettable, ILevelListener
         tileRemovalInProgress = true;
     }    
         
-    private void removeRockets(final Game game, ManagerHub hub)
-    {        
+    private List<TileEffect> removeRockets(final Game game, ManagerHub hub)
+    {
         // Sanity check.
-        if(game == null || hub == null)
-        {
-            throw new IllegalArgumentException("game and hub cannot be null.");
-        }
+        if (game == null)
+            throw new IllegalArgumentException("Game cannot be null.");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub cannot be null.");
         
         final AnimationManager animationMan = hub.animationMan;
         final BoardManager     boardMan     = hub.boardMan;
@@ -811,31 +815,34 @@ public class TileRemover implements IResettable, ILevelListener
         // Used below.
         int deltaScore = 0;
         
-        List<Tile> allSeenSet = new ArrayList<Tile>();
+//        List<Tile> allSeenSet = new ArrayList<Tile>();
           
         // Load the items into the allseen initially.
-        for (Integer index : rocketRemovalSet)
-        {            
-            Tile t = boardMan.getTile(index);
-            
-            if (t.getType() != TileType.NORMAL)
-            {
-                allSeenSet.add(t);
-            }
-         }
+//        for (Integer index : rocketRemovalSet)
+//        {
+//            Tile t = boardMan.getTile(index);
+//
+//            if (t.getType() != TileType.NORMAL)
+//            {
+//                allSeenSet.add(t);
+//            }
+//         }
                 
-        // Simulate all collisions that these rockets would achieve one at a time.
-        for (Integer index : rocketRemovalSet)
-        {            
-            // Create a set to hold the current item.
-            List<Tile> itemsSeen = new ArrayList<Tile>();
-            itemsSeen.add(boardMan.getTile(index));
-            
-            followItem(hub, index, itemsSeen, allSeenSet);
-        }
+//        // Simulate all collisions that these rockets would achieve one at a time.
+//        for (Integer index : rocketRemovalSet)
+//        {
+//            // Create a set to hold the current item.
+//            List<Tile> itemsSeen = new ArrayList<Tile>();
+//            itemsSeen.add(boardMan.getTile(index));
+//
+//            followItem(hub, index, itemsSeen, allSeenSet);
+//        }
 
         // Get the tiles the rockets would affect.
-        boardMan.processRockets(rocketRemovalSet, tileRemovalSet);
+        List<TileEffect> effectList = new ArrayList<TileEffect>();
+        boardMan.processRockets(rocketRemovalSet, tileRemovalSet, effectList);
+
+        // Add those to
 
         for (Integer index : lastMatchSet)
         {
@@ -1000,15 +1007,19 @@ public class TileRemover implements IResettable, ILevelListener
 
         // Set the flag.
         tileRemovalInProgress = true;
+
+        // Return the effect list.
+        return effectList;
     }
     
     private void removeBombs(final Game game, final ManagerHub hub)
     {        
         // Sanity check.
-        if(game == null || hub == null)
-        {
-            throw new IllegalArgumentException("game and hub cannot be null.");
-        }
+        if (game == null)
+            throw new IllegalArgumentException("Game cannot be null.");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub cannot be null.");
         
         // Create shortcuts to all the managers.
         final AnimationManager animationMan = hub.animationMan;
@@ -1045,15 +1056,15 @@ public class TileRemover implements IResettable, ILevelListener
             }
         }
         
-        // Simulate all collisions that these bombs would achieve one at a time.
-        for (Integer index : bombRemovalSet)
-        {           
-            // Create a set to hold the current item.
-            List<Tile> itemsSeenList = new ArrayList<Tile>();            
-            itemsSeenList.add(boardMan.getTile(index));                        
-            
-            followItem(hub, index, itemsSeenList, allSeenList);            
-        }
+//        // Simulate all collisions that these bombs would achieve one at a time.
+//        for (Integer index : bombRemovalSet)
+//        {
+//            // Create a set to hold the current item.
+//            List<Tile> itemsSeenList = new ArrayList<Tile>();
+//            itemsSeenList.add(boardMan.getTile(index));
+//
+//            followItem(hub, index, itemsSeenList, allSeenList);
+//        }
         
         // Get the tiles the bombs would affect.
         boardMan.processBombs(bombRemovalSet, tileRemovalSet);
@@ -1261,10 +1272,11 @@ public class TileRemover implements IResettable, ILevelListener
     private void removeStars(final Game game, final ManagerHub hub)
     {        
         // Sanity check.
-        if(game == null || hub == null)
-        {
-            throw new IllegalArgumentException("game and hub cannot be null.");
-        }
+        if (game == null)
+            throw new IllegalArgumentException("Game cannot be null.");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub cannot be null.");
         
         // Create shortcuts to all the managers.
         final AnimationManager animationMan = hub.animationMan;
@@ -1304,15 +1316,15 @@ public class TileRemover implements IResettable, ILevelListener
             }
         }
         
-        // Simulate all collisions that these stars would achieve one at a time.
-        for (Integer index : starRemovalSet)
-        {           
-            // Create a set to hold the current item.
-            List<Tile> itemsSeenList = new ArrayList<Tile>();            
-            itemsSeenList.add(boardMan.getTile(index));                        
-            
-            followItem(hub, index, itemsSeenList, allSeenList);            
-        }
+//        // Simulate all collisions that these stars would achieve one at a time.
+//        for (Integer index : starRemovalSet)
+//        {
+//            // Create a set to hold the current item.
+//            List<Tile> itemsSeenList = new ArrayList<Tile>();
+//            itemsSeenList.add(boardMan.getTile(index));
+//
+//            followItem(hub, index, itemsSeenList, allSeenList);
+//        }
 
         // Get the tiles the bombs would affect.
         boardMan.processStars(starRemovalSet, tileRemovalSet);

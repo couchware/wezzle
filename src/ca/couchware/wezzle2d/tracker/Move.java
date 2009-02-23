@@ -3,8 +3,9 @@
  * Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
 
-package ca.couchware.wezzle2d;
+package ca.couchware.wezzle2d.tracker;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class Move
      */
     private Move(List<Chain> chainList)
     {
-        this.chainList = chainList;
+        this.chainList = new ArrayList<Chain>(chainList);
     }
     
     /**
