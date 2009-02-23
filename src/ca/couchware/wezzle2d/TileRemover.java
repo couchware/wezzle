@@ -39,6 +39,7 @@ import ca.couchware.wezzle2d.tile.TileFactory;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.tracker.TileEffect;
 import ca.couchware.wezzle2d.util.CouchLogger;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -199,7 +200,7 @@ public class TileRemover implements IResettable, ILevelListener
         {
             // Keep track of chains.
             Chain chain = findMatches(hub);
-            if (chain.size() != 0) game.getTracker().record(chain);
+            if (chain.size() != 0) game.getTracker().track(chain);
             
             // If there are matches, score them, remove 
             // them and then refactor again.
@@ -241,32 +242,31 @@ public class TileRemover implements IResettable, ILevelListener
         {            
             removeLines(game, hub);
         }                 
-
         // If the star removal is in progress.
-        if (this.activateRocketRemoval == true)
+        else if (this.activateRocketRemoval == true)
         {
             Chain chain = Chain.newInstance(removeRockets(game, hub));
-            game.getTracker().record(chain);
+            game.getTracker().track(chain);
         }
-
         // If the star removal is in progress.
-        if (this.activateStarRemoval == true)
+        else if (this.activateStarRemoval == true)
         {
             removeStars(game, hub);
         }
-
         // If a bomb removal is in progress.
-        if (this.activateBombRemoval == true)
+        else if (this.activateBombRemoval == true)
         {
             removeBombs(game, hub);
         }
-                       
+        
         // If a line removal is in progress.        
         if (this.tileRemovalInProgress == true)
         {            
             processRemoval(game, hub);
         }
     }
+
+    
     
     private void startLineRemoval(Refactorer refactorer)
     {
@@ -397,52 +397,7 @@ public class TileRemover implements IResettable, ILevelListener
         return Chain.newInstance(lineList);
     }
 
-    private IAnimation animateItemActivation(
-            final ManagerHub hub,
-            final Tile tile)
-    {
-        // Sanity check.
-        if (hub == null)
-            throw new IllegalArgumentException("Hub cannot be null.");
-
-        if (tile == null)
-            throw new IllegalArgumentException("Tile cannot be null.");
-        
-        // The clone of tile, used to make the effect.
-        final Tile clone = TileFactory.cloneTile(tile);
-        
-        // Add the clone to the layer man.
-        hub.layerMan.add(clone, Layer.EFFECT);
-        
-        // Make the animation.
-        IAnimation anim1 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, clone)
-                .minWidth(clone.getWidth())                                
-                .maxWidth(Integer.MAX_VALUE)
-                .speed(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED))
-                .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION))
-                .end();
-
-        IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, clone)
-                .wait(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_WAIT))
-                .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_DURATION))
-                .end();
-
-        MetaAnimation meta = new MetaAnimation.Builder()
-                .add(anim1)
-                .add(anim2)
-                .end();
-        
-        meta.addAnimationListener(new AnimationAdapter()
-        {
-            @Override
-            public void animationFinished()
-            { hub.layerMan.remove(clone, Layer.EFFECT); }
-        });
-
-        clone.setAnimation(meta);
-        
-        return meta;
-    }
+    
 
 //    private void followItem(
 //            ManagerHub hub,
@@ -522,7 +477,7 @@ public class TileRemover implements IResettable, ILevelListener
             }
         } // end for
 
-        if (animationInProgress == false)
+        if (!animationInProgress)
         {
             // Remove the tiles from the board.
             hub.boardMan.removeTiles(tileRemovalSet);
@@ -532,19 +487,19 @@ public class TileRemover implements IResettable, ILevelListener
 
             // See if there are any bombs in the bomb set.
             // If there are, activate the bomb removal.              
-            if (this.itemSetMap.get(TileType.ROCKET).isEmpty() == false)
+            if (!this.itemSetMap.get(TileType.ROCKET).isEmpty())
             {
                 this.activateRocketRemoval = true;
             }
-            else if (this.itemSetMap.get(TileType.STAR).isEmpty() == false)
+            else if (!this.itemSetMap.get(TileType.STAR).isEmpty())
             {
                 this.activateStarRemoval = true;
             }
-            else if (this.itemSetMap.get(TileType.BOMB).isEmpty() == false)
+            else if (!this.itemSetMap.get(TileType.BOMB).isEmpty())
             {
                 this.activateBombRemoval = true;
             }
-            else if (this.itemSetMap.get(TileType.GRAVITY).isEmpty() == false)
+            else if (!this.itemSetMap.get(TileType.GRAVITY).isEmpty())
             {                
                 shiftGravity(hub.boardMan); 
                 game.getRefactorer()
@@ -630,38 +585,9 @@ public class TileRemover implements IResettable, ILevelListener
             }
 
             // Show the SCT.
-            ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
-
-            final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(settingsMan.getColor(Key.SCT_COLOR_LINE)).size(scoreMan.determineFontSize(deltaScore))
-                    .text(String.valueOf(deltaScore)).end();
-            
-            IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
-                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
-                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
-                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                .end();
-            
-            IAnimation a2 = new MoveAnimation.Builder(label)
-                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
-                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
-                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();                       
-            
-            a2.addAnimationListener(new AnimationAdapter()
-            {
-                @Override
-                public void animationStarted()
-                { layerMan.add(label, Layer.EFFECT); }
-                
-                @Override
-                public void animationFinished()
-                { layerMan.remove(label, Layer.EFFECT); }
-            });
-
-            animationMan.add(a1);
-            animationMan.add(a2);           
+            final ImmutablePosition pos = boardMan.determineCenterPoint(tileRemovalSet);
+            final Color color = settingsMan.getColor(Key.SCT_COLOR_LINE);
+            animationMan.add(animateItemSct(hub, pos, deltaScore, color));
         }
         else
         {
@@ -676,7 +602,7 @@ public class TileRemover implements IResettable, ILevelListener
         // Make sure bombs aren't removed (they get removed
         // in a different step).  However, if the no-items
         // flag is set, then ignore bombs.
-        if (this.noItems == false)
+        if (!this.noItems)
         {
             scanFor(boardMan, EnumSet.allOf(TileType.class), true);
         }
@@ -688,13 +614,13 @@ public class TileRemover implements IResettable, ILevelListener
 
         // Start the line removal animations if there are any
         // non-bomb tiles.
-        if (tileRemovalSet.isEmpty() == false)
+        if (!tileRemovalSet.isEmpty())
         {            
             for (Integer index : tileRemovalSet)
             {
                 Tile t = boardMan.getTile(index);
 
-                if (levelUpInProgress == true)
+                if (this.levelUpInProgress)
                 {
                     final int COLUMN = boardMan.asColumn(index);
                     final int ANGLE  = COLUMN >= boardMan.getColumns() / 2 ? 0 : 180;                    
@@ -868,44 +794,10 @@ public class TileRemover implements IResettable, ILevelListener
         }
 
         // Show the SCT.
-        ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
-
-        final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.SCT_COLOR_ITEM))
-                .size(scoreMan.determineFontSize(deltaScore))
-                .text(String.valueOf(deltaScore))
-                .end();
-        
-        { // Context for the animations.
-            IAnimation anim1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
-                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
-                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
-                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                .end();
-        
-            IAnimation anim2 = new MoveAnimation.Builder(label)
-                    .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
-                    .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
-                    .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
-                    .end();
-
-            anim2.addAnimationListener(new AnimationAdapter()
-            {
-                @Override
-                public void animationStarted()
-                { layerMan.add(label, Layer.EFFECT); }
-
-                @Override
-                public void animationFinished()
-                { layerMan.remove(label, Layer.EFFECT); }
-            });
-
-            animationMan.add(anim1);
-            animationMan.add(anim2); 
-        }
-               
+        final ImmutablePosition pos = boardMan.determineCenterPoint(tileRemovalSet);
+        final Color color = hub.settingsMan.getColor(Key.SCT_COLOR_ITEM);
+        animationMan.add(animateItemSct(hub, pos, deltaScore, color));
+                       
         // Play the sound.
         soundMan.play(Sound.ROCKET);
         
@@ -947,57 +839,24 @@ public class TileRemover implements IResettable, ILevelListener
         int i = 0;
         for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
         {
-            Tile t = boardMan.getTile((Integer) it.next());
+            Tile tile = boardMan.getTile((Integer) it.next());
 
             // Bring the tile to the front.
-            layerMan.toFront(t, Layer.TILE);
+            layerMan.toFront(tile, Layer.TILE);
 
-            if (t.getType() == TileType.ROCKET)
+            IAnimation anim;
+            if (tile.getType() == TileType.ROCKET)
             {                
-                // Cast it.
-                RocketTile r = (RocketTile) t;                                
+                anim = animateRocket(hub, tile);
                 
-                IAnimation anim1 = new MoveAnimation.Builder(r)
-                        .duration(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_DURATION))
-                        .theta(r.getDirection().toDegrees())
-                        .speed(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_SPEED))
-                        .gravity(settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_GRAVITY))
-                        .end();
-                
-                IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_DURATION))
-                        .end();
-                                
-                MetaAnimation meta = new MetaAnimation.Builder()
-                        .finishRule(FinishRule.ALL)
-                        .add(anim1)
-                        .add(anim2)                        
-                        .end();
-                
-                t.setAnimation(meta);                
-                animationMan.add(meta);                                                
             }
             else
             {
-                i++;
-                int angle = i % 2 == 0 ? 70 : 180 - 70;                
-               
-                IAnimation anim1 = new MoveAnimation.Builder(t)
-                        .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
-                        .theta(angle)
-                        .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
-                        .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY)).end();
-                    
-                IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_DURATION)).end();
-                
-                t.setAnimation(anim1);
-                
-                animationMan.add(anim1);
-                animationMan.add(anim2);               
+                int angle = ++i % 2 == 0 ? 70 : 180 - 70;
+                anim = animateRocketJump(hub, tile, angle);              
             }
+            tile.setAnimation(anim);
+            animationMan.add(anim);
         }
 
         // If other things were were hit, they will be dealt with in another
@@ -1042,18 +901,18 @@ public class TileRemover implements IResettable, ILevelListener
         // Used below.
         int deltaScore = 0;
         
-        List<Tile> allSeenList = new ArrayList<Tile>();
-          
-        // Load the items into the allseen initially.
-        for (Integer index : bombRemovalSet)
-        {          
-            Tile t = boardMan.getTile(index);
-            
-            if (t.getType() != TileType.NORMAL)
-            {
-                allSeenList.add(t);
-            }
-        }
+//        List<Tile> allSeenList = new ArrayList<Tile>();
+//
+//        // Load the items into the allseen initially.
+//        for (Integer index : bombRemovalSet)
+//        {
+//            Tile t = boardMan.getTile(index);
+//
+//            if (t.getType() != TileType.NORMAL)
+//            {
+//                allSeenList.add(t);
+//            }
+//        }
         
 //        // Simulate all collisions that these bombs would achieve one at a time.
 //        for (Integer index : bombRemovalSet)
@@ -1079,40 +938,9 @@ public class TileRemover implements IResettable, ILevelListener
         }
 
         // Show the SCT.
-        ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
-
-        final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.SCT_COLOR_ITEM)).size(scoreMan.determineFontSize(deltaScore))
-                .text(String.valueOf(deltaScore)).end();
-
-        { // Context for the animations.
-            IAnimation anim1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                    .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
-                    .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
-                    .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
-                    .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                    .end();
-
-            IAnimation anim2 = new MoveAnimation.Builder(label)
-                    .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
-                    .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
-                    .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
-
-            anim2.addAnimationListener(new AnimationAdapter()
-            {
-                @Override
-                public void animationStarted()
-                { layerMan.add(label, Layer.EFFECT); }
-
-                @Override
-                public void animationFinished()
-                { layerMan.remove(label, Layer.EFFECT); }
-            });
-
-            animationMan.add(anim1);
-            animationMan.add(anim2);    
-        }
+        ImmutablePosition pos = boardMan.determineCenterPoint(tileRemovalSet);
+        final Color color = hub.settingsMan.getColor(Key.SCT_COLOR_ITEM);
+        animationMan.add(animateItemSct(hub, pos, deltaScore, color));
 
         // Play the sound.
         soundMan.play(Sound.BOMB);
@@ -1207,12 +1035,6 @@ public class TileRemover implements IResettable, ILevelListener
                         .add(anim3)
                         .end();
 
-//                meta.setFinishRunnable(new Runnable()
-//                {
-//                   public void run() 
-//                   { layerMan.remove(explosion, Layer.EFFECT); }
-//                });
-                
                 meta.addAnimationListener(new AnimationAdapter()
                 {                   
                     @Override
@@ -1279,13 +1101,12 @@ public class TileRemover implements IResettable, ILevelListener
         
         // Create shortcuts to all the managers.
         final AnimationManager animationMan = hub.animationMan;
-        final BoardManager     boardMan     = hub.boardMan;
-        final LayerManager     layerMan     = hub.layerMan;
-        final ScoreManager     scoreMan     = hub.scoreMan;
-        final SettingsManager  settingsMan  = hub.settingsMan;
-        final SoundManager     soundMan     = hub.soundMan;
-        final StatManager      statMan      = hub.statMan;                        
-        final TutorialManager  tutorialMan  = hub.tutorialMan;
+        final BoardManager boardMan         = hub.boardMan;
+        final LayerManager layerMan         = hub.layerMan;
+        final ScoreManager scoreMan         = hub.scoreMan;
+        final SoundManager soundMan         = hub.soundMan;
+        final StatManager statMan           = hub.statMan;
+        final TutorialManager tutorialMan   = hub.tutorialMan;
         
         // Shortcut to the set.
         Set<Integer> starRemovalSet = this.itemSetMap.get(TileType.STAR);
@@ -1298,22 +1119,19 @@ public class TileRemover implements IResettable, ILevelListener
 
         // Used below.
         int deltaScore = 0;
-
-        // Also used below.
-        IAnimation a1, a2;
-                
-        List<Tile> allSeenList = new ArrayList<Tile>();
-          
-        // Load the items into the allseen initially.
-        for (Integer index : starRemovalSet)
-        {            
-            Tile t = boardMan.getTile(index);
-            
-            if (t.getType() != TileType.NORMAL)
-            {
-                allSeenList.add(t);
-            }
-        }
+//
+//        List<Tile> allSeenList = new ArrayList<Tile>();
+//
+//        // Load the items into the allseen initially.
+//        for (Integer index : starRemovalSet)
+//        {
+//            Tile t = boardMan.getTile(index);
+//
+//            if (t.getType() != TileType.NORMAL)
+//            {
+//                allSeenList.add(t);
+//            }
+//        }
         
 //        // Simulate all collisions that these stars would achieve one at a time.
 //        for (Integer index : starRemovalSet)
@@ -1353,40 +1171,9 @@ public class TileRemover implements IResettable, ILevelListener
         }
 
         // Show the SCT.
-        ImmutablePosition p = boardMan.determineCenterPoint(tileRemovalSet);
-
-        final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.SCT_COLOR_ITEM))
-                .size(scoreMan.determineFontSize(deltaScore))
-                .text(String.valueOf(deltaScore))
-                .end();
-
-        a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
-                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
-                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
-                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                .end();
-        
-        a2 = new MoveAnimation.Builder(label)
-                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
-                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
-                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA)).end();
-        
-        a2.addAnimationListener(new AnimationAdapter()
-        {
-            @Override
-            public void animationStarted()
-            { layerMan.add(label, Layer.EFFECT); }
-
-            @Override
-            public void animationFinished()
-            { layerMan.remove(label, Layer.EFFECT); }
-        });
-
-        animationMan.add(a1);
-        animationMan.add(a2);       
+        final ImmutablePosition pos = boardMan.determineCenterPoint(tileRemovalSet);
+        final Color color = hub.settingsMan.getColor(Key.SCT_COLOR_ITEM);
+        animationMan.add(animateItemSct(hub, pos, deltaScore, color));
 
         // Play the sound.
         soundMan.play(Sound.STAR);
@@ -1396,35 +1183,18 @@ public class TileRemover implements IResettable, ILevelListener
         tileTypeSet.remove(TileType.STAR);        
         scanFor(boardMan, tileTypeSet);  
 
-        // Start the line removal animations.
-        IAnimation rem1, rem2;
+        // Start the line removal animations.        
         int i = 0;
         for (Integer index : tileRemovalSet)
         {
-            Tile t = boardMan.getTile(index);
-
-            // Bring the entity to the front.
-            layerMan.toFront(t, Layer.TILE);
-
-            // Increment counter.
-            i++;
-
-            int angle = i % 2 == 0 ? 70 : 180 - 70;
-                                          
-            rem1 = new MoveAnimation.Builder(t)
-                    .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
-                    .theta(angle)
-                    .speed(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
-                    .gravity(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
-                    .end();
-            rem2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                    .wait(settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
-                    .duration(settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
-                    .end();
+            Tile tile = boardMan.getTile(index);           
+            layerMan.toFront(tile, Layer.TILE);
             
-            t.setAnimation(rem1);
-            animationMan.add(rem1);
-            animationMan.add(rem2);           
+            int angle = ++i % 2 == 0 ? 70 : 180 - 70;
+            IAnimation anim = animateJump(hub, tile, angle);
+
+            tile.setAnimation(anim);
+            animationMan.add(anim);
         }
 
         // Clear the star removal set.
@@ -1455,6 +1225,145 @@ public class TileRemover implements IResettable, ILevelListener
         
         // Clear the gravity tiles.
         gravityRemovalSet.clear();
+    }
+
+    private IAnimation animateItemSct(
+            final ManagerHub hub,
+            final ImmutablePosition pos,
+            final int deltaScore,
+            final Color color)
+    {
+        final ITextLabel label = new LabelBuilder(pos.getX(), pos.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(color)
+                .size(hub.scoreMan.determineFontSize(deltaScore))
+                .text(String.valueOf(deltaScore))
+                .end();
+
+        IAnimation move = new MoveAnimation.Builder(label)
+                .duration(hub.settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(hub.settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(hub.settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
+                .end();
+
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                .wait(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
+                .end();
+        
+        move.addAnimationListener(new AnimationAdapter()
+        {
+            @Override
+            public void animationStarted()
+            {
+                hub.layerMan.add(label, Layer.EFFECT);
+            }
+
+            @Override
+            public void animationFinished()
+            {
+                hub.layerMan.remove(label, Layer.EFFECT);
+            }
+        });
+
+        return new MetaAnimation.Builder()
+                .finishRule(MetaAnimation.FinishRule.ALL)
+                .add(move).add(fade).end();
+    }
+
+    private IAnimation animateItemActivation(final ManagerHub hub, final Tile tile)
+    {
+        // Sanity check.
+        if (hub == null)
+            throw new IllegalArgumentException("Hub cannot be null.");
+
+        if (tile == null)
+            throw new IllegalArgumentException("Tile cannot be null.");
+
+        // The clone of tile, used to make the effect.
+        final Tile clone = TileFactory.cloneTile(tile);
+
+        // Add the clone to the layer man.
+        hub.layerMan.add(clone, Layer.EFFECT);
+
+        // Make the animation.
+        IAnimation anim1 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, clone)
+                .minWidth(clone.getWidth())
+                .maxWidth(Integer.MAX_VALUE)
+                .speed(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION))
+                .end();
+
+        IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, clone)
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_DURATION))
+                .end();
+
+        MetaAnimation meta = new MetaAnimation.Builder()
+                .add(anim1)
+                .add(anim2)
+                .end();
+
+        meta.addAnimationListener(new AnimationAdapter()
+        {
+            @Override
+            public void animationFinished()
+            { hub.layerMan.remove(clone, Layer.EFFECT); }
+        });
+
+        clone.setAnimation(meta);
+
+        return meta;
+    }
+
+    private IAnimation animateJump(final ManagerHub hub, Tile tile, int angle)
+    {
+        IAnimation move = new MoveAnimation.Builder(tile)
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
+                .theta(angle)
+                .speed(hub.settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
+                .gravity(hub.settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
+                .end();
+
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
+                .end();
+
+        return new MetaAnimation.Builder()
+                .finishRule(MetaAnimation.FinishRule.ALL)
+                .add(move).add(fade).end();
+    }
+
+    private IAnimation animateRocket(ManagerHub hub, Tile tile)
+    {
+        // Cast it.
+        RocketTile rocket = (RocketTile) tile;
+
+        IAnimation move = new MoveAnimation.Builder(rocket)
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_DURATION))
+                .theta(rocket.getDirection().toDegrees())
+                .speed(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_SPEED))
+                .gravity(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_GRAVITY))
+                .end();
+
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_DURATION))
+                .end();
+
+        MetaAnimation meta = new MetaAnimation.Builder()
+                .finishRule(FinishRule.ALL)
+                .add(move).add(fade).end();
+
+        return meta;
+    }
+
+    private IAnimation animateRocketJump(ManagerHub hub, Tile tile, int angle)
+    {
+        return animateJump(hub, tile, angle);
     }
    
     public void levelChanged(LevelEvent event)

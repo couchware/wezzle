@@ -43,7 +43,7 @@ public class Tracker
      * Add a new chain to the current move.
      * @param chain
      */
-    public void record(Chain chain)
+    public void track(Chain chain)
     {
         if (chain == null)
             throw new NullPointerException("Chain cannot be null!");

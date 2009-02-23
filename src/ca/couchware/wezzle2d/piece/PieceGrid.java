@@ -368,10 +368,10 @@ public class PieceGrid extends AbstractEntity
             for (int j = 0; j < structure[0].length; j++)
             {
 				if (structure[i][j] == true)
-                {
+                {                    
                     gfx.drawRoundRect(
-                            x + offsetX + i * cellWidth, 
-                            y + offsetY + j * cellHeight + 1, 
+                            x + offsetX + i * cellWidth,
+                            y + offsetY + j * cellHeight + 1,
                             cellWidth  - 1, cellHeight - 1,
                             5, 50);
                 } // end if
