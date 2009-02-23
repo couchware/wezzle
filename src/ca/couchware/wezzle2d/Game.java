@@ -24,6 +24,7 @@ import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.menu.MainMenu;
+import ca.couchware.wezzle2d.tracker.Tracker;
 import ca.couchware.wezzle2d.transition.CircularTransition;
 import ca.couchware.wezzle2d.transition.ITransition;
 import ca.couchware.wezzle2d.tutorial.BasicTutorial;
@@ -76,6 +77,9 @@ public class Game extends Canvas implements IWindowCallback
     
     /** The manager hub. */
     final private ManagerHub hub = ManagerHub.get();
+
+    /** The tracker. */
+    final private Tracker tracker = Tracker.newInstance();
           
     /** The width of the screen. */
     final public static int SCREEN_WIDTH = 800;
@@ -951,19 +955,9 @@ public class Game extends Canvas implements IWindowCallback
         return window;
     }
 
-    public List<Chain> getChainList()
+    public Tracker getTracker()
     {
-        return Collections.unmodifiableList(this.chainList);
-    }
-
-    public void addToChainList(Chain chain)
-    {
-        if (chain != null) this.chainList.add(chain);
-    }
-
-    public void clearChainList()
-    {
-        this.chainList.clear();
+        return tracker;
     }
     
     //--------------------------------------------------------------------------

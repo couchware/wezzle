@@ -199,7 +199,7 @@ public class TileRemover implements IResettable, ILevelListener
         {
             // Keep track of chains.
             Chain chain = findMatches(hub);
-            if (chain.size() != 0) game.addToChainList(chain);
+            if (chain.size() != 0) game.getTracker().record(chain);
             
             // If there are matches, score them, remove 
             // them and then refactor again.
@@ -220,12 +220,10 @@ public class TileRemover implements IResettable, ILevelListener
                         listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));
                         
                         // The move is completed. Build the move.
-                        Move move = Move.newInstance(game.getChainList());
+                        //Move move = Move.newInstance(game.getChainList());
+                        Move move = game.getTracker().completeMove();
                         CouchLogger.get().recordMessage(this.getClass(),
-                                "\n" + move.toString());
-                        
-                        // Reset chains tracking.
-                        game.clearChainList();
+                                "\n" + move.toString());                                               
                     }
                     
                     // Start the next move.
@@ -247,7 +245,8 @@ public class TileRemover implements IResettable, ILevelListener
         // If the star removal is in progress.
         if (this.activateRocketRemoval == true)
         {
-            game.addToChainList(Chain.newInstance(removeRockets(game, hub)));
+            Chain chain = Chain.newInstance(removeRockets(game, hub));
+            game.getTracker().record(chain);
         }
 
         // If the star removal is in progress.

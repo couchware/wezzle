@@ -164,12 +164,12 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         
         // Clear the mouse button set.
         this.clearMouseButtonSet();
-        
-        // Clear the refactored flag.
-        this.refactored = false;
 
         // Rehide piece grid.
         this.hidePieceGrid();
+
+        // Clear the refactored flag.
+        this.refactored = false;       
     }
     
     /**
@@ -746,13 +746,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public void showPieceGrid()
     {
-        CouchLogger.get().recordWarning(this.getClass(), "Grid is shown");
+        //CouchLogger.get().recordWarning(this.getClass(), "Grid is shown");
         this.pieceGrid.setVisible(true);
     }
     
     public void hidePieceGrid()
     {
-        CouchLogger.get().recordWarning(this.getClass(), "Grid is hidden");
+        //CouchLogger.get().recordWarning(this.getClass(), "Grid is hidden");
         this.pieceGrid.setVisible(false);
     }
     

@@ -1,8 +1,6 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.tracker.Chain;
 import ca.couchware.wezzle2d.tracker.Line;
-import ca.couchware.wezzle2d.tracker.Move;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -14,17 +12,11 @@ import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.tile.BombTile;
-import ca.couchware.wezzle2d.tile.GravityTile;
 import ca.couchware.wezzle2d.tile.RocketTile;
-import ca.couchware.wezzle2d.tile.StarTile;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileFactory;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.tile.X2Tile;
-import ca.couchware.wezzle2d.tile.X3Tile;
-import ca.couchware.wezzle2d.tile.X4Tile;
 import ca.couchware.wezzle2d.tracker.TileEffect;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
@@ -1485,7 +1477,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      * @param affectedSet
      * @param trackerList
      */
-    public void processRockets(Set<Integer> rocketSet, Set<Integer> affectedSet, List<TileEffect> trackerList)
+    public void processRockets(
+            Set<Integer> rocketSet,
+            Set<Integer> affectedSet,
+            List<TileEffect> trackerList)
     {        
         // Clear the set.
         affectedSet.clear();
@@ -1498,21 +1493,18 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         
         for (Integer rocketIndex : rocketSet)
         {            
-
             // Extract column and row.
             column = rocketIndex % columns;
             row    = rocketIndex / columns;
             
             // Depending on the direction, collect the appropriate tiles.            
-            Tile t = getTile(rocketIndex);
-            RocketTile rocket = null;
-            
-            if (t.getType() == TileType.ROCKET)
+            final Tile t = getTile(rocketIndex);
+            if (t.getType() != TileType.ROCKET)
             {
-                rocket = (RocketTile) t;
-            }           
-            
-            RocketTile.Direction dir = rocket.getDirection();
+                throw new IllegalArgumentException("Rocket set contained non-rocket");
+            }
+            final RocketTile rocket = (RocketTile) t;            
+            final RocketTile.Direction dir = rocket.getDirection();
             
             int index;
 
@@ -1521,7 +1513,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 case UP:
                         
                     //Util.handleWarning("Dir is up!", Thread.currentThread());
-                    
+
                     for (int j = 0; j <= row; j++)
                     {
                         index = column + j * columns;
@@ -1589,7 +1581,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 
             // Remove the rocket's instance.
             list.remove(rocket);
-            trackerList.add(TileEffect.newInstance(getTile(rocketIndex), list));
+            trackerList.add(TileEffect.newInstance(rocket, list));
             list.clear();
 
         } // end for
@@ -1626,7 +1618,6 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	/**
 	 * Feeds all the bombs in the bomb processor and then returns those results
      * in the cleared out affected set parameter.
-     * 
 	 * @param bombTileSet
      * @param affectedSet
 	 */
@@ -1642,7 +1633,6 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     
     /**
 	 * Determines where tiles are affected by the bomb explosion.
-     * 
 	 * @param bombIndex     
      * @return The set of indices (including the bomb) affected by the bomb.
 	 */
@@ -1688,8 +1678,11 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             Set<Integer> tileSet, 
             Set<Integer> foundSet)
     {        
-        assert tileType != null;
-        assert tileSet  != null;        
+        if (tileType == null)
+            throw new NullPointerException("Tile type is null");
+
+        if (tileSet == null)
+            throw new NullPointerException("Tile set is null");       
         
         // The number of items found.
         int count = 0;
