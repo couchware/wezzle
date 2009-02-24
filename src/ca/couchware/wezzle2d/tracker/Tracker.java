@@ -15,11 +15,15 @@ import java.util.List;
  */
 public class Tracker
 {
+
     /** The game history. */
     List<Move> history = new ArrayList<Move>();
 
     /** The current move being tracked. */
     private List<Chain> chainList;
+
+    /** The current chain being tracked. */
+    private List<TileGroup> tileGroupList;
 
     /**
      * The private constructor.
@@ -28,6 +32,9 @@ public class Tracker
     {
         // Add a chain list to hold the first move.
         this.chainList = new ArrayList<Chain>();
+
+        // Add a tile group list to hold the first chain.
+        this.tileGroupList = new ArrayList<TileGroup>();
     }
 
     /**
@@ -37,18 +44,32 @@ public class Tracker
     public static Tracker newInstance()
     {
         return new Tracker();
+    }   
+
+    public void track(List<? extends TileGroup> tileGroupList)
+    {
+        if (tileGroupList == null)
+            throw new NullPointerException("TileGroup cannot be null!");
+
+        if (!tileGroupList.isEmpty())
+            this.tileGroupList.addAll(tileGroupList);
     }
 
     /**
-     * Add a new chain to the current move.
-     * @param chain
+     * Complete the current chain.  Automatically starts a new chain.
+     * @return The chain that was just completed.
      */
-    public void track(Chain chain)
+    public Chain completeChain()
     {
-        if (chain == null)
-            throw new NullPointerException("Chain cannot be null!");
-
+        // Add the current move to the history.
+        Chain chain = Chain.newInstance(tileGroupList);
         this.chainList.add(chain);
+
+        // Create a new chain list for the next move.
+        this.tileGroupList = new ArrayList<TileGroup>();
+
+        // Return the move.
+        return chain;
     }
 
     /**
@@ -67,4 +88,5 @@ public class Tracker
         // Return the move.
         return move;
     }
+
 }

@@ -197,30 +197,30 @@ public class AchievementManager implements ICollisionListener
                 completeAchievement(achievement);
                 it.remove();
                 achieved = true;
-
-
-
             }
         }
 
         // If we have achieved something, check meta achievements.
-        if(achieved == true)
+        if (achieved == true)
         {
             for (Iterator<Achievement> itr = incompletedList.iterator(); itr.hasNext(); )
             {
                 Achievement ach = itr.next();
 
-                if (ach.evaluateMeta())
+                if (ach.evaluateMeta(this))
                 {
                     completeAchievement(ach);
                     itr.remove();
                 }
             } // end for
-
         }
-        // Export.
-        if (achieved) exportAchievements();
         
+        // Export.
+        if (achieved)
+        {
+            exportAchievements();
+        }
+
         return achieved;
     }
     
@@ -264,7 +264,7 @@ public class AchievementManager implements ICollisionListener
             {
                 Achievement ach = itr.next();
 
-                if (ach.evaluateMeta())
+                if (ach.evaluateMeta(this))
                 {
                     completeAchievement(ach);
                     itr.remove();

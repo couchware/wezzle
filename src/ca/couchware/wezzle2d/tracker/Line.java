@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.tracker;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.util.StringUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Line implements TileGroup
      * Constructor private to ensure immutability.
      * @param line The tiles.
      */
-    private Line(List<Tile> tileList)
+    private Line(Collection<Tile> tileList)
     {
         this.tileList = new ArrayList<Tile>(tileList);
     }
@@ -35,7 +36,7 @@ public class Line implements TileGroup
      * @param tiles  The tiles in the line.
      * @return The immutable line.
      */
-    public static Line newInstance(List<Tile> tiles)
+    public static Line newInstance(Collection<Tile> tiles)
     {
        return new Line(tiles);
     }

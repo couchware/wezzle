@@ -6,9 +6,9 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.manager.Achievement;
+import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +52,10 @@ public class Rule
         BETWEEN
     }
 
-     /**
-     * The meta types.
+    /**
+     * The completion status.
      */
-    public static enum MetaType
+    public static enum Status
     {
       COMPLETE,
       INCOMPLETE
@@ -68,8 +68,8 @@ public class Rule
     protected final Operation operation;
     protected final int value;    
     protected final TileType[] tileTypes;
-    protected final List<String> achievementNames;
-    protected final MetaType mType;
+    protected final List<String> achievementNameList;
+    protected final Status status;
     
     //--------------------------------------------------------------------------
     // Constructor
@@ -84,79 +84,72 @@ public class Rule
      * @param value The value we are testing against, i.e. less than 2.
      */
     public Rule(Type type, Operation operation, int value)
-    {   
-        if(type == null || operation == null)
+    {
+        if (type == null)
         {
-            throw new IllegalArgumentException("type and operation cannot be null.");
+            throw new NullPointerException("Type cannot be null.");
         }
-        if(value < 0)
+        if (operation == null)
         {
-            throw new IllegalArgumentException("value must be >= 0.");
+            throw new NullPointerException("Operation cannot be null.");
         }
-        
-        this.type      = type;
+        if (value < 0)
+        {
+            throw new IllegalArgumentException("Value must be >= 0.");
+        }
+
+        this.type = type;
         this.operation = operation;
-        this.value     = value;
+        this.value = value;
         this.tileTypes = new TileType[0];
-        this.achievementNames = null;
-        mType = MetaType.COMPLETE;
+        this.achievementNameList = null;
+        status = Status.COMPLETE;
     }
-    
-    public Rule(Type type, Operation operation, TileType ... tileTypes)
+
+    public Rule(Type type, Operation operation, List<TileType> tileTypes)
     {
-        if(type == null || operation == null)
+        if (type == null)
         {
-            throw new IllegalArgumentException("type and operation cannot be null.");
+            throw new NullPointerException("Type cannot be null.");
         }
-        if(tileTypes.length <= 0)
+        if (operation == null)
         {
-            throw new IllegalArgumentException("there must be at least one tileType.");
+            throw new NullPointerException("Operation cannot be null.");
         }
-        
-        this.type      = type;
-        this.operation = operation;
-        this.tileTypes = tileTypes;
-        this.value     = -1;
-        this.achievementNames = null;
-        mType = MetaType.COMPLETE;
-    }
-    
-     public Rule(Type type, Operation operation, List<TileType> tileTypes)
-    {
-       if(type == null || operation == null)
+        if (tileTypes.size() <= 0)
         {
-            throw new IllegalArgumentException("type and operation cannot be null.");
+            throw new IllegalArgumentException("There must be at least one tile type.");
         }
-        if(tileTypes.size() <= 0)
-        {
-            throw new IllegalArgumentException("there must be at least one tileType.");
-        }
-        
-        this.type      = type;
+
+        this.type = type;
         this.operation = operation;
         this.tileTypes = tileTypes.toArray(new TileType[0]);
-        this.value     = -1;
-        this.achievementNames = null;
-        mType = MetaType.COMPLETE;
+        this.value = -1;
+        this.achievementNameList = null;
+        status = Status.COMPLETE;
     }
 
-     public Rule (Type type, Operation operation, int value, List<String> achievementNames, MetaType mType)
+     public Rule (Type type, Operation operation, int value, List<String> achievementNameList, Status status)
      {
-        if(type == null || operation == null)
+        if (type == null)
         {
-            throw new IllegalArgumentException("type and operation cannot be null.");
+            throw new NullPointerException("Type cannot be null.");
         }
-        if(value < 0)
+        if (operation == null)
         {
-            throw new IllegalArgumentException("value cannot be negative.");
+            throw new NullPointerException("Operation cannot be null.");
+        }
+        if (value < 0)
+        {
+            throw new IllegalArgumentException("Value cannot be negative.");
         }
 
         this.type      = type;
         this.operation = operation;
         this.value     = value;
         this.tileTypes = new TileType[0];
-        this.achievementNames = achievementNames;
-        this.mType = mType;
+        this.achievementNameList = achievementNameList;
+        this.status = status;
      }
     
     public void onMatch()
@@ -258,25 +251,22 @@ public class Rule
     
     /**
      * A special evaluate for collisions.  Will always return false for
-     * non-collision achivements.
+     * non-collision achievements.
      * 
      * @param tileTypeList
      * @return
      */
     public boolean evaluateCollision(List<Tile> tileList)
     {
+        if (tileList == null)
+            throw new NullPointerException("Tile list must not be null");
+
         if (this.type != Type.COLLISION)
             return false;
         
         if (tileList.size() < tileTypes.length)
             return false;
-        
-        if(tileList.size() < tileTypes.length)
-        {
-            throw new IllegalStateException("The tile list is smaller than the" +
-                    " number of tile types.");
-        }
-        
+               
         for (int i = 0; i < tileTypes.length; i++)
         {
             if (tileTypes[i] != tileList.get(i).getType())
@@ -293,71 +283,88 @@ public class Rule
      * @param achieveMentNameList The list of the achievementNames.
      * @return true or false.
      */
-    public boolean evaluateMeta()
+    public boolean evaluateMeta(AchievementManager achievementMan)
     {
-        if(this.type != Type.META)
-            return false;
-        List<Achievement> achieveList = new ArrayList<Achievement>();
-        ManagerHub hub = ManagerHub.get();
-
-        if(getMetaType() == MetaType.COMPLETE)
-            achieveList = hub.achievementMan.getCompletedAchievementList();
-        else if(getMetaType() == MetaType.INCOMPLETE)
-            achieveList = hub.achievementMan.getIncompletedAchievementList();
-        else
+        if (this.type != Type.META)
         {
-            CouchLogger.get().recordMessage(this.getClass(), "undefined meta type");
-            System.exit(-1);
+            return false;
         }
+
+        List<Achievement> achievementList = new ArrayList<Achievement>();
+      
+        switch (this.status)
+        {
+            case COMPLETE:
+                achievementList = achievementMan.getCompletedAchievementList();
+                break;
+
+            case INCOMPLETE:
+                achievementList = achievementMan.getIncompletedAchievementList();
+                break;
+
+            default: throw new AssertionError();
+        }       
+
         // Count the achievements in the achievement list that match the
         // names list.
-
-         int x = 0;
-         if (this.getAchievementNamesList() != null)
-         {
-            for(Achievement a : achieveList)
+        int x = 0;
+        if (this.getAchievementNameList() != null)
+        {
+            for (Achievement a : achievementList)
             {
-                if(this.getAchievementNamesList().contains(a.getTitle()))
+                if (this.getAchievementNameList().contains(a.getTitle()))
+                {
                     x++;
+                }
             }
-         }
-         // If there is no list, implicitly count the number of achievements.
-         else
-             x = achieveList.size();
+        }
+        // If there is no list, implicitly count the number of achievements.
+        else
+        {
+            x = achievementList.size();
+        }
 
-        switch (getOperation())
+        switch (this.operation)
         {
             case GT:
-               if(x > this.getValue())
-                   return true;
+                if (x > this.getValue())
+                {
+                    return true;
+                }
                 break;
 
             case LT:
-                 if (x < getValue())
+                if (x < getValue())
+                {
                     return true;
+                }
                 break;
 
             case EQ:
-                 if (x == getValue())
+                if (x == getValue())
+                {
                     return true;
+                }
                 break;
 
             case GTEQ:
                 if (x >= getValue())
+                {
                     return true;
+                }
                 break;
 
             case LTEQ:
-                 if (x <= getValue())
+                if (x <= getValue())
+                {
                     return true;
+                }
                 break;
 
-            default:
-                throw new IllegalArgumentException("Unknown operation.");
+            default: throw new AssertionError();
         }
 
         return false;
-
     }
 
     //--------------------------------------------------------------------------
@@ -379,9 +386,9 @@ public class Rule
         return this.tileTypes;
     }
 
-    public List<String> getAchievementNamesList()
+    public List<String> getAchievementNameList()
     {
-        return this.achievementNames;
+        return this.achievementNameList;
     }
 
     public Type getType() 
@@ -389,9 +396,9 @@ public class Rule
         return type;
     }
 
-    public MetaType getMetaType()
+    public Status getStatus()
     {
-        return this.mType;
+        return this.status;
     }
     
 }

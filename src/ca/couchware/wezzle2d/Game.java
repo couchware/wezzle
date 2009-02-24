@@ -76,7 +76,7 @@ public class Game extends Canvas implements IWindowCallback
     //--------------------------------------------------------------------------                                           
     
     /** The manager hub. */
-    final private ManagerHub hub = ManagerHub.get();
+    final private ManagerHub hub = ManagerHub.newInstance();
 
     /** The tracker. */
     final private Tracker tracker = Tracker.newInstance();

@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.tracker;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.util.StringUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class TileEffect implements TileGroup
      * Constructor private to ensure immutability.
      * @param line The tiles.
      */
-    private TileEffect(Tile causeTile, List<Tile> tileList)
+    private TileEffect(Tile causeTile, Collection<Tile> tileList)
     {
         this.causeTile = causeTile;
         this.tileList = new ArrayList<Tile>(tileList);
@@ -39,7 +40,7 @@ public class TileEffect implements TileGroup
      * @param tiles  The tiles in the line.
      * @return The immutable line.
      */
-    public static TileEffect newInstance(Tile causeTile, List<Tile> tileList)
+    public static TileEffect newInstance(Tile causeTile, Collection<Tile> tileList)
     {
        return new TileEffect(causeTile, tileList);
     }

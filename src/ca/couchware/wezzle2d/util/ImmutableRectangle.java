@@ -17,7 +17,7 @@ import java.awt.geom.Rectangle2D;
  * 
  * @author cdmckay
  */
-public class ImmutableRectangle implements Shape
+public final class ImmutableRectangle implements Shape
 {
 
     /**

@@ -181,7 +181,7 @@ public class Achievement implements IXMLizable
             if(type == Rule.Type.META)
             {
                 Element amount = rule.getChild("amount");
-                Rule.MetaType metaType = Rule.MetaType.valueOf(amount.getAttributeValue("metatype").toString());
+                Rule.Status metaType = Rule.Status.valueOf(amount.getAttributeValue("metatype").toString());
                 int value = Integer.parseInt(amount.getAttributeValue("value").toString());
                 Rule.Operation operation = Rule.Operation.valueOf(amount.getAttributeValue("operation"));
 
@@ -267,7 +267,7 @@ public class Achievement implements IXMLizable
         
         for (Rule rule : ruleList)
         {
-           if (rule.evaluate(game, hub) == false)
+           if (!rule.evaluate(game, hub))
                return false;
         }
        
@@ -282,14 +282,14 @@ public class Achievement implements IXMLizable
         
         for (Rule rule : ruleList)
         {
-           if (rule.evaluateCollision(collisionList) == false)
+           if (!rule.evaluateCollision(collisionList))
                return false;
         }
        
         return true;       
     }
 
-    public boolean evaluateMeta()
+    public boolean evaluateMeta(AchievementManager achievementMan)
     {
         // Use the private helper method to test if all of the fields
         // meet the requirements. any null values are automatically
@@ -297,7 +297,7 @@ public class Achievement implements IXMLizable
 
         for (Rule rule : ruleList)
         {
-           if (rule.evaluateMeta() == false)
+           if (!rule.evaluateMeta(achievementMan))
                return false;
         }
 
@@ -367,12 +367,12 @@ public class Achievement implements IXMLizable
             if (type.equals("META"))
             {
                 Element amount = new Element("amount");
-                amount.setAttribute("metatype", ruleList.get(i).getMetaType().toString());
+                amount.setAttribute("metatype", ruleList.get(i).getStatus().toString());
                 amount.setAttribute("value", String.valueOf(ruleList.get(i).getValue()));
                 amount.setAttribute("operation", String.valueOf(this.ruleList.get(i).getOperation()));
                 rule.addContent(amount);
 
-                List<String> achievementNamesList = ruleList.get(i).getAchievementNamesList();
+                List<String> achievementNamesList = ruleList.get(i).getAchievementNameList();
                 if(achievementNamesList != null)
                 {
                     for(String str : achievementNamesList)

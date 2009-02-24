@@ -1620,29 +1620,38 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      * in the cleared out affected set parameter.
 	 * @param bombTileSet
      * @param affectedSet
+     * @param trackerList
 	 */
-	public void processBombs(Set<Integer> bombSet, Set<Integer> affectedSet)
+	public void processBombs(
+            Set<Integer> bombSet,
+            Set<Integer> affectedSet,
+            List<TileEffect> trackerList)
 	{				
 		// A list of tiles affected by the blast.
 		affectedSet.clear();
 		
 		// Gather affected tiles.
-		for (Iterator<Integer> it = bombSet.iterator(); it.hasNext(); )		
-			affectedSet.addAll(this.processBomb(it.next()));			
+		for (int bombIndex : bombSet)
+			affectedSet.addAll(this.processBomb(bombIndex, trackerList));
 	}
     
     /**
 	 * Determines where tiles are affected by the bomb explosion.
-	 * @param bombIndex     
+	 * @param bombIndex
+     * @param trackerList
      * @return The set of indices (including the bomb) affected by the bomb.
 	 */
-	private Set<Integer> processBomb(final int bombIndex)
+	private Set<Integer> processBomb(final int bombIndex, List<TileEffect> trackerList)
 	{	                
 		// List of additional bomb tiles.
-		Set<Integer> affectedSet = new HashSet<Integer>();		
+		Set<Integer> affectedSet = new HashSet<Integer>();
+
+        // The list of tiles to be tracked.
+        List<Tile> list = new ArrayList<Tile>();
 		
 		// Return if bomb is null.
-		if (getTile(bombIndex) == null)
+        Tile bombTile = getTile(bombIndex);
+		if (bombTile == null)
 			return null;				
 		
 		// Determine affected tiles.
@@ -1656,11 +1665,19 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 						&& (bombIndex / columns) + j < this.getRows())
 				{
 					if (getTile(bombIndex % columns + i, bombIndex / columns + j) != null)
-						affectedSet.add(new Integer(bombIndex + i + (j * columns)));														
+                    {
+                        int index = bombIndex + i + (j * columns);
+						affectedSet.add(index);
+                        list.add(getTile(index));
+                    }
 				}
 			} // end for i
 		} // end for j
-				
+
+        // Add all affected tiles to the tracker list.
+        list.remove(bombTile);
+        trackerList.add(TileEffect.newInstance(bombTile, list));
+
 		// Pass back affected tiles.
 		return affectedSet;
 	}

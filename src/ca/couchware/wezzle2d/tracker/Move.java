@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tracker;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Move
      * Constructor private to ensure immutability.
      * @param cascades The cascades.
      */
-    private Move(List<Chain> chainList)
+    private Move(Collection<Chain> chainList)
     {
         this.chainList = new ArrayList<Chain>(chainList);
     }
@@ -36,7 +37,7 @@ public class Move
      * @param cascades  The cascades in the move.
      * @return The immutable move.
      */
-    public static Move newInstance(List<Chain> chainList)
+    public static Move newInstance(Collection<Chain> chainList)
     {
        return new Move(chainList);
     }    

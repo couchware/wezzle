@@ -25,11 +25,21 @@ import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.manager.*;
-import ca.couchware.wezzle2d.manager.BoardManager.Direction;
+import ca.couchware.wezzle2d.manager.AnimationManager;
+import ca.couchware.wezzle2d.manager.BoardManager;
+import ca.couchware.wezzle2d.manager.IResettable;
+import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.ScoreManager.ScoreType;
+import ca.couchware.wezzle2d.manager.ListenerManager;
+import ca.couchware.wezzle2d.manager.PieceManager;
+import ca.couchware.wezzle2d.manager.ScoreManager;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
+import ca.couchware.wezzle2d.manager.SoundManager;
+import ca.couchware.wezzle2d.manager.StatManager;
+import ca.couchware.wezzle2d.manager.TimerManager;
+import ca.couchware.wezzle2d.manager.TutorialManager;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.tile.RocketTile;
@@ -199,8 +209,7 @@ public class TileRemover implements IResettable, ILevelListener
         if (game.getRefactorer().isFinished() && areItemSetsEmpty())
         {
             // Keep track of chains.
-            Chain chain = findMatches(hub);
-            if (chain.size() != 0) game.getTracker().track(chain);
+            game.getTracker().track( findMatches(hub) );
             
             // If there are matches, score them, remove 
             // them and then refactor again.
@@ -244,9 +253,8 @@ public class TileRemover implements IResettable, ILevelListener
         }                 
         // If the star removal is in progress.
         else if (this.activateRocketRemoval == true)
-        {
-            Chain chain = Chain.newInstance(removeRockets(game, hub));
-            game.getTracker().track(chain);
+        {            
+            game.getTracker().track( removeRockets(game, hub) );
         }
         // If the star removal is in progress.
         else if (this.activateStarRemoval == true)
@@ -256,7 +264,7 @@ public class TileRemover implements IResettable, ILevelListener
         // If a bomb removal is in progress.
         else if (this.activateBombRemoval == true)
         {
-            removeBombs(game, hub);
+            game.getTracker().track( removeBombs(game, hub) );
         }
         
         // If a line removal is in progress.        
@@ -264,10 +272,8 @@ public class TileRemover implements IResettable, ILevelListener
         {            
             processRemoval(game, hub);
         }
-    }
-
-    
-    
+    }   
+         
     private void startLineRemoval(Refactorer refactorer)
     {
         // Activate the line removal.
@@ -338,7 +344,7 @@ public class TileRemover implements IResettable, ILevelListener
         this.tileRemovalSet.clear();
         
         int j;
-        if (boardMan.getGravity().contains(Direction.UP))
+        if (boardMan.getGravity().contains(BoardManager.Direction.UP))
         {
             j = 0;
         }
@@ -357,7 +363,7 @@ public class TileRemover implements IResettable, ILevelListener
         }
     }
 
-    public Chain findMatches(ManagerHub hub)
+    public List<Line> findMatches(ManagerHub hub)
     {        
         // Shortcuts to the managers.
         BoardManager boardMan       = hub.boardMan;
@@ -367,7 +373,7 @@ public class TileRemover implements IResettable, ILevelListener
         tileRemovalSet.clear();
 
         // The lines in the chain
-        List<Line> lineList = new ArrayList<Line>();
+        final List<Line> lineList = new ArrayList<Line>();
         
         int cycleX = boardMan.findXMatch(tileRemovalSet, lineList);
         int cycleY = boardMan.findYMatch(tileRemovalSet, lineList);                
@@ -394,10 +400,8 @@ public class TileRemover implements IResettable, ILevelListener
         lastMatchSet.addAll(tileRemovalSet);
 
         // Return the chain list.        
-        return Chain.newInstance(lineList);
-    }
-
-    
+        return lineList;
+    }    
 
 //    private void followItem(
 //            ManagerHub hub,
@@ -500,8 +504,9 @@ public class TileRemover implements IResettable, ILevelListener
                 this.activateBombRemoval = true;
             }
             else if (!this.itemSetMap.get(TileType.GRAVITY).isEmpty())
-            {                
-                shiftGravity(hub.boardMan); 
+            {
+                game.getTracker().completeChain();
+                shiftGravity(hub.boardMan);                
                 game.getRefactorer()
                         .setRefactorSpeed(RefactorSpeed.SHIFT)
                         .startRefactor();
@@ -509,6 +514,7 @@ public class TileRemover implements IResettable, ILevelListener
             // Otherwise, start a new refactor.
             else
             {
+                game.getTracker().completeChain();
                 game.getRefactorer()
                         .setRefactorSpeed(refactorSpeed)
                         .startRefactor();
@@ -575,7 +581,7 @@ public class TileRemover implements IResettable, ILevelListener
         {
             final int deltaScore = scoreMan.calculateLineScore(
                     tileRemovalSet,
-                    ScoreType.LINE,
+                    ScoreManager.ScoreType.LINE,
                     statMan.getChainCount());           
             
             // Increment the score.
@@ -618,59 +624,19 @@ public class TileRemover implements IResettable, ILevelListener
         {            
             for (Integer index : tileRemovalSet)
             {
-                Tile t = boardMan.getTile(index);
+                Tile tile = boardMan.getTile(index);
 
                 if (this.levelUpInProgress)
                 {
-                    final int COLUMN = boardMan.asColumn(index);
-                    final int ANGLE  = COLUMN >= boardMan.getColumns() / 2 ? 0 : 180;                    
-                    final int WAIT   = COLUMN >= boardMan.getColumns() / 2
-                            ? (boardMan.getColumns() - 1 - COLUMN) * 100
-                            : COLUMN * 100;
-
-                    // Bring this tile to the top.
-                    layerMan.toFront(t, Layer.TILE);
-
-                    IAnimation a1 = new MoveAnimation.Builder(t)
-                            .wait(WAIT)
-                            .duration(settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_DURATION))
-                            .theta(ANGLE)
-                            .speed(settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_SPEED))
-                            .gravity(settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_GRAVITY))
-                            .end();
-                    
-                    IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                            .wait(WAIT)
-                            .duration(settingsMan.getInt(Key.ANIMATION_LEVEL_FADE_DURATION))
-                            .end();
-                    
-                    t.setAnimation(a1);
-                    
-                    animationMan.add(a1);
-                    animationMan.add(a2);
-                    
-                    a1 = null;
-                    a2 = null;
+                    IAnimation anim = animateLevelUp(hub, index);
+                    tile.setAnimation(anim);
+                    animationMan.add(anim);
                 }
                 else
-                {
-                    IAnimation a1 = new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
-                            .speed(settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED))
-                            .end();
-                    
-                    IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                            .wait(settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_WAIT))
-                            .duration(settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_DURATION))
-                            .end();
-                    
-                    IAnimation meta = new MetaAnimation.Builder()
-                            .finishRule(FinishRule.ALL)
-                            .add(a1)
-                            .add(a2)
-                            .end();
-                    
-                    t.setAnimation(meta);
-                    animationMan.add(t.getAnimation());                                        
+                {                    
+                    IAnimation anim = animateRemove(hub, tile);
+                    tile.setAnimation(anim);
+                    animationMan.add(anim);
                 }                                
                 
                 // Get a set of all the items activated.
@@ -684,12 +650,12 @@ public class TileRemover implements IResettable, ILevelListener
                 for (Integer itemIndex : allItemSet)
                 {
                     // Get the tile and make a copy.
-                    final Tile tile = boardMan.getTile(itemIndex);
+                    Tile itemTile = boardMan.getTile(itemIndex);
                    
                     // Create and add the animation.                    
-                    animationMan.add(animateItemActivation(hub, tile));
+                    animationMan.add(animateItemActivation(hub, itemTile));
                 }
-            }           
+            } // end for
         } // end if    
         
         Set<Integer> gravityRemovalSet = itemSetMap.get(TileType.GRAVITY);
@@ -784,7 +750,7 @@ public class TileRemover implements IResettable, ILevelListener
 
         deltaScore = scoreMan.calculateLineScore(
                 tileRemovalSet,
-                ScoreType.ROCKET,
+                ScoreManager.ScoreType.ROCKET,
                 statMan.getChainCount());       
         
         // Increment the score.
@@ -870,7 +836,7 @@ public class TileRemover implements IResettable, ILevelListener
         return effectList;
     }
     
-    private void removeBombs(final Game game, final ManagerHub hub)
+    private List<TileEffect> removeBombs(final Game game, final ManagerHub hub)
     {        
         // Sanity check.
         if (game == null)
@@ -925,10 +891,11 @@ public class TileRemover implements IResettable, ILevelListener
 //        }
         
         // Get the tiles the bombs would affect.
-        boardMan.processBombs(bombRemovalSet, tileRemovalSet);
+        List<TileEffect> effectList = new ArrayList<TileEffect>();
+        boardMan.processBombs(bombRemovalSet, tileRemovalSet, effectList);
         deltaScore = scoreMan.calculateLineScore(
                 tileRemovalSet,
-                ScoreType.BOMB,
+                ScoreManager.ScoreType.BOMB,
                 statMan.getChainCount());       
 
         // Increment the score.
@@ -981,104 +948,37 @@ public class TileRemover implements IResettable, ILevelListener
         }
 
         // Get the bombs from the set.
-        Integer bombIndex = null;
-        for (Integer i : tileRemovalSet)
+        int bombIndex = -1;
+        for (int i : tileRemovalSet)
         {                       
             if (boardMan.getTile(i).getType() == TileType.BOMB)
             {
                 bombIndex = i;
                 break;
             }
-        }                
+        }
+
+        // If bomb index is still -1, then there's no bomb, uh-oh :(
+        if (bombIndex < 0)
+            throw new IllegalStateException("No bomb found!");
         
         // Start the line removal animations.
-        for (Integer i : tileRemovalSet)
+        for (int index : tileRemovalSet)
         {
-            Tile t = boardMan.getTile(i);
-            layerMan.toFront(t, Layer.TILE);
+            Tile tile = boardMan.getTile(index);
+            layerMan.toFront(tile, Layer.TILE);
             
-            if (boardMan.getTile(i).getType() == TileType.BOMB)
+            if (tile.getType() == TileType.BOMB)
             {
-                final GraphicEntity explosion = new GraphicEntity.Builder(
-                        t.getCenterX() - 1,
-                        t.getCenterY() - 1,
-                        Settings.getSpriteResourcesPath() + "/Explosion.png")
-                        .end();
-                
-                explosion.setWidth(2);
-                explosion.setHeight(2);
-                
-                // Add the clone to the layer man.
-                layerMan.add(explosion, Layer.EFFECT);
-
-                // Make the animation.
-                IAnimation anim1 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, explosion)
-                        .minWidth(2)                                
-                        .maxWidth(Integer.MAX_VALUE)
-                        .speed(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_ZOOM_SPEED))
-                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_ZOOM_DURATION))
-                        .end();
-
-                IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, explosion)
-                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_DURATION))
-                        .end();
-                
-                IAnimation anim3 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_TILE_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_TILE_FADE_DURATION))
-                        .end();
-
-                MetaAnimation meta = new MetaAnimation.Builder()
-                        .add(anim1)
-                        .add(anim2)
-                        .add(anim3)
-                        .end();
-
-                meta.addAnimationListener(new AnimationAdapter()
-                {                   
-                    @Override
-                    public void animationFinished()
-                    { layerMan.remove(explosion, Layer.EFFECT); }
-                });
-
-                t.setAnimation(meta);
-                animationMan.add(meta);                
+                IAnimation anim = animateExplosion(hub, tile);
+                tile.setAnimation(anim);
+                animationMan.add(anim);
             }
             else
             {           
-                IAnimation anim1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_DURATION))
-                        .end();
-                                       
-                int h = boardMan.relativeColumnPosition(i, bombIndex).asInteger();
-                int v = boardMan.relativeRowPosition(i, bombIndex).asInteger() * -1;                                
-                
-                int theta = 0;
-                
-                if      (h == 0) theta = 90 * v;                    
-                else if (v == 0) theta = h == 1 ? 0 : 180;
-                else
-                {
-                    theta = (int) Math.toDegrees(Math.atan(h / v));
-                    if (h == -1) theta -= 180;                    
-                }         
-                
-                t.setRotationAnchor(t.getWidth() / 2, t.getHeight() / 2);
-                                                                    
-                IAnimation anim2 = new MoveAnimation.Builder(t)
-                        .wait(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_WAIT))
-                        .duration(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_DURATION))
-                        .speed(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_SPEED))
-                        .gravity(settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_GRAVITY))
-                        .theta(theta)                         
-                        .omega(settingsMan.getDouble(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_OMEGA))
-                        .end();                                     
-                
-                t.setAnimation(anim1);
-                animationMan.add(anim1);
-                animationMan.add(anim2);                
+                IAnimation anim = animateShrapnel(hub, tile, index, bombIndex);
+                tile.setAnimation(anim);
+                animationMan.add(anim);
             }
         }
 
@@ -1087,7 +987,10 @@ public class TileRemover implements IResettable, ILevelListener
         this.itemSetMap.put(TileType.BOMB, nextBombRemovalSet);        
 
         // Set the flag.
-        tileRemovalInProgress = true;
+        this.tileRemovalInProgress = true;
+
+        // Return the effect list.
+        return effectList;
     }   
 
     private void removeStars(final Game game, final ManagerHub hub)
@@ -1161,7 +1064,7 @@ public class TileRemover implements IResettable, ILevelListener
 
         deltaScore = scoreMan.calculateLineScore(
                 tileRemovalSet,
-                ScoreType.STAR,
+                ScoreManager.ScoreType.STAR,
                 statMan.getChainCount());       
         
         // Increment the score.
@@ -1205,26 +1108,71 @@ public class TileRemover implements IResettable, ILevelListener
     }
     
     private void shiftGravity(BoardManager boardMan)
-    {
-        // Shortcut to the set.
-        Set<Integer> gravityRemovalSet = this.itemSetMap.get(TileType.GRAVITY);
-        
+    {      
         // Determine the new gravity.
-        EnumSet<Direction> gravity = null;
-        if (boardMan.getGravity().contains(Direction.LEFT))
+        EnumSet<BoardManager.Direction> gravity = null;
+        if (boardMan.getGravity().contains(BoardManager.Direction.LEFT))
         {
-            gravity = EnumSet.of(Direction.DOWN, Direction.RIGHT);
+            gravity = EnumSet.of(BoardManager.Direction.DOWN,
+                    BoardManager.Direction.RIGHT);
         }
         else
         {
-            gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
+            gravity = EnumSet.of(BoardManager.Direction.DOWN,
+                    BoardManager.Direction.LEFT);
         }
 
         // Set the new gravity.
         boardMan.setGravity(gravity);
         
         // Clear the gravity tiles.
-        gravityRemovalSet.clear();
+        this.itemSetMap.get(TileType.GRAVITY).clear();
+    }
+
+    private IAnimation animateLevelUp(final ManagerHub hub, int index)
+    {
+        final int column = hub.boardMan.asColumn(index);
+        final int angle = column >= hub.boardMan.getColumns() / 2 ? 0 : 180;
+        final int wait = column >= hub.boardMan.getColumns() / 2
+                ? (hub.boardMan.getColumns() - 1 - column) * 100
+                : column * 100;
+
+        final Tile tile = hub.boardMan.getTile(index);
+
+        IAnimation move = new MoveAnimation.Builder(tile)
+                .wait(wait)
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_DURATION))
+                .theta(angle).speed(hub.settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_SPEED))
+                .gravity(hub.settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_GRAVITY))
+                .end();
+
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
+                .wait(wait)
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_LEVEL_FADE_DURATION))
+                .end();
+
+        IAnimation meta = new MetaAnimation.Builder()
+                .finishRule(MetaAnimation.FinishRule.ALL)
+                .add(move).add(fade).end();
+        
+        return meta;
+    }
+
+    private IAnimation animateRemove(final ManagerHub hub, final Tile t)
+    {
+        IAnimation a1 = new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
+                .speed(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED))
+                .end();
+
+        IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_DURATION))
+                .end();
+
+        IAnimation meta = new MetaAnimation.Builder().finishRule(FinishRule.ALL)
+                .add(a1).add(a2).end();
+
+        return meta;
     }
 
     private IAnimation animateItemSct(
@@ -1318,7 +1266,7 @@ public class TileRemover implements IResettable, ILevelListener
         return meta;
     }
 
-    private IAnimation animateJump(final ManagerHub hub, Tile tile, int angle)
+    private IAnimation animateJump(final ManagerHub hub, final Tile tile, int angle)
     {
         IAnimation move = new MoveAnimation.Builder(tile)
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
@@ -1337,7 +1285,7 @@ public class TileRemover implements IResettable, ILevelListener
                 .add(move).add(fade).end();
     }
 
-    private IAnimation animateRocket(ManagerHub hub, Tile tile)
+    private IAnimation animateRocket(final ManagerHub hub, final Tile tile)
     {
         // Cast it.
         RocketTile rocket = (RocketTile) tile;
@@ -1361,11 +1309,101 @@ public class TileRemover implements IResettable, ILevelListener
         return meta;
     }
 
-    private IAnimation animateRocketJump(ManagerHub hub, Tile tile, int angle)
+    private IAnimation animateRocketJump(final ManagerHub hub, final Tile tile, int angle)
     {
         return animateJump(hub, tile, angle);
     }
-   
+
+    private IAnimation animateExplosion(final ManagerHub hub, final Tile t)
+    {
+        final GraphicEntity explosion = new GraphicEntity.Builder(
+                t.getCenterX() - 1, t.getCenterY() - 1,
+                Settings.getSpriteResourcesPath() + "/Explosion.png")
+                .end();
+
+        explosion.setWidth(2);
+        explosion.setHeight(2);
+
+        // Add the clone to the layer man.
+        hub.layerMan.add(explosion, Layer.EFFECT);
+
+        // Make the animation.
+        IAnimation boomZoom = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, explosion)
+                .minWidth(2).maxWidth(Integer.MAX_VALUE)
+                .speed(hub.settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_ZOOM_SPEED))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_ZOOM_DURATION))
+                .end();
+
+        IAnimation boomFade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, explosion)
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_DURATION))
+                .end();
+
+        IAnimation tileFade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_BOMB_TILE_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_TILE_FADE_DURATION))
+                .end();
+
+        MetaAnimation meta = new MetaAnimation.Builder()
+                .add(boomZoom).add(boomFade).add(tileFade).end();
+
+        meta.addAnimationListener(new AnimationAdapter()
+        {
+            @Override
+            public void animationFinished()
+            {
+                hub.layerMan.remove(explosion, Layer.EFFECT);
+            }
+        });
+
+        return meta;
+    }
+
+    private IAnimation animateShrapnel(final ManagerHub hub, final Tile tile, int index, int bombIndex)
+    {
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_DURATION))
+                .end();
+
+        int h = hub.boardMan.relativeColumnPosition(index, bombIndex).asInteger();
+        int v = hub.boardMan.relativeRowPosition(index, bombIndex).asInteger() * -1;
+        int theta = 0;
+
+        if (h == 0)
+        {
+            theta = 90 * v;
+        }
+        else if (v == 0)
+        {
+            theta = h == 1 ? 0 : 180;
+        }
+        else
+        {
+            theta = (int) Math.toDegrees(Math.atan(h / v));
+            if (h == -1)
+            {
+                theta -= 180;
+            }
+        }
+
+        tile.setRotationAnchor(tile.getWidth() / 2, tile.getHeight() / 2);
+        IAnimation move = new MoveAnimation.Builder(tile)
+                .wait(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_WAIT))
+                .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_DURATION))
+                .speed(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_SPEED))
+                .gravity(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_GRAVITY))
+                .theta(theta)
+                .omega(hub.settingsMan.getDouble(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_OMEGA))
+                .end();
+
+        IAnimation meta = new MetaAnimation.Builder()
+                .finishRule(MetaAnimation.FinishRule.ALL)
+                .add(fade).add(move).end();
+
+        return meta;
+    }
+
     public void levelChanged(LevelEvent event)
     {                
         this.activateLevelUp = event.isLevelUp();

@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tracker;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Chain
      * Constructor private to ensure immutability.
      * @param lines The lines.
      */
-    private Chain(List<? extends TileGroup> tileGroupList)
+    private Chain(Collection<? extends TileGroup> tileGroupList)
     {
         this.tileGroupList = new ArrayList<TileGroup>(tileGroupList);
     }
@@ -35,7 +36,7 @@ public class Chain
      * @param lines  The lines in the cascade.
      * @return The immutable cascade.
      */
-    public static Chain newInstance(List<? extends TileGroup> tileGroupList)
+    public static Chain newInstance(Collection<? extends TileGroup> tileGroupList)
     {
        return new Chain(tileGroupList);
     }

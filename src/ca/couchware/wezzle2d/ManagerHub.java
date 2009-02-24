@@ -33,10 +33,7 @@ import java.util.Set;
  */
 public class ManagerHub 
 {
-
-    /** The single instance of the manager hub. */
-    final private static ManagerHub SINGLE = new ManagerHub();
-      
+    
     /** An enum of the manager types. */
     public static enum Manager
     {       
@@ -124,13 +121,12 @@ public class ManagerHub
     { }
     
     /** 
-     * Get the only instance of the manager hub. 
-     * 
+     * Make a new ManagerHub instance.
      * @return
      */
-    public static ManagerHub get()
+    public static ManagerHub newInstance()
     {
-        return SINGLE;
+        return new ManagerHub();
     }    
     
     public void initialize(Set<Manager> set, Game game)   
