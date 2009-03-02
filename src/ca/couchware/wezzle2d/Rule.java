@@ -8,9 +8,11 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.Node;
+import ca.couchware.wezzle2d.util.Node.Filter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -63,7 +65,7 @@ public class Rule
     protected final Type type;
     protected final Operation operation;
     protected final int value;    
-    protected final Node<TileType> tileTree;
+    protected final Node<TileType> itemSubTree;
     protected final List<String> achievementNameList;
     protected final Status status;
     
@@ -97,7 +99,7 @@ public class Rule
         this.type = type;
         this.operation = operation;
         this.value = value;
-        this.tileTree = null;
+        this.itemSubTree = null;
         this.achievementNameList = null;
         status = Status.COMPLETE;
     }
@@ -119,7 +121,7 @@ public class Rule
 
         this.type = type;
         this.operation = operation;
-        this.tileTree = tree;
+        this.itemSubTree = tree;
         this.value = -1;
         this.achievementNameList = null;
         status = Status.COMPLETE;
@@ -143,7 +145,7 @@ public class Rule
         this.type = type;
         this.operation = operation;
         this.value = value;
-        this.tileTree = null;
+        this.itemSubTree = null;
         this.achievementNameList = achievementNameList;
         this.status = status;
      }
@@ -260,9 +262,32 @@ public class Rule
         if (this.type != Type.COLLISION)
             return false;                
 
-        CouchLogger.get().recordMessage(this.getClass(), this.tileTree.toString());
+        CouchLogger.get().recordMessage(this.getClass(), this.itemSubTree.toString());
 
-        return isSubTree(tileTree, this.tileTree);
+        // This filter is used with the .findAll() method of the Node class
+        // to find all item tiles.
+        Node.Filter<Tile> filter = new Node.Filter<Tile>()
+        {
+            @Override
+            public boolean apply(Tile nodeTile)
+            { return TileHelper.getItemTileTypeSet().contains(nodeTile.getType()); }
+        };
+
+        // Right here, we are finding all item tiles in the tree.  These will
+        // be searched for the item sub-tree if it's not found in the root.
+        // We add the tile tree root at the beginning of the list so that it is
+        // searched first.
+        List<Node<Tile>> targetSubTreeList = tileTree.findAll(filter);
+        targetSubTreeList.add(0, tileTree);
+        for ( Node<Tile> subTree : targetSubTreeList )
+        {
+            if (isSubTree(subTree, this.itemSubTree))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -409,7 +434,7 @@ public class Rule
     
     public Node<TileType> getTileTree()
     {
-        return this.tileTree;
+        return this.itemSubTree;
     }
 
     public List<String> getAchievementNameList()

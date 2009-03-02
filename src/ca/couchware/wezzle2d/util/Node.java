@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +33,6 @@ public class Node<T>
      */
     public Node(T data)
     {
-        this();
         setData(data);
     }
 
@@ -41,23 +41,58 @@ public class Node<T>
      * @param data
      * @return
      */
-    public Node<T> find(T data)
+    public Node<T> find(Filter<T> filter, T data)
     {
         // Otherwise, look at all the children.
         if (this.children == null) return null;
 
         for ( Node<T> node : this.children )
         {
-            if (node.data == data) return node;
+            if (filter.apply(node.data, data)) return node;
         }
 
         for ( Node<T> node : this.children )
         {
-            Node<T> targetNode = node.find(data);
+            Node<T> targetNode = node.find(filter, data);
             if (targetNode != null) return targetNode;
         }
 
         return null;
+    }
+
+    public Node<T> find(Filter<T> filter)
+    {
+        return find(filter, null);
+    }
+
+    public Node<T> find(T data)
+    {
+        return find(this.equalityFilter, data);
+    }
+
+    /**
+     * Searches for a piece of data in a tree and returns
+     * all node with occurances of it.
+     * @param data
+     * @return
+     */
+    public List<Node<T>> findAll(Filter<T> filter, T data)
+    {
+        // Create a list to return.
+        List<Node<T>> foundList = new ArrayList<Node<T>>();
+
+        for ( Node<T> node : getChildren() )
+        {
+            if (filter.apply(node.data, data)) foundList.add(node);
+            foundList.addAll(node.findAll(filter, data));
+        }
+
+        return foundList;
+    }
+
+    public List<Node<T>> findAll(Filter<T> filter)
+    {
+        return findAll(filter, null);
     }
 
     /**
@@ -204,6 +239,42 @@ public class Node<T>
         
         buffer.append("]").append("}");
         return buffer.toString();
+    }
+
+    /**
+     * A class for creating find filters.
+     * @param <T> The data type that the filter is applied to.
+     */
+    public static class Filter<T>
+    {
+        /**
+         * Apply the filter to the given data.
+         * @param nodeData
+         * @param otherData
+         * @return
+         */
+        public boolean apply(T nodeData, T otherData)
+        {
+            return nodeData == otherData;
+        }
+
+        /**
+         * Apply the filter to the given data.
+         * @param nodeData
+         * @param otherData
+         * @return
+         */
+        public boolean apply(T nodeData)
+        {
+            return apply(nodeData, null);
+        }
+    }
+
+    private Filter<T> equalityFilter = new Filter<T>();
+
+    public Filter<T> getEqualityFilter()
+    {
+        return equalityFilter;
     }
 
 }
