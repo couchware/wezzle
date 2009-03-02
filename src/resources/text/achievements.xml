@@ -26,6 +26,15 @@
         </item>
       </rule>
     </achievement>
+    <achievement name="2 Rockets with 1 Stone" difficulty="GOLD">
+        <description>Fire a rocket into two other rockets.</description>
+        <rule type="COLLISION" operation="BETWEEN">
+            <item type="ROCKET">
+                <item type="ROCKET" />
+                <item type="ROCKET" />
+            </item>
+        </rule>
+    </achievement>
     <achievement name="Rocket Specialist" difficulty="GOLD">
       <description>Finish three rocket-related achievements.</description>
       <rule type="META">
