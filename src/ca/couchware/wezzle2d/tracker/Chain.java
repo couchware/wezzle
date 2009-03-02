@@ -5,6 +5,9 @@
 
 package ca.couchware.wezzle2d.tracker;
 
+import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.util.CouchLogger;
+import ca.couchware.wezzle2d.util.Node;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +24,9 @@ public class Chain
     
     /** The list of lines. */
     private List<? extends TileGroup> tileGroupList;
+
+    /** The chain tree. */
+    private Node<Tile> chainTree;
     
     /**
      * Constructor private to ensure immutability.
@@ -29,6 +35,7 @@ public class Chain
     private Chain(Collection<? extends TileGroup> tileGroupList)
     {
         this.tileGroupList = new ArrayList<TileGroup>(tileGroupList);
+        this.buildTree();
     }
     
     /**
@@ -40,7 +47,38 @@ public class Chain
     {
        return new Chain(tileGroupList);
     }
-    
+
+    // -------------------------------------------------------------------------
+    // Private Members
+    // -------------------------------------------------------------------------
+
+    private void buildTree()
+    {
+        // Find all the lines and turn them into one continuous list.
+        this.chainTree = new Node<Tile>(null);
+        Node<Tile> root = this.chainTree;
+
+        for ( TileGroup group : this.tileGroupList )
+        {
+            if (group instanceof Line)
+            {
+                Line line = (Line) group;
+                root.addChildren(line.getTileList());
+                continue;
+            }
+
+            if (group instanceof TileEffect)
+            {
+                TileEffect effect = (TileEffect) group;
+                Node<Tile> node = root.find(effect.getCauseTile());
+                assert node != null;
+                node.addChildren(effect.getTileList());
+            }
+        } // end for
+
+        //CouchLogger.get().recordMessage(this.getClass(), root.toString());
+    }
+
     // -------------------------------------------------------------------------
     // Public Members
     // -------------------------------------------------------------------------
@@ -52,6 +90,24 @@ public class Chain
     public List getLineList()
     {
         return Collections.unmodifiableList(this.tileGroupList);
+    }
+
+    /**
+     * Get the chain tree.
+     * @return
+     */
+    public Node<Tile> getTree()
+    {
+        return chainTree;
+    }
+
+    /**
+     * Get the size of the chain.
+     * @return
+     */
+    public int size()
+    {
+        return tileGroupList.size();
     }
     
     @Override
@@ -67,11 +123,6 @@ public class Chain
         }
                         
         return buffer.toString();
-    }
-
-    public int size()
-    {
-        return this.tileGroupList.size();
-    }
+    }    
     
 }

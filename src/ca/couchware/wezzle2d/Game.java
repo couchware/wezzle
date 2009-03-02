@@ -72,15 +72,12 @@ import javazoom.jlgui.basicplayer.BasicPlayer;
 public class Game extends Canvas implements IWindowCallback
 {	  
     //--------------------------------------------------------------------------
-    // Static Members
-    //--------------------------------------------------------------------------                                           
-    
+    // Final & Static Members
+    //--------------------------------------------------------------------------                                                   
+
     /** The manager hub. */
     final private ManagerHub hub = ManagerHub.newInstance();
 
-    /** The tracker. */
-    final private Tracker tracker = Tracker.newInstance();
-          
     /** The width of the screen. */
     final public static int SCREEN_WIDTH = 800;
     
@@ -104,15 +101,15 @@ public class Game extends Canvas implements IWindowCallback
     final public static String COPYRIGHT = "\u00A9 2009 Couchware Inc.";
     
     //--------------------------------------------------------------------------
-    // Public Members
+    // Members
     //--------------------------------------------------------------------------                  
-    
+
     /** The loader. */
     public Loader loader;
     
     /** The main menu. */
     public MainMenu mainMenu;
-    
+
     /** The resource factory. */
     private ResourceFactory resourceFactory = ResourceFactory.get();
     
@@ -126,7 +123,10 @@ public class Game extends Canvas implements IWindowCallback
     private TileDropper tileDropper;
     
     /** The tile remover. */
-    private TileRemover tileRemover;        
+    private TileRemover tileRemover;
+
+    /** The tracker. */
+    private Tracker tracker;
     
     /** The window that is being used to render the game. */
     private IWindow window;    
@@ -284,7 +284,10 @@ public class Game extends Canvas implements IWindowCallback
         tileDropper = TileDropper.get();
 
         // Get the singleton.
-        tileRemover = TileRemover.get();                  
+        tileRemover = TileRemover.get();
+
+        // Setup the tracker.
+        tracker = Tracker.newInstance(hub.listenerMan);
         
         // Make the tile remover listen for level events.
         hub.listenerMan.registerListener(Listener.LEVEL, this.tileRemover);

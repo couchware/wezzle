@@ -5,6 +5,8 @@
 
 package ca.couchware.wezzle2d.tracker;
 
+import ca.couchware.wezzle2d.event.CollisionEvent;
+import ca.couchware.wezzle2d.manager.ListenerManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +18,11 @@ import java.util.List;
 public class Tracker
 {
 
+    /** The listener manager. */
+    final private ListenerManager listenerMan;
+
     /** The game history. */
-    List<Move> history = new ArrayList<Move>();
+    final private List<Move> history = new ArrayList<Move>();
 
     /** The current move being tracked. */
     private List<Chain> chainList;
@@ -28,8 +33,11 @@ public class Tracker
     /**
      * The private constructor.
      */
-    private Tracker()
+    private Tracker(ListenerManager listenerMan)
     {
+        // Store reference to listener manager.
+        this.listenerMan = listenerMan;
+
         // Add a chain list to hold the first move.
         this.chainList = new ArrayList<Chain>();
 
@@ -41,12 +49,12 @@ public class Tracker
      * Create a new Tracker instance.
      * @return A new Tracker instance.
      */
-    public static Tracker newInstance()
+    public static Tracker newInstance(ListenerManager listenerMan)
     {
-        return new Tracker();
+        return new Tracker(listenerMan);
     }   
 
-    public void track(List<? extends TileGroup> tileGroupList)
+    public void record(List<? extends TileGroup> tileGroupList)
     {
         if (tileGroupList == null)
             throw new NullPointerException("TileGroup cannot be null!");
@@ -59,11 +67,14 @@ public class Tracker
      * Complete the current chain.  Automatically starts a new chain.
      * @return The chain that was just completed.
      */
-    public Chain completeChain()
+    public Chain finishChain()
     {
         // Add the current move to the history.
         Chain chain = Chain.newInstance(tileGroupList);
         this.chainList.add(chain);
+
+        // Notify all listeners that a collision might've occured.
+        this.listenerMan.notifyCollisionOccured(new CollisionEvent(this, chain));
 
         // Create a new chain list for the next move.
         this.tileGroupList = new ArrayList<TileGroup>();
@@ -76,7 +87,7 @@ public class Tracker
      * Complete the current move.  Automatically starts a new move.
      * @return The move that was just completed.
      */
-    public Move completeMove()
+    public Move finishMove()
     {
         // Add the current move to the history.
         Move move = Move.newInstance(chainList);

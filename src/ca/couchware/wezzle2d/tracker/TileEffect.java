@@ -53,9 +53,14 @@ public class TileEffect implements TileGroup
      * Get the tiles. To ensure immutability returns an unmodifiable list.
      * @return The list of tiles.
      */
-    public List getTileList()
+    public List<Tile> getTileList()
     {
         return Collections.unmodifiableList(this.tileList);
+    }
+
+    public Tile getCauseTile()
+    {
+        return this.causeTile;
     }
 
     @Override

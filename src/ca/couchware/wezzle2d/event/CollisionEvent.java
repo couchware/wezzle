@@ -5,10 +5,8 @@
 
 package ca.couchware.wezzle2d.event;
 
-import ca.couchware.wezzle2d.tile.Tile;
-import java.util.Collections;
+import ca.couchware.wezzle2d.tracker.Chain;
 import java.util.EventObject;
-import java.util.List;
 
 /**
  *
@@ -16,16 +14,16 @@ import java.util.List;
  */
 public class CollisionEvent extends EventObject 
 {
-    private List<Tile> collisionList;
+    private Chain chain;
     
-    public CollisionEvent(Object source, List<Tile> collisionList)    
+    public CollisionEvent(Object source, Chain chain)
     {
         super(source);
-        this.collisionList = Collections.unmodifiableList(collisionList);
+        this.chain = chain;
     }
     
-    public List<Tile> getCollisionList()
+    public Chain getChain()
     {
-        return this.collisionList;
+        return chain;
     }
 }

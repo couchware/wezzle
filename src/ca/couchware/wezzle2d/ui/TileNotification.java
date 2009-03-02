@@ -11,9 +11,8 @@ import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.tile.TileFactory;
+import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.util.StringUtil;
 import java.util.EnumSet;
 
 /**
@@ -50,7 +49,7 @@ public class TileNotification extends AbstractNotification
                 .end();
 
         // Get a new tile of that type.
-        this.tile = TileFactory.makeTile(tileType, TileColor.BLACK,
+        this.tile = TileHelper.makeTile(tileType, TileColor.BLACK,
                 this.x + offsetX, this.y + offsetY);
         //this.tile.setOpacity(70);
         this.tile.translate(

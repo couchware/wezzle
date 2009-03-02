@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
@@ -24,9 +23,12 @@ import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.piece.Piece;
 import ca.couchware.wezzle2d.piece.PieceType;
+import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.ITextLabel;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import ca.couchware.wezzle2d.util.NumUtil;
@@ -899,6 +901,66 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             case ' ':
                 mouseButtonSet.add(MouseButton.LEFT);
                 return;
+        }
+
+        if (hub.boardMan != null)
+        {
+            int index = -1;
+            Tile oldTile;            
+
+            switch (event.getChar())
+            {
+                // Rocket.
+                case 'u':
+                case 'd':
+                case 'l':
+                case 'r':
+                    
+                    index = hub.boardMan.getIndexFromPosition(this.cursorPosition);
+                    oldTile = hub.boardMan.getTile(index);
+                    if (oldTile == null) break;
+                    
+                    RocketTile rocketTile = (RocketTile) TileHelper.makeTile(
+                            TileType.ROCKET, oldTile.getColor());
+
+                    RocketTile.Direction dir = RocketTile.Direction.UP;
+                    switch (event.getChar())
+                    {
+                        case 'u': dir = RocketTile.Direction.UP;    break;
+                        case 'd': dir = RocketTile.Direction.DOWN;  break;
+                        case 'l': dir = RocketTile.Direction.LEFT;  break;
+                        case 'r': dir = RocketTile.Direction.RIGHT; break;
+                        default:  throw new AssertionError();
+                    }
+                    rocketTile.setDirection(dir);
+                    
+                    hub.boardMan.replaceTile(index, rocketTile);
+                    
+                    break;
+
+                // Bomb, gravity, star.
+                case 'b':
+                case 'g':
+                case 's':
+
+                    index = hub.boardMan.getIndexFromPosition(this.cursorPosition);
+                    oldTile = hub.boardMan.getTile(index);
+                    if (oldTile == null) break;
+
+                    TileType type = TileType.NORMAL;
+                    switch (event.getChar())
+                    {
+                        case 'b': type = TileType.BOMB;    break;
+                        case 'g': type = TileType.GRAVITY; break;
+                        case 's': type = TileType.STAR;    break;
+                        default:  throw new AssertionError();
+                    }
+
+                    hub.boardMan.replaceTile(index,
+                            TileHelper.makeTile(type, oldTile.getColor()));
+
+                    break;
+            }
         }
     }
 

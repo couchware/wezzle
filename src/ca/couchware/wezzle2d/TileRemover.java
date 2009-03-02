@@ -7,7 +7,6 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.tracker.Line;
 import ca.couchware.wezzle2d.tracker.Move;
-import ca.couchware.wezzle2d.tracker.Chain;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
@@ -45,7 +44,7 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.StarTile;
 import ca.couchware.wezzle2d.tile.Tile;
-import ca.couchware.wezzle2d.tile.TileFactory;
+import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.tracker.TileEffect;
 import ca.couchware.wezzle2d.util.CouchLogger;
@@ -209,7 +208,7 @@ public class TileRemover implements IResettable, ILevelListener
         if (game.getRefactorer().isFinished() && areItemSetsEmpty())
         {
             // Keep track of chains.
-            game.getTracker().track( findMatches(hub) );
+            game.getTracker().record( findMatches(hub) );
             
             // If there are matches, score them, remove 
             // them and then refactor again.
@@ -231,7 +230,7 @@ public class TileRemover implements IResettable, ILevelListener
                         
                         // The move is completed. Build the move.
                         //Move move = Move.newInstance(game.getChainList());
-                        Move move = game.getTracker().completeMove();
+                        Move move = game.getTracker().finishMove();
                         CouchLogger.get().recordMessage(this.getClass(),
                                 "\n" + move.toString());                                               
                     }
@@ -254,7 +253,7 @@ public class TileRemover implements IResettable, ILevelListener
         // If the star removal is in progress.
         else if (this.activateRocketRemoval == true)
         {            
-            game.getTracker().track( removeRockets(game, hub) );
+            game.getTracker().record( removeRockets(game, hub) );
         }
         // If the star removal is in progress.
         else if (this.activateStarRemoval == true)
@@ -264,7 +263,7 @@ public class TileRemover implements IResettable, ILevelListener
         // If a bomb removal is in progress.
         else if (this.activateBombRemoval == true)
         {
-            game.getTracker().track( removeBombs(game, hub) );
+            game.getTracker().record( removeBombs(game, hub) );
         }
         
         // If a line removal is in progress.        
@@ -402,69 +401,6 @@ public class TileRemover implements IResettable, ILevelListener
         // Return the chain list.        
         return lineList;
     }    
-
-//    private void followItem(
-//            ManagerHub hub,
-//            Integer lastItem,
-//            List<Tile> itemsSeenList,
-//            List<Tile> allSeenList)
-//    {
-//        // The set to hold the tiles affected by the item.
-//        Set<Integer> tilesAffected = new HashSet<Integer>();
-//
-//        // Build a set with the current item as its only member.
-//        Set<Integer> currentItem = new HashSet<Integer>();
-//        currentItem.add(lastItem);
-//
-//        // Determine the type and get the affected tiles accordingly.
-//        switch (hub.boardMan.getTile(lastItem).getType())
-//        {
-//            case ROCKET:
-//                hub.boardMan.processRockets(currentItem, tilesAffected);
-//                break;
-//
-//            case BOMB:
-//                hub.boardMan.processBombs(currentItem, tilesAffected);
-//                break;
-//
-//            case STAR:
-//                hub.boardMan.processStars(currentItem, tilesAffected);
-//                break;
-//
-//            default:
-//                break;
-//        }
-//
-//        // Go through the affected tiles set looking for an item.
-//        for (Integer index : tilesAffected)
-//        {
-//            // Get the tile entity.
-//            Tile t = hub.boardMan.getTile(index);
-//
-//            // If we have found another item. Recurse.
-//            if (t.getType() != TileType.NORMAL)
-//            {
-//                // We've found another item. Add it to the list and recurse.
-//                if (allSeenList.contains(t) == true)
-//                    continue;
-//
-//                // Add to the list of all things seen.
-//                allSeenList.add(t);
-//
-//                // Add to the temp list.
-//                List<Tile> list = new ArrayList<Tile>(itemsSeenList);
-//                list.add(t);
-//                followItem(hub, index, list, allSeenList);
-//            }
-//        }
-//
-//        // When we are done.  Return the event.
-//        if (!hub.tutorialMan.isTutorialRunning() && !itemsSeenList.isEmpty())
-//        {
-//            hub.listenerMan.notifyCollisionOccured(
-//                    new CollisionEvent(this, itemsSeenList));
-//        }
-//    }
     
     private void processRemoval(Game game, ManagerHub hub)
     {        
@@ -505,7 +441,7 @@ public class TileRemover implements IResettable, ILevelListener
             }
             else if (!this.itemSetMap.get(TileType.GRAVITY).isEmpty())
             {
-                game.getTracker().completeChain();
+                game.getTracker().finishChain();
                 shiftGravity(hub.boardMan);                
                 game.getRefactorer()
                         .setRefactorSpeed(RefactorSpeed.SHIFT)
@@ -514,7 +450,7 @@ public class TileRemover implements IResettable, ILevelListener
             // Otherwise, start a new refactor.
             else
             {
-                game.getTracker().completeChain();
+                game.getTracker().finishChain();
                 game.getRefactorer()
                         .setRefactorSpeed(refactorSpeed)
                         .startRefactor();
@@ -704,30 +640,7 @@ public class TileRemover implements IResettable, ILevelListener
         statMan.incrementChainCount();
 
         // Used below.
-        int deltaScore = 0;
-        
-//        List<Tile> allSeenSet = new ArrayList<Tile>();
-          
-        // Load the items into the allseen initially.
-//        for (Integer index : rocketRemovalSet)
-//        {
-//            Tile t = boardMan.getTile(index);
-//
-//            if (t.getType() != TileType.NORMAL)
-//            {
-//                allSeenSet.add(t);
-//            }
-//         }
-                
-//        // Simulate all collisions that these rockets would achieve one at a time.
-//        for (Integer index : rocketRemovalSet)
-//        {
-//            // Create a set to hold the current item.
-//            List<Tile> itemsSeen = new ArrayList<Tile>();
-//            itemsSeen.add(boardMan.getTile(index));
-//
-//            followItem(hub, index, itemsSeen, allSeenSet);
-//        }
+        int deltaScore = 0;       
 
         // Get the tiles the rockets would affect.
         List<TileEffect> effectList = new ArrayList<TileEffect>();
@@ -866,30 +779,7 @@ public class TileRemover implements IResettable, ILevelListener
 
         // Used below.
         int deltaScore = 0;
-        
-//        List<Tile> allSeenList = new ArrayList<Tile>();
-//
-//        // Load the items into the allseen initially.
-//        for (Integer index : bombRemovalSet)
-//        {
-//            Tile t = boardMan.getTile(index);
-//
-//            if (t.getType() != TileType.NORMAL)
-//            {
-//                allSeenList.add(t);
-//            }
-//        }
-        
-//        // Simulate all collisions that these bombs would achieve one at a time.
-//        for (Integer index : bombRemovalSet)
-//        {
-//            // Create a set to hold the current item.
-//            List<Tile> itemsSeenList = new ArrayList<Tile>();
-//            itemsSeenList.add(boardMan.getTile(index));
-//
-//            followItem(hub, index, itemsSeenList, allSeenList);
-//        }
-        
+
         // Get the tiles the bombs would affect.
         List<TileEffect> effectList = new ArrayList<TileEffect>();
         boardMan.processBombs(bombRemovalSet, tileRemovalSet, effectList);
@@ -1022,29 +912,6 @@ public class TileRemover implements IResettable, ILevelListener
 
         // Used below.
         int deltaScore = 0;
-//
-//        List<Tile> allSeenList = new ArrayList<Tile>();
-//
-//        // Load the items into the allseen initially.
-//        for (Integer index : starRemovalSet)
-//        {
-//            Tile t = boardMan.getTile(index);
-//
-//            if (t.getType() != TileType.NORMAL)
-//            {
-//                allSeenList.add(t);
-//            }
-//        }
-        
-//        // Simulate all collisions that these stars would achieve one at a time.
-//        for (Integer index : starRemovalSet)
-//        {
-//            // Create a set to hold the current item.
-//            List<Tile> itemsSeenList = new ArrayList<Tile>();
-//            itemsSeenList.add(boardMan.getTile(index));
-//
-//            followItem(hub, index, itemsSeenList, allSeenList);
-//        }
 
         // Get the tiles the bombs would affect.
         boardMan.processStars(starRemovalSet, tileRemovalSet);
@@ -1231,7 +1098,7 @@ public class TileRemover implements IResettable, ILevelListener
             throw new IllegalArgumentException("Tile cannot be null.");
 
         // The clone of tile, used to make the effect.
-        final Tile clone = TileFactory.cloneTile(tile);
+        final Tile clone = TileHelper.cloneTile(tile);
 
         // Add the clone to the layer man.
         hub.layerMan.add(clone, Layer.EFFECT);

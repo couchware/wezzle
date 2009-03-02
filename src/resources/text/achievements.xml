@@ -10,17 +10,20 @@
     <achievement name="A Tale of Two Rockets" difficulty="SILVER">
       <description>Fire a rocket into another rocket.</description>
       <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
+        <item type="ROCKET">
+            <item type="ROCKET" />
+        </item>
       </rule>
     </achievement>
     <achievement name="It's Raining Rockets" difficulty="GOLD">
       <description>Fire a rocket into another rocket 
       into yet another rocket.</description>      
       <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />
-        <item type="ROCKET" />
-        <item type="ROCKET" />
+        <item type="ROCKET">
+            <item type="ROCKET">
+                <item type="ROCKET" />
+            </item>
+        </item>
       </rule>
     </achievement>
     <achievement name="Rocket Specialist" difficulty="GOLD">

@@ -5,13 +5,35 @@
 
 package ca.couchware.wezzle2d.tile;
 
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * A factory that creates tiles based on a tile type.
  * @author Cameron McKay
  */
-public class TileFactory
+public class TileHelper
 {
-    
+
+    /** All the item tile types. */
+    private static final Set<TileType> itemTileTypeSet = 
+            Collections.unmodifiableSet(EnumSet.range(TileType.BOMB, TileType.STAR));
+
+    /** All the multiplier tile types. */
+    private static final Set<TileType> multiplierTileTypeSet = 
+            Collections.unmodifiableSet(EnumSet.range(TileType.X2, TileType.X4));
+
+    public static Set<TileType> getItemTileTypeSet()
+    {
+        return itemTileTypeSet;
+    }
+
+    public static Set<TileType> getMultiplierTileTypeSet()
+    {
+        return multiplierTileTypeSet;
+    }
+
     /**
      * Creates a new tile with the given type, color and position and returns
      * it.
@@ -66,6 +88,11 @@ public class TileFactory
         return t;
     }
 
+    public static Tile makeTile(TileType type, TileColor color)
+    {
+        return makeTile(type, color, 0, 0);
+    }
+
     /**
      * Clones the passed tile.
      * @param tile
@@ -76,7 +103,7 @@ public class TileFactory
         assert tile != null;
 
         TileType type = tile.getType();
-        Tile clone = TileFactory.makeTile(type, tile.getColor(), tile.getX(), tile.getY());
+        Tile clone = TileHelper.makeTile(type, tile.getColor(), tile.getX(), tile.getY());
 
         switch (type)
         {

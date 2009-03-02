@@ -15,7 +15,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.tile.TileFactory;
+import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.tracker.TileEffect;
 import ca.couchware.wezzle2d.util.CouchLogger;
@@ -1189,7 +1189,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         // The new tile.
         int tx = x + (index % columns) * cellWidth;
         int ty = y + (index / columns) * cellHeight;
-        Tile t = TileFactory.makeTile(type, color, tx, ty);
+        Tile t = TileHelper.makeTile(type, color, tx, ty);
         
         // Add the tile.
         addTile(index, t);               
@@ -1274,16 +1274,24 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         {
             Tile testTile = getTile(i);
             
-            if(testTile != null)
+            if (testTile != null)
             {
-                if(t.equals(testTile))
+                if (t.equals(testTile))
                 {
                     return i;
                 }
-            }
-        }
+            } // end if
+        } // end for
         
        return -1;
+    }
+
+    public int getIndexFromPosition(ImmutablePosition pos)
+    {
+        int col = (pos.getX() - this.x) / this.cellWidth;
+        int row = (pos.getY() - this.y) / this.cellHeight;
+
+        return row * this.columns + col;
     }
     
     public void removeTile(Tile t)
@@ -2418,21 +2426,21 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     {
         switch (event.getChar())
         {
-            case 'r':
-                insertItemRandomly(TileType.ROCKET);
-                break;
-                
-            case 'g':
-                insertItemRandomly(TileType.GRAVITY);
-                break;
-                
-            case 'b':
-                insertItemRandomly(TileType.BOMB);
-                break;
-                
-            case 's':
-                insertItemRandomly(TileType.STAR);
-                break;                             
+//            case 'r':
+//                insertItemRandomly(TileType.ROCKET);
+//                break;
+//
+//            case 'g':
+//                insertItemRandomly(TileType.GRAVITY);
+//                break;
+//
+//            case 'b':
+//                insertItemRandomly(TileType.BOMB);
+//                break;
+//
+//            case 's':
+//                insertItemRandomly(TileType.STAR);
+//                break;      
         }
     }
 

@@ -9,7 +9,10 @@ import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.util.CouchLogger;
+import ca.couchware.wezzle2d.util.Node;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -39,9 +42,7 @@ public class Rule
         META
     };       
     
-    /**
-     * The operation being performed on the value.
-     */
+    /** The operation being performed on the value. */
     public static enum Operation
     {
         LT, 
@@ -52,22 +53,17 @@ public class Rule
         BETWEEN
     }
 
-    /**
-     * The completion status.
-     */
+    /** The completion status. */
     public static enum Status
     {
       COMPLETE,
       INCOMPLETE
     }
-    
-    /** 
-     * An achievement tuple contains a value and an associated test. 
-     */
+        
     protected final Type type;
     protected final Operation operation;
     protected final int value;    
-    protected final TileType[] tileTypes;
+    protected final Node<TileType> tileTree;
     protected final List<String> achievementNameList;
     protected final Status status;
     
@@ -101,29 +97,29 @@ public class Rule
         this.type = type;
         this.operation = operation;
         this.value = value;
-        this.tileTypes = new TileType[0];
+        this.tileTree = null;
         this.achievementNameList = null;
         status = Status.COMPLETE;
     }
 
-    public Rule(Type type, Operation operation, List<TileType> tileTypes)
+    public Rule(Type type, Operation operation, Node<TileType> tree)
     {
         if (type == null)
         {
-            throw new NullPointerException("Type cannot be null.");
+            throw new NullPointerException("Type cannot be null");
         }
         if (operation == null)
         {
-            throw new NullPointerException("Operation cannot be null.");
+            throw new NullPointerException("Operation cannot be null");
         }
-        if (tileTypes.size() <= 0)
+        if (tree == null)
         {
-            throw new IllegalArgumentException("There must be at least one tile type.");
+            throw new IllegalArgumentException("Tree cannot be null");
         }
 
         this.type = type;
         this.operation = operation;
-        this.tileTypes = tileTypes.toArray(new TileType[0]);
+        this.tileTree = tree;
         this.value = -1;
         this.achievementNameList = null;
         status = Status.COMPLETE;
@@ -144,10 +140,10 @@ public class Rule
             throw new IllegalArgumentException("Value cannot be negative.");
         }
 
-        this.type      = type;
+        this.type = type;
         this.operation = operation;
-        this.value     = value;
-        this.tileTypes = new TileType[0];
+        this.value = value;
+        this.tileTree = null;
         this.achievementNameList = achievementNameList;
         this.status = status;
      }
@@ -253,27 +249,57 @@ public class Rule
      * A special evaluate for collisions.  Will always return false for
      * non-collision achievements.
      * 
-     * @param tileTypeList
+     * @param tileTree
      * @return
      */
-    public boolean evaluateCollision(List<Tile> tileList)
+    public boolean evaluateCollision(Node<Tile> tileTree)
     {
-        if (tileList == null)
-            throw new NullPointerException("Tile list must not be null");
+        if (tileTree == null)
+            throw new NullPointerException("Tile tree must not be null");
 
         if (this.type != Type.COLLISION)
-            return false;
-        
-        if (tileList.size() < tileTypes.length)
-            return false;
-               
-        for (int i = 0; i < tileTypes.length; i++)
+            return false;                
+
+        CouchLogger.get().recordMessage(this.getClass(), this.tileTree.toString());
+
+        return isSubTree(tileTree, this.tileTree);
+    }
+
+    /**
+     * Check if <code>subTree</code> is a sub-tree of <code>tree</code>.
+     * @param tree
+     * @param subTree
+     * @return
+     */
+    private boolean isSubTree(Node<Tile> tree, Node<TileType> subTree)
+    {
+        // If the subtree has no children, then we return true.
+        if (subTree.getChildren().isEmpty()) return true;
+
+        // If the tree has no children, but the subtree does, then return false.
+        if (tree.getChildren().isEmpty()) return false;
+
+        // Get an iterator for the children of the subtree.
+        Iterator<Node<TileType>> subTreeIt = subTree.getChildren().iterator();
+
+        // We know we have at least one child, so this is fine.
+        Node<TileType> targetNode = subTreeIt.next();
+
+        // Set to true if this is a sub tree.
+        boolean match = false;
+
+        // Cycle through the children of the tree, looking for matches.
+        for ( Node<Tile> node : tree.getChildren() )
         {
-            if (tileTypes[i] != tileList.get(i).getType())
-                return false;
+            if (node.getData().getType() == targetNode.getData()
+                    && isSubTree(node, targetNode))
+            {
+                if (subTreeIt.hasNext()) targetNode = subTreeIt.next();
+                else match = true;
+            }
         }
-        
-        return true;
+
+        return match;
     }
 
     /**
@@ -381,9 +407,9 @@ public class Rule
         return value;
     }  
     
-    public TileType[] getItemList()
+    public Node<TileType> getTileTree()
     {
-        return this.tileTypes;
+        return this.tileTree;
     }
 
     public List<String> getAchievementNameList()

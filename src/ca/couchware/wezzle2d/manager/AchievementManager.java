@@ -230,17 +230,8 @@ public class AchievementManager implements ICollisionListener
      * @param e
      */
     public void collisionOccured(CollisionEvent e)
-    {
-        List<Tile> collisionList =  e.getCollisionList();
-
-        StringBuffer buffer = new StringBuffer();
-        for (Tile t : collisionList)
-        {
-           buffer.append(t.getType().toString() + " -> ");
-        }
-        buffer.append("END");
-
-        CouchLogger.get().recordMessage(this.getClass(), buffer.toString());
+    {               
+        CouchLogger.get().recordMessage(this.getClass(), e.getChain().getTree().toString());
         
         // Set to true if an achievement was achieved.
         boolean achieved = false;
@@ -249,7 +240,7 @@ public class AchievementManager implements ICollisionListener
         {
             Achievement achievement = it.next();
 
-            if (achievement.evaluateCollision(collisionList))
+            if (achievement.evaluateCollision(e.getChain().getTree()))
             {
                 completeAchievement(achievement);
                 it.remove();

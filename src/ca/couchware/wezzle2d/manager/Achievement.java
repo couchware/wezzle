@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
+import ca.couchware.wezzle2d.util.Node;
 import ca.couchware.wezzle2d.util.SuperCalendar;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -150,7 +151,8 @@ public class Achievement implements IXMLizable
                 achievement.difficulty,
                 dateCompleted);
     }
-    
+
+    @SuppressWarnings("unchecked") 
     public static Achievement newInstanceFromXML(Element element)
     {
         // Get the name.
@@ -178,79 +180,98 @@ public class Achievement implements IXMLizable
         {
             Rule.Type type = Rule.Type.valueOf(rule.getAttributeValue("type").toString());
 
-            if(type == Rule.Type.META)
+            switch (type)
             {
-                Element amount = rule.getChild("amount");
-                Rule.Status metaType = Rule.Status.valueOf(amount.getAttributeValue("metatype").toString());
-                int value = Integer.parseInt(amount.getAttributeValue("value").toString());
-                Rule.Operation operation = Rule.Operation.valueOf(amount.getAttributeValue("operation"));
-
-                Element achieve = rule.getChild("achievement");
-                List<String> achievementNamesList = new ArrayList<String>();
-
-                // If there are no specified achievement names...
-                if(achieve == null)
+                case META:
                 {
+                    Element amount = rule.getChild("amount");
+                    Rule.Status metaType = Rule.Status.valueOf(amount.getAttributeValue("metatype").toString());
+                    int value = Integer.parseInt(amount.getAttributeValue("value").toString());
+                    Rule.Operation operation = Rule.Operation.valueOf(amount.getAttributeValue("operation"));
+
+                    Element achieve = rule.getChild("achievement");
+                    List<String> achievementNamesList = new ArrayList<String>();
+
+                    // If there are no specified achievement names...
+                    if (achieve == null)
+                    {
+                        rules.add(new Rule(type, operation, value));
+                        element.removeChild("rule");
+                        rule = element.getChild("rule");
+                        continue;
+                    }
+                    else
+                    {
+                        while (achieve != null)
+                        {
+                            achievementNamesList.add(achieve.getAttributeValue("name").toString());
+                            rule.removeChild("achievement");
+                            achieve = rule.getChild("achievement");
+                        }
+
+                        rules.add(new Rule(type, operation, value, achievementNamesList, metaType));
+                        element.removeChild("rule");
+                        rule = element.getChild("rule");
+                    }
+
+                    break;
+                } // end case
+
+                case COLLISION:
+                {
+                    Rule.Operation operation = Rule.Operation
+                            .valueOf(rule.getAttributeValue("operation").toString());
+
+                    // Get the collisions.
+                    if (type == Rule.Type.COLLISION)
+                    {
+                        Node<TileType> tileTree = new Node<TileType>(null);
+                        List<Element> elementList = (List<Element>) rule.getChildren("item");
+                        Node<TileType> currentNode = tileTree;
+                        transferElement(currentNode, elementList);                        
+
+                        // Add the rule and continue to get the next rule.
+                        rules.add(new Rule(type, operation, tileTree));
+                        element.removeChild("rule");
+                        rule = element.getChild("rule");
+                    }
+                    
+                    break;
+                } // end case
+
+                default:
+                {
+                    Rule.Operation operation = Rule.Operation
+                            .valueOf(rule.getAttributeValue("operation").toString());
+
+                    int value = Integer.parseInt(rule.getAttributeValue("value").toString());
+
                     rules.add(new Rule(type, operation, value));
                     element.removeChild("rule");
                     rule = element.getChild("rule");
-                    continue;
-                }
-                else
-                {
-
-                    while(achieve != null)
-                    {
-                        achievementNamesList.add(achieve.getAttributeValue("name").toString());
-                        rule.removeChild("achievement");
-                        achieve = rule.getChild("achievement");
-                    }
-
-                    rules.add(new Rule(type, operation, value, achievementNamesList, metaType));
-                    element.removeChild("rule");
-                    rule = element.getChild("rule");
-                }
-
-                continue;
-            }
-
-            Rule.Operation operation = Rule.Operation
-                    .valueOf(rule.getAttributeValue("operation").toString()); 
-            
-            // Get the collisions.
-            if (type == Rule.Type.COLLISION)
-            {
-                Element item = rule.getChild("item");
-                List<TileType> tileTypeList = new ArrayList<TileType>();
-                while( item != null)
-                {
-                    TileType t = TileType.valueOf(item.getAttributeValue("type").toString());
-                    tileTypeList.add(t);
-                    rule.removeChild("item");
-                    item = rule.getChild("item");
-                }
-                
-                // add the rule and continue to get the next rule.
-                rules.add(new Rule(type, operation, tileTypeList));
-                element.removeChild("rule");
-                rule = element.getChild("rule");
-                
-                continue;
-            }
-
-
-
-
-                         
-             int value = Integer.parseInt(rule.getAttributeValue("value").toString());
-            
-            rules.add(new Rule(type, operation, value));
-            element.removeChild("rule");
-            rule = element.getChild("rule");
-        }
+                    
+                } // end default
+            } // end witch
+        } // end while
         
         // Get the collisions.  
         return new Achievement(rules, name, formattedDescription, description, difficulty, dateCompleted);
+    }
+
+    /**
+     * Transfer an XML element (and all it's children) to an internal tree node.
+     * @param parentNode
+     * @param elementList
+     */
+    @SuppressWarnings("unchecked") 
+    private static void transferElement(Node<TileType> parentNode, List<Element> elementList)
+    {
+        for ( Element e : elementList )
+        {
+            TileType t = TileType.valueOf(e.getAttributeValue("type").toString());
+            Node<TileType> node = parentNode.addChild(t);
+            transferElement(node, (List<Element>) e.getChildren("item"));
+        }
     }
     
     /**
@@ -274,7 +295,7 @@ public class Achievement implements IXMLizable
         return true;       
     }   
     
-    public boolean evaluateCollision(List<Tile> collisionList)
+    public boolean evaluateCollision(Node<Tile> tileTree)
     {
         // Use the private helper method to test if all of the fields
         // meet the requirements. any null values are automatically
@@ -282,7 +303,7 @@ public class Achievement implements IXMLizable
         
         for (Rule rule : ruleList)
         {
-           if (!rule.evaluateCollision(collisionList))
+           if (!rule.evaluateCollision(tileTree))
                return false;
         }
        
@@ -373,7 +394,7 @@ public class Achievement implements IXMLizable
                 rule.addContent(amount);
 
                 List<String> achievementNamesList = ruleList.get(i).getAchievementNameList();
-                if(achievementNamesList != null)
+                if (achievementNamesList != null)
                 {
                     for(String str : achievementNamesList)
                     {
@@ -388,25 +409,24 @@ public class Achievement implements IXMLizable
                 continue;
             }
 
-            rule.setAttribute("operation", String.valueOf(this.ruleList.get(i).getOperation()));
+            rule.setAttribute("operation", this.ruleList.get(i).getOperation().toString());
             
             if (type.equals("COLLISION"))
             {
-                TileType[] itemList = ruleList.get(i).getItemList();
-               
-                for(int j = 0; j < itemList.length; j++)
-                {
-                    Element item = new Element("item");
-                    item.setAttribute("type", itemList[j].toString());
-                    rule.addContent(item);
-                }
-                
-                element.addContent(rule);
+                // XXX: come back and implement this
+//                TileType[] itemList = ruleList.get(i).getItemList();
+//
+//                for (int j = 0; j < itemList.length; j++)
+//                {
+//                    Element item = new Element("item");
+//                    item.setAttribute("type", itemList[j].toString());
+//                    rule.addContent(item);
+//                }
+//
+//                element.addContent(rule);
                 continue;
             }
 
-
-            
             rule.setAttribute("value", String.valueOf(this.ruleList.get(i).getValue()));            
             element.addContent(rule);
         }
