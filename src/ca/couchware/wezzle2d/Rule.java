@@ -269,7 +269,7 @@ public class Rule
         Node.Filter<Tile> filter = new Node.Filter<Tile>()
         {
             @Override
-            public boolean apply(Tile nodeTile)
+            public boolean apply(Tile nodeTile, Tile notUsed)
             { return TileHelper.getItemTileTypeSet().contains(nodeTile.getType()); }
         };
 

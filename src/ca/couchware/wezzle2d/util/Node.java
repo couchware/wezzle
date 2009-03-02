@@ -256,18 +256,7 @@ public class Node<T>
         public boolean apply(T nodeData, T otherData)
         {
             return nodeData == otherData;
-        }
-
-        /**
-         * Apply the filter to the given data.
-         * @param nodeData
-         * @param otherData
-         * @return
-         */
-        public boolean apply(T nodeData)
-        {
-            return apply(nodeData, null);
-        }
+        }       
     }
 
     private Filter<T> equalityFilter = new Filter<T>();
