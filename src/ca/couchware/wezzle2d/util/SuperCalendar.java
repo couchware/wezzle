@@ -31,7 +31,7 @@ public class SuperCalendar extends GregorianCalendar implements IXMLizable
         return new SuperCalendar();
     }
     
-    public static SuperCalendar newInstanceFromXML(Element element)
+    public static SuperCalendar newInstanceFromXml(Element element)
     {
         int day = Integer.parseInt(element.getAttributeValue("day").toString());
         int month = Integer.parseInt(element.getAttributeValue("month").toString());            
@@ -40,7 +40,7 @@ public class SuperCalendar extends GregorianCalendar implements IXMLizable
         return new SuperCalendar(year, month, day);
     }
     
-    public Element toXMLElement()
+    public Element toXmlElement()
     {
         Element element = new Element("date");
         element.setAttribute("day",   String.valueOf(get(Calendar.DATE)));

@@ -15,6 +15,6 @@ import org.jdom.Element;
  */
 public interface IXMLizable 
 {
-    // public static <object> newInstanceFromXML(Element element);
-    public Element toXMLElement();
+    // public static <object> newInstanceFromXml(Element element);
+    public Element toXmlElement();
 }

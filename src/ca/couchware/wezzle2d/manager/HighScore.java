@@ -27,7 +27,7 @@ public class HighScore implements IXMLizable
         return new HighScore(name, score, level);
     }
     
-    public static HighScore newInstanceFromXML(Element element)
+    public static HighScore newInstanceFromXml(Element element)
     {
         String name = element.getAttributeValue("name");
         int score   = Integer.parseInt(element.getAttributeValue("score"));
@@ -51,7 +51,7 @@ public class HighScore implements IXMLizable
         return level;
     }        
     
-    public Element toXMLElement()
+    public Element toXmlElement()
     {
         Element element = new Element("high-score");
         element.setAttribute("name",  this.name);

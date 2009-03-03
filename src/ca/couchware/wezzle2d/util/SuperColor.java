@@ -54,7 +54,7 @@ public class SuperColor implements IXMLizable
         return new SuperColor(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
     
-    public static SuperColor newInstanceFromXML(Element element)
+    public static SuperColor newInstanceFromXml(Element element)
     {
         int r = Integer.parseInt(element.getAttributeValue("red"));
         int g = Integer.parseInt(element.getAttributeValue("green"));
@@ -63,7 +63,7 @@ public class SuperColor implements IXMLizable
         return new SuperColor(r, g, b, a);
     }
     
-    public Element toXMLElement()
+    public Element toXmlElement()
     {
         Element element = new Element("color");
         element.setAttribute("red", String.valueOf(color.getRed()));

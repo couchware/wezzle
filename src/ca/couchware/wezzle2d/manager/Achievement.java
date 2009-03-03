@@ -8,13 +8,13 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
-import ca.couchware.wezzle2d.Rule.Type;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import ca.couchware.wezzle2d.util.Node;
+import ca.couchware.wezzle2d.util.StringUtil;
 import ca.couchware.wezzle2d.util.SuperCalendar;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -158,7 +158,7 @@ public class Achievement implements IXMLizable
     }
 
     @SuppressWarnings("unchecked") 
-    public static Achievement newInstanceFromXML(Element element)
+    public static Achievement newInstanceFromXml(Element element)
     {
         // Get the name.
         String name = element.getAttributeValue("name");
@@ -174,7 +174,7 @@ public class Achievement implements IXMLizable
         // Get the date.
         Element dateElement = element.getChild("date");
         SuperCalendar dateCompleted = dateElement != null
-                ? SuperCalendar.newInstanceFromXML(dateElement)
+                ? SuperCalendar.newInstanceFromXml(dateElement)
                 : null;                
         
         // Get all the rules.        
@@ -234,6 +234,7 @@ public class Achievement implements IXMLizable
         return new Rule(Rule.Type.META, operation, value, achievementNamesList, metaType);
     }
 
+    @SuppressWarnings("unchecked")
     private static Rule createCollisionRule(Element rule)
     {
         // Get the operation.
@@ -243,7 +244,7 @@ public class Achievement implements IXMLizable
         Node<Set<TileType>> tileTree = new Node<Set<TileType>>(null);
         List<Element> elementList = (List<Element>) rule.getChildren("item");
         Node<Set<TileType>> currentNode = tileTree;
-        transferElement(currentNode, elementList);
+        convertElementToInternalTree(currentNode, elementList);
 
         // Add the rule and continue to get the next rule.
         return new Rule(Rule.Type.COLLISION, operation, tileTree);
@@ -263,7 +264,9 @@ public class Achievement implements IXMLizable
      * @param elementList
      */
     @SuppressWarnings("unchecked") 
-    private static void transferElement(Node<Set<TileType>> parentNode, List<Element> elementList)
+    private static void convertElementToInternalTree(
+            Node<Set<TileType>> parentNode,
+            List<Element> elementList)
     {
         for ( Element e : elementList )
         {
@@ -294,7 +297,33 @@ public class Achievement implements IXMLizable
             }
             
             Node<Set<TileType>> node = parentNode.addChild(typeSet);
-            transferElement(node, (List<Element>) e.getChildren("item"));
+            convertElementToInternalTree(node, (List<Element>) e.getChildren("item"));
+        }
+    }
+
+    private static void convertInternalTreeToElement(
+            Element element,
+            Node<Set<TileType>> parentNode)
+    {
+        for ( Node<Set<TileType>> child : parentNode.getChildren() )
+        {
+            Element e = new Element("item");
+
+            if (child.getData().equals(TileHelper.getItemTileTypeSet()))
+            {
+                e.setAttribute("type", "*ITEM");
+            }
+            else if (child.getData().equals(TileHelper.getMultiplierTileTypeSet()))
+            {
+                e.setAttribute("type", "*MULTIPLIER");
+            }
+            else
+            {
+                e.setAttribute("type", StringUtil.join(child.getData(), ","));
+            }
+            
+            convertInternalTreeToElement(e, child);
+            element.addContent(e);
         }
     }
     
@@ -385,7 +414,7 @@ public class Achievement implements IXMLizable
         return "[" + this.title + " - " + this.difficulty + "] " + this.description;
     }    
     
-    public Element toXMLElement() 
+    public Element toXmlElement()
     {
         Element element = new Element("achievement");
         element.setAttribute("name",  this.title);        
@@ -398,66 +427,83 @@ public class Achievement implements IXMLizable
         // Date.
         if (dateCompleted != null)
         {                       
-            element.addContent(dateCompleted.toXMLElement());
+            element.addContent(dateCompleted.toXmlElement());
         }
         
-        for (int i = 0; i < this.ruleList.size(); i++)
-        {
-            Element rule = new Element("rule");
-            
-            String type = String.valueOf(this.ruleList.get(i).getType());
-            
-            rule.setAttribute("type", type);
-
-            if (type.equals("META"))
+        for ( Rule rule : this.ruleList )
+        {            
+            switch (rule.getType())
             {
-                Element amount = new Element("amount");
-                amount.setAttribute("metatype", ruleList.get(i).getStatus().toString());
-                amount.setAttribute("value", String.valueOf(ruleList.get(i).getValue()));
-                amount.setAttribute("operation", String.valueOf(this.ruleList.get(i).getOperation()));
-                rule.addContent(amount);
+                case META:
+                    element.addContent(createMetaXmlRule(rule));
+                    break;
 
-                List<String> achievementNamesList = ruleList.get(i).getAchievementNameList();
-                if (achievementNamesList != null)
-                {
-                    for(String str : achievementNamesList)
-                    {
-                        Element achieve = new Element("achievement");
+                case COLLISION:
+                    element.addContent(createCollisionXmlRule(rule));
+                    break;
 
-                        achieve.setAttribute("name", str);
-                        rule.addContent(achieve);
-                    }
-                }
-
-                element.addContent(rule);
-                continue;
+                default:
+                    element.addContent(createSimpleXmlRule(rule));
             }
-
-            rule.setAttribute("operation", this.ruleList.get(i).getOperation().toString());
-            
-            if (type.equals("COLLISION"))
-            {
-                // XXX: come back and implement this
-//                TileType[] itemList = ruleList.get(i).getItemList();
-//
-//                for (int j = 0; j < itemList.length; j++)
-//                {
-//                    Element item = new Element("item");
-//                    item.setAttribute("type", itemList[j].toString());
-//                    rule.addContent(item);
-//                }
-//
-//                element.addContent(rule);
-                continue;
-            }
-
-            rule.setAttribute("value", String.valueOf(this.ruleList.get(i).getValue()));            
-            element.addContent(rule);
         }
         
         return element;
     }
-    
+
+    private static Element createMetaXmlRule(Rule rule)
+    {
+        Element element = new Element("rule");
+
+        // Set type.
+        element.setAttribute("type", rule.getType().toString());
+
+        // Set amount.
+        Element amount = new Element("amount");
+        amount.setAttribute("metatype", rule.getStatus().toString());        
+        amount.setAttribute("operation", String.valueOf(rule.getOperation()));
+        amount.setAttribute("value", String.valueOf(rule.getValue()));
+        element.addContent(amount);
+
+        List<String> achievementNamesList = rule.getAchievementNameList();
+        if ( achievementNamesList != null )
+        {
+            for ( String achStr : achievementNamesList )
+            {
+                Element achElement = new Element("achievement");
+                achElement.setAttribute("name", achStr);
+                element.addContent(achElement);
+            }
+        }
+
+        return element;
+    }
+
+    private static Element createCollisionXmlRule(Rule rule)
+    {
+        Element element = new Element("rule");
+
+        // Set type and operation.
+        element.setAttribute("type", rule.getType().toString());
+        element.setAttribute("operation", rule.getOperation().toString());
+
+        // Create the collision rule.
+        convertInternalTreeToElement(element, rule.getTileTree());
+
+        return element;
+    }
+
+    private static Element createSimpleXmlRule(Rule rule)
+    {
+        Element element = new Element("rule");
+
+        // Set type, operation and value
+        element.setAttribute("type", rule.getType().toString());
+        element.setAttribute("operation", rule.getOperation().toString());
+        element.setAttribute("value", String.valueOf(rule.getValue()));
+
+        return element;
+    }
+
     /**
      * Read this carefully, as the Acheivement equivalence is probably different
      * to what you intuitively would think.

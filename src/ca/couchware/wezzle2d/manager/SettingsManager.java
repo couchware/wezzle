@@ -311,15 +311,15 @@ public class SettingsManager
         
         if (element.getName().equals("color"))
         {                        
-            instance = SuperColor.newInstanceFromXML(element);
+            instance = SuperColor.newInstanceFromXml(element);
         }
         else if (element.getName().equals("high-score"))
         {                            
-            instance = HighScore.newInstanceFromXML(element);
+            instance = HighScore.newInstanceFromXml(element);
         }
         else if (element.getName().equals("achievement"))
         {                            
-            instance = Achievement.newInstanceFromXML(element);
+            instance = Achievement.newInstanceFromXml(element);
         }
         else
         {
@@ -334,17 +334,17 @@ public class SettingsManager
          if (object instanceof SuperColor)
         {
             SuperColor color = (SuperColor) object;
-            return color.toXMLElement();
+            return color.toXmlElement();
         }
         else if (object instanceof HighScore)
         {
             HighScore score = (HighScore) object;
-            return score.toXMLElement();
+            return score.toXmlElement();
         }
         else if (object instanceof Achievement)
         {
             Achievement achievement = (Achievement) object;
-            return achievement.toXMLElement();
+            return achievement.toXmlElement();
         }
         else
         {
