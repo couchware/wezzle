@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import ca.couchware.wezzle2d.util.Node;
@@ -274,7 +275,26 @@ public class Achievement implements IXMLizable
             Set<TileType> typeSet = new HashSet<TileType>();
             for ( String typeStr : typeStrList )
             {
-                typeSet.add(TileType.valueOf(typeStr));
+                // Check for a pseudo-type.
+                if (typeStr.startsWith("*"))
+                {
+                    if (typeStr.equals("*ITEM"))
+                    {
+                        typeSet.addAll(TileHelper.getItemTileTypeSet());
+                    }
+                    else if (typeStr.equals("*MULTIPLIER"))
+                    {
+                        typeSet.addAll(TileHelper.getMultiplierTileTypeSet());
+                    }
+                    else
+                    {
+                        throw new IllegalArgumentException("Unknown pseudo-tile: " + typeStr);
+                    }
+                }
+                else
+                {
+                    typeSet.add(TileType.valueOf(typeStr));
+                }
             }
             
             Node<Set<TileType>> node = parentNode.addChild(typeSet);

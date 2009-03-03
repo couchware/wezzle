@@ -56,11 +56,11 @@
         <item type="BOMB" />
       </rule>
     </achievement>
-    <achievement name="Collateral Damage" difficulty="BRONZE">
-      <description>Make a bomb explode into another tile.</description>
+    <achievement name="Collateral Damage" difficulty="SILVER">
+      <description>Make a bomb explode into another item tile.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="BOMB">
-            <item type="ROCKET,BOMB,GRAVITY,STAR" />
+            <item type="*ITEM" />
         </item>
       </rule>
     </achievement>
@@ -70,11 +70,11 @@
         <item type="STAR" />
       </rule>
     </achievement>    
-    <achievement name="Starry-Eyed Surprise" difficulty="BRONZE">
-      <description>Make a star tile activated another tile.</description>      
+    <achievement name="Starry-Eyed Surprise" difficulty="SILVER">
+      <description>Make a star tile activate another item tile.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="STAR">
-            <item type="ROCKET,BOMB,GRAVITY,STAR" />
+            <item type="*ITEM" />
         </item>
       </rule>
     </achievement>

@@ -71,7 +71,7 @@ public class Chain
             {
                 TileEffect effect = (TileEffect) group;
                 Node<Tile> node = root.find(effect.getCauseTile());
-                assert node != null;
+                assert node != null : String.format("Could not find %s in %s", effect.getCauseTile(), node);
                 node.addChildren(effect.getTileList());
             }
         } // end for

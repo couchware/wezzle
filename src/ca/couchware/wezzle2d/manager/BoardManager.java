@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.RocketTile;
+import ca.couchware.wezzle2d.tile.StarTile;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileHelper;
@@ -1600,27 +1601,49 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      * 
      * @param starSet
      * @param affectedSet
+     * @param trackerList
      */
-    public void processStars(Set<Integer> starSet, Set<Integer> affectedSet)
+    public void processStars(
+            Set<Integer> starSet,
+            Set<Integer> affectedSet,
+            List<TileEffect> trackerList)
     {        
         // Clear the set.
         affectedSet.clear();
-        
+
+        // The list to store the effect tiles in.
+        List<Tile> list = new ArrayList<Tile>();
+
         for (Integer starIndex : starSet)
         {
             // Determine the colour of the star.
-            TileColor color = getTile(starIndex).getColor();
+            if (getTile(starIndex).getType() != TileType.STAR)
+            {
+                throw new IllegalArgumentException("Non-star tile passed");
+            }
+
+            StarTile starTile = (StarTile) getTile(starIndex);
             
             // Look for that colour and add it to the affected set.
             for (int i = 0; i < cells; i++)
             {
-                if (getTile(i) == null)
+                Tile tile = getTile(i);
+
+                if (tile == null)
                     continue;
                 
-                if (getTile(i).getColor() == color)
+                if (tile.getColor() == starTile.getColor())
+                {
                     affectedSet.add(i);
+                    list.add(tile);
+                }
             }
-        }               
+
+            // Remove the star's instance.
+            list.remove(starTile);
+            trackerList.add(TileEffect.newInstance(starTile, list));
+            list.clear();
+        }
     } 
     
 	/**

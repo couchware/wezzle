@@ -1,16 +1,13 @@
 package ca.couchware.wezzle2d.ui.group;
 
 import ca.couchware.wezzle2d.manager.GroupManager;
-import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.IGameListener;
-import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.*;
 import java.util.EnumSet;
 
@@ -153,7 +150,5 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         // Set the score to whatever the score manager has now.
         this.setScore(event.getTotalScore());
     }
-
-  
             
 }

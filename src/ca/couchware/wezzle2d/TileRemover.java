@@ -258,7 +258,7 @@ public class TileRemover implements IResettable, ILevelListener
         // If the star removal is in progress.
         else if (this.activateStarRemoval == true)
         {
-            removeStars(game, hub);
+            game.getTracker().record( removeStars(game, hub) );
         }
         // If a bomb removal is in progress.
         else if (this.activateBombRemoval == true)
@@ -883,7 +883,7 @@ public class TileRemover implements IResettable, ILevelListener
         return effectList;
     }   
 
-    private void removeStars(final Game game, final ManagerHub hub)
+    private List<TileEffect> removeStars(final Game game, final ManagerHub hub)
     {        
         // Sanity check.
         if (game == null)
@@ -914,7 +914,8 @@ public class TileRemover implements IResettable, ILevelListener
         int deltaScore = 0;
 
         // Get the tiles the bombs would affect.
-        boardMan.processStars(starRemovalSet, tileRemovalSet);
+        List<TileEffect> effectList = new ArrayList<TileEffect>();
+        boardMan.processStars(starRemovalSet, tileRemovalSet, effectList);
 
         for (Integer index : lastMatchSet)
         {
@@ -972,6 +973,9 @@ public class TileRemover implements IResettable, ILevelListener
 
         // Set the flag.
         tileRemovalInProgress = true;
+
+        // Return tile effect set.
+        return effectList;
     }
     
     private void shiftGravity(BoardManager boardMan)
