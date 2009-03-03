@@ -78,55 +78,62 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="Score 10,000 Points" difficulty="BRONZE">
-      <description>Get over 10,000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="10000" />     
-    </achievement>
-    <achievement name="Score 30,000 Points" difficulty="SILVER">
+    <achievement name="Score 30,000 Points" difficulty="BRONZE">
       <description>Get over 30,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="30000" />
     </achievement>
-    <achievement name="Score 80,000 Points" difficulty="GOLD">
+    <achievement name="Score 80,000 Points" difficulty="SILVER">
       <description>Get over 80,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="80000" />
     </achievement>
+    <achievement name="Score 160,000 Points" difficulty="GOLD">
+      <description>Get over 160,000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="160000" />
+    </achievement>
     <achievement name="Score Master" difficulty="PLATINUM">
-      <description>Get over 150,000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="150000" />
+      <description>Get over 300,000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="300000" />
     </achievement>
     <achievement name="Score Specialist" difficulty="GOLD">
         <description>Complete 3 score-related achievements.</description>
         <rule type="META">
             <amount metatype="COMPLETE" value="3" operation="GTEQ" />
-            <achievement name="Score 10,000 Points" />
             <achievement name="Score 30,000 Points" />
             <achievement name="Score 80,000 Points" />
+            <achievement name="Score 160,000 Points" />
             <achievement name="Score Master" />
         </rule>
-    </achievement>
-    <achievement name="Get A Level" difficulty="BRONZE">
-      <description>Starting from level 1, get to level 2 without
-      getting a game over.</description>
-      <rule type="START_LEVEL" operation="EQ" value="1" />
-      <rule type="LEVEL" operation="EQ" value="2" />
-    </achievement>
-    <achievement name="Get 5 Levels" difficulty="SILVER">
+    </achievement>   
+    <achievement name="Get To Level 5" difficulty="BRONZE">
       <description>Starting from level 1, get to level 5 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="5" />
     </achievement>
-    <achievement name="Get 10 Levels" difficulty="GOLD">
+    <achievement name="Get To Level 10" difficulty="SILVER">
       <description>Starting from level 1, get to level 10 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="10" />
     </achievement>
-    <achievement name="Level Master" difficulty="PLATINUM">
+    <achievement name="Get To Level 15" difficulty="GOLD">
       <description>Starting from level 1, get to level 15 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="15" />
+    </achievement>
+    <achievement name="Get To Level 20" difficulty="PLATINUM">
+      <description>Starting from level 1, get to level 20 without
+      getting a game over.</description>
+      <rule type="START_LEVEL" operation="EQ" value="1" />
+      <rule type="LEVEL" operation="EQ" value="20" />
+    </achievement>
+    <achievement name="Get 30,000 By Level 5" difficulty="SILVER">
+      <description>Starting from level 1, accumulate 30,000
+      points by level 5.</description>
+      <rule type="START_LEVEL" operation="EQ" value="1" />
+      <rule type="LEVEL" operation="EQ" value="5" />
+      <rule type="SCORE" operation="GTEQ" value="30000" />
     </achievement>
     <achievement name="Doomed Space Mission" difficulty="GOLD">
         <description>Blast off in a rocket to the stars, only to
@@ -139,7 +146,7 @@
             </item>
         </rule>
     </achievement>
-    <achievement name="Full Clear" difficulty="PLATINUM">
+    <achievement name="The Perfect Star Storm" difficulty="PLATINUM">
         <description>Use a star to remove three multiplier tiles
         and two item tiles.</description>
         <rule type="COLLISION" operation="BETWEEN">
