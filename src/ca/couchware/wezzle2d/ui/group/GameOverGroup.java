@@ -113,7 +113,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
                 GroupManager.Layer.BOTTOM);
                        
         // Reset the stat man.
-        resetGame(hub, game, this.restartButton.isActivated());
+        game.resetGame(hub, game, this.restartButton.isActivated());
 
         // Create board and make it invisible.
         hub.boardMan.setVisible(false);
@@ -154,26 +154,6 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         this.setScore(event.getTotalScore());
     }
 
-    public static void resetGame(ManagerHub hub, Game game, boolean restartActivated) {
-        // The level we reset to.
-        int level = hub.levelMan.getLevel();
-        // Reset a bunch of stuff.
-        if (restartActivated) {
-            // Reset the board manager.
-            hub.boardMan.resetState();
-            // Reset the world manager.
-            hub.levelMan.resetState();
-            level = hub.levelMan.getLevel();
-            // Reset the item manager.
-            hub.itemMan.resetState();
-            hub.itemMan.evaluateRules(game, hub);
-            // Reset the timer to the initial.
-            //hub.timerMan.setStartTimeToUpper();
-        }
-        // Notify all listeners of reset.
-        hub.listenerMan.notifyGameReset(new GameEvent(GameOverGroup.class, level, hub.scoreMan.getLevelScore()));
-        // Reset the stat man.
-        hub.statMan.resetState();
-    }
+  
             
 }

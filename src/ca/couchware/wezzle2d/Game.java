@@ -243,7 +243,7 @@ public class Game extends Canvas implements IWindowCallback
                 hub.musicMan.stop();
 
 
-                GameOverGroup.resetGame(hub, this, true);
+                resetGame(hub, this, true);
 
                 // Create the main menu.
                 mainMenu = new MainMenu(hub);
@@ -841,7 +841,30 @@ public class Game extends Canvas implements IWindowCallback
         
         // Activate the game over process.
         this.activateGameOver = true;
-    }       
+    }
+
+      public static void resetGame(ManagerHub hub, Game game, boolean restartActivated)
+      {
+        // The level we reset to.
+        int level = hub.levelMan.getLevel();
+        // Reset a bunch of stuff.
+        if (restartActivated) {
+            // Reset the board manager.
+            hub.boardMan.resetState();
+            // Reset the world manager.
+            hub.levelMan.resetState();
+            level = hub.levelMan.getLevel();
+            // Reset the item manager.
+            hub.itemMan.resetState();
+            hub.itemMan.evaluateRules(game, hub);
+            // Reset the timer to the initial.
+            //hub.timerMan.setStartTimeToUpper();
+        }
+        // Notify all listeners of reset.
+        hub.listenerMan.notifyGameReset(new GameEvent(GameOverGroup.class, level, hub.scoreMan.getLevelScore()));
+        // Reset the stat man.
+        hub.statMan.resetState();
+    }
     
     //--------------------------------------------------------------------------
     // Getters and Setters
