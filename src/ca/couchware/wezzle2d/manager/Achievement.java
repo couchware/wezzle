@@ -18,8 +18,10 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.jdom.Element;
 
 /**
@@ -225,9 +227,9 @@ public class Achievement implements IXMLizable
                     // Get the collisions.
                     if (type == Rule.Type.COLLISION)
                     {
-                        Node<TileType> tileTree = new Node<TileType>(null);
+                        Node<Set<TileType>> tileTree = new Node<Set<TileType>>(null);
                         List<Element> elementList = (List<Element>) rule.getChildren("item");
-                        Node<TileType> currentNode = tileTree;
+                        Node<Set<TileType>> currentNode = tileTree;
                         transferElement(currentNode, elementList);                        
 
                         // Add the rule and continue to get the next rule.
@@ -264,12 +266,18 @@ public class Achievement implements IXMLizable
      * @param elementList
      */
     @SuppressWarnings("unchecked") 
-    private static void transferElement(Node<TileType> parentNode, List<Element> elementList)
+    private static void transferElement(Node<Set<TileType>> parentNode, List<Element> elementList)
     {
         for ( Element e : elementList )
         {
-            TileType t = TileType.valueOf(e.getAttributeValue("type").toString());
-            Node<TileType> node = parentNode.addChild(t);
+            String[] typeStrList = e.getAttributeValue("type").split(",");
+            Set<TileType> typeSet = new HashSet<TileType>();
+            for ( String typeStr : typeStrList )
+            {
+                typeSet.add(TileType.valueOf(typeStr));
+            }
+            
+            Node<Set<TileType>> node = parentNode.addChild(typeSet);
             transferElement(node, (List<Element>) e.getChildren("item"));
         }
     }

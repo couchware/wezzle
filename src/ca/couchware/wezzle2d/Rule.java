@@ -16,6 +16,7 @@ import ca.couchware.wezzle2d.util.Node.Filter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /*
  * A class that holds two associated values.
@@ -65,7 +66,7 @@ public class Rule
     protected final Type type;
     protected final Operation operation;
     protected final int value;    
-    protected final Node<TileType> itemSubTree;
+    protected final Node<Set<TileType>> itemSubTree;
     protected final List<String> achievementNameList;
     protected final Status status;
     
@@ -104,7 +105,7 @@ public class Rule
         status = Status.COMPLETE;
     }
 
-    public Rule(Type type, Operation operation, Node<TileType> tree)
+    public Rule(Type type, Operation operation, Node<Set<TileType>> tree)
     {
         if (type == null)
         {
@@ -296,7 +297,7 @@ public class Rule
      * @param subTree
      * @return
      */
-    private boolean isSubTree(Node<Tile> tree, Node<TileType> subTree)
+    private boolean isSubTree(Node<Tile> tree, Node<Set<TileType>> subTree)
     {
         // If the subtree has no children, then we return true.
         if (subTree.getChildren().isEmpty()) return true;
@@ -305,10 +306,10 @@ public class Rule
         if (tree.getChildren().isEmpty()) return false;
 
         // Get an iterator for the children of the subtree.
-        Iterator<Node<TileType>> subTreeIt = subTree.getChildren().iterator();
+        Iterator<Node<Set<TileType>>> subTreeIt = subTree.getChildren().iterator();
 
         // We know we have at least one child, so this is fine.
-        Node<TileType> targetNode = subTreeIt.next();
+        Node<Set<TileType>> targetNode = subTreeIt.next();
 
         // Set to true if this is a sub tree.
         boolean match = false;
@@ -316,7 +317,7 @@ public class Rule
         // Cycle through the children of the tree, looking for matches.
         for ( Node<Tile> node : tree.getChildren() )
         {
-            if (node.getData().getType() == targetNode.getData()
+            if (targetNode.getData().contains(node.getData().getType())
                     && isSubTree(node, targetNode))
             {
                 if (subTreeIt.hasNext()) targetNode = subTreeIt.next();
@@ -432,7 +433,7 @@ public class Rule
         return value;
     }  
     
-    public Node<TileType> getTileTree()
+    public Node<Set<TileType>> getTileTree()
     {
         return this.itemSubTree;
     }

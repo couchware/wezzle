@@ -55,13 +55,29 @@
       <rule type="COLLISION" operation="BETWEEN">
         <item type="BOMB" />
       </rule>
-    </achievement>    
+    </achievement>
+    <achievement name="Collateral Damage" difficulty="BRONZE">
+      <description>Make a bomb explode into another tile.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="ROCKET,BOMB,GRAVITY,STAR" />
+        </item>
+      </rule>
+    </achievement>
     <achievement name="Astronomer" difficulty="BRONZE">
       <description>Activate a star tile.</description>      
       <rule type="COLLISION" operation="BETWEEN">
         <item type="STAR" />
       </rule>
     </achievement>    
+    <achievement name="Starry-Eyed Surprise" difficulty="BRONZE">
+      <description>Make a star tile activated another tile.</description>      
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="STAR">
+            <item type="ROCKET,BOMB,GRAVITY,STAR" />
+        </item>
+      </rule>
+    </achievement>
     <achievement name="Score 10,000 Points" difficulty="BRONZE">
       <description>Get over 10,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="10000" />     
