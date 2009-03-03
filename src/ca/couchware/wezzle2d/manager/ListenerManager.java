@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;

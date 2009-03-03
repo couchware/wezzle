@@ -38,6 +38,7 @@ import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
@@ -241,6 +242,9 @@ public class Game extends Canvas implements IWindowCallback
                 // Shut off the music.
                 hub.musicMan.stop();
 
+
+                GameOverGroup.resetGame(hub, this, true);
+
                 // Create the main menu.
                 mainMenu = new MainMenu(hub);
                 mainMenu.setDisabled(true);
@@ -260,6 +264,8 @@ public class Game extends Canvas implements IWindowCallback
 
                 // Queue in the animation manager.
                 hub.animationMan.add(transition);
+
+
                 
                 break;
         }
