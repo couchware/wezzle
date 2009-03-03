@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
+import ca.couchware.wezzle2d.Rule.Type;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileHelper;
@@ -50,6 +51,7 @@ import org.jdom.Element;
  */
 public class Achievement implements IXMLizable
 {
+   
     /** The levels of achievement difficulty. */
     public static enum Difficulty
     {
@@ -175,90 +177,84 @@ public class Achievement implements IXMLizable
                 ? SuperCalendar.newInstanceFromXML(dateElement)
                 : null;                
         
-        // Get all the rules.
-        Element rule = element.getChild("rule");
-        List<Rule> rules = new ArrayList<Rule>();               
+        // Get all the rules.        
+        List<Rule> rules = new ArrayList<Rule>();
         
-        while (rule != null)
+        for ( Object o : element.getChildren("rule") )
         {
+            Element rule = (Element) o;
             Rule.Type type = Rule.Type.valueOf(rule.getAttributeValue("type").toString());
 
             switch (type)
             {
                 case META:
-                {
-                    Element amount = rule.getChild("amount");
-                    Rule.Status metaType = Rule.Status.valueOf(amount.getAttributeValue("metatype").toString());
-                    int value = Integer.parseInt(amount.getAttributeValue("value").toString());
-                    Rule.Operation operation = Rule.Operation.valueOf(amount.getAttributeValue("operation"));
-
-                    Element achieve = rule.getChild("achievement");
-                    List<String> achievementNamesList = new ArrayList<String>();
-
-                    // If there are no specified achievement names...
-                    if (achieve == null)
-                    {
-                        rules.add(new Rule(type, operation, value));
-                        element.removeChild("rule");
-                        rule = element.getChild("rule");
-                        continue;
-                    }
-                    else
-                    {
-                        while (achieve != null)
-                        {
-                            achievementNamesList.add(achieve.getAttributeValue("name").toString());
-                            rule.removeChild("achievement");
-                            achieve = rule.getChild("achievement");
-                        }
-
-                        rules.add(new Rule(type, operation, value, achievementNamesList, metaType));
-                        element.removeChild("rule");
-                        rule = element.getChild("rule");
-                    }
-
+                
+                    rules.add(createMetaRule(rule));
                     break;
-                } // end case
 
                 case COLLISION:
-                {
-                    Rule.Operation operation = Rule.Operation
-                            .valueOf(rule.getAttributeValue("operation").toString());
-
-                    // Get the collisions.
-                    if (type == Rule.Type.COLLISION)
-                    {
-                        Node<Set<TileType>> tileTree = new Node<Set<TileType>>(null);
-                        List<Element> elementList = (List<Element>) rule.getChildren("item");
-                        Node<Set<TileType>> currentNode = tileTree;
-                        transferElement(currentNode, elementList);                        
-
-                        // Add the rule and continue to get the next rule.
-                        rules.add(new Rule(type, operation, tileTree));
-                        element.removeChild("rule");
-                        rule = element.getChild("rule");
-                    }
-                    
+                
+                    rules.add(createCollisionRule(rule));
                     break;
-                } // end case
-
+                
                 default:
-                {
-                    Rule.Operation operation = Rule.Operation
-                            .valueOf(rule.getAttributeValue("operation").toString());
-
-                    int value = Integer.parseInt(rule.getAttributeValue("value").toString());
-
-                    rules.add(new Rule(type, operation, value));
-                    element.removeChild("rule");
-                    rule = element.getChild("rule");
-                    
-                } // end default
+               
+                    rules.add(createSimpleRule(type, rule));
+             
             } // end witch
         } // end while
         
-        // Get the collisions.  
+        // Get the collisions.
         return new Achievement(rules, name, formattedDescription, description, difficulty, dateCompleted);
+    }
+
+    private static Rule createMetaRule(Element rule)
+    {
+        Element amount = rule.getChild("amount");
+        Rule.Status metaType = Rule.Status.valueOf(amount.getAttributeValue("metatype").toString());
+        int value = Integer.parseInt(amount.getAttributeValue("value").toString());
+        Rule.Operation operation = Rule.Operation.valueOf(amount.getAttributeValue("operation"));
+
+        Element achieve = rule.getChild("achievement");
+        List<String> achievementNamesList = new ArrayList<String>();
+
+        // If there are no specified achievement names...
+        if (achieve == null)
+        {
+            return new Rule(Rule.Type.META, operation, value);
+        }
+        
+        while (achieve != null)
+        {
+            achievementNamesList.add(achieve.getAttributeValue("name").toString());
+            rule.removeChild("achievement");
+            achieve = rule.getChild("achievement");
+        }
+
+        return new Rule(Rule.Type.META, operation, value, achievementNamesList, metaType);
+    }
+
+    private static Rule createCollisionRule(Element rule)
+    {
+        // Get the operation.
+        Rule.Operation operation = Rule.Operation.valueOf(rule.getAttributeValue("operation").toString());
+
+        // Get the collisions.
+        Node<Set<TileType>> tileTree = new Node<Set<TileType>>(null);
+        List<Element> elementList = (List<Element>) rule.getChildren("item");
+        Node<Set<TileType>> currentNode = tileTree;
+        transferElement(currentNode, elementList);
+
+        // Add the rule and continue to get the next rule.
+        return new Rule(Rule.Type.COLLISION, operation, tileTree);
+    }
+
+    private static Rule createSimpleRule(Rule.Type type, Element rule)
+    {
+        // Get the operation.
+        Rule.Operation operation = Rule.Operation.valueOf(rule.getAttributeValue("operation").toString());
+        int value = Integer.parseInt(rule.getAttributeValue("value").toString());
+        return new Rule(type, operation, value);
     }
 
     /**

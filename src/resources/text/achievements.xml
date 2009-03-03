@@ -135,6 +135,13 @@
       <rule type="LEVEL" operation="EQ" value="5" />
       <rule type="SCORE" operation="GTEQ" value="30000" />
     </achievement>
+    <achievement name="Get 60,000 By Level 5" difficulty="GOLD">
+      <description>Starting from level 1, accumulate 60,000
+      points by level 5.</description>
+      <rule type="START_LEVEL" operation="EQ" value="1" />
+      <rule type="LEVEL" operation="EQ" value="5" />
+      <rule type="SCORE" operation="GTEQ" value="60000" />
+    </achievement>
     <achievement name="Doomed Space Mission" difficulty="GOLD">
         <description>Blast off in a rocket to the stars, only to
         tragically blow up at the end.</description>
@@ -148,7 +155,7 @@
     </achievement>
     <achievement name="The Perfect Star Storm" difficulty="PLATINUM">
         <description>Use a star to remove three multiplier tiles
-        and two item tiles.</description>
+        and two item tiles, all in the same move.</description>
         <rule type="COLLISION" operation="BETWEEN">
             <item type="STAR">
                 <item type="*ITEM" />
