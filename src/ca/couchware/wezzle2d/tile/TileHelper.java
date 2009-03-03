@@ -17,12 +17,12 @@ public class TileHelper
 {
 
     /** All the item tile types. */
-    private static final Set<TileType> itemTileTypeSet = 
-            Collections.unmodifiableSet(EnumSet.range(TileType.BOMB, TileType.STAR));
+    private static final Set<TileType> itemTileTypeSet = Collections.unmodifiableSet(
+            EnumSet.of(TileType.ROCKET, TileType.BOMB, TileType.GRAVITY, TileType.STAR));
 
     /** All the multiplier tile types. */
     private static final Set<TileType> multiplierTileTypeSet = 
-            Collections.unmodifiableSet(EnumSet.range(TileType.X2, TileType.X4));
+            Collections.unmodifiableSet(EnumSet.of(TileType.X2, TileType.X3, TileType.X4));
 
     public static Set<TileType> getItemTileTypeSet()
     {

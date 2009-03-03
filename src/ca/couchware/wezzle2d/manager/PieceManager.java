@@ -938,10 +938,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                     
                     break;
 
-                // Bomb, gravity, star.
+                // Bomb, gravity, star, multipliers.
                 case 'b':
                 case 'g':
                 case 's':
+                case '2':
+                case '3':
+                case '4':
 
                     index = hub.boardMan.getIndexFromPosition(this.cursorPosition);
                     oldTile = hub.boardMan.getTile(index);
@@ -953,6 +956,9 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                         case 'b': type = TileType.BOMB;    break;
                         case 'g': type = TileType.GRAVITY; break;
                         case 's': type = TileType.STAR;    break;
+                        case '2': type = TileType.X2;      break;
+                        case '3': type = TileType.X3;      break;
+                        case '4': type = TileType.X4;      break;
                         default:  throw new AssertionError();
                     }
 

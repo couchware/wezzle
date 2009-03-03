@@ -127,6 +127,30 @@
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="15" />
-    </achievement>    
+    </achievement>
+    <achievement name="Doomed Space Mission" difficulty="GOLD">
+        <description>Blast off in a rocket to the stars, only to
+        tragically blow up at the end.</description>
+        <rule type="COLLISION" operation="BETWEEN">
+            <item type="ROCKET">
+                <item type="STAR">
+                    <item type="BOMB" />
+                </item>
+            </item>
+        </rule>
+    </achievement>
+    <achievement name="Full Clear" difficulty="PLATINUM">
+        <description>Use a star to remove three multiplier tiles
+        and two item tiles.</description>
+        <rule type="COLLISION" operation="BETWEEN">
+            <item type="STAR">
+                <item type="*ITEM" />
+                <item type="*ITEM" />
+                <item type="*MULTIPLIER" />
+                <item type="*MULTIPLIER" />
+                <item type="*MULTIPLIER" />
+            </item>
+        </rule>
+    </achievement>
   </entry>  
 </settings>
