@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,23 +59,36 @@ public class HighScoreManager
     
     /**
      * Get the highest score. Return position 0 in the list.
-     * @return the high score.
+     * @return the high score, or -1 if there are no high scores
      */
     public int getHighestScore()
     {
-        return this.scoreList.get(0).getScore();
+        if (!this.scoreList.isEmpty())
+        {
+            return this.scoreList.get(0).getScore();
+        }
+        else
+        {
+            return -1;
+        }
     }
     
     /**
      * A method to check the lowest score in the list. Since the list is sorted
      * it returns the bottom score. This is used to see if a new score belongs
      * in the list.
-     * 
-     * @return the lowest score.
+     * @return the lowest score, or -1 if there are no high scores
      */
     public int getLowestScore()
     {
-        return this.scoreList.get(scoreList.size() - 1).getScore();
+        if (!this.scoreList.isEmpty())
+        {
+            return this.scoreList.get(scoreList.size() - 1).getScore();
+        }
+        else
+        {
+            return -1;
+        }
     }       
     
     /**
@@ -93,16 +107,22 @@ public class HighScoreManager
     public void offerScore(String name, int score, int level, boolean export)
     {
         // See if the score belongs on the list.
-        if (score < getLowestScore())
+        if ( this.scoreList.size() == NUMBER_OF_SCORES && score < this.getLowestScore() )
             return;
         
         HighScore newScore = HighScore.newInstance(name, score, level);       
         
         // Add the score.
-        this.scoreList.set(NUMBER_OF_SCORES - 1, newScore);
+        this.scoreList.add(newScore);
         
         // Sort.
         this.bubbleUp();
+
+        // Crop the list.
+        if ( this.scoreList.size() > NUMBER_OF_SCORES )
+        {
+            this.scoreList.subList(NUMBER_OF_SCORES, this.scoreList.size()).clear();
+        }
         
         // Export if requested.
         if (export == true) this.exportSettings();
@@ -168,25 +188,26 @@ public class HighScoreManager
     {
         SettingsManager settingsMan = SettingsManager.get();
         
-        // Reset the score list.
-        resetScoreList();
+        // Clear the score list.
+        this.scoreList.clear();
         
         // Get the list from the settings manager.
-        //List list = new ArrayList((List) settingsMan.getObject(Key.USER_HIGHSCORE));
         List list = (List) settingsMan.getObject(Key.USER_HIGHSCORE);
         
         for (Object object : list)     
         {
-            HighScore score = (HighScore) object;            
+            HighScore score = (HighScore) object;
+            CouchLogger.get().recordWarning(this.getClass(), score.toString());
             offerScore(score, false);                
         }
     }
     
     /**
-     * Reset the list.
+     * Reset the list and export it to the settings manager.
      */
     public void resetScoreList()
     {
+        CouchLogger.get().recordWarning(this.getClass(), "High Score table reset!");
         HighScore score = HighScore.newInstance("", 0, 0);
         scoreList.clear();
         

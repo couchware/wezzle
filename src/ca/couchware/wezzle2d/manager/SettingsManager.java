@@ -192,11 +192,11 @@ public class SettingsManager
                     {
                         Element element = (Element) object;
 
-                        Object instance = createInstanceFromXML(element);
+                        Object instance = createInstanceFromXml(element);
                         if (instance != null) 
                             list.add(instance);
                         else
-                            CouchLogger.get().recordWarning(this.getClass(), "Unknown element.");
+                            throw new IllegalArgumentException("Unknown tag type");
                     }      
 
                     // Return the list as the value.
@@ -205,13 +205,21 @@ public class SettingsManager
                 
                 try 
                 {
-                    Key key = Key.valueOf(name);
+                    Key key = Key.valueOf(name);                    
+
+                    if (currentMap.containsKey(key))
+                    {
+                        CouchLogger.get().recordMessage(
+                                this.getClass(), "Value overwritten: " + key);
+                    }
+
                     currentMap.put(key, value);
+
                     CouchLogger.get().recordMessage(this.getClass(), key + " = " + value);
                 }
                 catch (IllegalArgumentException e)
                 {
-                    CouchLogger.get().recordMessage(this.getClass(), "Unknown key: " + name);
+                    throw new IllegalArgumentException("Unknown key: " + name);
                 }
             }
         }
@@ -265,12 +273,12 @@ public class SettingsManager
                     List list = (List) currentValue;
                     for (Object object : list)
                     {
-                        entry.addContent(createXMLFromInstance(object));
+                        entry.addContent(createXmlFromInstance(object));
                     }
                 }
                 else
                 {
-                    entry.addContent(createXMLFromInstance(currentValue));
+                    entry.addContent(createXmlFromInstance(currentValue));
                 }                         
                 
                 // Add it to the XML document.
@@ -305,7 +313,7 @@ public class SettingsManager
         saveSettings(Settings.getAchievementKeys(), Settings.getAchievementsFilePath());        
     }
     
-    private Object createInstanceFromXML(Element element)
+    private Object createInstanceFromXml(Element element)
     {
         Object instance;
         
@@ -329,7 +337,7 @@ public class SettingsManager
         return instance;        
     }
     
-    private Content createXMLFromInstance(Object object)
+    private Content createXmlFromInstance(Object object)
     {
          if (object instanceof SuperColor)
         {

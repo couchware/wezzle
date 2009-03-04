@@ -5,11 +5,7 @@
   <entry name="User.Sound">true</entry>
   <entry name="User.Sound.Volume">50</entry>
   <entry name="User.Highscore">
-    <high-score name="" score="0" level="0" />
-    <high-score name="" score="0" level="0" />
-    <high-score name="" score="0" level="0" />
-    <high-score name="" score="0" level="0" />
-    <high-score name="" score="0" level="0" />
+      <high-score name="" score="0" level="0" />
   </entry>
   <entry name="User.Level.Default">1</entry>
   <entry name="User.Tutorial.Default">true</entry>
