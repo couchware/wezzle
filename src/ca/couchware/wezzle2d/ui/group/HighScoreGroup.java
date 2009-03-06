@@ -169,7 +169,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         {            
             // Hide all side triggered menues.
             closeButton.setActivated(false);
-            hub.groupMan.hideGroup(this);
+            hub.groupMan.hideGroup(this, !game.isCompletelyBusy());
         }       
     }
     

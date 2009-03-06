@@ -387,7 +387,8 @@ public class UI implements
             {
                 hub.groupMan.hideGroup(
                         GroupManager.Class.HIGH_SCORE,
-                        GroupManager.Layer.MIDDLE);
+                        GroupManager.Layer.MIDDLE,
+                        !game.isCompletelyBusy());
             }
         } // end if
         
@@ -404,7 +405,8 @@ public class UI implements
             {
                 hub.groupMan.hideGroup(
                         GroupManager.Class.PAUSE,
-                        GroupManager.Layer.MIDDLE);            
+                        GroupManager.Layer.MIDDLE,
+                        !game.isCompletelyBusy());
             }
         } // end if
         
@@ -421,7 +423,8 @@ public class UI implements
             {
                 hub.groupMan.hideGroup(
                         GroupManager.Class.OPTIONS,
-                        GroupManager.Layer.MIDDLE);
+                        GroupManager.Layer.MIDDLE,
+                        !game.isCompletelyBusy());
             }
         } // end if  
         

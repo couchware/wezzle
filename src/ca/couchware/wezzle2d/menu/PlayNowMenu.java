@@ -318,7 +318,7 @@ public class PlayNowMenu extends AbstractMenu
         {
             // Make sure no groups are showing if we've come back to the menu
             // from a previous game.
-            hub.groupMan.hideAllGroups();
+            hub.groupMan.hideAllGroups(!game.isCompletelyBusy());
             
             // Reset the core managers.
             IResettable coreArray[] = new IResettable[]

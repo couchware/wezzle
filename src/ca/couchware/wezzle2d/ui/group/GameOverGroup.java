@@ -107,7 +107,8 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         // Hide the screen.
         hub.groupMan.hideGroup(
                 GroupManager.Class.GAME_OVER,
-                GroupManager.Layer.BOTTOM);
+                GroupManager.Layer.BOTTOM,
+                !game.isCompletelyBusy());
                        
         // Reset the stat man.
         game.resetGame(hub, game, this.restartButton.isActivated());

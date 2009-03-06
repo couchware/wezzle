@@ -59,7 +59,7 @@ public class GroupManager implements IResettable
      * Holds the visiblility of the piece grid before the board was hidden so
      * that the proper visibility may be restored when the board is reshown.
      */
-    private boolean lastPieceGridVisible;
+    //private boolean lastPieceGridVisible;
 
     /**
      * Private constructor.
@@ -73,12 +73,12 @@ public class GroupManager implements IResettable
         
         this.layerMan = layerMan;
         this.pieceMan = pieceMan;
-        this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
+        //this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
     }             
 
     public void resetState()
     {
-        hideAllGroups();
+        hideAllGroups(false);
     }
     
     /**
@@ -164,7 +164,7 @@ public class GroupManager implements IResettable
             entry.getButton().setActivated(false);
     }
     
-    public void hideGroup(Class cls, Layer layer)
+    public void hideGroup(Class cls, Layer layer, boolean showGrid)
     {
         // Go through the entry list, removing all entries with the
         // passed class name.
@@ -187,7 +187,7 @@ public class GroupManager implements IResettable
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
-            showBoard();
+            showBoard(showGrid);
         }
         else
         {
@@ -197,7 +197,7 @@ public class GroupManager implements IResettable
         CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }   
     
-    public void hideGroup(IGroup group)
+    public void hideGroup(IGroup group, boolean showGrid)
     {
         // Remove the group.
         for (Iterator<Entry> it = entryList.iterator(); it.hasNext(); )            
@@ -217,7 +217,7 @@ public class GroupManager implements IResettable
         if (entryList.isEmpty() == true)
         {
             pieceMan.clearMouseButtonSet();
-            showBoard();
+            showBoard(showGrid);
         }
         else
         {
@@ -230,7 +230,7 @@ public class GroupManager implements IResettable
     /**
      * Hides all currently shown groups.
      */
-    public void hideAllGroups()
+    public void hideAllGroups(boolean showGrid)
     {
         for (Iterator<Entry> it = entryList.iterator(); it.hasNext(); )            
         {
@@ -241,16 +241,16 @@ public class GroupManager implements IResettable
         }
         
         pieceMan.clearMouseButtonSet();
-        showBoard();
+        showBoard(showGrid);
     }   
 
     /**
      * Show the board.
      */
-    private void showBoard()
+    private void showBoard(boolean showGrid)
     {
         // Make piece grid visible contingent on the saved visibility.
-        if (lastPieceGridVisible) pieceMan.showPieceGrid();
+        if (showGrid) pieceMan.showPieceGrid();
         else pieceMan.hidePieceGrid();
 
         layerMan.show(LayerManager.Layer.TILE);
@@ -263,7 +263,7 @@ public class GroupManager implements IResettable
     private void hideBoard()
     {
         // Remember the old visibility.
-        this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
+        //this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
 
         pieceMan.hidePieceGrid();
         layerMan.hide(LayerManager.Layer.TILE);
