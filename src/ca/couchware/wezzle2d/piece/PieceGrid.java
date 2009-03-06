@@ -360,7 +360,8 @@ public class PieceGrid extends AbstractEntity
     {
         // Save the old color and set the new one.
         SuperColor oldColor = gfx.getColor();
-        gfx.setColor(this.color);
+        gfx.setColor(color);
+
         
         // Cycle through, drawing only the sprites that should be shown.
         for (int i = 0; i < structure.length; i++)
@@ -369,11 +370,16 @@ public class PieceGrid extends AbstractEntity
             {
 				if (structure[i][j] == true)
                 {                    
-                    gfx.drawRoundRect(
+//                    gfx.drawRoundRect(
+//                            x + offsetX + i * cellWidth,
+//                            y + offsetY + j * cellHeight + 1,
+//                            cellWidth  - 1, cellHeight - 1,
+//                            5, 50);
+                    gfx.fillEllipse(
                             x + offsetX + i * cellWidth,
                             y + offsetY + j * cellHeight + 1,
                             cellWidth  - 1, cellHeight - 1,
-                            5, 50);
+                            100);
                 } // end if
             } // end for
         } // end for	

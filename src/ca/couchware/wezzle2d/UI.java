@@ -23,6 +23,7 @@ import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
+import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Box.Border;
@@ -35,6 +36,7 @@ import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
 import ca.couchware.wezzle2d.ui.group.OptionsGroup;
 import ca.couchware.wezzle2d.ui.group.PauseGroup;
+import ca.couchware.wezzle2d.util.SuperColor;
 import java.awt.Color;
 import java.util.EnumSet;
 
@@ -277,13 +279,16 @@ public class UI implements
      * @param hub
      */
     private void initializePieceBox(ManagerHub hub)
-    {                        
+    {
+        Color color = SuperColor.newInstance(Color.WHITE, 80).toColor();
+
         // Create the piece preview window.
-        this.nextPieceBox = new Box.Builder(670, 120)
+        this.nextPieceBox = new Box.Builder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(90)
+                .opacity(70)
                 .border(Border.MEDIUM)
-                .width(90).height(90).end();
+                .visible(false)
+                .width(46).height(46).end();
         hub.layerMan.add(this.nextPieceBox, Layer.UI);
         
         this.nextPieceGrid = new PieceGrid.Builder(
@@ -291,10 +296,11 @@ public class UI implements
                     this.nextPieceBox.getY() - 1,
                     PieceGrid.RenderMode.VECTOR
                 )
+                .color(color)
                 .alignmentMode(PieceGrid.AlignmentMode.TO_PIECE)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .cellWidth(22)
-                .cellHeight(22)
+                .cellWidth(50)
+                .cellHeight(50)
                 .end();                
         hub.layerMan.add(this.nextPieceGrid, Layer.UI);               
     }
@@ -314,7 +320,7 @@ public class UI implements
         hub.layerMan.add(this.timerBar, Layer.UI);        
                 
          // Create the progress bar.
-        this.progressBar = new ProgressBar.Builder(400, 501)
+        this.progressBar = new ProgressBar.Builder(400, 500)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
                 .textPosition(ProgressBar.TextPosition.BOTTOM)
                 .end();
@@ -493,7 +499,7 @@ public class UI implements
     {
         // Update the piece preview.
         this.nextPieceGrid.loadStructure(event.getNextPiece().getStructure());
-        this.nextPieceGrid.setColor(event.getNextPiece().getType().getColor());
+        //this.nextPieceGrid.setColor(event.getNextPiece().getType().getColor());
     }
 
     public void tickOccurred(TimerEvent event)

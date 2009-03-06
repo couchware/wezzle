@@ -223,20 +223,26 @@ public class LWJGLGraphics implements IGraphics
     private void drawEllipse(double x, double y, 
             double width, double height, 
             int points, boolean filled)
-    {        
+    {
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        this.color.bind();
+
         float xf = (float) (x + width  / 2);
         float yf = (float) (y + height / 2);
-        float wf = (float) width;
-        float hf = (float) height;                
+        float wf = (float) width  / 2;
+        float hf = (float) height / 2;
         
         int mode = filled ? GL11.GL_POLYGON : GL11.GL_LINE_LOOP;
-                
+
         GL11.glBegin(mode);
-            for (double t = 0; t <= TWO_PI; t += TWO_PI / points)
+            for (double t = 0.0; t <= TWO_PI; t += TWO_PI / points)
                 GL11.glVertex2f(
                         wf * (float) Math.cos(t) + xf, 
                         hf * (float) Math.sin(t) + yf);
-        GL11.glEnd();        
+        GL11.glEnd();
+
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
     }    
     
     public void drawEllipse(double x, double y, double width, double height, int points)
