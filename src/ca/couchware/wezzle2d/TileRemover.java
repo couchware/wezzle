@@ -232,7 +232,10 @@ public class TileRemover implements IResettable, ILevelListener
                         //Move move = Move.newInstance(game.getChainList());
                         Move move = game.getTracker().finishMove();
                         CouchLogger.get().recordMessage(this.getClass(),
-                                "\n" + move.toString());                                               
+                                "\n" + move.toString());
+                        
+                        // evaluate the achievements.
+                        hub.achievementMan.evaluate(game, hub);
                     }
                     
                     // Start the next move.

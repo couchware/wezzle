@@ -5,10 +5,14 @@
 
 package ca.couchware.wezzle2d.tracker;
 
+import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An immutable class that holds the information about a single move. A
@@ -54,6 +58,66 @@ public class Move
     {
         return Collections.unmodifiableList(this.chainList);
     }
+
+    /**
+     * Get a list of all the tile types in a move.
+     * We do this by first getting the chains, then getting all the lines
+     * in each chain. Then getting the tiles in the lines and finally getting
+     * the tiletypes from the tiles. The algorithm has a complexity of O(c*l*t)
+     * which in practice will not be THAT large.
+     *
+     * @return An unmodifiable list of tile types.
+     */
+    public Set<Tile> getTiles()
+    {
+        Set<Tile> tileSet = new HashSet<Tile>();
+
+        List<Chain> chains = this.getChainList();
+
+        for(Chain c : chains)
+        {
+            List<Line> lines = c.getLineList();
+
+            for (Line l : lines)
+            {
+                List<Tile> tiles = l.getTileList();
+                for( Tile t : tiles)
+                {
+                    tileSet.add(t);
+                }
+
+            }
+
+        }
+
+        return Collections.unmodifiableSet(tileSet);
+
+    }
+
+    // Get the total score of this move.
+    public int getScore()
+    {
+        //ToDo: finish this.
+        return -1;
+    }
+
+    /**
+     * Get the number of lines in this move.
+     * @return
+     */
+    public int getNumLines()
+    {
+        int lineCount = 0;
+
+        List<Chain> chains = this.getChainList();
+
+        for(Chain c : chains)
+        {
+            lineCount += c.size();
+        }
+
+        return lineCount;
+    }
         
     @Override
     public String toString()
@@ -69,5 +133,7 @@ public class Move
         
         return buffer.toString();
     }
+
+
     
 }

@@ -6,16 +6,21 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.manager.Achievement;
+import ca.couchware.wezzle2d.manager.Achievement.Numerator;
 import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.tracker.Move;
+import ca.couchware.wezzle2d.tracker.Tracker;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.Node;
 import ca.couchware.wezzle2d.util.Node.Filter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /*
@@ -42,6 +47,7 @@ public class Rule
         LINES,
         START_LEVEL,
         COLLISION,
+        RATE,
         META
     };       
     
@@ -62,6 +68,41 @@ public class Rule
       COMPLETE,
       INCOMPLETE
     }
+
+    /** Possible numerator types, note: collisions refers to
+        the number of collisions per move while collision is a list of
+        items.
+     */
+    public static enum NumeratorType
+    {
+        COLLISION,
+        LINES,
+        SCORE,
+        ITEMS,
+        MULTIPLIERS
+    }
+
+    /** Possible denominator types */
+    public static enum DenominatorType
+    {
+        MOVE
+    }
+
+    /** Possible values for a numerator type */
+    public static enum NumeratorSubType
+    {
+        LINES,
+        SCORE,
+        ROCKET,
+        STAR,
+        BOMB,
+        GRAVITY,
+        ITEMS,
+        X2,
+        X3,
+        X4,
+        MULTIPLIERS
+    }
         
     protected final Type type;
     protected final Operation operation;
@@ -69,6 +110,8 @@ public class Rule
     protected final Node<Set<TileType>> itemSubTree;
     protected final List<String> achievementNameList;
     protected final Status status;
+    protected final List<Numerator> numerators;
+    protected final DenominatorType denominatorType;
     
     //--------------------------------------------------------------------------
     // Constructor
@@ -102,6 +145,8 @@ public class Rule
         this.value = value;
         this.itemSubTree = null;
         this.achievementNameList = null;
+        this.numerators = null;
+        this.denominatorType = null;
         status = Status.COMPLETE;
     }
 
@@ -125,6 +170,42 @@ public class Rule
         this.itemSubTree = tree;
         this.value = -1;
         this.achievementNameList = null;
+        this.numerators = null;
+        this.denominatorType = null;
+        status = Status.COMPLETE;
+    }
+
+    public Rule(Type type, List<Numerator> numerators,
+            DenominatorType dType, Operation operation, Integer value)
+    {
+        if (type == null)
+        {
+            throw new NullPointerException("Type cannot be null");
+        }
+        if (dType == null)
+        {
+            throw new NullPointerException("dType cannot be null");
+        }
+        if (operation == null)
+        {
+            throw new NullPointerException("Operation cannot be null");
+        }
+        if (numerators == null)
+        {
+            throw new IllegalArgumentException("numeratorMap cannot be null");
+        }
+        if(value < 0)
+        {
+            throw new IllegalArgumentException("Value must be positive");
+        }
+
+        this.denominatorType = dType;
+        this.type = type;
+        this.operation = operation;
+        this.itemSubTree = null;
+        this.value = value;
+        this.achievementNameList = null;
+        this.numerators = numerators;
         status = Status.COMPLETE;
     }
 
@@ -149,6 +230,8 @@ public class Rule
         this.itemSubTree = null;
         this.achievementNameList = achievementNameList;
         this.status = status;
+        this.numerators = null;
+        this.denominatorType = null;
      }
     
     public void onMatch()
@@ -183,6 +266,11 @@ public class Rule
         // Make sure we're not a META-type.
         if (this.type == Type.META)
             return false;
+
+        if(this.type == Type.RATE)
+        {
+            return evaluateRate(game.getTracker());
+        }
         
         // Find the appropriate field value from the type.
         int x = -1;          
@@ -247,7 +335,108 @@ public class Rule
         
         return false;
     }
-    
+
+
+    public boolean evaluateRate(Tracker tracker)
+    {
+        // Get the denominator;
+        List<Move> moves = null;
+        switch(this.denominatorType)
+        {
+            case MOVE:
+            {
+                switch(this.operation)
+                {
+                    case LTEQ:
+                    {
+                        moves = tracker.getHistory(value);
+                        break;
+                    }
+                    case LT:
+                    {
+                        moves = tracker.getHistory(value-1);
+                        break;
+                    }
+                    default:
+                        throw new RuntimeException("Illegal operation");
+                }
+                break;
+            }
+            default:
+                throw new RuntimeException("Unknown denominatortype");
+
+        }
+
+        // if we have no moves, false.
+        if(moves == null)
+            return false;
+
+
+
+        // Build a map of all values within the history;
+        Map<NumeratorSubType, Integer> counts = tracker.getCounts(moves);
+
+        // Go through the hashmap testing all the cases.
+
+        for(Numerator n : numerators)
+        {
+
+            // If its a collision, we dont want the subtype.
+            if(n.subType == null)
+                continue;
+
+            int countValue = counts.get(n.subType);
+            int numeratorValue = n.value;
+
+            switch(n.operation)
+            {
+                case LT:
+                {
+                    if(countValue >= numeratorValue)
+                        return false;
+
+                    break;
+                }
+                case LTEQ:
+                {
+                   if(countValue > numeratorValue)
+                        return false;
+                    break;
+                }
+                case EQ:
+                {
+                    if(countValue != numeratorValue)
+                        return false;
+                    break;
+                }
+                case GT:
+                {
+                    if(countValue <= numeratorValue)
+                        return false;
+                    break;
+                }
+                case GTEQ:
+                {
+
+                    if(countValue < numeratorValue)
+                        return false;
+                    break;
+
+                }
+                default:
+                    throw new RuntimeException("Unknown operation!");
+
+
+            }
+
+            
+        }
+
+        return true;
+
+    }
+
+
     /**
      * A special evaluate for collisions.  Will always return false for
      * non-collision achievements.
@@ -452,5 +641,18 @@ public class Rule
     {
         return this.status;
     }
+
+    public DenominatorType getDenominatorType()
+    {
+        return this.denominatorType;
+    }
+
+    public List<Numerator> getNumeratorList()
+    {
+        return this.numerators;
+    }
+
+
+
     
 }

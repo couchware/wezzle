@@ -5,11 +5,14 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.event.MoveEvent;
+import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
+import ca.couchware.wezzle2d.event.IMoveListener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.util.SuperCalendar;
@@ -301,4 +304,5 @@ public class AchievementManager implements ICollisionListener
         return this.completedList;
     }
 
+  
 }

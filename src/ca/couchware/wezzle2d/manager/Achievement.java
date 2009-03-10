@@ -8,6 +8,8 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
+import ca.couchware.wezzle2d.Rule.NumeratorSubType;
+import ca.couchware.wezzle2d.Rule.Operation;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileHelper;
@@ -20,7 +22,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -196,6 +200,10 @@ public class Achievement implements IXMLizable
                 
                     rules.add(createCollisionRule(rule));
                     break;
+
+                case RATE:
+                    rules.add(createRateRule(rule));
+                    break;
                 
                 default:
                
@@ -248,6 +256,106 @@ public class Achievement implements IXMLizable
 
         // Add the rule and continue to get the next rule.
         return new Rule(Rule.Type.COLLISION, operation, tileTree);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private static Rule createRateRule(Element rule)
+    {
+        // Get the numerator element.
+        Element numerator = rule.getChild("numerator");
+
+       List<Numerator> numerators = new ArrayList<Numerator>();
+
+        // Get the numerator type.
+        while(rule.getChild("numerator") != null)
+        {
+            
+
+            Rule.NumeratorType numeratorType = Rule.NumeratorType
+                    .valueOf(numerator.getAttributeValue("type").toString());
+
+            Integer value = Integer.parseInt(numerator.getAttributeValue("value")
+                    .toString());
+
+            Rule.Operation operation = Rule.Operation
+                    .valueOf(numerator.getAttributeValue("operation"));
+
+
+
+            switch(numeratorType)
+            {
+                case COLLISION:
+                {
+                    Element item = numerator.getChild("item");
+                    while(item != null)
+                    {
+                        Rule.NumeratorSubType type = Rule.NumeratorSubType
+                                .valueOf(item.getAttributeValue("type"));
+
+                        operation = Rule.Operation
+                                .valueOf(item.getAttributeValue("operation"));
+
+                        value = Integer.parseInt(rule
+                                .getAttributeValue("value").toString());
+
+                        numerators.add(new Numerator(value, operation, numeratorType, type));
+
+                        numerator.removeChild("item");
+                        item = numerator.getChild("item");
+
+                    }
+                    break;
+                }
+                case LINES:
+                {
+                    numerators.add(new Numerator(value, operation, numeratorType, Rule.NumeratorSubType.LINES));
+                   
+                    break;
+                }
+                case SCORE:
+                {
+                    numerators.add(new Numerator(value, operation, numeratorType, Rule.NumeratorSubType.SCORE));
+                    break;
+                }
+                case ITEMS:
+                {
+                    numerators.add(new Numerator(value, operation, numeratorType, Rule.NumeratorSubType.ITEMS));
+                    break;
+                }
+                 case MULTIPLIERS:
+                {
+                    numerators.add(new Numerator(value, operation, numeratorType, Rule.NumeratorSubType.MULTIPLIERS));
+                    break;
+                }
+                default:
+                    throw new RuntimeException("Unrecognized numerator type.");
+                    
+
+
+            }
+
+            rule.removeChild("numerator");
+            numerator = rule.getChild("numerator");
+        }
+
+
+        // Only one denominator for now.
+        Element denominator = rule.getChild("denominator");
+        Rule.DenominatorType denominatorType = Rule.DenominatorType
+                .valueOf(denominator.getAttributeValue("type").toString());
+
+        Integer value = Integer.parseInt(denominator
+                .getAttributeValue("value").toString());
+
+        Rule.Operation operation = Rule.Operation.valueOf(denominator
+                .getAttributeValue("operation"));
+
+
+
+        // Add the rule and continue to get the next rule.
+        return new Rule(Rule.Type.RATE, numerators, denominatorType, operation
+                , value);
     }
 
     private static Rule createSimpleRule(Rule.Type type, Element rule)
@@ -338,6 +446,8 @@ public class Achievement implements IXMLizable
         // Use the private helper method to test if all of the fields
         // meet the requirements. any null values are automatically
         // accepted.
+
+     
         
         for (Rule rule : ruleList)
         {
@@ -442,6 +552,10 @@ public class Achievement implements IXMLizable
                     element.addContent(createCollisionXmlRule(rule));
                     break;
 
+                case RATE:
+                    element.addContent(createRateXmlRule(rule));
+                    break;
+
                 default:
                     element.addContent(createSimpleXmlRule(rule));
             }
@@ -476,6 +590,68 @@ public class Achievement implements IXMLizable
         }
 
         return element;
+    }
+
+    /**
+     * Create an xml representation of a Rate rule.
+     *
+     * @param rule
+     * @return
+     */
+    private static Element createRateXmlRule(Rule rule)
+    {
+        Element element = new Element("rule");
+        element.setAttribute("type", rule.getType().toString());
+
+        List<Numerator> numerators = rule.getNumeratorList();
+
+        // Do everything but the collisions.
+        for(Iterator<Numerator> it = numerators.iterator(); it.hasNext();)
+        {
+            Numerator n = it.next();
+           
+            if(n.type.equals(Rule.NumeratorType.COLLISION))
+               continue;
+
+           Element numerator = new Element("numerator");
+           numerator.setAttribute("type", n.type.toString());
+           numerator.setAttribute("operation", n.operation.toString());
+           numerator.setAttribute("value", String.valueOf(n.value));
+
+           element.addContent(numerator);
+
+           it.remove();
+        }
+
+        // We should only have the collisions left.
+        if(numerators.size() > 0)
+        {
+            Element numerator = new Element("numerator");
+            numerator.setAttribute("type", numerators.get(0).type.toString());
+
+            for(Numerator n : numerators)
+            {
+                Element item = new Element("item");
+                item.setAttribute("type", n.subType.toString());
+                item.setAttribute("operation", n.operation.toString());
+                item.setAttribute("value", String.valueOf(n.value));
+
+                numerator.addContent(item);
+            }
+
+            element.addContent(numerator);
+        }
+
+        Element denominator = new Element("denominator");
+        denominator.setAttribute("type", rule.getDenominatorType().toString());
+        denominator.setAttribute("operation", rule.getOperation().toString());
+        denominator.setAttribute("value", String.valueOf(rule.getValue()));
+
+        element.addContent(denominator);
+
+        // We have a collision, build it up.
+        return element;
+
     }
 
     private static Element createCollisionXmlRule(Rule rule)
@@ -551,5 +727,26 @@ public class Achievement implements IXMLizable
         result = 31 * result + description.hashCode();        
         return result;
     }
+
+    public static final class Numerator
+    {
+
+        public final int value;
+        public final Rule.Operation operation;
+        public final Rule.NumeratorType type;
+        public final Rule.NumeratorSubType subType;
+
+        public Numerator(int val, Rule.Operation op, Rule.NumeratorType t,
+                Rule.NumeratorSubType subT)
+        {
+            value = val;
+            type = t;
+            operation = op;
+            subType = subT;
+        }
+
+
+    }
+
     
 }

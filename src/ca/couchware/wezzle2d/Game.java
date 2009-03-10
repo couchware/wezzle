@@ -282,6 +282,7 @@ public class Game extends Canvas implements IWindowCallback
         hub.listenerMan.registerListener(Listener.PIECE, this.ui);
         hub.listenerMan.registerListener(Listener.SCORE, this.ui);       
         hub.listenerMan.registerListener(Listener.TIMER, this.ui);
+
         
         // Get the singleton.
         refactorer = Refactorer.get();
@@ -574,7 +575,7 @@ public class Game extends Canvas implements IWindowCallback
         }
         
         // Check the achievements.
-        hub.achievementMan.evaluate(this, hub);
+        //hub.achievementMan.evaluate(this, hub);
 
         if (!hub.tutorialMan.isTutorialRunning()
                 && hub.achievementMan.isNewAchievementCompleted())

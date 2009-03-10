@@ -265,7 +265,7 @@ public class ManagerHub
             // Create the achievement manager.
             achievementMan = AchievementManager.newInstance(settingsMan);
             
-            listenerMan.registerListener(Listener.COLLISION, achievementMan);        
+            listenerMan.registerListener(Listener.COLLISION, achievementMan);
         }                     
     }            
     

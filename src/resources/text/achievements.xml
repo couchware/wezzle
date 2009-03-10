@@ -166,5 +166,12 @@
             </item>
         </rule>
     </achievement>
+     <achievement name="Test Rate" difficulty="BRONZE">
+        <description>Get 3 lines in 2 moves.</description>
+        <rule type="RATE" >
+            <numerator type="LINES" operation="GTEQ" value="3" />
+            <denominator type="MOVE" operation="LTEQ" value="2" />
+        </rule>
+    </achievement>
   </entry>  
 </settings>
