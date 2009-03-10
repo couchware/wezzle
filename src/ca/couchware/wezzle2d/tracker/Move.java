@@ -26,14 +26,18 @@ public class Move
     
     /** The list of chains. */
     private List<Chain> chainList;
+
+    /** The total score of this move */
+    private int score;
     
     /**
      * Constructor private to ensure immutability.
      * @param cascades The cascades.
      */
-    private Move(Collection<Chain> chainList)
+    private Move(Collection<Chain> chainList, int score)
     {
         this.chainList = new ArrayList<Chain>(chainList);
+        this.score = score;
     }
     
     /**
@@ -41,10 +45,18 @@ public class Move
      * @param cascades  The cascades in the move.
      * @return The immutable move.
      */
-    public static Move newInstance(Collection<Chain> chainList)
+    public static Move newInstance(Collection<Chain> chainList, int score)
     {
-       return new Move(chainList);
-    }    
+       return new Move(chainList, score);
+    }
+
+
+    public int getScore()
+    {
+        return this.score;
+    }
+
+
         
     // -------------------------------------------------------------------------
     // Public Members
@@ -87,12 +99,7 @@ public class Move
         return Collections.unmodifiableSet(tileSet);
     }
 
-    // Get the total score of this move.
-    public int getScore()
-    {
-        //ToDo: finish this.
-        return -1;
-    }
+ 
 
     /**
      * Get the number of lines in this move.

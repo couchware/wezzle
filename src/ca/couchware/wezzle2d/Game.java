@@ -295,6 +295,7 @@ public class Game extends Canvas implements IWindowCallback
 
         // Setup the tracker.
         tracker = Tracker.newInstance(hub.listenerMan);
+        hub.listenerMan.registerListener(Listener.SCORE, tracker);
         
         // Make the tile remover listen for level events.
         hub.listenerMan.registerListener(Listener.LEVEL, this.tileRemover);

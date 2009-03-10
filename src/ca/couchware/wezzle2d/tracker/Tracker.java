@@ -8,6 +8,8 @@ package ca.couchware.wezzle2d.tracker;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.Rule.NumeratorSubType;
 import ca.couchware.wezzle2d.event.CollisionEvent;
+import ca.couchware.wezzle2d.event.IScoreListener;
+import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.manager.ListenerManager;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
@@ -24,7 +26,7 @@ import java.util.Set;
  * by the achievement system.
  * @author Cameron McKay
  */
-public class Tracker
+public class Tracker implements IScoreListener
 {
 
     /** The listener manager. */
@@ -39,6 +41,9 @@ public class Tracker
     /** The current chain being tracked. */
     private List<TileGroup> tileGroupList;
 
+    /** The current score being tracked */
+    private int score;
+
     /**
      * The private constructor.
      */
@@ -52,6 +57,8 @@ public class Tracker
 
         // Add a tile group list to hold the first chain.
         this.tileGroupList = new ArrayList<TileGroup>();
+
+        this.score = 0;
     }
 
     /**
@@ -99,11 +106,14 @@ public class Tracker
     public Move finishMove()
     {
         // Add the current move to the history.
-        Move move = Move.newInstance(chainList);
+        Move move = Move.newInstance(chainList, score);
         this.history.add(move);
 
         // Create a new chain list for the next move.
         this.chainList = new ArrayList<Chain>();
+
+        // Reset the score to be tracked for the next move.
+        this.score = 0;
 
         // Return the move.
         return move;
@@ -116,20 +126,20 @@ public class Tracker
      * @param n The number of moves you would like to see.
      * @return An unmodifiable list of the last n moves in reverse order.
      */
-    public List<Move> getHistory(int n)
+    public List<Move> getHistory(int numMoves)
     {
-        if (n < 0)
+        if (numMoves < 0)
             throw new IllegalArgumentException("n must be a positive integer");
 
+        int historySize = history.size();
         // Limit the size.
-        if (n > history.size()) n = history.size();
+        if (numMoves >historySize) numMoves = historySize;
 
         // Reverse the list.
-        List<Move> historyClone = new ArrayList<Move>(history);
-        Collections.reverse(historyClone);
+       
 
         // Get the sublist.
-        return Collections.unmodifiableList(history.subList(0, n));
+        return Collections.unmodifiableList(history.subList(historySize-numMoves, historySize));
     }
 
     /**
@@ -220,6 +230,18 @@ public class Tracker
         countMap.put(NumeratorSubType.X4, x4);
         
         return countMap;
+    }
+
+    public void scoreIncreased(ScoreEvent event) {
+        this.score += event.getScore();
+    }
+
+    public void scoreChanged(ScoreEvent event) {
+        //do nothing.
+    }
+
+    public void targetScoreChanged(ScoreEvent event) {
+        //do nothing.
     }
 
 }
