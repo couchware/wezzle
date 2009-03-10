@@ -103,14 +103,24 @@ public class Achievement implements IXMLizable
             return difficultyColorMap.get(this);
         }
     }
-       
+
+    /** The rule list for this achievement. */
     private final List<Rule> ruleList;
+
+    /** The title of this achievement. */
     private final String title;
+
+    /** The formatted description for this acheivement. */
     private final String formattedDescription;
+
+    /** The unformatted description. */
     private final String description;
-    private final Difficulty difficulty;    
-    private SuperCalendar dateCompleted = null;
-    //private static Calendar cal = Calendar.getInstance();
+
+    /** The difficulty level of the achievment. */
+    private final Difficulty difficulty;
+
+    /** The dete the achievement was completed, if any. */
+    private SuperCalendar dateCompleted = null;    
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -202,11 +212,12 @@ public class Achievement implements IXMLizable
                     break;
 
                 case RATE:
+
                     rules.add(createRateRule(rule));
                     break;
                 
                 default:
-               
+                    
                     rules.add(createSimpleRule(type, rule));
              
             } // end witch
@@ -262,38 +273,36 @@ public class Achievement implements IXMLizable
     @SuppressWarnings("unchecked")
     private static Rule createRateRule(Element rule)
     {
-        // Get the numerator element.
-       Element numerator = rule.getChild("numerator");
+        // The list of numerators (of which there may be many).
+        List<Numerator> numeratorList = new ArrayList<Numerator>();
 
-       List<Numerator> numerators = new ArrayList<Numerator>();
-
-        // Get the numerator type.
-        while(rule.getChild("numerator") != null)
+        // Get the numerator type.        
+        for ( Object o : rule.getChildren("numerator") )
         {
+            // The numerator element.
+            Element numerator = (Element) o;
+
             Integer value = null;
             Rule.Operation operation = null;
-
             Rule.NumeratorType numeratorType = Rule.NumeratorType
                     .valueOf(numerator.getAttributeValue("type").toString());
 
-            if(!numeratorType.equals(Rule.NumeratorType.COLLISION))
+            // Set the operation and value here if this is not a collision.
+            // If it is a collision, the operation is set below.
+            if (!numeratorType.equals(Rule.NumeratorType.COLLISION))
             {
-                 value = Integer.parseInt(numerator.getAttributeValue("value")
-                    .toString());
-
-                operation = Rule.Operation
-                    .valueOf(numerator.getAttributeValue("operation"));
+                operation = Rule.Operation.valueOf(numerator.getAttributeValue("operation"));
+                value = Integer.parseInt(numerator.getAttributeValue("value").toString());                
             }
 
-
-
-            switch(numeratorType)
+            switch (numeratorType)
             {
                 case COLLISION:
-                {
-                    Element item = numerator.getChild("item");
-                    while(item != null)
+
+                    for ( Object p : numerator.getChildren("item") )
                     {
+                        Element item = (Element) p;
+
                         Rule.NumeratorSubType type = Rule.NumeratorSubType
                                 .valueOf(item.getAttributeValue("type"));
 
@@ -303,63 +312,53 @@ public class Achievement implements IXMLizable
                         value = Integer.parseInt(item
                                 .getAttributeValue("value").toString());
 
-                        numerators.add(new Numerator(value, operation, numeratorType, type));
-
-                        numerator.removeChild("item");
-                        item = numerator.getChild("item");
-
+                        numeratorList.add(new Numerator(value, operation, numeratorType, type));                       
                     }
                     break;
-                }
+                
                 case LINES:
-                {
-                    numerators.add(new Numerator(value, operation, numeratorType, Rule.NumeratorSubType.LINES));
-                   
+                
+                    numeratorList.add(new Numerator(value, operation, numeratorType,
+                            Rule.NumeratorSubType.LINES));
                     break;
-                }
+                
                 case SCORE:
-                {
-                    numerators.add(new Numerator(value, operation, numeratorType, Rule.NumeratorSubType.SCORE));
+                
+                    numeratorList.add(new Numerator(value, operation, numeratorType,
+                            Rule.NumeratorSubType.SCORE));
                     break;
-                }
+                
                 case ITEMS:
-                {
-                    numerators.add(new Numerator(value, operation, numeratorType, Rule.NumeratorSubType.ITEMS));
+                
+                    numeratorList.add(new Numerator(value, operation, numeratorType,
+                            Rule.NumeratorSubType.ITEMS));
                     break;
-                }
+                
                  case MULTIPLIERS:
-                {
-                    numerators.add(new Numerator(value, operation, numeratorType, Rule.NumeratorSubType.MULTIPLIERS));
+                
+                    numeratorList.add(new Numerator(value, operation, numeratorType,
+                            Rule.NumeratorSubType.MULTIPLIERS));
                     break;
-                }
-                default:
-                    throw new RuntimeException("Unrecognized numerator type.");
-                    
-
-
-            }
-
-            rule.removeChild("numerator");
-            numerator = rule.getChild("numerator");
+                
+                default: throw new IllegalArgumentException("Unrecognized numerator type.");
+            }           
         }
-
 
         // Only one denominator for now.
         Element denominator = rule.getChild("denominator");
+
         Rule.DenominatorType denominatorType = Rule.DenominatorType
                 .valueOf(denominator.getAttributeValue("type").toString());
 
-        Integer value = Integer.parseInt(denominator
+        Integer denominatorValue = Integer.parseInt(denominator
                 .getAttributeValue("value").toString());
 
-        Rule.Operation operation = Rule.Operation.valueOf(denominator
+        Rule.Operation denominatorOp = Rule.Operation.valueOf(denominator
                 .getAttributeValue("operation"));
 
-
-
         // Add the rule and continue to get the next rule.
-        return new Rule(Rule.Type.RATE, numerators, denominatorType, operation
-                , value);
+        return new Rule(Rule.Type.RATE, numeratorList,
+                denominatorType, denominatorOp, denominatorValue);
     }
 
     private static Rule createSimpleRule(Rule.Type type, Element rule)
@@ -740,17 +739,18 @@ public class Achievement implements IXMLizable
         public final Rule.NumeratorType type;
         public final Rule.NumeratorSubType subType;
 
-        public Numerator(int val, Rule.Operation op, Rule.NumeratorType t,
-                Rule.NumeratorSubType subT)
+        public Numerator(
+                int value,
+                Rule.Operation operation,
+                Rule.NumeratorType type,
+                Rule.NumeratorSubType subType)
         {
-            value = val;
-            type = t;
-            operation = op;
-            subType = subT;
+            this.value = value;
+            this.type = type;
+            this.operation = operation;
+            this.subType = subType;
         }
 
-
     }
-
     
 }

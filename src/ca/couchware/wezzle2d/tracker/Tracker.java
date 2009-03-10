@@ -110,34 +110,27 @@ public class Tracker
     }
 
     /**
-     * Get the last x moves from the history.
-     * NOTE: order is reversed. Last move is first.
+     * Get the last n moves from the history.
+     * NOTE: Order is reversed. Last move is first.
      *
-     * @param numMoves The number of moves you would like to see.
-     * @return An unmodifiable list of the last x conditions in reverse order.
+     * @param n The number of moves you would like to see.
+     * @return An unmodifiable list of the last n moves in reverse order.
      */
-    public List<Move> getHistory (int numMoves)
+    public List<Move> getHistory(int n)
     {
-        if(numMoves < 0)
-            throw new IllegalArgumentException("numMoves must be a positive integer.");
+        if (n < 0)
+            throw new IllegalArgumentException("n must be a positive integer");
 
-        // If we are asking for a larger history than we have, simply return
-        // the entire history.
-        if(numMoves > history.size())
-            return Collections.unmodifiableList(history);
+        // Limit the size.
+        if (n > history.size()) n = history.size();
 
-        // Return the null on empty.
-        if(numMoves == 0)
-            return null;
+        // Reverse the list.
+        List<Move> historyClone = new ArrayList<Move>(history);
+        Collections.reverse(historyClone);
 
-        List<Move> temp = new ArrayList<Move>();
-
-        for(int i = 1; i <= numMoves; i++)
-            temp.add(history.get(history.size()-i));
-
-        return Collections.unmodifiableList(temp);
+        // Get the sublist.
+        return Collections.unmodifiableList(history.subList(0, n));
     }
-
 
     /**
      * Get a mapping of all the counts for the numerator values in the list of
@@ -159,7 +152,7 @@ public class Tracker
         for( Move m : moves)
         {
             lines += m.getNumLines();
-            tiles.addAll(m.getTiles());
+            tiles.addAll(m.getTileSet());
             score += m.getScore();
         }
 

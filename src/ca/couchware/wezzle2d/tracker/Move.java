@@ -54,39 +54,37 @@ public class Move
      * Get the cascades. To ensure immutability returns an unmodifiable list.
      * @return The list of cascades.
      */
-    public List getChainList()
+    public List<Chain> getChainList()
     {
         return Collections.unmodifiableList(this.chainList);
     }
 
     /**
      * Get a list of all the tile types in a move.
-     * We do this by first getting the chains, then getting all the lines
-     * in each chain. Then getting the tiles in the lines and finally getting
-     * the tiletypes from the tiles. The algorithm has a complexity of O(c*l*t)
-     * which in practice will not be THAT large.
-     *
      * @return An unmodifiable list of tile types.
      */
-    public Set<Tile> getTiles()
+    public Set<Tile> getTileSet()
     {
+        // We do this by first getting the chains, 
+        // then getting all the lines in each chain,
+        // then getting the tiles in the lines,
+        // then  finally getting the tile types from the tiles.
+        // The algorithm has a complexity of O(c*l*t) which in practice
+        // will not be THAT large.
         Set<Tile> tileSet = new HashSet<Tile>();
-
         List<Chain> chains = this.getChainList();
 
-        for(Chain c : chains)
+        for ( Chain c : chains )
         {
-            List<Line> lines = c.getLineList();
+            List<Line> lineList = c.getLineList();
 
-            for (Line l : lines)
+            for (Line line : lineList)
             {
-                tileSet.addAll(l.getTileList());
+                tileSet.addAll(line.getTileList());
             }
-
         }
 
         return Collections.unmodifiableSet(tileSet);
-
     }
 
     // Get the total score of this move.
@@ -128,7 +126,5 @@ public class Move
         
         return buffer.toString();
     }
-
-
-    
+   
 }

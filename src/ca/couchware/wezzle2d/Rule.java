@@ -110,7 +110,7 @@ public class Rule
     protected final Node<Set<TileType>> itemSubTree;
     protected final List<String> achievementNameList;
     protected final Status status;
-    protected final List<Numerator> numerators;
+    protected final List<Numerator> numeratorList;
     protected final DenominatorType denominatorType;
     
     //--------------------------------------------------------------------------
@@ -145,7 +145,7 @@ public class Rule
         this.value = value;
         this.itemSubTree = null;
         this.achievementNameList = null;
-        this.numerators = null;
+        this.numeratorList = null;
         this.denominatorType = null;
         status = Status.COMPLETE;
     }
@@ -170,58 +170,58 @@ public class Rule
         this.itemSubTree = tree;
         this.value = -1;
         this.achievementNameList = null;
-        this.numerators = null;
+        this.numeratorList = null;
         this.denominatorType = null;
         status = Status.COMPLETE;
     }
 
-    public Rule(Type type, List<Numerator> numerators,
-            DenominatorType dType, Operation operation, Integer value)
+    public Rule(Type type, List<Numerator> numeratorList,
+            DenominatorType denominatorType, Operation denominatorOp, Integer denominatorValue)
     {
         if (type == null)
         {
             throw new NullPointerException("Type cannot be null");
         }
-        if (dType == null)
+        if (numeratorList == null)
         {
-            throw new NullPointerException("dType cannot be null");
+            throw new IllegalArgumentException("Numerator list cannot be null");
         }
-        if (operation == null)
+        if (denominatorType == null)
+        {
+            throw new NullPointerException("Denominator type cannot be null");
+        }
+        if (denominatorOp == null)
         {
             throw new NullPointerException("Operation cannot be null");
-        }
-        if (numerators == null)
-        {
-            throw new IllegalArgumentException("numeratorMap cannot be null");
-        }
-        if(value < 0)
+        }        
+        if (denominatorValue < 0)
         {
             throw new IllegalArgumentException("Value must be positive");
         }
 
-        this.denominatorType = dType;
         this.type = type;
-        this.operation = operation;
-        this.itemSubTree = null;
-        this.value = value;
+        this.numeratorList = numeratorList;
+        this.denominatorType = denominatorType;        
+        this.operation = denominatorOp;
+        this.value = denominatorValue;
+        this.itemSubTree = null;        
         this.achievementNameList = null;
-        this.numerators = numerators;
-        status = Status.COMPLETE;
+        this.status = Status.COMPLETE;
     }
 
      public Rule (Type type, Operation operation, int value, List<String> achievementNameList, Status status)
      {
         if (type == null)
         {
-            throw new NullPointerException("Type cannot be null.");
+            throw new NullPointerException("Type cannot be null");
         }
         if (operation == null)
         {
-            throw new NullPointerException("Operation cannot be null.");
+            throw new NullPointerException("Operation cannot be null");
         }
         if (value < 0)
         {
-            throw new IllegalArgumentException("Value cannot be negative.");
+            throw new IllegalArgumentException("Value cannot be negative");
         }
 
         this.type = type;
@@ -230,7 +230,7 @@ public class Rule
         this.itemSubTree = null;
         this.achievementNameList = achievementNameList;
         this.status = status;
-        this.numerators = null;
+        this.numeratorList = null;
         this.denominatorType = null;
      }
     
@@ -340,102 +340,91 @@ public class Rule
     public boolean evaluateRate(Tracker tracker)
     {
         // Get the denominator;
-        List<Move> moves = null;
-        switch(this.denominatorType)
+        List<Move> moveList = null;
+
+        switch (this.denominatorType)
         {
             case MOVE:
-            {
-                switch(this.operation)
+            
+                switch (this.operation)
                 {
                     case LTEQ:
                     {
-                        moves = tracker.getHistory(value);
+                        moveList = tracker.getHistory(value);
                         break;
                     }
                     case LT:
                     {
-                        moves = tracker.getHistory(value-1);
+                        moveList = tracker.getHistory(value - 1);
                         break;
                     }
                     default:
-                        throw new RuntimeException("Illegal operation");
+                        throw new IllegalArgumentException("Illegal operation");
                 }
                 break;
-            }
-            default:
-                throw new RuntimeException("Unknown denominatortype");
 
+            default:
+                throw new IllegalArgumentException("Unknown denominator type");
         }
 
-        // if we have no moves, false.
-        if(moves == null)
-            return false;
+        // Moves should not be null here.
+        assert (moveList != null);
 
-
+        // If we have no moves, false.
+        if (moveList.isEmpty()) return false;
 
         // Build a map of all values within the history;
-        Map<NumeratorSubType, Integer> counts = tracker.getCounts(moves);
+        Map<NumeratorSubType, Integer> countMap = tracker.getCounts(moveList);
 
         // Go through the hashmap testing all the cases.
-
-        for(Numerator n : numerators)
+        for ( Numerator n : numeratorList )
         {
-
-            // If its a collision, we dont want the subtype.
-            if(n.subType == null)
+            // If its a collision, we don't want the sub-type.
+            if ( n.subType == null )
                 continue;
 
-            int countValue = counts.get(n.subType);
+            int countValue = countMap.get(n.subType);
             int numeratorValue = n.value;
 
             switch(n.operation)
             {
                 case LT:
-                {
-                    if(countValue >= numeratorValue)
+                
+                    if (countValue >= numeratorValue)
                         return false;
 
                     break;
-                }
+                
                 case LTEQ:
-                {
-                   if(countValue > numeratorValue)
+                
+                   if (countValue > numeratorValue)
                         return false;
                     break;
-                }
+                
                 case EQ:
-                {
-                    if(countValue != numeratorValue)
+                
+                    if (countValue != numeratorValue)
                         return false;
                     break;
-                }
+                
                 case GT:
-                {
-                    if(countValue <= numeratorValue)
+                
+                    if (countValue <= numeratorValue)
                         return false;
                     break;
-                }
+                
                 case GTEQ:
-                {
-
-                    if(countValue < numeratorValue)
+                
+                    if (countValue < numeratorValue)
                         return false;
                     break;
-
-                }
-                default:
-                    throw new RuntimeException("Unknown operation!");
-
-
-            }
-
-            
-        }
+               
+                default: throw new AssertionError("Unknown operation");
+            } // end switch
+        } // end for
 
         return true;
-
     }
-
 
     /**
      * A special evaluate for collisions.  Will always return false for
@@ -649,10 +638,7 @@ public class Rule
 
     public List<Numerator> getNumeratorList()
     {
-        return this.numerators;
+        return this.numeratorList;
     }
 
-
-
-    
 }
