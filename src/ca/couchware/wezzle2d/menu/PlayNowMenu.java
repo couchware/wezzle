@@ -380,8 +380,8 @@ public class PlayNowMenu extends AbstractMenu
             // Set the target score.
             hub.levelMan.setLevel(levelNumber, false);
             //hub.timerMan.resetCurrentTime();
-            hub.scoreMan.setTargetLevelScore(hub.scoreMan.generateTargetLevelScore(levelNumber));
             hub.scoreMan.setTargetTotalScore(hub.scoreMan.generateTargetLevelScore(levelNumber)); 
+            hub.scoreMan.setTargetLevelScore(hub.scoreMan.generateTargetLevelScore(levelNumber));            
             
             // Notify that the game started.
             hub.listenerMan.notifyGameStarted(new GameEvent(this, 

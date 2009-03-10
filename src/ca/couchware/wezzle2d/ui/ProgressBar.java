@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.StringUtil;
 import java.awt.Color;
@@ -361,6 +362,8 @@ public class ProgressBar extends AbstractEntity
 	 */
 	public void setProgressUpper(int progressUpper)
 	{
+        CouchLogger.get().recordMessage(this.getClass(), "setProgressUpper called");
+
 		// Update the text, if needed.
 		if (textPosition != TextPosition.NONE)
         {			
@@ -391,15 +394,16 @@ public class ProgressBar extends AbstractEntity
 	 */
 	final public void setProgressValue(int progressValue)
 	{
+        CouchLogger.get().recordMessage(this.getClass(), "setProgressValue called");
         // Make sure progress is positive.
 //        assert progressValue >= this.progressLower
 //                : String.format("%d was >= %d", progressValue, this.progressLower);
         
         // Don't do anything if it's the same.
-        if (this.progressValue == progressValue)
-        {
-            return;
-        }
+        //if (this.progressValue == progressValue)
+        //{
+        //    return;
+        //}
         
 		// Update the text, if needed.
 		if (textPosition != TextPosition.NONE)
@@ -411,9 +415,23 @@ public class ProgressBar extends AbstractEntity
         // Save the progress value.
         this.progressValue = progressValue;
         		
-        // Determine the progress width.        
-        this.progressWidth = ((progressValue - progressLower) * maxProgressWidth) 
+        // Determine the progress width.
+//        CouchLogger.get().recordWarning(this.getClass(),
+//                String.format("%d in [%d, %d]",
+//                    progressValue, progressLower, progressUpper));
+        if (progressUpper - progressLower == 0)
+        {
+            this.progressWidth = 0;
+        }
+        else
+        {
+            this.progressWidth = ((progressValue - progressLower) * maxProgressWidth)
                 / (progressUpper - progressLower);
+        }
+//        CouchLogger.get().recordWarning(this.getClass(),
+//                String.format("%d in [%d, %d] - %d/%d width",
+//                    progressValue, progressLower, progressUpper,
+//                    progressWidth, maxProgressWidth));
         
         // This code ensures that the progress width does not exceed the
         // maximum progress width.        

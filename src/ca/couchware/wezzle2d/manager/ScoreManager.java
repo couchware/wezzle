@@ -379,10 +379,11 @@ import java.util.Set;
      */
     public void setTargetTotalScore(int targetTotalScore)
     {
-        if(targetTotalScore < 0)
+        if (targetTotalScore < 0)
         {
            throw new IllegalArgumentException("targetTotalScore must be non-negative.");
         }
+
         this.targetTotalScore = targetTotalScore;
     }  
     
@@ -513,10 +514,10 @@ import java.util.Set;
 
     public void resetState()
     {
-        setLevelScore(0);
+        setTargetTotalScore(0);
         setTotalScore(0);
         setTargetLevelScore(0);
-        setTargetTotalScore(0);        
+        setLevelScore(0);                
     }   
     
 }

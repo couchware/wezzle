@@ -843,12 +843,14 @@ public class Game extends Canvas implements IWindowCallback
         this.activateGameOver = true;
     }
 
-      public static void resetGame(ManagerHub hub, Game game, boolean restartActivated)
-      {
+    public static void resetGame(ManagerHub hub, Game game, boolean restartActivated)
+    {
         // The level we reset to.
         int level = hub.levelMan.getLevel();
+
         // Reset a bunch of stuff.
-        if (restartActivated) {
+        if (restartActivated)
+        {
             // Reset the board manager.
             hub.boardMan.resetState();
             // Reset the world manager.
@@ -860,8 +862,10 @@ public class Game extends Canvas implements IWindowCallback
             // Reset the timer to the initial.
             //hub.timerMan.setStartTimeToUpper();
         }
+
         // Notify all listeners of reset.
         hub.listenerMan.notifyGameReset(new GameEvent(GameOverGroup.class, level, hub.scoreMan.getLevelScore()));
+
         // Reset the stat man.
         hub.statMan.resetState();
     }

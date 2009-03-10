@@ -519,8 +519,7 @@ public class UI implements
     {
         CouchLogger.get().recordMessage(this.getClass(),
                 "Start time changed! Start time is " + event.getStartTime() + ".");
-        this.timerBar.setProgressValue(event.getStartTime());
-        this.timerBar.setProgressUpper(event.getStartTime());        
+        this.timerBar.setProgressUpper(event.getStartTime());
     }
     
 }
