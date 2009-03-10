@@ -185,7 +185,7 @@
      <achievement name="Test Rate 3" difficulty="BRONZE">
         <description>Score 300 points in 2 moves.</description>
         <rule type="RATE" >
-            <numerator type="SCORE" operation="GTEQ" value="300" />
+            <numerator type="SCORE" operation="GTEQ" value="900" />
             <denominator type="MOVE" operation="LTEQ" value="2" />
         </rule>
     </achievement>

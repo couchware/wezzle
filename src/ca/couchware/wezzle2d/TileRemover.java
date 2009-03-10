@@ -233,9 +233,10 @@ public class TileRemover implements IResettable, ILevelListener
                         Move move = game.getTracker().finishMove();
                         CouchLogger.get().recordMessage(this.getClass(),
                                 "\n" + move.toString());
-                        
+
                         // evaluate the achievements.
                         hub.achievementMan.evaluate(game, hub);
+                        
                     }
                     
                     // Start the next move.
@@ -449,6 +450,9 @@ public class TileRemover implements IResettable, ILevelListener
                 game.getRefactorer()
                         .setRefactorSpeed(RefactorSpeed.SHIFT)
                         .startRefactor();
+
+                // evaluate the achievements.
+                hub.achievementMan.evaluate(game, hub);
             }
             // Otherwise, start a new refactor.
             else
@@ -457,6 +461,10 @@ public class TileRemover implements IResettable, ILevelListener
                 game.getRefactorer()
                         .setRefactorSpeed(refactorSpeed)
                         .startRefactor();
+
+                // check for achievements
+                // evaluate the achievements.
+                hub.achievementMan.evaluate(game, hub);
             }
         } // end if
     }
