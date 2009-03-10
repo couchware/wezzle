@@ -173,5 +173,14 @@
             <denominator type="MOVE" operation="LTEQ" value="2" />
         </rule>
     </achievement>
+    <achievement name="Test Rate 2" difficulty="BRONZE">
+        <description>Get 2 rockets in 2 moves.</description>
+        <rule type="RATE" >
+            <numerator type="COLLISION" >
+                <item type="ROCKET" operation="GTEQ" value="2" />
+            </numerator>
+            <denominator type="MOVE" operation="LTEQ" value="2" />
+        </rule>
+    </achievement>
   </entry>  
 </settings>

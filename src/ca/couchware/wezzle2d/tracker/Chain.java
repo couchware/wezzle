@@ -87,9 +87,23 @@ public class Chain
      * Get the lines. To ensure immutability returns an unmodifiable list.
      * @return The list of lines.
      */
-    public List getLineList()
+    public List getTileGroupList()
     {
         return Collections.unmodifiableList(this.tileGroupList);
+    }
+
+    public List<Line> getLineList()
+    {
+        List<Line> lineList = new ArrayList<Line>();
+
+        for(int i = 0; i < tileGroupList.size(); i++)
+        {
+            if(! (tileGroupList.get(i) instanceof TileEffect))
+                lineList.add((Line)tileGroupList.get(i));
+
+        }
+
+        return lineList;
     }
 
     /**

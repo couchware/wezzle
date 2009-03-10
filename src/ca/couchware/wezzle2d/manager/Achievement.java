@@ -263,23 +263,27 @@ public class Achievement implements IXMLizable
     private static Rule createRateRule(Element rule)
     {
         // Get the numerator element.
-        Element numerator = rule.getChild("numerator");
+       Element numerator = rule.getChild("numerator");
 
        List<Numerator> numerators = new ArrayList<Numerator>();
 
         // Get the numerator type.
         while(rule.getChild("numerator") != null)
         {
-            
+            Integer value = null;
+            Rule.Operation operation = null;
 
             Rule.NumeratorType numeratorType = Rule.NumeratorType
                     .valueOf(numerator.getAttributeValue("type").toString());
 
-            Integer value = Integer.parseInt(numerator.getAttributeValue("value")
+            if(!numeratorType.equals(Rule.NumeratorType.COLLISION))
+            {
+                 value = Integer.parseInt(numerator.getAttributeValue("value")
                     .toString());
 
-            Rule.Operation operation = Rule.Operation
+                operation = Rule.Operation
                     .valueOf(numerator.getAttributeValue("operation"));
+            }
 
 
 
@@ -296,7 +300,7 @@ public class Achievement implements IXMLizable
                         operation = Rule.Operation
                                 .valueOf(item.getAttributeValue("operation"));
 
-                        value = Integer.parseInt(rule
+                        value = Integer.parseInt(item
                                 .getAttributeValue("value").toString());
 
                         numerators.add(new Numerator(value, operation, numeratorType, type));

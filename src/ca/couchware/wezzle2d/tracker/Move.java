@@ -80,12 +80,7 @@ public class Move
 
             for (Line l : lines)
             {
-                List<Tile> tiles = l.getTileList();
-                for( Tile t : tiles)
-                {
-                    tileSet.add(t);
-                }
-
+                tileSet.addAll(l.getTileList());
             }
 
         }
@@ -113,7 +108,7 @@ public class Move
 
         for(Chain c : chains)
         {
-            lineCount += c.size();
+            lineCount += c.getLineList().size();
         }
 
         return lineCount;
