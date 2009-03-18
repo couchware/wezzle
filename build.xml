@@ -7,6 +7,8 @@
     <import file="nbproject/build-impl.xml"/>
     <import file="nbproject/profiler-build-impl.xml"/>   	
 
+ 
+
     <!-- This target excludes the resources from the main JAR. -->
     <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available+main.class+mkdist.available" name="-do-jar-with-libraries">
         <property location="${build.classes.dir}" name="build.classes.dir.resolved"/>
@@ -32,12 +34,26 @@
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <echo>java -jar "${dist.jar.resolved}"</echo>
+
+        <!-- This task creates the exe file. -->
+        <taskdef name="launch4j"
+            classname="net.sf.launch4j.ant.Launch4jTask"
+            classpath="${launch4j.dir}/launch4j.jar
+                :${launch4j.dir}/lib/xstream.jar" />
+                <launch4j configFile="./l4j-config.xml" /> 
     </target>
+   
     
+   
+
     <!-- This target creates the resources JAR. -->
     <target name="-post-jar">
         <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="resources/**" />
     </target>
+    
+    
+    
+
     
     <!--
 

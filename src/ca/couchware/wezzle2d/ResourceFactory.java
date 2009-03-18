@@ -17,6 +17,7 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -267,9 +268,18 @@ public class ResourceFactory
         List<String> spriteList = new ArrayList<String>();
         
         // Detect whether or not we're using a JAR file.
-        URL jarPathUrl = ResourceFactory.class.getProtectionDomain().getCodeSource().getLocation();
-        boolean isJar = jarPathUrl.toString().endsWith(".jar");
-              
+        URI jarPathUrl = null;
+        try{
+         jarPathUrl = ResourceFactory.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        System.out.println("@#%@#%@#%@ " + jarPathUrl.toString());
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        boolean isJar = (jarPathUrl.toString().endsWith(".jar") || jarPathUrl.toString().endsWith(".exe"));
+
+       
         // If we're running from a JAR, then we need to read the JAR entries to
         // figure out all the names of the sprites.
         if (isJar == true)
@@ -277,7 +287,7 @@ public class ResourceFactory
             try
             {
                 // Open the jar.
-                JarInputStream in = new JarInputStream(jarPathUrl.openStream());
+                JarInputStream in = new JarInputStream(jarPathUrl.toURL().openStream());
 
                 while (true)
                 {
@@ -308,8 +318,10 @@ public class ResourceFactory
             try
             {            
                 // Get a list of all the sprites in the sprites directory.
+                //URL url = this.getClass().getClassLoader()
+                //        .getResource(Settings.getSpriteResourcesPath());
                 URL url = this.getClass().getClassLoader()
-                        .getResource(Settings.getSpriteResourcesPath());                        
+                        .getResource(Settings.getSpriteResourcesPath());
 
                 // Convert to file.
                 dir = new File(url.toURI());
