@@ -18,6 +18,6 @@
     <minVersion>1.5.0</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
-    <opt>-ea -Djava.library.path=../lib/lwjgl/native/win32</opt>
+    <opt>-ea -Djava.library.path=lib/lwjgl/native/win32</opt>
   </jre>
 </launch4jConfig>

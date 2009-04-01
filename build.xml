@@ -7,7 +7,39 @@
     <import file="nbproject/build-impl.xml"/>
     <import file="nbproject/profiler-build-impl.xml"/>   	
 
- 
+    <!-- Override the default task so that it includes the native libraries -->
+    <!-- for all supported platforms.                                       -->
+    <target depends="test,jar,win32,macosx,linux" description="Build and test whole project." name="default"/>
+
+    <target name="win32" depends="test,jar">
+        <!-- This copies the native LWJGL library. -->
+        <copy todir="${dist.dir}/lib/lwjgl/native/win32">
+            <fileset dir="lib/lwjgl/native/win32" excludes="*.jar"/>
+        </copy>
+    </target>
+
+    <target name="macosx" depends="test,jar">
+        <!-- This copies the native LWJGL library. -->
+        <copy todir="${dist.dir}/lib/lwjgl/native/macosx">
+            <fileset dir="lib/lwjgl/native/macosx" excludes="*.jar"/>
+        </copy>
+    </target>
+
+    <target name="linux" depends="test,jar">
+        <!-- This copies the native LWJGL library. -->
+        <copy todir="${dist.dir}/lib/lwjgl/native/linux">
+            <fileset dir="lib/lwjgl/native/linux" excludes="*.jar"/>
+        </copy>
+    </target>
+
+    <!-- This task creates the .exe for Windows. -->
+    <target name="exe" depends="jar,win32">
+        <!-- This task creates the exe file. -->
+        <taskdef name="launch4j"
+            classname="net.sf.launch4j.ant.Launch4jTask"
+            classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"/>
+        <launch4j configFile="./l4j-config.xml"/>
+    </target>
 
     <!-- This target excludes the resources from the main JAR. -->
     <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available+main.class+mkdist.available" name="-do-jar-with-libraries">
@@ -33,27 +65,13 @@
         </copylibs>
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
-        <echo>java -jar "${dist.jar.resolved}"</echo>
-
-        <!-- This task creates the exe file. -->
-        <taskdef name="launch4j"
-            classname="net.sf.launch4j.ant.Launch4jTask"
-            classpath="${launch4j.dir}/launch4j.jar
-                :${launch4j.dir}/lib/xstream.jar" />
-                <launch4j configFile="./l4j-config.xml" /> 
+        <echo>java -jar "${dist.jar.resolved}"</echo>        
     </target>
-   
-    
-   
 
     <!-- This target creates the resources JAR. -->
     <target name="-post-jar">
         <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="resources/**" />
-    </target>
-    
-    
-    
-
+    </target>             
     
     <!--
 
