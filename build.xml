@@ -63,15 +63,11 @@
                 <attribute name="Class-Path" value="${jar.classpath} lib/resources.jar"/>
             </manifest>
         </copylibs>
+        <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="resources/**" />
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <echo>java -jar "${dist.jar.resolved}"</echo>        
-    </target>
-
-    <!-- This target creates the resources JAR. -->
-    <target name="-post-jar">
-        <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="resources/**" />
-    </target>             
+    </target>  
     
     <!--
 
