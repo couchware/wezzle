@@ -13,22 +13,22 @@
 
     <target name="win32" depends="test,jar">
         <!-- This copies the native LWJGL library. -->
-        <copy todir="${dist.dir}/lib/lwjgl/native/win32">
-            <fileset dir="lib/lwjgl/native/win32" excludes="*.jar"/>
+        <copy todir="${dist.dir}/lib/native/win32">
+            <fileset dir="lib/native/win32" excludes="*.jar"/>
         </copy>
     </target>
 
     <target name="macosx" depends="test,jar">
         <!-- This copies the native LWJGL library. -->
-        <copy todir="${dist.dir}/lib/lwjgl/native/macosx">
-            <fileset dir="lib/lwjgl/native/macosx" excludes="*.jar"/>
+        <copy todir="${dist.dir}/lib/native/macosx">
+            <fileset dir="lib/native/macosx" excludes="*.jar"/>
         </copy>
     </target>
 
     <target name="linux" depends="test,jar">
         <!-- This copies the native LWJGL library. -->
-        <copy todir="${dist.dir}/lib/lwjgl/native/linux">
-            <fileset dir="lib/lwjgl/native/linux" excludes="*.jar"/>
+        <copy todir="${dist.dir}/lib/native/linux">
+            <fileset dir="lib/native/linux" excludes="*.jar"/>
         </copy>
     </target>
 
