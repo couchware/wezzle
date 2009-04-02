@@ -1011,31 +1011,31 @@ public class Game extends Canvas implements IWindowCallback
 	 */
 	public static void main(String argv[])
 	{		              
-        // Make sure the setting manager is loaded.       
-        SettingsManager settingsMan = SettingsManager.get();      
-        
-        // Set the default color scheme.
-        ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));       
-        Achievement.Difficulty.initializeDifficultyColorMap(settingsMan);
+            // Make sure the setting manager is loaded.
+            SettingsManager settingsMan = SettingsManager.get();
 
-        // Set the BasicPlayer logger level.
-        Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
-        
-        try
-        {
-            //Game game = new Game(ResourceFactory.Renderer.JAVA2D);
-            Game game = new Game(ResourceFactory.Renderer.LWJGL);
-            game.start();		
-        }
-        catch (Exception e)
-        {
-            CouchLogger.get().recordException(Game.class, e);
-            CouchLogger.get().write();
-        }
+            // Set the default color scheme.
+            ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+            ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+            RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+            SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+            Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+            Achievement.Difficulty.initializeDifficultyColorMap(settingsMan);
+
+            // Set the BasicPlayer logger level.
+            Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
+
+            try
+            {
+                //Game game = new Game(ResourceFactory.Renderer.JAVA2D);
+                Game game = new Game(ResourceFactory.Renderer.LWJGL);
+                game.start();
+            }
+            catch (Exception e)
+            {
+                CouchLogger.get().recordException(Game.class, e);
+                CouchLogger.get().write();
+            }
 	}
   
 }
