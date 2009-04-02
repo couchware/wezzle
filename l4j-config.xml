@@ -1,15 +1,15 @@
 <launch4jConfig>
-  <dontWrapJar>false</dontWrapJar>
-  <headerType>console</headerType>
-  <jar>dist/Wezzle.jar</jar>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>Wezzle.jar</jar>
   <outfile>dist/Wezzle.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl></supportUrl>
-  <customProcName>false</customProcName>
+  <supportUrl>http://couchware.ca/wezzle</supportUrl>
+  <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
   <manifest></manifest>
   <icon></icon>

@@ -11,7 +11,7 @@
     <!-- for all supported platforms.                                       -->
     <target depends="test,jar,win32,macosx,linux" description="Build and test whole project." name="default"/>
 
-    <target name="win32" depends="test,jar">
+    <target name="win32" depends="test,jar" description="Build the Win32 version of Wezzle">
         <!-- This copies the native LWJGL library. -->
         <copy todir="${dist.dir}/lib/native/win32">
             <fileset dir="lib/native/win32" excludes="*.jar"/>
@@ -33,7 +33,7 @@
     </target>
 
     <!-- This task creates the .exe for Windows. -->
-    <target name="exe" depends="jar,win32" description="Build the Windows version of Wezzle">
+    <target name="exe" depends="jar,win32" description="Build the Wezzle Win32 .exe">
         <!-- This task creates the exe file. -->
         <taskdef name="launch4j"
             classname="net.sf.launch4j.ant.Launch4jTask"
