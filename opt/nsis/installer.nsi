@@ -1,385 +1,251 @@
 ;
-; Wezzle Win32 Installer Script
-;
-; This file creates a Win32 installer that will install the .exe version of
-; Wezzle to the computer.  It will also check for an appropriate version of
-; the JRE.  If it is not found, it will install the bundled JRE.
+; Wezzle Installer
+; By Cameron McKay (cam@couchware.ca)
 ;
 
-!define AppName "Wezzle"
-!define AppVersion "1.0"
-!define Vendor "Couchware Inc."
-!define JRE_VERSION "1.5.0"
-!define JRE_INSTALLER_PATH "../jre-installer"
-!define JRE_INSTALLER "jre-6u13-windows-i586-p.exe"
+;--------------------------------
+; Settings
 
-!include "MUI.nsh"
-!include "Sections.nsh"
+  !define APP_VENDOR "Couchware"
+  !define APP_SHORT_NAME "Wezzle"
+  !define APP_FULL_NAME "Wezzle"
+  !define APP_VERSION "1.0-test7"
+  !define JAVA_REQUIRED "1.5.0"
+  !define JAVA_INSTALLER "..\jre-installer\jre-6u13-windows-i586-p.exe"
+  !define REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"  
 
-Var InstallRuntime
-Var JREPath
+;--------------------------------
+; Include Modern UI
+; Include LogicLib
 
-;-------------------------------------------------------------------------------
-; Configuration
-;-------------------------------------------------------------------------------
+  !include "MUI2.nsh"
+  !include "LogicLib.nsh"
 
+;--------------------------------
 ; General
-Name "${AppName}"
-OutFile "${AppName}-${AppVersion}-win32-setup.exe"
 
-; Folder selection page
-InstallDir "$PROGRAMFILES\${AppName}"
+  ; Name and file
+  Name "${APP_FULL_NAME}"
+  OutFile "${APP_SHORT_NAME}-${APP_VERSION}-win32-setup.exe"
 
-; Get install folder from registry if available
-InstallDirRegKey HKLM "SOFTWARE\${Vendor}\${AppName}" ""
+  ; Default installation folder
+  InstallDir "$PROGRAMFILES\${APP_VENDOR}\${APP_FULL_NAME}"
 
-; Installation types
-; Uncomment if you want Installation types
-;InstType "full"	
+  ; Get installation folder from registry if available
+  InstallDirRegKey HKCU "${REG_KEY}" ""
 
-;-------------------------------------------------------------------------------
-; Pages
-;-------------------------------------------------------------------------------
+  ; Request application privileges for Windows Vista
+  RequestExecutionLevel user
 
-; The license page.
-!insertmacro MUI_PAGE_LICENSE "..\..\docs\eula.txt"
+;--------------------------------
+; Interface Settings
 
-; This page checks for JRE. It displays a dialog based on JRE.ini if it needs to install JRE
-; Otherwise you won't see it.
-Page custom CheckInstalledRuntime
+  !define MUI_ABORTWARNING
 
-; Define headers for the 'Java installed successfully' page.
-!define MUI_INSTFILESPAGE_FINISHHEADER_TEXT "Java installation complete"
-!define MUI_PAGE_HEADER_TEXT "Installing Java Runtime Environment"
-!define MUI_PAGE_HEADER_SUBTEXT "Please wait while we install the Java Runtime Environemnt."
-!define MUI_INSTFILESPAGE_FINISHHEADER_SUBTEXT "Java runtime installed successfully."
-!insertmacro MUI_PAGE_INSTFILES
-!define MUI_INSTFILESPAGE_FINISHHEADER_TEXT "Installation complete"
-!define MUI_PAGE_HEADER_TEXT "Installing ${AppName} ${AppVersion}"
-!define MUI_PAGE_HEADER_SUBTEXT "Please wait while ${AppName} is being installed."
+;--------------------------------
+; Pages  
 
-; Uncomment the next line if you want optional components to be selectable.
-;!insertmacro MUI_PAGE_COMPONENTS
+  !define MUI_COMPONENTSPAGE_SMALLDESC
 
-!define MUI_PAGE_CUSTOMFUNCTION_PRE myPreInstfiles
-!define MUI_PAGE_CUSTOMFUNCTION_LEAVE RestoreSections
-!insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_INSTFILES
-!insertmacro MUI_PAGE_FINISH
-!insertmacro MUI_UNPAGE_CONFIRM
-!insertmacro MUI_UNPAGE_INSTFILES
+  !insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
+  !insertmacro MUI_PAGE_COMPONENTS  
+  !insertmacro MUI_PAGE_DIRECTORY
+  !insertmacro MUI_PAGE_INSTFILES
 
-;-------------------------------------------------------------------------------
-; Modern UI Configuration
-;-------------------------------------------------------------------------------
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
 
-!define MUI_ABORTWARNING
-
-;-------------------------------------------------------------------------------
+;--------------------------------
 ; Languages
-;-------------------------------------------------------------------------------
 
-!insertmacro MUI_LANGUAGE "English"
+  !insertmacro MUI_LANGUAGE "English"
 
-;-------------------------------------------------------------------------------
-; Language Strings
-;-------------------------------------------------------------------------------
-
-; Description.
-LangString DESC_SecAppFiles ${LANG_ENGLISH} "Application files copy"
-
-; Header.
-LangString TEXT_JRE_TITLE ${LANG_ENGLISH} "Java Runtime Environment"
-LangString TEXT_JRE_SUBTITLE ${LANG_ENGLISH} "Installation"
-LangString TEXT_PRODVER_TITLE ${LANG_ENGLISH} "Installed version of ${AppName}"
-LangString TEXT_PRODVER_SUBTITLE ${LANG_ENGLISH} "Installation cancelled"
-
-;-------------------------------------------------------------------------------
-; Reserve Files
-;-------------------------------------------------------------------------------
-
-;Only useful for BZIP2 compression
-
-ReserveFile "jre.ini"
-!insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
-
-;-------------------------------------------------------------------------------
+;--------------------------------
 ; Installer Sections
-;-------------------------------------------------------------------------------
 
-Section -InstallRuntime jre
-
-  Push $0
-  Push $1
+Section "Wezzle" SecWezzle
   
-  StrCmp $InstallRuntime "yes" InstallRuntime JREPathStorage
-  DetailPrint "Starting the Java installation..."
+  ; Make it required.
+  SectionIn RO
 
-InstallRuntime:
+  SetOutPath "$INSTDIR"
 
-  File /oname=$TEMP\${JRE_INSTALLER} ${JRE_INSTALLER_PATH}\${JRE_INSTALLER}  
-  DetailPrint "Launching Java installer..."
-  ;ExecWait "$TEMP\${JRE_INSTALLER} /S" $0
-  ; The silent install /S does not work for installing the JRE, 
-  ; Sun has documentation on the parameters needed.
-  ExecWait '"$TEMP\${JRE_INSTALLER}" /s /v\"/qn REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0\"' $0
-  DetailPrint "Java installation complete."
-  Delete "$TEMP\${JRE_INSTALLER}"
-  StrCmp $0 "0" VerifyInstall 0
-  Push "The Java installer has been unexpectedly interrupted."
-  Goto ExitInstallRuntime
+  File /r ..\..\dist\*.*
 
-VerifyInstall:
-
-  DetailPrint "Verifying the Java installation..."
-
-  Push "${JRE_VERSION}"
-  Call DetectRuntime
-
-  ; DetectRuntime's return value.
-  Pop $0	  
-  StrCmp $0 "0" ExitInstallRuntime 0
-  StrCmp $0 "-1" ExitInstallRuntime 0
-  Goto JavaExeVerif
-  Push "Java installation failed."
-  Goto ExitInstallRuntime
-
-JavaExeVerif:
-
-  IfFileExists $0 JREPathStorage 0
-  Push "Cannot find $0."
-  Goto ExitInstallRuntime
-
-JREPathStorage:
-
-  ; MessageBox MB_OK "Path Storage"
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "jre.ini" "UserDefinedSection" "JREPath" $1
-  StrCpy $JREPath $0
-  Goto End
-
-ExitInstallRuntime:
-
-  Pop $1
-  MessageBox MB_OK "The setup is about to be interrupted for the following reason: $1."
-  Pop $1 	; Restore $1
-  Pop $0 	; Restore $0
-  Abort
-
-End:
-
-  Pop $1	; Restore $1
-  Pop $0	; Restore $0
-
-SectionEnd
-
-Section "Installation of ${AppName}" SecAppFiles
-
-  SectionIn 1 RO ; Full install, cannot be unselected.
-                 ; If you add more sections be sure to add them here as well.
-  SetOutPath $INSTDIR
-  ;File /r "stream\"
-
-  ; If you need the path to JRE, you can either get it here for from $JREPath
-  ;!insertmacro MUI_INSTALLOPTIONS_READ $0 "jre.ini" "UserDefinedSection" "JREPath"  
-
-  ; Store installation folder.
-  WriteRegStr HKLM "SOFTWARE\${Vendor}\${AppName}" "" $INSTDIR
-
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "DisplayName" "${AppName}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "NoModify" "1"
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "NoRepair" "1"
+  ; Store installation folder
+  WriteRegStr HKCU "${REG_KEY}" "" $INSTDIR
 
   ; Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 SectionEnd
 
-Section "Start menu shortcuts" SecCreateShortcut
-  SectionIn 1	; Can be unselected
-  CreateDirectory "$SMPROGRAMS\${AppName}"
-  CreateShortCut "$SMPROGRAMS\${AppName}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  ;CreateShortCut "$SMPROGRAMS\${AppName}\${AppName}.lnk" "$INSTDIR\${AppName}.exe" "" "$INSTDIR\${AppName}.exe" 0
+Section "Java Runtime Environment" SecJava
+
+  ; Make it required.
+  SectionIn RO
+
+  Push $0
+  Push $1
+
+  ; Detect Java.
+  Call DetectJava
+  Pop $0
+
+  ; See if it was not found.
+  ${If} $0 == ""
+
+    MessageBox MB_OKCANCEL "The correct version of Java was not detected.$\r$\nSetup will now attempt to install the Java Runtime Environment." IDCANCEL JavaInstallerFailure
+
+    DetailPrint "Installing the Java Runtime Environment..."   
+
+    File /oname=$TEMP\java_installer.exe ${JAVA_INSTALLER}
+    ExecWait '"$TEMP\java_installer.exe" /s /v\"/qn REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0\"' $0
+    DetailPrint "Java Runtime Environment installation completed."
+    Delete "$TEMP\java_installer.exe"
+
+    ; Detect Java again, to see if it installed.
+    Call DetectJava
+    Pop $0
+
+    JavaInstallerFailure:
+
+      ${If} $0 == ""
+        MessageBox MB_OK|MB_ICONEXCLAMATION "Setup was unable to install the Java Runtime Environment."
+      ${EndIf}
+
+  ${EndIf}
+
 SectionEnd
 
-;-------------------------------------------------------------------------------
+Section "Start Menu Shortcuts" SecStartMenuShortcuts
+
+  CreateDirectory "$SMPROGRAMS\${APP_FULL_NAME}"  
+  CreateShortCut "$SMPROGRAMS\${APP_FULL_NAME}\${APP_SHORT_NAME}.lnk" "$INSTDIR\${APP_SHORT_NAME}.exe" "" "$INSTDIR\${APP_SHORT_NAME}.exe" 0
+  CreateShortCut "$SMPROGRAMS\${APP_FULL_NAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
+
+SectionEnd
+
+;--------------------------------
+; Functions
+
+Function DetectJava
+
+  Push $0   ; This will be used for the target version
+  Push $1   ; This will be used for the detected version string
+  Push $2   ; This will be used for the detected Java home directory
+  Push $3   ; This will be used for testing the major...
+  Push $4   ; ...and minor version of Java.
+
+  ; Set the target version.
+  StrCpy $0 "${JAVA_REQUIRED}"
+
+  ; Try finding a JRE.
+  DetailPrint "Searching for compatible Java Runtime Environment..."
+  ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"  
+
+  ${If} $1 != ""
+    DetailPrint "Found Java Runtime Environment $1."
+    ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$1" "JavaHome"
+    ;MessageBox MB_OK "JavaHome was $2."
+    Goto GetJava
+  ${EndIf}
+
+  ; Try finding a JDK.
+  DetailPrint "Searching for compatible Java Development Kit..."
+  ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+
+  ${If} $1 != ""
+    DetailPrint "Found Java Development Kit $1."
+    ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$1" "JavaHome"
+    Goto GetJava
+  ${EndIf}
+
+  ; Could not find a usable Java.
+  Goto JavaNotFound
+
+  ; This label tries to find the actual Java exectuable.
+  GetJava:
+
+    DetailPrint "Verifying that the installed Java is the correct version..."
+
+    IfFileExists "$2\bin\java.exe" 0 JavaNotFound
+
+    ; Get major version number.
+    ; Example: $1 = X.Y.Z, now $3 and $4 are X
+    StrCpy $3 $0 1			; Get requested major version.
+    StrCpy $4 $1 1			; Get found major version.
+    ;MessageBox MB_OK "Compared $3 to $4."
+    IntCmp $4 $3 0 JavaNotFound JavaFound
+
+    StrCpy $3 $0 1 2        ; Get requested minor version.
+    StrCpy $4 $1 1 2        ; Get found minor version.
+    ;MessageBox MB_OK "Compared $3 to $4."
+    IntCmp $4 $3 JavaFound JavaNotFound JavaFound
+
+  ; If we got here, Java was found within parameters.
+  JavaFound:
+
+    DetailPrint "The detected version of Java is correct."
+    Push "$2\bin\java.exe"
+    Goto DetectJavaEnd
+
+  ; If we got here, Java was not found or was too low.
+  JavaNotFound:
+
+    DetailPrint "The detected version of Java is incorrect."
+    Push ""
+    Goto DetectJavaEnd
+
+  ; This label ends the function and restores the stack.
+  DetectJavaEnd:
+
+    ; Stack   => rv,r4,r3,r2,r1,r0
+    Exch	; => r4,rv,r3,r2,r1,r0
+	Pop $4	; => rv,r3,r2,r1,r0
+	Exch	; => r3,rv,r2,r1,r0
+	Pop $3	; => rv,r2,r1,r0
+	Exch 	; => r2,rv,r1,r0
+	Pop $2	; => rv,r1,r0
+	Exch	; => r1,rv,r0
+	Pop $1	; => rv,r0
+	Exch	; => r0,rv
+	Pop $0	; => rv
+
+FunctionEnd
+
+;--------------------------------
 ; Descriptions
-;-------------------------------------------------------------------------------
 
-!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-!insertmacro MUI_DESCRIPTION_TEXT ${SecAppFiles} $(DESC_SecAppFiles)
-!insertmacro MUI_FUNCTION_DESCRIPTION_END
+  ; Language strings
+  LangString DESC_SecWezzle ${LANG_ENGLISH} "Installs the Wezzle game files."
+  LangString DESC_SecJava ${LANG_ENGLISH} "Installs the Java Runtime Environment if needed."
+  LangString DESC_SecStartMenuShortcuts ${LANG_ENGLISH} "Create Start Menu shortcuts for Wezzle."
 
-;-------------------------------------------------------------------------------
-; Installer Functions
-;-------------------------------------------------------------------------------
+  ; Assign language strings to sections
+  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecWezzle} $(DESC_SecWezzle)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecJava} $(DESC_SecJava)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenuShortcuts} $(DESC_SecStartMenuShortcuts)
+  !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
-Function .onInit
-
-  ;Extract InstallOptions INI Files
-  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "jre.ini"
-  Call SetupSections
-
-FunctionEnd
-
-Function myPreInstfiles
-
-  Call RestoreSections
-  SetAutoClose true
-
-FunctionEnd
-
-Function CheckInstalledRuntime
-  
-  Push "${JRE_VERSION}"
-  Call DetectRuntime  
-
-  ; Get return value from stack.
-  Exch $0
-
-  ; See if we found a suitable runtime.
-  StrCmp $0 "0" NotFound
-  StrCmp $0 "-1" NotFound
-  Goto RuntimeInstalled
-
-NotFound:
-  
-  Goto MustInstallRuntime
-
-MustInstallRuntime:
-
-  Exch $0	; $0 now has the install options page return value.
-  ; Do something with return value here.
-  Pop $0	; Restore $0
-  StrCpy $InstallRuntime "yes"
-  Return
-
-RuntimeInstalled:
- 
-  StrCpy $InstallRuntime "no"
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "jre.ini" "UserDefinedSection" "JREPath" $JREPATH
-  Pop $0		; Restore $0
-  Return
-
-FunctionEnd
-
-; Detects if a Java runtime exists.
-; Version requested is on the stack.
-; Return (on stack)
-;   "0"   if not found
-;   "-1"  if old version found
-;   path  if current or new version found
-Function DetectRuntime
-
-  Exch $0 ; Get version requested.
-          ; Now the previous value of $0 is on the stack, 
-          ; and the asked for version of JDK is in $0.
-  Push $1 ; $1 = Java version string (i.e. 1.5.0)
-  Push $2 ; $2 = JavaHome
-  Push $3 ; $3 and $4 are used for checking the major/minor version of java
-  Push $4
-
-  ; Look for the JRE.
-  ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
-
-  ; If that fails, try finding the JDK.
-  StrCmp $1 "" DetectJDK
-
-  ; If we found the a current version, but no Java home, then look
-  ; for the JDK.
-  ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$1" "JavaHome"  
-  StrCmp $2 "" DetectJDK
-
-  Goto DetectVersion
-
-DetectJDK:
-
-  ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"  
-  StrCmp $1 "" NotFound
-
-  ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$1" "JavaHome"  
-  StrCmp $2 "" NotFound
-
-DetectVersion:
-
-  ; $0 = Java version requested.
-  ; $1 = Java version found.
-  ; $2 = JavaHome
-  ; 1.5.0 = Major.Minor.Bugfix
-
-  IfFileExists "$2\bin\java.exe" 0 NotFound
-  StrCpy $3 $0 1   ; Put requested major version number in $3.
-  StrCpy $4 $1 1   ; Put found major version number in $4.
-
-  ; Compare the version numbers.
-  ; If the they are eqaul, look at the minor version number.
-  IntCmp $4 $3 0 FoundOld Found
-  StrCpy $3 $0 1 2   ; Put requested minor version number in $3.
-  StrCpy $4 $1 1 2   ; Put found minor version number in $4.
-  
-  IntCmp $4 $3 Found FoundOld Found
-
-NotFound:
-  
-  Push "0"
-  Goto End
-
-Found:
-
-  Push "$2\bin\java.exe"
-  Goto End
-
-FoundOld:
-  
-  Push "-1"
-  Goto End
-
-End:
-
-  ; Top of stack is return value, then r4,r3,r2,r1
-  Exch   ; => r4,rv,r3,r2,r1,r0
-  Pop $4 ; => rv,r3,r2,r1r,r0
-  Exch   ; => r3,rv,r2,r1,r0
-  Pop $3 ; => rv,r2,r1,r0
-  Exch   ; => r2,rv,r1,r0
-  Pop $2 ; => rv,r1,r0
-  Exch   ; => r1,rv,r0
-  Pop $1 ; => rv,r0
-  Exch   ; => r0,rv
-  Pop $0 ; => rv
-
-FunctionEnd
-
-Function RestoreSections
-
-  !insertmacro UnselectSection ${jre}
-  !insertmacro SelectSection ${SecAppFiles}
-  !insertmacro SelectSection ${SecCreateShortcut}
-
-FunctionEnd
-
-Function SetupSections
-
-  !insertmacro SelectSection ${jre}
-  !insertmacro UnselectSection ${SecAppFiles}
-  !insertmacro UnselectSection ${SecCreateShortcut}
-
-FunctionEnd
-
-;-------------------------------------------------------------------------------
+;--------------------------------
 ; Uninstaller Section
-;-------------------------------------------------------------------------------
 
 Section "Uninstall"
 
-  ; Remove registry keys.
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}"
-  DeleteRegKey HKLM  "SOFTWARE\${Vendor}\${AppName}"
+  ; ADD YOUR OWN FILES HERE...
 
-  ; Remove shortcuts, if any.
-  Delete "$SMPROGRAMS\${AppName}\*.*"
+  Delete "$INSTDIR\Uninstall.exe"
+  ;DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_FULL_NAME}"
+  ;DeleteRegKey HKLM "SOFTWARE\${VENDOR}\${APP_FULL_NAME}"
 
-  ; Remove files.
+  ; Remove shortcuts.
+  Delete "$SMPROGRAMS\${APP_SHORT_NAME}\*.*"
+  RMDir "$SMPROGRAMS\${APP_SHORT_NAME}"
+
   RMDir /r "$INSTDIR"
+
+  DeleteRegKey /ifempty HKCU "${REG_KEY}"
 
 SectionEnd
