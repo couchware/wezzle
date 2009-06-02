@@ -1,2 +1,2 @@
 This is where the EULA goes. w00t!
-testing hook
+testing hooks
