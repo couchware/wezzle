@@ -76,7 +76,7 @@ public class ExitMenu extends AbstractGroup
         // Line 2.
         ITextLabel l2 = new LabelBuilder(l1).y(l1.getY() + 30)
                 .text("you want to exit?").end();
-        this.entityList.add(l2);                
+        this.entityList.add(l2);
         
         // Add the "Yes" button.
 //        this.yesButton = new SpriteButton.Builder(174, 405)

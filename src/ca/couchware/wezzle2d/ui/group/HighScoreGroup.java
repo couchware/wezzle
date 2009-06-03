@@ -59,7 +59,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("High Scores")
                 .visible(false).end();        
-        this.entityList.add(this.headerLabel);     
+        this.entityList.add(this.headerLabel);
         
         // Create the no high score label.
         this.noHighScore = new ITextLabel[2];

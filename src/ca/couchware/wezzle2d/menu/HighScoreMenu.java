@@ -67,6 +67,25 @@ public class HighScoreMenu extends AbstractMenu
                 .end();
         this.entityList.add(optionBox);
 
+        // Create the score labels.
+        this.scoreLabelList = new ArrayList<ITextLabel>(HighScoreManager.NUMBER_OF_SCORES);
+
+        // Create all the labels.
+        for (int i = 0; i < HighScoreManager.NUMBER_OF_SCORES; i++)
+        {
+            ITextLabel label = new LabelBuilder(268, 186 + (45 * i))
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                    .opacity(0).size(20).text(" ")
+                    .visible(false).end();
+            scoreLabelList.add(label);
+
+            this.entityList.add(label);
+        }
+
+        // Update the labels.
+        this.updateScoreLabels(scoreLabelList, hub.highScoreMan.getScoreList());
+
         // Create the no high score label.
         this.noHighScore = new ITextLabel[2];
 
@@ -82,30 +101,6 @@ public class HighScoreMenu extends AbstractMenu
                 .size(20).text("high scores yet.")
                 .visible(false).end();
 
-        for (ITextLabel label : noHighScore)
-        {
-            this.entityList.add(label);
-        }
-
-        // Create the score labels.
-        this.scoreLabelList = new ArrayList<ITextLabel>(HighScoreManager.NUMBER_OF_SCORES);
-
-        // Create all the labels.
-        for (int i = 0; i < HighScoreManager.NUMBER_OF_SCORES; i++)
-        {            
-            ITextLabel label = new LabelBuilder(268, 186 + (45 * i))
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                    .opacity(0).size(20).text(" ")
-                    .visible(false).end();
-            scoreLabelList.add(label);
-           
-            this.entityList.add(label);
-        }
-
-        // Update the labels.
-        this.updateScoreLabels(scoreLabelList, hub.highScoreMan.getScoreList());
-
         // Create the reset button.
         this.resetButton = new Button.Builder(268, 445)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -114,13 +109,17 @@ public class HighScoreMenu extends AbstractMenu
                 .visible(false)
                 .text("Reset")
                 .end();
-        this.entityList.add(this.resetButton);
 
         if (hub.highScoreMan.getScoreList().isEmpty())
         {
-            this.resetButton.setOpacity(0);
-            this.resetButton.setDisabled(true);
+            // The false means don't add it to the layer manager
+            // or change visibility.
+            showNoHighScoreText(false);
         }
+        else
+        {
+            showResetButton();
+        }        
 
         // Add them all to the layer manager.
         for (IEntity entity : this.entityList)
@@ -136,14 +135,38 @@ public class HighScoreMenu extends AbstractMenu
             // Reset the scores.
             hub.highScoreMan.resetScoreList();
             
-            // Update the labels.
-            this.updateScoreLabels(this.scoreLabelList, hub.highScoreMan.getScoreList());
+            // Show the text.
+            this.showNoHighScoreText(true);
+            this.hideResetButton();            
 
-            // Reset the button state.
-            this.resetButton.setActivated(false);
-            this.resetButton.setOpacity(0);
-            this.resetButton.setDisabled(true);
+            // Update the labels.
+            this.updateScoreLabels(this.scoreLabelList, hub.highScoreMan.getScoreList());            
         }
+    }
+
+    private void showNoHighScoreText(boolean addToLayerManager)
+    {
+        for (ITextLabel label : this.noHighScore)
+        {
+            this.entityList.add(label);
+            if (addToLayerManager)
+            {
+                label.setVisible(true);
+                this.menuLayerMan.add(label, Layer.UI);
+            }
+        }
+    }
+
+    private void showResetButton()
+    {
+        this.entityList.add(this.resetButton);
+    }
+
+    private void hideResetButton()
+    {
+        // Remove the button.
+        this.menuLayerMan.remove(this.resetButton, Layer.UI);
+        this.entityList.remove(this.resetButton);
     }
 
     /**
@@ -169,14 +192,7 @@ public class HighScoreMenu extends AbstractMenu
             {
                 label.setText("");
             }
-        } // end for
-
-        // If no high scores exist, tell the user.
-        final int op = scoreList.isEmpty() ? 100 : 0;
-        for ( ITextLabel label : this.noHighScore )
-        {
-            label.setOpacity(op);
-        }
+        } // end for      
     }
 
     /**

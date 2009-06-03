@@ -168,7 +168,7 @@ public class PlayNowMenu extends AbstractMenu
                 .add(tutorialOff, !tutorialDefault)
                 .visible(false)
                 .end();
-        this.entityList.add(tutorialRadio);                
+        this.entityList.add(tutorialRadio);
         
         ITextLabel themeLabel = new LabelBuilder(
                     tutorialLabel.getX(), 
@@ -254,7 +254,7 @@ public class PlayNowMenu extends AbstractMenu
                 .add(themeItem2, themeMap.get(Theme.ELECTRONIC))
                 .add(themeItem3, themeMap.get(Theme.HIPPOP))              
                 .itemSpacing(20).visible(false).end();
-        this.entityList.add(themeRadio);    
+        this.entityList.add(themeRadio);
                
         // Create the start button.
         this.startButton = new Button.Builder(268, 450)

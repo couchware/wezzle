@@ -105,7 +105,7 @@ public class AchievementMenu extends AbstractMenu
                 .opacity(80)
                 .visible(false)
                 .end();
-        this.entityList.add(listBox);  
+        this.entityList.add(listBox);
         
         // Create the list of titles for the first 5 achievements.
         Scroller.Builder builder = new Scroller.Builder(68, 229)
@@ -136,7 +136,7 @@ public class AchievementMenu extends AbstractMenu
                 .opacity(80)
                 .visible(false)
                 .end();
-        this.entityList.add(descriptionBox);  
+        this.entityList.add(descriptionBox);
         
         // The achievement description text.
         this.achievementTitle = new ResourceFactory.LabelBuilder(96, 381)

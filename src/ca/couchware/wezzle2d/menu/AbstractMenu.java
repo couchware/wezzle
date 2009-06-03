@@ -7,6 +7,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -75,10 +76,10 @@ public abstract class AbstractMenu extends AbstractGroup
                 .end();
 
         List<IAnimation> fadeList = new ArrayList<IAnimation>(entityList.size());
-        for (int i = 0; i < entityList.size(); i++)
+        for (IEntity entity : entityList)
         {
             //CouchLogger.get().recordMessage(this.getClass(), "Got here!");
-            IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.IN, entityList.get(i))
+            IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.IN, entity)
                     .duration(200).end();
             fadeList.add(anim);
         }

@@ -84,7 +84,7 @@ public class AudioGroup extends AbstractGroup
                 .add(soundItem2, !SettingsManager.get().getBoolean(Key.USER_SOUND))
                 .visible(false).end();
         hub.layerMan.add(soundRadio, Layer.UI);
-        entityList.add(soundRadio);             
+        entityList.add(soundRadio);
         
         // Clear flag.
         soundRadio.changed();
@@ -96,7 +96,7 @@ public class AudioGroup extends AbstractGroup
                 .virtualValue(SettingsManager.get().getInt(Key.USER_SOUND_VOLUME))
                 .visible(false).end();
         hub.layerMan.add(soundSlider, Layer.UI);
-        entityList.add(soundSlider);        
+        entityList.add(soundSlider);
                         
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
@@ -108,7 +108,7 @@ public class AudioGroup extends AbstractGroup
                 .add(musicItem2, !SettingsManager.get().getBoolean(Key.USER_MUSIC))
                 .visible(false).end();
         hub.layerMan.add(musicRadio, Layer.UI);
-        entityList.add(musicRadio);            
+        entityList.add(musicRadio);
         
         // Clear flag.
         musicRadio.changed();
@@ -120,7 +120,7 @@ public class AudioGroup extends AbstractGroup
                 .virtualValue(SettingsManager.get().getInt(Key.USER_MUSIC_VOLUME))
                 .visible(false).end();
         hub.layerMan.add(musicSlider, Layer.UI);
-        entityList.add(musicSlider);                      
+        entityList.add(musicSlider);
         
         // Create back button.
         backButton = new Button.Builder(400, 420)
