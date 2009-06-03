@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>  
   <entry name="User.Achievement">
+
+    <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
+    <!-- Regular Achievements                                                -->
+    <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
+
+    <!-- Rocket Achievements -->
     <achievement name="Rocketeer" difficulty="BRONZE">
       <description>Fire a single rocket.</description>      
       <rule type="COLLISION" operation="BETWEEN">
@@ -26,7 +32,7 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="2 Rockets with 1 Stone" difficulty="GOLD">
+    <achievement name="Missile Defense Shield" difficulty="GOLD">
         <description>Fire a rocket into two other rockets.</description>
         <rule type="COLLISION" operation="BETWEEN">
             <item type="ROCKET">
@@ -41,19 +47,34 @@
         <amount metatype="COMPLETE" value="3" operation="GTEQ" />
         <achievement name="Rocketeer" />
         <achievement name="A Tale of Two Rockets" />
-        <achievement name="It's Raining Rockets" />
+        <achievement name="It's Raining Rockets" />        
+        <achievement name="Missile Defense Shield" />
       </rule>
     </achievement>
+
+    <!-- Gravity Achievements -->
     <achievement name="Gravitron" difficulty="BRONZE">
       <description>Activate a gravity tile.</description>      
       <rule type="COLLISION" operation="BETWEEN">
         <item type="GRAVITY" />
       </rule>
     </achievement>
+    
+
+    <!-- Bomb Achievements -->
     <achievement name="Bomber" difficulty="BRONZE">
       <description>Activate a bomb tile.</description>      
       <rule type="COLLISION" operation="BETWEEN">
         <item type="BOMB" />
+      </rule>
+    </achievement>
+    <achievement name="Missile Launcher" difficulty="GOLD">
+      <description>Explode a bomb into two rockets.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="ROCKET" />
+            <item type="ROCKET" />
+        </item>
       </rule>
     </achievement>
     <achievement name="Collateral Damage" difficulty="SILVER">
@@ -64,6 +85,8 @@
         </item>
       </rule>
     </achievement>
+
+    <!-- Star Achievements -->
     <achievement name="Astronomer" difficulty="BRONZE">
       <description>Activate a star tile.</description>      
       <rule type="COLLISION" operation="BETWEEN">
@@ -78,6 +101,21 @@
         </item>
       </rule>
     </achievement>
+    <achievement name="The Perfect Star Storm" difficulty="PLATINUM">
+        <description>Use a star to remove three multiplier tiles
+        and two item tiles, all in the same move.</description>
+        <rule type="COLLISION" operation="BETWEEN">
+            <item type="STAR">
+                <item type="*ITEM" />
+                <item type="*ITEM" />
+                <item type="*MULTIPLIER" />
+                <item type="*MULTIPLIER" />
+                <item type="*MULTIPLIER" />
+            </item>
+        </rule>
+    </achievement>
+
+    <!-- Score Achievements -->
     <achievement name="Score 30,000 Points" difficulty="BRONZE">
       <description>Get over 30,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="30000" />
@@ -90,7 +128,7 @@
       <description>Get over 160,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="160000" />
     </achievement>
-    <achievement name="Score Master" difficulty="PLATINUM">
+    <achievement name="Score 300,000 Points" difficulty="PLATINUM">
       <description>Get over 300,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="300000" />
     </achievement>
@@ -101,9 +139,12 @@
             <achievement name="Score 30,000 Points" />
             <achievement name="Score 80,000 Points" />
             <achievement name="Score 160,000 Points" />
-            <achievement name="Score Master" />
+            <achievement name="Score 300,000 Points" />
+            <!-- This needs more achievements. -->
         </rule>
-    </achievement>   
+    </achievement>
+
+    <!-- Level Achievements -->
     <achievement name="Get To Level 5" difficulty="BRONZE">
       <description>Starting from level 1, get to level 5 without
       getting a game over.</description>
@@ -142,6 +183,8 @@
       <rule type="LEVEL" operation="EQ" value="5" />
       <rule type="SCORE" operation="GTEQ" value="60000" />
     </achievement>
+
+    <!-- Story Achievements -->
     <achievement name="Doomed Space Mission" difficulty="GOLD">
         <description>Blast off in a rocket to the stars, only to
         tragically blow up at the end.</description>
@@ -153,19 +196,22 @@
             </item>
         </rule>
     </achievement>
-    <achievement name="The Perfect Star Storm" difficulty="PLATINUM">
-        <description>Use a star to remove three multiplier tiles
-        and two item tiles, all in the same move.</description>
-        <rule type="COLLISION" operation="BETWEEN">
-            <item type="STAR">
-                <item type="*ITEM" />
-                <item type="*ITEM" />
-                <item type="*MULTIPLIER" />
-                <item type="*MULTIPLIER" />
-                <item type="*MULTIPLIER" />
-            </item>
+
+    <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
+    <!-- Rate Achievements                                                   -->
+    <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
+
+    <achievement name="Itemizer" difficulty="GOLD">
+        <description>Use 10 items over the course of 10 moves.</description>
+        <rule type="RATE" >
+            <numerator type="COLLISION">
+                <item type="ROCKET" />
+            </numerator>
+            <denominator type="MOVE" operation="LTEQ" value="10" />
         </rule>
     </achievement>
+
+    <!-- Line 'Em Up -->
     <achievement name="Beginner's Luck" difficulty="BRONZE">
         <description>Get 3 lines in 2 moves.</description>
         <rule type="RATE" >
@@ -179,22 +225,7 @@
             <numerator type="LINES" operation="GTEQ" value="4" />
             <denominator type="MOVE" operation="LTEQ" value="2" />
         </rule>
-    </achievement>
-    <achievement name="Rapid Rockets" difficulty="BRONZE">
-        <description>Get 2 rockets in 2 moves.</description>
-        <rule type="RATE" >
-            <numerator type="COLLISION" >
-                <item type="ROCKET" operation="GTEQ" value="2" />
-            </numerator>
-            <denominator type="MOVE" operation="LTEQ" value="2" />
-        </rule>
-    </achievement>
-     <achievement name="Test Rate 3" difficulty="BRONZE">
-        <description>Score 300 points in 2 moves.</description>
-        <rule type="RATE" >
-            <numerator type="SCORE" operation="GTEQ" value="900" />
-            <denominator type="MOVE" operation="LTEQ" value="2" />
-        </rule>
-    </achievement>
+    </achievement>   
+
   </entry>  
 </settings>
