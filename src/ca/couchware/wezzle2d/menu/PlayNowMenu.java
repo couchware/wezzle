@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.menu;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.event.GameEvent;
@@ -27,6 +28,7 @@ import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.IButton.IButtonListener;
 import ca.couchware.wezzle2d.ui.SliderBar;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -77,7 +79,7 @@ public class PlayNowMenu extends AbstractMenu
     final private static int THEME_HIPPOP = 2;
     
     /** The music player map. */
-    private List<MusicPlayer> playerMap;   
+    private List<MusicPlayer> playerList;
     
     /** The start button. */
     final private IButton startButton;       
@@ -183,18 +185,33 @@ public class PlayNowMenu extends AbstractMenu
         // Creat the level limit radio group.        
         RadioItem themeItem1 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("Tron").end();
-        themeItem1.setMouseOnRunnable(createFadeInRunnable(THEME_TRON));        
-        themeItem1.setMouseOffRunnable(createFadeOutRunnable(THEME_TRON));
+//        themeItem1.setMouseOnRunnable(createFadeInRunnable(THEME_TRON));
+//        themeItem1.setMouseOffRunnable(createFadeOutRunnable(THEME_TRON));
+        themeItem1.addButtonListener(new IButtonListener()
+        {
+            public void buttonClicked()
+            { playTheme(THEME_TRON); }
+        });
         
         RadioItem themeItem2 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("Elec").end();
-        themeItem2.setMouseOnRunnable(createFadeInRunnable(THEME_ELECTRONIC));        
-        themeItem2.setMouseOffRunnable(createFadeOutRunnable(THEME_ELECTRONIC));
+//        themeItem2.setMouseOnRunnable(createFadeInRunnable(THEME_ELECTRONIC));
+//        themeItem2.setMouseOffRunnable(createFadeOutRunnable(THEME_ELECTRONIC));
+        themeItem2.addButtonListener(new IButtonListener()
+        {
+            public void buttonClicked()
+            { playTheme(THEME_ELECTRONIC); }
+        });
         
         RadioItem themeItem3 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("HipPop").end();
-        themeItem3.setMouseOnRunnable(createFadeInRunnable(THEME_HIPPOP));        
-        themeItem3.setMouseOffRunnable(createFadeOutRunnable(THEME_HIPPOP));
+//        themeItem3.setMouseOnRunnable(createFadeInRunnable(THEME_HIPPOP));
+//        themeItem3.setMouseOffRunnable(createFadeOutRunnable(THEME_HIPPOP));
+        themeItem3.addButtonListener(new IButtonListener()
+        {
+            public void buttonClicked()
+            { playTheme(THEME_HIPPOP); }
+        });
         
         Map<Theme, Boolean> themeMap = new EnumMap<Theme, Boolean>(Theme.class);
         themeMap.put(Theme.TRON, false);
@@ -259,16 +276,16 @@ public class PlayNowMenu extends AbstractMenu
     private void createPlayers()
     {
         // Create the music player map.
-        this.playerMap = new ArrayList<MusicPlayer>();
+        this.playerList = new ArrayList<MusicPlayer>();
        
         // Create three players, 1 for each theme.
-        this.playerMap.add(MusicManager.createPlayer(Music.TRON2));
-        this.playerMap.add(MusicManager.createPlayer(Music.ELECTRONIC1));
-        this.playerMap.add(MusicManager.createPlayer(Music.HIPPOP1));        
+        this.playerList.add(MusicManager.createPlayer(Music.TRON2));
+        this.playerList.add(MusicManager.createPlayer(Music.ELECTRONIC1));
+        this.playerList.add(MusicManager.createPlayer(Music.HIPPOP1));
         
         try 
         {            
-            for (MusicPlayer p : playerMap)
+            for (MusicPlayer p : playerList)
             {
                 p.setLoop(true);
                 p.play();        
@@ -281,29 +298,25 @@ public class PlayNowMenu extends AbstractMenu
             CouchLogger.get().recordException(this.getClass(), e);
         }             
     }
-    
-    private Runnable createFadeInRunnable(final int playerIndex)
+
+    private void playTheme(int theme)
     {
-        return new Runnable()
+        for (int i = 0; i < playerList.size(); i++)
         {
-            public void run()
-            { 
-                playerMap.get(playerIndex).fadeToGain(
-                        SettingsManager.get().getDouble(Settings.Key.USER_MUSIC_VOLUME));
-            }
-        };
+            if (i == theme) continue;
+            playerList.get(i).fadeToGain(0.0);
+        }
+        double userGain = SettingsManager.get().getDouble(Settings.Key.USER_MUSIC_VOLUME);
+        playerList.get(theme).fadeToGain(userGain);
     }
-    
-    private Runnable createFadeOutRunnable(final int playerIndex)
+
+    private void stopThemes()
     {
-        return new Runnable()
+        for (MusicPlayer player : playerList)
         {
-            public void run()
-            { 
-                playerMap.get(playerIndex).fadeToGain(0.0);
-            }
-        };
-    }                   
+            player.fadeToGain(0.0);
+        }
+    }
         
     public void updateLogic(Game game, ManagerHub hub)
     {      
@@ -400,7 +413,7 @@ public class PlayNowMenu extends AbstractMenu
             }
                                       
             // Stop all the players.
-            for (MusicPlayer p : playerMap)
+            for (MusicPlayer p : playerList)
             {                
                 p.stopAtGain(0.0);
             }        
@@ -412,5 +425,19 @@ public class PlayNowMenu extends AbstractMenu
             this.parent.setActivated(false);
         }
     }
-    
+
+    @Override
+    public IAnimation animateShow()
+    {
+        playTheme(themeRadio.getSelectedIndex());
+        return super.animateShow();
+    }
+
+    @Override
+    public IAnimation animateHide()
+    {
+        stopThemes();
+        return super.animateHide();
+    }
+
 }

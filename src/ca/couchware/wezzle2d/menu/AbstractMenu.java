@@ -77,7 +77,7 @@ public abstract class AbstractMenu extends AbstractGroup
         List<IAnimation> fadeList = new ArrayList<IAnimation>(entityList.size());
         for (int i = 0; i < entityList.size(); i++)
         {
-            CouchLogger.get().recordMessage(this.getClass(), "Got here!");
+            //CouchLogger.get().recordMessage(this.getClass(), "Got here!");
             IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.IN, entityList.get(i))
                     .duration(200).end();
             fadeList.add(anim);

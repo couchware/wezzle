@@ -166,14 +166,21 @@
             </item>
         </rule>
     </achievement>
-     <achievement name="Test Rate" difficulty="BRONZE">
+    <achievement name="Beginner's Luck" difficulty="BRONZE">
         <description>Get 3 lines in 2 moves.</description>
         <rule type="RATE" >
             <numerator type="LINES" operation="GTEQ" value="3" />
             <denominator type="MOVE" operation="LTEQ" value="2" />
         </rule>
     </achievement>
-    <achievement name="Test Rate 2" difficulty="BRONZE">
+    <achievement name="Line 'Em Up!" difficulty="BRONZE">
+        <description>Get 4 lines in 2 moves.</description>
+        <rule type="RATE" >
+            <numerator type="LINES" operation="GTEQ" value="4" />
+            <denominator type="MOVE" operation="LTEQ" value="2" />
+        </rule>
+    </achievement>
+    <achievement name="Rapid Rockets" difficulty="BRONZE">
         <description>Get 2 rockets in 2 moves.</description>
         <rule type="RATE" >
             <numerator type="COLLISION" >

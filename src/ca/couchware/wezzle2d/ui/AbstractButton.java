@@ -122,8 +122,8 @@ public abstract class AbstractButton extends AbstractEntity implements
         
         // Pretend like we just moved the mouse.
         handleMoved(window.getMouseImmutablePosition());
-    }
-    
+    }  
+
     protected void handleReleased()
     {                                             
         if (state.containsAll(EnumSet.of(State.PRESSED, State.HOVERED)))
@@ -181,23 +181,10 @@ public abstract class AbstractButton extends AbstractEntity implements
                 window.setCursor(Cursor.HAND_CURSOR);
             }
         }        
-    }
-    
-    /**
-     * The mouse on runnable.
-     */
-    protected Runnable mouseOnRunnable = null;
-
-    public void setMouseOnRunnable(Runnable mouseOnRunnable)
-    {
-        this.mouseOnRunnable = mouseOnRunnable;
-    }        
+    }      
     
     protected void handleMouseOn()
-    {   
-        if (mouseOnRunnable != null)
-            mouseOnRunnable.run();
-        
+    {           
         //LogManager.recordMessage(this + " on called");
         // Set the cursor appropriately.
         window.setCursor(Cursor.HAND_CURSOR);
@@ -205,21 +192,8 @@ public abstract class AbstractButton extends AbstractEntity implements
         setDirty(true);                        
     }                
     
-    /**
-     * The mouse off runnable.
-     */
-    protected Runnable mouseOffRunnable = null;
-
-    public void setMouseOffRunnable(Runnable mouseOffRunnable)
-    {
-        this.mouseOffRunnable = mouseOffRunnable;
-    }            
-               
     protected void handleMouseOff()
-    {   
-        if (mouseOffRunnable != null)
-            mouseOffRunnable.run(); 
-        
+    {           
         //LogManager.recordMessage(this + " off called");
         // Set the cursor appropriately.
         window.setCursor(Cursor.DEFAULT_CURSOR);
