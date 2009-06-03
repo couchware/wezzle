@@ -111,9 +111,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     private IAnimation slideAnimation = FinishedAnimation.get();    
     
     /** The animation that is currently being run. */        
-    private IAnimation currentAnimation = FinishedAnimation.get();    
-    
-    
+    private IAnimation currentAnimation = FinishedAnimation.get();            
     
     /**
      * Create a new main menu.

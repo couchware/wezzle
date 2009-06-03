@@ -399,7 +399,7 @@ public class PlayNowMenu extends AbstractMenu
                 hub.settingsMan.setBoolean(Key.USER_TUTORIAL_DEFAULT, false);
             }
                                       
-            // Stop all the player.
+            // Stop all the players.
             for (MusicPlayer p : playerMap)
             {                
                 p.stopAtGain(0.0);

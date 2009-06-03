@@ -5,7 +5,9 @@
 
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.IGraphics;
+import ca.couchware.wezzle2d.IWindow;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
@@ -139,7 +141,7 @@ public abstract class AbstractButton extends AbstractEntity implements
                             
         setDirty(true);
     }
-    
+
     protected void handlePressed()
     {        
         state.add(State.PRESSED);
@@ -332,39 +334,6 @@ public abstract class AbstractButton extends AbstractEntity implements
     {
         return shape;
     }
-    
-//    //--------------------------------------------------------------------------
-//    // Clickable
-//    //--------------------------------------------------------------------------
-//    
-//    /**
-//     * The stored click action.
-//     */
-//    Runnable clickRunnable = null;
-//    
-//    /**
-//     * Sets the click runnable.
-//     */
-//    public void setClickRunnable(Runnable clickRunnable)
-//    { 
-//        this.clickRunnable = clickRunnable;
-//    }
-//    
-//    /**
-//     * Gets the click runnable.
-//     */
-//    public Runnable getClickRunnable()
-//    {
-//        return clickRunnable;
-//    }
-//    
-//    /**
-//     * This method is called when the tile is clicked.
-//     */
-//    public void onClick()
-//    {
-//        if (clickRunnable != null) clickRunnable.run();
-//    }
     
     //--------------------------------------------------------------------------
     // Events

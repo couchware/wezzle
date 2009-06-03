@@ -3,7 +3,9 @@ package ca.couchware.wezzle2d.menu;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
+import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -11,7 +13,10 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.group.AbstractGroup;
+import ca.couchware.wezzle2d.util.CouchLogger;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * An abstract class to aide in creating menus.
@@ -65,18 +70,38 @@ public abstract class AbstractMenu extends AbstractGroup
         menuBox.setPosition(268, -300);
         menuBox.setVisible(true);
 
-        IAnimation anim = new MoveAnimation.Builder(menuBox).theta(-90).maxY(300)
+        IAnimation move = new MoveAnimation.Builder(menuBox).theta(-90).maxY(300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
                 .end();
 
-        anim.addAnimationListener(new AnimationAdapter()
+        List<IAnimation> fadeList = new ArrayList<IAnimation>(entityList.size());
+        for (int i = 0; i < entityList.size(); i++)
+        {
+            CouchLogger.get().recordMessage(this.getClass(), "Got here!");
+            IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.IN, entityList.get(i))
+                    .duration(200).end();
+            fadeList.add(anim);
+        }
+
+        IAnimation fade = new MetaAnimation.Builder()
+                .runRule(MetaAnimation.RunRule.SIMULTANEOUS)
+                .addAll(fadeList)
+                .end();
+
+        IAnimation meta = new MetaAnimation.Builder()
+                .runRule(MetaAnimation.RunRule.SEQUENCE)
+                .add(move)
+                .add(fade)
+                .end();
+        
+        meta.addAnimationListener(new AnimationAdapter()
         {
             @Override
             public void animationFinished()
             { setVisible(true); }
         });
 
-        return anim;
+        return meta;
     }
 
     @Override

@@ -59,12 +59,7 @@ public class FadeAnimation extends AbstractAnimation
     /**
      * The max time for the animation to run for, in ticks.
      */
-    private int duration;
-
-    public FadeAnimation(Type OUT, AchievementNotification notif)
-    {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    private int duration;  
     
     /**
      * The constructor.
