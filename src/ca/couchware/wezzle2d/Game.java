@@ -31,6 +31,7 @@ import ca.couchware.wezzle2d.tutorial.BasicTutorial;
 import ca.couchware.wezzle2d.tutorial.BombTutorial;
 import ca.couchware.wezzle2d.tutorial.GravityTutorial;
 import ca.couchware.wezzle2d.tutorial.RocketTutorial;
+import ca.couchware.wezzle2d.tutorial.RotateTutorial;
 import ca.couchware.wezzle2d.tutorial.StarTutorial;
 import ca.couchware.wezzle2d.ui.AchievementNotification;
 import ca.couchware.wezzle2d.ui.ITextLabel;
@@ -308,6 +309,7 @@ public class Game extends Canvas implements IWindowCallback
     {        
         // Add the tutorials to it.
         hub.tutorialMan.add(new BasicTutorial(refactorer));
+        hub.tutorialMan.add(new RotateTutorial(refactorer));
         hub.tutorialMan.add(new GravityTutorial(refactorer));
         hub.tutorialMan.add(new RocketTutorial(refactorer));
         hub.tutorialMan.add(new BombTutorial(refactorer));

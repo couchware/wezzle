@@ -202,26 +202,35 @@
     <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 
     <achievement name="Itemizer" difficulty="GOLD">
-        <description>Use 10 items over the course of 10 moves.</description>
-        <rule type="RATE" >
+        <description>Use 10 item tiles over the course of 10 moves.</description>
+        <rule type="RATE">
             <numerator type="COLLISION">
-                <item type="ROCKET" />
+                <item type="ROCKET" operation="GTEQ" value="10" />
             </numerator>
             <denominator type="MOVE" operation="LTEQ" value="10" />
+        </rule>
+    </achievement>
+    <achievement name="Item Addict" difficulty="GOLD">
+        <description>Use 10 item tiles over the course of 5 moves.</description>
+        <rule type="RATE">
+            <numerator type="COLLISION">
+                <item type="ROCKET" operation="GTEQ" value="10" />
+            </numerator>
+            <denominator type="MOVE" operation="LTEQ" value="5" />
         </rule>
     </achievement>
 
     <!-- Line 'Em Up -->
     <achievement name="Beginner's Luck" difficulty="BRONZE">
         <description>Get 3 lines in 2 moves.</description>
-        <rule type="RATE" >
+        <rule type="RATE">
             <numerator type="LINES" operation="GTEQ" value="3" />
             <denominator type="MOVE" operation="LTEQ" value="2" />
         </rule>
     </achievement>
     <achievement name="Line 'Em Up!" difficulty="BRONZE">
         <description>Get 4 lines in 2 moves.</description>
-        <rule type="RATE" >
+        <rule type="RATE">
             <numerator type="LINES" operation="GTEQ" value="4" />
             <denominator type="MOVE" operation="LTEQ" value="2" />
         </rule>
