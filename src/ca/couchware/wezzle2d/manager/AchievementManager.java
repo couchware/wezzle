@@ -231,8 +231,11 @@ public class AchievementManager implements ICollisionListener
      * 
      * @param e
      */
-    public void collisionOccured(CollisionEvent e)
-    {               
+    public void collisionOccured(CollisionEvent e, ManagerHub hub)
+    {
+        if(true == hub.tutorialMan.isTutorialRunning())
+            return;
+        
         CouchLogger.get().recordMessage(this.getClass(), e.getChain().getTree().toString());
         
         // Set to true if an achievement was achieved.

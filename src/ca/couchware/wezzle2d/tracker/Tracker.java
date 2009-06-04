@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.tracker;
 
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.Rule.NumeratorSubType;
 import ca.couchware.wezzle2d.event.CollisionEvent;
@@ -83,14 +84,14 @@ public class Tracker implements IScoreListener
      * Complete the current chain.  Automatically starts a new chain.
      * @return The chain that was just completed.
      */
-    public Chain finishChain()
+    public Chain finishChain(ManagerHub hub)
     {
         // Add the current move to the history.
         Chain chain = Chain.newInstance(tileGroupList);
         this.chainList.add(chain);
 
         // Notify all listeners that a collision might've occured.
-        this.listenerMan.notifyCollisionOccured(new CollisionEvent(this, chain));
+        this.listenerMan.notifyCollisionOccured(new CollisionEvent(this, chain), hub);
 
         // Create a new chain list for the next move.
         this.tileGroupList = new ArrayList<TileGroup>();

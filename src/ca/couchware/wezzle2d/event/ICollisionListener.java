@@ -6,11 +6,13 @@
 
 package ca.couchware.wezzle2d.event;
 
+import ca.couchware.wezzle2d.ManagerHub;
+
 /**
  *
  * @author kgrad
  */
 public interface ICollisionListener extends IListener
 {
-    public void collisionOccured(CollisionEvent event);
+    public void collisionOccured(CollisionEvent event, ManagerHub hub);
 }
