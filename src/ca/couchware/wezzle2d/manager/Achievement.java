@@ -301,10 +301,15 @@ public class Achievement implements IXMLizable
                         Element item = (Element) p;
 
                         String modifiedType = item.getAttributeValue("type");
-                        if ("*ITEM".equals(modifiedType))
+
+                        if ( "*ITEM".equals(modifiedType) )
+                        {
                             modifiedType = "ITEMS";
-                        else if ("*MULTIPLIER".equals(modifiedType))
+                        }
+                        else if ( "*MULTIPLIER".equals(modifiedType) )
+                        {
                             modifiedType = "MULTIPLIERS";
+                        }
                         
                         Rule.NumeratorSubType type = Rule.NumeratorSubType
                                 .valueOf(modifiedType);

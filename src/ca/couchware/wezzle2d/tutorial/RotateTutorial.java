@@ -20,6 +20,7 @@ import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
+import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
@@ -92,9 +93,8 @@ public class RotateTutorial extends AbstractTutorial
         // The speech bubble will be positioned over the button right
         // corner of the board.
         this.bubble = new SpeechBubble.Builder(
-                    boardMan.getX() + boardMan.getCellWidth() / 2,
-                    boardMan.getY() + boardMan.getHeight() 
-                        - boardMan.getCellHeight())
+                    boardMan.getX() + (boardMan.getCellWidth() * 3) / 2,
+                    boardMan.getY() + boardMan.getHeight() - boardMan.getCellHeight())
                 .type(BubbleType.VERTICAL).text("Click here").end();                
         layerMan.add(bubble, Layer.EFFECT);   
         layerMan.toFront(bubble, Layer.EFFECT);                         
@@ -114,42 +114,42 @@ public class RotateTutorial extends AbstractTutorial
         boardMan.clearBoard();
                 
         // Create bottom row.        
-        Tile t = boardMan.createTile(0, boardMan.getRows() - 1, 
-                TileType.NORMAL, TileColor.RED);
-        
+        boardMan.createTile(0, boardMan.getRows() - 1, 
+                TileType.NORMAL, TileColor.RED);                               
+                
+        Tile t = boardMan.createTile(1, boardMan.getRows() - 1,
+                TileType.NORMAL, TileColor.BLUE);
+
         // Set a click action.
         t.addTileListener(new Tile.ITileListener()
-        {           
+        {
            public void tileClicked()
-           {               
-               // Fade out the bubble.            
+           {
+               // Fade out the bubble.
                IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
                        .wait(0).duration(500).end();
-               animationMan.add(f);       
+               animationMan.add(f);
            }
-        });                
-                
-        boardMan.createTile(1, boardMan.getRows() - 1, 
-                TileType.NORMAL, TileColor.BLUE);
+        });
         
         boardMan.createTile(2, boardMan.getRows() - 1, 
-                TileType.NORMAL, TileColor.BLUE);
+                TileType.NORMAL, TileColor.RED);
         
         boardMan.createTile(3, boardMan.getRows() - 1, 
-                TileType.NORMAL, TileColor.YELLOW);
+                TileType.NORMAL, TileColor.BLUE);
         
         // Create second-from-bottom row.
         boardMan.createTile(0, boardMan.getRows() - 2, 
-                TileType.NORMAL, TileColor.BLUE);
+                TileType.NORMAL, TileColor.PURPLE);
         
         boardMan.createTile(1, boardMan.getRows() - 2, 
                 TileType.NORMAL, TileColor.BLUE);
         
         boardMan.createTile(2, boardMan.getRows() - 2, 
-                TileType.NORMAL, TileColor.PURPLE);
+                TileType.NORMAL, TileColor.BLUE);
         
         boardMan.createTile(3, boardMan.getRows() - 2, 
-                TileType.NORMAL, TileColor.YELLOW);
+                TileType.NORMAL, TileColor.YELLOW);    
         
         boardMan.setVisible(true);
     }   
@@ -158,12 +158,17 @@ public class RotateTutorial extends AbstractTutorial
     protected void repeat(Game game, ManagerHub hub)
     {
         super.repeat(game, hub);
-        
+
+        // Set piece to line piece.
+        hub.pieceMan.loadPiece(PieceType.LINE.getPiece());
+
         // Set restriction board so that only the bottom left corner is
         // clickable.
         hub.pieceMan.clearRestrictionBoard();
         hub.pieceMan.reverseRestrictionBoard();
         hub.pieceMan.setRestrictionCell(0, hub.boardMan.getRows() - 1, true);
+        hub.pieceMan.setRestrictionCell(1, hub.boardMan.getRows() - 1, true);
+        hub.pieceMan.setRestrictionCell(2, hub.boardMan.getRows() - 1, true);
     }
 
 }
