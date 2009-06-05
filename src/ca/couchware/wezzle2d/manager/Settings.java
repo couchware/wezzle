@@ -34,11 +34,15 @@ public class Settings
         USER_LEVEL_DEFAULT,
         USER_TUTORIAL_DEFAULT,
         USER_MUSIC_DEFAULT,
+
+        // Graphics values.              
         
-        // Game mechanic values.
-        
-        /** The number of ticks (frames) per second. */
+        /** The number of ticks (frames) per second. */        
         GAME_TICKS_PER_SECOND,
+
+        /** The number of FSAA samples. */
+        GAME_GRAPHICS_SAMPLES,
+        
         GAME_COLOR_PRIMARY,
         GAME_COLOR_SECONDARY,
         GAME_COLOR_DISABLED,          

@@ -1,6 +1,6 @@
 /*
  *  Wezzle
- *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ *  Copyright (c) 2007-2009 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d;
@@ -23,7 +23,6 @@ import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Box.Border;
@@ -46,10 +45,7 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class UI implements 
-        ILevelListener, 
-        IPieceListener, 
-        IScoreListener,
-        ITimerListener
+        ILevelListener, IPieceListener, IScoreListener, ITimerListener
 {       
      
     /** The graphics file extension. */
@@ -301,7 +297,7 @@ public class UI implements
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .cellWidth(50)
                 .cellHeight(50)
-                .end();                
+                .end();
         hub.layerMan.add(this.nextPieceGrid, Layer.UI);               
     }
     
@@ -466,10 +462,8 @@ public class UI implements
             }
 
             // Set the score text.
-            if (!scoreLabel.getText().equals(""))
-            {
-                scoreLabel.setText("");                
-            }
+            if (!scoreLabel.getText().equals("")) scoreLabel.setText("");
+            
         } // end if      
     }
 

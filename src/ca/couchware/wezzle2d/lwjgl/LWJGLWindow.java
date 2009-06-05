@@ -13,6 +13,8 @@ import ca.couchware.wezzle2d.event.KeyEvent;
 import ca.couchware.wezzle2d.event.KeyEvent.Modifier;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MouseEvent.Button;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.util.ArrayList;
@@ -41,43 +43,32 @@ import org.lwjgl.opengl.PixelFormat;
  */
 public class LWJGLWindow implements IWindow 
 {
-  
-	/** 
-     * The callback which should be notified of window events 
-     */
+
+    /** The settings manager. */
+    private SettingsManager settingsMan;
+
+	/** The callback which should be notified of window events */
 	private IWindowCallback callback;
   
-    /**
-     * The key presses.
-     */
+    /** The key presses. */
     private Set<Character> keyPressSet;
     
-    /**
-     * The mouse states.
-     */
+    /** The mouse states. */
     private Map<MouseEvent.Button, Boolean> mouseStateMap;
     
-	/** 
-     * True if the game is currently "running", i.e. the game loop is looping .
-     */
+	/** True if the game is currently "running", i.e. the game loop is looping. */
 	private boolean gameRunning = true;
     
     /** True if the window is active. */
     private boolean active = false;
   
-	/**
-     * The width of the game display area.
-     */
+	/** The width of the game display area. */
 	private int width;
   
-	/** 
-     * The height of the game display area.
-     */
+	/** The height of the game display area. */
 	private int height;
 
-	/** 
-     * The loader responsible for converting images into OpenGL textures.
-     */
+	/** The loader responsible for converting images into OpenGL textures. */
 	private TextureLoader textureLoader;
   
 	/** 
@@ -90,8 +81,9 @@ public class LWJGLWindow implements IWindow
 	 * Create a new game window that will use OpenGL to 
 	 * render our game.
 	 */
-	public LWJGLWindow() 
+	public LWJGLWindow(SettingsManager settingsMan)
     {
+        this.settingsMan = settingsMan;
         this.keyPressSet = new HashSet<Character>();
         
         this.mouseStateMap = 
@@ -269,10 +261,23 @@ public class LWJGLWindow implements IWindow
     {
 		try
         {
+            // Get the number of samples and make sure they're
+            // with in the correct range.
+            int samples = settingsMan.getInt(Key.GAME_GRAPHICS_SAMPLES);
+            if (samples < 0 || samples > 4)
+                throw new IndexOutOfBoundsException("Number of samples must be between 0 and 4 inclusive");
+
+            // Set the pixel format.
+            PixelFormat pixelFormat = new PixelFormat()
+                    .withAlphaBits(0)
+                    .withDepthBits(16)
+                    .withStencilBits(1)
+                    .withSamples(samples);
+
             this.originalDisplayMode = Display.getDisplayMode();
             setDisplayMode(width, height, false);
             Display.setVSyncEnabled(true);            
-            Display.create(new PixelFormat(0, 16, 1));
+            Display.create(pixelFormat);
             Display.setTitle(this.title);            
 
             // Enable textures since we're going to use these for our sprites.
@@ -289,7 +294,11 @@ public class LWJGLWindow implements IWindow
             // Enable transparency.
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);
+
+            // Antialises, but has terrible visual artifacts.
+            //GL11.glEnable(GL11.GL_LINE_SMOOTH);
+            //GL11.glEnable(GL11.GL_POLYGON_SMOOTH);
+            //GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);            
 
             textureLoader = new TextureLoader();
 

@@ -1016,6 +1016,9 @@ public class Game extends Canvas implements IWindowCallback
             // Make sure the setting manager is loaded.
             SettingsManager settingsMan = SettingsManager.get();
 
+            // Send a reference to the resource manager.
+            ResourceFactory.get().setSettingsManager(settingsMan);
+
             // Set the default color scheme.
             ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
             ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));

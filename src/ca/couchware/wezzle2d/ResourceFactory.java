@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.lwjgl.LWJGLTextLabel;
 import ca.couchware.wezzle2d.lwjgl.LWJGLSprite;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.menu.Loader;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.awt.Color;
@@ -68,7 +69,12 @@ public class ResourceFactory
 	 * The type of rendering that we are currently using. 
 	 */
 	private Renderer renderer = Renderer.LWJGL;
-	
+
+    /**
+     * The settings manager.
+     */
+    private SettingsManager settingsMan;
+
 	/** 
      * The window the game should use to render.
      */
@@ -125,6 +131,19 @@ public class ResourceFactory
         return renderer;
     }
 
+    public void setSettingsManager(SettingsManager settingsMan)
+    {
+        if (settingsMan == null)
+            throw new NullPointerException("Settings Manager is null");
+
+        this.settingsMan = settingsMan;
+    }
+
+    public SettingsManager getSettingsManager()
+    {
+        return this.settingsMan;
+    }
+
 	/**
 	 * Retrieve the game window that should be used to render the game
 	 * 
@@ -143,7 +162,7 @@ public class ResourceFactory
 //					break;
 				
                 case LWJGL:
-                    window = new LWJGLWindow();
+                    window = new LWJGLWindow(this.settingsMan);
                     break;
 			}
 		}
