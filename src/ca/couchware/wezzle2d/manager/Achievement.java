@@ -8,8 +8,6 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
-import ca.couchware.wezzle2d.Rule.NumeratorSubType;
-import ca.couchware.wezzle2d.Rule.Operation;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileHelper;
@@ -22,7 +20,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -303,8 +300,14 @@ public class Achievement implements IXMLizable
                     {
                         Element item = (Element) p;
 
+                        String modifiedType = item.getAttributeValue("type");
+                        if ("*ITEM".equals(modifiedType))
+                            modifiedType = "ITEMS";
+                        else if ("*MULTIPLIER".equals(modifiedType))
+                            modifiedType = "MULTIPLIERS";
+                        
                         Rule.NumeratorSubType type = Rule.NumeratorSubType
-                                .valueOf(item.getAttributeValue("type"));
+                                .valueOf(modifiedType);
 
                         operation = Rule.Operation
                                 .valueOf(item.getAttributeValue("operation"));
@@ -620,6 +623,8 @@ public class Achievement implements IXMLizable
            numerator.setAttribute("type", n.type.toString());
            numerator.setAttribute("operation", n.operation.toString());
            numerator.setAttribute("value", String.valueOf(n.value));
+
+
 
            element.addContent(numerator);
 
