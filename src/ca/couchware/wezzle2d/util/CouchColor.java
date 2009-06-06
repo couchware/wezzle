@@ -13,54 +13,54 @@ import org.lwjgl.opengl.GL11;
  *
  * @author cdmckay
  */
-public class SuperColor implements IXMLizable
+public class CouchColor implements IXMLizable
 {
 
     /** The instance of color this instance is wrapping. */
     private Color color;    
     
-    private SuperColor(Color color)
+    private CouchColor(Color color)
     {
         this.color = color;
     }
     
-    private SuperColor(int red, int green, int blue)
+    private CouchColor(int red, int green, int blue)
     {
         this.color = new Color(red, green, blue);
     }
     
-    private SuperColor(int red, int green, int blue, int alpha)
+    private CouchColor(int red, int green, int blue, int alpha)
     {
         this.color = new Color(red, green, blue, alpha);
     }
     
-    public static SuperColor newInstance(Color color)
+    public static CouchColor newInstance(Color color)
     {
-        return new SuperColor(color);
+        return new CouchColor(color);
     }
     
-    public static SuperColor newInstance(int red, int green, int blue)
+    public static CouchColor newInstance(int red, int green, int blue)
     {
-        return new SuperColor(red, green, blue);
+        return new CouchColor(red, green, blue);
     }
     
-    public static SuperColor newInstance(int red, int green, int blue, int alpha)
+    public static CouchColor newInstance(int red, int green, int blue, int alpha)
     {
-        return new SuperColor(red, green, blue, alpha);
+        return new CouchColor(red, green, blue, alpha);
     }
     
-    public static SuperColor newInstance(Color color, int alpha)
+    public static CouchColor newInstance(Color color, int alpha)
     {
-        return new SuperColor(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+        return new CouchColor(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
     
-    public static SuperColor newInstanceFromXml(Element element)
+    public static CouchColor newInstanceFromXml(Element element)
     {
         int r = Integer.parseInt(element.getAttributeValue("red"));
         int g = Integer.parseInt(element.getAttributeValue("green"));
         int b = Integer.parseInt(element.getAttributeValue("blue"));
         int a = Integer.parseInt(element.getAttributeValue("alpha"));
-        return new SuperColor(r, g, b, a);
+        return new CouchColor(r, g, b, a);
     }
     
     public Element toXmlElement()

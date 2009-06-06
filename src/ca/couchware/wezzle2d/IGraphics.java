@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.util.SuperColor;
+import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.awt.Shape;
 
@@ -32,19 +32,21 @@ public interface IGraphics
      * 
      * @param c
      */
-    public void setColor(SuperColor color);
+    public void setColor(CouchColor color);
     
     /**
      * Get the drawing color.
      * 
      * @return The current color.
      */
-    public SuperColor getColor();
+    public CouchColor getColor();
     
     public void drawLine(int x1, int y1, int x2, int y2);
     
     public void drawEllipse(double x, double y, double width, double height, int points);
+    public void drawEllipse(double x, double y, double width, double height);
     public void fillEllipse(double x, double y, double width, double height, int points);
+    public void fillEllipse(double x, double y, double width, double height);
     
     /**
      * Draws the outline of the specified rectangle.

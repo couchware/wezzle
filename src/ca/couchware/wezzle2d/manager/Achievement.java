@@ -15,7 +15,7 @@ import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import ca.couchware.wezzle2d.util.Node;
 import ca.couchware.wezzle2d.util.StringUtil;
-import ca.couchware.wezzle2d.util.SuperCalendar;
+import ca.couchware.wezzle2d.util.CouchDate;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -117,7 +117,7 @@ public class Achievement implements IXMLizable
     private final Difficulty difficulty;
 
     /** The dete the achievement was completed, if any. */
-    private SuperCalendar dateCompleted = null;    
+    private CouchDate dateCompleted = null;
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -133,7 +133,7 @@ public class Achievement implements IXMLizable
             String formattedDescription,
             String description, 
             Difficulty difficulty, 
-            SuperCalendar dateCompleted)
+            CouchDate dateCompleted)
     {
         this.ruleList             = ruleList;
         this.title                = title;
@@ -147,7 +147,7 @@ public class Achievement implements IXMLizable
             String title,
             String description, 
             Difficulty difficulty, 
-            SuperCalendar dateCompleted)
+            CouchDate dateCompleted)
     {
        return new Achievement(ruleList, 
                title, 
@@ -157,7 +157,7 @@ public class Achievement implements IXMLizable
                dateCompleted);
     }
     
-    public static Achievement newInstance(Achievement achievement, SuperCalendar dateCompleted)
+    public static Achievement newInstance(Achievement achievement, CouchDate dateCompleted)
     {
         return new Achievement(
                 achievement.ruleList, 
@@ -184,8 +184,8 @@ public class Achievement implements IXMLizable
         
         // Get the date.
         Element dateElement = element.getChild("date");
-        SuperCalendar dateCompleted = dateElement != null
-                ? SuperCalendar.newInstanceFromXml(dateElement)
+        CouchDate dateCompleted = dateElement != null
+                ? CouchDate.newInstanceFromXml(dateElement)
                 : null;                
         
         // Get all the rules.        
@@ -514,7 +514,7 @@ public class Achievement implements IXMLizable
      * 
      * @return the date.
      */
-    public Calendar getDateCompleted()
+    public CouchDate getDateCompleted()
     {
         return dateCompleted;
     }

@@ -3,7 +3,7 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.Settings.Value;
-import ca.couchware.wezzle2d.util.SuperColor;
+import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -141,7 +141,7 @@ public class SettingsManager
             try
             {
                 // Load from XML.
-                loadFromXML(f.toURL());
+                loadFromXML(f.toURI().toURL());
             }
             catch (MalformedURLException ex)
             {
@@ -319,7 +319,7 @@ public class SettingsManager
         
         if (element.getName().equals("color"))
         {                        
-            instance = SuperColor.newInstanceFromXml(element);
+            instance = CouchColor.newInstanceFromXml(element);
         }
         else if (element.getName().equals("high-score"))
         {                            
@@ -339,9 +339,9 @@ public class SettingsManager
     
     private Content createXmlFromInstance(Object object)
     {
-         if (object instanceof SuperColor)
+         if (object instanceof CouchColor)
         {
-            SuperColor color = (SuperColor) object;
+            CouchColor color = (CouchColor) object;
             return color.toXmlElement();
         }
         else if (object instanceof HighScore)
@@ -508,7 +508,7 @@ public class SettingsManager
      */
     public Color getColor(Key key)
     {
-        return ((SuperColor) getList(key).get(0)).toColor();
+        return ((CouchColor) getList(key).get(0)).toColor();
     }
     
     /**

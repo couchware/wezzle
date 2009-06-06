@@ -8,7 +8,7 @@ import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.NumUtil;
-import ca.couchware.wezzle2d.util.SuperColor;
+import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Arrays;
@@ -359,7 +359,7 @@ public class PieceGrid extends AbstractEntity
     private void renderVector()
     {
         // Save the old color and set the new one.
-        SuperColor oldColor = gfx.getColor();
+        CouchColor oldColor = gfx.getColor();
         gfx.setColor(color);
 
         
@@ -370,16 +370,10 @@ public class PieceGrid extends AbstractEntity
             {
 				if (structure[i][j] == true)
                 {                    
-//                    gfx.drawRoundRect(
-//                            x + offsetX + i * cellWidth,
-//                            y + offsetY + j * cellHeight + 1,
-//                            cellWidth  - 1, cellHeight - 1,
-//                            5, 50);
                     gfx.fillEllipse(
                             x + offsetX + i * cellWidth,
                             y + offsetY + j * cellHeight + 1,
-                            cellWidth  - 1, cellHeight - 1,
-                            100);
+                            cellWidth  - 1, cellHeight - 1);
                 } // end if
             } // end for
         } // end for	

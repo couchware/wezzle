@@ -11,7 +11,7 @@ import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.util.SuperCalendar;
+import ca.couchware.wezzle2d.util.CouchDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -165,7 +165,7 @@ public class AchievementManager implements ICollisionListener
     {
         // Set the date.
         Achievement completedAchievement = 
-            Achievement.newInstance(achievement, SuperCalendar.newInstance());
+            Achievement.newInstance(achievement, CouchDate.newInstance());
         this.newlyCompletedList.add(completedAchievement);
         this.completedList.add(completedAchievement);
 

@@ -21,6 +21,7 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.ui.Scroller;
+import ca.couchware.wezzle2d.util.CouchDate;
 import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -218,7 +219,7 @@ public class AchievementMenu extends AbstractMenu
         }
         
         // Set the status.
-        Calendar date = ach.getDateCompleted();
+        CouchDate date = ach.getDateCompleted();
         if (date == null)
         {
             achievementStatus.setText("This achievement has not been completed.");            

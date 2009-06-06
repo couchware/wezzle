@@ -300,14 +300,14 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     
     private void drawRail(int x, int y, int width, int height, int border)
     {
-        gfx.setColor(SuperColor.newInstance( 
+        gfx.setColor(CouchColor.newInstance(
                 Color.BLACK, 
-                SuperColor.scaleOpacity(opacity)));
+                CouchColor.scaleOpacity(opacity)));
         gfx.fillRect(x, y, width + border * 2, height + border * 2);
         
-        gfx.setColor(SuperColor.newInstance(
+        gfx.setColor(CouchColor.newInstance(
                 Color.DARK_GRAY, 
-                SuperColor.scaleOpacity(opacity)));
+                CouchColor.scaleOpacity(opacity)));
         gfx.fillRect(x + border, y + border, width, height);
     }
     

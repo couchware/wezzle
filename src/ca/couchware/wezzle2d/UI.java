@@ -14,7 +14,9 @@ import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.PieceEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.event.TimerEvent;
+import ca.couchware.wezzle2d.graphics.Ellipse;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
+import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.piece.PieceGrid;
 import ca.couchware.wezzle2d.manager.GroupManager;
@@ -23,6 +25,7 @@ import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
+import ca.couchware.wezzle2d.piece.Piece;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Box.Border;
@@ -35,7 +38,7 @@ import ca.couchware.wezzle2d.ui.group.GameOverGroup;
 import ca.couchware.wezzle2d.ui.group.HighScoreGroup;
 import ca.couchware.wezzle2d.ui.group.OptionsGroup;
 import ca.couchware.wezzle2d.ui.group.PauseGroup;
-import ca.couchware.wezzle2d.util.SuperColor;
+import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.util.EnumSet;
 
@@ -85,10 +88,12 @@ public class UI implements
     private ProgressBar progressBar; 
        
     /** The next piece preview. */
-    private Box nextPieceBox;
+    private IEntity traditionalPieceBox;
+    private IEntity traditionalPieceBoxBorder;
     
     /** The next piece preview grid. */
-    private PieceGrid nextPieceGrid;
+    private PieceGrid overlayPieceBoxGrid;
+    private PieceGrid traditionalPieceBoxGrid;
     
     /** The score header graphic. */
     private GraphicEntity scoreHeaderLabel;
@@ -144,7 +149,8 @@ public class UI implements
         initializeBackground(hub);
         
         // Initialize piece box.
-        initializePieceBox(hub);
+        initializeTraditionalPieceBox(hub);
+        initializeOverlayPieceBox(hub);
         
         // Initialize the progress bars.
         initializeBars(hub);
@@ -269,27 +275,55 @@ public class UI implements
         hub.layerMan.add(this.background, Layer.BACKGROUND);   
         hub.layerMan.toBack(this.background, Layer.BACKGROUND);     
     }
-    
+
     /**
-     * Initialize the piece box.
+     * Initialize the traditional piece box
+     */
+    private void initializeTraditionalPieceBox(ManagerHub hub)
+    {        
+        ITextLabel label = new LabelBuilder(668, 65)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
+                .text("Next")
+                .end();
+        hub.layerMan.add(label, Layer.UI);
+
+        this.traditionalPieceBox = new Box.Builder(668, 110)
+                .border(Border.MEDIUM)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .opacity(90)
+                .visible(true)
+                .width(80).height(80).end();
+        hub.layerMan.add(this.traditionalPieceBox, Layer.UI);        
+
+        Color c = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
+        Color color = CouchColor.newInstance(c, 255).toColor();
+
+        this.traditionalPieceBoxGrid = new PieceGrid.Builder(
+                    this.traditionalPieceBox.getX(),
+                    this.traditionalPieceBox.getY(),                   
+                    PieceGrid.RenderMode.VECTOR
+                )
+                .color(color)
+                .alignmentMode(PieceGrid.AlignmentMode.TO_PIECE)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .cellWidth(16)
+                .cellHeight(16)
+                .end();
+        
+        hub.layerMan.add(this.traditionalPieceBoxGrid, Layer.UI);
+    }
+
+    /**
+     * Initialize the overlay piece box.
      * @param hub
      */
-    private void initializePieceBox(ManagerHub hub)
+    private void initializeOverlayPieceBox(ManagerHub hub)
     {
-        Color color = SuperColor.newInstance(Color.WHITE, 80).toColor();
-
-        // Create the piece preview window.
-        this.nextPieceBox = new Box.Builder(400, 300)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(70)
-                .border(Border.MEDIUM)
-                .visible(false)
-                .width(46).height(46).end();
-        hub.layerMan.add(this.nextPieceBox, Layer.UI);
+        Color color = CouchColor.newInstance(Color.WHITE, 80).toColor();      
         
-        this.nextPieceGrid = new PieceGrid.Builder(
-                    this.nextPieceBox.getX(),
-                    this.nextPieceBox.getY() - 1,
+        this.overlayPieceBoxGrid = new PieceGrid.Builder(
+                    400,
+                    300 - 1,
                     PieceGrid.RenderMode.VECTOR
                 )
                 .color(color)
@@ -298,7 +332,8 @@ public class UI implements
                 .cellWidth(50)
                 .cellHeight(50)
                 .end();
-        hub.layerMan.add(this.nextPieceGrid, Layer.UI);               
+        
+        hub.layerMan.add(this.overlayPieceBoxGrid, Layer.UI);
     }
     
     /**
@@ -492,7 +527,9 @@ public class UI implements
     public void pieceAdded(PieceEvent event)
     {
         // Update the piece preview.
-        this.nextPieceGrid.loadStructure(event.getNextPiece().getStructure());
+        Piece piece = event.getNextPiece();
+        this.overlayPieceBoxGrid.loadStructure(piece.getStructure());
+        this.traditionalPieceBoxGrid.loadStructure(piece.getStructure());
         //this.nextPieceGrid.setColor(event.getNextPiece().getType().getColor());
     }
 

@@ -17,7 +17,7 @@ import ca.couchware.wezzle2d.util.Ascii;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.StringUtil;
-import ca.couchware.wezzle2d.util.SuperColor;
+import ca.couchware.wezzle2d.util.CouchColor;
 import ca.couchware.wezzle2d.util.ArrayUtil;
 import java.awt.Color;
 import java.util.EnumSet;
@@ -320,14 +320,14 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     
     private void drawUnderline(int x, int y, int width, int height, int border)
     {                
-        gfx.setColor(SuperColor.newInstance( 
+        gfx.setColor(CouchColor.newInstance(
                 Color.BLACK, 
-                SuperColor.scaleOpacity(opacity)));
+                CouchColor.scaleOpacity(opacity)));
         gfx.fillRect(x, y, width + border * 2, height + border * 2);
         
-        gfx.setColor(SuperColor.newInstance(
+        gfx.setColor(CouchColor.newInstance(
                 Color.DARK_GRAY, 
-                SuperColor.scaleOpacity(opacity)));
+                CouchColor.scaleOpacity(opacity)));
         gfx.fillRect(x + border, y + border, width, height);
     }
     

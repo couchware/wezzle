@@ -264,8 +264,8 @@ public class LWJGLWindow implements IWindow
             // Get the number of samples and make sure they're
             // with in the correct range.
             int samples = settingsMan.getInt(Key.GAME_GRAPHICS_SAMPLES);
-            if (samples < 0 || samples > 4)
-                throw new IndexOutOfBoundsException("Number of samples must be between 0 and 4 inclusive");
+            if (samples < 0)
+                throw new IndexOutOfBoundsException("Number of samples must be 0 or more");
 
             // Set the pixel format.
             PixelFormat pixelFormat = new PixelFormat()

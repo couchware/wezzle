@@ -6,7 +6,7 @@
 package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.IGraphics;
-import ca.couchware.wezzle2d.util.SuperColor;
+import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -22,7 +22,7 @@ public class LWJGLGraphics implements IGraphics
 {
     
     /** The current colour. */
-    private SuperColor color = SuperColor.newInstance(Color.WHITE);
+    private CouchColor color = CouchColor.newInstance(Color.WHITE);
     
     /**
      * Sets the current drawing colour.
@@ -31,10 +31,10 @@ public class LWJGLGraphics implements IGraphics
      */
     public void setColor(Color color)
     {
-        this.color = SuperColor.newInstance(color);
+        this.color = CouchColor.newInstance(color);
     }
     
-    public void setColor(SuperColor color)
+    public void setColor(CouchColor color)
     {
         this.color = color;
     }
@@ -44,7 +44,7 @@ public class LWJGLGraphics implements IGraphics
      * 
      * @return
      */
-    public SuperColor getColor()
+    public CouchColor getColor()
     {
         return color;
     }                
@@ -244,15 +244,28 @@ public class LWJGLGraphics implements IGraphics
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }    
-    
+
+    /** The default number of ellipse points used. */
+    final int DEFAULT_ELLIPSE_POINTS = 100;
+
     public void drawEllipse(double x, double y, double width, double height, int points)
     {
         drawEllipse(x, y, width, height, points, false);
+    }
+
+    public void drawEllipse(double x, double y, double width, double height)
+    {
+        drawEllipse(x, y, width, height, DEFAULT_ELLIPSE_POINTS);
     }
     
     public void fillEllipse(double x, double y, double width, double height, int points)
     {
         drawEllipse(x, y, width, height, points, true);
+    }
+
+    public void fillEllipse(double x, double y, double width, double height)
+    {
+        fillEllipse(x, y, width, height, DEFAULT_ELLIPSE_POINTS);
     }
        
     /**
