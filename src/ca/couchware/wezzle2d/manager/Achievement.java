@@ -299,20 +299,9 @@ public class Achievement implements IXMLizable
                     for ( Object p : numerator.getChildren("item") )
                     {
                         Element item = (Element) p;
-
-                        String modifiedType = item.getAttributeValue("type");
-
-                        if ( "*ITEM".equals(modifiedType) )
-                        {
-                            modifiedType = "ITEMS";
-                        }
-                        else if ( "*MULTIPLIER".equals(modifiedType) )
-                        {
-                            modifiedType = "MULTIPLIERS";
-                        }
-                        
+                 
                         Rule.NumeratorSubType type = Rule.NumeratorSubType
-                                .valueOf(modifiedType);
+                                .valueOf(item.getAttributeValue("type"));
 
                         operation = Rule.Operation
                                 .valueOf(item.getAttributeValue("operation"));
@@ -339,13 +328,13 @@ public class Achievement implements IXMLizable
                 case ITEMS:
                 
                     numeratorList.add(new Numerator(value, operation, numeratorType,
-                            Rule.NumeratorSubType.ITEMS));
+                            Rule.NumeratorSubType.ALL_ITEMS));
                     break;
                 
                  case MULTIPLIERS:
                 
                     numeratorList.add(new Numerator(value, operation, numeratorType,
-                            Rule.NumeratorSubType.MULTIPLIERS));
+                            Rule.NumeratorSubType.ALL_MULTIPLIERS));
                     break;
                 
                 default: throw new IllegalArgumentException("Unrecognized numerator type.");

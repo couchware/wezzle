@@ -95,11 +95,11 @@ public class Rule
         STAR,
         BOMB,
         GRAVITY,
-        ITEMS,
+        ALL_ITEMS,
         X2,
         X3,
         X4,
-        MULTIPLIERS
+        ALL_MULTIPLIERS
     }
         
     protected final Type type;
