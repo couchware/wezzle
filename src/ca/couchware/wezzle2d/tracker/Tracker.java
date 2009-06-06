@@ -220,9 +220,9 @@ public class Tracker implements IScoreListener
 
         countMap.put(NumeratorSubType.BOMB, bomb);
         countMap.put(NumeratorSubType.GRAVITY, gravity);
-        countMap.put(NumeratorSubType.ITEMS, (rocket+bomb+gravity+star));
+        countMap.put(NumeratorSubType.ALL_ITEMS, (rocket+bomb+gravity+star));
         countMap.put(NumeratorSubType.LINES, lines);
-        countMap.put(NumeratorSubType.MULTIPLIERS, (x2+x3+x4));
+        countMap.put(NumeratorSubType.ALL_MULTIPLIERS, (x2+x3+x4));
         countMap.put(NumeratorSubType.ROCKET, rocket);
         countMap.put(NumeratorSubType.SCORE, score);
         countMap.put(NumeratorSubType.STAR, star);
