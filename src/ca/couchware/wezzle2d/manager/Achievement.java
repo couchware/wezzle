@@ -383,13 +383,13 @@ public class Achievement implements IXMLizable
             for ( String typeStr : typeStrList )
             {
                 // Check for a pseudo-type.
-                if (typeStr.startsWith("*"))
+                if (typeStr.startsWith("ALL"))
                 {
-                    if (typeStr.equals("*ITEM"))
+                    if (typeStr.equals("ALL_ITEMS"))
                     {
                         typeSet.addAll(TileHelper.getItemTileTypeSet());
                     }
-                    else if (typeStr.equals("*MULTIPLIER"))
+                    else if (typeStr.equals("ALL_MULTIPLIERS"))
                     {
                         typeSet.addAll(TileHelper.getMultiplierTileTypeSet());
                     }
@@ -419,11 +419,11 @@ public class Achievement implements IXMLizable
 
             if (child.getData().equals(TileHelper.getItemTileTypeSet()))
             {
-                e.setAttribute("type", "*ITEM");
+                e.setAttribute("type", "ALL_ITEMS");
             }
             else if (child.getData().equals(TileHelper.getMultiplierTileTypeSet()))
             {
-                e.setAttribute("type", "*MULTIPLIER");
+                e.setAttribute("type", "ALL_MULTIPLIERS");
             }
             else
             {

@@ -158,7 +158,6 @@ public class Tracker implements IScoreListener
         // get a set of all tiles distinct.
         Set<Tile> tiles = new HashSet<Tile>();
         int lines = 0;
-        int score = 0;
 
         for( Move m : moves)
         {
