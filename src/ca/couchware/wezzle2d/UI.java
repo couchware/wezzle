@@ -14,7 +14,6 @@ import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.PieceEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.event.TimerEvent;
-import ca.couchware.wezzle2d.graphics.Ellipse;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -89,11 +88,11 @@ public class UI implements
        
     /** The next piece preview. */
     private IEntity traditionalPieceBox;
-    private IEntity traditionalPieceBoxBorder;
+    private IEntity traditionalPieceBoxLabel;
+    private PieceGrid traditionalPieceBoxGrid;
     
     /** The next piece preview grid. */
-    private PieceGrid overlayPieceBoxGrid;
-    private PieceGrid traditionalPieceBoxGrid;
+    private PieceGrid overlayPieceBoxGrid;    
     
     /** The score header graphic. */
     private GraphicEntity scoreHeaderLabel;
@@ -281,17 +280,16 @@ public class UI implements
      */
     private void initializeTraditionalPieceBox(ManagerHub hub)
     {        
-        ITextLabel label = new LabelBuilder(668, 65)
+        this.traditionalPieceBoxLabel = new LabelBuilder(668, 65)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .text("Next")
                 .end();
-        hub.layerMan.add(label, Layer.UI);
+        hub.layerMan.add(this.traditionalPieceBoxLabel, Layer.UI);
 
         this.traditionalPieceBox = new Box.Builder(668, 110)
                 .border(Border.MEDIUM)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(90)
-                .visible(true)
                 .width(80).height(80).end();
         hub.layerMan.add(this.traditionalPieceBox, Layer.UI);        
 
@@ -311,6 +309,10 @@ public class UI implements
                 .end();
         
         hub.layerMan.add(this.traditionalPieceBoxGrid, Layer.UI);
+
+        // Set the visibility based on the settings.
+        boolean visible = hub.settingsMan.getBoolean(Key.USER_PIECE_PREVIEW_TRADITIONAL);
+        this.setTraditionalPiecePreviewVisible(visible);
     }
 
     /**
@@ -333,7 +335,11 @@ public class UI implements
                 .cellHeight(50)
                 .end();
         
-        hub.layerMan.add(this.overlayPieceBoxGrid, Layer.UI);
+        hub.layerMan.add(this.overlayPieceBoxGrid, Layer.PIECE_GRID);
+
+        // Set the visibility based on the settings.
+        boolean visible = hub.settingsMan.getBoolean(Key.USER_PIECE_PREVIEW_OVERLAY);
+        this.setOverlayPiecePreviewVisible(visible);
     }
     
     /**
@@ -403,7 +409,57 @@ public class UI implements
                 GroupManager.Class.PAUSE,
                 GroupManager.Layer.MIDDLE);
     }      
-    
+
+    /** Whether or not the traditional piece preview is visible. */
+    private boolean traditionalPiecePreviewVisible = true;
+
+    /**
+     * Gets the visibility of the traditional piece preview.
+     * @return
+     */
+    public boolean isTraditionalPiecePreviewVisible()
+    {
+        return this.traditionalPiecePreviewVisible;
+    }
+
+    /**
+     * Sets the visibility of the traditional piece preview.
+     * @param visible
+     */
+    public void setTraditionalPiecePreviewVisible(boolean visible)
+    {
+        if (this.traditionalPiecePreviewVisible == visible) return;
+
+        this.traditionalPiecePreviewVisible = visible;
+        this.traditionalPieceBox.setVisible(visible);
+        this.traditionalPieceBoxLabel.setVisible(visible);
+        this.traditionalPieceBoxGrid.setVisible(visible);
+    }
+
+    /** Whether or not the overlay piece preview is visible. */
+    private boolean overlayPiecePreviewVisible = true;
+
+    /**
+     * Gets the visibility of the overlay piece preview.
+     * @return
+     */
+    public boolean isOverlayPiecePreviewVisible()
+    {
+        return overlayPiecePreviewVisible;
+    }
+
+    /**
+     * Sets the visibility of the overlay piece preview.
+     * @param visible
+     */
+    public void setOverlayPiecePreviewVisible(boolean visible)
+    {
+        if (this.overlayPiecePreviewVisible == visible) return;
+
+        this.overlayPiecePreviewVisible = visible;
+        this.overlayPieceBoxGrid.setVisible(visible);
+    }
+
     /**
      * Update the UI logic.
      * 
@@ -469,32 +525,24 @@ public class UI implements
         //this.timerBar.setProgressValue(timerMan.getCurrrentTime());
 
         // Draw the high score text.
-        if (!highScoreLabel.getText().equals(String.valueOf(hub.scoreMan.getHighScore())))
-        {
+        if (!highScoreLabel.getText().equals(String.valueOf(hub.scoreMan.getHighScore())))        
             highScoreLabel.setText(String.format("%,d", hub.scoreMan.getHighScore()));
-        }                        
-
+                                
         if (!hub.tutorialMan.isTutorialRunning())
         {
             // Set the level text.
             if (!levelLabel.getText().equals(String.valueOf(hub.levelMan.getLevel())))
-            {
-                levelLabel.setText(String.valueOf(hub.levelMan.getLevel()));                
-            }
+                levelLabel.setText(String.valueOf(hub.levelMan.getLevel()));
 
             // Set the score text.
             if (!scoreLabel.getText().equals(String.valueOf(hub.scoreMan.getTotalScore())))
-            {
                 scoreLabel.setText(String.format("%,d", hub.scoreMan.getTotalScore()));
-            }
         }
         else
         {
             // Set the level text.
-            if (!levelLabel.getText().equals(hub.tutorialMan.getRunningTutorial().getName()))
-            {                
-                levelLabel.setText(hub.tutorialMan.getRunningTutorial().getName());
-            }
+            if (!levelLabel.getText().equals(hub.tutorialMan.getRunningTutorial().getName()))                            
+                levelLabel.setText(hub.tutorialMan.getRunningTutorial().getName());            
 
             // Set the score text.
             if (!scoreLabel.getText().equals("")) scoreLabel.setText("");

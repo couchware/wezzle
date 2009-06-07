@@ -201,11 +201,20 @@
     <!-- Rate Achievements                                                   -->
     <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 
+    <achievement name="On A Roll" difficulty="GOLD">
+        <description>Use 5 item tiles over the course of 5 moves.</description>
+        <rule type="RATE">
+            <numerator type="COLLISION">
+                <item type="ALL_ITEMS" operation="GTEQ" value="5" />
+            </numerator>
+            <denominator type="MOVE" operation="LTEQ" value="5" />
+        </rule>
+    </achievement>
     <achievement name="Itemizer" difficulty="GOLD">
         <description>Use 10 item tiles over the course of 10 moves.</description>
         <rule type="RATE">
             <numerator type="COLLISION">
-                <item type="ROCKET" operation="GTEQ" value="10" />
+                <item type="ALL_ITEMS" operation="GTEQ" value="10" />
             </numerator>
             <denominator type="MOVE" operation="LTEQ" value="10" />
         </rule>
@@ -214,7 +223,7 @@
         <description>Use 10 item tiles over the course of 5 moves.</description>
         <rule type="RATE">
             <numerator type="COLLISION">
-                <item type="ROCKET" operation="GTEQ" value="10" />
+                <item type="ALL_ITEMS" operation="GTEQ" value="10" />
             </numerator>
             <denominator type="MOVE" operation="LTEQ" value="5" />
         </rule>

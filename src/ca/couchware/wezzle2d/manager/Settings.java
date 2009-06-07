@@ -1,6 +1,6 @@
 /*
  *  Wezzle
- *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ *  Copyright (c) 2007-2009 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d.manager;
@@ -35,6 +35,12 @@ public class Settings
         USER_TUTORIAL_DEFAULT,
         USER_MUSIC_DEFAULT,
 
+        /** Use the "traditional" piece preview. */
+        USER_PIECE_PREVIEW_TRADITIONAL,
+
+        /** use the overlay piece preview. */
+        USER_PIECE_PREVIEW_OVERLAY,
+
         // Tutorials.
         USER_TUTORIAL_ROCKET_RAN,
         USER_TUTORIAL_BASIC_RAN,
@@ -42,7 +48,6 @@ public class Settings
         USER_TUTORIAL_GRAVITY_RAN,
         USER_TUTORIAL_ROTATE_RAN,
         USER_TUTORIAL_STAR_RAN,
-        
 
         // Graphics values.              
         

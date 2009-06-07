@@ -394,7 +394,7 @@ public class ProgressBar extends AbstractEntity
 	 */
 	final public void setProgressValue(int progressValue)
 	{
-        CouchLogger.get().recordMessage(this.getClass(), "setProgressValue called");
+        //CouchLogger.get().recordMessage(this.getClass(), "setProgressValue called");
         // Make sure progress is positive.
 //        assert progressValue >= this.progressLower
 //                : String.format("%d was >= %d", progressValue, this.progressLower);

@@ -10,4 +10,6 @@
   <entry name="User.Level.Default">1</entry>
   <entry name="User.Tutorial.Default">false</entry>
   <entry name="User.Music.Default">TRON</entry>
+  <entry name="User.Piece.Preview.Traditional">true</entry>
+  <entry name="User.Piece.Preview.Overlay">false</entry>
 </settings>
