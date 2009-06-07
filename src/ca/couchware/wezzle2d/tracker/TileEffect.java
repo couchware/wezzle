@@ -73,7 +73,8 @@ public class TileEffect implements TileGroup
     }
 
 
-    public Set<Tile> getTiles()
+    @Override
+    public Set<Tile> getUniqueTiles()
     {
        Set<Tile> tiles = new HashSet<Tile>();
        for(Tile t : tileList)

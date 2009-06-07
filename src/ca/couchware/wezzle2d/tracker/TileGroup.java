@@ -15,5 +15,5 @@ import java.util.Set;
  */
 public interface TileGroup
 {
-    Set<Tile> getTiles();
+    Set<Tile> getUniqueTiles();
 }

@@ -78,11 +78,8 @@ public class Move
     public Set<Tile> getTileSet()
     {
         // We do this by first getting the chains, 
-        // then getting all the lines in each chain,
-        // then getting the tiles in the lines,
-        // then  finally getting the tile types from the tiles.
-        // The algorithm has a complexity of O(c*l*t) which in practice
-        // will not be THAT large.
+        // followed by the tile groups. Throwing them into
+        // HashSets to ensure we only get unique tiles, no overcounts.
         Set<Tile> tileSet = new HashSet<Tile>();
         List<Chain> chains = this.getChainList();
 
@@ -93,7 +90,7 @@ public class Move
 
             for(TileGroup tg : grpList)
             {
-                tileSet.addAll(tg.getTiles());
+                tileSet.addAll(tg.getUniqueTiles());
             }
            
         }

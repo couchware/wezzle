@@ -62,7 +62,8 @@ public class Line implements TileGroup
         return StringUtil.join(tileList, ", ");
     }
 
-    public Set<Tile> getTiles()
+    @Override
+    public Set<Tile> getUniqueTiles()
     {
        Set<Tile> tiles = new HashSet<Tile>();
        for(Tile t : tileList)
