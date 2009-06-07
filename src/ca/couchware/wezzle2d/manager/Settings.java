@@ -35,6 +35,15 @@ public class Settings
         USER_TUTORIAL_DEFAULT,
         USER_MUSIC_DEFAULT,
 
+        // Tutorials.
+        USER_TUTORIAL_ROCKET_RAN,
+        USER_TUTORIAL_BASIC_RAN,
+        USER_TUTORIAL_BOMB_RAN,
+        USER_TUTORIAL_GRAVITY_RAN,
+        USER_TUTORIAL_ROTATE_RAN,
+        USER_TUTORIAL_STAR_RAN,
+        
+
         // Graphics values.              
         
         /** The number of ticks (frames) per second. */        

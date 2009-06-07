@@ -199,5 +199,10 @@ public class GravityTutorial extends AbstractTutorial
         hub.pieceMan.reverseRestrictionBoard();
         hub.pieceMan.setRestrictionCell(3, hub.boardMan.getRows() - 1, true);
     }
-    
+
+    @Override
+    public Key getSettingsKey()
+    {
+        return Key.USER_TUTORIAL_GRAVITY_RAN;
+    }
 }

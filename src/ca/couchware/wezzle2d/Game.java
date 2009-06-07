@@ -30,6 +30,7 @@ import ca.couchware.wezzle2d.transition.ITransition;
 import ca.couchware.wezzle2d.tutorial.BasicTutorial;
 import ca.couchware.wezzle2d.tutorial.BombTutorial;
 import ca.couchware.wezzle2d.tutorial.GravityTutorial;
+import ca.couchware.wezzle2d.tutorial.ITutorial;
 import ca.couchware.wezzle2d.tutorial.RocketTutorial;
 import ca.couchware.wezzle2d.tutorial.RotateTutorial;
 import ca.couchware.wezzle2d.tutorial.StarTutorial;
@@ -45,7 +46,6 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -305,15 +305,34 @@ public class Game extends Canvas implements IWindowCallback
     /**
      * Initialize the tutorials.
      */
-    public void initializeTutorials()
-    {        
-        // Add the tutorials to it.
-        hub.tutorialMan.add(new BasicTutorial(refactorer));
-        hub.tutorialMan.add(new RotateTutorial(refactorer));
-        hub.tutorialMan.add(new GravityTutorial(refactorer));
-        hub.tutorialMan.add(new RocketTutorial(refactorer));
-        hub.tutorialMan.add(new BombTutorial(refactorer));
-        hub.tutorialMan.add(new StarTutorial(refactorer));
+    public void initializeTutorials(boolean isActivated)
+    {
+        BasicTutorial bt = new BasicTutorial(refactorer);
+        RotateTutorial rt = new RotateTutorial(refactorer);
+        GravityTutorial gt = new GravityTutorial(refactorer);
+        RocketTutorial rot = new RocketTutorial(refactorer);
+        BombTutorial bot = new BombTutorial(refactorer);
+        StarTutorial st = new StarTutorial(refactorer);
+
+        if(true == isActivated || false == bt.hasRun(hub))
+            hub.tutorialMan.add(bt);
+
+        if(true == isActivated || false == rt.hasRun(hub))
+            hub.tutorialMan.add(rt);
+        
+        if(true == isActivated || false == rot.hasRun(hub))
+            hub.tutorialMan.add(rot);
+        
+        if(true == isActivated || false == bot.hasRun(hub))
+            hub.tutorialMan.add(bot);
+        
+        if(true == isActivated || false == st.hasRun(hub))
+            hub.tutorialMan.add(st);
+        
+        if(true == isActivated || false == gt.hasRun(hub))
+            hub.tutorialMan.add(gt);
+
+
     }
     
 	/**

@@ -166,4 +166,11 @@ public class BasicTutorial extends AbstractTutorial
         hub.pieceMan.setRestrictionCell(0, hub.boardMan.getRows() - 1, true);
     }
 
+    @Override
+    public Key getSettingsKey()
+    {
+        return Key.USER_TUTORIAL_BASIC_RAN;
+    }
+
+
 }

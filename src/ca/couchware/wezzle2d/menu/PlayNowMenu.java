@@ -405,11 +405,12 @@ public class PlayNowMenu extends AbstractMenu
             if (this.tutorialRadio.getSelectedIndex() == TUTORIAL_ON)
             {
                 hub.settingsMan.setBoolean(Key.USER_TUTORIAL_DEFAULT, true);
-                game.initializeTutorials();
+                game.initializeTutorials(true);
             }
             else
             {
                 hub.settingsMan.setBoolean(Key.USER_TUTORIAL_DEFAULT, false);
+                game.initializeTutorials(false);
             }
                                       
             // Stop all the players.

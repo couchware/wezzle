@@ -22,6 +22,7 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.PieceManager;
 import ca.couchware.wezzle2d.manager.ScoreManager;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.piece.PieceType;
@@ -246,6 +247,10 @@ public abstract class AbstractTutorial implements ITutorial
         final ScoreManager scoreMan = hub.scoreMan;
         final StatManager statMan = hub.statMan;
         final TimerManager timerMan = hub.timerMan;
+        final SettingsManager settingsMan = hub.settingsMan;
+
+        // Write out completion.
+        settingsMan.setBoolean(this.getSettingsKey(), true);
 
         // Load the score managers state.
         boardMan.loadState();
@@ -366,6 +371,12 @@ public abstract class AbstractTutorial implements ITutorial
     public String getName()
     {
         return name;
-    }        
+    }
+
+    @Override
+    public boolean hasRun(final ManagerHub hub)
+    {
+        return hub.settingsMan.getBoolean(this.getSettingsKey());
+    }
     
 }

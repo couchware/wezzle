@@ -496,7 +496,7 @@ public class SettingsManager
 	public boolean getBoolean(Key key)
 	{		
 		return getString(key) == null 
-            ? null 
+            ? false
             : Boolean.valueOf(getString(key));
 	}      
     

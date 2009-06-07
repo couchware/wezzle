@@ -18,7 +18,6 @@ import ca.couchware.wezzle2d.util.StringUtil;
 import ca.couchware.wezzle2d.util.CouchDate;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;

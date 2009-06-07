@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.tutorial;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 
 /**
  *
@@ -28,7 +29,7 @@ public interface ITutorial
      * 
      * @param rule
      */
-    public void removeRule(Rule rule);        
+    public void removeRule(Rule rule);  
 
     /**
      * Evaluates the tutorial activation rules.  Returns true if they are
@@ -81,5 +82,10 @@ public interface ITutorial
      * @param game
      */
     public void updateLogic(Game game, ManagerHub hub);
+
+
+    public Key getSettingsKey();
+
+    public boolean hasRun(final ManagerHub hub);
 
 }
