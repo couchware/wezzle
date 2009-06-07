@@ -156,7 +156,7 @@ public class Tracker implements IScoreListener
     public Map<Rule.NumeratorSubType, Integer> getCounts(List<Move> moves)
     {
         // get a set of all tiles distinct.
-        Set<Tile> tiles = new HashSet<Tile>();
+        List<Tile> tiles = new ArrayList<Tile>();
         int lines = 0;
 
         for( Move m : moves)
