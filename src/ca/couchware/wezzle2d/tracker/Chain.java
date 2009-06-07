@@ -86,7 +86,7 @@ public class Chain
      * Get the lines. To ensure immutability returns an unmodifiable list.
      * @return The list of lines.
      */
-    public List getTileGroupList()
+    public List<TileGroup> getTileGroupList()
     {
         return Collections.unmodifiableList(this.tileGroupList);
     }

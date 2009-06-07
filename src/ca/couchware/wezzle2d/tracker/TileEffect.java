@@ -75,7 +75,7 @@ public class TileEffect implements TileGroup
 
     public Set<Tile> getTiles()
     {
-       Set tiles = new HashSet<Tile>();
+       Set<Tile> tiles = new HashSet<Tile>();
        for(Tile t : tileList)
        {
            tiles.add(t);
