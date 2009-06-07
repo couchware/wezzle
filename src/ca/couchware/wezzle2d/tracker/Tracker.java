@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.manager.ListenerManager;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -156,7 +157,7 @@ public class Tracker implements IScoreListener
     public Map<Rule.NumeratorSubType, Integer> getCounts(List<Move> moves)
     {
         // get a set of all tiles distinct.
-        List<Tile> tiles = new ArrayList<Tile>();
+        Set<Tile> tiles = new HashSet<Tile>();
         int lines = 0;
 
         for( Move m : moves)
@@ -228,6 +229,11 @@ public class Tracker implements IScoreListener
         countMap.put(NumeratorSubType.X2, x2);
         countMap.put(NumeratorSubType.X3, x3);
         countMap.put(NumeratorSubType.X4, x4);
+
+        String message = "Bomb: " + bomb + " Gravity: "+ gravity + " ROCKET: " +
+                rocket + " Star " + star;
+
+        CouchLogger.get().recordMessage(this.getClass(), message);
         
         return countMap;
     }

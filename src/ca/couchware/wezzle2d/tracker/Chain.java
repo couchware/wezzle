@@ -6,7 +6,6 @@
 package ca.couchware.wezzle2d.tracker;
 
 import ca.couchware.wezzle2d.tile.Tile;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.Node;
 import java.util.ArrayList;
 import java.util.Collection;

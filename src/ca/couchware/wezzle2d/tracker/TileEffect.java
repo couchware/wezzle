@@ -10,7 +10,9 @@ import ca.couchware.wezzle2d.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A class for holding the tiles affected by a tile effect like a rocket
@@ -68,5 +70,17 @@ public class TileEffect implements TileGroup
     {
         return this.causeTile.getType().toString() + " => "
                 + (tileList.isEmpty() ? "*Nothing*" : StringUtil.join(tileList, ", "));
+    }
+
+
+    public Set<Tile> getTiles()
+    {
+       Set tiles = new HashSet<Tile>();
+       for(Tile t : tileList)
+       {
+           tiles.add(t);
+       }
+
+       return tiles;
     }
 }

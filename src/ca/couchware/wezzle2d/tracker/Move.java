@@ -88,12 +88,14 @@ public class Move
 
         for ( Chain c : chains )
         {
-            List<Line> lineList = c.getLineList();
 
-            for (Line line : lineList)
+            List<TileGroup> grpList = c.getTileGroupList();
+
+            for(TileGroup tg : grpList)
             {
-                tileSet.addAll(line.getTileList());
+                tileSet.addAll(tg.getTiles());
             }
+           
         }
 
         return Collections.unmodifiableSet(tileSet);
