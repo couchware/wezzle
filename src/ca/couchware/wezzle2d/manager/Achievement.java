@@ -294,24 +294,22 @@ public class Achievement implements IXMLizable
             switch (numeratorType)
             {
                 case COLLISION:
-
-                    for ( Object p : numerator.getChildren("item") )
-                    {
-                        Element item = (Element) p;
+                {
+                    
                  
                         Rule.NumeratorSubType type = Rule.NumeratorSubType
-                                .valueOf(item.getAttributeValue("type"));
+                                .valueOf(numerator.getAttributeValue("sub-type"));
 
                         operation = Rule.Operation
-                                .valueOf(item.getAttributeValue("operation"));
+                                .valueOf(numerator.getAttributeValue("operation"));
 
-                        value = Integer.parseInt(item
+                        value = Integer.parseInt(numerator
                                 .getAttributeValue("value").toString());
 
                         numeratorList.add(new Numerator(value, operation, numeratorType, type));                       
-                    }
+                   
                     break;
-                
+                }
                 case LINES:
                 
                     numeratorList.add(new Numerator(value, operation, numeratorType,
@@ -625,20 +623,20 @@ public class Achievement implements IXMLizable
         // We should only have the collisions left.
         if (numerators.size() > 0)
         {
-            Element numerator = new Element("numerator");
-            numerator.setAttribute("type", numerators.get(0).type.toString());
+            
 
             for (Numerator n : numerators)
             {
-                Element item = new Element("item");
-                item.setAttribute("type", n.subType.toString());
-                item.setAttribute("operation", n.operation.toString());
-                item.setAttribute("value", String.valueOf(n.value));
+                Element numerator = new Element("numerator");
+                numerator.setAttribute("type", numerators.get(0).type.toString());
+                numerator.setAttribute("sub-type", n.subType.toString());
+                numerator.setAttribute("operation", n.operation.toString());
+                numerator.setAttribute("value", String.valueOf(n.value));
 
-                numerator.addContent(item);
+                element.addContent(numerator);
             }
 
-            element.addContent(numerator);
+            
         }
 
         Element denominator = new Element("denominator");
