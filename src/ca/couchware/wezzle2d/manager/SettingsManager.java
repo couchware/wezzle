@@ -400,7 +400,7 @@ public class SettingsManager
         setString(key, String.valueOf(value));
     }
     
-    public void setBoolean(Key key, boolean value)
+    public void setBool(Key key, boolean value)
     {
         setString(key, String.valueOf(value));
     }	        

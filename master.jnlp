@@ -18,7 +18,7 @@
     </resources>
     <resources os="Windows">
 <!--${JNLP.RESOURCES.RUNTIME}-->        
-        <nativelib href="lib/native-lwjgl-win32.jar"/>                
+        <nativelib href="lib/native-lwjgl-windows.jar"/>
     </resources>    
     <resources os="Linux">
 <!--${JNLP.RESOURCES.RUNTIME}-->        

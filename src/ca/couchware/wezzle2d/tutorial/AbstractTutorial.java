@@ -262,7 +262,7 @@ public abstract class AbstractTutorial implements ITutorial
         final SettingsManager settingsMan = hub.settingsMan;
 
         // Write out completion.
-        settingsMan.setBoolean(this.getSettingsKey(), true);
+        settingsMan.setBool(this.getSettingsKey(), true);
 
         // Load the score managers state.
         boardMan.loadState();

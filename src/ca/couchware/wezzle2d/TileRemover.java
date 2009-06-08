@@ -241,6 +241,7 @@ public class TileRemover implements IResettable, ILevelListener
                     boolean getNextPiece = !this.levelUpInProgress
                             && !hub.tutorialMan.isTutorialRunning();
                     startNextMove(pieceMan, timerMan, getNextPiece);
+                    CouchLogger.get().recordWarning(this.getClass(), "getNextPiece = " + getNextPiece);
                     
                     // Clear the level up in progress flag.
                     this.levelUpInProgress = false;                                             

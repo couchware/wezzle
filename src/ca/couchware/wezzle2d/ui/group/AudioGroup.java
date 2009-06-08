@@ -154,7 +154,7 @@ public class AudioGroup extends AbstractGroup
             boolean soundOn = soundRadio.getSelectedIndex() == SOUND_ON;
             
             // Set the property.            
-            SettingsManager.get().setBoolean(Key.USER_SOUND, soundOn);            
+            SettingsManager.get().setBool(Key.USER_SOUND, soundOn);
          
             // Pause or unpause the sound depending on whether or not
             // the button is activated.
@@ -165,7 +165,7 @@ public class AudioGroup extends AbstractGroup
             boolean musicOn = musicRadio.getSelectedIndex() == MUSIC_ON;
             
             // Set the property.            
-            SettingsManager.get().setBoolean(Key.USER_MUSIC, musicOn);
+            SettingsManager.get().setBool(Key.USER_MUSIC, musicOn);
             
             // Set the pausedness.
             hub.musicMan.setPaused(!musicOn);           
