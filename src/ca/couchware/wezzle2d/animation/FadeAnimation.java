@@ -108,7 +108,7 @@ public class FadeAnimation extends AbstractAnimation
         public Builder minOpacity(int val) { minOpacity = val; return this; }
         public Builder maxOpacity(int val) { maxOpacity = val; return this; }
 
-        public FadeAnimation end()
+        public FadeAnimation build()
         {
             return new FadeAnimation(this);
         }                

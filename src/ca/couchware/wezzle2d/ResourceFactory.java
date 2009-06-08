@@ -429,7 +429,7 @@ public class ResourceFactory
         public LabelBuilder cached(boolean val)
         { cached = val; return this; }
 
-        public ITextLabel end()
+        public ITextLabel build()
         {
             return get().getLabel(this);
         }                

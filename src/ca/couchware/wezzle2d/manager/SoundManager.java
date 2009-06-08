@@ -87,7 +87,7 @@ public class SoundManager
         setNormalizedGain((double) settingsMan.getInt(Key.USER_SOUND_VOLUME) / 100.0);
         
         // Check if on or off.
-        if (SettingsManager.get().getBoolean(Key.USER_SOUND) == true)
+        if (SettingsManager.get().getBool(Key.USER_SOUND) == true)
         {
             setPaused(false);
         }

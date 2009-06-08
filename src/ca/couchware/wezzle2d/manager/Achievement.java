@@ -520,7 +520,7 @@ public class Achievement implements IXMLizable
     @Override
     public String toString()
     {
-        return "[" + this.title + " - " + this.difficulty + "] " + this.description;
+        return String.format("[ %s - %s ] %s", this.title, this.difficulty, this.description);
     }    
     
     public Element toXmlElement()
@@ -572,9 +572,9 @@ public class Achievement implements IXMLizable
 
         // Set amount.
         Element amount = new Element("amount");
-        amount.setAttribute("metatype", rule.getStatus().toString());        
+        amount.setAttribute("metatype",  rule.getStatus().toString());
         amount.setAttribute("operation", String.valueOf(rule.getOperation()));
-        amount.setAttribute("value", String.valueOf(rule.getValue()));
+        amount.setAttribute("value",     String.valueOf(rule.getValue()));
         element.addContent(amount);
 
         List<String> achievementNamesList = rule.getAchievementNameList();
@@ -607,9 +607,9 @@ public class Achievement implements IXMLizable
         // Do everything but the collisions.
         for(Iterator<Numerator> it = numerators.iterator(); it.hasNext();)
         {
-            Numerator n = it.next();
+           Numerator n = it.next();
            
-            if(n.type.equals(Rule.NumeratorType.COLLISION))
+           if (n.type.equals(Rule.NumeratorType.COLLISION))
                continue;
 
            Element numerator = new Element("numerator");
@@ -617,20 +617,18 @@ public class Achievement implements IXMLizable
            numerator.setAttribute("operation", n.operation.toString());
            numerator.setAttribute("value", String.valueOf(n.value));
 
-
-
            element.addContent(numerator);
 
            it.remove();
         }
 
         // We should only have the collisions left.
-        if(numerators.size() > 0)
+        if (numerators.size() > 0)
         {
             Element numerator = new Element("numerator");
             numerator.setAttribute("type", numerators.get(0).type.toString());
 
-            for(Numerator n : numerators)
+            for (Numerator n : numerators)
             {
                 Element item = new Element("item");
                 item.setAttribute("type", n.subType.toString());
@@ -652,7 +650,6 @@ public class Achievement implements IXMLizable
 
         // We have a collision, build it up.
         return element;
-
     }
 
     private static Element createCollisionXmlRule(Rule rule)
@@ -710,14 +707,12 @@ public class Achievement implements IXMLizable
         
         Achievement achievement = (Achievement) o;
         return this.title.equals(achievement.title)
-                && this.description.equals(achievement.description);               
+                && this.description.equals(achievement.description);
     }
     
     /**
-     * Must override hashcode if you override <pre>equals()</pre>.
-     * 
-     * The method used here is taking from Effective Java (2nd Ed.) pp. 46-48.
-     * 
+     * Must override hashcode if you override <pre>equals()</pre>.     
+     * The method used here is taking from Effective Java (2nd Ed.) pp. 46-48.     
      * @return
      */
     @Override

@@ -54,7 +54,7 @@ public abstract class AbstractMenu extends AbstractGroup
         this.menuBox = new Box.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
-                .visible(false).end();
+                .visible(false).build();
         this.menuLayerMan.add(this.menuBox, Layer.UI);
     }
 
@@ -73,27 +73,27 @@ public abstract class AbstractMenu extends AbstractGroup
 
         IAnimation move = new MoveAnimation.Builder(menuBox).theta(-90).maxY(300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();
+                .build();
 
         List<IAnimation> fadeList = new ArrayList<IAnimation>(entityList.size());
         for (IEntity entity : entityList)
         {
             //CouchLogger.get().recordMessage(this.getClass(), "Got here!");
             IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.IN, entity)
-                    .duration(200).end();
+                    .duration(200).build();
             fadeList.add(anim);
         }
 
         IAnimation fade = new MetaAnimation.Builder()
                 .runRule(MetaAnimation.RunRule.SIMULTANEOUS)
                 .addAll(fadeList)
-                .end();
+                .build();
 
         IAnimation meta = new MetaAnimation.Builder()
                 .runRule(MetaAnimation.RunRule.SEQUENCE)
                 .add(move)
                 .add(fade)
-                .end();
+                .build();
         
         meta.addAnimationListener(new AnimationAdapter()
         {
@@ -111,7 +111,7 @@ public abstract class AbstractMenu extends AbstractGroup
         IAnimation anim = new MoveAnimation.Builder(menuBox).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();
+                .build();
 
         anim.addAnimationListener(new AnimationAdapter()
         {

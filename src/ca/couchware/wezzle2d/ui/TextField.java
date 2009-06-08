@@ -171,13 +171,13 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         // Create the normal label.
         this.normalLabel = new LabelBuilder(x + offsetX + width / 2, y + offsetY + height / 2)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(normalColor).size(textSize).text(defaultText).end(); 
+                .color(normalColor).size(textSize).text(defaultText).build();
         
         // Create the active label, which is just the normal label with
         // an underscore at the end.
         this.activeLabel = new LabelBuilder(normalLabel)
                 .color(activeColor)
-                .text(StringUtil.padString("", EDIT_CHARACTER, maximumLength)).end();
+                .text(StringUtil.padString("", EDIT_CHARACTER, maximumLength)).build();
     }
     
     public static class Builder implements IBuilder<TextField>
@@ -276,7 +276,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         public Builder maximumLength(int val)
         { maximumLength = val; return this; }
         
-        public TextField end()
+        public TextField build()
         {
             TextField textBox = new TextField(this);
             

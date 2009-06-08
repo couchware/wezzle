@@ -89,34 +89,34 @@ public class Loader implements IDrawer
         
         // Add the background.
         GraphicEntity backgroundGraphic = 
-                new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
+                new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).build();
         layerMan.add(backgroundGraphic, Layer.BACKGROUND);
                 
         // Set up the copyright label.               
         ITextLabel label1 = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED)).size(12)                
-                .text(Game.COPYRIGHT).end();
+                .text(Game.COPYRIGHT).build();
         layerMan.add(label1, Layer.UI);
         
         // Set up the version label.	
         ITextLabel label2 = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
                 .color(settingsMan.getColor(Key.GAME_COLOR_DISABLED)).size(12)                
-                .text(Game.TITLE).end();                        
+                .text(Game.TITLE).build();
         layerMan.add(label2, Layer.UI);
         
         // Create the loader title.
         ITextLabel label3 = new ResourceFactory.LabelBuilder(400, 273)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .cached(false).size(26).text(title).end();
+                .cached(false).size(26).text(title).build();
         this.layerMan.add(label3, Layer.UI);
         
         // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(400, 326)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .barWidth(ProgressBar.BarWidth.LARGE)
-                .textPosition(ProgressBar.TextPosition.NONE).end();
+                .textPosition(ProgressBar.TextPosition.NONE).build();
         layerMan.add(progressBar, Layer.UI);
         
         // Create an entity group that will be used by the transition
@@ -128,7 +128,7 @@ public class Loader implements IDrawer
         this.animation = new FadeAnimation.Builder(FadeAnimation.Type.OUT, e)
                 .wait(settingsMan.getInt(Key.LOADER_BAR_FADE_WAIT))
                 .duration(settingsMan.getInt(Key.LOADER_BAR_FADE_DURATION))
-                .end();
+                .build();
         
         // Initialize the loader list.
         this.loaderQueue = new LinkedList<Runnable>();

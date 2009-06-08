@@ -56,14 +56,14 @@ public class AchievementNotification extends AbstractNotification
                     this.y + 28 + offsetY)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .text("Achievement!").size(21)
-                .end();   
+                .build();
         
         this.achTitle = new ResourceFactory.LabelBuilder(
                     this.x + 15 + offsetX,
                     this.y + 57 + offsetY)                    
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .text(this.achievement.getTitle()).size(12)
-                .end();   
+                .build();
         
         this.achDifficulty = new ResourceFactory.LabelBuilder(
                     this.x + 15 + offsetX,
@@ -71,7 +71,7 @@ public class AchievementNotification extends AbstractNotification
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .text(this.achievement.getDifficulty().toString()).size(12)
                 .color(this.achievement.getDifficulty().getColor())
-                .end();
+                .build();
         
         this.entityGroup = new EntityGroup(this.title, this.achTitle, this.achDifficulty);
         this.entityList.add(this.entityGroup);
@@ -121,7 +121,7 @@ public class AchievementNotification extends AbstractNotification
         public Builder visible(boolean val) 
         { visible = val; return this; }
                 
-        public AchievementNotification end()
+        public AchievementNotification build()
         {
             AchievementNotification notif = new AchievementNotification(this);                      
             return notif;

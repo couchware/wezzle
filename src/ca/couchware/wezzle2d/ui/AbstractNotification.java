@@ -70,7 +70,7 @@ public abstract class AbstractNotification extends AbstractEntity implements INo
                 .border(Border.MEDIUM)
                 .width(this.width).height(this.height)
                 .opacity(this.opacity)
-                .end();
+                .build();
 
         this.entityList = new ArrayList<IEntity>();
         this.entityList.add(this.box);

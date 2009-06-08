@@ -132,7 +132,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                         boardMan.getY() + boardMan.getCellHeight(),
                         PieceGrid.RenderMode.SPRITE)
                     .visible(false)
-                    .end();             
+                    .build();
         
         // Create the piece queue and load it up.
         this.pieceQueue = new LinkedList<Piece>();
@@ -196,7 +196,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
      * 
 	 * @param piece The piece to set.
 	 */
-	public void loadPiece(final Piece piece)
+	public void setPiece(final Piece piece)
 	{
         // Remember which piece it is for rotating.
         this.piece = piece;
@@ -208,10 +208,10 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     /**
      * Loads the piece from the top of the piece queue.
      */
-    public void loadPiece()
+    public void nextPiece()
     {                  
         // Get a piece from the queue.
-        loadPiece(pieceQueue.remove());
+        setPiece(pieceQueue.remove());
         
         // Add one to replace it.
         Piece nextPiece = PieceType.getRandom().getPiece();  
@@ -226,6 +226,15 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         this.movePieceGridTo(this.cursorPosition);
         pieceGrid.setDirty(true);
 	}
+
+    /**
+     * Get the current piece being used.
+     * @return
+     */
+    public Piece getPiece()
+    {
+        return this.piece;
+    }
     
     /**
      * Adjusts the position of the piece grid so that it is within the board's
@@ -341,7 +350,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     {
         refactored = true;
         
-    }      
+    }
           
     private int toColumn(final int x)
     {
@@ -356,7 +365,56 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
        final BoardManager boardMan = hub.boardMan;
        return (y - boardMan.getY()) / boardMan.getCellHeight(); 
     }
-    
+
+     /**
+     * Create SCT text and add to the animation manager.
+     * @param hub
+     * @param indexSet
+     * @param deltaScore
+     */
+    private void animateSct(final ManagerHub hub, Set<Integer> indexSet, int deltaScore)
+    {
+        // Add score SCT.
+        ImmutablePosition p = hub.boardMan.determineCenterPoint(indexSet);
+        SettingsManager settingsMan = SettingsManager.get();
+
+        final ITextLabel label = new LabelBuilder( p.getX(), p.getY() )
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(settingsMan.getColor(Key.SCT_COLOR_PIECE))
+                .size(hub.scoreMan.determineFontSize(deltaScore))
+                .text(String.valueOf(deltaScore))
+                .build();
+
+        IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
+                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
+                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
+                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
+                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
+                .build();
+
+        IAnimation a2 = new MoveAnimation.Builder(label)
+                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
+                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
+                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
+                .build();
+
+        a2.addAnimationListener(new AnimationAdapter()
+        {
+            @Override
+            public void animationStarted() {
+                hub.layerMan.add(label, Layer.EFFECT);
+            }
+
+            @Override
+            public void animationFinished() {
+                hub.layerMan.remove(label, Layer.EFFECT);
+            }
+        });
+
+        hub.animationMan.add(a1);
+        hub.animationMan.add(a2);
+    }
+
     private void startAnimationAt(final ImmutablePosition p, int speed)
     {
         // Add new animations.
@@ -377,7 +435,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
             // Make sure they have a pulse animation.                   
             t.setAnimation(new ZoomAnimation.Builder(ZoomAnimation.Type.LOOP_IN, t)
-                    .minWidth(t.getWidth() - 8).speed(speed).end());
+                    .minWidth(t.getWidth() - 8).speed(speed).build());
             animationMan.add(t.getAnimation());
         }
     }
@@ -535,7 +593,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     public void initiateCommit(final Game game, final ManagerHub hub)
     {
         // If a tile drop is already in progress, then return.
-        if (game.getTileDropper().isTileDropping() == true)
+        if ( game.getTileDropper().isTileDropping() )
             return;
 
         // Create convenience variable.
@@ -573,66 +631,22 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         Tile tile = null;
         for (Integer index : indexSet)
         {
-            tile = boardMan.getTile(index);
-            
-            // Invoke the on-click behaviour.            
-            tile.fireTileClickedEvent();
-                         
-        } // end for                 
+            tile = boardMan.getTile(index);     
+            tile.fireTileClickedEvent();                         
+        }
         
         // Remove and score the piece.
         int deltaScore = hub.scoreMan.calculatePieceScore(indexSet);                    
         
         // Increment the score.
-        if (hub.tutorialMan.isTutorialRunning() == false)       
+        if (!hub.tutorialMan.isTutorialRunning())
         {
             hub.scoreMan.incrementScore(deltaScore);        
         }
-        
-        // Add score SCT.
-        ImmutablePosition p = boardMan.determineCenterPoint(indexSet);
-               
-        SettingsManager settingsMan = SettingsManager.get();
-        
-        final ITextLabel label = new LabelBuilder(p.getX(), p.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.SCT_COLOR_PIECE))
-                .size(hub.scoreMan.determineFontSize(deltaScore))
-                .text(String.valueOf(deltaScore))
-                .end();                
-        
-        IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
-                .wait(settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
-                .duration(settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
-                .minOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
-                .maxOpacity(settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                .end();
-        
-        IAnimation a2 = new MoveAnimation.Builder(label)
-                .duration(settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
-                .speed(settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
-                .theta(settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
-                .end();                      
-        
-        a2.addAnimationListener(new AnimationAdapter()
-        {
-            @Override
-            public void animationStarted()
-            { hub.layerMan.add(label, Layer.EFFECT); }
 
-            @Override
-            public void animationFinished()
-            { hub.layerMan.remove(label, Layer.EFFECT); }
-        });
-        
-        hub.animationMan.add(a1);
-        hub.animationMan.add(a2);
-        a1 = null;
-        a2 = null;
-        
-        // Release references.
-        p = null;       
-        
+        // Show the SCT.
+        animateSct(hub, indexSet, deltaScore);
+
         // Remove the tiles.
         hub.boardMan.removeTiles(indexSet);
 
@@ -644,7 +658,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 this.piece.getSize());
 
         // Increment the moves.
-        if (hub.tutorialMan.isTutorialRunning() == true)
+        if (hub.tutorialMan.isTutorialRunning())
         {
             hub.listenerMan.notifyMoveCommitted(new MoveEvent(this, 1), 
                     ListenerManager.GameType.TUTORIAL); 

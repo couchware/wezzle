@@ -252,7 +252,7 @@ public class Game extends Canvas implements IWindowCallback
                 // Create the layer manager transition animation.
                 transitionTo = TransitionTarget.MENU;
                 this.transition = new CircularTransition.Builder(mainMenu)
-                        .minRadius(10).speed(400).end();
+                        .minRadius(10).speed(400).build();
                 setDrawer(transition);
                 
                 this.transition.addAnimationListener(new AnimationAdapter()
@@ -417,7 +417,7 @@ public class Game extends Canvas implements IWindowCallback
                 // Create the layer manager transition animation.
                 this.transitionTo = TransitionTarget.GAME;
                 this.transition = new CircularTransition.Builder(hub.layerMan)
-                        .minRadius(10).speed(400).end();
+                        .minRadius(10).speed(400).build();
                 setDrawer(transition);                
                 
                 this.transition.addAnimationListener(new AnimationAdapter() 
@@ -434,7 +434,7 @@ public class Game extends Canvas implements IWindowCallback
                 hub.musicMan.play();
                 
                 // See if the music is off.
-                if (hub.settingsMan.getBoolean(Key.USER_MUSIC) == false)
+                if (hub.settingsMan.getBool(Key.USER_MUSIC) == false)
                 {
                     hub.musicMan.setPaused(true);
                 }
@@ -609,7 +609,7 @@ public class Game extends Canvas implements IWindowCallback
             {
                 AchievementNotification notif = new AchievementNotification.Builder(0, 0, ach)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .end();
+                    .build();
 
                 hub.notificationMan.offer(notif);
             }
@@ -674,20 +674,20 @@ public class Game extends Canvas implements IWindowCallback
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                         .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                         .size(hub.settingsMan.getInt(Key.SCT_LEVELUP_TEXT_SIZE))
-                        .text(hub.settingsMan.getString(Key.SCT_LEVELUP_TEXT)).end();
+                        .text(hub.settingsMan.getString(Key.SCT_LEVELUP_TEXT)).build();
 
                 IAnimation a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
                         .wait(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
                         .duration(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
                         .minOpacity(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
                         .maxOpacity(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                        .end();                 
+                        .build();
                 
                 IAnimation a2 = new MoveAnimation.Builder(label)
                         .duration(hub.settingsMan.getInt(Key.SCT_LEVELUP_MOVE_DURATION))
                         .speed(hub.settingsMan.getInt(Key.SCT_LEVELUP_MOVE_SPEED))
                         .theta(hub.settingsMan.getInt(Key.SCT_LEVELUP_MOVE_THETA))
-                        .end(); 
+                        .build();
                 
                 a2.addAnimationListener(new AnimationAdapter()
                 {

@@ -282,7 +282,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         
         // Create the board background graphic.
         GraphicEntity entity = new GraphicEntity.Builder(x - 12, y - 12, PATH)
-                .opacity(90).end();        
+                .opacity(90).build();
         layerMan.add(entity, Layer.BACKGROUND);    
         
         // Reset the state.
@@ -846,7 +846,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).speed(v)
-                                .minY(bound).theta(90).end();                        
+                                .minY(bound).theta(90).build();
                         animationList.add(a);
                     }
                 }  
@@ -866,7 +866,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).speed(v)
-                                .maxY(bound).theta(-90).end();                        
+                                .maxY(bound).theta(-90).build();
                         animationList.add(a);
                     }
                 }  
@@ -887,7 +887,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).speed(v)
-                                .minX(bound).theta(180).end();                        
+                                .minX(bound).theta(180).build();
                         animationList.add(a);
                     }
                 }
@@ -908,7 +908,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).speed(v)
-                                .maxX(bound).theta(0).end();                        
+                                .maxX(bound).theta(0).build();
                         animationList.add(a);
                     }
                 }
@@ -1790,7 +1790,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 			if (t != null)		
 			{	                
                 IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, t)
-                        .wait(wait).duration(duration).end();  
+                        .wait(wait).duration(duration).build();
                 
                 t.setAnimation(a);
                 animationMan.add(a);
@@ -1860,7 +1860,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 
                 // Create the animation.
                 a1 = new FadeAnimation.Builder(FadeAnimation.Type.IN, t)
-                        .wait(fadeWait).duration(fadeDuration).end();
+                        .wait(fadeWait).duration(fadeDuration).build();
                 
                 // Make the animation remove itself.                
 //                a1.setFinishRunnable(new Runnable()
@@ -1909,7 +1909,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 a2 = new MoveAnimation.Builder(t)
                         .minX(minX).maxX(maxX)
                         .wait(moveWait)
-                        .theta(theta).speed(moveSpeed).end();                                
+                        .theta(theta).speed(moveSpeed).build();
                 
                 // Add them to the animation manager.
                 t.setAnimation(a1);
@@ -1977,7 +1977,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 			if (t != null)		
 			{	                
                 IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(wait).duration(duration).end();                 
+                        .wait(wait).duration(duration).build();
                 t.setAnimation(a);
                 animationMan.add(a);
                 
@@ -2054,12 +2054,12 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 
                 // Create the animation.
                 a1 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
-                        .wait(fadeWait).duration(fadeDuration).end();               
+                        .wait(fadeWait).duration(fadeDuration).build();
                                 
                 a2 = new MoveAnimation.Builder(t).wait(moveWait)
                         .duration(moveDuration)
                         .theta(180 * (row % 2))
-                        .speed(moveSpeed).end();                             
+                        .speed(moveSpeed).build();
                 
                 a1.addAnimationListener(new AnimationAdapter()
                 {                   

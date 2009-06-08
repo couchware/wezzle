@@ -67,7 +67,7 @@ public class OptionsGroup extends AbstractGroup
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(26).text("Options")
-                .visible(false).end();
+                .visible(false).build();
         hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
@@ -75,13 +75,13 @@ public class OptionsGroup extends AbstractGroup
         upgradeButton = new Button.Builder(400, 246)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
-                .text("Buy Now").normalOpacity(80).visible(false).end();        
+                .text("Buy Now").normalOpacity(80).visible(false).build();
         hub.layerMan.add(upgradeButton, Layer.UI);
         entityList.add(upgradeButton);
         
         // Create audio button.
         audioButton = new Button.Builder((Button) upgradeButton).y(300)
-            .text("Sound/Music").end();
+            .text("Sound/Music").build();
         hub.layerMan.add(audioButton, Layer.UI);
         entityList.add(audioButton);
         
@@ -91,13 +91,13 @@ public class OptionsGroup extends AbstractGroup
         
         // Create main menu button.
         mainMenuButton = new Button.Builder((Button) upgradeButton).y(354)
-            .text("Main Menu").end();
+            .text("Main Menu").build();
         hub.layerMan.add(mainMenuButton, Layer.UI);
         entityList.add(mainMenuButton);
         
         // Create back button.
         closeButton = new Button.Builder((Button) upgradeButton).y(420)
-            .text("Close").end();
+            .text("Close").build();
         hub.layerMan.add(closeButton, Layer.UI);     
         entityList.add(closeButton);
         

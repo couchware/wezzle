@@ -283,7 +283,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         public Builder virtualValue(int val)        
         { virtualValue = val; return this; }           
         
-        public SliderBar end()
+        public SliderBar build()
         {
             SliderBar bar = new SliderBar(this);
             

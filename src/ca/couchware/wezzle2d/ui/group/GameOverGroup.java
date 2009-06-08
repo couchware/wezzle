@@ -57,7 +57,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         headerLabel = new LabelBuilder(400, 181)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Game over :(")
-                .visible(false).end();
+                .visible(false).build();
         hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
         
@@ -66,7 +66,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(14)
                 .text("Your final score was")
-                .visible(false).end();
+                .visible(false).build();
         hub.layerMan.add(scoreHeaderLabel, Layer.UI); 
         entityList.add(scoreHeaderLabel);
         
@@ -74,7 +74,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         scoreLabel = new LabelBuilder(400, 270)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(30)
-                .text("0").visible(false).end();
+                .text("0").visible(false).build();
         hub.layerMan.add(scoreLabel, Layer.UI); 
         entityList.add(scoreLabel);
         
@@ -82,13 +82,13 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         restartButton = new Button.Builder(400, 345)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
-                .text("Restart").normalOpacity(70).visible(false).end();
+                .text("Restart").normalOpacity(70).visible(false).build();
         hub.layerMan.add(restartButton, Layer.UI);
         entityList.add(restartButton);
         
         // Create continue button, using the restart button as a template.
         continueButton = new Button.Builder((Button) restartButton)
-                .y(405).text("Continue").end();
+                .y(405).text("Continue").build();
         hub.layerMan.add(continueButton, Layer.UI);
         entityList.add(continueButton);
     }        

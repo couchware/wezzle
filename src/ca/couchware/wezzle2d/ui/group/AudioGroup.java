@@ -70,19 +70,19 @@ public class AudioGroup extends AbstractGroup
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26)
-                .text("Audio").visible(false).end();
+                .text("Audio").visible(false).build();
         hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
                
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
-        RadioItem soundItem1 = new RadioItem.Builder().text("Sound On").end();
-        RadioItem soundItem2 = new RadioItem.Builder().text("Off").end();        
+        RadioItem soundItem1 = new RadioItem.Builder().text("Sound On").build();
+        RadioItem soundItem2 = new RadioItem.Builder().text("Off").build();
         soundRadio = new RadioGroup.Builder(400, 233)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(soundItem1, SettingsManager.get().getBoolean(Key.USER_SOUND))
-                .add(soundItem2, !SettingsManager.get().getBoolean(Key.USER_SOUND))
-                .visible(false).end();
+                .add(soundItem1, SettingsManager.get().getBool(Key.USER_SOUND))
+                .add(soundItem2, !SettingsManager.get().getBool(Key.USER_SOUND))
+                .visible(false).build();
         hub.layerMan.add(soundRadio, Layer.UI);
         entityList.add(soundRadio);
         
@@ -94,19 +94,19 @@ public class AudioGroup extends AbstractGroup
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0, 100)                    
                 .virtualValue(SettingsManager.get().getInt(Key.USER_SOUND_VOLUME))
-                .visible(false).end();
+                .visible(false).build();
         hub.layerMan.add(soundSlider, Layer.UI);
         entityList.add(soundSlider);
                         
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
-        RadioItem musicItem1 = new RadioItem.Builder().text("Music On").end();
-        RadioItem musicItem2 = new RadioItem.Builder().text("Off").end();        
+        RadioItem musicItem1 = new RadioItem.Builder().text("Music On").build();
+        RadioItem musicItem2 = new RadioItem.Builder().text("Off").build();
         musicRadio = new RadioGroup.Builder(400, 321)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(musicItem1, SettingsManager.get().getBoolean(Key.USER_MUSIC))
-                .add(musicItem2, !SettingsManager.get().getBoolean(Key.USER_MUSIC))
-                .visible(false).end();
+                .add(musicItem1, SettingsManager.get().getBool(Key.USER_MUSIC))
+                .add(musicItem2, !SettingsManager.get().getBool(Key.USER_MUSIC))
+                .visible(false).build();
         hub.layerMan.add(musicRadio, Layer.UI);
         entityList.add(musicRadio);
         
@@ -118,7 +118,7 @@ public class AudioGroup extends AbstractGroup
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0, 100)
                 .virtualValue(SettingsManager.get().getInt(Key.USER_MUSIC_VOLUME))
-                .visible(false).end();
+                .visible(false).build();
         hub.layerMan.add(musicSlider, Layer.UI);
         entityList.add(musicSlider);
         
@@ -126,7 +126,7 @@ public class AudioGroup extends AbstractGroup
         backButton = new Button.Builder(400, 420)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
-                .text("Back").normalOpacity(70).visible(false).end();        
+                .text("Back").normalOpacity(70).visible(false).build();
         hub.layerMan.add(backButton, Layer.UI);     
         entityList.add(backButton);
     }

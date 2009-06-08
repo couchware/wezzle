@@ -125,7 +125,7 @@ public class GraphicEntity extends AbstractEntity
         public Builder visible(boolean val) 
         { visible = val; return this; }
         
-        public GraphicEntity end()
+        public GraphicEntity build()
         {
             return new GraphicEntity(this);
         }                

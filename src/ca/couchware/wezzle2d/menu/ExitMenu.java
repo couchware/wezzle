@@ -62,7 +62,7 @@ public class ExitMenu extends AbstractGroup
         box = new Box.Builder(268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(settingsMan.getInt(Key.MAIN_MENU_WINDOW_OPACITY))
-                .visible(false).end();
+                .visible(false).build();
         this.layerMan.add(box, Layer.UI);               
                
         // Line 1.
@@ -70,12 +70,12 @@ public class ExitMenu extends AbstractGroup
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(22).visible(false)
-                .text("Are you sure").end();           
+                .text("Are you sure").build();
         this.entityList.add(l1);
         
         // Line 2.
         ITextLabel l2 = new LabelBuilder(l1).y(l1.getY() + 30)
-                .text("you want to exit?").end();
+                .text("you want to exit?").build();
         this.entityList.add(l2);
         
         // Add the "Yes" button.
@@ -95,12 +95,12 @@ public class ExitMenu extends AbstractGroup
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 //.type(SpriteButton.Type.THIN)
                 .visible(false).normalOpacity(90)
-                .text("Yes").end();
+                .text("Yes").build();
         this.entityList.add(this.yesButton);
         
         // Add the "No" button.
         this.noButton = new Button.Builder((Button) yesButton)
-                .y(yesButton.getY() + 60).text("No").end();
+                .y(yesButton.getY() + 60).text("No").build();
         this.entityList.add(this.noButton);
         
         // Add them all to the layer manager.
@@ -116,7 +116,7 @@ public class ExitMenu extends AbstractGroup
         
         IAnimation anim = new MoveAnimation.Builder(box).theta(-90).maxY(300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();   
+                .build();
         
 //        a.setFinishRunnable(new Runnable()
 //        {
@@ -140,7 +140,7 @@ public class ExitMenu extends AbstractGroup
         IAnimation anim = new MoveAnimation.Builder(box).theta(-90)
                 .maxY(Game.SCREEN_HEIGHT + 300)
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .end();
+                .build();
         
 //        a.setStartRunnable(new Runnable()
 //        {

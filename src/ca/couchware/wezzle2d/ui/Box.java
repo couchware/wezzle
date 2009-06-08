@@ -225,7 +225,7 @@ public class Box extends AbstractEntity implements IMouseListener
         public Builder border(Border val)
         { border = val; return this; }
         
-        public Box end()
+        public Box build()
         {
             Box win = new Box(this);
             

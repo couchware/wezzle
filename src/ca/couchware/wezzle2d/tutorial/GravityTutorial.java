@@ -72,24 +72,24 @@ public class GravityTutorial extends AbstractTutorial
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false)
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(16)
-                .text("Gravity tiles change the").end();
+                .text("Gravity tiles change the").build();
         layerMan.add(label, Layer.EFFECT);   
         this.labelList.add(label);
         
         // Line 2.
         label = new LabelBuilder(label).y(166 + 24)
-                .text("direction that tiles slide.").end();
+                .text("direction that tiles slide.").build();
         layerMan.add(label, Layer.EFFECT);                 
         this.labelList.add(label);
         
         // Line 3.
         label = new LabelBuilder(label).y(166 + 24 + 24 + 24)
-                .text("Get one in a line to").end();
+                .text("Get one in a line to").build();
         layerMan.add(label, Layer.EFFECT);                                 
         this.labelList.add(label);              
         
         label = new LabelBuilder(label).y(166 + 24 + 24 + 24 + 24)
-                .text("try it out.").end();
+                .text("try it out.").build();
         layerMan.add(label, Layer.EFFECT);                                 
         this.labelList.add(label);              
         
@@ -100,7 +100,7 @@ public class GravityTutorial extends AbstractTutorial
         int y = boardMan.getY() + boardMan.getHeight() - boardMan.getCellHeight();
 
         this.bubble = new SpeechBubble.Builder(x, y)
-                .type(BubbleType.VERTICAL).text("Click here").end();                
+                .type(BubbleType.VERTICAL).text("Click here").build();
         layerMan.add(bubble, Layer.EFFECT);   
         layerMan.toFront(bubble, Layer.EFFECT);
 
@@ -138,7 +138,7 @@ public class GravityTutorial extends AbstractTutorial
            {               
                // Fade out the bubble.            
                IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
-                       .wait(0).duration(500).end();
+                       .wait(0).duration(500).build();
                animationMan.add(f);       
            }
         });  

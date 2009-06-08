@@ -199,7 +199,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
             return this;
         }
         
-        public RadioGroup end()
+        public RadioGroup build()
         {
             RadioGroup group = new RadioGroup(this);
             

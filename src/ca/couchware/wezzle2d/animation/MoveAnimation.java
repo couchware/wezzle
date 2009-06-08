@@ -187,7 +187,7 @@ public class MoveAnimation extends AbstractAnimation
         public Builder maxY(int val) { maxY = val; return this; }
         public Builder finishRule(FinishRule val) { finishRule = val; return this; }
                 
-        public MoveAnimation end()
+        public MoveAnimation build()
         {
             return new MoveAnimation(this);
         }                

@@ -127,14 +127,14 @@ public class RadioItem extends AbstractButton
         
         // Create the sprites. 
         radioOn = new GraphicEntity.Builder(0, 0, PATH_ON)
-                .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE)).end();
+                .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE)).build();
         radioOff = new GraphicEntity.Builder(radioOn)
-                .path(PATH_OFF).end();
+                .path(PATH_OFF).build();
         
         radioHoverOn = new GraphicEntity.Builder(0, 0, PATH_HOVER_ON)
-                .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE)).end();
+                .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE)).build();
         radioHoverOff = new GraphicEntity.Builder(radioHoverOn)
-                .path(PATH_HOVER_OFF).end();
+                .path(PATH_HOVER_OFF).build();
         
         radioGraphic = new EntityGroup(radioOn, radioOff, 
                 radioHoverOn, radioHoverOff);
@@ -147,7 +147,7 @@ public class RadioItem extends AbstractButton
         label = new ResourceFactory.LabelBuilder(0, 0)  
                 .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE))
                 .cached(false).color(color).text(text)
-                .visible(visible).opacity(opacity).size(textSize).end();                
+                .visible(visible).opacity(opacity).size(textSize).build();
             
         // Adjust the height so that it'll include the label.
         // Set the width and height.
@@ -236,7 +236,7 @@ public class RadioItem extends AbstractButton
         public Builder pad(int val)
         { pad = val; return this; }
         
-        public RadioItem end()
+        public RadioItem build()
         {
             RadioItem item = new RadioItem(this);
             

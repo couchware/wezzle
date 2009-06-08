@@ -55,7 +55,7 @@ public class HighScoreMenu extends AbstractMenu
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("High Scores").size(20)
-                .visible(false).end();
+                .visible(false).build();
         this.entityList.add(titleLabel);
 
          // The box.
@@ -64,7 +64,7 @@ public class HighScoreMenu extends AbstractMenu
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(optionBox);
 
         // Create the score labels.
@@ -77,7 +77,7 @@ public class HighScoreMenu extends AbstractMenu
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                     .opacity(0).size(20).text(" ")
-                    .visible(false).end();
+                    .visible(false).build();
             scoreLabelList.add(label);
 
             this.entityList.add(label);
@@ -93,13 +93,13 @@ public class HighScoreMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(20).text("There are no")
-                .visible(false).end();
+                .visible(false).build();
 
         this.noHighScore[1] = new LabelBuilder(268, 336)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(20).text("high scores yet.")
-                .visible(false).end();
+                .visible(false).build();
 
         // Create the reset button.
         this.resetButton = new Button.Builder(268, 445)
@@ -108,7 +108,7 @@ public class HighScoreMenu extends AbstractMenu
                 .normalOpacity(90)
                 .visible(false)
                 .text("Reset")
-                .end();
+                .build();
 
         if (hub.highScoreMan.getScoreList().isEmpty())
         {

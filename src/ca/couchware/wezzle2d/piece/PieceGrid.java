@@ -206,7 +206,7 @@ public class PieceGrid extends AbstractEntity
         public Builder visible(boolean val)
         { visible = val; return this; }
         
-        public PieceGrid end()
+        public PieceGrid build()
         {
             return new PieceGrid(this);
         }

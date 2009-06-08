@@ -117,7 +117,7 @@ public class Ellipse extends AbstractEntity
         public Builder color(Color val)
         { color = val; return this; }
 
-        public Ellipse end()
+        public Ellipse build()
         {
             Ellipse ellipse = new Ellipse(this);
             return ellipse;

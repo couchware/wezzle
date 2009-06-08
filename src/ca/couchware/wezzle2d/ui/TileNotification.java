@@ -46,7 +46,7 @@ public class TileNotification extends AbstractNotification
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("Tile Available!")
                 .size(16)
-                .end();
+                .build();
 
         // Get a new tile of that type.
         this.tile = TileHelper.makeTile(tileType, TileColor.BLACK,
@@ -120,7 +120,7 @@ public class TileNotification extends AbstractNotification
         public Builder visible(boolean val)
         { visible = val; return this; }
 
-        public TileNotification end()
+        public TileNotification build()
         {
             TileNotification notif = new TileNotification(this);
             return notif;

@@ -175,7 +175,7 @@ public class UI implements
         highScoreButton = new MammothButton.Builder(128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("")
-                .normalOpacity(0).hoverOpacity(70).activeOpacity(95).end();
+                .normalOpacity(0).hoverOpacity(70).activeOpacity(95).build();
         hub.layerMan.add(highScoreButton, Layer.UI);
                 
         // Create pause button.        
@@ -184,17 +184,17 @@ public class UI implements
                 //.type(SpriteButton.Type.NORMAL)
                 .width(170)
                 .text("Pause").activeText("Resume")
-                .normalOpacity(70).end();
+                .normalOpacity(70).build();
         hub.layerMan.add(pauseButton, Layer.UI);    
         
         // Create the options button, using pause button as a template.
         optionsButton = new Button.Builder((Button) pauseButton)
-                .y(299).text("Options").end();
+                .y(299).text("Options").build();
         hub.layerMan.add(optionsButton, Layer.UI);                
         
         // Create the help buttton, using pause button as a template.
         helpButton = new Button.Builder((Button) optionsButton)
-                .y(387).text("Help").end();               
+                .y(387).text("Help").build();
         hub.layerMan.add(helpButton, Layer.UI);     
     }
     
@@ -211,7 +211,7 @@ public class UI implements
         copyrightLabel = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false).color(PRIMARY_COLOR).size(12)                
-                .text(Game.COPYRIGHT).end();
+                .text(Game.COPYRIGHT).build();
         hub.layerMan.add(copyrightLabel, Layer.UI);
         
         // Set up the version label.	
@@ -219,45 +219,45 @@ public class UI implements
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
                 .cached(false).color(PRIMARY_COLOR).size(12)                
                 .text(Game.TITLE)
-                .end();                        
+                .build();
         hub.layerMan.add(versionLabel, Layer.UI);
         		  
         
         // Set up the level header.
         levelHeader = new GraphicEntity.Builder(126, 153, LEVEL_HEADER_PATH)                
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();        
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).build();
         hub.layerMan.add(levelHeader, Layer.UI);
         
         // Set up the level text.
         levelLabel = new LabelBuilder(126, 210)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(PRIMARY_COLOR).size(20).text("").end();                
+                .color(PRIMARY_COLOR).size(20).text("").build();
         hub.layerMan.add(levelLabel, Layer.UI);        
         
         // Set up the score header.
         highScoreHeaderLabel = 
                 new GraphicEntity.Builder(127, 278, HIGH_SCORE_HEADER_PATH)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).build();
         hub.layerMan.add(highScoreHeaderLabel, Layer.UI);
                         
         // Set up the high score text.
         highScoreLabel = new LabelBuilder(126, 337)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(PRIMARY_COLOR).size(20).text("").end();
+                .color(PRIMARY_COLOR).size(20).text("").build();
         hub.layerMan.add(highScoreLabel, Layer.UI);
         
         // Set up the score header.
         scoreHeaderLabel = new GraphicEntity.Builder(128, 403, SCORE_HEADER_PATH)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).build();
         hub.layerMan.add(scoreHeaderLabel, Layer.UI);
         
         // Set up the score text.
         scoreLabel = new LabelBuilder(126, 460)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .cached(false)
-                .color(PRIMARY_COLOR).size(20).text("").end();
+                .color(PRIMARY_COLOR).size(20).text("").build();
         hub.layerMan.add(scoreLabel, Layer.UI);
     }
     
@@ -269,7 +269,7 @@ public class UI implements
         // Create the background.
 		this.background = new GraphicEntity
                 .Builder(0, 0, Settings.getSpriteResourcesPath() + "/Background2.png")
-                .end();
+                .build();
         
         hub.layerMan.add(this.background, Layer.BACKGROUND);   
         hub.layerMan.toBack(this.background, Layer.BACKGROUND);     
@@ -283,14 +283,14 @@ public class UI implements
         this.traditionalPieceBoxLabel = new LabelBuilder(668, 65)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
                 .text("Next")
-                .end();
+                .build();
         hub.layerMan.add(this.traditionalPieceBoxLabel, Layer.UI);
 
         this.traditionalPieceBox = new Box.Builder(668, 110)
                 .border(Border.MEDIUM)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(90)
-                .width(80).height(80).end();
+                .width(80).height(80).build();
         hub.layerMan.add(this.traditionalPieceBox, Layer.UI);        
 
         Color c = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
@@ -306,12 +306,12 @@ public class UI implements
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .cellWidth(16)
                 .cellHeight(16)
-                .end();
+                .build();
         
         hub.layerMan.add(this.traditionalPieceBoxGrid, Layer.UI);
 
         // Set the visibility based on the settings.
-        boolean visible = hub.settingsMan.getBoolean(Key.USER_PIECE_PREVIEW_TRADITIONAL);
+        boolean visible = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_TRADITIONAL);
         this.setTraditionalPiecePreviewVisible(visible);
     }
 
@@ -333,12 +333,12 @@ public class UI implements
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .cellWidth(50)
                 .cellHeight(50)
-                .end();
+                .build();
         
         hub.layerMan.add(this.overlayPieceBoxGrid, Layer.PIECE_GRID);
 
         // Set the visibility based on the settings.
-        boolean visible = hub.settingsMan.getBoolean(Key.USER_PIECE_PREVIEW_OVERLAY);
+        boolean visible = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_OVERLAY);
         this.setOverlayPiecePreviewVisible(visible);
     }
     
@@ -353,14 +353,14 @@ public class UI implements
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))               
                 .textPosition(ProgressBar.TextPosition.NONE)
                 .barColor(ProgressBar.BarColor.BLUE)
-                .end();
+                .build();
         hub.layerMan.add(this.timerBar, Layer.UI);        
                 
          // Create the progress bar.
         this.progressBar = new ProgressBar.Builder(400, 500)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)) 
                 .textPosition(ProgressBar.TextPosition.BOTTOM)
-                .end();
+                .build();
         hub.layerMan.add(this.progressBar, Layer.UI);           
     }
     
@@ -430,9 +430,7 @@ public class UI implements
     {
         if (this.traditionalPiecePreviewVisible == visible) return;
 
-        this.traditionalPiecePreviewVisible = visible;
-        this.traditionalPieceBox.setVisible(visible);
-        this.traditionalPieceBoxLabel.setVisible(visible);
+        this.traditionalPiecePreviewVisible = visible;        
         this.traditionalPieceBoxGrid.setVisible(visible);
     }
 

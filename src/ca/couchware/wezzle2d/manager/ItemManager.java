@@ -82,11 +82,11 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         // Set the multipliers.
         multiplierMap = new EnumMap<TileType, Item>(TileType.class);        
         multiplierMap.put(TileType.X2, new Item.Builder(TileType.X2)
-                .initialAmount(2).weight(50).maximumOnBoard(3).end());
+                .initialAmount(2).weight(50).maximumOnBoard(3).build());
         multiplierMap.put(TileType.X3, new Item.Builder(TileType.X3)
-                .initialAmount(0).weight(20).maximumOnBoard(1).end());
+                .initialAmount(0).weight(20).maximumOnBoard(1).build());
         multiplierMap.put(TileType.X4, new Item.Builder(TileType.X4)
-                .initialAmount(0).weight(10).maximumOnBoard(1).end());                
+                .initialAmount(0).weight(10).maximumOnBoard(1).build());
                           
         // Make the mutable list the master list.
         masterRuleList = createMasterRuleList(hub);
@@ -108,19 +108,19 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         itemMap.clear();
         
         itemMap.put(TileType.NORMAL, new Item.Builder(TileType.NORMAL)
-                .initialAmount(28).weight(5).maximumOnBoard(100).end());
+                .initialAmount(28).weight(5).maximumOnBoard(100).build());
                 
         itemMap.put(TileType.ROCKET, new Item.Builder(TileType.ROCKET)
-                .initialAmount(0).weight(0).maximumOnBoard(1).end());
+                .initialAmount(0).weight(0).maximumOnBoard(1).build());
         
         itemMap.put(TileType.BOMB, new Item.Builder(TileType.BOMB)
-                .initialAmount(0).weight(0).maximumOnBoard(1).end());  
+                .initialAmount(0).weight(0).maximumOnBoard(1).build());
         
         itemMap.put(TileType.STAR, new Item.Builder(TileType.STAR)
-                .initialAmount(0).weight(0).maximumOnBoard(1).end());
+                .initialAmount(0).weight(0).maximumOnBoard(1).build());
         
         itemMap.put(TileType.GRAVITY, new Item.Builder(TileType.GRAVITY)
-                .initialAmount(0).weight(0).maximumOnBoard(1).end());
+                .initialAmount(0).weight(0).maximumOnBoard(1).build());
         
         // Reset the rules.
         currentRuleList.clear();
@@ -147,12 +147,12 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 // Add the rocket.
                 itemMap.put(TileType.ROCKET, 
                         new Item.Builder(TileType.ROCKET)
-                        .initialAmount(1).weight(55).maximumOnBoard(3).end());
+                        .initialAmount(1).weight(55).maximumOnBoard(3).build());
 
                 // Notify the user.
                 TileNotification notif = new TileNotification.Builder(0, 0, TileType.ROCKET)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .end();
+                    .build();
 
                 hub.notificationMan.offer(notif);
             }            
@@ -169,12 +169,12 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 // Add the bomb.
                 itemMap.put(TileType.GRAVITY,
                         new Item.Builder(TileType.GRAVITY)
-                        .initialAmount(1).weight(50).maximumOnBoard(1).end());
+                        .initialAmount(1).weight(50).maximumOnBoard(1).build());
 
                 // Notify the user.
                 TileNotification notif = new TileNotification.Builder(0, 0, TileType.BOMB)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .end();
+                    .build();
 
                 hub.notificationMan.offer(notif);
             }            
@@ -191,7 +191,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 // Add the bomb.
                 itemMap.put(TileType.BOMB,
                         new Item.Builder(TileType.BOMB)
-                        .initialAmount(1).weight(10).maximumOnBoard(1).end());                
+                        .initialAmount(1).weight(10).maximumOnBoard(1).build());
             }            
         }); 
         
@@ -204,7 +204,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 // Add the star.
                 itemMap.put(TileType.STAR,
                         new Item.Builder(TileType.STAR)
-                        .initialAmount(0).weight(10).maximumOnBoard(1).end());                
+                        .initialAmount(0).weight(10).maximumOnBoard(1).build());
             }            
         });           
         

@@ -94,7 +94,7 @@ public class Item
         public Builder cooldown(int val) 
         { cooldown = val; return this; }
         
-        public Item end()
+        public Item build()
         {            
             return new Item(tileType, initialAmount, weight, maxOnScreen, cooldown);
         }                

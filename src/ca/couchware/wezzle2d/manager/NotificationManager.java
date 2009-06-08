@@ -62,16 +62,16 @@ public class NotificationManager implements IManager
             notif.setPosition(x, 490);
 
             IAnimation slideIn = new MoveAnimation.Builder(notif)
-                    .speed(375).minX(670).duration(4000).theta(180).end();
+                    .speed(375).minX(670).duration(4000).theta(180).build();
 
             IAnimation fadeOut = new FadeAnimation.Builder(FadeAnimation.Type.OUT, notif)
-                    .duration(500).end();
+                    .duration(500).build();
 
             IAnimation meta = new MetaAnimation.Builder()
                     .runRule(RunRule.SEQUENCE)
                     .add(slideIn)
                     .add(fadeOut)
-                    .end();
+                    .build();
 
             meta.addAnimationListener(new AnimationAdapter()
             {

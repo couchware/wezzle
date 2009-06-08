@@ -81,19 +81,19 @@ public class RocketTutorial extends AbstractTutorial
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false)
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .size(16).text("Rockets destroy all tiles").end();
+                .size(16).text("Rockets destroy all tiles").build();
         layerMan.add(label, Layer.EFFECT);   
         this.labelList.add(label);
         
         // Line 2.
         label = new LabelBuilder(label).y(166 + 24)
-                .text("in their path. Get one in a").end();
+                .text("in their path. Get one in a").build();
         layerMan.add(label, Layer.EFFECT);                 
         this.labelList.add(label);
         
         // Line 3.
         label = new LabelBuilder(label).y(166 + 24 + 24)
-                .text("line to fire it.").end();
+                .text("line to fire it.").build();
         layerMan.add(label, Layer.EFFECT);                                 
         this.labelList.add(label);
        
@@ -105,7 +105,7 @@ public class RocketTutorial extends AbstractTutorial
                         + boardMan.getCellWidth() / 2,
                     boardMan.getY() + boardMan.getHeight() 
                         - boardMan.getCellHeight() * 3)
-                .type(BubbleType.VERTICAL).text("Click here").end();                
+                .type(BubbleType.VERTICAL).text("Click here").build();
         layerMan.add(this.bubble, Layer.EFFECT);   
         layerMan.toFront(this.bubble, Layer.EFFECT);                             
         
@@ -130,7 +130,7 @@ public class RocketTutorial extends AbstractTutorial
            {               
                // Fade out the bubble.            
                IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
-                       .wait(0).duration(500).end();
+                       .wait(0).duration(500).build();
                animationMan.add(f);       
            }
         };                   

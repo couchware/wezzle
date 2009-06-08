@@ -58,7 +58,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         this.headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("High Scores")
-                .visible(false).end();        
+                .visible(false).build();
         this.entityList.add(this.headerLabel);
         
         // Create the no high score label.
@@ -68,13 +68,13 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(20).text("There are no")
-                .visible(false).end();                
+                .visible(false).build();
                 
         this.noHighScore[1] = new LabelBuilder(400, 300)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(20).text("high scores yet.")
-                .visible(false).end();                
+                .visible(false).build();
         
         for (ITextLabel label : noHighScore)
         {
@@ -90,7 +90,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
             ITextLabel label = new LabelBuilder(400, 225 + (35 * i))
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).opacity(0).size(16).text(" ")
-                    .visible(false).end();
+                    .visible(false).build();
             this.scoreLabelList.add(label);            
             this.entityList.add(label);
         }       
@@ -101,7 +101,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         // Create close button.
         this.closeButton = new Button.Builder(400, 420)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .text("Close").normalOpacity(70).visible(false).end();        
+                .text("Close").normalOpacity(70).visible(false).build();
         this.entityList.add(this.closeButton);
         
         // Add them all to the layer man.

@@ -204,7 +204,7 @@ public class ProgressBar extends AbstractEntity
                 progressLabel = new LabelBuilder(x + getWidth() / 2, y + 47)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .color(builder.textColor).size(14)
-                        .text(progressValue + "/" + progressUpper).cached(false).end();   
+                        .text(progressValue + "/" + progressUpper).cached(false).build();
 
                 // Update the text if necessary.        
                 progressLabel.setX(progressLabel.getX() + offsetX);
@@ -277,7 +277,7 @@ public class ProgressBar extends AbstractEntity
         public Builder visible(boolean val) 
         { visible = val; return this; }
         
-        public ProgressBar end()
+        public ProgressBar build()
         {
             return new ProgressBar(this);
         }                

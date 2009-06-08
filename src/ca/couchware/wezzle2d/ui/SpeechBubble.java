@@ -131,7 +131,7 @@ public class SpeechBubble extends AbstractEntity
                 label = new LabelBuilder(x, y - offsetList.get(type))
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .color(color).size(16).text(text)
-                        .cached(false).end();
+                        .cached(false).build();
                 
                 break;
                 
@@ -141,7 +141,7 @@ public class SpeechBubble extends AbstractEntity
                 
                 label = new LabelBuilder(x - offsetList.get(type), y)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .color(color).size(16).text(text).end();
+                        .color(color).size(16).text(text).build();
                 
                 break;
         }             
@@ -196,7 +196,7 @@ public class SpeechBubble extends AbstractEntity
         public Builder type(BubbleType val)
         { type = val; return this; }                    
         
-        public SpeechBubble end()
+        public SpeechBubble build()
         {
             return new SpeechBubble(this);
         }                

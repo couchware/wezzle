@@ -64,7 +64,7 @@ public class MammothButton extends Button
         }
                 
         @Override
-        public Button end()
+        public Button build()
         {
             MammothButton button = new MammothButton(this);
             

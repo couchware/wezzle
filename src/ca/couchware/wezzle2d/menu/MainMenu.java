@@ -147,7 +147,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.slideAnimation = new MetaAnimation.Builder()
                 .runRule(MetaAnimation.RunRule.SEQUENCE)
                 .add(animateShow())                
-                .end();
+                .build();
         
         // Add it to the manager.
         hub.animationMan.add(this.slideAnimation);
@@ -157,7 +157,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     {
         // Add the background.
         GraphicEntity backgroundGraphic = 
-                new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).end();
+                new GraphicEntity.Builder(0, 0, BACKGROUND_PATH).build();
         this.menuLayerMan.add(backgroundGraphic, Layer.BACKGROUND);
                 
         // Set up the copyright label.               
@@ -165,7 +165,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_DISABLED))
                 .size(12)                
-                .text(Game.COPYRIGHT).end();
+                .text(Game.COPYRIGHT).build();
         this.menuLayerMan.add(l1, Layer.UI);
         
         // Set up the version label.	
@@ -173,7 +173,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_DISABLED))
                 .size(12)                
-                .text(Game.TITLE).end();                        
+                .text(Game.TITLE).build();
         this.menuLayerMan.add(l2, Layer.UI);
     }
     
@@ -181,18 +181,18 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     {
         // Create the wezzle logo.
         IEntity e1 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_STARBURST_PATH)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).build();
         e1.setRotationAnchor(e1.getWidth() / 2, e1.getHeight() / 2);
         
         this.menuLayerMan.add(e1, Layer.BACKGROUND);
         this.rotateAnimation = new MoveAnimation.Builder(e1)
                 .gravity(0).speed(0)
                 .omega(SettingsManager.get().getDouble(Key.MAIN_MENU_STARBURST_OMEGA))
-                .end();
+                .build();
         hub.animationMan.add(this.rotateAnimation);
         
         IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).end();
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).build();
         this.menuLayerMan.add(e2, Layer.BACKGROUND);
         
         this.logoEntity = new EntityGroup(e1, e2);
@@ -217,25 +217,25 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .hoverOpacity(70)
                 .normalOpacity(0)
                 .disabled(true)
-                .end();        
+                .build();
                    
         button = new Button.Builder((Button) templateButton)
-                .y(222).text("Play Now").end();
+                .y(222).text("Play Now").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.PLAY_NOW, button);                                          
         
         button = new Button.Builder((Button) templateButton)
-                .y(271).text("Achievements").end();
+                .y(271).text("Achievements").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.ACHIEVEMENTS, button);
         
         button = new Button.Builder((Button) templateButton)
-                .y(320).text("High Scores").end();
+                .y(320).text("High Scores").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.HIGH_SCORES, button);
         
         button = new Button.Builder((Button) templateButton)
-                .y(369).text("Buy Now").end();
+                .y(369).text("Buy Now").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.UPGRADE, button);                                                   
     };
@@ -318,7 +318,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                                     //.runRule(MetaAnimation.RunRule.SEQUENCE)
                                     .add(this.groupMap.get(currentButton).animateHide())
                                     .add(this.groupMap.get(menu).animateShow())
-                                    .end();                            
+                                    .build();
                             
                             // Set the new current button.                            
                             this.currentButton = menu;
@@ -412,7 +412,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         // Add the wezzle logo fade in.
         builder.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, logoEntity)
                 .wait(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_WAIT))
-                .duration(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_DURATION)).end());
+                .duration(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_DURATION)).build());
         
         // Animate the buttons coming in.        
         for (Menu menu : this.buttonMap.keySet())
@@ -426,7 +426,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                     .speed(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
                     .minX(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_MIN_X))
                     .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * menu.getRank())
-                    .end();
+                    .build();
             
             builder.add(anim);
             
@@ -439,7 +439,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         }
         
         // Complete the meta animation.
-        return builder.end();
+        return builder.build();
     }
     
     @Override
@@ -456,7 +456,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
                 .wait(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_WAIT))
                 .duration(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_DURATION))
-                .end();        
+                .build();
         
         fade.addAnimationListener(new AnimationAdapter()
         {           
@@ -480,7 +480,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                     .speed(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
                     .maxX(910)
                     .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
-                    .end();
+                    .build();
             
             builder.add(anim);
             
@@ -493,7 +493,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         }
         
         // Return the new meta animation.
-        return builder.end();
+        return builder.build();
     };
 
     public State getState()

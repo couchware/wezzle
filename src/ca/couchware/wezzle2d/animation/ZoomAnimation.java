@@ -195,7 +195,7 @@ public class ZoomAnimation extends AbstractAnimation
         public Builder speedOut(int val) { speedOut = val; return this; }
         public Builder speed(int val) { speedIn = val; speedOut = val; return this; }
 
-        public ZoomAnimation end()
+        public ZoomAnimation build()
         {
             return new ZoomAnimation(this);
         }                

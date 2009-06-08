@@ -198,28 +198,28 @@ public class TileRemover implements IResettable, ILevelListener
         final PieceManager pieceMan       = hub.pieceMan;
         final TimerManager timerMan       = hub.timerMan;           
         
-        if (activateLevelUp == true)
+        if ( activateLevelUp )
         {
             activateLevelUp = false;
-            levelUp(hub.boardMan);
+            levelUp( hub.boardMan );
         }
 
         // See if it just finished.
-        if (game.getRefactorer().isFinished() && areItemSetsEmpty())
+        if ( game.getRefactorer().isFinished() && areItemSetsEmpty() )
         {
             // Keep track of chains.
             game.getTracker().record( findMatches(hub) );
             
             // If there are matches, score them, remove 
             // them and then refactor again.
-            if (!tileRemovalSet.isEmpty())
+            if ( !tileRemovalSet.isEmpty() )
             {
                 startLineRemoval(game.getRefactorer());
             }
             else
             {
                 // Make sure the tiles are not still dropping.
-                if (!game.getTileDropper().isTileDropping())
+                if ( !game.getTileDropper().isTileDropping() )
                 {      
                     // Don't fire a move completed event if we're just
                     // doing the level up line removal.
@@ -228,19 +228,19 @@ public class TileRemover implements IResettable, ILevelListener
                         // Fire the move completed event.
                         listenerMan.notifyMoveCompleted(new MoveEvent(this, 1));
                         
-                        // The move is completed. Build the move.
-                        //Move move = Move.newInstance(game.getChainList());
+                        // The move is completed. Build the move.                        
                         Move move = game.getTracker().finishMove();
                         CouchLogger.get().recordMessage(this.getClass(),
                                 "\n" + move.toString());
 
-                        // evaluate the achievements.
-                        hub.achievementMan.evaluate(game, hub);
-                        
+                        // Evaluate the achievements.
+                        hub.achievementMan.evaluate(game, hub);                        
                     }
                     
                     // Start the next move.
-                    startNextMove(pieceMan, timerMan, !this.levelUpInProgress);
+                    boolean getNextPiece = !this.levelUpInProgress
+                            && !hub.tutorialMan.isTutorialRunning();
+                    startNextMove(pieceMan, timerMan, getNextPiece);
                     
                     // Clear the level up in progress flag.
                     this.levelUpInProgress = false;                                             
@@ -292,15 +292,13 @@ public class TileRemover implements IResettable, ILevelListener
             boolean newPiece)
     {
         // Load new piece and make it visible.
-        if (newPiece) { pieceMan.loadPiece(); }
+        if (newPiece) pieceMan.nextPiece();
+
         pieceMan.showPieceGrid();
         pieceMan.startAnimation(timerMan);
 
         // Reset the mouse.
         pieceMan.clearMouseButtonSet();
-
-        // Unpause the timer.
-        //timerMan.resetCurrentTime();
         timerMan.setPaused(false);
     }
     
@@ -613,7 +611,7 @@ public class TileRemover implements IResettable, ILevelListener
                 Tile t = boardMan.getTile(i);
                 IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                         .duration(50)
-                        .end();
+                        .build();
                 t.setAnimation(a);
                 animationMan.add(a);
             }            
@@ -1026,16 +1024,16 @@ public class TileRemover implements IResettable, ILevelListener
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_DURATION))
                 .theta(angle).speed(hub.settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_SPEED))
                 .gravity(hub.settingsMan.getInt(Key.ANIMATION_LEVEL_MOVE_GRAVITY))
-                .end();
+                .build();
 
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
                 .wait(wait)
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_LEVEL_FADE_DURATION))
-                .end();
+                .build();
 
         IAnimation meta = new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL)
-                .add(move).add(fade).end();
+                .add(move).add(fade).build();
         
         return meta;
     }
@@ -1044,15 +1042,15 @@ public class TileRemover implements IResettable, ILevelListener
     {
         IAnimation a1 = new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
                 .speed(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED))
-                .end();
+                .build();
 
         IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_DURATION))
-                .end();
+                .build();
 
         IAnimation meta = new MetaAnimation.Builder().finishRule(FinishRule.ALL)
-                .add(a1).add(a2).end();
+                .add(a1).add(a2).build();
 
         return meta;
     }
@@ -1068,20 +1066,20 @@ public class TileRemover implements IResettable, ILevelListener
                 .color(color)
                 .size(hub.scoreMan.determineFontSize(deltaScore))
                 .text(String.valueOf(deltaScore))
-                .end();
+                .build();
 
         IAnimation move = new MoveAnimation.Builder(label)
                 .duration(hub.settingsMan.getInt(Key.SCT_SCORE_MOVE_DURATION))
                 .speed(hub.settingsMan.getInt(Key.SCT_SCORE_MOVE_SPEED))
                 .theta(hub.settingsMan.getInt(Key.SCT_SCORE_MOVE_THETA))
-                .end();
+                .build();
 
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, label)
                 .wait(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_DURATION))
                 .minOpacity(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_MIN_OPACITY))
                 .maxOpacity(hub.settingsMan.getInt(Key.SCT_SCORE_FADE_MAX_OPACITY))
-                .end();
+                .build();
         
         move.addAnimationListener(new AnimationAdapter()
         {
@@ -1100,7 +1098,7 @@ public class TileRemover implements IResettable, ILevelListener
 
         return new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL)
-                .add(move).add(fade).end();
+                .add(move).add(fade).build();
     }
 
     private IAnimation animateItemActivation(final ManagerHub hub, final Tile tile)
@@ -1124,17 +1122,17 @@ public class TileRemover implements IResettable, ILevelListener
                 .maxWidth(Integer.MAX_VALUE)
                 .speed(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION))
-                .end();
+                .build();
 
         IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, clone)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_DURATION))
-                .end();
+                .build();
 
         MetaAnimation meta = new MetaAnimation.Builder()
                 .add(anim1)
                 .add(anim2)
-                .end();
+                .build();
 
         meta.addAnimationListener(new AnimationAdapter()
         {
@@ -1155,16 +1153,16 @@ public class TileRemover implements IResettable, ILevelListener
                 .theta(angle)
                 .speed(hub.settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_SPEED))
                 .gravity(hub.settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_GRAVITY))
-                .end();
+                .build();
 
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_JUMP_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_JUMP_MOVE_DURATION))
-                .end();
+                .build();
 
         return new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL)
-                .add(move).add(fade).end();
+                .add(move).add(fade).build();
     }
 
     private IAnimation animateRocket(final ManagerHub hub, final Tile tile)
@@ -1177,16 +1175,16 @@ public class TileRemover implements IResettable, ILevelListener
                 .theta(rocket.getDirection().toDegrees())
                 .speed(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_SPEED))
                 .gravity(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_GRAVITY))
-                .end();
+                .build();
 
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_DURATION))
-                .end();
+                .build();
 
         MetaAnimation meta = new MetaAnimation.Builder()
                 .finishRule(FinishRule.ALL)
-                .add(move).add(fade).end();
+                .add(move).add(fade).build();
 
         return meta;
     }
@@ -1201,7 +1199,7 @@ public class TileRemover implements IResettable, ILevelListener
         final GraphicEntity explosion = new GraphicEntity.Builder(
                 t.getCenterX() - 1, t.getCenterY() - 1,
                 Settings.getSpriteResourcesPath() + "/Explosion.png")
-                .end();
+                .build();
 
         explosion.setWidth(2);
         explosion.setHeight(2);
@@ -1214,20 +1212,20 @@ public class TileRemover implements IResettable, ILevelListener
                 .minWidth(2).maxWidth(Integer.MAX_VALUE)
                 .speed(hub.settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_ZOOM_SPEED))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_ZOOM_DURATION))
-                .end();
+                .build();
 
         IAnimation boomFade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, explosion)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_EXPLODE_FADE_DURATION))
-                .end();
+                .build();
 
         IAnimation tileFade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_BOMB_TILE_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_TILE_FADE_DURATION))
-                .end();
+                .build();
 
         MetaAnimation meta = new MetaAnimation.Builder()
-                .add(boomZoom).add(boomFade).add(tileFade).end();
+                .add(boomZoom).add(boomFade).add(tileFade).build();
 
         meta.addAnimationListener(new AnimationAdapter()
         {
@@ -1246,7 +1244,7 @@ public class TileRemover implements IResettable, ILevelListener
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_FADE_DURATION))
-                .end();
+                .build();
 
         int h = hub.boardMan.relativeColumnPosition(index, bombIndex).asInteger();
         int v = hub.boardMan.relativeRowPosition(index, bombIndex).asInteger() * -1;
@@ -1277,11 +1275,11 @@ public class TileRemover implements IResettable, ILevelListener
                 .gravity(hub.settingsMan.getInt(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_GRAVITY))
                 .theta(theta)
                 .omega(hub.settingsMan.getDouble(Key.ANIMATION_BOMB_SHRAPNEL_MOVE_OMEGA))
-                .end();
+                .build();
 
         IAnimation meta = new MetaAnimation.Builder()
                 .finishRule(MetaAnimation.FinishRule.ALL)
-                .add(fade).add(move).end();
+                .add(fade).add(move).build();
 
         return meta;
     }

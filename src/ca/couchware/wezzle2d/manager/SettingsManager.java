@@ -493,7 +493,7 @@ public class SettingsManager
 	 * @param key The properties key.
 	 * @return The property
 	 */
-	public boolean getBoolean(Key key)
+	public boolean getBool(Key key)
 	{		
 		return getString(key) == null 
             ? false

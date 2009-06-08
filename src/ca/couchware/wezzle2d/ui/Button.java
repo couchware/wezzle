@@ -127,12 +127,12 @@ public class Button extends AbstractButton
         // Create the normal label.
         this.normalLabel = new LabelBuilder(0, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(textColor).size(textSize).text(normalText).end(); 
+                .color(textColor).size(textSize).text(normalText).build();
         
         // Create the other labels, using the normal label as a template.
         if (this.hoverText != null)   
         {
-            this.hoverLabel = new LabelBuilder(normalLabel).text(hoverText).end();                
+            this.hoverLabel = new LabelBuilder(normalLabel).text(hoverText).build();
         }
         else
         {
@@ -141,7 +141,7 @@ public class Button extends AbstractButton
         
         if (this.activeText != null)
         {
-            this.activeLabel = new LabelBuilder(normalLabel).text(activeText).end();                
+            this.activeLabel = new LabelBuilder(normalLabel).text(activeText).build();
         }
         else
         {
@@ -277,7 +277,7 @@ public class Button extends AbstractButton
         public Builder disabled(boolean val)
         { disabled = val; return this; }
         
-        public Button end()
+        public Button build()
         {
             Button button = new Button(this);
             

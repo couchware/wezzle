@@ -104,7 +104,7 @@ public class CircularTransition extends AbstractTransition
         public Builder maxRadius(int val) { maxRadius = val; return this; }
         public Builder speed(int val) { speed = val; return this; }
 
-        public CircularTransition end()
+        public CircularTransition build()
         {
             return new CircularTransition(this);
         }                

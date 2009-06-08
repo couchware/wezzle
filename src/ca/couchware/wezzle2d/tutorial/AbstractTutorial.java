@@ -22,9 +22,11 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.PieceManager;
 import ca.couchware.wezzle2d.manager.ScoreManager;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.StatManager;
 import ca.couchware.wezzle2d.manager.TimerManager;
+import ca.couchware.wezzle2d.piece.Piece;
 import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ITextLabel;
@@ -67,6 +69,9 @@ public abstract class AbstractTutorial implements ITutorial
     
     /** The continue button. */
     protected IButton continueButton;
+
+    /** The piece the user started the tutorial with. */
+    protected Piece pieceBeforeInitialization;
     
     /** The list of rules. */
     private List<Rule> ruleList = new ArrayList<Rule>();        
@@ -107,17 +112,24 @@ public abstract class AbstractTutorial implements ITutorial
         game.getTileDropper().setDropOnCommit(false);
         
         // Stop the timer.
-        timerMan.setStopped(true);       
-        
+        timerMan.setStopped(true);
+
+        // Hide the piece preview.
+        game.getUI().setTraditionalPiecePreviewVisible(false);
+        game.getUI().setOverlayPiecePreviewVisible(false);
+
+        // Remember the piece we entered with.
+        this.pieceBeforeInitialization = hub.pieceMan.getPiece();
+
         // Create repeat button.
         repeatButton = new Button.Builder(400, 330)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .text("Repeat").visible(false).end();
+                .text("Repeat").visible(false).build();
         layerMan.add(repeatButton, Layer.EFFECT);
         
          // Create continue button, using the repeat button as a template.
         continueButton = new Button.Builder((Button) repeatButton)
-                .y(390).text("Continue").end();
+                .y(390).text("Continue").build();
         layerMan.add(continueButton, Layer.EFFECT);          
     }
        
@@ -146,7 +158,7 @@ public abstract class AbstractTutorial implements ITutorial
                     boardMan.getNumberOfCells() - 1);
             
             IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.OUT, entityGroup)
-                    .wait(0).duration(500).end();
+                    .wait(0).duration(500).build();
             
             anim.addAnimationListener(new AnimationAdapter()
             {                
@@ -163,13 +175,13 @@ public abstract class AbstractTutorial implements ITutorial
             //f = new FadeAnimation(FadeType.IN, 100, 500, repeatButton);
             //f.setMaxOpacity(70);
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, repeatButton)
-                    .wait(100).duration(500).maxOpacity(70).end();            
+                    .wait(100).duration(500).maxOpacity(70).build();
             animationMan.add(fade);
                          
             //f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
             //f.setMaxOpacity(70);
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, continueButton)
-                    .wait(100).duration(500).maxOpacity(70).end();
+                    .wait(100).duration(500).maxOpacity(70).build();
             animationMan.add(fade);
             
             // Menu is now shown.
@@ -293,6 +305,15 @@ public abstract class AbstractTutorial implements ITutorial
         
         // Reset the refactor speed.
         refactorer.setRefactorSpeed(RefactorSpeed.NORMAL);
+
+        // Reset the piece preview.
+        boolean showTraditional = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_TRADITIONAL);
+        boolean showOverlay = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_OVERLAY);
+        game.getUI().setTraditionalPiecePreviewVisible(showTraditional);
+        game.getUI().setOverlayPiecePreviewVisible(showOverlay);
+
+        // Reset the piece we had before the tutorial ran.
+        hub.pieceMan.setPiece(pieceBeforeInitialization);
     }
         
     protected void repeat(final Game game, ManagerHub hub)
@@ -325,12 +346,12 @@ public abstract class AbstractTutorial implements ITutorial
         e.setVisible(false);
         
         IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
-                .wait(0).duration(300).end();               
+                .wait(0).duration(300).build();
         
         animationMan.add(a);
         
         // Change the piece to the dot.
-        pieceMan.loadPiece(PieceType.DOT.getPiece());    
+        pieceMan.setPiece(PieceType.DOT.getPiece());
         
         // Make sure buttons aren't visible.
         repeatButton.setVisible(false);
@@ -376,7 +397,7 @@ public abstract class AbstractTutorial implements ITutorial
     @Override
     public boolean hasRun(final ManagerHub hub)
     {
-        return hub.settingsMan.getBoolean(this.getSettingsKey());
+        return hub.settingsMan.getBool(this.getSettingsKey());
     }
     
 }

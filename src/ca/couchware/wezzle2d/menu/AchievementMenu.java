@@ -96,7 +96,7 @@ public class AchievementMenu extends AbstractMenu
                 .text(String.format("Achievements (%d/%d)", 
                         numberOfCompletedAchievements, numberOfAchievements))
                 .size(20)                
-                .visible(false).end();
+                .visible(false).build();
         this.entityList.add(titleLabel);
         
         // The first box.
@@ -105,7 +105,7 @@ public class AchievementMenu extends AbstractMenu
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(listBox);
         
         // Create the list of titles for the first 5 achievements.
@@ -118,7 +118,7 @@ public class AchievementMenu extends AbstractMenu
         {            
             builder.add(ach.getTitle());             
         }         
-        scroller = builder.selectedIndex(0).end();
+        scroller = builder.selectedIndex(0).build();
         entityList.add(scroller);
         
         for (int i = 0; i < achievementList.size(); i++)
@@ -136,7 +136,7 @@ public class AchievementMenu extends AbstractMenu
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(descriptionBox);
         
         // The achievement description text.
@@ -144,7 +144,7 @@ public class AchievementMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .visible(false)
                 .text("Chain Gang I - Bronze").size(20)
-                .end();
+                .build();
         this.entityList.add(this.achievementTitle);
         
         // The achievement description text.
@@ -152,7 +152,7 @@ public class AchievementMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .visible(false)
                 .text("BRONZE").size(12)
-                .end();
+                .build();
         this.entityList.add(this.achievementDifficulty);
                
         this.achievementDescriptionArray = new ITextLabel[3];
@@ -163,7 +163,7 @@ public class AchievementMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .visible(false)
                 .text("").size(12)
-                .end();            
+                .build();
             this.entityList.add(achievementDescriptionArray[i]);
         }
         
@@ -175,7 +175,7 @@ public class AchievementMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .visible(false)
                 .text("This achievement has not been completed.").size(12)
-                .end();
+                .build();
         this.entityList.add(this.achievementStatus);
         
         // Show the first achievement in the list.

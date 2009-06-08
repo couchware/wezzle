@@ -80,7 +80,7 @@ public class ExplosionAnimation extends AbstractAnimation
         // Load the explosion and centre it over the entity.
         explosion = new GraphicEntity.Builder(0, 0, PATH)
                 .opacity(SettingsManager.get().getInt(Key.ANIMATION_EXPLOSION_OPACITY))
-                .end();        
+                .build();
         
         // Set the explosion durations.
         duration = ((explosion.getHeight() / 2) * 1000) / speed;        

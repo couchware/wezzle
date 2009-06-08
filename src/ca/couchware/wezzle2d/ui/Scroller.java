@@ -90,7 +90,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         // Create all the buttons.
         IButton templateButton = new Button.Builder(0, 0)
                 .text("").textSize(textSize)
-                .end();
+                .build();
         
         for (String optionText : builder.optionList)
         {            
@@ -101,7 +101,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
                     //.hoverOpacity(10)
                     .activeOpacity(100)
                     .visible(false)
-                    .text(optionText).end());
+                    .text(optionText).build());
         }
         
         // Set the selected index.
@@ -121,7 +121,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
                 .orientation(SliderBar.Orientation.VERTICAL)
                 .virtualRange(0, Math.max(0, buttonList.size() - rows))
                 .virtualValue(0)                
-                .end();     
+                .build();
         
         // Make the scroller listen for slider bar changes.
         this.scrollBar.addSliderBarListener(new SliderBar.ISliderBarListener() 
@@ -247,7 +247,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
             return this;
         }
         
-        public Scroller end()
+        public Scroller build()
         {
             Scroller scroller = new Scroller(this);         
             

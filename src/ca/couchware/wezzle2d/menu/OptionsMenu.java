@@ -103,7 +103,7 @@ public class OptionsMenu extends AbstractMenu
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Play Now").size(20)                
-                .visible(false).end();
+                .visible(false).build();
         this.entityList.add(titleLabel);
         
         // The first box.
@@ -112,7 +112,7 @@ public class OptionsMenu extends AbstractMenu
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(optionBox);
 
         // Get the user set level and make sure it's within range.
@@ -124,7 +124,7 @@ public class OptionsMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Level").size(20)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(levelLabel);
         
         this.levelNumberLabel = new LabelBuilder(
@@ -134,7 +134,7 @@ public class OptionsMenu extends AbstractMenu
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
                 .size(20).visible(false)
                 .text(String.valueOf(levelNumber))
-                .end();
+                .build();
         this.entityList.add(this.levelNumberLabel);
         
         this.levelSlider = new SliderBar.Builder(
@@ -145,7 +145,7 @@ public class OptionsMenu extends AbstractMenu
                 .virtualRange(MIN_LEVEL, MAX_LEVEL)
                 .virtualValue(this.levelNumber)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(levelSlider);
         
         ITextLabel tutorialLabel = new LabelBuilder(
@@ -154,18 +154,18 @@ public class OptionsMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Tutorial").size(20)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(tutorialLabel);
         
         RadioItem tutorialOn = new RadioItem.Builder()
                 .color(OPTION_COLOR)
-                .text("On").end();        
+                .text("On").build();
          
         RadioItem tutorialOff = new RadioItem.Builder()
                 .color(OPTION_COLOR)
-                .text("Off").end();
+                .text("Off").build();
 
-        final boolean tutorialDefault = hub.settingsMan.getBoolean(Key.USER_TUTORIAL_DEFAULT);
+        final boolean tutorialDefault = hub.settingsMan.getBool(Key.USER_TUTORIAL_DEFAULT);
         this.tutorialRadio = new RadioGroup.Builder(
                     268,
                     tutorialLabel.getY() + 35)
@@ -173,7 +173,7 @@ public class OptionsMenu extends AbstractMenu
                 .add(tutorialOn,  tutorialDefault)
                 .add(tutorialOff, !tutorialDefault)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(tutorialRadio);
         
         ITextLabel themeLabel = new LabelBuilder(
@@ -182,7 +182,7 @@ public class OptionsMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Music").size(20)
                 .visible(false)
-                .end();
+                .build();
         this.entityList.add(themeLabel);
         
         // Create the music players.
@@ -190,7 +190,7 @@ public class OptionsMenu extends AbstractMenu
         
         // Creat the level limit radio group.        
         RadioItem themeItem1 = new RadioItem.Builder().color(OPTION_COLOR)
-                .text("Tron").end();
+                .text("Tron").build();
 //        themeItem1.setMouseOnRunnable(createFadeInRunnable(THEME_TRON));
 //        themeItem1.setMouseOffRunnable(createFadeOutRunnable(THEME_TRON));
         themeItem1.addButtonListener(new IButtonListener()
@@ -200,7 +200,7 @@ public class OptionsMenu extends AbstractMenu
         });
         
         RadioItem themeItem2 = new RadioItem.Builder().color(OPTION_COLOR)
-                .text("Elec").end();
+                .text("Elec").build();
 //        themeItem2.setMouseOnRunnable(createFadeInRunnable(THEME_ELECTRONIC));
 //        themeItem2.setMouseOffRunnable(createFadeOutRunnable(THEME_ELECTRONIC));
         themeItem2.addButtonListener(new IButtonListener()
@@ -210,7 +210,7 @@ public class OptionsMenu extends AbstractMenu
         });
         
         RadioItem themeItem3 = new RadioItem.Builder().color(OPTION_COLOR)
-                .text("HipPop").end();
+                .text("HipPop").build();
 //        themeItem3.setMouseOnRunnable(createFadeInRunnable(THEME_HIPPOP));
 //        themeItem3.setMouseOffRunnable(createFadeOutRunnable(THEME_HIPPOP));
         themeItem3.addButtonListener(new IButtonListener()
@@ -259,7 +259,7 @@ public class OptionsMenu extends AbstractMenu
                 .add(themeItem1, themeMap.get(Theme.TRON))
                 .add(themeItem2, themeMap.get(Theme.ELECTRONIC))
                 .add(themeItem3, themeMap.get(Theme.HIPPOP))              
-                .itemSpacing(20).visible(false).end();
+                .itemSpacing(20).visible(false).build();
         this.entityList.add(themeRadio);
                
         // Create the start button.
@@ -269,7 +269,7 @@ public class OptionsMenu extends AbstractMenu
                 .normalOpacity(90)                
                 .visible(false)                
                 .text("Start")
-                .end();
+                .build();
         this.entityList.add(this.startButton);
                 
         // Add them all to the layer manager.
@@ -426,7 +426,7 @@ public class OptionsMenu extends AbstractMenu
             }        
             
             game.startBoard();  
-            hub.pieceMan.loadPiece();
+            hub.pieceMan.nextPiece();
             
             // Notify the main menu.
             this.parent.setActivated(false);

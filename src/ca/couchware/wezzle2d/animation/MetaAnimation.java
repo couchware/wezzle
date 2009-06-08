@@ -87,7 +87,7 @@ public class MetaAnimation extends AbstractAnimation
         public Builder finishRule(FinishRule val) 
         { finishRule = val; return this; }       
 
-        public MetaAnimation end()
+        public MetaAnimation build()
         {
             return new MetaAnimation(this);
         }                

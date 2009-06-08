@@ -68,28 +68,28 @@ public class PauseGroup extends AbstractGroup implements
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(38)
                 .text("Paused")
-                .visible(false).end();       
+                .visible(false).build();
         entityList.add(mainLabel);
 
         movesLabel = new LabelBuilder(400, 310)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0 moves")
-                .visible(false).end();        
+                .visible(false).build();
         entityList.add(movesLabel);
 
         linesLabel = new LabelBuilder(400, 340)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0 lines")
-                .visible(false).end();        
+                .visible(false).build();
         entityList.add(linesLabel);
 
         linesPerMoveLabel = new LabelBuilder(400, 370)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0.0 lines/move")
-                .visible(false).end();        
+                .visible(false).build();
         entityList.add(linesPerMoveLabel);
 
         // Add all entities to the layer manager.

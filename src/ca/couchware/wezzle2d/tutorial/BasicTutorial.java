@@ -72,19 +72,19 @@ public class BasicTutorial extends AbstractTutorial
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .cached(false)
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .size(16).text("Lines are made by lining").end();
+                .size(16).text("Lines are made by lining").build();
         layerMan.add(label, Layer.EFFECT);   
         this.labelList.add(label);
         
         // Line 2.
         label = new LabelBuilder(label).y(166 + 24)
-                .text("up 3 tiles of the same").end();
+                .text("up 3 tiles of the same").build();
         layerMan.add(label, Layer.EFFECT);                 
         this.labelList.add(label);
         
         // Line 3.
         label = new LabelBuilder(label).y(166 + 24 + 24)
-                .text("colour.").end();
+                .text("colour.").build();
         layerMan.add(label, Layer.EFFECT);                                 
         this.labelList.add(label);              
         
@@ -95,7 +95,7 @@ public class BasicTutorial extends AbstractTutorial
                     boardMan.getX() + boardMan.getCellWidth() / 2,
                     boardMan.getY() + boardMan.getHeight() 
                         - boardMan.getCellHeight())
-                .type(BubbleType.VERTICAL).text("Click here").end();                
+                .type(BubbleType.VERTICAL).text("Click here").build();
         layerMan.add(bubble, Layer.EFFECT);   
         layerMan.toFront(bubble, Layer.EFFECT);                         
         
@@ -124,7 +124,7 @@ public class BasicTutorial extends AbstractTutorial
            {               
                // Fade out the bubble.            
                IAnimation f = new FadeAnimation.Builder(FadeAnimation.Type.OUT, bubble)
-                       .wait(0).duration(500).end();
+                       .wait(0).duration(500).build();
                animationMan.add(f);       
            }
         });                

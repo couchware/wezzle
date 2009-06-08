@@ -331,7 +331,7 @@ public class TileDropper implements IResettable
                         {                                                                   
                             IAnimation a = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, tile)
                                     .speed(settingsMan.getInt(Key.ANIMATION_DROP_ZOOM_OUT_SPEED))
-                                    .end();
+                                    .build();
                             
                             tile.setAnimation(a);
                             animationMan.add(a);
