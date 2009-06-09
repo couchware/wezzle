@@ -74,8 +74,9 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         NONE(-1),
         PLAY_NOW(0),                
         ACHIEVEMENTS(1),
-        HIGH_SCORES(2),
-        UPGRADE(3);
+        OPTIONS(2),
+        HIGH_SCORES(3),
+        UPGRADE(4);
                 
         private int rank;
         
@@ -210,7 +211,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         IButton button = null;
         
         // Create the buttons.               
-        templateButton = new Button.Builder(910, 153)
+        templateButton = new Button.Builder(910, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                               
                 .text("")
                 .textSize(20)
@@ -218,24 +219,37 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .normalOpacity(0)
                 .disabled(true)
                 .build();
-                   
+
+        // The Y-coordinate that we draw the first button at.
+        int startY = 200;
+
         button = new Button.Builder((Button) templateButton)
-                .y(222).text("Play Now").build();
+                .y(startY + 50 * Menu.PLAY_NOW.getRank())
+                .text("Play Now").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.PLAY_NOW, button);                                          
         
         button = new Button.Builder((Button) templateButton)
-                .y(271).text("Achievements").build();
+                .y(startY + 50 * Menu.ACHIEVEMENTS.getRank())
+                .text("Achievements").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.ACHIEVEMENTS, button);
+
+        button = new Button.Builder((Button) templateButton)
+                .y(startY + 50 * Menu.OPTIONS.getRank())
+                .text("Options").build();
+        this.menuLayerMan.add(button, Layer.UI);
+        buttonMap.put(Menu.OPTIONS, button);
         
         button = new Button.Builder((Button) templateButton)
-                .y(320).text("High Scores").build();
+                .y(startY + 50 * Menu.HIGH_SCORES.getRank())
+                .text("High Scores").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.HIGH_SCORES, button);
         
         button = new Button.Builder((Button) templateButton)
-                .y(369).text("Buy Now").build();
+                .y(startY + 50 * Menu.UPGRADE.getRank())
+                .text("Buy Now").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.UPGRADE, button);                                                   
     };
@@ -257,9 +271,13 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         group = new PlayNowMenu(this, hub, this.menuLayerMan);
         this.groupMap.put(Menu.PLAY_NOW, group);
 
-         // Create the "Achievements" group.
+        // Create the "Achievements" group.
         group = new AchievementMenu(this, hub, this.menuLayerMan);
         this.groupMap.put(Menu.ACHIEVEMENTS, group);
+
+        // Create the "Achievements" group.
+        group = new OptionsMenu(this, hub, this.menuLayerMan);
+        this.groupMap.put(Menu.OPTIONS, group);
         
         // Create the "High Scores" group.
         group = new HighScoreMenu(this, hub, this.menuLayerMan);

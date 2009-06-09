@@ -12,4 +12,12 @@
   <entry name="User.Music.Default">TRON</entry>
   <entry name="User.Piece.Preview.Traditional">true</entry>
   <entry name="User.Piece.Preview.Overlay">false</entry>
+  <entry name="User.Graphics.Antialiasing.Samples">4</entry>
+  <entry name="User.Max.Level.Capped">true</entry>
+  <entry name="User.Tutorial.Basic.Ran">false</entry>
+  <entry name="User.Tutorial.Rotate.Ran">false</entry>
+  <entry name="User.Tutorial.Rocket.Ran">false</entry>
+  <entry name="User.Tutorial.Gravity.Ran">false</entry>
+  <entry name="User.Tutorial.Bomb.Ran">false</entry>
+  <entry name="User.Tutorial.Star.Ran">false</entry>
 </settings>

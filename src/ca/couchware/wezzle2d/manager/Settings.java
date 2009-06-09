@@ -41,21 +41,24 @@ public class Settings
         /** use the overlay piece preview. */
         USER_PIECE_PREVIEW_OVERLAY,
 
-        // Tutorials.
-        USER_TUTORIAL_ROCKET_RAN,
+        /** The number of FSAA samples. */
+        USER_GRAPHICS_ANTIALIASING_SAMPLES,
+
+        /** Is the maximum level capped? */
+        USER_MAX_LEVEL_CAPPED,
+
+        // Tutorials.       
         USER_TUTORIAL_BASIC_RAN,
-        USER_TUTORIAL_BOMB_RAN,
-        USER_TUTORIAL_GRAVITY_RAN,
         USER_TUTORIAL_ROTATE_RAN,
+        USER_TUTORIAL_ROCKET_RAN,
+        USER_TUTORIAL_GRAVITY_RAN,
+        USER_TUTORIAL_BOMB_RAN,        
         USER_TUTORIAL_STAR_RAN,
 
         // Graphics values.              
         
         /** The number of ticks (frames) per second. */        
-        GAME_TICKS_PER_SECOND,
-
-        /** The number of FSAA samples. */
-        GAME_GRAPHICS_SAMPLES,
+        GAME_TICKS_PER_SECOND,       
         
         GAME_COLOR_PRIMARY,
         GAME_COLOR_SECONDARY,

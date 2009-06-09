@@ -263,7 +263,7 @@ public class LWJGLWindow implements IWindow
         {
             // Get the number of samples and make sure they're
             // with in the correct range.
-            int samples = settingsMan.getInt(Key.GAME_GRAPHICS_SAMPLES);
+            int samples = settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
             if (samples < 0)
                 throw new IndexOutOfBoundsException("Number of samples must be 0 or more");
 
