@@ -459,6 +459,16 @@ public class UI implements
     }
 
     /**
+     * Set the piece preview piece.
+     * @param piece
+     */
+    public void setPiecePreviewPiece(Piece piece)
+    {
+        this.traditionalPieceBoxGrid.loadStructure(piece.getStructure());
+        this.overlayPieceBoxGrid.loadStructure(piece.getStructure());
+    }
+
+    /**
      * Update the UI logic.
      * 
      * @param game The current game state.

@@ -202,7 +202,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         this.piece = piece;
         
         // Load the piece into the piece grid.
-		pieceGrid.loadStructure(piece.getStructure());
+		pieceGrid.loadStructure( piece.getStructure() );
 	}	
     
     /**
@@ -509,72 +509,84 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public void updateLogic(final Game game, ManagerHub hub)
     {                        
-        // If the game is busy, do not logicify.
-        if (game.isCompletelyBusy()) return;                 
+        // If the game is busy, check for preview rotations, and that's it.
+        if (game.isCompletelyBusy())
+        {
+            if (mouseButtonSet.contains(MouseButton.RIGHT) == true)
+            {
+                // Rotate the top of the piece queue.
+                Piece rotatedPiece = this.pieceQueue.peek();
+                rotatedPiece.rotate();
 
-        // In this case, the tile drop is not activated, so proceed normally
-        // and handle mouse clicks and such.
-        if (!game.getTileDropper().isTileDropping())
-        {      
-            // Grab the current mouse position.
-            final ImmutablePosition p = window.getMouseImmutablePosition();             
-            
-            if (mouseButtonSet.contains(MouseButton.LEFT) == true)
-            {          
-               mouseButtonSet.remove(MouseButton.LEFT);
-               initiateCommit(game, hub);
-            }
-            else if (mouseButtonSet.contains(MouseButton.RIGHT) == true)
-            {                                
-                // Rotate the piece.            
-                stopAnimation();
-                
-                this.piece.rotate();
-                this.cursorPosition = limitPosition(pieceGrid.getPosition());
-                this.movePieceGridTo(this.cursorPosition);
-                this.pieceGrid.setDirty(true);                                
-                
-                if (pieceGrid.isVisible() == true)
-                    startAnimationAt(this.cursorPosition, SLOW_SPEED);
+                // This really should be an event, but too late for that.
+                game.getUI().setPiecePreviewPiece(rotatedPiece);
 
                 // Reset released buttons.
                 mouseButtonSet = EnumSet.noneOf(MouseButton.class);
             }
-            // Animate selected pieces.
+
+            return;
+        }
+
+        // In this case, the tile drop is not activated, so proceed normally
+        // and handle mouse clicks and such.
+                 
+        if (mouseButtonSet.contains(MouseButton.LEFT) == true)
+        {
+           mouseButtonSet.remove(MouseButton.LEFT);
+           initiateCommit(game, hub);
+        }
+        else if (mouseButtonSet.contains(MouseButton.RIGHT) == true)
+        {
+            // Rotate the piece.
+            stopAnimation();
+
+            this.piece.rotate();
+            this.cursorPosition = limitPosition(pieceGrid.getPosition());
+            this.movePieceGridTo(this.cursorPosition);
+            this.pieceGrid.setDirty(true);
+
+            if (pieceGrid.isVisible() == true)
+                startAnimationAt(this.cursorPosition, SLOW_SPEED);
+
+            // Reset released buttons.
+            mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+        }
+        // Animate selected pieces.
+        else
+        {
+            // Filter the current position.
+            ImmutablePosition pos =
+                    limitPosition(window.getMouseImmutablePosition());
+
+            int speed = getPulseSpeed(hub.timerMan.getStartTime(),
+                    hub.timerMan.getCurrrentTime());
+
+            // If the position changed, or the board was refactored.
+            if (pos.getX() != this.cursorPosition.getX()
+                    || pos.getY() != this.cursorPosition.getY()
+                    || refactored == true)
+            {
+                // Clear refactored flag.
+                refactored = false;
+
+                // Stop the old animations.
+                stopAnimationAt(this.cursorPosition);
+
+                // Update piece grid position.
+                this.cursorPosition = pos;
+                this.movePieceGridTo(this.cursorPosition);
+
+                // Start new animation.
+                if (pieceGrid.isVisible() == true)
+                {
+                    startAnimationAt(pos, speed);
+                }
+            }
             else
             {
-                // Filter the current position.
-                ImmutablePosition pos = limitPosition(p);
-
-                int speed = getPulseSpeed(hub.timerMan.getStartTime(), 
-                        hub.timerMan.getCurrrentTime());                             
-                
-                // If the position changed, or the board was refactored.
-                if (pos.getX() != this.cursorPosition.getX()
-                        || pos.getY() != this.cursorPosition.getY()
-                        || refactored == true)                    
-                {
-                    // Clear refactored flag.
-                    refactored = false;
-
-                    // Stop the old animations.
-                    stopAnimationAt(this.cursorPosition);
-
-                    // Update piece grid position.
-                    this.cursorPosition = pos;
-                    this.movePieceGridTo(this.cursorPosition);
-                                        
-                    // Start new animation.   
-                    if (pieceGrid.isVisible() == true)
-                    {
-                        startAnimationAt(pos, speed);
-                    }
-                } 
-                else
-                {                                        
-                    adjustAnimationAt(this.cursorPosition, speed);
-                }
-            } // end if
+                adjustAnimationAt(this.cursorPosition, speed);
+            }
         } // end if
     }
     
