@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<settings>
-  <entry name="Conf.Version">CONF_VERSION_1</entry>  
+<settings>  
   <entry name="Game.Ticks.Per.Second">60</entry>
   <entry name="Game.Color.Primary">
     <color red="252" green="233" blue="45" alpha="255" />
