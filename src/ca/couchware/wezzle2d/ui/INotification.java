@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.IEntity;
 
 /**
@@ -14,5 +15,5 @@ import ca.couchware.wezzle2d.graphics.IEntity;
  */
 public interface INotification extends IEntity
 {
-
+    Sound getAssociatedSound();
 }

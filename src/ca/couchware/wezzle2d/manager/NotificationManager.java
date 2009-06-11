@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation.RunRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ui.AchievementNotification;
@@ -73,11 +74,16 @@ public class NotificationManager implements IManager
                     .add(fadeOut)
                     .build();
 
+            final Sound sound = notif.getAssociatedSound();
+
             meta.addAnimationListener(new AnimationAdapter()
             {
                 @Override
                 public void animationStarted()
-                { hub.layerMan.add(notif, Layer.UI); }
+                {
+                    hub.layerMan.add(notif, Layer.UI);
+                    if (sound != null) hub.soundMan.play(sound);
+                }
 
                 @Override
                 public void animationFinished()

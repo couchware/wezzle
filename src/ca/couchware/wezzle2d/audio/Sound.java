@@ -24,7 +24,8 @@ public enum Sound
     CLICK(1),
     LEVEL_UP(1),
     STAR(1),
-    ROCKET(3);
+    ROCKET(3),
+    ACHIEVEMENT(3);
 
     /** The number of buffers this clip needs. */
     final private int numberOfBuffers;

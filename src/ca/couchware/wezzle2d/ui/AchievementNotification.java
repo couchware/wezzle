@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.ui;
 import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.manager.Achievement;
 import java.util.EnumSet;
@@ -126,6 +127,12 @@ public class AchievementNotification extends AbstractNotification
             AchievementNotification notif = new AchievementNotification(this);                      
             return notif;
         }                
-    }     
+    }
+
+    @Override
+    public Sound getAssociatedSound()
+    {
+        return Sound.ACHIEVEMENT;
+    }
 
 }

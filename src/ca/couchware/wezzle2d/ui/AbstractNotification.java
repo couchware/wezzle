@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.IWindow;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.Box.Border;
@@ -130,6 +131,11 @@ public abstract class AbstractNotification extends AbstractEntity implements INo
             ret |= entity.draw();
         }
         return ret;
+    }
+
+    public Sound getAssociatedSound()
+    {
+        return null;
     }
 
 }
