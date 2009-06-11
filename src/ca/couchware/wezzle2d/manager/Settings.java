@@ -17,11 +17,7 @@ public class Settings
     
     /** All the keys that may be used. */
     public enum Key
-    {                
-        // Meta values.
-        
-        CONF_VERSION,                                               
-        
+    {                        
         // User values.
                         
         USER_MUSIC,
