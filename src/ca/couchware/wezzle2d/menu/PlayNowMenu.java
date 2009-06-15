@@ -185,8 +185,6 @@ public class PlayNowMenu extends AbstractMenu
         // Creat the level limit radio group.        
         RadioItem themeItem1 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("Tron").build();
-//        themeItem1.setMouseOnRunnable(createFadeInRunnable(THEME_TRON));
-//        themeItem1.setMouseOffRunnable(createFadeOutRunnable(THEME_TRON));
         themeItem1.addButtonListener(new IButtonListener()
         {
             public void buttonClicked()
@@ -195,8 +193,6 @@ public class PlayNowMenu extends AbstractMenu
         
         RadioItem themeItem2 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("Elec").build();
-//        themeItem2.setMouseOnRunnable(createFadeInRunnable(THEME_ELECTRONIC));
-//        themeItem2.setMouseOffRunnable(createFadeOutRunnable(THEME_ELECTRONIC));
         themeItem2.addButtonListener(new IButtonListener()
         {
             public void buttonClicked()
@@ -205,8 +201,6 @@ public class PlayNowMenu extends AbstractMenu
         
         RadioItem themeItem3 = new RadioItem.Builder().color(OPTION_COLOR)
                 .text("HipPop").build();
-//        themeItem3.setMouseOnRunnable(createFadeInRunnable(THEME_HIPPOP));
-//        themeItem3.setMouseOffRunnable(createFadeOutRunnable(THEME_HIPPOP));
         themeItem3.addButtonListener(new IButtonListener()
         {
             public void buttonClicked()

@@ -17,6 +17,8 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SliderBar;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -87,6 +89,12 @@ public class OptionsMenu extends AbstractMenu
 
     /** The piece preview overlay radio group. */
     final private RadioGroup piecePreviewOverlayRadio;
+
+    /** The page 1 button. */
+    final private IButton page1Button;
+
+    /** The page 2 button. */
+    final private IButton page2Button;
                     
     public OptionsMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)
     {                
@@ -103,7 +111,30 @@ public class OptionsMenu extends AbstractMenu
                 .color(LABEL_COLOR).text("Options").size(20)
                 .visible(false).build();
         this.entityList.add(titleLabel);
-        
+
+        // The page buttons.
+        this.page1Button = new Button.Builder(418, 97)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .normalOpacity(90)
+                .visible(false)
+                .text("1")
+                .width(40)
+                .textSize(16)
+                .build();
+        this.entityList.add(this.page1Button);
+
+        this.page2Button = new Button.Builder(463, 97)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
+                .normalOpacity(90)
+                .visible(false)
+                .text("2")
+                .width(40)
+                .textSize(16)
+                .build();
+        this.entityList.add(this.page2Button);
+
         // The first box.
         Box optionBox = new Box.Builder(68, 122)
                 .width(400).height(398)
