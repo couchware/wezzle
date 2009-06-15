@@ -6,14 +6,8 @@
     <!-- Regular Achievements                                                -->
     <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 
-    <!-- Rocket Achievements -->
-    <achievement name="Rocketeer" difficulty="BRONZE">
-      <description>Fire a single rocket.</description>      
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="ROCKET" />        
-      </rule>
-    </achievement>    
-    <achievement name="A Tale of Two Rockets" difficulty="SILVER">
+    <!-- Rocket Achievements -->      
+    <achievement name="A Tale of Two Rockets" difficulty="BRONZE">
       <description>Fire a rocket into another rocket.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="ROCKET">
@@ -21,7 +15,7 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="It's Raining Rockets" difficulty="GOLD">
+    <achievement name="A Tale of Three Rockets" difficulty="SILVER">
       <description>Fire a rocket into another rocket 
       into yet another rocket.</description>      
       <rule type="COLLISION" operation="BETWEEN">
@@ -32,7 +26,7 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="Missile Defense Shield" difficulty="GOLD">
+    <achievement name="Missile Defense Shield" difficulty="SILVER">
         <description>Fire a rocket into two other rockets.</description>
         <rule type="COLLISION" operation="BETWEEN">
             <item type="ROCKET">
@@ -40,17 +34,7 @@
                 <item type="ROCKET" />
             </item>
         </rule>
-    </achievement>
-    <achievement name="Rocket Specialist" difficulty="GOLD">
-      <description>Finish three rocket-related achievements.</description>
-      <rule type="META">
-        <amount metatype="COMPLETE" value="3" operation="GTEQ" />
-        <achievement name="Rocketeer" />
-        <achievement name="A Tale of Two Rockets" />
-        <achievement name="It's Raining Rockets" />        
-        <achievement name="Missile Defense Shield" />
-      </rule>
-    </achievement>
+    </achievement>   
 
     <!-- Gravity Achievements -->
     <achievement name="Gravitron" difficulty="BRONZE">
@@ -61,14 +45,8 @@
     </achievement>
     
 
-    <!-- Bomb Achievements -->
-    <achievement name="Bomber" difficulty="BRONZE">
-      <description>Activate a bomb tile.</description>      
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="BOMB" />
-      </rule>
-    </achievement>
-    <achievement name="Missile Launcher" difficulty="GOLD">
+    <!-- Bomb Achievements -->    
+    <achievement name="Missile Launcher" difficulty="SILVER">
       <description>Explode a bomb into two rockets.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="BOMB">
@@ -86,13 +64,7 @@
       </rule>
     </achievement>
 
-    <!-- Star Achievements -->
-    <achievement name="Astronomer" difficulty="BRONZE">
-      <description>Activate a star tile.</description>      
-      <rule type="COLLISION" operation="BETWEEN">
-        <item type="STAR" />
-      </rule>
-    </achievement>    
+    <!-- Star Achievements -->       
     <achievement name="Starry-Eyed Surprise" difficulty="SILVER">
       <description>Make a star tile activate another item tile.</description>
       <rule type="COLLISION" operation="BETWEEN">
@@ -101,7 +73,7 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="The Perfect Star Storm" difficulty="PLATINUM">
+    <achievement name="The Perfect Star Storm" difficulty="GOLD">
         <description>Use a star to remove three multiplier tiles
         and two item tiles, all in the same move.</description>
         <rule type="COLLISION" operation="BETWEEN">
@@ -115,34 +87,19 @@
         </rule>
     </achievement>
 
-    <!-- Score Achievements -->
-    <achievement name="Score 30,000 Points" difficulty="BRONZE">
-      <description>Get over 30,000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="30000" />
+    <!-- Score Achievements -->   
+    <achievement name="Score 60,000 Points" difficulty="SILVER">
+      <description>Get over 60,000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="60000" />
     </achievement>
-    <achievement name="Score 80,000 Points" difficulty="SILVER">
-      <description>Get over 80,000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="80000" />
+    <achievement name="Score 100,000 Points" difficulty="SILVER">
+      <description>Get over 100,000 points in a game.</description>
+      <rule type="SCORE" operation="GTEQ" value="100000" />
     </achievement>
-    <achievement name="Score 160,000 Points" difficulty="GOLD">
-      <description>Get over 160,000 points in a game.</description>
-      <rule type="SCORE" operation="GTEQ" value="160000" />
-    </achievement>
-    <achievement name="Score 300,000 Points" difficulty="PLATINUM">
+    <achievement name="Score 300,000 Points" difficulty="GOLD">
       <description>Get over 300,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="300000" />
-    </achievement>
-    <achievement name="Score Specialist" difficulty="GOLD">
-        <description>Complete 3 score-related achievements.</description>
-        <rule type="META">
-            <amount metatype="COMPLETE" value="3" operation="GTEQ" />
-            <achievement name="Score 30,000 Points" />
-            <achievement name="Score 80,000 Points" />
-            <achievement name="Score 160,000 Points" />
-            <achievement name="Score 300,000 Points" />
-            <!-- This needs more achievements. -->
-        </rule>
-    </achievement>
+    </achievement>   
 
     <!-- Level Achievements -->
     <achievement name="Get To Level 5" difficulty="BRONZE">

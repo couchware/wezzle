@@ -28,7 +28,7 @@ public class PieceLine extends Piece
 	}
 	
     @Override
-	public void rotate()
+	public void rotateRight()
 	{
 		// Transpose the structure.		
 		ArrayUtil.transpose2d(structure);
@@ -38,5 +38,11 @@ public class PieceLine extends Piece
 		this.columns = this.rows;
 		this.rows = swap;
 	}
+
+    @Override
+	public void rotateLeft()
+	{
+        this.rotateRight();
+    }
 
 }

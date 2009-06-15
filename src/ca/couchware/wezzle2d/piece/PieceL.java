@@ -29,11 +29,19 @@ public class PieceL extends Piece
 	}
 	
     @Override
-	public void rotate()
+	public void rotateRight()
 	{
 		ArrayUtil.swap2d(structure, 1, 0, 2, 1);
 		ArrayUtil.swap2d(structure, 1, 0, 1, 2);
 		ArrayUtil.swap2d(structure, 1, 0, 0, 1);
+	}
+
+    @Override
+	public void rotateLeft()
+	{
+		this.rotateRight();
+        this.rotateRight();
+        this.rotateRight();
 	}
 
 }

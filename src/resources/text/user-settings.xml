@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>  
   <entry name="User.Music">true</entry>
-  <entry name="User.Music.Volume">50</entry>
+  <entry name="User.Music.Volume">30</entry>
   <entry name="User.Sound">true</entry>
   <entry name="User.Sound.Volume">50</entry>
   <entry name="User.Highscore">

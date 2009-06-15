@@ -29,7 +29,7 @@ public class PieceDiagonal extends Piece
 	}
 	
     @Override
-	public void rotate()
+	public void rotateRight()
 	{
 		// Transpose the structure.
 		ArrayUtil.swap2d(structure, 2, 2, 2, 0);
@@ -37,5 +37,12 @@ public class PieceDiagonal extends Piece
 //		Util.swap2d(structure, 0, 0, 2, 2);
 //		Util.swap2d(structure, 0, 0, 0, 2);
 	}
+
+
+    @Override
+	public void rotateLeft()
+	{
+        this.rotateRight();
+    }    
 
 }

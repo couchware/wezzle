@@ -64,7 +64,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     /** The possible buttons that may be clicked. */
     private static enum MouseButton
     {
-        LEFT, RIGHT
+        LEFT, RIGHT, MIDDLE
     }            
     
     /** A set of buttons that were clicked. */
@@ -117,7 +117,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         // Sanity check and assignment.
        if(hub == null)
        {
-           throw new IllegalArgumentException("hub must not be null.");
+           throw new IllegalArgumentException("Hub must not be null");
        }
 
         this.hub = hub;
@@ -512,17 +512,22 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         // If the game is busy, check for preview rotations, and that's it.
         if (game.isCompletelyBusy())
         {
-            if (mouseButtonSet.contains(MouseButton.RIGHT) == true)
+            if (mouseButtonSet.contains(MouseButton.RIGHT)
+                    || mouseButtonSet.contains(MouseButton.MIDDLE))
             {
                 // Rotate the top of the piece queue.
                 Piece rotatedPiece = this.pieceQueue.peek();
-                rotatedPiece.rotate();
+
+                if (mouseButtonSet.contains(MouseButton.RIGHT))
+                    rotatedPiece.rotateRight();
+                else
+                    rotatedPiece.rotateLeft();
 
                 // This really should be an event, but too late for that.
                 game.getUI().setPiecePreviewPiece(rotatedPiece);
 
                 // Reset released buttons.
-                mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+                clearMouseButtonSet();
             }
 
             return;
@@ -531,18 +536,24 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         // In this case, the tile drop is not activated, so proceed normally
         // and handle mouse clicks and such.
                  
-        if (mouseButtonSet.contains(MouseButton.LEFT) == true)
+        if (mouseButtonSet.contains(MouseButton.LEFT))
         {
            mouseButtonSet.remove(MouseButton.LEFT);
            initiateCommit(game, hub);
         }
-        else if (mouseButtonSet.contains(MouseButton.RIGHT) == true)
+        else if (mouseButtonSet.contains(MouseButton.RIGHT)
+                || mouseButtonSet.contains(MouseButton.MIDDLE))
         {
             // Rotate the piece.
             stopAnimation();
 
-            this.piece.rotate();
-            this.cursorPosition = limitPosition(pieceGrid.getPosition());
+            if (mouseButtonSet.contains(MouseButton.RIGHT))
+                this.piece.rotateRight();
+            else
+                this.piece.rotateLeft();
+
+            //this.cursorPosition = limitPosition(pieceGrid.getPosition());
+            this.cursorPosition = limitPosition(window.getMouseImmutablePosition());
             this.movePieceGridTo(this.cursorPosition);
             this.pieceGrid.setDirty(true);
 
@@ -550,7 +561,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 startAnimationAt(this.cursorPosition, SLOW_SPEED);
 
             // Reset released buttons.
-            mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+            clearMouseButtonSet();
         }
         // Animate selected pieces.
         else
@@ -622,7 +633,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             if (restrictionBoard[index] == false)
             {
                 setRestrictionBoardClicked(true);
-                mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+                clearMouseButtonSet();
                 return;
             }          
         } // end for
@@ -632,7 +643,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             if (restrictionBoard[index] == false)
             {
                 setRestrictionBoardClicked(true);
-                mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+                clearMouseButtonSet();
                 return;
             }
         } // end for
@@ -694,7 +705,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         game.getRefactorer().startRefactor();
 
         // Reset mouse buttons.
-        mouseButtonSet = EnumSet.noneOf(MouseButton.class);
+        clearMouseButtonSet();
 
         // Pause timer.
         hub.timerMan.setPaused(true);
@@ -885,9 +896,9 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 mouseButtonSet.add(MouseButton.RIGHT);
                 break;
                 
-            //temp.
+            // Middle mouse clicked.
             case MIDDLE:
-                boardMan.insertItemRandomly(TileType.BOMB);
+                mouseButtonSet.add(MouseButton.MIDDLE);
                 break;
                 
             default:

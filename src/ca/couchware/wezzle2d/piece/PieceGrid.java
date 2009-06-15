@@ -342,7 +342,7 @@ public class PieceGrid extends AbstractEntity
         {
             for (int j = 0; j < structure[0].length; j++)
             {
-				if (structure[i][j] == true)
+				if (structure[i][j])
                 {
                     spriteArray[i][j].draw(
                                 x + offsetX + (i) * cellWidth,

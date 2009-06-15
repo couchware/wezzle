@@ -29,7 +29,7 @@ public class PieceDash extends Piece
 	}
 	
     @Override
-	public void rotate()
+	public void rotateRight()
 	{
 		// Transpose the structure.		
 		ArrayUtil.transpose2d(structure);
@@ -41,6 +41,12 @@ public class PieceDash extends Piece
 		int swap = this.columns;
 		this.columns = this.rows;
 		this.rows = swap;
+	}
+
+    @Override
+	public void rotateLeft()
+	{
+		this.rotateRight();
 	}
 
 }

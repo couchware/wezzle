@@ -64,10 +64,18 @@ public abstract class Piece
 	/**
 	 * Rotates the piece to the right.
 	 */
-	public void rotate()
+	public void rotateRight()
 	{
 		// Intentionally blank.  Meant to be overridden by subclass.
 	}
+
+    /**
+     * Rotate the piece to the left.
+     */
+    public void rotateLeft()
+    {
+        // Intentionally blank.  Meant to be overridden by subclass.
+    }
     
     /**
      * Rotate the piece randomly.
@@ -76,7 +84,7 @@ public abstract class Piece
     {
         int numberOfRotations = ArrayUtil.random.nextInt(4);
         for (int i = 0; i <= numberOfRotations; i++)        
-            this.rotate();   
+            this.rotateRight();
     }
 	
 	// ---------------------------------------------------------------------------
