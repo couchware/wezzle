@@ -11,7 +11,6 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.MusicManager.Theme;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
@@ -22,11 +21,8 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SliderBar;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The play now group, which holds all the configuration options for playing
@@ -61,40 +57,49 @@ public class OptionsMenu extends AbstractMenu
     }
     
     /** The level label. */
-    private final ITextLabel sampleNumberLabel;
+    private ITextLabel sampleNumberLabel;
     
     /** The level. */
     private int sampleNumber = 1;
     
     /** The level slider. */
-    private final SliderBar sampleSlider;
+    private SliderBar sampleSlider;
     
     /** The possibilities for the max level. */
     final private static int MAX_LEVEL_ON = 0;
     final private static int MAX_LEVEL_OFF = 1;
     
     /** The max level radio group. */
-    final private RadioGroup maxLevelRadio;
+    private RadioGroup maxLevelRadio;
 
     /** The possibilities for the max level. */
     final private static int PIECE_PREVIEW_BOX_ON = 0;
     final private static int PIECE_PREVIEW_BOX_OFF = 1;
 
     /** The piece preview box radio group. */
-    final private RadioGroup piecePreviewBoxRadio;
+    private RadioGroup piecePreviewBoxRadio;
 
     /** The possibilities for the max level. */
     final private static int PIECE_PREVIEW_OVERLAY_ON = 0;
     final private static int PIECE_PREVIEW_OVERLAY_OFF = 1;
 
     /** The piece preview overlay radio group. */
-    final private RadioGroup piecePreviewOverlayRadio;
+    private RadioGroup piecePreviewOverlayRadio;
+
+    /** The current page. */
+    private int currentPage = -1;
 
     /** The page 1 button. */
-    final private IButton page1Button;
+    final private IButton page0Button;
 
     /** The page 2 button. */
-    final private IButton page2Button;
+    final private IButton page1Button;
+
+    /** The page 1 entities. */
+    final private List<IEntity> page0EntityList = new ArrayList<IEntity>();
+
+    /** The page 2 entities. */
+    final private List<IEntity> page1EntityList = new ArrayList<IEntity>();
                     
     public OptionsMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)
     {                
@@ -113,7 +118,7 @@ public class OptionsMenu extends AbstractMenu
         this.entityList.add(titleLabel);
 
         // The page buttons.
-        this.page1Button = new Button.Builder(418, 97)
+        this.page0Button = new Button.Builder(418, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .normalOpacity(90)
@@ -122,9 +127,16 @@ public class OptionsMenu extends AbstractMenu
                 .width(40)
                 .textSize(16)
                 .build();
-        this.entityList.add(this.page1Button);
 
-        this.page2Button = new Button.Builder(463, 97)
+        this.page0Button.addButtonListener(new Button.IButtonListener()
+        {
+            public void buttonClicked()
+            { switchPage(0); }
+        });
+
+        this.entityList.add(this.page0Button);
+
+        this.page1Button = new Button.Builder(463, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .normalOpacity(90)
@@ -133,7 +145,14 @@ public class OptionsMenu extends AbstractMenu
                 .width(40)
                 .textSize(16)
                 .build();
-        this.entityList.add(this.page2Button);
+
+        this.page1Button.addButtonListener(new Button.IButtonListener()
+        {
+            public void buttonClicked()
+            { switchPage(1); }
+        });
+
+        this.entityList.add(this.page1Button);
 
         // The first box.
         Box optionBox = new Box.Builder(68, 122)
@@ -149,80 +168,143 @@ public class OptionsMenu extends AbstractMenu
         this.sampleNumber = Math.max(MIN_SAMPLES, this.sampleNumber);
         this.sampleNumber = Math.min(MAX_SAMPLES, this.sampleNumber);
 
-        ITextLabel levelLabel = new LabelBuilder(110, 180)
+        // Page 0 entities.
+        createEntitiesForPage0(hub, LABEL_COLOR, OPTION_COLOR);
+
+        // Page 1 entities.
+        createEntitiesForPage1(hub, LABEL_COLOR, OPTION_COLOR);
+           
+        // Add them all to the layer manager.
+        for (IEntity entity : this.entityList)
+        {
+            this.menuLayerMan.add(entity, Layer.UI);
+        }
+
+        // Activate the first page.
+        switchPage(0); 
+    }                   
+
+    private void switchPage(int page)
+    {
+        if (this.currentPage == page) return;
+        this.currentPage = page;
+
+        switch (page)
+        {
+            case 0:
+
+                for ( IEntity entity : this.page0EntityList )
+                {
+                    this.menuLayerMan.add(entity, Layer.UI);
+                    this.entityList.add(entity);
+                }
+
+                for ( IEntity entity : this.page1EntityList )
+                {
+                    this.menuLayerMan.remove(entity, Layer.UI);
+                    this.entityList.remove(entity);
+                }
+
+                break;
+
+            case 1:
+
+                for ( IEntity entity : this.page0EntityList )
+                {
+                    this.menuLayerMan.remove(entity, Layer.UI);
+                    this.entityList.remove(entity);
+                }
+
+                for ( IEntity entity : this.page1EntityList )
+                {
+                    this.menuLayerMan.add(entity, Layer.UI);
+                    this.entityList.add(entity);
+                }
+
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid options page number");
+        }
+    }
+
+    private void createEntitiesForPage0(ManagerHub hub,
+            Color labelColor, Color optionColor)
+    {
+         ITextLabel levelLabel = new LabelBuilder(110, 180)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(LABEL_COLOR).text("Graphics Quality").size(20)
+                .color(labelColor).text("Graphics Quality").size(20)
                 .visible(false)
                 .build();
-        this.entityList.add(levelLabel);
-        
+        this.page0EntityList.add(levelLabel);
+
         this.sampleNumberLabel = new LabelBuilder(
-                    levelLabel.getX() + levelLabel.getWidth() + 20, 
-                    levelLabel.getY())                
+                    levelLabel.getX() + levelLabel.getWidth() + 20,
+                    levelLabel.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
                 .size(20).visible(false)
                 .text(GraphicsQuality.values()[sampleNumber].getDescription())
                 .build();
-        this.entityList.add(this.sampleNumberLabel);
-        
+        this.page0EntityList.add(this.sampleNumberLabel);
+
         this.sampleSlider = new SliderBar.Builder(
-                    268, 
+                    268,
                     levelLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .width(340)
                 .virtualRange(MIN_SAMPLES, MAX_SAMPLES)
                 .virtualValue(this.sampleNumber)
                 .visible(false)
                 .build();
-        this.entityList.add(sampleSlider);
-        
+        this.page0EntityList.add(sampleSlider);
+
         ITextLabel maxLevelLabel = new LabelBuilder(
-                    levelLabel.getX(), 
+                    levelLabel.getX(),
                     levelLabel.getY() + 80)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(LABEL_COLOR).text("Maximum Level").size(20)
+                .color(labelColor).text("Maximum Level").size(20)
                 .visible(false)
                 .build();
-        this.entityList.add(maxLevelLabel);
-        
+        this.page0EntityList.add(maxLevelLabel);
+
         RadioItem maxLevelOn = new RadioItem.Builder()
-                .color(OPTION_COLOR)
+                .color(optionColor)
                 .text("20").build();
-         
+
         RadioItem maxLevelOff = new RadioItem.Builder()
-                .color(OPTION_COLOR)
+                .color(optionColor)
                 .text("No Limit").build();
 
         final boolean maxLevelSetting = hub.settingsMan.getBool(Key.USER_MAX_LEVEL_CAPPED);
         this.maxLevelRadio = new RadioGroup.Builder(
                     268,
                     maxLevelLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(maxLevelOn,  maxLevelSetting)
                 .add(maxLevelOff, !maxLevelSetting)
                 .visible(false)
                 .build();
-        this.entityList.add(maxLevelRadio);
-        
+        this.page0EntityList.add(maxLevelRadio);
+
         ITextLabel piecePreviewBoxLabel = new LabelBuilder(
                     maxLevelLabel.getX(),
                     maxLevelLabel.getY() + 85)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(LABEL_COLOR).text("Piece Preview Box").size(20)
+                .color(labelColor).text("Piece Preview Box").size(20)
                 .visible(false)
                 .build();
-        this.entityList.add(piecePreviewBoxLabel);
-        
-        // Creat the level limit radio group.        
+        this.page0EntityList.add(piecePreviewBoxLabel);
+
+        // Creat the level limit radio group.
         RadioItem boxItem1 = new RadioItem.Builder()
-                .color(OPTION_COLOR)
+                .color(optionColor)
                 .text("On").build();
-        
+
         RadioItem boxItem2 = new RadioItem.Builder()
-                .color(OPTION_COLOR)
-                .text("Off").build();               
-                        
+                .color(optionColor)
+                .text("Off").build();
+
         // Attempt to get the user's music preference.
         final boolean piecePreviewBoxSetting = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_TRADITIONAL);
 
@@ -233,50 +315,50 @@ public class OptionsMenu extends AbstractMenu
                 .add(boxItem1, piecePreviewBoxSetting)
                 .add(boxItem2, !piecePreviewBoxSetting)
                 .itemSpacing(20).visible(false).build();
-        this.entityList.add(piecePreviewBoxRadio);
+        this.page0EntityList.add(piecePreviewBoxRadio);
 
         ITextLabel piecePreviewOverlayLabel = new LabelBuilder(
                     piecePreviewBoxLabel.getX(),
                     piecePreviewBoxLabel.getY() + 85)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(LABEL_COLOR).text("Piece Preview Overlay").size(20)
+                .color(labelColor).text("Piece Preview Overlay").size(20)
                 .visible(false)
                 .build();
-        this.entityList.add(piecePreviewOverlayLabel);
+        this.page0EntityList.add(piecePreviewOverlayLabel);
 
         // Creat the level limit radio group.
         RadioItem overlayItem1 = new RadioItem.Builder()
-                .color(OPTION_COLOR)
+                .color(optionColor)
                 .text("On").build();
 
         RadioItem overlayItem2 = new RadioItem.Builder()
-                .color(OPTION_COLOR)
+                .color(optionColor)
                 .text("Off").build();
 
         // Attempt to get the user's music preference.
         final boolean piecePreviewOverlaySetting = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_OVERLAY);
-               
+
         this.piecePreviewOverlayRadio = new RadioGroup.Builder(
-                    268, 
+                    268,
                     piecePreviewOverlayLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(overlayItem1, piecePreviewOverlaySetting)
                 .add(overlayItem2, !piecePreviewOverlaySetting)
                 .itemSpacing(20).visible(false).build();
-        this.entityList.add(piecePreviewOverlayRadio);
-                
-        // Add them all to the layer manager.
-        for (IEntity entity : this.entityList)
-        {
-            this.menuLayerMan.add(entity, Layer.UI);
-        }
-    }       
+        this.page0EntityList.add(piecePreviewOverlayRadio);
+    }
+
+    private void createEntitiesForPage1(ManagerHub hub,
+            Color labelColor, Color optionColor)
+    {
         
+    }
+
     public void updateLogic(Game game, ManagerHub hub)
-    {      
+    {
         if ( this.sampleSlider.changed() )
         {
-            sampleNumber = (int) sampleSlider.getVirtualValue();
+            sampleNumber = sampleSlider.getVirtualValue();
             this.sampleNumberLabel.setText(
                     GraphicsQuality.values()[sampleNumber].getDescription());
             hub.settingsMan.setInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES, this.sampleNumber);
@@ -298,7 +380,7 @@ public class OptionsMenu extends AbstractMenu
             hub.settingsMan.setBool(Key.USER_PIECE_PREVIEW_TRADITIONAL, isOn);
             game.getUI().setTraditionalPiecePreviewVisible(isOn);
         }
-        
+
         if ( this.piecePreviewOverlayRadio.changed() )
         {
             int selected = this.piecePreviewOverlayRadio.getSelectedIndex();
