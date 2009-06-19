@@ -2,7 +2,6 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.manager.Settings.Value;
 import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.io.File;
@@ -367,42 +366,63 @@ public class SettingsManager
     
     public void setObject(Key key, Object value)
     {
+        if (key.getIntendedType() != Object.class)
+            throw new IllegalArgumentException(key + " is not an object");
+
         currentMap.put(key, value);
     }
     
     public void setString(Key key, String value)
     {
+        if (key.getIntendedType() != String.class)
+            throw new IllegalArgumentException(key + " is not a string");
+
+        setStringUnchecked(key, value);
+    }
+
+    private void setStringUnchecked(Key key, String value)
+    {
         currentMap.put(key, value);
-    }       
-    
-    public void setValue(Key key, Value value)
-	{
-		setString(key, value.toString());
-	} 
+    }
     
     public void setInt(Key key, int value)
     {
-        setString(key, String.valueOf(value));
+        if (key.getIntendedType() != Integer.class)
+            throw new IllegalArgumentException(key + " is not an int");
+
+        setStringUnchecked(key, String.valueOf(value));
     }
     
     public void setLong(Key key, long value)
     {
-        setString(key, String.valueOf(value));
+        if (key.getIntendedType() != Long.class)
+            throw new IllegalArgumentException(key + " is not a long");
+
+        setStringUnchecked(key, String.valueOf(value));
     }
     
     public void setFloat(Key key, float value)
     {
-        setString(key, String.valueOf(value));
+        if (key.getIntendedType() != Float.class)
+            throw new IllegalArgumentException(key + " is not a float");
+
+        setStringUnchecked(key, String.valueOf(value));
     }
     
     public void setDouble(Key key, double value)
     {
-        setString(key, String.valueOf(value));
+        if (key.getIntendedType() != Double.class)
+            throw new IllegalArgumentException(key + " is not an double");
+
+        setStringUnchecked(key, String.valueOf(value));
     }
     
     public void setBool(Key key, boolean value)
     {
-        setString(key, String.valueOf(value));
+        if (key.getIntendedType() != Boolean.class)
+            throw new IllegalArgumentException(key + " is not a boolean");
+
+        setStringUnchecked(key, String.valueOf(value));
     }	        
     
     /**
@@ -413,6 +433,9 @@ public class SettingsManager
      */
     public Object getObject(Key key)
     {
+        if (key.getIntendedType() != Object.class)
+            throw new IllegalArgumentException(key + " is not an object");
+
         return currentMap.get(key);
     }
     
@@ -423,7 +446,15 @@ public class SettingsManager
 	 * @return The property
 	 */
 	public String getString(Key key)
-	{		
+	{
+        if (key.getIntendedType() != String.class)
+            throw new IllegalArgumentException(key + " is not a string");
+
+		return getStringUnchecked(key);
+	}
+
+    private String getStringUnchecked(Key key)
+	{
 		return (String) currentMap.get(key);
 	}
 	
@@ -436,22 +467,25 @@ public class SettingsManager
 	 * @return The property
 	 */
 	public final int getInt(Key key)
-	{	
+	{
+        if (key.getIntendedType() != Integer.class)
+            throw new IllegalArgumentException(key + " is not an int");
+
         int val = 0;
         
         try 
         {
-            if (getString(key) == null)
+            if (getStringUnchecked(key) == null)
             {
                 throw new NullPointerException("Key did not exist.");
             }
             
-            val = Integer.parseInt(getString(key));               
+            val = Integer.parseInt(getStringUnchecked(key));
         }
         catch (NumberFormatException e)
         {
             CouchLogger.get().recordWarning(this.getClass(),
-                    "Could not convert " + key + ": " + getString(key));
+                    "Could not convert " + key + ": " + getStringUnchecked(key));
             throw e;
         }
         
@@ -459,10 +493,13 @@ public class SettingsManager
 	}
         
     public long getLong(Key key)
-	{		
-		return getString(key) == null 
+	{
+        if (key.getIntendedType() != Long.class)
+            throw new IllegalArgumentException(key + " is not a long");
+
+		return getStringUnchecked(key) == null
             ? null 
-            : Long.parseLong(getString(key));
+            : Long.parseLong(getStringUnchecked(key));
 	}
     
     /**
@@ -474,17 +511,23 @@ public class SettingsManager
 	 * @return The property
 	 */
 	public float getFloat(Key key)
-	{		        
-		return getString(key) == null 
+	{
+        if (key.getIntendedType() != Float.class)
+            throw new IllegalArgumentException(key + " is not a float");
+
+		return getStringUnchecked(key) == null
             ? null 
-            : Float.parseFloat(getString(key));
+            : Float.parseFloat(getStringUnchecked(key));
 	}
     
     public double getDouble(Key key)
-	{		        
-		return getString(key) == null 
+	{
+        if (key.getIntendedType() != Double.class)
+            throw new IllegalArgumentException(key + " is not a double");
+
+		return getStringUnchecked(key) == null
             ? null 
-            : Double.parseDouble(getString(key));
+            : Double.parseDouble(getStringUnchecked(key));
 	}		
 	
 	/**
@@ -494,10 +537,13 @@ public class SettingsManager
 	 * @return The property
 	 */
 	public boolean getBool(Key key)
-	{		
-		return getString(key) == null 
+	{
+        if (key.getIntendedType() != Boolean.class)
+            throw new IllegalArgumentException(key + " is not an boolean");
+
+		return getStringUnchecked(key) == null
             ? false
-            : Boolean.valueOf(getString(key));
+            : Boolean.valueOf(getStringUnchecked(key));
 	}      
     
     /**
@@ -508,20 +554,31 @@ public class SettingsManager
      */
     public Color getColor(Key key)
     {
-        return ((CouchColor) getList(key).get(0)).toColor();
+        if (key.getIntendedType() != Color.class)
+            throw new IllegalArgumentException(key + " is not a color");
+
+        return ((CouchColor) getListUnchecked(key).get(0)).toColor();
     }
-    
+
     /**
      * Get a list property.
-     * 
+     *
      * @param key
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List getList(Key key)
     {
+         if (key.getIntendedType() != List.class)
+            throw new IllegalArgumentException(key + " is not a list");
+
+         return getListUnchecked(key);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List getListUnchecked(Key key)
+    {        
         // Return an unmodifiable list.
-        Object object = getObject(key);
+        Object object = currentMap.get(key);
         
         List list = null;
         

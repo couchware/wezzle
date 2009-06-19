@@ -5,7 +5,9 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import java.awt.Color;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Contains all the settings keys and values.
@@ -13,180 +15,188 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class Settings 
-{   
-    
+{
+
     /** All the keys that may be used. */
     public enum Key
     {                        
         // User values.
                         
-        USER_MUSIC,
-        USER_MUSIC_VOLUME,
-        USER_SOUND,
-        USER_SOUND_VOLUME,
-        USER_HIGHSCORE,   
-        USER_ACHIEVEMENT,
-        USER_ACHIEVEMENT_COMPLETED,
-        USER_LEVEL_DEFAULT,
-        USER_TUTORIAL_DEFAULT,
-        USER_MUSIC_DEFAULT,
+        USER_MUSIC(Boolean.class),
+        USER_MUSIC_VOLUME(Integer.class),
+        USER_SOUND(Boolean.class),
+        USER_SOUND_VOLUME(Integer.class),
+        USER_HIGHSCORE(Object.class),
+        USER_ACHIEVEMENT(List.class),
+        USER_ACHIEVEMENT_COMPLETED(List.class),
+        USER_LEVEL_DEFAULT(Integer.class),
+        USER_TUTORIAL_DEFAULT(Boolean.class),
+        USER_MUSIC_DEFAULT(String.class),
 
         /** Use the "traditional" piece preview. */
-        USER_PIECE_PREVIEW_TRADITIONAL,
+        USER_PIECE_PREVIEW_TRADITIONAL(Boolean.class),
 
         /** use the overlay piece preview. */
-        USER_PIECE_PREVIEW_OVERLAY,
+        USER_PIECE_PREVIEW_OVERLAY(Boolean.class),
 
         /** The number of FSAA samples. */
-        USER_GRAPHICS_ANTIALIASING_SAMPLES,
+        USER_GRAPHICS_ANTIALIASING_SAMPLES(Integer.class),
 
         /** Is the maximum level capped? */
-        USER_MAX_LEVEL_CAPPED,
+        USER_MAX_LEVEL_CAPPED(Boolean.class),
 
         // Tutorials.       
-        USER_TUTORIAL_BASIC_RAN,
-        USER_TUTORIAL_ROTATE_RAN,
-        USER_TUTORIAL_ROCKET_RAN,
-        USER_TUTORIAL_GRAVITY_RAN,
-        USER_TUTORIAL_BOMB_RAN,        
-        USER_TUTORIAL_STAR_RAN,
+        USER_TUTORIAL_BASIC_RAN(Boolean.class),
+        USER_TUTORIAL_ROTATE_RAN(Boolean.class),
+        USER_TUTORIAL_ROCKET_RAN(Boolean.class),
+        USER_TUTORIAL_GRAVITY_RAN(Boolean.class),
+        USER_TUTORIAL_BOMB_RAN(Boolean.class),
+        USER_TUTORIAL_STAR_RAN(Boolean.class),
 
         // Graphics values.              
         
         /** The number of ticks (frames) per second. */        
-        GAME_TICKS_PER_SECOND,       
+        GAME_TICKS_PER_SECOND(Integer.class),
         
-        GAME_COLOR_PRIMARY,
-        GAME_COLOR_SECONDARY,
-        GAME_COLOR_DISABLED,          
-        
+        GAME_COLOR_PRIMARY(Color.class),
+        GAME_COLOR_SECONDARY(Color.class),
+        GAME_COLOR_DISABLED(Color.class),
+
+        /** The amount of score to carryover between levels, the top part. */
+        GAME_SCORE_CARRYOVER_NUMERATOR(Integer.class),
+
+        /** The amount of score to carryover between levels, the bottom part. */
+        GAME_SCORE_CARRYOVER_DENOMINATOR(Integer.class),
+
         // Debug values.
         
         /** Whether or not to show the clip rectangle.  Only works in JAVA2D mode. */
-        DEBUG_SHOW_CLIP_RECT,
+        DEBUG_SHOW_CLIP_RECT(Boolean.class),
         
         // Refactor values.
         
-        REFACTOR_SPEED_X_SLOWER,
-        REFACTOR_SPEED_Y_SLOWER,
-        REFACTOR_SPEED_X_SLOW,
-        REFACTOR_SPEED_Y_SLOW,
-        REFACTOR_SPEED_X_NORMAL,
-        REFACTOR_SPEED_Y_NORMAL,
-        REFACTOR_SPEED_X_SHIFT,
-        REFACTOR_SPEED_Y_SHIFT,
+        REFACTOR_SPEED_X_SLOWER(Integer.class),
+        REFACTOR_SPEED_Y_SLOWER(Integer.class),
+        REFACTOR_SPEED_X_SLOW(Integer.class),
+        REFACTOR_SPEED_Y_SLOW(Integer.class),
+        REFACTOR_SPEED_X_NORMAL(Integer.class),
+        REFACTOR_SPEED_Y_NORMAL(Integer.class),
+        REFACTOR_SPEED_X_SHIFT(Integer.class),
+        REFACTOR_SPEED_Y_SHIFT(Integer.class),
         
         // Animation values.
             
-        ANIMATION_DROP_ZOOM_OUT_SPEED,
+        ANIMATION_DROP_ZOOM_OUT_SPEED(Integer.class),
                 
-        ANIMATION_JUMP_MOVE_SPEED,
-        ANIMATION_JUMP_MOVE_DURATION,
-        ANIMATION_JUMP_MOVE_GRAVITY,
-        ANIMATION_JUMP_FADE_WAIT,
-        ANIMATION_JUMP_FADE_DURATION,
+        ANIMATION_JUMP_MOVE_SPEED(Integer.class),
+        ANIMATION_JUMP_MOVE_DURATION(Integer.class),
+        ANIMATION_JUMP_MOVE_GRAVITY(Integer.class),
+        ANIMATION_JUMP_FADE_WAIT(Integer.class),
+        ANIMATION_JUMP_FADE_DURATION(Integer.class),
         
-        ANIMATION_LEVEL_MOVE_SPEED,
-        ANIMATION_LEVEL_MOVE_DURATION,
-        ANIMATION_LEVEL_MOVE_GRAVITY,
-        ANIMATION_LEVEL_FADE_DURATION,
+        ANIMATION_LEVEL_MOVE_SPEED(Integer.class),
+        ANIMATION_LEVEL_MOVE_DURATION(Integer.class),
+        ANIMATION_LEVEL_MOVE_GRAVITY(Integer.class),
+        ANIMATION_LEVEL_FADE_DURATION(Integer.class),
         
-        ANIMATION_LINE_REMOVE_ZOOM_SPEED,
-        ANIMATION_LINE_REMOVE_FADE_WAIT,
-        ANIMATION_LINE_REMOVE_FADE_DURATION,
+        ANIMATION_LINE_REMOVE_ZOOM_SPEED(Integer.class),
+        ANIMATION_LINE_REMOVE_FADE_WAIT(Integer.class),
+        ANIMATION_LINE_REMOVE_FADE_DURATION(Integer.class),
         
-        ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED,
-        ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION,
-        ANIMATION_ITEM_ACTIVATE_FADE_WAIT,
-        ANIMATION_ITEM_ACTIVATE_FADE_DURATION,
+        ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED(Integer.class),
+        ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION(Integer.class),
+        ANIMATION_ITEM_ACTIVATE_FADE_WAIT(Integer.class),
+        ANIMATION_ITEM_ACTIVATE_FADE_DURATION(Integer.class),
         
-        ANIMATION_ROCKET_MOVE_DURATION,
-        ANIMATION_ROCKET_MOVE_SPEED,
-        ANIMATION_ROCKET_MOVE_GRAVITY,
-        ANIMATION_ROCKET_FADE_WAIT,
-        ANIMATION_ROCKET_FADE_DURATION,
+        ANIMATION_ROCKET_MOVE_DURATION(Integer.class),
+        ANIMATION_ROCKET_MOVE_SPEED(Integer.class),
+        ANIMATION_ROCKET_MOVE_GRAVITY(Integer.class),
+        ANIMATION_ROCKET_FADE_WAIT(Integer.class),
+        ANIMATION_ROCKET_FADE_DURATION(Integer.class),
         
-        ANIMATION_BOMB_TILE_FADE_WAIT,
-        ANIMATION_BOMB_TILE_FADE_DURATION,
+        ANIMATION_BOMB_TILE_FADE_WAIT(Integer.class),
+        ANIMATION_BOMB_TILE_FADE_DURATION(Integer.class),
         
-        ANIMATION_BOMB_SHRAPNEL_FADE_WAIT,
-        ANIMATION_BOMB_SHRAPNEL_FADE_DURATION,
-        ANIMATION_BOMB_SHRAPNEL_MOVE_WAIT,
-        ANIMATION_BOMB_SHRAPNEL_MOVE_DURATION,
-        ANIMATION_BOMB_SHRAPNEL_MOVE_SPEED,
-        ANIMATION_BOMB_SHRAPNEL_MOVE_GRAVITY,
-        ANIMATION_BOMB_SHRAPNEL_MOVE_OMEGA,
+        ANIMATION_BOMB_SHRAPNEL_FADE_WAIT(Integer.class),
+        ANIMATION_BOMB_SHRAPNEL_FADE_DURATION(Integer.class),
+        ANIMATION_BOMB_SHRAPNEL_MOVE_WAIT(Integer.class),
+        ANIMATION_BOMB_SHRAPNEL_MOVE_DURATION(Integer.class),
+        ANIMATION_BOMB_SHRAPNEL_MOVE_SPEED(Integer.class),
+        ANIMATION_BOMB_SHRAPNEL_MOVE_GRAVITY(Integer.class),
+        ANIMATION_BOMB_SHRAPNEL_MOVE_OMEGA(Double.class),
                
-        ANIMATION_BOMB_EXPLODE_ZOOM_SPEED,
-        ANIMATION_BOMB_EXPLODE_ZOOM_DURATION,
-        ANIMATION_BOMB_EXPLODE_FADE_WAIT,
-        ANIMATION_BOMB_EXPLODE_FADE_DURATION,
+        ANIMATION_BOMB_EXPLODE_ZOOM_SPEED(Integer.class),
+        ANIMATION_BOMB_EXPLODE_ZOOM_DURATION(Integer.class),
+        ANIMATION_BOMB_EXPLODE_FADE_WAIT(Integer.class),
+        ANIMATION_BOMB_EXPLODE_FADE_DURATION(Integer.class),
         
-        ANIMATION_EXPLOSION_SPEED,        
-        ANIMATION_EXPLOSION_OPACITY,
-        ANIMATION_EXPLOSION_INITIAL_WIDTH,
-        ANIMATION_EXPLOSION_INITIAL_HEIGHT,
+        ANIMATION_EXPLOSION_SPEED(Integer.class),
+        ANIMATION_EXPLOSION_OPACITY(Integer.class),
+        ANIMATION_EXPLOSION_INITIAL_WIDTH(Integer.class),
+        ANIMATION_EXPLOSION_INITIAL_HEIGHT(Integer.class),
         
-        ANIMATION_ROWFADE_WAIT,
-        ANIMATION_ROWFADE_DURATION,
+        ANIMATION_ROWFADE_WAIT(Integer.class),
+        ANIMATION_ROWFADE_DURATION(Integer.class),
         
-        ANIMATION_SLIDEFADE_FADE_WAIT,
-        ANIMATION_SLIDEFADE_FADE_DURATION,
-        ANIMATION_SLIDEFADE_MOVE_WAIT,
-        ANIMATION_SLIDEFADE_MOVE_DURATION,
-        ANIMATION_SLIDEFADE_MOVE_SPEED,
+        ANIMATION_SLIDEFADE_FADE_WAIT(Integer.class),
+        ANIMATION_SLIDEFADE_FADE_DURATION(Integer.class),
+        ANIMATION_SLIDEFADE_MOVE_WAIT(Integer.class),
+        ANIMATION_SLIDEFADE_MOVE_DURATION(Integer.class),
+        ANIMATION_SLIDEFADE_MOVE_SPEED(Integer.class),
         
-        ANIMATION_PIECE_PULSE_SPEED_SLOW,
-        ANIMATION_PIECE_PULSE_SPEED_FAST,
+        ANIMATION_PIECE_PULSE_SPEED_SLOW(Integer.class),
+        ANIMATION_PIECE_PULSE_SPEED_FAST(Integer.class),
                 
         // Achievement values.
         
-        ACHIEVEMENT_COLOR_BRONZE,
-        ACHIEVEMENT_COLOR_SILVER,
-        ACHIEVEMENT_COLOR_GOLD,
-        ACHIEVEMENT_COLOR_PLATINUM,
+        ACHIEVEMENT_COLOR_BRONZE(Color.class),
+        ACHIEVEMENT_COLOR_SILVER(Color.class),
+        ACHIEVEMENT_COLOR_GOLD(Color.class),
+        ACHIEVEMENT_COLOR_PLATINUM(Color.class),
         
         // SCT values.
 
-        SCT_COLOR_PIECE,
-        SCT_COLOR_LINE,        
-        SCT_COLOR_ITEM,
-        SCT_SCORE_MOVE_DURATION,
-        SCT_SCORE_MOVE_SPEED,
-        SCT_SCORE_MOVE_THETA,
-        SCT_SCORE_FADE_WAIT,
-        SCT_SCORE_FADE_DURATION,
-        SCT_SCORE_FADE_MIN_OPACITY,
-        SCT_SCORE_FADE_MAX_OPACITY,
-        SCT_LEVELUP_TEXT,
-        SCT_LEVELUP_TEXT_SIZE,
-        SCT_LEVELUP_MOVE_DURATION,
-        SCT_LEVELUP_MOVE_SPEED,
-        SCT_LEVELUP_MOVE_THETA,                
+        SCT_COLOR_PIECE(Color.class),
+        SCT_COLOR_LINE(Color.class),
+        SCT_COLOR_ITEM(Color.class),
+        SCT_SCORE_MOVE_DURATION(Integer.class),
+        SCT_SCORE_MOVE_SPEED(Integer.class),
+        SCT_SCORE_MOVE_THETA(Integer.class),
+        SCT_SCORE_FADE_WAIT(Integer.class),
+        SCT_SCORE_FADE_DURATION(Integer.class),
+        SCT_SCORE_FADE_MIN_OPACITY(Integer.class),
+        SCT_SCORE_FADE_MAX_OPACITY(Integer.class),
+        SCT_LEVELUP_TEXT(String.class),
+        SCT_LEVELUP_TEXT_SIZE(Integer.class),
+        SCT_LEVELUP_MOVE_DURATION(Integer.class),
+        SCT_LEVELUP_MOVE_SPEED(Integer.class),
+        SCT_LEVELUP_MOVE_THETA(Integer.class),
                 
         // Menu values.
         
-        LOADER_BAR_FADE_WAIT,
-        LOADER_BAR_FADE_DURATION,        
-        MAIN_MENU_STARBURST_OMEGA,
-        MAIN_MENU_WINDOW_OPACITY,
-        MAIN_MENU_WINDOW_SPEED,
-        MAIN_MENU_SLIDE_SPEED,
-        MAIN_MENU_SLIDE_MIN_X,
-        MAIN_MENU_SLIDE_WAIT,
-        MAIN_MENU_LOGO_FADE_IN_WAIT,
-        MAIN_MENU_LOGO_FADE_IN_DURATION,
-        MAIN_MENU_LOGO_FADE_OUT_WAIT,
-        MAIN_MENU_LOGO_FADE_OUT_DURATION,
+        LOADER_BAR_FADE_WAIT(Integer.class),
+        LOADER_BAR_FADE_DURATION(Integer.class),
+        MAIN_MENU_STARBURST_OMEGA(Double.class),
+        MAIN_MENU_WINDOW_OPACITY(Integer.class),
+        MAIN_MENU_WINDOW_SPEED(Integer.class),
+        MAIN_MENU_SLIDE_SPEED(Integer.class),
+        MAIN_MENU_SLIDE_MIN_X(Integer.class),
+        MAIN_MENU_SLIDE_WAIT(Integer.class),
+        MAIN_MENU_LOGO_FADE_IN_WAIT(Integer.class),
+        MAIN_MENU_LOGO_FADE_IN_DURATION(Integer.class),
+        MAIN_MENU_LOGO_FADE_OUT_WAIT(Integer.class),
+        MAIN_MENU_LOGO_FADE_OUT_DURATION(Integer.class),
         
         // Item values.
-        ITEM_COOLDOWN_STAR
-                
-    }
-    
-    public enum Value
-    {
-        CONF_VERSION_1,
+        ITEM_COOLDOWN_STAR(Integer.class);
+
+        private Class<?> intendedType;
+
+        Key(Class<?> intendedType)
+        { this.intendedType = intendedType; }      
+
+        public Class<?> getIntendedType()
+        { return this.intendedType; }
     }
     
     // Static settings.

@@ -257,7 +257,7 @@ public class ManagerHub
         if (set.contains(Manager.LEVEL))
         {
             // Create the world manager.
-            levelMan = LevelManager.newInstance(listenerMan, scoreMan);                  
+            levelMan = LevelManager.newInstance(listenerMan, scoreMan, settingsMan);
         }                                         
         
         if (set.contains(Manager.ACHIEVEMENT))

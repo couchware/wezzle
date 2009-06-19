@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.event.LevelEvent;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 
 /**
  * Manages the level.
@@ -14,12 +15,10 @@ public class LevelManager implements IResettable
 	//--------------------------------------------------------------------------
 	// Instance Members
 	//--------------------------------------------------------------------------	   
-    
-    /** The listener manager. */
-    private ListenerManager listenerMan;
-    
-    /** The score manager. */
-    private ScoreManager scoreMan;
+        
+    private ListenerManager listenerMan;   
+    private ScoreManager scoreMan;    
+    private SettingsManager settingsMan;
     
 	/** The current level. */
 	private int level = 1;     
@@ -34,11 +33,13 @@ public class LevelManager implements IResettable
 	 * @param board
 	 * @param scoreManager
 	 */
-	private LevelManager(ListenerManager listenerMan, ScoreManager scoreMan)
+	private LevelManager(ListenerManager listenerMan, 
+            ScoreManager scoreMan, SettingsManager settingsMan)
 	{				
         // Remember the listener manager.
         this.listenerMan = listenerMan;
-        this.scoreMan    = scoreMan;                
+        this.scoreMan    = scoreMan;
+        this.settingsMan = settingsMan;
 	}
 	        
     /**
@@ -49,9 +50,10 @@ public class LevelManager implements IResettable
      */       
     public static LevelManager newInstance(
             ListenerManager listenerMan,
-            ScoreManager    scoreMan)
+            ScoreManager    scoreMan,
+            SettingsManager settingsMan)
     {
-        return new LevelManager(listenerMan, scoreMan);
+        return new LevelManager(listenerMan, scoreMan, settingsMan);
     }   
     
     //--------------------------------------------------------------------------
@@ -78,9 +80,16 @@ public class LevelManager implements IResettable
         int nextLevelScore = 0;
         int nextTargetLevelScore  = scoreMan.generateTargetLevelScore(newLevel);
 
-        if (excessLevelScore > nextTargetLevelScore/ 2)
+        int numerator   = settingsMan.getInt(Key.GAME_SCORE_CARRYOVER_NUMERATOR);
+        int denominator = settingsMan.getInt(Key.GAME_SCORE_CARRYOVER_DENOMINATOR);
+
+        // The carryover is the amount of excess score the user may keep
+        // between levels.
+        int carryover = (nextTargetLevelScore * numerator) / denominator;
+
+        if (excessLevelScore > carryover)
         {
-            nextLevelScore = nextTargetLevelScore / 2;
+            nextLevelScore = carryover;
         }       
         else
         {

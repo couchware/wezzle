@@ -9,7 +9,9 @@
   </entry>
   <entry name="Game.Color.Disabled">
     <color red="178" green="178" blue="178" alpha="255" />
-  </entry> 
+  </entry>
+  <entry name="Game.Score.Carryover.Numerator">1</entry>
+  <entry name="Game.Score.Carryover.Denominator">10</entry>
   <entry name="Debug.Show.Clip.Rect">false</entry>
   <entry name="Refactor.Speed.X.Slower">70</entry>
   <entry name="Refactor.Speed.Y.Slower">70</entry>

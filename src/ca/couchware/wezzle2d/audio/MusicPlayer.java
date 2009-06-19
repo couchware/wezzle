@@ -85,7 +85,7 @@ public class MusicPlayer
     private MusicPlayer()
     {         
         // Create a new basic player.
-        this.player = new BasicPlayer();                        
+        this.player = new BasicPlayer();
         this.player.addBasicPlayerListener(new MusicPlayerListener());
     }    
     
@@ -178,7 +178,7 @@ public class MusicPlayer
             public void run()
             {
                 double n = normalizedGain.get();
-                double delta = 0.05;                
+                double delta = 0.02;
 
                 if (NumUtil.equalsDouble(n, targetNormalizedGain, 0.02))
                 {

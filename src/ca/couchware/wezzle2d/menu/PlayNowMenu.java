@@ -300,7 +300,10 @@ public class PlayNowMenu extends AbstractMenu
             if (i == theme) continue;
             playerList.get(i).fadeToGain(0.0);
         }
-        double userGain = SettingsManager.get().getDouble(Settings.Key.USER_MUSIC_VOLUME);
+
+        int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);
+        double userGain = (double) intGain / 100.0;
+        
         playerList.get(theme).fadeToGain(userGain);
     }
 
@@ -410,6 +413,7 @@ public class PlayNowMenu extends AbstractMenu
             // Stop all the players.
             for (MusicPlayer p : playerList)
             {                
+                //p.fadeToGain(0.0);
                 p.stopAtGain(0.0);
             }        
             

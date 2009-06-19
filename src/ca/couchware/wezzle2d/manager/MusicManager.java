@@ -228,14 +228,15 @@ public class MusicManager
         // already.
         if (this.player == null)
         {
-            this.player = createPlayer(playList.get(index));
-            this.player.fadeToGain(normalizedGain);
+            this.player = createPlayer(playList.get(index));            
         }
         
         try
         {            
-            // Play.
+            // Play.            
             this.player.play();
+            this.player.setNormalizedGain(0.0);
+            this.player.fadeToGain(normalizedGain);
         }
         catch (BasicPlayerException e)
         {
@@ -263,7 +264,7 @@ public class MusicManager
     public void next()
     {
         // Make sure the play list has items, if not, ignore the command.
-        if (this.playList.isEmpty() == true)
+        if ( this.playList.isEmpty() )
             return;
         
         // Stop the current track, advance the index and release the old player.
@@ -326,17 +327,11 @@ public class MusicManager
     public void setNormalizedGain(double nGain)
     {
         // Make sure it's between 0.0 and 1.0.
-        if (nGain < 0.0)
-        {
-            nGain = 0.0;
-        }
-        else if (nGain > 1.0)
-        {
-            nGain = 1.0;
-        }
+        nGain = Math.max(nGain, 0.0);
+        nGain = Math.min(nGain, 1.0);
         
         // Adjust the property;
-        settingsMan.setInt(Key.USER_MUSIC_VOLUME, (int) (nGain * 100));
+        settingsMan.setInt(Key.USER_MUSIC_VOLUME, (int) (nGain * 100.0));
 
         // Rememeber it.
         this.normalizedGain = nGain;
@@ -353,6 +348,17 @@ public class MusicManager
         {
             CouchLogger.get().recordException(this.getClass(), e);
         }
+    }
+
+    public void fadeToGain(double nGain)
+    {
+        // Make sure it's between 0.0 and 1.0.
+        nGain = Math.max(nGain, 0.0);
+        nGain = Math.min(nGain, 1.0);
+       
+        // Adjust the current player.
+        if (this.player != null)        
+            this.player.fadeToGain(nGain);        
     }
     
     public void updateLogic(Game game, ManagerHub hub)

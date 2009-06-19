@@ -1,4 +1,3 @@
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -20,7 +19,7 @@ import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.manager.StatManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.EnumSet;
 
@@ -150,6 +149,17 @@ public class PauseGroup extends AbstractGroup implements
     @Override
     public void setActivated(final boolean activated)
     {
+        if (activated)
+        {
+            hub.musicMan.fadeToGain(0.05);
+        }
+        else
+        {
+            int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
+            double gain = (double) intGain / 100.0;
+            hub.musicMan.fadeToGain(gain);
+        }
+
         // Invoke super.
         super.setActivated(activated);               
     }
