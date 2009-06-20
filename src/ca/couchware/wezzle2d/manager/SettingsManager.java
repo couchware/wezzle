@@ -371,6 +371,14 @@ public class SettingsManager
 
         currentMap.put(key, value);
     }
+
+    public void setList(Key key, List list)
+    {
+        if (key.getIntendedType() != List.class)
+            throw new IllegalArgumentException(key + " is not a list");
+
+        currentMap.put(key, list);
+    }
     
     public void setString(Key key, String value)
     {

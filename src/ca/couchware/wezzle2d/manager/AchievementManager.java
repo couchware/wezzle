@@ -119,7 +119,7 @@ public class AchievementManager implements ICollisionListener
     private void exportAchievements()
     {
         CouchLogger.get().recordMessage(this.getClass(), "Exported achievements to settings manager.");
-        this.settingsMan.setObject(Key.USER_ACHIEVEMENT_COMPLETED, this.completedList);
+        this.settingsMan.setList(Key.USER_ACHIEVEMENT_COMPLETED, this.completedList);
     }
 
     /**
