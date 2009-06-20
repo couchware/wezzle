@@ -19,10 +19,7 @@ import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
  *
  */
 public class TimerManager implements 
-        IResettable,
-        IGameListener,
-        IMoveListener,
-        ILevelListener
+        IResettable, IGameListener, IMoveListener, ILevelListener
 {                 
     
     /** The listener manager used to fire timer events. */
@@ -201,10 +198,20 @@ public class TimerManager implements
         this.stopped = stopped;
     }
 
+    /**
+     * Determine the time limit for the given level.
+     * @param level
+     * @return
+     */
+    public int determineTimeForLevel(int level)
+    {
+        return Math.max(timeUpper - (level - 1) * 1000, timeLower);
+    }
+
+
     public void levelChanged(LevelEvent event)
     {
-        int time = Math.max(timeUpper - (event.getNewLevel() - 1) * 1000, timeLower);
-                
+        int time = determineTimeForLevel(event.getNewLevel());
         this.setStartTime(time);        
         
         CouchLogger.get().recordMessage(this.getClass(), "Level changed.");
@@ -235,6 +242,10 @@ public class TimerManager implements
 
     public void gameReset(GameEvent event)
     {
+        // Set the max time to the value for this level.
+        int time = determineTimeForLevel(event.getLevel());
+        this.setStartTime(time);
+
         // Reset the counter.
         this.resetCurrentTime();
     }

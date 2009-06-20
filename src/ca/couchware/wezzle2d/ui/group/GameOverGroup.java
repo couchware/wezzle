@@ -111,7 +111,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
                 !game.isCompletelyBusy());
                        
         // Reset the stat man.
-        game.resetGame(hub, game, this.restartButton.isActivated());
+        Game.resetGame(hub, game, this.restartButton.isActivated());
 
         // Create board and make it invisible.
         hub.boardMan.setVisible(false);
