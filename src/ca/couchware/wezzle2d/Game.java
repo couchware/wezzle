@@ -943,7 +943,8 @@ public class Game extends Canvas implements IWindowCallback
         //   a) The game's layer manager is not the drawer.
         //   b) Any sort of screen other than the game is showing (i.e. game over).
         //   c) A tutorial is playing (as they don't have a time limit).
-        if (this.drawer == hub.layerMan
+        boolean autoPause = hub.settingsMan.getBool(Key.USER_AUTO_PAUSE);
+        if (autoPause && this.drawer == hub.layerMan
                 && (hub.groupMan != null && !hub.groupMan.isActivated())
                 && (hub.tutorialMan != null && !hub.tutorialMan.isTutorialRunning()))
         {

@@ -66,11 +66,11 @@ public class OptionsMenu extends AbstractMenu
     private SliderBar sampleSlider;
     
     /** The possibilities for the max level. */
-    final private static int MAX_LEVEL_ON = 0;
-    final private static int MAX_LEVEL_OFF = 1;
+    final private static int AUTO_PAUSE_ON = 0;
+    final private static int AUTO_PAUSE_OFF = 1;
     
     /** The max level radio group. */
-    private RadioGroup maxLevelRadio;
+    private RadioGroup autoPauseRadio;
 
     /** The possibilities for the max level. */
     final private static int PIECE_PREVIEW_BOX_ON = 0;
@@ -259,37 +259,37 @@ public class OptionsMenu extends AbstractMenu
                 .build();
         this.page0EntityList.add(sampleSlider);
 
-        ITextLabel maxLevelLabel = new LabelBuilder(
+        ITextLabel autoPauseLabel = new LabelBuilder(
                     levelLabel.getX(),
                     levelLabel.getY() + 80)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(labelColor).text("Maximum Level").size(20)
+                .color(labelColor).text("Automatic Pause").size(20)
                 .visible(false)
                 .build();
-        this.page0EntityList.add(maxLevelLabel);
+        this.page0EntityList.add(autoPauseLabel);
 
-        RadioItem maxLevelOn = new RadioItem.Builder()
+        RadioItem autoPauseOn = new RadioItem.Builder()
                 .color(optionColor)
-                .text("20").build();
+                .text("On").build();
 
-        RadioItem maxLevelOff = new RadioItem.Builder()
+        RadioItem autoPauseOff = new RadioItem.Builder()
                 .color(optionColor)
-                .text("No Limit").build();
+                .text("Off").build();
 
-        final boolean maxLevelSetting = hub.settingsMan.getBool(Key.USER_MAX_LEVEL_CAPPED);
-        this.maxLevelRadio = new RadioGroup.Builder(
+        final boolean autoPauseSetting = hub.settingsMan.getBool(Key.USER_AUTO_PAUSE);
+        this.autoPauseRadio = new RadioGroup.Builder(
                     268,
-                    maxLevelLabel.getY() + 35)
+                    autoPauseLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(maxLevelOn,  maxLevelSetting)
-                .add(maxLevelOff, !maxLevelSetting)
+                .add(autoPauseOn,  autoPauseSetting)
+                .add(autoPauseOff, !autoPauseSetting)
                 .visible(false)
                 .build();
-        this.page0EntityList.add(maxLevelRadio);
+        this.page0EntityList.add(autoPauseRadio);
 
         ITextLabel piecePreviewBoxLabel = new LabelBuilder(
-                    maxLevelLabel.getX(),
-                    maxLevelLabel.getY() + 85)
+                    autoPauseLabel.getX(),
+                    autoPauseLabel.getY() + 85)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor).text("Piece Preview Box").size(20)
                 .visible(false)
@@ -364,12 +364,12 @@ public class OptionsMenu extends AbstractMenu
             hub.settingsMan.setInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES, this.sampleNumber);
         }
 
-        if ( this.maxLevelRadio.changed() )
+        if ( this.autoPauseRadio.changed() )
         {
-            int selected = this.maxLevelRadio.getSelectedIndex();
-            boolean isOn = selected == MAX_LEVEL_ON;
+            int selected = this.autoPauseRadio.getSelectedIndex();
+            boolean isOn = selected == AUTO_PAUSE_ON;
 
-            hub.settingsMan.setBool(Key.USER_MAX_LEVEL_CAPPED, isOn);
+            hub.settingsMan.setBool(Key.USER_AUTO_PAUSE, isOn);
         }
 
         if ( this.piecePreviewBoxRadio.changed() )

@@ -42,6 +42,9 @@ public class Settings
         /** The number of FSAA samples. */
         USER_GRAPHICS_ANTIALIASING_SAMPLES(Integer.class),
 
+        /** Whether or not auto-pause is enabled. */
+        USER_AUTO_PAUSE(Boolean.class),
+
         /** Is the maximum level capped? */
         USER_MAX_LEVEL_CAPPED(Boolean.class),
 

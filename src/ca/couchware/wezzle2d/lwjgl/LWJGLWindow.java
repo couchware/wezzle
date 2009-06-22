@@ -373,57 +373,52 @@ public class LWJGLWindow implements IWindow
                 callback.windowClosed();
             }            
             // The window is in the foreground, so we should play the game
-            else if (Display.isActive())
+            else // if (Display.isActive())
             {
                 // Notify of activation.
                 if (this.active == false) 
                 {
                     callback.windowActivated();
                     this.active = true;
-                }
-                
-//                loopCounter = 0;
-//
-//                while (getTime() > nextGameTick && loopCounter < MAX_FRAME_SKIP)
-//                {
-//                    callback.update(this.speed);
-//                    nextGameTick += SKIP_TICKS;
-//                    loopCounter++;
-//                }                       
-//
-//                callback.render();  
+                }               
                 
                 callback.update();                                               
-                callback.draw();                                                
-                
-                GL11.glColor3f(0, 0, 0);                
-                Display.sync(TICKS_PER_SECOND);                
-            }
-            // The window is not in the foreground, so we can allow other stuff to run and
-            // infrequently update.
-            else
-            {
-                if (this.active == true)
-                {
-                    callback.windowDeactivated();
-                    this.active = false;
-                }
-                
-                try
-                {
-                    Thread.sleep(100);
-                }
-                catch (InterruptedException e)
-                { }
-                
-                callback.update();
+                //callback.draw();
 
                 // Only bother rendering if the window is visible or dirty
                 if (Display.isVisible() || Display.isDirty())
                 {
                     callback.draw();
                 }
-            } // end if               
+                
+                GL11.glColor3f(0, 0, 0);                
+                Display.sync(TICKS_PER_SECOND);                
+            }
+            // The window is not in the foreground, so we can allow other stuff to run and
+            // infrequently update.
+//            else
+//            {
+//                if (this.active == true)
+//                {
+//                    callback.windowDeactivated();
+//                    this.active = false;
+//                }
+//
+//                try
+//                {
+//                    Thread.sleep(100);
+//                }
+//                catch (InterruptedException e)
+//                { }
+//
+//                callback.update();
+//
+//                // Only bother rendering if the window is visible or dirty
+//                if (Display.isVisible() || Display.isDirty())
+//                {
+//                    callback.draw();
+//                }
+//            } // end if
         } // end while
 	}
     
