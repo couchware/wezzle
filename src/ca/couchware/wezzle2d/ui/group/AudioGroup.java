@@ -185,6 +185,7 @@ public class AudioGroup extends AbstractGroup
             
             // Set the volume.
             hub.musicMan.setNormalizedGain(gain);
+            hub.musicMan.exportSettings();
         }
     }
 }

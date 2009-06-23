@@ -133,7 +133,7 @@ public class PauseGroup extends AbstractGroup implements
         linesPerMoveLabel.setText(linesPerMove + " lines/move");        
     }      
     
-     @Override
+    @Override
     public void setVisible(final boolean visible)
     {
         // This is more important than you think.  Basically, since we might
@@ -151,7 +151,7 @@ public class PauseGroup extends AbstractGroup implements
     {
         if (activated)
         {
-            hub.musicMan.fadeToGain(0.05);
+            hub.musicMan.fadeToGain(0.05);            
         }
         else
         {

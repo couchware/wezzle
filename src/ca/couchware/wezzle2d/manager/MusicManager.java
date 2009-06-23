@@ -108,7 +108,7 @@ public class MusicManager
         this.index = 0;    
                         
         // Get the default volume.
-        setNormalizedGain((double) settingsMan.getInt(Key.USER_MUSIC_VOLUME) / 100.0);                
+        importSettings();
     }
         
     /**
@@ -331,7 +331,7 @@ public class MusicManager
         nGain = Math.min(nGain, 1.0);
         
         // Adjust the property;
-        settingsMan.setInt(Key.USER_MUSIC_VOLUME, (int) (nGain * 100.0));
+        //settingsMan.setInt(Key.USER_MUSIC_VOLUME, (int) (nGain * 100.0));
 
         // Rememeber it.
         this.normalizedGain = nGain;
@@ -358,7 +358,25 @@ public class MusicManager
        
         // Adjust the current player.
         if (this.player != null)        
-            this.player.fadeToGain(nGain);        
+            this.player.fadeToGain(nGain);
+
+        this.normalizedGain = nGain;
+    }
+
+    public void exportSettings()
+    {
+        // Write the music volume.
+        int intGain =(int) (normalizedGain * 100.0);
+        settingsMan.setInt(Key.USER_MUSIC_VOLUME, intGain);
+    }
+
+    public final void importSettings()
+    {
+        // Read the music volume.
+        final double nGain = 
+                (double) settingsMan.getInt(Key.USER_MUSIC_VOLUME) / 100.0;
+        
+        setNormalizedGain(nGain);
     }
     
     public void updateLogic(Game game, ManagerHub hub)
