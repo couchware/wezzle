@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.IWindowCallback;
 import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.KeyEvent;
+import ca.couchware.wezzle2d.event.KeyEvent.Arrow;
 import ca.couchware.wezzle2d.event.KeyEvent.Modifier;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MouseEvent.Button;
@@ -535,14 +536,37 @@ public class LWJGLWindow implements IWindow
                 default:
                     modifier = KeyEvent.Modifier.NONE;
             }
-            
+
+            Arrow arrow;
+            switch(i)
+            {
+                case Keyboard.KEY_UP:
+                    arrow = KeyEvent.Arrow.KEY_UP;
+                    break;
+
+                case Keyboard.KEY_DOWN:
+                    arrow = KeyEvent.Arrow.KEY_DOWN;
+                    break;
+
+                case Keyboard.KEY_LEFT:
+                    arrow = KeyEvent.Arrow.KEY_LEFT;
+                    break;
+
+                case Keyboard.KEY_RIGHT:
+                    arrow = KeyEvent.Arrow.KEY_RIGHT;
+                    break;
+
+                default:
+                    arrow = KeyEvent.Arrow.NONE;
+
+            }
             
 //            LogManager.recordMessage(Keyboard.getKeyName(i) + " was pressed.");
 //            LogManager.recordMessage("State is " + state + ".");
             
             char ch = Keyboard.getEventCharacter();                                                  
             
-            KeyEvent event = new KeyEvent(this, ch, modifier);
+            KeyEvent event = new KeyEvent(this, ch, modifier, arrow);
             
             for (IKeyListener listener : list)
             {                                                        

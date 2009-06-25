@@ -31,15 +31,26 @@ public class KeyEvent extends EventObject
     
     
     }
+
+    public enum Arrow
+    {
+        NONE,
+        KEY_UP,
+        KEY_DOWN,
+        KEY_LEFT,
+        KEY_RIGHT
+    }
     
     final private char ch;
     final private Modifier modifer;
+    final private Arrow arrow;
     
-    public KeyEvent(Object source, char ch, Modifier modifier)
+    public KeyEvent(Object source, char ch, Modifier modifier, Arrow arrow)
     {
         super(source);
         this.ch = ch;
         this.modifer = modifier;
+        this.arrow = arrow;
     }
         
     public char getChar()
@@ -50,6 +61,11 @@ public class KeyEvent extends EventObject
     public Modifier getModifer()
     {
         return modifer;
-    }        
+    }
+
+    public Arrow getArrow()
+    {
+        return arrow;
+    }
     
 }

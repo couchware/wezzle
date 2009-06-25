@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+
 /**
  * The piece manager keeps track of where the mouse pointer is on the board
  * and places the piece selector accordingly when its draw method is called.
@@ -99,6 +100,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     /** This is set to true everytime the restriction board is clicked. */
     private volatile boolean restrictionBoardClicked = false;
+    private boolean leftShiftPressed = false;
 
     //--------------------------------------------------------------------------
     // Constructor
@@ -930,7 +932,15 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             case RIGHT_ALT:
             case RIGHT_CTRL:
                 mouseButtonSet.add(MouseButton.RIGHT);
-                return;                                                       
+                return;
+            case LEFT_SHIFT:
+            {
+                leftShiftPressed = true;
+
+            }
+              
+
+               
         }
         
         switch (event.getChar())
@@ -1003,6 +1013,57 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                             TileHelper.makeTile(type, oldTile.getColor()));
 
                     break;
+
+
+                case 'S':
+                {
+                    
+                     hub.soundMan.setPaused(!hub.soundMan.isPaused());
+                     break;
+                }
+                case 'M':
+                {
+                    hub.musicMan.setPaused(!hub.musicMan.isPaused());
+                    break;
+                }
+
+
+
+            }
+
+            switch(event.getArrow())
+            {
+                 case KEY_UP:
+                     if(leftShiftPressed == true)
+                     {
+                         hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()+0.2);
+                     }
+                     break;
+
+
+                case KEY_DOWN:
+                     if(leftShiftPressed == true)
+                     {
+                         hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()-0.2);
+                     }
+                     break;
+
+
+                case KEY_LEFT:
+                     if(leftShiftPressed == true)
+                     {
+                         hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()-0.2);
+                     }
+                     break;
+
+
+                case KEY_RIGHT:
+                     if(leftShiftPressed == true)
+                     {
+                          hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()+0.2);
+                     }
+                     break;
+                  
             }
         }
     }
@@ -1010,6 +1071,12 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     public void keyReleased(KeyEvent event)
     {
         // Intentionally left blank.
+        switch(event.getModifer())
+        {
+            case LEFT_SHIFT:
+                this.leftShiftPressed = false;
+                break;
+        }
     }
     
 }
