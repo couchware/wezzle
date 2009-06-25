@@ -1030,13 +1030,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
 
             }
-
+            double offset = 0.2;
             switch(event.getArrow())
             {
                  case KEY_UP:
                      if(leftShiftPressed == true)
                      {
-                         hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()+0.2);
+                         hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()+offset);
                      }
                      break;
 
@@ -1044,7 +1044,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 case KEY_DOWN:
                      if(leftShiftPressed == true)
                      {
-                         hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()-0.2);
+                         hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()-offset);
                      }
                      break;
 
@@ -1052,7 +1052,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 case KEY_LEFT:
                      if(leftShiftPressed == true)
                      {
-                         hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()-0.2);
+                         hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()-offset);
                      }
                      break;
 
@@ -1060,7 +1060,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 case KEY_RIGHT:
                      if(leftShiftPressed == true)
                      {
-                          hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()+0.2);
+                          hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()+offset);
                      }
                      break;
                   
