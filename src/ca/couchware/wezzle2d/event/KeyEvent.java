@@ -30,9 +30,6 @@ public class KeyEvent extends EventObject
         APPLICATION,
         RIGHT_CTRL,
         RIGHT_SHIFT
-    
-    
-    
     }
 
     public enum Arrow
@@ -52,7 +49,7 @@ public class KeyEvent extends EventObject
     {
         super(source);
         this.ch = ch;
-        this.modifers = modifiers;
+        this.modifers = Collections.unmodifiableSet(modifiers);
         this.arrow = arrow;
     }
         
@@ -61,10 +58,9 @@ public class KeyEvent extends EventObject
         return ch;
     }
 
-
     public Set<Modifier> getModifierSet()
     {
-        return Collections.unmodifiableSet(modifers);
+        return modifers;
     }
 
     public Arrow getArrow()

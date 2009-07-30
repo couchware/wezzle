@@ -106,21 +106,18 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     // Constructor
     //--------------------------------------------------------------------------
     
-	/**
-	 * The constructor.
-	 * 
-	 * @param boardMan The board manager.
-	 */
+    /**
+     * The constructor.
+     *
+     * @param boardMan The board manager.
+     */
     private PieceManager(ManagerHub hub)
     {
-		// Set the reference.
+        // Set the reference.
         this.window = ResourceFactory.get().getWindow();
 
-        // Sanity check and assignment.
-        if(hub == null)
-        {
+        if (hub == null)        
            throw new IllegalArgumentException("Hub must not be null");
-        }
 
         this.hub = hub;
 
@@ -129,10 +126,12 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         final LayerManager layerMan = hub.layerMan;
 
         // Create new piece entity at the origin of the board.
-        pieceGrid = new PieceGrid.Builder(
+        this.pieceGrid = new PieceGrid.Builder(
                 boardMan.getX() + boardMan.getCellWidth(),
                 boardMan.getY() + boardMan.getCellHeight(),
-                PieceGrid.RenderMode.SPRITE).visible(false).build();
+                PieceGrid.RenderMode.SPRITE)
+            .visible(false)
+            .build();
 
         // Create the piece queue and load it up.
         this.pieceQueue = new LinkedList<Piece>();
@@ -194,16 +193,16 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     /**
      * Load a piece into the piece grid.
      * 
-	 * @param piece The piece to set.
-	 */
-	public void setPiece(final Piece piece)
-	{
+     * @param piece The piece to set.
+     */
+    public void setPiece(final Piece piece)
+    {
         // Remember which piece it is for rotating.
         this.piece = piece;
-        
+
         // Load the piece into the piece grid.
-		pieceGrid.loadStructure( piece.getStructure() );
-	}	
+        pieceGrid.loadStructure( piece.getStructure() );
+    }
     
     /**
      * Loads the piece from the top of the piece queue.
@@ -244,7 +243,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
      * @return The adjusted position.
      */
     public ImmutablePosition limitPosition(ImmutablePosition p)
-	{
+    {
         int x = p.getX();
         int y = p.getY();
 
@@ -298,7 +297,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 		return new ImmutablePosition(
                 boardMan.getX() + (column * boardMan.getCellWidth()), 
                 boardMan.getY() + (row * boardMan.getCellHeight()));
-	}
+    }
     
     /**
      * Gets the set of indices covered by the current piece.  All of the
@@ -348,8 +347,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     public void notifyRefactored()
     {
-        refactored = true;
-        
+        refactored = true;        
     }
           
     private int toColumn(final int x)
@@ -845,31 +843,31 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     //--------------------------------------------------------------------------
     
     public void mouseClicked(MouseEvent e)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+    {
+            // TODO Auto-generated method stub
 
-	public void mouseEntered(MouseEvent e)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	public void mouseExited(MouseEvent e)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+    public void mouseEntered(MouseEvent e)
+    {
+            // TODO Auto-generated method stub
 
-	public void mousePressed(MouseEvent e)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	public void mouseReleased(MouseEvent e)
-	{
+    public void mouseExited(MouseEvent e)
+    {
+            // TODO Auto-generated method stub
+
+    }
+
+    public void mousePressed(MouseEvent e)
+    {
+            // TODO Auto-generated method stub
+
+    }
+
+    public void mouseReleased(MouseEvent e)
+    {
         // Debug.
         //Util.handleMessage("Button clicked.", Thread.currentThread());                
         
@@ -902,9 +900,10 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 break;
                 
             default:
-                CouchLogger.get().recordMessage(this.getClass(), "No recognized button pressed.");
+                CouchLogger.get().recordMessage(this.getClass(),
+                        "No recognized button pressed.");
         }
-	}
+    }
 
     public void mouseDragged(MouseEvent e)
     {
@@ -923,14 +922,15 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
     public void keyPressed(KeyEvent event)
     {
-       
+        if (event.getModifierSet().contains(Modifier.LEFT_CTRL)
+                || event.getModifierSet().contains(Modifier.LEFT_ALT)
+                || event.getModifierSet().contains(Modifier.RIGHT_ALT)
+                || event.getModifierSet().contains(Modifier.RIGHT_CTRL))
+        {                
+            mouseButtonSet.add(MouseButton.RIGHT);
+            return;
+        }
 
-        if(event.getModifierSet().contains(Modifier.RIGHT_SHIFT))
-                mouseButtonSet.add(MouseButton.RIGHT);
-
-               
-        
-        
         switch (event.getChar())
         {
             case ' ':
@@ -939,126 +939,129 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         }
 
         if (hub.boardMan != null)
-        {
-            int index = -1;
-            Tile oldTile;            
-
-            switch (event.getChar())
-            {
-                // Rocket.
-                case 'u':
-                case 'd':
-                case 'l':
-                case 'r':
-                    
-                    index = hub.boardMan.getIndexFromPosition(this.cursorPosition);
-                    oldTile = hub.boardMan.getTile(index);
-                    if (oldTile == null) break;
-                    
-                    RocketTile rocketTile = (RocketTile) TileHelper.makeTile(
-                            TileType.ROCKET, oldTile.getColor());
-
-                    RocketTile.Direction dir = RocketTile.Direction.UP;
-                    switch (event.getChar())
-                    {
-                        case 'u': dir = RocketTile.Direction.UP;    break;
-                        case 'd': dir = RocketTile.Direction.DOWN;  break;
-                        case 'l': dir = RocketTile.Direction.LEFT;  break;
-                        case 'r': dir = RocketTile.Direction.RIGHT; break;
-                        default:  throw new AssertionError();
-                    }
-                    rocketTile.setDirection(dir);
-                    
-                    hub.boardMan.replaceTile(index, rocketTile);
-                    
-                    break;
-
-                // Bomb, gravity, star, multipliers.
-                case 'b':
-                case 'g':
-                case 's':
-                case '2':
-                case '3':
-                case '4':
-
-                    index = hub.boardMan.getIndexFromPosition(this.cursorPosition);
-                    oldTile = hub.boardMan.getTile(index);
-                    if (oldTile == null) break;
-
-                    TileType type = TileType.NORMAL;
-                    switch (event.getChar())
-                    {
-                        case 'b': type = TileType.BOMB;    break;
-                        case 'g': type = TileType.GRAVITY; break;
-                        case 's': type = TileType.STAR;    break;
-                        case '2': type = TileType.X2;      break;
-                        case '3': type = TileType.X3;      break;
-                        case '4': type = TileType.X4;      break;
-                        default:  throw new AssertionError();
-                    }
-
-                    hub.boardMan.replaceTile(index,
-                            TileHelper.makeTile(type, oldTile.getColor()));
-
-                    break;
-
-
-                case 'S':
-                {
-                    
-                     hub.soundMan.setPaused(!hub.soundMan.isPaused());
-                     break;
-                }
-                case 'M':
-                {
-                    hub.musicMan.setPaused(!hub.musicMan.isPaused());
-                    break;
-                }
-
-
-
-            }
-            double offset = 0.2;
-            switch(event.getArrow())
-            {
-                 case KEY_UP:
-                     if(event.getModifierSet().contains(Modifier.LEFT_SHIFT))
-                     {
-                         hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()+offset);
-                     }
-                     break;
-
-
-                case KEY_DOWN:
-                     if(event.getModifierSet().contains(Modifier.LEFT_SHIFT))
-                     {
-                         hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()-offset);
-                     }
-                     break;
-
-
-                case KEY_LEFT:
-                     if(event.getModifierSet().contains(Modifier.LEFT_SHIFT))
-                     {
-                         hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()-offset);
-                     }
-                     break;
-
-
-                case KEY_RIGHT:
-                     if(event.getModifierSet().contains(Modifier.LEFT_SHIFT))
-                     {
-                          hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()+offset);
-                     }
-                     break;
-                  
-            }
+        {                                
+            handleItemKeys(event);            
+            handleMusicKeys(event);
         }
     }
 
     public void keyReleased(KeyEvent event)
     {
         // Intentionally left blank.
+    }
+
+    private void handleItemKeys(KeyEvent event)
+    {
+        int index = -1;
+        Tile oldTile;
+
+        switch (event.getChar())
+        {
+            case 'u':
+            case 'd':
+            case 'l':
+            case 'r':
+                index = hub.boardMan.getIndexFromPosition(this.cursorPosition);
+                oldTile = hub.boardMan.getTile(index);
+                if (oldTile == null)  break;
+
+                RocketTile rocketTile = (RocketTile) TileHelper.makeTile(
+                            TileType.ROCKET, oldTile.getColor());
+                RocketTile.Direction dir = RocketTile.Direction.UP;
+                switch (event.getChar())
+                {
+                    case 'u':
+                        dir = RocketTile.Direction.UP;
+                        break;
+                    case 'd':
+                        dir = RocketTile.Direction.DOWN;
+                        break;
+                    case 'l':
+                        dir = RocketTile.Direction.LEFT;
+                        break;
+                    case 'r':
+                        dir = RocketTile.Direction.RIGHT;
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+                rocketTile.setDirection(dir);
+                hub.boardMan.replaceTile(index, rocketTile);
+                break;
+
+            case 'b':
+            case 'g':
+            case 's':
+            case '2':
+            case '3':
+            case '4':
+                index = hub.boardMan.getIndexFromPosition(this.cursorPosition);
+                oldTile = hub.boardMan.getTile(index);
+                if (oldTile == null) break;
+
+                TileType type;
+                switch (event.getChar()) {
+                    case 'b':
+                        type = TileType.BOMB;
+                        break;
+                    case 'g':
+                        type = TileType.GRAVITY;
+                        break;
+                    case 's':
+                        type = TileType.STAR;
+                        break;
+                    case '2':
+                        type = TileType.X2;
+                        break;
+                    case '3':
+                        type = TileType.X3;
+                        break;
+                    case '4':
+                        type = TileType.X4;
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+                hub.boardMan.replaceTile(index, TileHelper.makeTile(type, oldTile.getColor()));
+                break;
+            case 'S':
+            {
+                hub.soundMan.setPaused(!hub.soundMan.isPaused());
+                break;
+            }
+            case 'M':
+            {
+                hub.musicMan.setPaused(!hub.musicMan.isPaused());
+                break;
+            }
+        }
+    }
+
+    private final double AUDIO_DELTA = 0.1;
+    private void handleMusicKeys(KeyEvent event)
+    {
+        switch (event.getArrow())
+        {
+            case KEY_UP:
+                if (event.getModifierSet().contains(Modifier.LEFT_SHIFT))
+                    hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain() + AUDIO_DELTA);
+                break;
+
+            case KEY_DOWN:
+                if (event.getModifierSet().contains(Modifier.LEFT_SHIFT))
+                    hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain() - AUDIO_DELTA);
+                break;
+                
+            case KEY_LEFT:
+                if (event.getModifierSet().contains(Modifier.LEFT_SHIFT))
+                    hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain() - AUDIO_DELTA);
+                break;
+
+            case KEY_RIGHT:
+                if (event.getModifierSet().contains(Modifier.LEFT_SHIFT))
+                    hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain() + AUDIO_DELTA);
+                break;
+        } // end switch
     }
     
 }
