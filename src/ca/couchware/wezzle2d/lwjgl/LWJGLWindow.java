@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +78,8 @@ public class LWJGLWindow implements IWindow
      * until needed.
      */
 	private String title;
+
+        private Set<Modifier> modifiers;
 	
 	/**
 	 * Create a new game window that will use OpenGL to 
@@ -93,6 +96,9 @@ public class LWJGLWindow implements IWindow
         this.mouseStateMap.put(Button.LEFT, false);
         this.mouseStateMap.put(Button.RIGHT, false);
         this.mouseStateMap.put(Button.MIDDLE, false);
+        
+        modifiers = EnumSet.noneOf(Modifier.class);
+
     }
 	
 	/**
@@ -566,17 +572,19 @@ public class LWJGLWindow implements IWindow
             
             char ch = Keyboard.getEventCharacter();                                                  
             
-            KeyEvent event = new KeyEvent(this, ch, modifier, arrow);
+            KeyEvent event = new KeyEvent(this, ch, this.modifiers, arrow);
             
             for (IKeyListener listener : list)
             {                                                        
                 // If it equals NUL, then it's actually a key up.
                 if (state)               
-                {                    
+                {
+                    modifiers.add(modifier);
                     listener.keyPressed(event);    
                 }                
                 else
                 {
+                    modifiers.remove(modifier);
                     listener.keyReleased(event);
                 }
             }

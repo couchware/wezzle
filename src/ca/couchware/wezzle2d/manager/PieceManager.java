@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.KeyEvent;
+import ca.couchware.wezzle2d.event.KeyEvent.Modifier;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
 import ca.couchware.wezzle2d.event.PieceEvent;
@@ -86,8 +87,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     /** The current piece. */
     private Piece piece;
     
-	/** The piece grid. */
-	private PieceGrid pieceGrid;       
+    /** The piece grid. */
+    private PieceGrid pieceGrid;
     
     /** The position of the mouse cursor. */
     private ImmutablePosition cursorPosition;        
@@ -100,7 +101,6 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     
     /** This is set to true everytime the restriction board is clicked. */
     private volatile boolean restrictionBoardClicked = false;
-    private boolean leftShiftPressed = false;
 
     //--------------------------------------------------------------------------
     // Constructor
@@ -111,16 +111,16 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 	 * 
 	 * @param boardMan The board manager.
 	 */
-	private PieceManager(ManagerHub hub)
-	{       
+    private PieceManager(ManagerHub hub)
+    {
 		// Set the reference.
         this.window = ResourceFactory.get().getWindow();
 
         // Sanity check and assignment.
-       if(hub == null)
-       {
+        if(hub == null)
+        {
            throw new IllegalArgumentException("Hub must not be null");
-       }
+        }
 
         this.hub = hub;
 
@@ -129,37 +129,35 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         final LayerManager layerMan = hub.layerMan;
 
         // Create new piece entity at the origin of the board.
-		pieceGrid = new PieceGrid.Builder(
-                        boardMan.getX() + boardMan.getCellWidth(),                
-                        boardMan.getY() + boardMan.getCellHeight(),
-                        PieceGrid.RenderMode.SPRITE)
-                    .visible(false)
-                    .build();
-        
+        pieceGrid = new PieceGrid.Builder(
+                boardMan.getX() + boardMan.getCellWidth(),
+                boardMan.getY() + boardMan.getCellHeight(),
+                PieceGrid.RenderMode.SPRITE).visible(false).build();
+
         // Create the piece queue and load it up.
         this.pieceQueue = new LinkedList<Piece>();
-        
+
         for (int i = 0; i < PIECE_QUEUE_SIZE; i++)
         {
-            Piece futurePiece = PieceType.getRandom().getPiece();  
+            Piece futurePiece = PieceType.getRandom().getPiece();
             futurePiece.rotateRandomly();
             this.pieceQueue.offer(futurePiece);
         }
-        
+
         // Load a piece from the top of the queue.
         //this.loadPiece();
-        
+
         // Get the cursor position.
         this.cursorPosition = limitPosition(window.getMouseImmutablePosition());
-        
+
         // Move the piece to the cursor position.
         this.movePieceGridTo(this.cursorPosition);
         layerMan.add(this.pieceGrid, Layer.PIECE_GRID);
-        
+
         // Create the restriction board and fill it with trues.
         restrictionBoard = new boolean[boardMan.getNumberOfCells()];
         this.clearRestrictionBoard();
-	}	
+    }
         
     public void resetState()
     {
@@ -925,23 +923,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
     public void keyPressed(KeyEvent event)
     {
-        switch (event.getModifer())
-        {
-            case LEFT_CTRL:
-            case LEFT_ALT:
-            case RIGHT_ALT:
-            case RIGHT_CTRL:
-                mouseButtonSet.add(MouseButton.RIGHT);
-                return;
-            case LEFT_SHIFT:
-            {
-                leftShiftPressed = true;
+       
 
-            }
-              
+        if(event.getModifierSet().contains(Modifier.RIGHT_SHIFT))
+                mouseButtonSet.add(MouseButton.RIGHT);
 
                
-        }
+        
         
         switch (event.getChar())
         {
@@ -1034,7 +1022,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             switch(event.getArrow())
             {
                  case KEY_UP:
-                     if(leftShiftPressed == true)
+                     if(event.getModifierSet().contains(Modifier.LEFT_SHIFT))
                      {
                          hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()+offset);
                      }
@@ -1042,7 +1030,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
 
                 case KEY_DOWN:
-                     if(leftShiftPressed == true)
+                     if(event.getModifierSet().contains(Modifier.LEFT_SHIFT))
                      {
                          hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain()-offset);
                      }
@@ -1050,7 +1038,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
 
                 case KEY_LEFT:
-                     if(leftShiftPressed == true)
+                     if(event.getModifierSet().contains(Modifier.LEFT_SHIFT))
                      {
                          hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()-offset);
                      }
@@ -1058,7 +1046,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
 
                 case KEY_RIGHT:
-                     if(leftShiftPressed == true)
+                     if(event.getModifierSet().contains(Modifier.LEFT_SHIFT))
                      {
                           hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain()+offset);
                      }
@@ -1071,12 +1059,6 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     public void keyReleased(KeyEvent event)
     {
         // Intentionally left blank.
-        switch(event.getModifer())
-        {
-            case LEFT_SHIFT:
-                this.leftShiftPressed = false;
-                break;
-        }
     }
     
 }

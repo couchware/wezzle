@@ -5,7 +5,10 @@
 
 package ca.couchware.wezzle2d.event;
 
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.EventObject;
+import java.util.Set;
 
 /**
  * A key event.
@@ -42,14 +45,14 @@ public class KeyEvent extends EventObject
     }
     
     final private char ch;
-    final private Modifier modifer;
+    final private Set<Modifier> modifers;
     final private Arrow arrow;
     
-    public KeyEvent(Object source, char ch, Modifier modifier, Arrow arrow)
+    public KeyEvent(Object source, char ch, Set<Modifier> modifiers, Arrow arrow)
     {
         super(source);
         this.ch = ch;
-        this.modifer = modifier;
+        this.modifers = modifiers;
         this.arrow = arrow;
     }
         
@@ -58,9 +61,10 @@ public class KeyEvent extends EventObject
         return ch;
     }
 
-    public Modifier getModifer()
+
+    public Set<Modifier> getModifierSet()
     {
-        return modifer;
+        return Collections.unmodifiableSet(modifers);
     }
 
     public Arrow getArrow()
