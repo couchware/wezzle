@@ -168,6 +168,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         
         // Set the orientation.
         this.orientation = builder.orientation;
+        this.opacity = builder.opacity;
         
         // Set the dimensions.
         switch (orientation)
@@ -227,8 +228,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);              
-        private int opacity = 100;
-        private boolean disabled = false;
+        private int opacity = 100;       
         private int width  = 200;
         private int height = 200;
         private Orientation orientation = Orientation.HORIZONTAL;
@@ -264,10 +264,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         { alignment = val; return this; }
                         
         public Builder opacity(int val)
-        { opacity = val; return this; }
-
-        public Builder disabled(boolean val)
-        { disabled = val; return this; }
+        { opacity = val; return this; }      
         
         public Builder width(int val)
         { width = val; return this; }
@@ -291,7 +288,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         {
             SliderBar bar = new SliderBar(this);
             
-            if (visible && !disabled)
+            if (visible)
                 bar.window.addMouseListener(bar);        
             
             return bar;
@@ -503,21 +500,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     
     //--------------------------------------------------------------------------
     // Getters and Setters
-    //--------------------------------------------------------------------------       
-
-    @Override
-    public void setDisabled(boolean disabled)
-    {
-        if (this.disabled == disabled) return;
-
-        super.setDisabled(disabled);
-
-        if (visible)
-        {
-            if (disabled) this.window.removeMouseListener(this);
-            else this.window.addMouseListener(this);
-        }
-    }
+    //--------------------------------------------------------------------------         
 
     /**
      * Gets the mousePosition.
@@ -665,7 +648,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     public void dispose()
     {
         // Stop listening to the mouse events.
-        if (this.visible && !this.disabled)
+        if (this.visible)
             window.removeMouseListener(this);
     }
     

@@ -101,20 +101,34 @@ public class OptionsMenu extends AbstractMenu
     /** The music volume slider. */
     private SliderBar musicVolumeValueSlider;
 
+    private enum Page
+    {
+        GAME("Game"),
+        AUDIO("Audio");
+
+        Page(String description)
+        { this.description = description; }
+
+        private String description;
+
+        public String getDescription()
+        { return description; }
+    }
+
     /** The current page. */
-    private int currentPage = 0;
+    private Page currentPage = Page.GAME;
 
     /** The page 1 button. */
-    private IButton page0Button;
+    private IButton gameButton;
 
     /** The page 2 button. */
-    private IButton page1Button;
+    private IButton audioButton;
 
     /** The page 1 entities. */
-    final private List<IEntity> page0EntityList = new ArrayList<IEntity>();
+    final private List<IEntity> gamePageEntities = new ArrayList<IEntity>();
 
     /** The page 2 entities. */
-    final private List<IEntity> page1EntityList = new ArrayList<IEntity>();
+    final private List<IEntity> audioPageEntities = new ArrayList<IEntity>();
                     
     public OptionsMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)
     {                
@@ -129,10 +143,10 @@ public class OptionsMenu extends AbstractMenu
         createMenuEntities(hub, LABEL_COLOR, OPTION_COLOR);
 
         // Page 0 entities.
-        createEntitiesForPage0(hub, LABEL_COLOR, OPTION_COLOR);
+        createEntitiesForGamePage(hub, LABEL_COLOR, OPTION_COLOR);
 
         // Page 1 entities.
-        createEntitiesForPage1(hub, LABEL_COLOR, OPTION_COLOR);
+        createEntitiesForAudioPage(hub, LABEL_COLOR, OPTION_COLOR);
            
         // Add them all to the layer manager.
         for (IEntity entity : this.entityList)
@@ -141,23 +155,23 @@ public class OptionsMenu extends AbstractMenu
         }
 
         // Add all the starting page entities.
-        for ( IEntity entity : this.page0EntityList )
+        for ( IEntity entity : this.gamePageEntities )
         {
             this.menuLayerMan.add(entity, Layer.UI);
             this.entityList.add(entity);
         }      
     }                   
 
-    private void switchPage(int page)
+    private void switchPage(Page page)
     {
         if (this.currentPage == page) return;
         this.currentPage = page;
 
         switch (page)
         {
-            case 0:
+            case GAME:
 
-                for ( IEntity entity : this.page0EntityList )
+                for ( IEntity entity : this.gamePageEntities )
                 {
                     this.menuLayerMan.add(entity, Layer.UI);
                     this.entityList.add(entity);
@@ -165,25 +179,27 @@ public class OptionsMenu extends AbstractMenu
                     entity.setDisabled(false);
                 }
 
-                for ( IEntity entity : this.page1EntityList )
+                for ( IEntity entity : this.audioPageEntities )
                 {
                     this.menuLayerMan.remove(entity, Layer.UI);
                     this.entityList.remove(entity);
+                    entity.setVisible(false);
                     entity.setDisabled(true);
                 }
 
                 break;
 
-            case 1:
+            case AUDIO:
 
-                for ( IEntity entity : this.page0EntityList )
+                for ( IEntity entity : this.gamePageEntities )
                 {
                     this.menuLayerMan.remove(entity, Layer.UI);
                     this.entityList.remove(entity);
+                    entity.setVisible(false);
                     entity.setDisabled(true);
                 }
 
-                for ( IEntity entity : this.page1EntityList )
+                for ( IEntity entity : this.audioPageEntities )
                 {
                     this.menuLayerMan.add(entity, Layer.UI);
                     this.entityList.add(entity);
@@ -194,12 +210,20 @@ public class OptionsMenu extends AbstractMenu
                 break;
 
             default:
-                throw new IllegalArgumentException("Invalid options page number");
+                throw new IllegalArgumentException("Invalid options page");
         }
     }
 
     private void createMenuEntities(ManagerHub hub, Color labelColor, Color optionColor)
     {
+        Box optionBox = new Box.Builder(68, 122)
+                .width(400).height(398)
+                .border(Box.Border.MEDIUM)
+                .opacity(80)
+                .visible(false).build();
+
+        this.entityList.add(optionBox);
+
         // The title label.
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
@@ -209,160 +233,113 @@ public class OptionsMenu extends AbstractMenu
                 .build();
         this.entityList.add(titleLabel);
 
+        this.audioButton = new Button.Builder(
+                    optionBox.getX() + optionBox.getWidth() - 6,
+                    97)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .color(labelColor)
+                .normalOpacity(90)
+                .visible(false)
+                .width(80)
+                .text(Page.AUDIO.getDescription()).textSize(14)
+                .build();
+
+        this.audioButton.addButtonListener(new Button.IButtonListener()
+        {
+            public void buttonClicked()
+            { switchPage(Page.AUDIO); }
+        });
+
+        this.entityList.add(this.audioButton);
+
         // The page buttons.
-        this.page0Button = new Button.Builder(418, 97)
+        this.gameButton = new Button.Builder(
+                    this.audioButton.getX() - this.audioButton.getWidth() - 5,
+                    this.audioButton.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .color(labelColor)
                 .normalOpacity(90)
                 .visible(false)
-                .width(40)
-                .text("1").textSize(16)
+                .width(80)
+                .text(Page.GAME.getDescription()).textSize(14)
                 .build();
 
-        this.page0Button.addButtonListener(new Button.IButtonListener()
+        this.gameButton.addButtonListener(new Button.IButtonListener()
         {
             public void buttonClicked()
-            { switchPage(0); }
+            { switchPage(Page.GAME); }
         });
-        this.entityList.add(this.page0Button);
-
-        this.page1Button = new Button.Builder(463, 97)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .color(labelColor)
-                .normalOpacity(90)
-                .visible(false)
-                .width(40)
-                .text("2").textSize(16)
-                .build();
-
-        this.page1Button.addButtonListener(new Button.IButtonListener()
-        {
-            public void buttonClicked()
-            { switchPage(1); }
-        });
-        this.entityList.add(this.page1Button);
-
-        // The first box.
-        Box optionBox = new Box.Builder(68, 122)
-                .width(400).height(398)
-                .border(Box.Border.MEDIUM)
-                .opacity(80)
-                .visible(false).build();
-
-        this.entityList.add(optionBox);
+        this.entityList.add(this.gameButton);       
     }
 
-    private void createEntitiesForPage0(ManagerHub hub,
+    private void createEntitiesForGamePage(ManagerHub hub,
             Color labelColor, Color optionColor)
     {
+        // <editor-fold defaultstate="collapsed" desc="Quality Value">
         // Get the user set level and make sure it's within range.
         this.qualityValue = hub.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
         this.qualityValue = Math.max(MIN_QUALITY, this.qualityValue);
         this.qualityValue = Math.min(MAX_QUALITY, this.qualityValue);
 
-        ITextLabel qualityLabel = new LabelBuilder(110, 180)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(labelColor).text("Graphics Quality").size(20)
-                .visible(false)
-                .build();
-        this.page0EntityList.add(qualityLabel);
+        ITextLabel qualityLabel = new LabelBuilder(110, 180).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Graphics Quality").size(20).visible(false).build();
+        this.gamePageEntities.add(qualityLabel);
 
         this.qualityValueLabel = new LabelBuilder(
-                    qualityLabel.getX() + qualityLabel.getWidth() + 20,
-                    qualityLabel.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(optionColor)
-                .size(20).visible(false)
-                .text(GraphicsQuality.values()[qualityValue].getDescription())
-                .build();
-        this.page0EntityList.add(this.qualityValueLabel);
+                qualityLabel.getX() + qualityLabel.getWidth() + 20,
+                qualityLabel.getY()).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(optionColor).size(20).visible(false).text(GraphicsQuality.values()[qualityValue].getDescription()).build();
+        this.gamePageEntities.add(this.qualityValueLabel);
 
         this.qualityValueSlider = new SliderBar.Builder(
-                    268,
-                    qualityLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .width(340)
-                .virtualRange(MIN_QUALITY, MAX_QUALITY)
-                .virtualValue(this.qualityValue)
-                .visible(false)
-                .build();
-        this.page0EntityList.add(qualityValueSlider);
+                268,
+                qualityLabel.getY() + 35).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).width(340).virtualRange(MIN_QUALITY, MAX_QUALITY).virtualValue(this.qualityValue).visible(false).build();
+        this.gamePageEntities.add(qualityValueSlider);
+        // </editor-fold>
 
+        // <editor-fold defaultstate="collapsed" desc="Auto Pause">
         ITextLabel autoPauseLabel = new LabelBuilder(
-                    qualityLabel.getX(),
-                    qualityLabel.getY() + 80)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(labelColor).text("Automatic Pause").size(20)
-                .visible(false)
-                .build();
-        this.page0EntityList.add(autoPauseLabel);
+                qualityLabel.getX(),
+                qualityLabel.getY() + 80).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Automatic Pause").size(20).visible(false).build();
+        this.gamePageEntities.add(autoPauseLabel);
 
-        RadioItem autoPauseOn = new RadioItem.Builder()
-                .color(optionColor)
-                .text("On").build();
-
-        RadioItem autoPauseOff = new RadioItem.Builder()
-                .color(optionColor)
-                .text("Off").build();
+        RadioItem autoPauseOn = new RadioItem.Builder().color(optionColor).text("On").build();
+        RadioItem autoPauseOff = new RadioItem.Builder().color(optionColor).text("Off").build();
 
         final boolean autoPauseSetting = hub.settingsMan.getBool(Key.USER_AUTO_PAUSE);
         this.autoPauseRadio = new RadioGroup.Builder(
-                    268,
-                    autoPauseLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(autoPauseOn,  autoPauseSetting)
-                .add(autoPauseOff, !autoPauseSetting)
-                .visible(false)
-                .build();
-        this.page0EntityList.add(autoPauseRadio);
+                268,
+                autoPauseLabel.getY() + 35).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).add(autoPauseOn, autoPauseSetting).add(autoPauseOff, !autoPauseSetting).visible(false).build();
+        this.gamePageEntities.add(autoPauseRadio);
+        // </editor-fold>
 
+        // <editor-fold defaultstate="collapsed" desc="Piece Preview Box">
         ITextLabel piecePreviewBoxLabel = new LabelBuilder(
-                    autoPauseLabel.getX(),
-                    autoPauseLabel.getY() + 85)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(labelColor).text("Piece Preview Box").size(20)
-                .visible(false)
-                .build();
-        this.page0EntityList.add(piecePreviewBoxLabel);
+                autoPauseLabel.getX(),
+                autoPauseLabel.getY() + 85).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Box").size(20).visible(false).build();
+        this.gamePageEntities.add(piecePreviewBoxLabel);
 
         // Creat the level limit radio group.
-        RadioItem boxItem1 = new RadioItem.Builder()
-                .color(optionColor)
-                .text("On").build();
-
-        RadioItem boxItem2 = new RadioItem.Builder()
-                .color(optionColor)
-                .text("Off").build();
+        RadioItem boxItem1 = new RadioItem.Builder().color(optionColor).text("On").build();
+        RadioItem boxItem2 = new RadioItem.Builder().color(optionColor).text("Off").build();
 
         // Attempt to get the user's music preference.
         final boolean piecePreviewBoxSetting = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_TRADITIONAL);
 
         this.piecePreviewBoxRadio = new RadioGroup.Builder(
-                    268,
-                    piecePreviewBoxLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(boxItem1, piecePreviewBoxSetting)
-                .add(boxItem2, !piecePreviewBoxSetting)
-                .itemSpacing(20).visible(false).build();
-        this.page0EntityList.add(piecePreviewBoxRadio);
+                268,
+                piecePreviewBoxLabel.getY() + 35).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).add(boxItem1, piecePreviewBoxSetting).add(boxItem2, !piecePreviewBoxSetting).itemSpacing(20).visible(false).build();
+        this.gamePageEntities.add(piecePreviewBoxRadio);
+        // </editor-fold>
 
+        // <editor-fold defaultstate="collapsed" desc="Piece Preview Overlay">
         ITextLabel piecePreviewOverlayLabel = new LabelBuilder(
-                    piecePreviewBoxLabel.getX(),
-                    piecePreviewBoxLabel.getY() + 85)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(labelColor).text("Piece Preview Overlay").size(20)
-                .visible(false)
-                .build();
-        this.page0EntityList.add(piecePreviewOverlayLabel);
+                piecePreviewBoxLabel.getX(),
+                piecePreviewBoxLabel.getY() + 85).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Overlay").size(20).visible(false).build();
+        this.gamePageEntities.add(piecePreviewOverlayLabel);
 
         // Creat the level limit radio group.
-        RadioItem overlayItem1 = new RadioItem.Builder()
-                .color(optionColor)
-                .text("On").build();
+        RadioItem overlayItem1 = new RadioItem.Builder().color(optionColor).text("On").build();
 
-        RadioItem overlayItem2 = new RadioItem.Builder()
-                .color(optionColor)
-                .text("Off").build();
+        RadioItem overlayItem2 = new RadioItem.Builder().color(optionColor).text("Off").build();
 
         // Attempt to get the user's music preference.
         final boolean piecePreviewOverlaySetting = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_OVERLAY);
@@ -373,13 +350,17 @@ public class OptionsMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(overlayItem1, piecePreviewOverlaySetting)
                 .add(overlayItem2, !piecePreviewOverlaySetting)
-                .itemSpacing(20).visible(false).build();
-        this.page0EntityList.add(piecePreviewOverlayRadio);
+                .itemSpacing(20)
+                .visible(false)
+                .build();
+        this.gamePageEntities.add(piecePreviewOverlayRadio);
+        // </editor-fold>
     }
 
-    private void createEntitiesForPage1(ManagerHub hub,
+    private void createEntitiesForAudioPage(ManagerHub hub,
             Color labelColor, Color optionColor)
     {
+        // <editor-fold defaultstate="collapsed" desc="Music Volume">
         // Get the user set level and make sure it's within range.
         this.musicVolumeValue = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
         this.musicVolumeValue = Math.max(MIN_VOLUME, this.musicVolumeValue);
@@ -390,7 +371,7 @@ public class OptionsMenu extends AbstractMenu
                 .color(labelColor).text("Music Volume").size(20)
                 .visible(false)
                 .build();
-        this.page1EntityList.add(musicVolumeLabel);
+        this.audioPageEntities.add(musicVolumeLabel);
 
         this.musicVolumeValueLabel = new LabelBuilder(
                     musicVolumeLabel.getX() + musicVolumeLabel.getWidth() + 20,
@@ -400,7 +381,7 @@ public class OptionsMenu extends AbstractMenu
                 .size(20).visible(false)
                 .text("" + this.musicVolumeValue)
                 .build();
-        this.page1EntityList.add(this.musicVolumeValueLabel);
+        this.audioPageEntities.add(this.musicVolumeValueLabel);
 
         this.musicVolumeValueSlider = new SliderBar.Builder(
                     268,
@@ -411,7 +392,8 @@ public class OptionsMenu extends AbstractMenu
                 .virtualValue(this.musicVolumeValue)
                 .visible(false)
                 .build();
-        this.page1EntityList.add(musicVolumeValueSlider);
+        this.audioPageEntities.add(musicVolumeValueSlider);
+        // </editor-fold>
     }
 
     public void updateLogic(Game game, ManagerHub hub)

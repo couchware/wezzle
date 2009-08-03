@@ -155,8 +155,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         private int y;     
         
         // Optional values.
-        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);              
-        private int opacity = 100;
+        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);                      
         private int width = 400;
         private int height = 200;       
         private boolean visible = true;
@@ -171,31 +170,14 @@ public class Scroller extends AbstractEntity implements IMouseListener
             this.window = ResourceFactory.get().getWindow();
             this.x = x;
             this.y = y;
-        }
-        
-        public Builder(Scroller scroller)
-        {            
-            this.window = scroller.window;
-            this.x = scroller.x;
-            this.y = scroller.y;
-            this.alignment = scroller.alignment.clone();                 
-            this.opacity = scroller.opacity;                        
-            this.width = scroller.width;
-            this.height = scroller.height;
-            this.visible = scroller.visible; 
-            this.textSize = scroller.textSize;
-            this.rows = scroller.rows;
-        }
+        }               
         
         public Builder x(int val) { x = val; return this; }        
         public Builder y(int val) { y = val; return this; }
                
         public Builder alignment(EnumSet<Alignment> val) 
         { alignment = val; return this; }
-                        
-        public Builder opacity(int val)
-        { opacity = val; return this; }
-        
+                               
         public Builder width(int val)
         { width = val; return this; }
         
@@ -252,7 +234,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
             Scroller scroller = new Scroller(this);         
             
             // Add the mouse listener.
-            if (visible == true)
+            if (visible)
                 window.addMouseListener(scroller);                                    
                                     
             return scroller;
