@@ -34,10 +34,16 @@ public class OptionsMenu extends AbstractMenu
 {
     
     /** The minimum number of FSAA samples. */
-    final private static int MIN_SAMPLES = 0;
+    final private static int MIN_QUALITY = 0;
     
     /** The maximum number of FSAA samples. */
-    final private static int MAX_SAMPLES = 4;
+    final private static int MAX_QUALITY = 4;
+
+    /** The minimum music/sound volume value. */
+    final private static int MIN_VOLUME = 0;
+
+    /** The maximum music/sound volume value. */
+    final private static int MAX_VOLUME = 100;  
 
     private enum GraphicsQuality
     {
@@ -56,14 +62,14 @@ public class OptionsMenu extends AbstractMenu
         { return description; }
     }
     
-    /** The level label. */
-    private ITextLabel sampleNumberLabel;
+    /** The quality value label. */
+    private ITextLabel qualityValueLabel;
     
-    /** The level. */
-    private int sampleNumber = 1;
+    /** The quality value. */
+    private int qualityValue = 1;
     
-    /** The level slider. */
-    private SliderBar sampleSlider;
+    /** The quality value slider. */
+    private SliderBar qualityValueSlider;
     
     /** The possibilities for the max level. */
     final private static int AUTO_PAUSE_ON = 0;
@@ -86,14 +92,23 @@ public class OptionsMenu extends AbstractMenu
     /** The piece preview overlay radio group. */
     private RadioGroup piecePreviewOverlayRadio;
 
+    /** The music volume value label. */
+    private ITextLabel musicVolumeValueLabel;
+
+    /** The music volume value. */
+    private int musicVolumeValue;
+
+    /** The music volume slider. */
+    private SliderBar musicVolumeValueSlider;
+
     /** The current page. */
-    private int currentPage = -1;
+    private int currentPage = 0;
 
     /** The page 1 button. */
-    final private IButton page0Button;
+    private IButton page0Button;
 
     /** The page 2 button. */
-    final private IButton page1Button;
+    private IButton page1Button;
 
     /** The page 1 entities. */
     final private List<IEntity> page0EntityList = new ArrayList<IEntity>();
@@ -108,65 +123,10 @@ public class OptionsMenu extends AbstractMenu
                
         // The colors.
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
-        final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);                    
-               
-        // The title label.
-        ITextLabel titleLabel = new LabelBuilder(74, 97)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(LABEL_COLOR).text("Options").size(20)
-                .visible(false).build();
-        this.entityList.add(titleLabel);
+        final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
 
-        // The page buttons.
-        this.page0Button = new Button.Builder(418, 97)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .normalOpacity(90)
-                .visible(false)
-                .text("1")
-                .width(40)
-                .textSize(16)
-                .build();
-
-        this.page0Button.addButtonListener(new Button.IButtonListener()
-        {
-            public void buttonClicked()
-            { switchPage(0); }
-        });
-
-        this.entityList.add(this.page0Button);
-
-        this.page1Button = new Button.Builder(463, 97)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .normalOpacity(90)
-                .visible(false)
-                .text("2")
-                .width(40)
-                .textSize(16)
-                .build();
-
-        this.page1Button.addButtonListener(new Button.IButtonListener()
-        {
-            public void buttonClicked()
-            { switchPage(1); }
-        });
-
-        this.entityList.add(this.page1Button);
-
-        // The first box.
-        Box optionBox = new Box.Builder(68, 122)
-                .width(400).height(398)
-                .border(Box.Border.MEDIUM)
-                .opacity(80)
-                .visible(false)
-                .build();
-        this.entityList.add(optionBox);
-
-        // Get the user set level and make sure it's within range.
-        this.sampleNumber = hub.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
-        this.sampleNumber = Math.max(MIN_SAMPLES, this.sampleNumber);
-        this.sampleNumber = Math.min(MAX_SAMPLES, this.sampleNumber);
+        // Create general entities.
+        createMenuEntities(hub, LABEL_COLOR, OPTION_COLOR);
 
         // Page 0 entities.
         createEntitiesForPage0(hub, LABEL_COLOR, OPTION_COLOR);
@@ -180,8 +140,12 @@ public class OptionsMenu extends AbstractMenu
             this.menuLayerMan.add(entity, Layer.UI);
         }
 
-        // Activate the first page.
-        switchPage(0); 
+        // Add all the starting page entities.
+        for ( IEntity entity : this.page0EntityList )
+        {
+            this.menuLayerMan.add(entity, Layer.UI);
+            this.entityList.add(entity);
+        }      
     }                   
 
     private void switchPage(int page)
@@ -197,12 +161,15 @@ public class OptionsMenu extends AbstractMenu
                 {
                     this.menuLayerMan.add(entity, Layer.UI);
                     this.entityList.add(entity);
+                    entity.setVisible(true);
+                    entity.setDisabled(false);
                 }
 
                 for ( IEntity entity : this.page1EntityList )
                 {
                     this.menuLayerMan.remove(entity, Layer.UI);
                     this.entityList.remove(entity);
+                    entity.setDisabled(true);
                 }
 
                 break;
@@ -213,12 +180,15 @@ public class OptionsMenu extends AbstractMenu
                 {
                     this.menuLayerMan.remove(entity, Layer.UI);
                     this.entityList.remove(entity);
+                    entity.setDisabled(true);
                 }
 
                 for ( IEntity entity : this.page1EntityList )
                 {
                     this.menuLayerMan.add(entity, Layer.UI);
                     this.entityList.add(entity);
+                    entity.setVisible(true);
+                    entity.setDisabled(false);
                 }
 
                 break;
@@ -228,40 +198,99 @@ public class OptionsMenu extends AbstractMenu
         }
     }
 
+    private void createMenuEntities(ManagerHub hub, Color labelColor, Color optionColor)
+    {
+        // The title label.
+        ITextLabel titleLabel = new LabelBuilder(74, 97)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(labelColor)
+                .text("Options").size(20)
+                .visible(false)
+                .build();
+        this.entityList.add(titleLabel);
+
+        // The page buttons.
+        this.page0Button = new Button.Builder(418, 97)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .color(labelColor)
+                .normalOpacity(90)
+                .visible(false)
+                .width(40)
+                .text("1").textSize(16)
+                .build();
+
+        this.page0Button.addButtonListener(new Button.IButtonListener()
+        {
+            public void buttonClicked()
+            { switchPage(0); }
+        });
+        this.entityList.add(this.page0Button);
+
+        this.page1Button = new Button.Builder(463, 97)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .color(labelColor)
+                .normalOpacity(90)
+                .visible(false)
+                .width(40)
+                .text("2").textSize(16)
+                .build();
+
+        this.page1Button.addButtonListener(new Button.IButtonListener()
+        {
+            public void buttonClicked()
+            { switchPage(1); }
+        });
+        this.entityList.add(this.page1Button);
+
+        // The first box.
+        Box optionBox = new Box.Builder(68, 122)
+                .width(400).height(398)
+                .border(Box.Border.MEDIUM)
+                .opacity(80)
+                .visible(false).build();
+
+        this.entityList.add(optionBox);
+    }
+
     private void createEntitiesForPage0(ManagerHub hub,
             Color labelColor, Color optionColor)
     {
-         ITextLabel levelLabel = new LabelBuilder(110, 180)
+        // Get the user set level and make sure it's within range.
+        this.qualityValue = hub.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
+        this.qualityValue = Math.max(MIN_QUALITY, this.qualityValue);
+        this.qualityValue = Math.min(MAX_QUALITY, this.qualityValue);
+
+        ITextLabel qualityLabel = new LabelBuilder(110, 180)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor).text("Graphics Quality").size(20)
                 .visible(false)
                 .build();
-        this.page0EntityList.add(levelLabel);
+        this.page0EntityList.add(qualityLabel);
 
-        this.sampleNumberLabel = new LabelBuilder(
-                    levelLabel.getX() + levelLabel.getWidth() + 20,
-                    levelLabel.getY())
+        this.qualityValueLabel = new LabelBuilder(
+                    qualityLabel.getX() + qualityLabel.getWidth() + 20,
+                    qualityLabel.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
+                .color(optionColor)
                 .size(20).visible(false)
-                .text(GraphicsQuality.values()[sampleNumber].getDescription())
+                .text(GraphicsQuality.values()[qualityValue].getDescription())
                 .build();
-        this.page0EntityList.add(this.sampleNumberLabel);
+        this.page0EntityList.add(this.qualityValueLabel);
 
-        this.sampleSlider = new SliderBar.Builder(
+        this.qualityValueSlider = new SliderBar.Builder(
                     268,
-                    levelLabel.getY() + 35)
+                    qualityLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .width(340)
-                .virtualRange(MIN_SAMPLES, MAX_SAMPLES)
-                .virtualValue(this.sampleNumber)
+                .virtualRange(MIN_QUALITY, MAX_QUALITY)
+                .virtualValue(this.qualityValue)
                 .visible(false)
                 .build();
-        this.page0EntityList.add(sampleSlider);
+        this.page0EntityList.add(qualityValueSlider);
 
         ITextLabel autoPauseLabel = new LabelBuilder(
-                    levelLabel.getX(),
-                    levelLabel.getY() + 80)
+                    qualityLabel.getX(),
+                    qualityLabel.getY() + 80)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor).text("Automatic Pause").size(20)
                 .visible(false)
@@ -351,17 +380,48 @@ public class OptionsMenu extends AbstractMenu
     private void createEntitiesForPage1(ManagerHub hub,
             Color labelColor, Color optionColor)
     {
-        
+        // Get the user set level and make sure it's within range.
+        this.musicVolumeValue = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
+        this.musicVolumeValue = Math.max(MIN_VOLUME, this.musicVolumeValue);
+        this.musicVolumeValue = Math.min(MAX_VOLUME, this.musicVolumeValue);
+
+        ITextLabel musicVolumeLabel = new LabelBuilder(110, 180)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(labelColor).text("Music Volume").size(20)
+                .visible(false)
+                .build();
+        this.page1EntityList.add(musicVolumeLabel);
+
+        this.musicVolumeValueLabel = new LabelBuilder(
+                    musicVolumeLabel.getX() + musicVolumeLabel.getWidth() + 20,
+                    musicVolumeLabel.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
+                .size(20).visible(false)
+                .text("" + this.musicVolumeValue)
+                .build();
+        this.page1EntityList.add(this.musicVolumeValueLabel);
+
+        this.musicVolumeValueSlider = new SliderBar.Builder(
+                    268,
+                    musicVolumeLabel.getY() + 35)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .width(340)
+                .virtualRange(MIN_VOLUME, MAX_VOLUME)
+                .virtualValue(this.musicVolumeValue)
+                .visible(false)
+                .build();
+        this.page1EntityList.add(musicVolumeValueSlider);
     }
 
     public void updateLogic(Game game, ManagerHub hub)
     {
-        if ( this.sampleSlider.changed() )
+        if ( this.qualityValueSlider.changed() )
         {
-            sampleNumber = sampleSlider.getVirtualValue();
-            this.sampleNumberLabel.setText(
-                    GraphicsQuality.values()[sampleNumber].getDescription());
-            hub.settingsMan.setInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES, this.sampleNumber);
+            qualityValue = qualityValueSlider.getVirtualValue();
+            this.qualityValueLabel.setText(
+                    GraphicsQuality.values()[qualityValue].getDescription());
+            hub.settingsMan.setInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES, this.qualityValue);
         }
 
         if ( this.autoPauseRadio.changed() )
@@ -388,6 +448,13 @@ public class OptionsMenu extends AbstractMenu
 
             hub.settingsMan.setBool(Key.USER_PIECE_PREVIEW_OVERLAY, isOn);
             game.getUI().setOverlayPiecePreviewVisible(isOn);
+        }
+
+        if ( this.musicVolumeValueSlider.changed() )
+        {
+            musicVolumeValue = musicVolumeValueSlider.getVirtualValue();
+            this.musicVolumeValueLabel.setText("" + musicVolumeValue);
+            hub.settingsMan.setInt(Key.USER_MUSIC_VOLUME, this.musicVolumeValue);
         }
     }
 

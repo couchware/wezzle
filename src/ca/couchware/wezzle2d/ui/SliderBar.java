@@ -228,6 +228,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         // Optional values.
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);              
         private int opacity = 100;
+        private boolean disabled = false;
         private int width  = 200;
         private int height = 200;
         private Orientation orientation = Orientation.HORIZONTAL;
@@ -264,6 +265,9 @@ public class SliderBar extends AbstractEntity implements IMouseListener
                         
         public Builder opacity(int val)
         { opacity = val; return this; }
+
+        public Builder disabled(boolean val)
+        { disabled = val; return this; }
         
         public Builder width(int val)
         { width = val; return this; }
@@ -287,7 +291,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         {
             SliderBar bar = new SliderBar(this);
             
-            if (visible == true)
+            if (visible && !disabled)
                 bar.window.addMouseListener(bar);        
             
             return bar;
@@ -355,46 +359,46 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     }
 
     public void mousePressed(MouseEvent e)
-	{
-		// Retrieve the mouse position.
+    {
+        // Retrieve the mouse position.
         setMousePosition(e.getX(), e.getY());
-        final ImmutablePosition p = getMousePosition();                
-        
+        final ImmutablePosition p = getMousePosition();
+
         // Ignore click if we're outside the button.
         if (shape.contains(p.getX(), p.getY()) == false)
-            return;                    
-                            
+            return;
+
         //Util.handleMessage("Pressed.", Thread.currentThread());
-        
-		// Check which button.
+
+        // Check which button.
         switch (e.getButton())
         {
             // Left mouse clicked.
             case LEFT:
-                
-                state = State.PRESSED; 
-                
+
+                state = State.PRESSED;
+
                 switch (orientation)
                 {
                     case HORIZONTAL:
                         setSlideOffset(p.getX() - x - offsetX - spriteHandle.getWidth() / 2);
                         break;
-                        
+
                     case VERTICAL:
                         setSlideOffset(p.getY() - y - offsetY - spriteHandle.getWidth() / 2);
                         break;
-                        
+
                     default: throw new AssertionError();
                 }
-                                             
+
                 break;
-                
-            default:                
-                break;   
+
+            default:
+                break;
         }
-        
+
         synchronize();
-	}
+    }
 
     public void mouseReleased(MouseEvent e)
     {
@@ -447,8 +451,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         // Get the last position.
         ImmutablePosition lp = getMousePosition(); 
         
-		// Set the mouse position.
-		setMousePosition(e.getX(), e.getY());
+        // Set the mouse position.
+        setMousePosition(e.getX(), e.getY());
         
         // Retrieve the mouse position.
         final ImmutablePosition p = getMousePosition();  
@@ -476,7 +480,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     }
     
     public boolean changed()
-    {
+    {     
         boolean val = changed;
         changed = false;
         return val;             
@@ -490,7 +494,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      * @return
      */
     public boolean changed(boolean preserve)
-    {
+    {       
         if (preserve == true)
             return changed;
         else
@@ -500,26 +504,40 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     //--------------------------------------------------------------------------
     // Getters and Setters
     //--------------------------------------------------------------------------       
-    
-    /**
-	 * Gets the mousePosition.
-     * 
-	 * @return The mousePosition.
-	 */
-	public synchronized ImmutablePosition getMousePosition()
-	{        
-		return mousePosition;
-	}
 
-	/**
-	 * Sets the mousePosition.
-     * 
-	 * @param mousePosition The mousePosition to set.
-	 */
-	public synchronized void setMousePosition(final int x, final int y)
-	{
-		this.mousePosition = new ImmutablePosition(x, y);
-	}    
+    @Override
+    public void setDisabled(boolean disabled)
+    {
+        if (this.disabled == disabled) return;
+
+        super.setDisabled(disabled);
+
+        if (visible)
+        {
+            if (disabled) this.window.removeMouseListener(this);
+            else this.window.addMouseListener(this);
+        }
+    }
+
+    /**
+     * Gets the mousePosition.
+     *
+     * @return The mousePosition.
+     */
+    public synchronized ImmutablePosition getMousePosition()
+    {
+            return mousePosition;
+    }
+
+    /**
+     * Sets the mousePosition.
+     *
+     * @param mousePosition The mousePosition to set.
+     */
+    public synchronized void setMousePosition(final int x, final int y)
+    {
+            this.mousePosition = new ImmutablePosition(x, y);
+    }    
     
     @Override
     public void setVisible(boolean visible)
