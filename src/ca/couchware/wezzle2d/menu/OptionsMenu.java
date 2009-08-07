@@ -32,18 +32,14 @@ import java.util.List;
  */
 public class OptionsMenu extends AbstractMenu
 {
-    
-    /** The minimum number of FSAA samples. */
-    final private static int MIN_QUALITY = 0;
-    
-    /** The maximum number of FSAA samples. */
+    final private static int MIN_QUALITY = 0;       
     final private static int MAX_QUALITY = 4;
 
-    /** The minimum music/sound volume value. */
     final private static int MIN_VOLUME = 0;
+    final private static int MAX_VOLUME = 100;
 
-    /** The maximum music/sound volume value. */
-    final private static int MAX_VOLUME = 100;  
+    final private static int ON = 0;
+    final private static int OFF = 1;
 
     private enum GraphicsQuality
     {
@@ -61,45 +57,24 @@ public class OptionsMenu extends AbstractMenu
         public String getDescription()
         { return description; }
     }
-    
-    /** The quality value label. */
-    private ITextLabel qualityValueLabel;
-    
-    /** The quality value. */
-    private int qualityValue = 1;
-    
-    /** The quality value slider. */
+        
+    private ITextLabel qualityValueLabel;        
+    private int qualityValue = 1;        
     private SliderBar qualityValueSlider;
-    
-    /** The possibilities for the max level. */
-    final private static int AUTO_PAUSE_ON = 0;
-    final private static int AUTO_PAUSE_OFF = 1;
-    
-    /** The max level radio group. */
-    private RadioGroup autoPauseRadio;
-
-    /** The possibilities for the max level. */
-    final private static int PIECE_PREVIEW_BOX_ON = 0;
-    final private static int PIECE_PREVIEW_BOX_OFF = 1;
-
-    /** The piece preview box radio group. */
-    private RadioGroup piecePreviewBoxRadio;
-
-    /** The possibilities for the max level. */
-    final private static int PIECE_PREVIEW_OVERLAY_ON = 0;
-    final private static int PIECE_PREVIEW_OVERLAY_OFF = 1;
-
-    /** The piece preview overlay radio group. */
+            
+    private RadioGroup autoPauseRadio;        
+    private RadioGroup piecePreviewBoxRadio;        
     private RadioGroup piecePreviewOverlayRadio;
-
-    /** The music volume value label. */
-    private ITextLabel musicVolumeValueLabel;
-
-    /** The music volume value. */
-    private int musicVolumeValue;
-
-    /** The music volume slider. */
+    
+    private RadioGroup musicRadio;
+    private ITextLabel musicVolumeValueLabel;    
+    private int musicVolumeValue;    
     private SliderBar musicVolumeValueSlider;
+
+    private RadioGroup soundRadio;
+    private ITextLabel soundVolumeValueLabel;    
+    private int soundVolumeValue;    
+    private SliderBar soundVolumeValueSlider;
 
     private enum Page
     {
@@ -171,47 +146,43 @@ public class OptionsMenu extends AbstractMenu
         {
             case GAME:
 
-                for ( IEntity entity : this.gamePageEntities )
-                {
-                    this.menuLayerMan.add(entity, Layer.UI);
-                    this.entityList.add(entity);
-                    entity.setVisible(true);
-                    entity.setDisabled(false);
-                }
+                for ( IEntity entity : this.gamePageEntities )                
+                    addEntity(entity);
 
-                for ( IEntity entity : this.audioPageEntities )
-                {
-                    this.menuLayerMan.remove(entity, Layer.UI);
-                    this.entityList.remove(entity);
-                    entity.setVisible(false);
-                    entity.setDisabled(true);
-                }
+                for ( IEntity entity : this.audioPageEntities )                
+                    removeEntity(entity);
 
                 break;
 
             case AUDIO:
 
                 for ( IEntity entity : this.gamePageEntities )
-                {
-                    this.menuLayerMan.remove(entity, Layer.UI);
-                    this.entityList.remove(entity);
-                    entity.setVisible(false);
-                    entity.setDisabled(true);
-                }
+                    removeEntity(entity);
 
                 for ( IEntity entity : this.audioPageEntities )
-                {
-                    this.menuLayerMan.add(entity, Layer.UI);
-                    this.entityList.add(entity);
-                    entity.setVisible(true);
-                    entity.setDisabled(false);
-                }
+                    addEntity(entity);
 
                 break;
 
             default:
                 throw new IllegalArgumentException("Invalid options page");
         }
+    }
+
+    private void addEntity(IEntity entity)
+    {
+        this.menuLayerMan.add(entity, Layer.UI);
+        this.entityList.add(entity);
+        entity.setVisible(true);
+        entity.setDisabled(false);
+    }
+
+    private void removeEntity(IEntity entity)
+    {
+        this.menuLayerMan.remove(entity, Layer.UI);
+        this.entityList.remove(entity);
+        entity.setVisible(false);
+        entity.setDisabled(true);
     }
 
     private void createMenuEntities(ManagerHub hub, Color labelColor, Color optionColor)
@@ -224,14 +195,20 @@ public class OptionsMenu extends AbstractMenu
 
         this.entityList.add(optionBox);
 
-        // The title label.
+        // <editor-fold defaultstate="collapsed" desc="Title Label">
+        
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor)
                 .text("Options").size(20)
                 .visible(false)
                 .build();
+        
         this.entityList.add(titleLabel);
+        
+        // </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="Audio Tab Button">
 
         this.audioButton = new Button.Builder(
                     optionBox.getX() + optionBox.getWidth() - 6,
@@ -252,7 +229,10 @@ public class OptionsMenu extends AbstractMenu
 
         this.entityList.add(this.audioButton);
 
-        // The page buttons.
+        // </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="Game Tab Button">
+
         this.gameButton = new Button.Builder(
                     this.audioButton.getX() - this.audioButton.getWidth() - 5,
                     this.audioButton.getY())
@@ -269,7 +249,10 @@ public class OptionsMenu extends AbstractMenu
             public void buttonClicked()
             { switchPage(Page.GAME); }
         });
-        this.entityList.add(this.gameButton);       
+
+        this.entityList.add(this.gameButton);
+
+        // </editor-fold>
     }
 
     private void createEntitiesForGamePage(ManagerHub hub,
@@ -298,7 +281,12 @@ public class OptionsMenu extends AbstractMenu
         // <editor-fold defaultstate="collapsed" desc="Auto Pause">
         ITextLabel autoPauseLabel = new LabelBuilder(
                 qualityLabel.getX(),
-                qualityLabel.getY() + 80).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Automatic Pause").size(20).visible(false).build();
+                qualityLabel.getY() + 80)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(labelColor)
+                .text("Automatic Pause").size(20)
+                .visible(false)
+                .build();
         this.gamePageEntities.add(autoPauseLabel);
 
         RadioItem autoPauseOn = new RadioItem.Builder().color(optionColor).text("On").build();
@@ -360,13 +348,39 @@ public class OptionsMenu extends AbstractMenu
     private void createEntitiesForAudioPage(ManagerHub hub,
             Color labelColor, Color optionColor)
     {
+        // <editor-fold defaultstate="collapsed" desc="Music On/Off">
+        ITextLabel musicLabel = new LabelBuilder(110, 180)                
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(labelColor)
+                .text("Music").size(20)
+                .visible(false)
+                .build();
+        this.audioPageEntities.add(musicLabel);
+
+        RadioItem musicOn = new RadioItem.Builder().color(optionColor).text("On").build();
+        RadioItem musicOff = new RadioItem.Builder().color(optionColor).text("Off").build();
+
+        final boolean musicSetting = hub.settingsMan.getBool(Key.USER_MUSIC);
+        this.musicRadio = new RadioGroup.Builder(
+                    310,
+                    musicLabel.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .add(musicOn, musicSetting)
+                .add(musicOff, !musicSetting)
+                .visible(false)
+                .build();
+        this.audioPageEntities.add(musicRadio);
+        // </editor-fold>
+
         // <editor-fold defaultstate="collapsed" desc="Music Volume">
         // Get the user set level and make sure it's within range.
         this.musicVolumeValue = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
         this.musicVolumeValue = Math.max(MIN_VOLUME, this.musicVolumeValue);
         this.musicVolumeValue = Math.min(MAX_VOLUME, this.musicVolumeValue);
 
-        ITextLabel musicVolumeLabel = new LabelBuilder(110, 180)
+        ITextLabel musicVolumeLabel = new LabelBuilder(
+                    musicLabel.getX(),
+                    musicLabel.getY() + 50)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor).text("Music Volume").size(20)
                 .visible(false)
@@ -377,7 +391,7 @@ public class OptionsMenu extends AbstractMenu
                     musicVolumeLabel.getX() + musicVolumeLabel.getWidth() + 20,
                     musicVolumeLabel.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
+                .color(optionColor)
                 .size(20).visible(false)
                 .text("" + this.musicVolumeValue)
                 .build();
@@ -394,6 +408,69 @@ public class OptionsMenu extends AbstractMenu
                 .build();
         this.audioPageEntities.add(musicVolumeValueSlider);
         // </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="Sound On/Off">
+        ITextLabel soundLabel = new LabelBuilder(
+                    musicVolumeLabel.getX(),
+                    musicVolumeLabel.getY() + 100)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(labelColor)
+                .text("Sound").size(20)
+                .visible(false)
+                .build();
+        this.audioPageEntities.add(soundLabel);
+
+        RadioItem soundOn = new RadioItem.Builder().color(optionColor).text("On").build();
+        RadioItem soundOff = new RadioItem.Builder().color(optionColor).text("Off").build();
+
+        final boolean soundSetting = hub.settingsMan.getBool(Key.USER_SOUND);
+        this.soundRadio = new RadioGroup.Builder(
+                    310,
+                    soundLabel.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .add(soundOn, soundSetting)
+                .add(soundOff, !soundSetting)
+                .visible(false)
+                .build();
+        this.audioPageEntities.add(soundRadio);
+        // </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="Sound Volume">
+        // Get the user set level and make sure it's within range.
+        this.soundVolumeValue = hub.settingsMan.getInt(Key.USER_SOUND_VOLUME);
+        this.soundVolumeValue = Math.max(MIN_VOLUME, this.soundVolumeValue);
+        this.soundVolumeValue = Math.min(MAX_VOLUME, this.soundVolumeValue);
+
+        ITextLabel soundVolumeLabel = new LabelBuilder(
+                    soundLabel.getX(),
+                    soundLabel.getY() + 50)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(labelColor).text("Sound Volume").size(20)
+                .visible(false)
+                .build();
+        this.audioPageEntities.add(soundVolumeLabel);
+
+        this.soundVolumeValueLabel = new LabelBuilder(
+                    soundVolumeLabel.getX() + soundVolumeLabel.getWidth() + 20,
+                    soundVolumeLabel.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(optionColor)
+                .size(20).visible(false)
+                .text("" + this.soundVolumeValue)
+                .build();
+        this.audioPageEntities.add(this.soundVolumeValueLabel);
+
+        this.soundVolumeValueSlider = new SliderBar.Builder(
+                    268,
+                    soundVolumeLabel.getY() + 35)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .width(340)
+                .virtualRange(MIN_VOLUME, MAX_VOLUME)
+                .virtualValue(this.soundVolumeValue)
+                .visible(false)
+                .build();
+        this.audioPageEntities.add(soundVolumeValueSlider);
+        // </editor-fold>
     }
 
     public void updateLogic(Game game, ManagerHub hub)
@@ -409,7 +486,7 @@ public class OptionsMenu extends AbstractMenu
         if ( this.autoPauseRadio.changed() )
         {
             int selected = this.autoPauseRadio.getSelectedIndex();
-            boolean isOn = selected == AUTO_PAUSE_ON;
+            boolean isOn = selected == ON;
 
             hub.settingsMan.setBool(Key.USER_AUTO_PAUSE, isOn);
         }
@@ -417,7 +494,7 @@ public class OptionsMenu extends AbstractMenu
         if ( this.piecePreviewBoxRadio.changed() )
         {
             int selected = this.piecePreviewBoxRadio.getSelectedIndex();
-            boolean isOn = selected == PIECE_PREVIEW_BOX_ON;
+            boolean isOn = selected == ON;
 
             hub.settingsMan.setBool(Key.USER_PIECE_PREVIEW_TRADITIONAL, isOn);
             game.getUI().setTraditionalPiecePreviewVisible(isOn);
@@ -426,10 +503,26 @@ public class OptionsMenu extends AbstractMenu
         if ( this.piecePreviewOverlayRadio.changed() )
         {
             int selected = this.piecePreviewOverlayRadio.getSelectedIndex();
-            boolean isOn = selected == PIECE_PREVIEW_OVERLAY_ON;
+            boolean isOn = selected == ON;
 
             hub.settingsMan.setBool(Key.USER_PIECE_PREVIEW_OVERLAY, isOn);
             game.getUI().setOverlayPiecePreviewVisible(isOn);
+        }
+
+        if ( this.musicRadio.changed() )
+        {
+            int selected = this.musicRadio.getSelectedIndex();
+            boolean isOn = selected == ON;
+
+            hub.settingsMan.setBool(Key.USER_MUSIC, isOn);
+        }
+
+        if ( this.soundRadio.changed() )
+        {
+            int selected = this.soundRadio.getSelectedIndex();
+            boolean isOn = selected == ON;
+
+            hub.settingsMan.setBool(Key.USER_SOUND, isOn);
         }
 
         if ( this.musicVolumeValueSlider.changed() )
@@ -438,6 +531,13 @@ public class OptionsMenu extends AbstractMenu
             this.musicVolumeValueLabel.setText("" + musicVolumeValue);
             hub.settingsMan.setInt(Key.USER_MUSIC_VOLUME, this.musicVolumeValue);
         }
+
+        if ( this.soundVolumeValueSlider.changed() )
+        {
+            soundVolumeValue = soundVolumeValueSlider.getVirtualValue();
+            this.soundVolumeValueLabel.setText("" + soundVolumeValue);
+            hub.settingsMan.setInt(Key.USER_SOUND_VOLUME, this.soundVolumeValue);
+        }
     }
 
-}
+} // end class

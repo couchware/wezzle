@@ -28,15 +28,19 @@ import javazoom.jlgui.basicplayer.BasicPlayerListener;
  * @author cdmckay
  */
 public class MusicPlayer
-{     
-    /**
-     * The scheduled executor.  It is used to fade the volume.
-     */
+{
+    private static final double MIN_GAIN = 0.0;
+    private static final double MAX_GAIN = 1.0;
+    private static final double EPSILON = 0.001;
+    private static final double FADE_DELTA = 0.02;
+
+    private static final int FADE_PERIOD = 100;
+    private static final int STOP_PERIOD = 500;
+
+    /** It is used to fade the volume. */
     private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);        
     
-    /**
-     * The basic player that this wraps.
-     */
+    /** The basic player that this wraps. */
     final private BasicPlayer player;
     
     /**
@@ -151,8 +155,8 @@ public class MusicPlayer
     public void setNormalizedGain(double nGain) throws BasicPlayerException
     {
         // Make sure gain is between 0.0 and 1.0.
-        if (nGain < 0.0) nGain = 0.0;
-        else if (nGain > 1.0) nGain = 1.0;
+        nGain = Math.max( nGain, MIN_GAIN );
+        nGain = Math.min( nGain, MAX_GAIN );
         
         // Invoke the super.
         synchronized (playerLock)
@@ -178,9 +182,9 @@ public class MusicPlayer
             public void run()
             {
                 double n = normalizedGain.get();
-                double delta = 0.02;
+                double delta = FADE_DELTA;
 
-                if (NumUtil.equalsDouble(n, targetNormalizedGain, 0.02))
+                if (NumUtil.equalsDouble(n, targetNormalizedGain, EPSILON))
                 {
                     //LogManager.get().recordMessage("Fade completed.");
                     
@@ -201,9 +205,9 @@ public class MusicPlayer
                 }          
                 
                 try
-                {           
-                    //LogManager.get().recordMessage("Fade gain set to " + (n + delta));
-                    setNormalizedGain(n + delta);
+                {                    
+                    double g = n + delta;                                       
+                    setNormalizedGain(g);
                 }
                 catch (BasicPlayerException e)
                 {
@@ -219,7 +223,7 @@ public class MusicPlayer
                 this.fadeFuture.cancel(false);
         
             // Start a new fader.
-            this.fadeFuture = executor.scheduleWithFixedDelay(r, 0, 100, TimeUnit.MILLISECONDS);    
+            this.fadeFuture = executor.scheduleWithFixedDelay(r, 0, FADE_PERIOD, TimeUnit.MILLISECONDS);
         } // end sync            
     }
 
@@ -250,7 +254,8 @@ public class MusicPlayer
     {
         return finished.get();
     }   
-    
+
+
     public void stopAtGain(final double nGain)
     {
         Runnable r = new Runnable()
@@ -261,7 +266,7 @@ public class MusicPlayer
             {
                 CouchLogger.get().recordMessage(MusicPlayer.class, "Checking...");
                 
-                if (NumUtil.equalsDouble(targetGain, normalizedGain.get(), 0.02))
+                if (NumUtil.equalsDouble(targetGain, normalizedGain.get(), EPSILON))
                 {                                        
                     synchronized (player)
                     {                        
@@ -292,7 +297,7 @@ public class MusicPlayer
                 this.stopFuture.cancel(false);
         
             // Start a new stopper.
-            this.stopFuture = executor.scheduleWithFixedDelay(r, 0, 500, TimeUnit.MILLISECONDS);    
+            this.stopFuture = executor.scheduleWithFixedDelay(r, 0, STOP_PERIOD, TimeUnit.MILLISECONDS);
         } // end sync  
     }
             
