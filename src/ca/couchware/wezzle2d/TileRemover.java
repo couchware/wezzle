@@ -214,7 +214,7 @@ public class TileRemover implements IResettable, ILevelListener
             // them and then refactor again.
             if ( !tileRemovalSet.isEmpty() )
             {
-                startLineRemoval(game.getRefactorer());
+                startLineRemoval(game);
             }
             else
             {
@@ -278,13 +278,13 @@ public class TileRemover implements IResettable, ILevelListener
         }
     }   
          
-    private void startLineRemoval(Refactorer refactorer)
+    private void startLineRemoval( Game game)
     {
         // Activate the line removal.
         this.activateLineRemoval = true;
 
         // Record the refactor speed.
-        this.refactorSpeed = refactorer.getRefactorSpeed();
+        this.refactorSpeed = game.getGameDifficulty().getRefactorSpeed();
     }   
     
     private void startNextMove(

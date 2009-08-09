@@ -6,7 +6,6 @@
 package ca.couchware.wezzle2d.event;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.EventObject;
 import java.util.Set;
 

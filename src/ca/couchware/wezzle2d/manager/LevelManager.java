@@ -20,28 +20,28 @@ public class LevelManager implements IResettable
     private ScoreManager scoreMan;    
     private SettingsManager settingsMan;
     
-	/** The current level. */
-	private int level = 1;     
+    /** The current level. */
+    private int level = 1;
            
     //--------------------------------------------------------------------------
 	// Constructor
 	//--------------------------------------------------------------------------
     
-	/**
-	 * The constructor.
-	 * @param fragment
-	 * @param board
-	 * @param scoreManager
-	 */
-	private LevelManager(ListenerManager listenerMan, 
-            ScoreManager scoreMan, SettingsManager settingsMan)
-	{				
-        // Remember the listener manager.
-        this.listenerMan = listenerMan;
-        this.scoreMan    = scoreMan;
-        this.settingsMan = settingsMan;
-	}
-	        
+    /**
+     * The constructor.
+     * @param fragment
+     * @param board
+     * @param scoreManager
+     */
+    private LevelManager(ListenerManager listenerMan,
+        ScoreManager scoreMan, SettingsManager settingsMan)
+    {
+    // Remember the listener manager.
+    this.listenerMan = listenerMan;
+    this.scoreMan    = scoreMan;
+    this.settingsMan = settingsMan;
+    }
+
     /**
      * Returns a new world manager instance.
      * 
@@ -63,20 +63,20 @@ public class LevelManager implements IResettable
 	/**
      * Get the current level.
      * 
-	 * @return the currentLevel
-	 */
-	public int getLevel()
-	{
-		return level;
-	}	
-	
-	/**
-	 * @param currentLevel the currentLevel to set
-	 */
-	public void setLevel(int newLevel, boolean levelUp)
-	{               
+     * @return the currentLevel
+     */
+    public int getLevel()
+    {
+        return level;
+    }
+
+    /**
+     * @param currentLevel the currentLevel to set
+     */
+    public void setLevel(int newLevel, boolean levelUp)
+    {
         int oldLevel = this.level;
-        int excessLevelScore = scoreMan.getLevelScore() - scoreMan.getTargetLevelScore();       
+        int excessLevelScore = scoreMan.getLevelScore() - scoreMan.getTargetLevelScore();
         int nextLevelScore = 0;
         int nextTargetLevelScore  = scoreMan.generateTargetLevelScore(newLevel);
 
@@ -90,31 +90,31 @@ public class LevelManager implements IResettable
         if (excessLevelScore > carryover)
         {
             nextLevelScore = carryover;
-        }       
+        }
         else
         {
             nextLevelScore = excessLevelScore;
         }
-                        
+
         // Set the level.
         this.level = newLevel;
-                        
-        listenerMan.notifyLevelChanged(new LevelEvent(this, 
-                oldLevel, 
+
+        listenerMan.notifyLevelChanged(new LevelEvent(this,
+                oldLevel,
                 newLevel,
                 levelUp,
                 nextLevelScore,
                 nextTargetLevelScore));
-	}	
+    }
 	   
-	/**
-	 * Increment the level.
-	 */
-	public void incrementLevel()
-    {	
-		// Increment the level.
-		setLevel(level + 1, true);
-	}		            	                   
+    /**
+     * Increment the level.
+     */
+    public void incrementLevel()
+    {
+        // Increment the level.
+        setLevel(level + 1, true);
+    }
 	
     /**
      * Resets the board manager to appropriate settings for the first level.

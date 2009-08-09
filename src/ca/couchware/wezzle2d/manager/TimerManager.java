@@ -25,15 +25,17 @@ public class TimerManager implements
     /** The listener manager used to fire timer events. */
     final private ListenerManager listenerMan;
     
+    private static Game game;
+
     /**
      * The timer upper bound, in ms.
      */
-    final private int timeUpper = 10000;
+    private int timeUpper;
    
     /** 
      * The timer lower bound, im ms.
      */
-    final private int timeLower = 1000;    	    
+    private int timeLower;    	    
     
 	/** 
      * The start time for this timer. 
@@ -68,18 +70,21 @@ public class TimerManager implements
 	 * 
 	 * @param initialTime The initial time on the timer.
 	 */
-	private TimerManager(ListenerManager listenerMan)
+	private TimerManager(ListenerManager listenerMan, Game gameRef)
 	{			
-        this.listenerMan = listenerMan;
-		this.startTime   = timeUpper;        
-		this.currentTime = startTime;
-        this.paused      = false;
-        this.stopped     = false;
+            game = gameRef;
+            this.timeLower = game.getGameDifficulty().getTimeLower();
+            this.timeUpper = game.getGameDifficulty().getTimeUpper();
+            this.listenerMan = listenerMan;
+                    this.startTime   = timeUpper;
+                    this.currentTime = startTime;
+            this.paused      = false;
+            this.stopped     = false;
 	}
         
-    public static TimerManager newInstance(ListenerManager listenerMan)        
+    public static TimerManager newInstance(ListenerManager listenerMan, Game gameRef)
     {
-        return new TimerManager(listenerMan);
+        return new TimerManager(listenerMan, gameRef);
     }
 
     /**

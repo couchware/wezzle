@@ -39,24 +39,10 @@ public class TileDropper implements IResettable
     /** The only instance of the tile dropper. */
     final private static TileDropper SINGLE = new TileDropper();
     
-    /** The percentage of tiles to maintain. */
-    final private int TILE_RATIO = 80;
-    
-    /** The maximum number of tiles to drop in. */
-    final private int MAXIMUM_TOTAL_DROP_AMOUNT = 8;      
     
     /** The number of pieces to drop in concurrently. */
     final private int MAXIMUM_PARALLEL_DROP_AMOUNT = 4;
-    
-    /** The minimum drop. */
-    final private int MINIMUM_DROP = 1;           
-            
-    /** The level at which the difficulty begins to increase. */
-    final private int MINIMUM_LEVEL = 3;
-    
-    /** The number of levels before the difficulty level increases. */
-    final private int LEVEL_INTERVAL = 2;
-    
+     
     /**
      * Should the piece manager drop automatically drop tiles after a 
      * commit?
@@ -70,7 +56,7 @@ public class TileDropper implements IResettable
     private boolean animating;        
     
     /** The number of tiles to drop this turn. */
-    private int totalDropAmount = 0;        
+    private int dropAmount = 0;
               
     /** The tile currently being dropped. */
     private List<Tile> tileDropList = new ArrayList<Tile>();
@@ -86,7 +72,7 @@ public class TileDropper implements IResettable
         this.animating    = false;
         
         // Set the total drop amount to 0.
-        this.totalDropAmount = 0;        
+        this.dropAmount = 0;
         
         // Clear the tile drop list.
         tileDropList.clear();       
@@ -96,7 +82,12 @@ public class TileDropper implements IResettable
     {
         return SINGLE;
     }  
-    
+
+    public void setDropAmount(int amount)
+    {
+        this.dropAmount = amount;
+    }
+
     public void updateLogic(Game game, ManagerHub hub)
     {
         // If the board is refactoring, do not logicify.
@@ -134,7 +125,7 @@ public class TileDropper implements IResettable
                 int parallelDropAmount = MAXIMUM_PARALLEL_DROP_AMOUNT;
                 
                 // Adjust for the pieces left to drop in.
-                parallelDropAmount = Math.min(parallelDropAmount, totalDropAmount);
+                parallelDropAmount = Math.min(parallelDropAmount, dropAmount);
                 
                 // Count the open columns and build a list of all open indices.
                 LinkedList<Integer> openIndexList = new LinkedList<Integer>();               
@@ -164,7 +155,7 @@ public class TileDropper implements IResettable
                 // If there are less items left (to ensure only 1 drop per drop 
                 // in) and we have less than the max number of items...
                 // drop an item in. Otherwise drop a normal.
-                if (openIndexList.size() == 0 && totalDropAmount > 0)                
+                if (openIndexList.size() == 0 && dropAmount > 0)
                 {                    
                     // The tile drop is no longer in progress.
                     tileDropping = false;
@@ -173,17 +164,17 @@ public class TileDropper implements IResettable
                     game.startGameOver();
                 }
                 else if (
-                          totalDropAmount <= openIndexList.size()
-                       && totalDropAmount <= MAXIMUM_PARALLEL_DROP_AMOUNT
+                          dropAmount <= openIndexList.size()
+                       && dropAmount <= MAXIMUM_PARALLEL_DROP_AMOUNT
                        && (items < maxItems || multipliers < maxMultipliers))                            
                 {
                     //LogManager.recordWarning("B, totalDropAmount = " + totalDropAmount);                    
                     
                     // This must be true.
-                    assert totalDropAmount <= openIndexList.size();
+                    assert dropAmount <= openIndexList.size();
                     
                     // Drop in the first amount, minus 1 for the item.
-                    for (int i = 0; i < totalDropAmount - 1; i++)
+                    for (int i = 0; i < dropAmount - 1; i++)
                     {
                         int randomIndex = openIndexList.remove();
                         //initialIndexList.add(randomIndex);
@@ -353,22 +344,22 @@ public class TileDropper implements IResettable
                 refactorer.startRefactor();
                 
                 // Remove the amount just removed from the total.
-                totalDropAmount -= tileDropList.size();
+                dropAmount -= tileDropList.size();
                 
                 // De-reference the tile dropped.
                 tileDropList.clear();
                 
                 // Check to see if we have more tiles to drop. 
                 // If not, stop tile dropping.
-                if (totalDropAmount == 0)  
+                if (dropAmount == 0)
                 {
                     tileDropping = false;
                 }                
                 // Defensive.
-                else if (totalDropAmount < 0)
+                else if (dropAmount < 0)
                 {
                     throw new IllegalStateException("Tile drop count is: "
-                            + totalDropAmount);
+                            + dropAmount);
                 }                
             } // end if
         }
@@ -381,88 +372,7 @@ public class TileDropper implements IResettable
      * @param pieceSize The size of the piece consumed.
      * @return The number of tiles do drop.
      */
-    public void updateDropAmount(
-            int numberOfTiles,
-            int numberOfCells,
-            int level,
-            int pieceSize)
-    {        
-        // The number of tiles for the current level.
-        int levelDrop = (level / this.LEVEL_INTERVAL);
-        
-        // Check for difficulty ramp up.
-        if (level > this.MINIMUM_LEVEL)
-        {
-            levelDrop = (this.MINIMUM_LEVEL / this.LEVEL_INTERVAL);
-        }
-        
-        // The percent of the board to readd.
-        int  boardPercentage = (int) ((numberOfCells - numberOfTiles) * 0.1f); 
-        
-        // The drop amount.
-        int dropAmount = -1;
-        
-        // We are low. drop in a percentage of the tiles, increasing if there 
-        // are fewer tiles.
-        if ((numberOfTiles / numberOfCells) * 100 < this.TILE_RATIO)
-        {
-            // If we are past the level ramp up point, drop in more.
-            if (level > this.MINIMUM_LEVEL)
-            {
-                dropAmount = pieceSize + levelDrop 
-                        + (level - this.MINIMUM_LEVEL) 
-                        + boardPercentage + this.MINIMUM_DROP;
-
-                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
-                {
-                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
-                }         
-            }
-            else
-            {
-                dropAmount = pieceSize + levelDrop + boardPercentage 
-                        + this.MINIMUM_DROP;
-                
-                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
-                {
-                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
-                }
-            }
-        }
-        else
-        {
-            // If we are past the level ramp up point, drop in more.
-            if (level > this.MINIMUM_LEVEL)
-            {
-                dropAmount = pieceSize + levelDrop 
-                        + (level - this.MINIMUM_LEVEL) 
-                        + this.MINIMUM_DROP;
-
-                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
-                {
-                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
-                }
-            }
-            else
-            {
-                dropAmount = pieceSize + levelDrop + this.MINIMUM_DROP;
-
-                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
-                {
-                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
-                }
-            }
-        } // end if
-        
-        // See if the drop amount is -1.  If it is, then something broke.
-        if (dropAmount == -1)
-        {
-            throw new IllegalStateException("The drop amount was not set properly.");
-        }
-        
-        // Otherwise, update the total drop amount.
-        this.totalDropAmount = dropAmount;
-    }
+    
     
     /**
      * Check if an array of animations is done.

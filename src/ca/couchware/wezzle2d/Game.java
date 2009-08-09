@@ -13,6 +13,8 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.difficulty.IGameDifficulty;
+import ca.couchware.wezzle2d.difficulty.NormalDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -183,7 +185,9 @@ public class Game extends Canvas implements IWindowCallback
      * The transition variable.  This is the transition animation that is used
      * to transition from the menu to the game and vice-versa.
      */
-    private ITransition transition;      
+    private ITransition transition;
+
+    private IGameDifficulty gameDifficulty;
                 
     //--------------------------------------------------------------------------
     // Constructor
@@ -199,23 +203,27 @@ public class Game extends Canvas implements IWindowCallback
 	public Game(ResourceFactory.Renderer renderer) 
 	{
        
-        // Print the build number.
-        Class cls = this.getClass();
-        CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
-        CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
-        CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
-        CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
-        CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
-        CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
-        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
-        
-		// Create a window based on a chosen rendering method.
-		ResourceFactory.get().setRenderer(renderer);		        
-        		                      
-        window = ResourceFactory.get().getWindow();
-        window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
-        window.setGameWindowCallback(Game.this);
-        window.setTitle(windowTitle);
+            // Print the build number.
+            Class cls = this.getClass();
+            CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
+            CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
+            CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
+            CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
+            CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
+            CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
+            CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
+
+                    // Create a window based on a chosen rendering method.
+                    ResourceFactory.get().setRenderer(renderer);
+
+            window = ResourceFactory.get().getWindow();
+            window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+            window.setGameWindowCallback(Game.this);
+            window.setTitle(windowTitle);
+
+            // TEMP!!@$!
+            this.gameDifficulty = new NormalDifficulty();
+            this.refactorer = new Refactorer(this);
 	}
 
 	public void start()
@@ -285,7 +293,7 @@ public class Game extends Canvas implements IWindowCallback
 
         
         // Get the singleton.
-        refactorer = Refactorer.get();
+        //refactorer = Refactorer.get();
 
         // Get the singleton.
         tileDropper = TileDropper.get();
@@ -1007,6 +1015,11 @@ public class Game extends Canvas implements IWindowCallback
     public UI getUI()
     {
         return ui;
+    }
+
+    public IGameDifficulty getGameDifficulty()
+    {
+        return this.gameDifficulty;
     }
 
     public IWindow getWindow()

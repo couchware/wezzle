@@ -24,7 +24,7 @@ public class Refactorer implements IResettable
     private static final SettingsManager settingsMan = SettingsManager.get();
     
     /** The single instance of this class to ever exist. */
-	private static final Refactorer SINGLE = new Refactorer();        
+	//private static final Refactorer SINGLE = new Refactorer();
     
     /** The refator speeds. */
     public static enum RefactorSpeed
@@ -99,10 +99,10 @@ public class Refactorer implements IResettable
      */
     private RefactorSpeed speed;        
     
-    private Refactorer()
+    public Refactorer(Game game)
     {
         // Set the refactor speeds to their defaults.           
-        this.speed = RefactorSpeed.NORMAL;
+        this.speed = game.getGameDifficulty().getRefactorSpeed();
         
         // Reset the state.
         this.resetState();
@@ -121,28 +121,25 @@ public class Refactorer implements IResettable
 	 * 
 	 * @return The single instance of this class.
 	 */
-	static Refactorer get()
-	{
-		return SINGLE;
-	}   
+//	static Refactorer get()
+//	{
+//		return SINGLE;
+//	}
     
-    public RefactorSpeed getRefactorSpeed()
-    {
-        return speed;
-    }
+   
 
     public Refactorer setRefactorSpeed(RefactorSpeed speed)
-    {        
+    {
         if(speed == null)
         {
             throw new IllegalArgumentException("speed cannot be null.");
         }
-        
+
         CouchLogger.get().recordMessage(this.getClass(), String.format("Speed set to %s.", speed.toString()));
-        
+
         this.speed = speed;
         return this;
-    }        
+    }
     
      /**
      * Start a refactor with the given speed.
