@@ -11,8 +11,8 @@ import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 public interface IGameDifficulty
 {
     public RefactorSpeed getRefactorSpeed();
-    public int getTimeUpper();
-    public int getTimeLower();
+    public int getMaxTime();
+    public int determineTimeForLevel(int level);
     public int getDropAmount(int numberOfTiles, int numberOfCells, int level,
             int pieceSize);
 }

@@ -26,12 +26,14 @@ public class RelaxedDifficulty implements IGameDifficulty
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public int getTimeUpper() {
+    public int getMaxTime() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public int getTimeLower() {
+    public int determineTimeForLevel(int level) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+   
 
 }

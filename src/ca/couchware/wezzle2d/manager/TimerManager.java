@@ -31,21 +31,17 @@ public class TimerManager implements
      * The timer upper bound, in ms.
      */
     private int timeUpper;
-   
-    /** 
-     * The timer lower bound, im ms.
-     */
-    private int timeLower;    	    
+  
     
-	/** 
+    /**
      * The start time for this timer. 
      */
-	private int startTime;
+    private int startTime;
 	
 	/** 
      * The current time, in ms.
      */
-	private int currentTime;
+    private int currentTime;
     
     /** 
      * Is the timer paused? 
@@ -73,8 +69,7 @@ public class TimerManager implements
 	private TimerManager(ListenerManager listenerMan, Game gameRef)
 	{			
             game = gameRef;
-            this.timeLower = game.getGameDifficulty().getTimeLower();
-            this.timeUpper = game.getGameDifficulty().getTimeUpper();
+            this.timeUpper = game.getGameDifficulty().getMaxTime();
             this.listenerMan = listenerMan;
                     this.startTime   = timeUpper;
                     this.currentTime = startTime;
@@ -203,20 +198,12 @@ public class TimerManager implements
         this.stopped = stopped;
     }
 
-    /**
-     * Determine the time limit for the given level.
-     * @param level
-     * @return
-     */
-    public int determineTimeForLevel(int level)
-    {
-        return Math.max(timeUpper - (level - 1) * 1000, timeLower);
-    }
+    
 
 
     public void levelChanged(LevelEvent event)
     {
-        int time = determineTimeForLevel(event.getNewLevel());
+        int time = game.getGameDifficulty().determineTimeForLevel(event.getNewLevel());
         this.setStartTime(time);        
         
         CouchLogger.get().recordMessage(this.getClass(), "Level changed.");
@@ -248,7 +235,7 @@ public class TimerManager implements
     public void gameReset(GameEvent event)
     {
         // Set the max time to the value for this level.
-        int time = determineTimeForLevel(event.getLevel());
+        int time = game.getGameDifficulty().determineTimeForLevel(event.getLevel());
         this.setStartTime(time);
 
         // Reset the counter.

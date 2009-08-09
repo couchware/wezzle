@@ -130,14 +130,19 @@ public class NormalDifficulty implements IGameDifficulty
 
     }
 
-    public int getTimeUpper()
+    public int getMaxTime()
     {
         return this.timeUpper;
     }
 
-    public int getTimeLower()
+    /**
+     * Determine the time limit for the given level.
+     * @param level
+     * @return
+     */
+    public int determineTimeForLevel(int level)
     {
-        return this.timeLower;
+        return Math.max(timeUpper - (level - 1) * 1000, timeLower);
     }
 
 }
