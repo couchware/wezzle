@@ -70,11 +70,13 @@ public class OptionsMenu extends AbstractMenu
     private ITextLabel musicVolumeValueLabel;    
     private int musicVolumeValue;    
     private SliderBar musicVolumeValueSlider;
+    private IButton musicTestButton;
 
     private RadioGroup soundRadio;
     private ITextLabel soundVolumeValueLabel;    
     private int soundVolumeValue;    
     private SliderBar soundVolumeValueSlider;
+    private IButton soundTestButton;
 
     private enum Page
     {
@@ -185,7 +187,8 @@ public class OptionsMenu extends AbstractMenu
         entity.setDisabled(true);
     }
 
-    private void createMenuEntities(ManagerHub hub, Color labelColor, Color optionColor)
+    private void createMenuEntities(ManagerHub hub,
+            Color labelColor, Color optionColor)
     {
         Box optionBox = new Box.Builder(68, 122)
                 .width(400).height(398)
@@ -380,7 +383,7 @@ public class OptionsMenu extends AbstractMenu
 
         ITextLabel musicVolumeLabel = new LabelBuilder(
                     musicLabel.getX(),
-                    musicLabel.getY() + 50)
+                    musicLabel.getY() + 40)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor).text("Music Volume").size(20)
                 .visible(false)
@@ -407,12 +410,12 @@ public class OptionsMenu extends AbstractMenu
                 .visible(false)
                 .build();
         this.audioPageEntities.add(musicVolumeValueSlider);
-        // </editor-fold>
+        // </editor-fold>     
 
         // <editor-fold defaultstate="collapsed" desc="Sound On/Off">
         ITextLabel soundLabel = new LabelBuilder(
                     musicVolumeLabel.getX(),
-                    musicVolumeLabel.getY() + 100)
+                    musicVolumeValueSlider.getY() + 60)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor)
                 .text("Sound").size(20)
@@ -443,7 +446,7 @@ public class OptionsMenu extends AbstractMenu
 
         ITextLabel soundVolumeLabel = new LabelBuilder(
                     soundLabel.getX(),
-                    soundLabel.getY() + 50)
+                    soundLabel.getY() + 40)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor).text("Sound Volume").size(20)
                 .visible(false)
@@ -471,6 +474,30 @@ public class OptionsMenu extends AbstractMenu
                 .build();
         this.audioPageEntities.add(soundVolumeValueSlider);
         // </editor-fold>
+
+        this.musicTestButton = new Button.Builder(
+                    258,
+                    soundVolumeValueSlider.getY() + 65)
+                .alignment( EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT) )
+                .color( labelColor )
+                .normalOpacity(90)
+                .visible(false)
+                .text("Test Music").textSize(16)
+                .width( 140 )
+                .build();
+        this.audioPageEntities.add(this.musicTestButton);
+
+        this.soundTestButton = new Button.Builder(
+                    278,
+                    soundVolumeValueSlider.getY() + 65)
+                .alignment( EnumSet.of(Alignment.MIDDLE, Alignment.LEFT) )
+                .color( labelColor )
+                .normalOpacity(90)
+                .visible(false)
+                .text("Test Sound").textSize(16)
+                .width( 140 )
+                .build();
+        this.audioPageEntities.add(this.soundTestButton);
     }
 
     public void updateLogic(Game game, ManagerHub hub)
