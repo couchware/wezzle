@@ -13,38 +13,25 @@ import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 
 /**
  * A class for managing a timer.
- * 
+ *
  * @author Cameron McKay
  * @author Kevin Grad
  *
  */
-public class TimerManager implements 
+public class TimerManager implements
         IResettable, IGameListener, IMoveListener, ILevelListener
-{                 
-    
-    /** The listener manager used to fire timer events. */
+{    
     final private ListenerManager listenerMan;
-    
-    private static Game game;
+
+    private Game game;
+
+    // All times are in milliseconds.
+    private int timeUpper;
+    private int startTime;
+    private int currentTime;
 
     /**
-     * The timer upper bound, in ms.
-     */
-    private int timeUpper;
-  
-    
-    /**
-     * The start time for this timer. 
-     */
-    private int startTime;
-	
-	/** 
-     * The current time, in ms.
-     */
-    private int currentTime;
-    
-    /** 
-     * Is the timer paused? 
+     * Is the timer paused?
      */
     private boolean paused;
     
@@ -53,44 +40,44 @@ public class TimerManager implements
      * It may seem like there's no point in having a pause and a stop, and to
      * an extent, you are right.  However, there is a distinction.  A pause
      * is fleeting, while a stop is more permanent.
-     * 
+     *
      * For example, the timer is paused between each turn (fleeting).  However,
      * if a tutorial is running, sometime we want the timer off regardless
      * of how many turns have taken place (more permanent).
      */
-    private boolean stopped;    
-	
-	/**
-	 * The overloaded constructor created a timer manager with a passed in 
-	 * initial time.
-	 * 
-	 * @param initialTime The initial time on the timer.
-	 */
-	private TimerManager(ListenerManager listenerMan, Game gameRef)
-	{			
-            game = gameRef;
-            this.timeUpper = game.getGameDifficulty().getMaxTime();
-            this.listenerMan = listenerMan;
-                    this.startTime   = timeUpper;
-                    this.currentTime = startTime;
-            this.paused      = false;
-            this.stopped     = false;
-	}
-        
-    public static TimerManager newInstance(ListenerManager listenerMan, Game gameRef)
+    private boolean stopped;
+
+    /**
+     * The overloaded constructor created a timer manager with a passed in
+     * initial time.
+     *
+     * @param initialTime The initial time on the timer.
+     */
+    private TimerManager(ListenerManager listenerMan, Game game)
     {
-        return new TimerManager(listenerMan, gameRef);
+        this.game = game;
+        this.timeUpper = game.getGameDifficulty().getMaxTime();
+        this.listenerMan = listenerMan;
+        this.startTime = timeUpper;
+        this.currentTime = startTime;
+        this.paused = false;
+        this.stopped = false;
+    }
+
+    public static TimerManager newInstance(ListenerManager listenerMan, Game game)
+    {
+        return new TimerManager( listenerMan, game );
     }
 
     /**
-	 * Get the timer time.
+     * Get the timer time.
      *
-	 * @return The time.
-	 */
-	public int getCurrrentTime()
-	{
-		return this.currentTime;
-	}
+     * @return The time.
+     */
+    public int getCurrrentTime()
+    {
+        return this.currentTime;
+    }
 
     public int getCurrentTimeInSeconds()
     {
@@ -98,89 +85,82 @@ public class TimerManager implements
     }
 
     /**
-	 * Get the initial time.
-	 * @return The initial time.
-	 */
-	public int getStartTime()
-	{
-		return this.startTime;
-	}
+     * Get the initial time.
+     * 
+     * @return The initial time.
+     */
+    public int getStartTime()
+    {
+        return this.startTime;
+    }
 
     public void updateLogic(Game game)
-    {
-        // Tick the timer.
+    {        
         tick();
     }
-    
+
     /**
-	 * A method to increment the internal time. If a second has passed
-	 * the internal time goes to 0 and the current time is decremented.
-	 * 
-	 * @param offset The elapsed time.
-	 */
-	private void tick()
-	{                
+     * A method to increment the internal time. If a second has passed
+     * the internal time goes to 0 and the current time is decremented.
+     *
+     * @param offset The elapsed time.
+     */
+    private void tick()
+    {
         // If the timer is paused, don't do anything.
-        if (paused == true || stopped == true)
-            return;                        		
-		        
-        // Tick.
-		this.currentTime -= Settings.getMillisecondsPerTick();		
-        
-        // Notify all listeners of the tick.
-        this.listenerMan.notifyTickOccurred(new TimerEvent(this, this.startTime, this.currentTime));
-	}   	
-		
-	/**
-	 * Reset the timer to the start time.
-	 */
-	private void resetCurrentTime()
-	{		
-        this.currentTime = this.startTime;
-        CouchLogger.get().recordMessage(this.getClass(), "Current time reset to " + this.currentTime);
-        
-        // Notify all listeners of the tick.
-        this.listenerMan.notifyCurrentTimeReset(new TimerEvent(this, this.startTime, this.currentTime));
-	}            	
+        if ( paused == true || stopped == true )
+        {
+            return;
+        }
 
-	/**
-	 * Set the initial time.  Everytime the start time is changed, the current time will also reset.
-     * 
-	 * @param time The new time.
-	 */
-	private void setStartTime(int time)
-	{
-		this.startTime = time;
-        CouchLogger.get().recordMessage(this.getClass(), "Initial time changed to " + time);
-        
-        // Notify all listeners of the tick.
-        this.listenerMan.notifyStartTimeChanged(new TimerEvent(this, this.startTime, this.currentTime));
+        this.currentTime -= Settings.getMillisecondsPerTick();
+        this.listenerMan.notifyTickOccurred( new TimerEvent( this, this.startTime, this.currentTime ) );
+    }
 
-        // Reset the current time.
+    /**
+     * Reset the timer to the start time.
+     */
+    private void resetCurrentTime()
+    {
+        this.currentTime = this.startTime;        
+        this.listenerMan.notifyCurrentTimeReset(
+                new TimerEvent( this, this.startTime, this.currentTime ) );
+    }
+
+    /**
+     * Set the initial time.  Everytime the start time is changed, the current time will also reset.
+     *
+     * @param time The new time.
+     */
+    private void setStartTime(int time)
+    {
+        this.startTime = time;              
+        this.listenerMan.notifyStartTimeChanged(
+                new TimerEvent( this, this.startTime, this.currentTime ) );
         this.resetCurrentTime();
-	}
-    
+    }
+
     /**
      * Reset the initial time to it's maximum amount.
      */
     private void setStartTimeToUpper()
     {
-        setStartTime(timeUpper);
+        setStartTime( timeUpper );
     }
-		    
+
     /**
      * Pause the timer.
-     * 
+     *
      * @param paused True to pause the timer, false to unpause it.
      */
     public void setPaused(final boolean paused)
     {
         this.paused = paused;
     }
-    
+
     /**
      * Check if the timer is paused.
-     * 
+     *
      * @return Whether or not the timer is paused.
      */
     public boolean isPaused()
@@ -198,17 +178,15 @@ public class TimerManager implements
         this.stopped = stopped;
     }
 
-    
-
-
     public void levelChanged(LevelEvent event)
     {
-        int time = game.getGameDifficulty().determineTimeForLevel(event.getNewLevel());
-        this.setStartTime(time);        
-        
-        CouchLogger.get().recordMessage(this.getClass(), "Level changed.");
-    }   
-    
+        int time = game.getGameDifficulty().determineTimeForLevel(
+                event.getNewLevel() );
+        this.setStartTime( time );
+
+        //CouchLogger.get().recordMessage( this.getClass(), "Level changed." );
+    }
+
     public void resetState()
     {
         this.setStartTimeToUpper();
@@ -235,8 +213,9 @@ public class TimerManager implements
     public void gameReset(GameEvent event)
     {
         // Set the max time to the value for this level.
-        int time = game.getGameDifficulty().determineTimeForLevel(event.getLevel());
-        this.setStartTime(time);
+        int time = game.getGameDifficulty().determineTimeForLevel( event.
+                getLevel() );
+        this.setStartTime( time );
 
         // Reset the counter.
         this.resetCurrentTime();
@@ -246,5 +225,5 @@ public class TimerManager implements
     {
         // Nothing right now.
     }
-		
+
 }

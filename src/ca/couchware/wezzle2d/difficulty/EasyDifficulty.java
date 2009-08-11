@@ -2,13 +2,6 @@ package ca.couchware.wezzle2d.difficulty;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 
-
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  *
  * @author kgrad
@@ -41,15 +34,10 @@ public class EasyDifficulty implements IGameDifficulty
      */
     final private int timeLower = 1000;
 
-
-
-
     public RefactorSpeed getRefactorSpeed()
     {
        return RefactorSpeed.SLOWER;
     }
-
-
 
     public int getDropAmount(int numberOfTiles, int numberOfCells, int level,
             int pieceSize)
@@ -65,7 +53,7 @@ public class EasyDifficulty implements IGameDifficulty
         }
 
         // The percent of the board to readd.
-        int  boardPercentage = (numberOfCells - numberOfTiles) / 10;
+        int boardPercentage = (numberOfCells - numberOfTiles) / 10;
 
         // The drop amount.
         int dropAmount = -1;
@@ -147,7 +135,4 @@ public class EasyDifficulty implements IGameDifficulty
     {
         return Math.max(timeUpper - (level/2) * 1000, timeLower);
     }
-
-   
-
 }

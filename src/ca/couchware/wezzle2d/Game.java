@@ -32,6 +32,7 @@ import ca.couchware.wezzle2d.transition.ITransition;
 import ca.couchware.wezzle2d.tutorial.BasicTutorial;
 import ca.couchware.wezzle2d.tutorial.BombTutorial;
 import ca.couchware.wezzle2d.tutorial.GravityTutorial;
+import ca.couchware.wezzle2d.tutorial.ITutorial;
 import ca.couchware.wezzle2d.tutorial.RocketTutorial;
 import ca.couchware.wezzle2d.tutorial.RotateTutorial;
 import ca.couchware.wezzle2d.tutorial.StarTutorial;
@@ -193,43 +194,43 @@ public class Game extends Canvas implements IWindowCallback
     // Constructor
     //--------------------------------------------------------------------------
     
-	/**
-	 * Construct our game and set it running.
-	 * 
-	 * @param renderingType
-	 *            The type of rendering to use (should be one of the contansts
-	 *            from ResourceFactory)
-	 */
-	public Game(ResourceFactory.Renderer renderer) 
-	{
-       
-            // Print the build number.
-            Class cls = this.getClass();
-            CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
-            CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
-            CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
-            CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
-            CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
-            CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
-            CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
+    /**
+     * Construct our game and set it running.
+     *
+     * @param renderingType
+     *            The type of rendering to use (should be one of the contansts
+     *            from ResourceFactory)
+     */
+    public Game(ResourceFactory.Renderer renderer)
+    {
 
-                    // Create a window based on a chosen rendering method.
-                    ResourceFactory.get().setRenderer(renderer);
+        // Print the build number.
+        Class cls = this.getClass();
+        CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
+        CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
+        CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
+        CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
+        CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
+        CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
+        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
 
-            window = ResourceFactory.get().getWindow();
-            window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
-            window.setGameWindowCallback(Game.this);
-            window.setTitle(windowTitle);
+                // Create a window based on a chosen rendering method.
+                ResourceFactory.get().setRenderer(renderer);
 
-            // TEMP!!@$!
-            this.gameDifficulty = new NormalDifficulty();
-            this.refactorer = new Refactorer(this);
-	}
+        window = ResourceFactory.get().getWindow();
+        window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+        window.setGameWindowCallback(Game.this);
+        window.setTitle(windowTitle);
 
-	public void start()
-	{
-		window.start();
-	}
+        // TEMP!!@$!
+        this.gameDifficulty = new NormalDifficulty();
+        this.refactorer = new Refactorer(this);
+    }
+
+    public void start()
+    {
+            window.start();
+    }
             
     public void startBoard()
     {
@@ -272,9 +273,7 @@ public class Game extends Canvas implements IWindowCallback
 
                 // Queue in the animation manager.
                 hub.animationMan.add(transition);
-
-
-                
+               
                 break;
         }
     }
@@ -314,69 +313,54 @@ public class Game extends Canvas implements IWindowCallback
      */
     public void initializeTutorials(boolean isActivated)
     {
-        BasicTutorial bt = new BasicTutorial(refactorer);
-        RotateTutorial rt = new RotateTutorial(refactorer);
-        GravityTutorial gt = new GravityTutorial(refactorer);
-        RocketTutorial rot = new RocketTutorial(refactorer);
-        BombTutorial bot = new BombTutorial(refactorer);
-        StarTutorial st = new StarTutorial(refactorer);
+        List<ITutorial> tutorials = new ArrayList<ITutorial>();
+        tutorials.add( new BasicTutorial(refactorer) );
+        tutorials.add( new RotateTutorial(refactorer) );
+        tutorials.add( new GravityTutorial(refactorer) );
+        tutorials.add( new RocketTutorial(refactorer) );
+        tutorials.add( new BombTutorial(refactorer) );
+        tutorials.add( new StarTutorial(refactorer) );
 
-        if(true == isActivated || false == bt.hasRun(hub))
-            hub.tutorialMan.add(bt);
-
-        if(true == isActivated || false == rt.hasRun(hub))
-            hub.tutorialMan.add(rt);
-        
-        if(true == isActivated || false == rot.hasRun(hub))
-            hub.tutorialMan.add(rot);
-        
-        if(true == isActivated || false == bot.hasRun(hub))
-            hub.tutorialMan.add(bot);
-        
-        if(true == isActivated || false == st.hasRun(hub))
-            hub.tutorialMan.add(st);
-        
-        if(true == isActivated || false == gt.hasRun(hub))
-            hub.tutorialMan.add(gt);
-
-
+        for (ITutorial t : tutorials)
+            if (isActivated && !t.hasRun( hub ))
+                hub.tutorialMan.add(t);
     }
     
-	/**
-	 * Initialize the common elements for the game.
-	 */
-	public void initialize()
-	{                
-        // Initialize the executor.        
+    /**
+     * Initialize the common elements for the game.
+     */
+    public void initialize()
+    {
+        // Initialize the executor.
         executor = Executors.newCachedThreadPool();
-                
-        // Make sure the listener and settings managers are ready.
-        hub.initialize(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS), this);       
 
-        // Create the loader.        
+        // Make sure the listener and settings managers are ready.
+        hub.initialize(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS), this);
+
+        // Create the loader.
         loader = new Loader("Loading Wezzle...", hub.settingsMan);
         setDrawer(loader);
-        
+
         // Preload the sprites.
-        resourceFactory.preloadSprites(loader);                                        
-                                
+        resourceFactory.preloadSprites(loader);
+
         // Initialize managers.
         loader.addTask(new Runnable()
         {
-           public void run() 
-           { 
-               hub.initialize(EnumSet.allOf(Manager.class), Game.this);               
+           public void run()
+           {
+               hub.initialize(EnumSet.allOf(Manager.class), Game.this);
                hub.layerMan.setDisabled(true);
            }
         });
-                               
+
         // Initialize the core managers.
         loader.addTask(new Runnable()
         {
            public void run()
            { initializeCoreManagers(); }
         });
-	}                      
+    }
     
     public void update()
     {                
@@ -918,11 +902,11 @@ public class Game extends Canvas implements IWindowCallback
     // Window Methods
     //--------------------------------------------------------------------------
     
-	/**
-	 * Notification that the game window has been closed
-	 */
-	public void windowClosed()
-	{                    
+    /**
+     * Notification that the game window has been closed
+     */
+    public void windowClosed()
+    {
         try
         {
             // Save the properites.
@@ -931,16 +915,16 @@ public class Game extends Canvas implements IWindowCallback
                 hub.settingsMan.saveSettings();
             }
 
-            // Save the log data.            
+            // Save the log data.
             CouchLogger.get().write();
         }
         catch(Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e);
-        }        
-        
-     	System.exit(0);
-	}        
+        }
+
+        System.exit(0);
+    }
     
     /**
      * Notification that the game window has been deactivated in some way.
@@ -1022,6 +1006,11 @@ public class Game extends Canvas implements IWindowCallback
         return this.gameDifficulty;
     }
 
+    public void setGameDifficulty(IGameDifficulty difficulty)
+    {
+        this.gameDifficulty = difficulty;
+    }
+
     public IWindow getWindow()
     {
         return window;
@@ -1036,43 +1025,43 @@ public class Game extends Canvas implements IWindowCallback
     // Main method
     //--------------------------------------------------------------------------
     
-	/**
-	 * The entry point into the game. We'll simply create an instance of class
-	 * which will start the display and game loop.
-	 * 
-	 * @param argv
-	 *            The arguments that are passed into our game
-	 */
-	public static void main(String argv[])
-	{		              
-            // Make sure the setting manager is loaded.
-            SettingsManager settingsMan = SettingsManager.get();
+    /**
+     * The entry point into the game. We'll simply create an instance of class
+     * which will start the display and game loop.
+     *
+     * @param argv
+     *            The arguments that are passed into our game
+     */
+    public static void main(String argv[])
+    {
+        // Make sure the setting manager is loaded.
+        SettingsManager settingsMan = SettingsManager.get();
 
-            // Send a reference to the resource manager.
-            ResourceFactory.get().setSettingsManager(settingsMan);
+        // Send a reference to the resource manager.
+        ResourceFactory.get().setSettingsManager(settingsMan);
 
-            // Set the default color scheme.
-            ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-            ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-            RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-            SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-            Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-            Achievement.Difficulty.initializeDifficultyColorMap(settingsMan);
+        // Set the default color scheme.
+        ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        Achievement.Difficulty.initializeDifficultyColorMap(settingsMan);
 
-            // Set the BasicPlayer logger level.
-            Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
+        // Set the BasicPlayer logger level.
+        Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
 
-            try
-            {
-                //Game game = new Game(ResourceFactory.Renderer.JAVA2D);
-                Game game = new Game(ResourceFactory.Renderer.LWJGL);
-                game.start();
-            }
-            catch (Exception e)
-            {
-                CouchLogger.get().recordException(Game.class, e);
-                CouchLogger.get().write();
-            }
-	}
+        try
+        {
+            //Game game = new Game(ResourceFactory.Renderer.JAVA2D);
+            Game game = new Game(ResourceFactory.Renderer.LWJGL);
+            game.start();
+        }
+        catch (Exception e)
+        {
+            CouchLogger.get().recordException(Game.class, e);
+            CouchLogger.get().write();
+        }
+    }
   
 }

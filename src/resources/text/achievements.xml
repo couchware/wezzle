@@ -88,7 +88,7 @@
     </achievement>
 
     <!-- Score Achievements -->   
-    <achievement name="Get 60,000 Points" difficulty="SILVER">
+    <achievement name="Get 60,000 Points" difficulty="BRONZE">
       <description>Get over 60,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="60000" />
     </achievement>
@@ -100,7 +100,7 @@
       <description>Get over 300,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="300000" />
     </achievement>
-     <achievement name="Get 1,000,000 Points" difficulty="PLATINUM">
+    <achievement name="Get 1,000,000 Points" difficulty="PLATINUM">
       <description>Get over 1,000,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="1000000" />
     </achievement>

@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ca.couchware.wezzle2d.difficulty;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
@@ -38,15 +33,10 @@ public class HardDifficulty implements IGameDifficulty
      */
     final private int timeLower = 500;
 
-
-
-
     public RefactorSpeed getRefactorSpeed()
     {
        return RefactorSpeed.NORMAL;
     }
-
-
 
     public int getDropAmount(int numberOfTiles, int numberOfCells, int level,
             int pieceSize)
@@ -144,7 +134,5 @@ public class HardDifficulty implements IGameDifficulty
     {
         return Math.max(timeUpper - (level*2 - 2) * 1000, timeLower);
     }
-
-    
 
 }

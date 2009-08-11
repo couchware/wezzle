@@ -1,5 +1,3 @@
-
-
 package ca.couchware.wezzle2d.difficulty;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
