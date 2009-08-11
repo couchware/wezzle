@@ -65,7 +65,7 @@ public class EasyDifficulty implements IGameDifficulty
         }
 
         // The percent of the board to readd.
-        int  boardPercentage = ((numberOfCells - numberOfTiles) * 10)/100;
+        int  boardPercentage = (numberOfCells - numberOfTiles) / 10;
 
         // The drop amount.
         int dropAmount = -1;

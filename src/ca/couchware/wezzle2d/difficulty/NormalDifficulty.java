@@ -62,7 +62,7 @@ public class NormalDifficulty implements IGameDifficulty
         }
 
         // The percent of the board to readd.
-        int  boardPercentage = (int) ((numberOfCells - numberOfTiles) * 0.1f);
+        int  boardPercentage = (numberOfCells - numberOfTiles) / 10;
 
         // The drop amount.
         int dropAmount = -1;
