@@ -281,7 +281,7 @@ public class PlayNowMenu extends AbstractMenu
         {            
             for (MusicPlayer p : playerList)
             {
-                p.setLoop(true);
+                p.setLooping(true);
                 p.play();        
                 p.setNormalizedGain(0.0);
             }            

@@ -8,9 +8,14 @@ package ca.couchware.wezzle2d.menu;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.audio.Music;
+import ca.couchware.wezzle2d.audio.MusicPlayer;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
@@ -19,10 +24,14 @@ import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SliderBar;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
  * The play now group, which holds all the configuration options for playing
@@ -71,6 +80,7 @@ public class OptionsMenu extends AbstractMenu
     private int musicVolumeValue;    
     private SliderBar musicVolumeValueSlider;
     private IButton musicTestButton;
+    private MusicPlayer musicTestPlayer;
 
     private RadioGroup soundRadio;
     private ITextLabel soundVolumeValueLabel;    
@@ -115,6 +125,10 @@ public class OptionsMenu extends AbstractMenu
         // The colors.
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
         final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
+
+        // Create the music player.
+        this.musicTestPlayer = MusicManager.createPlayer( Music.ELECTRONIC1 );
+        this.musicTestPlayer.setLooping(true);
 
         // Create general entities.
         createMenuEntities(hub, LABEL_COLOR, OPTION_COLOR);
@@ -481,10 +495,12 @@ public class OptionsMenu extends AbstractMenu
                 .alignment( EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT) )
                 .color( labelColor )
                 .normalOpacity(90)
+                .activeOpacity(90)
                 .visible(false)
                 .text("Test Music").textSize(16)
+                .activeText( "Stop Music" )
                 .width( 140 )
-                .build();
+                .build();       
         this.audioPageEntities.add(this.musicTestButton);
 
         this.soundTestButton = new Button.Builder(
@@ -493,10 +509,11 @@ public class OptionsMenu extends AbstractMenu
                 .alignment( EnumSet.of(Alignment.MIDDLE, Alignment.LEFT) )
                 .color( labelColor )
                 .normalOpacity(90)
+                .activeOpacity(90)
                 .visible(false)
                 .text("Test Sound").textSize(16)
                 .width( 140 )
-                .build();
+                .build();      
         this.audioPageEntities.add(this.soundTestButton);
     }
 
@@ -557,6 +574,19 @@ public class OptionsMenu extends AbstractMenu
             musicVolumeValue = musicVolumeValueSlider.getVirtualValue();
             this.musicVolumeValueLabel.setText("" + musicVolumeValue);
             hub.settingsMan.setInt(Key.USER_MUSIC_VOLUME, this.musicVolumeValue);
+
+            try
+            {
+                if (this.musicTestButton.isActivated())
+                {
+                    this.musicTestPlayer.setNormalizedGain(
+                            musicVolumeValueSlider.getVirtualPercent() );
+                }
+            }
+            catch ( BasicPlayerException e )
+            {
+                CouchLogger.get().recordException(this.getClass(), e);
+            }
         }
 
         if ( this.soundVolumeValueSlider.changed() )
@@ -564,7 +594,51 @@ public class OptionsMenu extends AbstractMenu
             soundVolumeValue = soundVolumeValueSlider.getVirtualValue();
             this.soundVolumeValueLabel.setText("" + soundVolumeValue);
             hub.settingsMan.setInt(Key.USER_SOUND_VOLUME, this.soundVolumeValue);
+
+            hub.soundMan.setNormalizedGain( soundVolumeValueSlider.getVirtualPercent() );
         }
+
+        if ( this.musicTestButton.clicked() )
+        {
+            try
+            {
+                if (this.musicTestButton.isActivated())
+                {
+                    this.musicTestPlayer.play();
+                    this.musicTestPlayer.setNormalizedGain(
+                            musicVolumeValueSlider.getVirtualPercent() );
+                }
+                else
+                {
+                    this.musicTestPlayer.stop();
+                }
+            }
+            catch ( BasicPlayerException e )
+            {
+                CouchLogger.get().recordException(this.getClass(), e);
+            }
+        }
+
+        if ( this.soundTestButton.clicked() )
+        {            
+            hub.soundMan.play( Sound.ROCKET );
+        }
+    }  
+
+    @Override
+    public IAnimation animateHide()
+    {
+        try
+        {
+            this.musicTestButton.setActivated( false );
+            this.musicTestPlayer.stop();
+        }
+        catch ( BasicPlayerException e )
+        {
+            CouchLogger.get().recordException(this.getClass(), e);
+        }
+
+        return super.animateHide();
     }
 
 } // end class

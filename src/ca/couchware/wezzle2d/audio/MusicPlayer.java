@@ -232,7 +232,7 @@ public class MusicPlayer
      * 
      * @return
      */
-    public boolean getLoop()
+    public boolean isLooping()
     {
         return loop.get();
     }
@@ -242,7 +242,7 @@ public class MusicPlayer
      * 
      * @param loop
      */
-    public void setLoop(boolean loop)
+    public void setLooping(boolean loop)
     {
         this.loop.set(loop);
     }   
@@ -255,7 +255,16 @@ public class MusicPlayer
         return finished.get();
     }   
 
-
+    /**
+     * This method will call stop() once the music player
+     * reaches the specified gain.  The order will expire
+     * once the gain is reached, or if the track is finished
+     * as decided by isFinished().
+     *
+     * @see stop
+     * @see isFinished
+     * @param nGain
+     */
     public void stopAtGain(final double nGain)
     {
         Runnable r = new Runnable()
@@ -264,7 +273,7 @@ public class MusicPlayer
             
             public void run()
             {
-                CouchLogger.get().recordMessage(MusicPlayer.class, "Checking...");
+                //CouchLogger.get().recordMessage(MusicPlayer.class, "Checking...");
                 
                 if (NumUtil.equalsDouble(targetGain, normalizedGain.get(), EPSILON))
                 {                                        
@@ -285,6 +294,14 @@ public class MusicPlayer
                         {
                             CouchLogger.get().recordException(this.getClass(), e);
                         }
+                    } // end sync
+                }
+                else if (finished.get())
+                {                    
+                    synchronized (stopFutureLock)
+                    {
+                        if (stopFuture != null)
+                            stopFuture.cancel(false);
                     } // end sync
                 } // end if
             }
