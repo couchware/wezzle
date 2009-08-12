@@ -146,7 +146,7 @@ public class RadioItem extends AbstractButton
         // Create the label.
         label = new ResourceFactory.LabelBuilder(0, 0)  
                 .alignment(EnumSet.of(Alignment.LEFT, Alignment.MIDDLE))
-                .cached(false).color(color).text(text)
+                .color(color).text(text)
                 .visible(visible).opacity(opacity).size(textSize).build();
             
         // Adjust the height so that it'll include the label.

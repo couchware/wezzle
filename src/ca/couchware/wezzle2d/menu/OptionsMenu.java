@@ -102,19 +102,12 @@ public class OptionsMenu extends AbstractMenu
         { return description; }
     }
 
-    /** The current page. */
     private Page currentPage = Page.GAME;
 
-    /** The page 1 button. */
     private IButton gameButton;
-
-    /** The page 2 button. */
     private IButton audioButton;
-
-    /** The page 1 entities. */
-    final private List<IEntity> gamePageEntities = new ArrayList<IEntity>();
-
-    /** The page 2 entities. */
+    
+    final private List<IEntity> gamePageEntities  = new ArrayList<IEntity>();
     final private List<IEntity> audioPageEntities = new ArrayList<IEntity>();
                     
     public OptionsMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)
@@ -130,13 +123,8 @@ public class OptionsMenu extends AbstractMenu
         this.musicTestPlayer = MusicManager.createPlayer( Music.ELECTRONIC1 );
         this.musicTestPlayer.setLooping(true);
 
-        // Create general entities.
         createMenuEntities(hub, LABEL_COLOR, OPTION_COLOR);
-
-        // Page 0 entities.
         createEntitiesForGamePage(hub, LABEL_COLOR, OPTION_COLOR);
-
-        // Page 1 entities.
         createEntitiesForAudioPage(hub, LABEL_COLOR, OPTION_COLOR);
            
         // Add them all to the layer manager.

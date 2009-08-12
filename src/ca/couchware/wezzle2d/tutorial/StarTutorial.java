@@ -77,8 +77,7 @@ public class StarTutorial extends AbstractTutorial
         
         // Line 1.
         label = new LabelBuilder(280, 166)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .cached(false)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))                
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(16).text("Stars destroy all tiles").build();
         layerMan.add(label, Layer.EFFECT);   

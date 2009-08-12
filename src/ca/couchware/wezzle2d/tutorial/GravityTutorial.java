@@ -69,8 +69,7 @@ public class GravityTutorial extends AbstractTutorial
         
         // Line 1.
         label = new LabelBuilder(280, 166)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .cached(false)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))                
                 .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(16)
                 .text("Gravity tiles change the").build();
         layerMan.add(label, Layer.EFFECT);   

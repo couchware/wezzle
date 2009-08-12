@@ -131,7 +131,7 @@ public class SpeechBubble extends AbstractEntity
                 label = new LabelBuilder(x, y - offsetList.get(type))
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .color(color).size(16).text(text)
-                        .cached(false).build();
+                        .build();
                 
                 break;
                 

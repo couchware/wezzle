@@ -459,7 +459,7 @@ public class LWJGLWindow implements IWindow
     
     public void addKeyListener(IKeyListener l)
     {
-        CouchLogger.get().recordMessage(this.getClass(), "Added key listener for " + l);
+        //CouchLogger.get().recordMessage(this.getClass(), "Added key listener for " + l);
         
         if (l == null)
             throw new NullPointerException();

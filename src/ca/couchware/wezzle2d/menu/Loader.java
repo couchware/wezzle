@@ -109,7 +109,7 @@ public class Loader implements IDrawer
         // Create the loader title.
         ITextLabel label3 = new ResourceFactory.LabelBuilder(400, 273)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .cached(false).size(26).text(title).build();
+                .size(26).text(title).build();
         this.layerMan.add(label3, Layer.UI);
         
         // Create the progress bar.

@@ -2137,18 +2137,18 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	 */
 	public void print()
 	{
-		for (int i = 0; i < board.length; i++)
-		{
-			if (board[i] == null)
-				System.out.print(".");
-			else
-				System.out.print("X");
-			
-			if (i % columns == columns - 1)
-				System.out.println();
-		}
-		
-		System.out.println();
+            for (int i = 0; i < board.length; i++)
+            {
+                if (board[i] == null)
+                    System.out.print(".");
+                else
+                    System.out.print("X");
+
+                if (i % columns == columns - 1)
+                    System.out.println();
+            }
+
+            System.out.println();
 	}
     
     //--------------------------------------------------------------------------

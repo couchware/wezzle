@@ -29,6 +29,7 @@ public class Settings
         USER_HIGHSCORE(Object.class),
         USER_ACHIEVEMENT(List.class),
         USER_ACHIEVEMENT_COMPLETED(List.class),
+        USER_DIFFICULTY_DEFAULT(String.class),
         USER_LEVEL_DEFAULT(Integer.class),
         USER_TUTORIAL_DEFAULT(Boolean.class),
         USER_MUSIC_DEFAULT(String.class),
@@ -44,10 +45,7 @@ public class Settings
 
         /** Whether or not auto-pause is enabled. */
         USER_AUTO_PAUSE(Boolean.class),
-
-        /** Is the maximum level capped? */
-        USER_MAX_LEVEL_CAPPED(Boolean.class),
-
+        
         // Tutorials.       
         USER_TUTORIAL_BASIC_RAN(Boolean.class),
         USER_TUTORIAL_ROTATE_RAN(Boolean.class),

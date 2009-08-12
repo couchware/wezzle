@@ -205,20 +205,13 @@ public class SettingsManager
                 try 
                 {
                     Key key = Key.valueOf(name);                    
-
-                    if (currentMap.containsKey(key))
-                    {
-                        CouchLogger.get().recordMessage(
-                                this.getClass(), "Value overwritten: " + key);
-                    }
-
                     currentMap.put(key, value);
-
-                    CouchLogger.get().recordMessage(this.getClass(), key + " = " + value);
                 }
                 catch (IllegalArgumentException e)
                 {
-                    throw new IllegalArgumentException("Unknown key: " + name);
+                    CouchLogger.get().recordWarning(
+                            this.getClass(),
+                            String.format( "Unknown pair %s = %s", name, value ));
                 }
             }
         }

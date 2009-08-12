@@ -210,14 +210,14 @@ public class UI implements
         // Set up the copyright label.
         copyrightLabel = new LabelBuilder(10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
-                .cached(false).color(PRIMARY_COLOR).size(12)                
+                .color(PRIMARY_COLOR).size(12)                
                 .text(Game.COPYRIGHT).build();
         hub.layerMan.add(copyrightLabel, Layer.UI);
         
         // Set up the version label.	
         versionLabel = new LabelBuilder(800 - 10, 600 - 10)
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.RIGHT))
-                .cached(false).color(PRIMARY_COLOR).size(12)                
+                .color(PRIMARY_COLOR).size(12)                
                 .text(Game.TITLE)
                 .build();
         hub.layerMan.add(versionLabel, Layer.UI);
@@ -230,8 +230,7 @@ public class UI implements
         
         // Set up the level text.
         levelLabel = new LabelBuilder(126, 210)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
-                .cached(false)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))                
                 .color(PRIMARY_COLOR).size(20).text("").build();
         hub.layerMan.add(levelLabel, Layer.UI);        
         
@@ -243,8 +242,7 @@ public class UI implements
                         
         // Set up the high score text.
         highScoreLabel = new LabelBuilder(126, 337)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
-                .cached(false)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))                
                 .color(PRIMARY_COLOR).size(20).text("").build();
         hub.layerMan.add(highScoreLabel, Layer.UI);
         
@@ -255,8 +253,7 @@ public class UI implements
         
         // Set up the score text.
         scoreLabel = new LabelBuilder(126, 460)
-                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))
-                .cached(false)
+                .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.CENTER))                
                 .color(PRIMARY_COLOR).size(20).text("").build();
         hub.layerMan.add(scoreLabel, Layer.UI);
     }
