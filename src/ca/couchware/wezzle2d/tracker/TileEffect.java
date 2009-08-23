@@ -72,8 +72,6 @@ public class TileEffect implements TileGroup
                 + (tileList.isEmpty() ? "*Nothing*" : StringUtil.join(tileList, ", "));
     }
 
-
-    @Override
     public Set<Tile> getUniqueTiles()
     {
        Set<Tile> tiles = new HashSet<Tile>();

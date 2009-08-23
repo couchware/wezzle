@@ -65,7 +65,7 @@ public class PauseGroup extends AbstractGroup implements
         // Create the "Paused" text.
         mainLabel = new LabelBuilder(400, 245)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(38)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(32)
                 .text("Paused")
                 .visible(false).build();
         entityList.add(mainLabel);

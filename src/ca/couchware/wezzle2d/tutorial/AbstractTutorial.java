@@ -394,7 +394,6 @@ public abstract class AbstractTutorial implements ITutorial
         return name;
     }
 
-    @Override
     public boolean hasRun(final ManagerHub hub)
     {
         return hub.settingsMan.getBool(this.getSettingsKey());

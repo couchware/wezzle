@@ -48,35 +48,27 @@ import javazoom.jlgui.basicplayer.BasicPlayerException;
 public class PlayNowMenu extends AbstractMenu
 {
     
-    /** The minimum level the user can select. */
     final private static int MIN_LEVEL = 1;
-    
-    /** The maximum level the user can select. */
     final private static int MAX_LEVEL = 15;             
-    
-    /** The level label. */
-    private final ITextLabel levelNumberLabel;    
-    
-    /** The level. */
     private int levelNumber = 1;
-    
-    /** The level slider. */
-    private final SliderBar levelSlider;
-    
-    /** The possibilies for the tutorial. */
-    //private enum Tutorial { ON, OFF }
+  
+    private final ITextLabel levelNumberLabel;    
+    private final SliderBar levelNumberSlider;
+    final private RadioGroup tutorialRadio;
+    final private RadioGroup themeRadio;
+    final private ITextLabel difficultyValueLabel;
+    final private SliderBar difficultyValueSlider;
+
     final private static int TUTORIAL_ON = 0;
     final private static int TUTORIAL_OFF = 1;
-    
-    /** The tutorial radio group. */
-    final private RadioGroup tutorialRadio;
-    
-    /** The music radio group. */
-    final private RadioGroup themeRadio;        
-    
+
     final private static int THEME_TRON = 0;
     final private static int THEME_ELECTRONIC = 1;
     final private static int THEME_HIPPOP = 2;
+
+    final private static int DIFFICULTY_EASY = 0;
+    final private static int DIFFICULTY_NORMAL = 1;
+    final private static int DIFFICULTY_HARD = 2;
     
     /** The music player map. */
     private List<MusicPlayer> playerList;
@@ -114,7 +106,7 @@ public class PlayNowMenu extends AbstractMenu
         this.levelNumber = Math.max(MIN_LEVEL, this.levelNumber);
         this.levelNumber = Math.min(MAX_LEVEL, this.levelNumber);
 
-        ITextLabel levelLabel = new LabelBuilder(110, 180)
+        ITextLabel levelLabel = new LabelBuilder(110, 170)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Level").size(20)
                 .visible(false)
@@ -131,20 +123,50 @@ public class PlayNowMenu extends AbstractMenu
                 .build();
         this.entityList.add(this.levelNumberLabel);
         
-        this.levelSlider = new SliderBar.Builder(
-                    268, 
+        this.levelNumberSlider = new SliderBar.Builder(
+                    268,
                     levelLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .width(340)
                 .virtualRange(MIN_LEVEL, MAX_LEVEL)
                 .virtualValue(this.levelNumber)
                 .visible(false)
                 .build();
-        this.entityList.add(levelSlider);
-        
+        this.entityList.add(levelNumberSlider);
+
+        ITextLabel difficultyLabel = new LabelBuilder(
+                    levelLabel.getX(),
+                    levelLabel.getY() + 75)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(LABEL_COLOR).text("Difficulty").size(20)
+                .visible(false)
+                .build();
+        this.entityList.add(difficultyLabel);
+
+        this.difficultyValueLabel = new LabelBuilder(
+                    difficultyLabel.getX() + difficultyLabel.getWidth() + 20,
+                    difficultyLabel.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY))
+                .size(20).visible(false)
+                .text("Normal")
+                .build();
+        this.entityList.add(this.difficultyValueLabel);
+
+        this.difficultyValueSlider = new SliderBar.Builder(
+                    268,
+                    difficultyLabel.getY() + 35)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .width(340)
+                .virtualRange(0, 2)
+                .virtualValue(1)
+                .visible(false)
+                .build();
+        this.entityList.add(difficultyValueSlider);
+       
         ITextLabel tutorialLabel = new LabelBuilder(
-                    levelLabel.getX(), 
-                    levelLabel.getY() + 80)
+                    difficultyLabel.getX(),
+                    difficultyLabel.getY() + 75)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Tutorial").size(20)
                 .visible(false)
@@ -161,18 +183,18 @@ public class PlayNowMenu extends AbstractMenu
 
         final boolean tutorialDefault = hub.settingsMan.getBool(Key.USER_TUTORIAL_DEFAULT);
         this.tutorialRadio = new RadioGroup.Builder(
-                    268,
-                    tutorialLabel.getY() + 35)
+                    310,
+                    tutorialLabel.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .add(tutorialOn,  tutorialDefault)
                 .add(tutorialOff, !tutorialDefault)
                 .visible(false)
                 .build();
         this.entityList.add(tutorialRadio);
-        
+
         ITextLabel themeLabel = new LabelBuilder(
-                    tutorialLabel.getX(), 
-                    tutorialLabel.getY() + 80)
+                    tutorialLabel.getX(),
+                    tutorialLabel.getY() + 45)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Music").size(20)
                 .visible(false)
@@ -251,7 +273,7 @@ public class PlayNowMenu extends AbstractMenu
         this.entityList.add(themeRadio);
                
         // Create the start button.
-        this.startButton = new Button.Builder(268, 450)
+        this.startButton = new Button.Builder(268, 460)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .normalOpacity(90)                
@@ -317,9 +339,9 @@ public class PlayNowMenu extends AbstractMenu
         
     public void updateLogic(Game game, ManagerHub hub)
     {      
-        if (this.levelSlider.changed() == true)
+        if (this.levelNumberSlider.changed() == true)
         {
-            levelNumber = (int) levelSlider.getVirtualValue();
+            levelNumber = (int) levelNumberSlider.getVirtualValue();
             this.levelNumberLabel.setText("" + levelNumber);
             hub.settingsMan.setInt(Key.USER_LEVEL_DEFAULT, this.levelNumber);
         }

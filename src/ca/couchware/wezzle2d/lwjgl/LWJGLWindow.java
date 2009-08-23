@@ -2,7 +2,6 @@
  *  Wezzle
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
-
 package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.IWindow;
@@ -43,156 +42,153 @@ import org.lwjgl.opengl.PixelFormat;
  * @author Brian Matzon
  * @author Cameron McKay
  */
-public class LWJGLWindow implements IWindow 
+public class LWJGLWindow implements IWindow
 {
-
-    /** The settings manager. */
     private SettingsManager settingsMan;
+    private IWindowCallback callback;
 
-	/** The callback which should be notified of window events */
-	private IWindowCallback callback;
-  
     /** The key presses. */
     private Set<Character> keyPressSet;
-    
+
     /** The mouse states. */
     private Map<MouseEvent.Button, Boolean> mouseStateMap;
-    
-	/** True if the game is currently "running", i.e. the game loop is looping. */
-	private boolean gameRunning = true;
-    
+
+    /** True if the game is currently "running", i.e. the game loop is looping. */
+    private boolean gameRunning = true;
+
     /** True if the window is active. */
     private boolean active = false;
-  
-	/** The width of the game display area. */
-	private int width;
-  
-	/** The height of the game display area. */
-	private int height;
 
-	/** The loader responsible for converting images into OpenGL textures. */
-	private TextureLoader textureLoader;
-  
-	/** 
+    /** The width of the game display area. */
+
+    private int width;
+    /** The height of the game display area. */
+
+    private int height;
+
+    /** The loader responsible for converting images into OpenGL textures. */
+    private TextureLoader textureLoader;
+
+    /**
      * Title of window, we get it before our window is ready, so store it 
      * until needed.
      */
-	private String title;
+    private String title;
+    private Set<Modifier> modifiers;
 
-        private Set<Modifier> modifiers;
-	
-	/**
-	 * Create a new game window that will use OpenGL to 
-	 * render our game.
-	 */
-	public LWJGLWindow(SettingsManager settingsMan)
+    /**
+     * Create a new game window that will use OpenGL to
+     * render our game.
+     */
+    public LWJGLWindow(SettingsManager settingsMan)
     {
         this.settingsMan = settingsMan;
         this.keyPressSet = new HashSet<Character>();
-        
-        this.mouseStateMap = 
+
+        this.mouseStateMap =
                 new EnumMap<Button, Boolean>(Button.class);
-        
+
         this.mouseStateMap.put(Button.LEFT, false);
         this.mouseStateMap.put(Button.RIGHT, false);
         this.mouseStateMap.put(Button.MIDDLE, false);
-        
+
         modifiers = EnumSet.noneOf(Modifier.class);
 
     }
-	
-	/**
-	 * Retrieve access to the texture loader that converts images
-	 * into OpenGL textures. Note, this has been made package level
-	 * since only other parts of the JOGL implementations need to access
-	 * it.
-	 * 
-	 * @return The texture loader that can be used to load images into
-	 * OpenGL textures.
-	 */
-	TextureLoader getTextureLoader() 
+
+    /**
+     * Retrieve access to the texture loader that converts images
+     * into OpenGL textures. Note, this has been made package level
+     * since only other parts of the JOGL implementations need to access
+     * it.
+     *
+     * @return The texture loader that can be used to load images into
+     * OpenGL textures.
+     */
+    TextureLoader getTextureLoader()
     {
-		return textureLoader;
-	}
-	
-	/**
-	 * Set the title of this window.
-	 *
-	 * @param title The title to set on this window
-	 */
-	public void setTitle(String title) 
-    {	    
+        return textureLoader;
+    }
+
+    /**
+     * Set the title of this window.
+     *
+     * @param title The title to set on this window
+     */
+    public void setTitle(String title)
+    {
         this.title = title;
-	    
+
         // Set the title if the display has been created.
-        if (Display.isCreated()) 
+        if (Display.isCreated())
         {
-	    	Display.setTitle(title);
-	    }
-	}
+            Display.setTitle(title);
+        }
+    }
 
-	/**
-	 * Set the resolution of the game display area.
-	 *
-	 * @param x The width of the game display area
-	 * @param y The height of the game display area
-	 */
-	public void setResolution(int x, int y) 
+    /**
+     * Set the resolution of the game display area.
+     *
+     * @param x The width of the game display area
+     * @param y The height of the game display area
+     */
+    public void setResolution(int x, int y)
     {
-		width = x;
-		height = y;
-	}
+        width = x;
+        height = y;
+    }
 
-	/**
-   	 * Sets the display mode for fullscreen mode.
-	 */
-	private boolean setDisplayMode()
+    /**
+     * Sets the display mode for fullscreen mode.
+     */
+    private boolean setDisplayMode()
     {
-    	try
+        try
         {
             // Get display modes.
             DisplayMode[] dm = org.lwjgl.util.Display.getAvailableDisplayModes(
-                    width, height, 
+                    width, height,
                     -1, -1, -1, -1,
                     Display.getDisplayMode().getFrequency(),
                     Display.getDisplayMode().getFrequency());
-            
+
             org.lwjgl.util.Display.setDisplayMode(dm, new String[]
-            {
-                "width=" + width, "height=" + height,
-                "freq=" + Display.getDisplayMode().getFrequency(),
-                "bpp=" + Display.getDisplayMode().getBitsPerPixel()
-            });
-            
+                    {
+                        "width=" + width, "height=" + height,
+                        "freq=" + Display.getDisplayMode().getFrequency(),
+                        "bpp=" + Display.getDisplayMode().getBitsPerPixel()
+                    });
+
             return true;
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            System.out.println("Unable to enter fullscreen, continuing in windowed mode.");
+            System.out.println(
+                    "Unable to enter fullscreen, continuing in windowed mode.");
         }
 
         return false;
-	}
-    
+    }
+
     /** The original display mode before we tampered with things. */
-	protected DisplayMode originalDisplayMode;
+    protected DisplayMode originalDisplayMode;
 
     /** The display mode we're going to try and use. */
-	protected DisplayMode targetDisplayMode;
-    
+    protected DisplayMode targetDisplayMode;
+
     /**
-	 * Set the display mode to be used.
+     * Set the display mode to be used.
      * [Code taken from Slick2D.]
-	 * 
-	 * @param width The width of the display required
-	 * @param height The height of the display required
-	 * @param fullscreen True if we want fullscreen mode
-	 * @throws SlickException Indicates a failure to initialise the display
-	 */
-	public void setDisplayMode(int width, int height, boolean fullscreen)
-    {        
-		try
+     *
+     * @param width The width of the display required
+     * @param height The height of the display required
+     * @param fullscreen True if we want fullscreen mode
+     * @throws SlickException Indicates a failure to initialise the display
+     */
+    public void setDisplayMode(int width, int height, boolean fullscreen)
+    {
+        try
         {
             this.targetDisplayMode = null;
             if (fullscreen)
@@ -208,7 +204,8 @@ public class LWJGLWindow implements IWindow
                     {
                         if ((targetDisplayMode == null) || (current.getFrequency() >= freq))
                         {
-                            if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel()))
+                            if ((targetDisplayMode == null)
+                                    || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel()))
                             {
                                 targetDisplayMode = current;
                                 freq = targetDisplayMode.getFrequency();
@@ -234,7 +231,8 @@ public class LWJGLWindow implements IWindow
 
             if (targetDisplayMode == null)
             {
-                throw new RuntimeException("Failed to find value mode: " + width + "x" + height + " fullscreen=" + fullscreen + ".");
+                throw new RuntimeException(
+                        "Failed to find value mode: " + width + "x" + height + " fullscreen=" + fullscreen + ".");
             }
 
 //            this.width = width;
@@ -256,140 +254,158 @@ public class LWJGLWindow implements IWindow
         }
         catch (LWJGLException e)
         {
-            throw new RuntimeException("Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + ".", e);
-        }				
-	}
+            throw new RuntimeException(
+                    "Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + ".",
+                                       e);
+        }
+    }
 
-	/**
-	 * Start the rendering process. This method will cause the 
-	 * display to redraw as fast as possible.
-	 */
-	public void start() 
+    /**
+     * Start the rendering process. This method will cause the
+     * display to redraw as fast as possible.
+     */
+    public void start()
     {
-		try
+        // Get the number of samples and make sure they're
+        // with in the correct range.
+        int samples = settingsMan.getInt(
+                Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
+        if (samples < 0)
         {
-            // Get the number of samples and make sure they're
-            // with in the correct range.
-            int samples = settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
-            if (samples < 0)
-                throw new IndexOutOfBoundsException("Number of samples must be 0 or more");
+            throw new IndexOutOfBoundsException(
+                    "Number of samples must be 0 or more");
+        }
 
-            // Set the pixel format.
-            PixelFormat pixelFormat = new PixelFormat()
-                    .withAlphaBits(0)
-                    .withDepthBits(16)
-                    .withStencilBits(1)
-                    .withSamples(samples);
+        // Try to set the pixel format.
+        PixelFormat pixelFormat = new PixelFormat()
+                .withAlphaBits(0)
+                .withDepthBits(16)
+                .withStencilBits(1)
+                .withSamples(samples);
 
-            this.originalDisplayMode = Display.getDisplayMode();
-            setDisplayMode(width, height, false);
-            Display.setVSyncEnabled(true);            
+        this.originalDisplayMode = Display.getDisplayMode();
+        setDisplayMode(width, height, false);
+        Display.setVSyncEnabled(true);
+        Display.setTitle(this.title);
+
+        try
+        {
+            // Try setting the pixel format.
             Display.create(pixelFormat);
-            Display.setTitle(this.title);            
-
-            // Enable textures since we're going to use these for our sprites.
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-            // Disable the OpenGL depth test since we're rendering 2D graphics.
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-            GL11.glMatrixMode(GL11.GL_PROJECTION);
-            GL11.glLoadIdentity();
-
-            GL11.glOrtho(0, width, height, 0, -1, 1);
+        }
+        catch (LWJGLException sampleException)
+        {
+            // If we failed, try using 0 samples.
+            CouchLogger.get().recordWarning(this.getClass(),
+                    "Could not set samples to: " + pixelFormat.getSamples());
             
-            // Enable transparency.
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            pixelFormat = new PixelFormat()
+                .withAlphaBits(0)
+                .withDepthBits(16)
+                .withStencilBits(1)
+                .withSamples(0);
 
-            // Antialises, but has terrible visual artifacts.
-            //GL11.glEnable(GL11.GL_LINE_SMOOTH);
-            //GL11.glEnable(GL11.GL_POLYGON_SMOOTH);
-            //GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);            
-
-            textureLoader = new TextureLoader();
-
-            if (callback != null)
+            try
             {
-                callback.initialize();
+                Display.create(pixelFormat);
+            }
+            catch (LWJGLException le)
+            {
+                throw new RuntimeException("LWJGL exception", le);
             }
         }
-        catch (LWJGLException le)
+
+        // Enable textures since we're going to use these for our sprites.
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+        // Disable the OpenGL depth test since we're rendering 2D graphics.
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0, width, height, 0, -1, 1);
+
+        // Enable transparency.
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        // Antialises, but has terrible visual artifacts.
+        //GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        //GL11.glEnable(GL11.GL_POLYGON_SMOOTH);
+        //GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);
+
+        textureLoader = new TextureLoader();
+
+        if (callback != null)
         {
-            callback.windowClosed();
+            callback.initialize();
         }
 
         loop();
-	}
+    }
 
-	/**
-	 * Register a callback that will be notified of game window
-	 * events.
-	 *
-	 * @param callback The callback that should be notified of game
-	 * window events. 
-	 */
-	public void setGameWindowCallback(IWindowCallback callback) 
+    /**
+     * Register a callback that will be notified of game window
+     * events.
+     *
+     * @param callback The callback that should be notified of game
+     * window events.
+     */
+    public void setGameWindowCallback(IWindowCallback callback)
     {
-		this.callback = callback;
-	}	    
-       
+        this.callback = callback;
+    }
+
     /**
      * Get the accurate system time.
      *
      * @return The system time in milliseconds
      */
-    public static long getTime() 
+    public static long getTime()
     {
         return (Sys.getTime() * 1000) / Sys.getTimerResolution();
     }
-  
-	/**
-	 * Run the main game loop. This method keeps rendering the scene
-	 * and requesting that the callback update its screen.
-	 */
-	private void loop() 
-    {               
+
+    /**
+     * Run the main game loop. This method keeps rendering the scene
+     * and requesting that the callback update its screen.
+     */
+    private void loop()
+    {
         final int TICKS_PER_SECOND = 60;
-//        final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;   
-//        final int MAX_FRAME_SKIP = 10;
-        
-//        long nextGameTick = getTime();
-//        int loopCounter;
-        
+
         // Clear the stencil buffer.        
-        GL11.glClearStencil(0);     
+        GL11.glClearStencil(0);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
-        
-        while (gameRunning == true)
-        {                       
+
+        while (gameRunning)
+        {
             // Always call Window.update(), all the time - it does some behind the
             // scenes work, and also displays the rendered output
             Display.update();
-                        
+
             // Clear screen.
             GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            GL11.glLoadIdentity();             		
+            GL11.glLoadIdentity();
             //GL11.glEnable(GL11.GL_LINE_SMOOTH | GL11.GL_POLYGON_SMOOTH);
-                        
+
             if (Display.isCloseRequested())
             {
                 gameRunning = false;
                 Display.destroy();
                 callback.windowClosed();
-            }            
+            }
             // The window is in the foreground, so we should play the game
             else // if (Display.isActive())
             {
                 // Notify of activation.
-                if (this.active == false) 
+                if (!this.active)
                 {
                     callback.windowActivated();
                     this.active = true;
-                }               
-                
-                callback.update();                                               
+                }
+
+                callback.update();
                 //callback.draw();
 
                 // Only bother rendering if the window is visible or dirty
@@ -397,44 +413,16 @@ public class LWJGLWindow implements IWindow
                 {
                     callback.draw();
                 }
-                
-                GL11.glColor3f(0, 0, 0);                
-                Display.sync(TICKS_PER_SECOND);                
+
+                GL11.glColor3f(0, 0, 0);
+                Display.sync(TICKS_PER_SECOND);
             }
-            // The window is not in the foreground, so we can allow other stuff to run and
-            // infrequently update.
-//            else
-//            {
-//                if (this.active == true)
-//                {
-//                    callback.windowDeactivated();
-//                    this.active = false;
-//                }
-//
-//                try
-//                {
-//                    Thread.sleep(100);
-//                }
-//                catch (InterruptedException e)
-//                { }
-//
-//                callback.update();
-//
-//                // Only bother rendering if the window is visible or dirty
-//                if (Display.isVisible() || Display.isDirty())
-//                {
-//                    callback.draw();
-//                }
-//            } // end if
         } // end while
-	}
-    
+    }
+
     //--------------------------------------------------------------------------
     // Color & clip code.
     //--------------------------------------------------------------------------
-       
-   
-    
     public void setCursor(int type)
     {
         // Intentionally left blank.
@@ -444,51 +432,53 @@ public class LWJGLWindow implements IWindow
     {
         return new ImmutablePosition(Mouse.getX(), height - Mouse.getY());
     }
-    
-    //--------------------------------------------------------------------------
-    // IKeyListener Attributes
-    //--------------------------------------------------------------------------
-    
-//    Map<IKeyListener, Object> keyListenerMap = new WeakHashMap<IKeyListener, Object>();
-//    final static Object KEY_FILLER = new Object();
-    List<IKeyListener> keyListenerList = new ArrayList<IKeyListener>();
-    
+
     //--------------------------------------------------------------------------
     // IKeyListener Methods
-    //-------------------------------------------------------------------------- 
-    
+    //--------------------------------------------------------------------------
+    List<IKeyListener> keyListenerList = new ArrayList<IKeyListener>();
+
     public void addKeyListener(IKeyListener l)
     {
         //CouchLogger.get().recordMessage(this.getClass(), "Added key listener for " + l);
-        
+
         if (l == null)
+        {
             throw new NullPointerException();
-        
+        }
+
         if (keyListenerList.contains(l))
+        {
             throw new IllegalStateException("Listener already registered!");
-                
+        }
+
         keyListenerList.add(l);
     }
-        
+
     public void removeKeyListener(IKeyListener l)
     {
-        CouchLogger.get().recordMessage(this.getClass(), "Removed key listener for " + l);
-        
+        CouchLogger.get().recordMessage(this.getClass(),
+                                        "Removed key listener for " + l);
+
         if (l == null)
+        {
             throw new NullPointerException();
-        
+        }
+
         if (!keyListenerList.contains(l))
+        {
             throw new IllegalStateException("Listener not registered!");
-        
+        }
+
         keyListenerList.remove(l);
     }
-    
+
     public void updateKeyPresses()
-    {    
+    {
         // Before we start, make a copy of the listener list in case
         // one of the listeners modifies their listener status.
-        List<IKeyListener> list = new ArrayList<IKeyListener>(keyListenerList);   
-        
+        List<IKeyListener> list = new ArrayList<IKeyListener>(keyListenerList);
+
         // If non-empty, clear.
         if (this.keyPressSet.isEmpty() == false)
         {
@@ -499,52 +489,52 @@ public class LWJGLWindow implements IWindow
         {
             boolean state = Keyboard.getEventKeyState();
             int i = Keyboard.getEventKey();
-            
-            Modifier modifier;           
+
+            Modifier modifier;
             switch (i)
             {
                 case Keyboard.KEY_LSHIFT:
                     modifier = KeyEvent.Modifier.LEFT_SHIFT;
-                    break;                                    
-                    
+                    break;
+
                 case Keyboard.KEY_LCONTROL:
                     modifier = KeyEvent.Modifier.LEFT_CTRL;
-                    break;                                    
-                    
+                    break;
+
                 case Keyboard.KEY_LMETA:
                     modifier = KeyEvent.Modifier.LEFT_META;
                     break;
-                    
+
                 case Keyboard.KEY_LMENU:
                     modifier = KeyEvent.Modifier.LEFT_ALT;
                     break;
-                    
+
                 case Keyboard.KEY_RMENU:
                     modifier = KeyEvent.Modifier.RIGHT_ALT;
                     break;
-                
+
                 case Keyboard.KEY_RMETA:
                     modifier = KeyEvent.Modifier.RIGHT_META;
                     break;
-                    
+
                 case Keyboard.KEY_APPS:
                     modifier = KeyEvent.Modifier.APPLICATION;
                     break;
-                
+
                 case Keyboard.KEY_RCONTROL:
                     modifier = KeyEvent.Modifier.RIGHT_CTRL;
                     break;
-                    
+
                 case Keyboard.KEY_RSHIFT:
                     modifier = KeyEvent.Modifier.RIGHT_SHIFT;
                     break;
-                    
+
                 default:
                     modifier = KeyEvent.Modifier.NONE;
             }
 
             Arrow arrow;
-            switch(i)
+            switch (i)
             {
                 case Keyboard.KEY_UP:
                     arrow = KeyEvent.Arrow.KEY_UP;
@@ -566,59 +556,53 @@ public class LWJGLWindow implements IWindow
                     arrow = KeyEvent.Arrow.NONE;
 
             }
-            
+
 //            LogManager.recordMessage(Keyboard.getKeyName(i) + " was pressed.");
 //            LogManager.recordMessage("State is " + state + ".");
-            
-            char ch = Keyboard.getEventCharacter();                                                  
-            
+
+            char ch = Keyboard.getEventCharacter();
+
             KeyEvent event = new KeyEvent(this, ch, this.modifiers, arrow);
-            
+
             for (IKeyListener listener : list)
-            {                                                        
+            {
                 // If it equals NUL, then it's actually a key up.
-                if (state)               
+                if (state)
                 {
                     modifiers.add(modifier);
-                    listener.keyPressed(event);    
-                }                
+                    listener.keyPressed(event);
+                }
                 else
                 {
                     modifiers.remove(modifier);
                     listener.keyReleased(event);
                 }
             }
-            
+
             this.keyPressSet.add(ch);
         }
     }
-    
-	/**
-	 * Check if a particular key is current pressed.
-	 *
-	 * @param keyCode The code associated with the key to check 
-	 * @return True if the specified key is pressed
-	 */
-	public boolean isKeyPressed(int key) 
-    {			
-            return this.keyPressSet.contains((char)key);
-	}
-    
-    //--------------------------------------------------------------------------
-    // IMouseListener Attributes
-    //--------------------------------------------------------------------------
-    
-//    Map<IMouseListener, Object> mouseListenerMap = new WeakHashMap<IMouseListener, Object>();
-//    final static Object MOUSE_FILLER = new Object();
-    
-    List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();      
-    private ImmutablePosition mousePosition = new ImmutablePosition(
-            Mouse.getX(), height - Mouse.getY());
-        
+
+    /**
+     * Check if a particular key is current pressed.
+     *
+     * @param keyCode The code associated with the key to check
+     * @return True if the specified key is pressed
+     */
+    public boolean isKeyPressed(int key)
+    {
+        return this.keyPressSet.contains((char) key);
+    }
+
     //--------------------------------------------------------------------------
     // IMouseListener Methods
-    //--------------------------------------------------------------------------        
-    
+    //--------------------------------------------------------------------------
+
+    List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();
+    private ImmutablePosition mousePosition = new ImmutablePosition(
+            Mouse.getX(), height - Mouse.getY());
+
+
     /**
      * Converts the LWJGL button number into a MouseEvent Button enum.
      * 
@@ -647,7 +631,7 @@ public class LWJGLWindow implements IWindow
             return MouseEvent.Button.NONE;
         }
     }
-    
+
     /**
      * Checks to see if any mouse button is down and returns the first
      * one it finds that is down.
@@ -659,172 +643,198 @@ public class LWJGLWindow implements IWindow
         for (Button buttonEnum : Button.values())
         {
             if (buttonEnum == Button.NONE)
+            {
                 continue;
-            
-            if (mouseStateMap.get(buttonEnum) == true)                
+            }
+
+            if (mouseStateMap.get(buttonEnum) == true)
+            {
                 return buttonEnum;
+            }
         }
-        
+
         return Button.NONE;
     }
-    
+
     /**
      * Fires all the queued up mouse events.
      */
     public void fireMouseEvents()
-    {           
+    {
         // Before we start, make a copy of the listener list in case
         // one of the listeners modifies their listener status.
-        List<IMouseListener> list = new ArrayList<IMouseListener>(mouseListenerList);        
-        
+        List<IMouseListener> list = new ArrayList<IMouseListener>(
+                mouseListenerList);
+
         // Poll mouse events.
         while (Mouse.next())
-        {    
-            boolean mouseMoved = false;                        
+        {
+            boolean mouseMoved = false;
             int mouseX = Mouse.getEventX();
             int mouseY = height - Mouse.getEventY();
             int deltaWheel = Mouse.getEventDWheel();
-            
+
             // Check for mouse movement.            
-            if (mouseX != mousePosition.getX() 
-                    || mouseY != mousePosition.getY())
+            if (mouseX != mousePosition.getX() || mouseY != mousePosition.getY())
             {
                 // Update internal position.                
                 mousePosition = new ImmutablePosition(mouseX, mouseY);
-                
+
                 // Set an event.
-                mouseMoved = true;                
-            }            
-            
+                mouseMoved = true;
+            }
+
             if (Mouse.getEventButton() != -1)
             {
                 int button = Mouse.getEventButton();
-                MouseEvent.Button buttonEnum = MouseEvent.Button.NONE;                                                    
+                MouseEvent.Button buttonEnum = MouseEvent.Button.NONE;
                 buttonEnum = toButtonEnum(button);
 
                 MouseEvent.Type type;
-                
+
                 // Pressed.
                 if (Mouse.getEventButtonState())
                 {
                     type = MouseEvent.Type.MOUSE_PRESSED;
                     mouseStateMap.put(buttonEnum, true);
-                }     
+                }
                 // Released.
                 else
                 {
                     type = MouseEvent.Type.MOUSE_RELEASED;
                     mouseStateMap.put(buttonEnum, false);
                 }
-                    
+
                 MouseEvent event = new MouseEvent(this,
-                        buttonEnum,
-                        EnumSet.noneOf(MouseEvent.Modifier.class),
-                        mousePosition,
-                        type,
-                        deltaWheel);
-                
+                                                  buttonEnum,
+                                                  EnumSet.noneOf(
+                        MouseEvent.Modifier.class),
+                                                  mousePosition,
+                                                  type,
+                                                  deltaWheel);
+
                 switch (type)
                 {
                     case MOUSE_PRESSED:
-                        
+
                         for (IMouseListener l : list)
+                        {
                             l.mousePressed(event);
-                        
+                        }
+
                         break;
 
-                    case MOUSE_RELEASED:                                               
-                        
+                    case MOUSE_RELEASED:
+
                         for (IMouseListener l : list)
+                        {
                             l.mouseReleased(event);
-                        
+                        }
+
                         break;
 
-                    default: throw new AssertionError();                    
+                    default:
+                        throw new AssertionError();
                 } // end switch                
-                
+
             } // if
-            
+
             if (mouseMoved == true)
             {
                 Button buttonEnum = findPressedButton();
                 if (buttonEnum != Button.NONE)
                 {
-                    MouseEvent event = new MouseEvent(this, 
-                            buttonEnum,
-                            EnumSet.noneOf(MouseEvent.Modifier.class),
-                            mousePosition,
-                            MouseEvent.Type.MOUSE_DRAGGED,
-                            deltaWheel);
-                
+                    MouseEvent event = new MouseEvent(this,
+                                                      buttonEnum,
+                                                      EnumSet.noneOf(
+                            MouseEvent.Modifier.class),
+                                                      mousePosition,
+                                                      MouseEvent.Type.MOUSE_DRAGGED,
+                                                      deltaWheel);
+
                     for (IMouseListener l : list)
+                    {
                         l.mouseDragged(event);
+                    }
                 }
                 else
                 {
-                    MouseEvent event = new MouseEvent(this, 
-                            MouseEvent.Button.NONE,
-                            EnumSet.noneOf(MouseEvent.Modifier.class),
-                            mousePosition,
-                            MouseEvent.Type.MOUSE_MOVED,
-                            deltaWheel);
-                
+                    MouseEvent event = new MouseEvent(this,
+                                                      MouseEvent.Button.NONE,
+                                                      EnumSet.noneOf(
+                            MouseEvent.Modifier.class),
+                                                      mousePosition,
+                                                      MouseEvent.Type.MOUSE_MOVED,
+                                                      deltaWheel);
+
                     for (IMouseListener l : list)
+                    {
                         l.mouseMoved(event);
-                }                
+                    }
+                }
             } // end if    
-            
+
             if (deltaWheel != 0)
             {
-                MouseEvent event = new MouseEvent(this, 
-                        MouseEvent.Button.NONE,
-                        EnumSet.noneOf(MouseEvent.Modifier.class),
-                        mousePosition,
-                        MouseEvent.Type.MOUSE_WHEEL,
-                        deltaWheel);
-                
+                MouseEvent event = new MouseEvent(this,
+                                                  MouseEvent.Button.NONE,
+                                                  EnumSet.noneOf(
+                        MouseEvent.Modifier.class),
+                                                  mousePosition,
+                                                  MouseEvent.Type.MOUSE_WHEEL,
+                                                  deltaWheel);
+
                 for (IMouseListener l : list)
+                {
                     l.mouseWheel(event);
+                }
             }
-            
+
         } // end while
     }
-    
+
     /**
      * Clears the mouse events instead of firing them.
      */
-    public void clearMouseEvents()           
+    public void clearMouseEvents()
     {
         // Empty the mouse events.
         while (Mouse.next());
-        
+
         // Update the mouse state map.
         for (int i = 0; i < 3; i++)
         {
             mouseStateMap.put(toButtonEnum(i), Mouse.isButtonDown(i));
         }
     }
-    
+
     public void addMouseListener(IMouseListener l)
     {
         if (l == null)
+        {
             throw new NullPointerException();
-        
+        }
+
         if (mouseListenerList.contains(l))
+        {
             throw new IllegalStateException("Listener already registered!");
-        
+        }
+
         mouseListenerList.add(l);
     }
-        
+
     public void removeMouseListener(IMouseListener l)
     {
         if (l == null)
+        {
             throw new NullPointerException();
-        
+        }
+
         if (!mouseListenerList.contains(l))
+        {
             throw new IllegalStateException("Listener not registered!");
-        
+        }
+
         mouseListenerList.remove(l);
     }
-   
 }

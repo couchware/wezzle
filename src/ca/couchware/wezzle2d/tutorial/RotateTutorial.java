@@ -170,7 +170,6 @@ public class RotateTutorial extends AbstractTutorial
         hub.pieceMan.setRestrictionCell(2, hub.boardMan.getRows() - 1, true);
     }
 
-    @Override
     public Key getSettingsKey()
     {
         return Key.USER_TUTORIAL_ROTATE_RAN;

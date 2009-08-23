@@ -112,37 +112,34 @@ public class CouchLogger
     private void open()
     {
         // See if we already opened it.
-        if (opened == true)
-        {
-            return;
-        }
+        if (opened) return;
         
         // Set the opened variable.
         this.opened = true;
         
         // Check if the directory exists.
-		File dir = new File(Settings.getLogPath());
-		
-		// If the directory doesn't exist. Create it.
-		if (dir.isDirectory() == false)		
-			dir.mkdir();		
-		
-		// Create the file.
-		logFile = new File(Settings.getLogFilePath());								
-		
-		try
-		{
+        File dir = new File(Settings.getLogPath());
+
+        // If the directory doesn't exist. Create it.
+        if (dir.isDirectory() == false)
+                dir.mkdirs();
+
+        // Create the file.
+        logFile = new File(Settings.getLogFilePath());
+
+        try
+        {
             // If the file does not exist, create it.
             if (logFile.exists() == false)
                 logFile.createNewFile();
             
             // Create the writer.
-			writer = new BufferedWriter(new FileWriter(logFile, true));
-		}
-		catch (Exception e)
-		{
-			recordException(this.getClass(), e);
-		}
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+        }
+        catch (Exception e)
+        {
+                recordException(this.getClass(), e);
+        }
     }
     
 	/**

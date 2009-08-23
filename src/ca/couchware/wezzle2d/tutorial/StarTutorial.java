@@ -239,7 +239,6 @@ public class StarTutorial extends AbstractTutorial
         pieceMan.setRestrictionCell(2, boardMan.getRows() - 2, true);
     }
 
-    @Override
     public Key getSettingsKey()
     {
         return Key.USER_TUTORIAL_STAR_RAN;
