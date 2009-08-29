@@ -400,6 +400,9 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     public void mouseReleased(MouseEvent e)
     {
         //Util.handleMessage("Released.", Thread.currentThread());
+
+        // Snap the slider bar to the virtual value.
+        setVirtualValue(this.virtualValue);
         
         // Reset the state.
         state = State.NORMAL;
@@ -419,7 +422,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     {   
         if (state == State.PRESSED)
         {
-             // Retrieve the mouse position.
+            // Retrieve the mouse position.
             setMousePosition(e.getX(), e.getY());
             final ImmutablePosition p = getMousePosition();
 
@@ -545,10 +548,12 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     }
     
     private void synchronize()
-    {
-        double percent = (double) slideOffset / (double) maxOffset;
-        this.virtualValue = this.virtualLower 
-                + (int) ((double) (this.virtualUpper - this.virtualLower) * percent);
+    {        
+        final float offset =
+                (float) ((virtualUpper - virtualLower) * slideOffset) /
+                (float) maxOffset;
+        
+        this.virtualValue = this.virtualLower + Math.round( offset );
     }
     
     /**
