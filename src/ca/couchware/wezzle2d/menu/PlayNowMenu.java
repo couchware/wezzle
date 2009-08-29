@@ -7,10 +7,13 @@ package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
+import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
+import ca.couchware.wezzle2d.difficulty.Difficulty;
+import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.IResettable;
@@ -54,23 +57,7 @@ public class PlayNowMenu extends AbstractMenu
     private int levelNumber;
     private ITextLabel levelLabel;
     private ITextLabel levelNumberLabel;    
-    private SliderBar levelNumberSlider;
-
-    private enum Difficulty
-    {
-        EASY("Easy"),
-        NORMAL("Normal"),
-        HARD("Hard");
-
-        Difficulty(String description)
-        { this.description = description; }
-
-        private String description;
-
-        public String getDescription()
-        { return description; }
-    }
-
+    private SliderBar levelNumberSlider;   
 
     final private static int MIN_DIFFICULTY = 0;
     final private static int MAX_DIFFICULTY = Difficulty.values().length - 1;
@@ -441,7 +428,7 @@ public class PlayNowMenu extends AbstractMenu
     {
         // Make sure no groups are showing if we've come back to the menu
         // from a previous game.
-        hub.groupMan.hideAllGroups(!game.isCompletelyBusy());
+        hub.groupMan.hideAllGroups(!game.isCompletelyBusy());       
 
         // Reset the core managers.
         IResettable coreArray[] = new IResettable[]
@@ -496,13 +483,20 @@ public class PlayNowMenu extends AbstractMenu
             default: throw new AssertionError();
         }
 
+        // Set the difficulty.
+        IDifficultyStrategy gameDifficulty =
+                Difficulty.values()[this.difficultyValue].getStrategy();
+        game.setDifficultyStrategy( gameDifficulty );
+
+        // Set the refactoring speed.
+        game.getRefactorer().setRefactorSpeed( gameDifficulty.getRefactorSpeed() );
+
         // Save the theme preference and set it in the music manager.
         hub.settingsMan.setString(Key.USER_MUSIC_DEFAULT, theme.toString());
         hub.musicMan.setTheme(theme);
 
         // Set the target score.
-        hub.levelMan.setLevel(levelNumber, false);
-        //hub.timerMan.resetCurrentTime();
+        hub.levelMan.setLevel(levelNumber, false);        
         hub.scoreMan.setTargetTotalScore(hub.scoreMan.generateTargetLevelScore(levelNumber));
         hub.scoreMan.setTargetLevelScore(hub.scoreMan.generateTargetLevelScore(levelNumber));
 

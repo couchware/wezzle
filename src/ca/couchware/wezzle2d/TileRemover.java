@@ -284,7 +284,7 @@ public class TileRemover implements IResettable, ILevelListener
         this.activateLineRemoval = true;
 
         // Record the refactor speed.
-        this.refactorSpeed = game.getGameDifficulty().getRefactorSpeed();
+        this.refactorSpeed = game.getDifficultyStrategy().getRefactorSpeed();
     }   
     
     private void startNextMove(

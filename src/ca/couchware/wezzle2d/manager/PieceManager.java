@@ -672,7 +672,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         hub.boardMan.removeTiles(indexSet);
 
         // Set the count to the piece size.
-        game.getTileDropper().setDropAmount(game.getGameDifficulty().getDropAmount(
+        game.getTileDropper().setDropAmount(game.getDifficultyStrategy().getDropAmount(
                 hub.boardMan.getNumberOfTiles(),
                 hub.boardMan.getNumberOfCells(),
                 hub.levelMan.getLevel(),

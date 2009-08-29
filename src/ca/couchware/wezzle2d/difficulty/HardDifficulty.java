@@ -6,7 +6,7 @@ import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
  *
  * @author kgrad
  */
-public class HardDifficulty implements IGameDifficulty
+public class HardDifficulty implements IDifficultyStrategy
 {
     /** The minimum drop. */
     final private int MINIMUM_DROP = 1;
@@ -32,6 +32,11 @@ public class HardDifficulty implements IGameDifficulty
      * The timer lower bound, im ms.
      */
     final private int timeLower = 500;
+
+    /**
+     * Package private constructor.
+     */
+    HardDifficulty() { };
 
     public RefactorSpeed getRefactorSpeed()
     {

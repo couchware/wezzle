@@ -5,6 +5,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
 import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -20,7 +21,7 @@ public class Refactorer implements IResettable
 {
     /** A shortcut to the settings manager to simplify some code. */
     private static final SettingsManager settingsMan = SettingsManager.get();
-    
+
     /** The refator speeds. */
     public static enum RefactorSpeed
     {
@@ -68,6 +69,13 @@ public class Refactorer implements IResettable
         }
 
     }
+
+    /**
+     * The game difficulty strategy. This object is queried for
+     * the refactor speed each time the refactorer is reset.
+     */
+    final private IDifficultyStrategy gameDifficulty;
+
     /**
      * If true, refactor will be activated next loop.
      */
@@ -98,17 +106,20 @@ public class Refactorer implements IResettable
      */
     private RefactorSpeed speed;
 
-    public Refactorer(Game game)
+    public Refactorer(IDifficultyStrategy gameDifficulty)
     {
-        // Set the refactor speeds to their defaults.           
-        this.speed = game.getGameDifficulty().getRefactorSpeed();
+        if (gameDifficulty == null)
+            throw new IllegalArgumentException("GameDifficulty cannot be null");
 
-        // Reset the state.
+        this.gameDifficulty = gameDifficulty;      
         this.resetState();
     }
 
-    public void resetState()
+    final public void resetState()
     {
+        // Set the refactor speeds to their defaults.
+        this.speed = gameDifficulty.getRefactorSpeed();
+
         this.activateRefactor = false;
         this.refactorVerticalInProgress = false;
         this.refactorHorizontalInProgress = false;

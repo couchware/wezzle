@@ -147,7 +147,9 @@ public class ManagerHub
         if (set.contains(Manager.TIMER))
         {
             // Get the singleton.
-            this.timerMan = TimerManager.newInstance(this.listenerMan, game);
+            this.timerMan = TimerManager.newInstance(
+                    this.listenerMan,
+                    game.getDifficultyStrategy());
             
             // Initialize some parameters.
             //this.timerMan.resetCurrentTime();

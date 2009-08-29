@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.event.ILevelListener;
@@ -22,8 +23,7 @@ public class TimerManager implements
         IResettable, IGameListener, IMoveListener, ILevelListener
 {    
     final private ListenerManager listenerMan;
-
-    private Game game;
+    final private IDifficultyStrategy difficultyStrategy;
 
     // All times are in milliseconds.
     private int timeUpper;
@@ -53,20 +53,23 @@ public class TimerManager implements
      *
      * @param initialTime The initial time on the timer.
      */
-    private TimerManager(ListenerManager listenerMan, Game game)
+    private TimerManager(ListenerManager listenerMan, IDifficultyStrategy difficultyStrategy)
     {
-        this.game = game;
-        this.timeUpper = game.getGameDifficulty().getMaxTime();
         this.listenerMan = listenerMan;
+        this.difficultyStrategy = difficultyStrategy;
+
+        this.timeUpper = difficultyStrategy.getMaxTime();
         this.startTime = timeUpper;
         this.currentTime = startTime;
         this.paused = false;
         this.stopped = false;
     }
 
-    public static TimerManager newInstance(ListenerManager listenerMan, Game game)
+    public static TimerManager newInstance(
+            ListenerManager listenerMan,
+            IDifficultyStrategy difficultyStrategy)
     {
-        return new TimerManager( listenerMan, game );
+        return new TimerManager( listenerMan, difficultyStrategy );
     }
 
     /**
@@ -180,8 +183,7 @@ public class TimerManager implements
 
     public void levelChanged(LevelEvent event)
     {
-        int time = game.getGameDifficulty().determineTimeForLevel(
-                event.getNewLevel() );
+        int time = difficultyStrategy.determineTimeForLevel( event.getNewLevel() );
         this.setStartTime( time );
 
         //CouchLogger.get().recordMessage( this.getClass(), "Level changed." );
@@ -213,8 +215,7 @@ public class TimerManager implements
     public void gameReset(GameEvent event)
     {
         // Set the max time to the value for this level.
-        int time = game.getGameDifficulty().determineTimeForLevel( event.
-                getLevel() );
+        int time = difficultyStrategy.determineTimeForLevel( event.getLevel() );
         this.setStartTime( time );
 
         // Reset the counter.

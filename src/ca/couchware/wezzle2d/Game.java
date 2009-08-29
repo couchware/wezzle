@@ -13,7 +13,8 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.difficulty.IGameDifficulty;
+import ca.couchware.wezzle2d.difficulty.Difficulty;
+import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
 import ca.couchware.wezzle2d.difficulty.NormalDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
@@ -188,7 +189,10 @@ public class Game extends Canvas implements IWindowCallback
      */
     private ITransition transition;
 
-    private IGameDifficulty gameDifficulty;
+    /**
+     * The game difficulty setting.
+     */
+    private IDifficultyStrategy difficultyStrategy = Difficulty.NORMAL.getStrategy();
                 
     //--------------------------------------------------------------------------
     // Constructor
@@ -203,7 +207,6 @@ public class Game extends Canvas implements IWindowCallback
      */
     public Game(ResourceFactory.Renderer renderer)
     {
-
         // Print the build number.
         Class cls = this.getClass();
         CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
@@ -220,16 +223,12 @@ public class Game extends Canvas implements IWindowCallback
         window = ResourceFactory.get().getWindow();
         window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
         window.setGameWindowCallback(Game.this);
-        window.setTitle(windowTitle);
-
-        // TEMP!!@$!
-        this.gameDifficulty = new NormalDifficulty();
-        this.refactorer = new Refactorer(this);
+        window.setTitle(windowTitle);     
     }
 
     public void start()
     {
-            window.start();
+        window.start();
     }
             
     public void startBoard()
@@ -291,7 +290,7 @@ public class Game extends Canvas implements IWindowCallback
         hub.listenerMan.registerListener(Listener.TIMER, this.ui);
         
         // Get the singleton.
-        //refactorer = Refactorer.get();
+        refactorer = new Refactorer(this.difficultyStrategy);
 
         // Get the singleton.
         tileDropper = TileDropper.get();
@@ -872,8 +871,7 @@ public class Game extends Canvas implements IWindowCallback
             // Reset the item manager.
             hub.itemMan.resetState();
             hub.itemMan.evaluateRules(game, hub);
-            // Reset the timer to the initial.
-            //hub.timerMan.setStartTimeToUpper();
+            // Reset the timer to the initial.            
         }
 
         // Notify all listeners of reset.
@@ -1000,14 +998,14 @@ public class Game extends Canvas implements IWindowCallback
         return ui;
     }
 
-    public IGameDifficulty getGameDifficulty()
+    public IDifficultyStrategy getDifficultyStrategy()
     {
-        return this.gameDifficulty;
+        return this.difficultyStrategy;
     }
 
-    public void setGameDifficulty(IGameDifficulty difficulty)
+    public void setDifficultyStrategy(IDifficultyStrategy difficultyStrategy)
     {
-        this.gameDifficulty = difficulty;
+        this.difficultyStrategy = difficultyStrategy;
     }
 
     public IWindow getWindow()

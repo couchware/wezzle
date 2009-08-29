@@ -300,7 +300,12 @@ public class OptionsMenu extends AbstractMenu
         final boolean autoPauseSetting = hub.settingsMan.getBool(Key.USER_AUTO_PAUSE);
         this.autoPauseRadio = new RadioGroup.Builder(
                 268,
-                autoPauseLabel.getY() + 35).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).add(autoPauseOn, autoPauseSetting).add(autoPauseOff, !autoPauseSetting).visible(false).build();
+                autoPauseLabel.getY() + 35)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .add(autoPauseOn, autoPauseSetting)
+                .add(autoPauseOff, !autoPauseSetting)
+                .visible(false)
+                .build();        
         this.gamePageEntities.add(autoPauseRadio);
         // </editor-fold>
 
