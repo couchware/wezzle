@@ -187,8 +187,7 @@ public class PlayNowMenu extends AbstractMenu
     {
         // Get the user set difficulty and make sure it's within range.
         String difficultyStr = hub.settingsMan.getString(Key.USER_DIFFICULTY_DEFAULT);
-        this.difficultyValue = Difficulty.valueOf(difficultyStr)
-                .ordinal();
+        this.difficultyValue = Difficulty.valueOf(difficultyStr).ordinal();
 
         this.difficultyLabel = new LabelBuilder(
                     levelLabel.getX(),
@@ -430,6 +429,11 @@ public class PlayNowMenu extends AbstractMenu
         // from a previous game.
         hub.groupMan.hideAllGroups(!game.isCompletelyBusy());       
 
+         // Set the difficulty.
+        IDifficultyStrategy difficultyStrategy =
+                Difficulty.values()[this.difficultyValue].getStrategy();
+        game.setDifficultyStrategy( difficultyStrategy );
+
         // Reset the core managers.
         IResettable coreArray[] = new IResettable[]
         {
@@ -481,15 +485,7 @@ public class PlayNowMenu extends AbstractMenu
                 break;
 
             default: throw new AssertionError();
-        }
-
-        // Set the difficulty.
-        IDifficultyStrategy gameDifficulty =
-                Difficulty.values()[this.difficultyValue].getStrategy();
-        game.setDifficultyStrategy( gameDifficulty );
-
-        // Set the refactoring speed.
-        game.getRefactorer().setRefactorSpeed( gameDifficulty.getRefactorSpeed() );
+        }             
 
         // Save the theme preference and set it in the music manager.
         hub.settingsMan.setString(Key.USER_MUSIC_DEFAULT, theme.toString());

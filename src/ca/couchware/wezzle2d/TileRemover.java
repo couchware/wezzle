@@ -19,6 +19,7 @@ import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.LineEvent;
 import ca.couchware.wezzle2d.event.MoveEvent;
@@ -214,7 +215,7 @@ public class TileRemover implements IResettable, ILevelListener
             // them and then refactor again.
             if ( !tileRemovalSet.isEmpty() )
             {
-                startLineRemoval(game);
+                startLineRemoval(game.getDifficultyStrategy());
             }
             else
             {
@@ -278,13 +279,13 @@ public class TileRemover implements IResettable, ILevelListener
         }
     }   
          
-    private void startLineRemoval( Game game)
+    private void startLineRemoval(IDifficultyStrategy difficultyStrategy)
     {
         // Activate the line removal.
         this.activateLineRemoval = true;
 
         // Record the refactor speed.
-        this.refactorSpeed = game.getDifficultyStrategy().getRefactorSpeed();
+        this.refactorSpeed = difficultyStrategy.getRefactorSpeed();
     }   
     
     private void startNextMove(

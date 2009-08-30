@@ -290,7 +290,7 @@ public class Game extends Canvas implements IWindowCallback
         hub.listenerMan.registerListener(Listener.TIMER, this.ui);
         
         // Get the singleton.
-        refactorer = new Refactorer(this.difficultyStrategy);
+        refactorer = new Refactorer(this);
 
         // Get the singleton.
         tileDropper = TileDropper.get();

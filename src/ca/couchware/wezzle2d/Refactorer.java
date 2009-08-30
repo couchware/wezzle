@@ -20,7 +20,7 @@ import java.util.List;
 public class Refactorer implements IResettable
 {
     /** A shortcut to the settings manager to simplify some code. */
-    private static final SettingsManager settingsMan = SettingsManager.get();
+    final private static SettingsManager settingsMan = SettingsManager.get();
 
     /** The refator speeds. */
     public static enum RefactorSpeed
@@ -36,6 +36,10 @@ public class Refactorer implements IResettable
         /** The normal refactor speed, used during normal operation. */
         NORMAL( settingsMan.getInt( Key.REFACTOR_SPEED_X_NORMAL ),
             settingsMan.getInt( Key.REFACTOR_SPEED_Y_NORMAL ) ),
+
+        /** The fast refactor speed, used during hard mode. */
+        FAST( settingsMan.getInt( Key.REFACTOR_SPEED_X_FAST ),
+            settingsMan.getInt( Key.REFACTOR_SPEED_Y_FAST ) ),
 
         /** The shift refactor speed, used during gravity shifts. */
         SHIFT( settingsMan.getInt( Key.REFACTOR_SPEED_X_SHIFT ),
@@ -68,13 +72,13 @@ public class Refactorer implements IResettable
             return vertical;
         }
 
-    }
+    }   
 
     /**
-     * The game difficulty strategy. This object is queried for
-     * the refactor speed each time the refactorer is reset.
+     * A reference to the game object.  
+     * Used to get the game difficulty strategy.
      */
-    final private IDifficultyStrategy gameDifficulty;
+    final private Game game;
 
     /**
      * If true, refactor will be activated next loop.
@@ -106,19 +110,19 @@ public class Refactorer implements IResettable
      */
     private RefactorSpeed speed;
 
-    public Refactorer(IDifficultyStrategy gameDifficulty)
+    public Refactorer(Game game)
     {
-        if (gameDifficulty == null)
-            throw new IllegalArgumentException("GameDifficulty cannot be null");
+        if (game == null)
+            throw new IllegalArgumentException("Game cannot be null");
 
-        this.gameDifficulty = gameDifficulty;      
+        this.game = game;
         this.resetState();
     }
 
     final public void resetState()
     {
         // Set the refactor speeds to their defaults.
-        this.speed = gameDifficulty.getRefactorSpeed();
+        this.speed = this.game.getDifficultyStrategy().getRefactorSpeed();
 
         this.activateRefactor = false;
         this.refactorVerticalInProgress = false;
@@ -139,11 +143,11 @@ public class Refactorer implements IResettable
     {
         if ( speed == null )
         {
-            throw new IllegalArgumentException( "speed cannot be null." );
+            throw new IllegalArgumentException( "Speed cannot be null" );
         }
 
-        CouchLogger.get().recordMessage( this.getClass(), String.format( "Speed set to %s.", speed.
-                toString() ) );
+        CouchLogger.get().recordMessage( this.getClass(),
+                String.format( "Speed set to %s", speed.toString() ) );
 
         this.speed = speed;
         return this;
@@ -307,7 +311,7 @@ public class Refactorer implements IResettable
             }
         }
 
-        if ( done == true )
+        if ( done )
         {
             // Clear the animation list.
             refactorAnimationList = null;

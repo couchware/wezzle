@@ -19,6 +19,8 @@
   <entry name="Refactor.Speed.Y.Slow">125</entry>
   <entry name="Refactor.Speed.X.Normal">190</entry>
   <entry name="Refactor.Speed.Y.Normal">250</entry>
+  <entry name="Refactor.Speed.X.Fast">350</entry>
+  <entry name="Refactor.Speed.Y.Fast">455</entry>
   <entry name="Refactor.Speed.X.Shift">250</entry>
   <entry name="Refactor.Speed.Y.Shift">250</entry>
   <entry name="Animation.Drop.Zoom.Out.Speed">50</entry>  

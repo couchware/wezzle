@@ -82,6 +82,8 @@ public class Settings
         REFACTOR_SPEED_Y_SLOW(Integer.class),
         REFACTOR_SPEED_X_NORMAL(Integer.class),
         REFACTOR_SPEED_Y_NORMAL(Integer.class),
+        REFACTOR_SPEED_X_FAST(Integer.class),
+        REFACTOR_SPEED_Y_FAST(Integer.class),
         REFACTOR_SPEED_X_SHIFT(Integer.class),
         REFACTOR_SPEED_Y_SHIFT(Integer.class),
         

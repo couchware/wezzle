@@ -23,7 +23,7 @@ public class TimerManager implements
         IResettable, IGameListener, IMoveListener, ILevelListener
 {    
     final private ListenerManager listenerMan;
-    final private IDifficultyStrategy difficultyStrategy;
+    final private Game game;
 
     // All times are in milliseconds.
     private int timeUpper;
@@ -53,12 +53,18 @@ public class TimerManager implements
      *
      * @param initialTime The initial time on the timer.
      */
-    private TimerManager(ListenerManager listenerMan, IDifficultyStrategy difficultyStrategy)
+    private TimerManager(Game game, ListenerManager listenerMan)
     {
-        this.listenerMan = listenerMan;
-        this.difficultyStrategy = difficultyStrategy;
+        if (listenerMan == null)
+            throw new IllegalArgumentException("ListenManager cannot be null");
 
-        this.timeUpper = difficultyStrategy.getMaxTime();
+        if (game == null)
+            throw new IllegalArgumentException("Game cannot be null");
+
+        this.game = game;
+        this.listenerMan = listenerMan;        
+
+        this.timeUpper = game.getDifficultyStrategy().getMaxTime();
         this.startTime = timeUpper;
         this.currentTime = startTime;
         this.paused = false;
@@ -66,10 +72,10 @@ public class TimerManager implements
     }
 
     public static TimerManager newInstance(
-            ListenerManager listenerMan,
-            IDifficultyStrategy difficultyStrategy)
+            Game game,
+            ListenerManager listenerMan)
     {
-        return new TimerManager( listenerMan, difficultyStrategy );
+        return new TimerManager( game, listenerMan );
     }
 
     /**
@@ -183,7 +189,8 @@ public class TimerManager implements
 
     public void levelChanged(LevelEvent event)
     {
-        int time = difficultyStrategy.determineTimeForLevel( event.getNewLevel() );
+        int time = this.game.getDifficultyStrategy()
+                .determineTimeForLevel( event.getNewLevel() );
         this.setStartTime( time );
 
         //CouchLogger.get().recordMessage( this.getClass(), "Level changed." );
@@ -215,7 +222,8 @@ public class TimerManager implements
     public void gameReset(GameEvent event)
     {
         // Set the max time to the value for this level.
-        int time = difficultyStrategy.determineTimeForLevel( event.getLevel() );
+        int time = this.game.getDifficultyStrategy()
+                .determineTimeForLevel( event.getLevel() );
         this.setStartTime( time );
 
         // Reset the counter.

@@ -40,7 +40,7 @@ public class HardDifficulty implements IDifficultyStrategy
 
     public RefactorSpeed getRefactorSpeed()
     {
-       return RefactorSpeed.NORMAL;
+       return RefactorSpeed.FAST;
     }
 
     public int getDropAmount(int numberOfTiles, int numberOfCells, int level,
