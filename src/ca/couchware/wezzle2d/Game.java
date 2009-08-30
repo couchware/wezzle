@@ -320,7 +320,7 @@ public class Game extends Canvas implements IWindowCallback
         tutorials.add( new StarTutorial(refactorer) );
 
         for (ITutorial t : tutorials)
-            if (isActivated && !t.hasRun( hub ))
+            if (isActivated || !t.hasRun( hub ))
                 hub.tutorialMan.add(t);
     }
     

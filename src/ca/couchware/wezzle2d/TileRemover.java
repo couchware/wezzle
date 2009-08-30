@@ -99,10 +99,10 @@ public class TileRemover implements IResettable, ILevelListener
     private boolean levelUpInProgress;
     
     /** If true, award no points for this tile removal. */
-    private boolean noScore;
+    private boolean doNotAwardScore;
     
     /** If true, do not activate items on this removal. */
-    private boolean noItems;
+    private boolean doNotActivateItems;
       
     /** If true, a bomb removal will be activated next loop. */
     private boolean activateBombRemoval;    
@@ -111,7 +111,10 @@ public class TileRemover implements IResettable, ILevelListener
     private boolean activateStarRemoval;   
     
     /** If true, a rocket removal will be activated next loop. */
-    private boolean activateRocketRemoval;    
+    private boolean activateRocketRemoval;
+
+    /** If true, the gravity shift will be activated next loop. */
+    private boolean gravityShiftInProgress;
       
     /**
      * The private constructor.
@@ -155,15 +158,16 @@ public class TileRemover implements IResettable, ILevelListener
             set.clear();
         }
         
-        this.activateLineRemoval   = false;        
-        this.activateLevelUp       = false;        
-        this.tileRemovalInProgress = false;             
-        this.levelUpInProgress     = false;                     
-        this.activateBombRemoval   = false;            
-        this.activateStarRemoval   = false;           
-        this.activateRocketRemoval = false;    
-        this.noScore = false;        
-        this.noItems = false;     
+        this.activateLineRemoval    = false;
+        this.activateLevelUp        = false;
+        this.tileRemovalInProgress  = false;
+        this.levelUpInProgress      = false;
+        this.activateBombRemoval    = false;            
+        this.activateStarRemoval    = false;
+        this.activateRocketRemoval  = false;
+        this.gravityShiftInProgress = false;
+        this.doNotAwardScore        = false;
+        this.doNotActivateItems     = false;
     }
 
     /**
@@ -252,30 +256,40 @@ public class TileRemover implements IResettable, ILevelListener
         } // end if                       
 
         // If a line removal was activated.
-        if (this.activateLineRemoval == true)
+        if (this.activateLineRemoval)
         {            
             removeLines(game, hub);
         }                 
         // If the star removal is in progress.
-        else if (this.activateRocketRemoval == true)
+        else if (this.activateRocketRemoval)
         {            
             game.getTracker().record( removeRockets(game, hub) );
         }
         // If the star removal is in progress.
-        else if (this.activateStarRemoval == true)
+        else if (this.activateStarRemoval)
         {
             game.getTracker().record( removeStars(game, hub) );
         }
         // If a bomb removal is in progress.
-        else if (this.activateBombRemoval == true)
+        else if (this.activateBombRemoval)
         {
             game.getTracker().record( removeBombs(game, hub) );
         }
         
         // If a line removal is in progress.        
-        if (this.tileRemovalInProgress == true)
+        if (this.tileRemovalInProgress)
         {            
             processRemoval(game, hub);
+        }
+
+        if (this.gravityShiftInProgress)
+        {
+            // Turn off the shift.
+            this.gravityShiftInProgress = false;
+
+            // Makes sure to reset refactor speed here.
+            Refactorer refactorer = game.getRefactorer();
+            refactorer.setRefactorSpeed(this.refactorSpeed);
         }
     }   
          
@@ -285,7 +299,7 @@ public class TileRemover implements IResettable, ILevelListener
         this.activateLineRemoval = true;
 
         // Record the refactor speed.
-        this.refactorSpeed = difficultyStrategy.getRefactorSpeed();
+        //this.refactorSpeed = difficultyStrategy.getRefactorSpeed();
     }   
     
     private void startNextMove(
@@ -340,8 +354,8 @@ public class TileRemover implements IResettable, ILevelListener
         // Set some flags for the level up.
         this.activateLineRemoval = true;
         this.levelUpInProgress   = true;
-        this.noScore = true;
-        this.noItems = true;
+        this.doNotAwardScore = true;
+        this.doNotActivateItems = true;
         
         // Clear the tile removal set.        
         this.tileRemovalSet.clear();
@@ -414,7 +428,8 @@ public class TileRemover implements IResettable, ILevelListener
         // Check to see if they're all done.
         for (Iterator it = tileRemovalSet.iterator(); it.hasNext();)
         {
-            if (hub.boardMan.getTile((Integer) it.next()).getAnimation().isFinished() == false)
+            Tile tile = hub.boardMan.getTile((Integer) it.next());
+            if (tile != null && !tile.getAnimation().isFinished())
             {
                 animationInProgress = true;
                 break;
@@ -444,26 +459,29 @@ public class TileRemover implements IResettable, ILevelListener
                 this.activateBombRemoval = true;
             }
             else if (!this.itemSetMap.get(TileType.GRAVITY).isEmpty())
-            {
+            {                
                 game.getTracker().finishChain(hub);
-                shiftGravity(hub.boardMan);                
-                game.getRefactorer()
-                        .setRefactorSpeed(RefactorSpeed.SHIFT)
-                        .startRefactor();
 
-                // evaluate the achievements.
+                shiftGravity(hub.boardMan);
+
+                Refactorer refactorer = game.getRefactorer();
+                this.refactorSpeed = refactorer.getRefactorSpeed();
+                refactorer.setRefactorSpeed(RefactorSpeed.SHIFT);
+                refactorer.startRefactor();
+
+                // Check for achievements.
                 hub.achievementMan.evaluate(game, hub);
             }
             // Otherwise, start a new refactor.
             else
-            {
+            {               
                 game.getTracker().finishChain(hub);
-                game.getRefactorer()
-                        .setRefactorSpeed(refactorSpeed)
-                        .startRefactor();
+                
+                Refactorer refactorer = game.getRefactorer();
+                //refactorer.setRefactorSpeed(this.refactorSpeed);
+                refactorer.startRefactor();
 
-                // check for achievements
-                // evaluate the achievements.
+                // Check for achievements.
                 hub.achievementMan.evaluate(game, hub);
             }
         } // end if
@@ -524,7 +542,7 @@ public class TileRemover implements IResettable, ILevelListener
         statMan.incrementLineChainCount();
 
         // Calculate score, unless no-score flag is set.
-        if (noScore == false)
+        if (!doNotAwardScore)
         {
             final int deltaScore = scoreMan.calculateLineScore(
                     tileRemovalSet,
@@ -545,7 +563,7 @@ public class TileRemover implements IResettable, ILevelListener
         else
         {
             // Turn off the flag now that it has been used.
-            noScore = false;
+            doNotAwardScore = false;
         }
 
         // Play the sound.
@@ -555,14 +573,14 @@ public class TileRemover implements IResettable, ILevelListener
         // Make sure bombs aren't removed (they get removed
         // in a different step).  However, if the no-items
         // flag is set, then ignore bombs.
-        if (!this.noItems)
+        if (!this.doNotActivateItems)
         {
             scanFor(boardMan, EnumSet.allOf(TileType.class), true);
         }
         else
         {
             // Turn off the flag now that it has been used.
-            this.noItems = false;
+            this.doNotActivateItems = false;
         }
 
         // Start the line removal animations if there are any
@@ -990,7 +1008,10 @@ public class TileRemover implements IResettable, ILevelListener
     }
     
     private void shiftGravity(BoardManager boardMan)
-    {      
+    {
+        // Set the flag.
+        this.gravityShiftInProgress = true;
+
         // Determine the new gravity.
         EnumSet<BoardManager.Direction> gravity = null;
         if (boardMan.getGravity().contains(BoardManager.Direction.LEFT))

@@ -139,7 +139,7 @@ public class Refactorer implements IResettable
 //	{
 //		return SINGLE;
 //	}
-    public Refactorer setRefactorSpeed(RefactorSpeed speed)
+    public void setRefactorSpeed(RefactorSpeed speed)
     {
         if ( speed == null )
         {
@@ -149,8 +149,12 @@ public class Refactorer implements IResettable
         CouchLogger.get().recordMessage( this.getClass(),
                 String.format( "Speed set to %s", speed.toString() ) );
 
-        this.speed = speed;
-        return this;
+        this.speed = speed;        
+    }
+
+    public RefactorSpeed getRefactorSpeed()
+    {
+        return this.speed;
     }
 
     /**
@@ -158,11 +162,10 @@ public class Refactorer implements IResettable
      * 
      * @param speed
      */
-    public Refactorer startRefactor()
+    public void startRefactor()
     {
         // Set the refactor flag.
-        this.activateRefactor = true;
-        return this;
+        this.activateRefactor = true;        
     }
 
     /**

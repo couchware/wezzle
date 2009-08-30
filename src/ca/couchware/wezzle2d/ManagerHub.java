@@ -149,8 +149,7 @@ public class ManagerHub
             // Get the singleton.
             this.timerMan = TimerManager.newInstance(game, this.listenerMan);
             
-            // Initialize some parameters.
-            //this.timerMan.resetCurrentTime();
+            // Initialize some parameters.            
             this.listenerMan.registerListener(Listener.GAME,  this.timerMan);
             this.listenerMan.registerListener(Listener.LEVEL, this.timerMan);
             this.listenerMan.registerListener(Listener.MOVE,  this.timerMan);

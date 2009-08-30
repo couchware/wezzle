@@ -262,7 +262,7 @@ public abstract class AbstractTutorial implements ITutorial
         final SettingsManager settingsMan = hub.settingsMan;
 
         // Write out completion.
-        settingsMan.setBool(this.getSettingsKey(), true);
+        settingsMan.setBool(this.getHasRunSettingsKey(), true);
 
         // Load the score managers state.
         boardMan.loadState();
@@ -304,7 +304,8 @@ public abstract class AbstractTutorial implements ITutorial
         timerMan.setStopped(false);  
         
         // Reset the refactor speed.
-        refactorer.setRefactorSpeed(RefactorSpeed.NORMAL);
+        refactorer.setRefactorSpeed(
+                game.getDifficultyStrategy().getRefactorSpeed());
 
         // Reset the piece preview.
         boolean showTraditional = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_TRADITIONAL);
@@ -396,7 +397,7 @@ public abstract class AbstractTutorial implements ITutorial
 
     public boolean hasRun(final ManagerHub hub)
     {
-        return hub.settingsMan.getBool(this.getSettingsKey());
+        return hub.settingsMan.getBool(this.getHasRunSettingsKey());
     }
     
 }

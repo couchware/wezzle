@@ -83,9 +83,20 @@ public interface ITutorial
      */
     public void updateLogic(Game game, ManagerHub hub);
 
+    /**
+     * The settings key that holds the boolean value indicating
+     * whether or not this tutorial has ever been run before.
+     *
+     * @return
+     */
+    public Key getHasRunSettingsKey();
 
-    public Key getSettingsKey();
-
+    /**
+     * Indicates whether or not this tutorial has ever been run before.
+     *
+     * @param hub
+     * @return
+     */
     public boolean hasRun(final ManagerHub hub);
 
 }

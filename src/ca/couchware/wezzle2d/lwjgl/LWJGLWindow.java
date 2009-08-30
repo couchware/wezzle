@@ -663,8 +663,8 @@ public class LWJGLWindow implements IWindow
     {
         // Before we start, make a copy of the listener list in case
         // one of the listeners modifies their listener status.
-        List<IMouseListener> list = new ArrayList<IMouseListener>(
-                mouseListenerList);
+        List<IMouseListener> list =
+                new ArrayList<IMouseListener>(mouseListenerList);
 
         // Poll mouse events.
         while (Mouse.next())
@@ -739,7 +739,7 @@ public class LWJGLWindow implements IWindow
 
             } // if
 
-            if (mouseMoved == true)
+            if (mouseMoved)
             {
                 Button buttonEnum = findPressedButton();
                 if (buttonEnum != Button.NONE)

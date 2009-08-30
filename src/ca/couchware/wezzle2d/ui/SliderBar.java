@@ -455,7 +455,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         setMousePosition(e.getX(), e.getY());
         
         // Retrieve the mouse position.
-        final ImmutablePosition p = getMousePosition();  
+        final ImmutablePosition p = getMousePosition();       
         
         // Handle case where there is no last position.
         if (lp == null) lp = p;

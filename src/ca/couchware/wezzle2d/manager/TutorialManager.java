@@ -122,7 +122,7 @@ public class TutorialManager implements IResettable
         if (game.isCompletelyBusy()) return;
         
         // If no tutorial is running, look for a new one to run.
-        if (tutorial == null && tutorialList.isEmpty() == false)
+        if (tutorial == null && !tutorialList.isEmpty())
         {
             for (Iterator<ITutorial> it = tutorialList.iterator(); it.hasNext(); ) 
             {

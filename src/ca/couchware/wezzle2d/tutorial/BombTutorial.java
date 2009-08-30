@@ -224,7 +224,7 @@ public class BombTutorial extends AbstractTutorial
         pieceMan.setRestrictionCell(2, boardMan.getRows() - 2, true);
     }
 
-    public Key getSettingsKey()
+    public Key getHasRunSettingsKey()
     {
         return Key.USER_TUTORIAL_BOMB_RAN;
     }
