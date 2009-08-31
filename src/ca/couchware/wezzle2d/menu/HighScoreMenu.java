@@ -171,6 +171,7 @@ public class HighScoreMenu extends AbstractMenu
 
     /**
      * Update a label list using a high score list.
+     * 
      * @param labelList
      * @param scoreList
      */
@@ -203,10 +204,11 @@ public class HighScoreMenu extends AbstractMenu
      */
     private String format(int rank, HighScore highScore)
     {
-        return String.format(Locale.CANADA, "%d. %,d points (Level %d)",
+        return String.format(Locale.CANADA, "%d. %,d - Lvl %d %s",
                 rank + 1, 
                 highScore.getScore(),
-                highScore.getLevel());
+                highScore.getLevel(),
+                highScore.getDifficulty().getDescription());
     }
 
 }

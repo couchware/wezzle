@@ -430,9 +430,8 @@ public class PlayNowMenu extends AbstractMenu
         hub.groupMan.hideAllGroups(!game.isCompletelyBusy());       
 
          // Set the difficulty.
-        IDifficultyStrategy difficultyStrategy =
-                Difficulty.values()[this.difficultyValue].getStrategy();
-        game.setDifficultyStrategy( difficultyStrategy );
+        Difficulty difficulty = Difficulty.values()[this.difficultyValue];
+        game.setDifficulty( difficulty );
 
         // Reset the core managers.
         IResettable coreArray[] = new IResettable[]

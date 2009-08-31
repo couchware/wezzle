@@ -122,7 +122,10 @@ public class Refactorer implements IResettable
     final public void resetState()
     {
         // Set the refactor speeds to their defaults.
-        this.speed = this.game.getDifficultyStrategy().getRefactorSpeed();
+        this.speed = this.game
+                .getDifficulty()
+                .getStrategy()
+                .getRefactorSpeed();
 
         this.activateRefactor = false;
         this.refactorVerticalInProgress = false;

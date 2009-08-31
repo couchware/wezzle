@@ -219,7 +219,7 @@ public class TileRemover implements IResettable, ILevelListener
             // them and then refactor again.
             if ( !tileRemovalSet.isEmpty() )
             {
-                startLineRemoval(game.getDifficultyStrategy());
+                startLineRemoval();
             }
             else
             {
@@ -293,13 +293,10 @@ public class TileRemover implements IResettable, ILevelListener
         }
     }   
          
-    private void startLineRemoval(IDifficultyStrategy difficultyStrategy)
+    private void startLineRemoval()
     {
         // Activate the line removal.
         this.activateLineRemoval = true;
-
-        // Record the refactor speed.
-        //this.refactorSpeed = difficultyStrategy.getRefactorSpeed();
     }   
     
     private void startNextMove(

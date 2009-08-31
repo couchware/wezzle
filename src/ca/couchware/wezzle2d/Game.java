@@ -14,8 +14,6 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.difficulty.Difficulty;
-import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
-import ca.couchware.wezzle2d.difficulty.NormalDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -192,7 +190,7 @@ public class Game extends Canvas implements IWindowCallback
     /**
      * The game difficulty setting.
      */
-    private IDifficultyStrategy difficultyStrategy = Difficulty.NORMAL.getStrategy();
+    private Difficulty difficulty = Difficulty.NORMAL;
                 
     //--------------------------------------------------------------------------
     // Constructor
@@ -842,9 +840,10 @@ public class Game extends Canvas implements IWindowCallback
 
         // Add the new score.
         hub.highScoreMan.offerScore(
-                "Unused",
+                "",
                 hub.scoreMan.getTotalScore(),
-                hub.levelMan.getLevel());
+                hub.levelMan.getLevel(),
+                this.getDifficulty());
 
         // Notify of game over.
         hub.listenerMan.notifyGameOver(new GameEvent(this, 
@@ -998,14 +997,14 @@ public class Game extends Canvas implements IWindowCallback
         return ui;
     }
 
-    public IDifficultyStrategy getDifficultyStrategy()
+    public Difficulty getDifficulty()
     {
-        return this.difficultyStrategy;
+        return this.difficulty;
     }
 
-    public void setDifficultyStrategy(IDifficultyStrategy difficultyStrategy)
+    public void setDifficulty(Difficulty difficulty)
     {
-        this.difficultyStrategy = difficultyStrategy;
+        this.difficulty = difficulty;
     }
 
     public IWindow getWindow()

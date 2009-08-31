@@ -64,7 +64,7 @@ public class TimerManager implements
         this.game = game;
         this.listenerMan = listenerMan;        
 
-        this.timeUpper = game.getDifficultyStrategy().getMaxTime();
+        this.timeUpper = game.getDifficulty().getStrategy().getMaxTime();
         this.startTime = timeUpper;
         this.currentTime = startTime;
         this.paused = false;
@@ -189,7 +189,9 @@ public class TimerManager implements
 
     public void levelChanged(LevelEvent event)
     {
-        int time = this.game.getDifficultyStrategy()
+        int time = this.game
+                .getDifficulty()
+                .getStrategy()
                 .determineTimeForLevel( event.getNewLevel() );
         this.setStartTime( time );
 
@@ -222,7 +224,9 @@ public class TimerManager implements
     public void gameReset(GameEvent event)
     {
         // Set the max time to the value for this level.
-        int time = this.game.getDifficultyStrategy()
+        int time = this.game
+                .getDifficulty()
+                .getStrategy()
                 .determineTimeForLevel( event.getLevel() );
         this.setStartTime( time );
 

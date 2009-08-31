@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.difficulty.Difficulty;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
@@ -104,13 +105,14 @@ public class HighScoreManager
      * @param level
      * @param export
      */    
-    public void offerScore(String name, int score, int level, boolean export)
+    public void offerScore(
+            String name, int score, int level, Difficulty difficulty, boolean export)
     {
         // See if the score belongs on the list.
         if ( this.scoreList.size() == NUMBER_OF_SCORES && score < this.getLowestScore() )
             return;
         
-        HighScore newScore = HighScore.newInstance(name, score, level);       
+        HighScore newScore = HighScore.newInstance(name, score, level, difficulty);
         
         // Add the score.
         this.scoreList.add(newScore);
@@ -125,17 +127,17 @@ public class HighScoreManager
         }
         
         // Export if requested.
-        if (export == true) this.exportSettings();
+        if (export) this.exportSettings();
     }
     
-    public void offerScore(String name, int score, int level)
+    public void offerScore(String name, int score, int level, Difficulty difficulty)
     {
-        offerScore(name, score, level, true);
+        offerScore(name, score, level, difficulty, true);
     }
     
     public void offerScore(HighScore score, boolean export)
     {
-        offerScore(score.getName(), score.getScore(), score.getLevel(), export);                
+        offerScore(score.getName(), score.getScore(), score.getLevel(), score.getDifficulty(), export);
     }
     
     public void offerScore(HighScore score)
@@ -208,7 +210,7 @@ public class HighScoreManager
     public void resetScoreList()
     {
         CouchLogger.get().recordWarning(this.getClass(), "High Score table reset!");
-        HighScore score = HighScore.newInstance("", 0, 0);
+        HighScore score = HighScore.newInstance("", 0, 0, Difficulty.NONE);
         scoreList.clear();
         
         // Load with dummy scores.
@@ -230,7 +232,7 @@ public class HighScoreManager
 
         for ( HighScore highScore : this.scoreList )
         {
-            if (highScore.getName().length() == 0) continue;
+            if (highScore.getScore() == 0) continue;
             returnList.add(highScore);
         }
 

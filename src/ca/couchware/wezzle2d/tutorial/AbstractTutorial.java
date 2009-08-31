@@ -304,8 +304,8 @@ public abstract class AbstractTutorial implements ITutorial
         timerMan.setStopped(false);  
         
         // Reset the refactor speed.
-        refactorer.setRefactorSpeed(
-                game.getDifficultyStrategy().getRefactorSpeed());
+        RefactorSpeed speed = game.getDifficulty().getStrategy().getRefactorSpeed();
+        refactorer.setRefactorSpeed(speed);
 
         // Reset the piece preview.
         boolean showTraditional = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_TRADITIONAL);

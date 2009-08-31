@@ -6,6 +6,7 @@ package ca.couchware.wezzle2d.difficulty;
  */
 public enum Difficulty
 {
+    NONE("None", null),
     EASY("Easy", new EasyDifficulty()),
     NORMAL("Normal", new NormalDifficulty()),
     HARD("Hard", new HardDifficulty());

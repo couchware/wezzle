@@ -41,7 +41,7 @@ public class EasyDifficulty implements IDifficultyStrategy
 
     public RefactorSpeed getRefactorSpeed()
     {
-       return RefactorSpeed.SLOWER;
+       return RefactorSpeed.NORMAL;
     }
 
     public int getDropAmount(int numberOfTiles, int numberOfCells, int level,
