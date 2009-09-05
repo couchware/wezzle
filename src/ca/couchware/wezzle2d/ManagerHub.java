@@ -247,7 +247,7 @@ public class ManagerHub
         if (set.contains(Manager.SCORE))
         {
             // Create the score manager.
-            scoreMan = ScoreManager.newInstance(boardMan, highScoreMan, listenerMan);
+            scoreMan = ScoreManager.newInstance(game, this);
                         
             listenerMan.registerListener(Listener.GAME,  scoreMan);
             listenerMan.registerListener(Listener.LEVEL, scoreMan);           

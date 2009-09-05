@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.difficulty;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
+import ca.couchware.wezzle2d.util.Rational;
 
 /**
  *
@@ -8,6 +9,9 @@ import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
  */
 public class NormalDifficulty implements IDifficultyStrategy
 {
+    /** The score modifier. */
+    final private Rational scoreModifier = new Rational(3, 2);
+
     /** The minimum drop. */
     final private int MINIMUM_DROP = 1;
 
@@ -138,6 +142,11 @@ public class NormalDifficulty implements IDifficultyStrategy
     public int determineTimeForLevel(int level)
     {
         return Math.max(timeUpper - (level - 1) * 1000, timeLower);
+    }
+
+    public Rational getScoreModifier()
+    {
+        return scoreModifier;
     }
 
 }

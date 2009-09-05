@@ -59,7 +59,7 @@ public class PlayNowMenu extends AbstractMenu
     private ITextLabel levelNumberLabel;    
     private SliderBar levelNumberSlider;   
 
-    final private static int MIN_DIFFICULTY = 0;
+    final private static int MIN_DIFFICULTY = 1;
     final private static int MAX_DIFFICULTY = Difficulty.values().length - 1;
 
     private int difficultyValue;

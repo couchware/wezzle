@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.difficulty;
 
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
+import ca.couchware.wezzle2d.util.Rational;
 
 /**
  *
@@ -8,21 +9,23 @@ import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
  */
 public class EasyDifficulty implements IDifficultyStrategy
 {
+    /** The score modifier. */
+    final private Rational scoreModifier = new Rational(1, 1);
 
     /** The minimum drop. */
-    final private int MINIMUM_DROP = 1;
+    final private int minimumDrop = 1;
 
     /** The level at which the difficulty begins to increase. */
-    final private int MINIMUM_LEVEL = 3;
+    final private int minimumLevel = 3;
 
     /** The number of levels before the difficulty level increases. */
-    final private int LEVEL_INTERVAL = 2;
+    final private int levelInterval = 2;
 
     /** The percentage of tiles to maintain. */
-    final private int TILE_RATIO = 80;
+    final private int tileRatio = 80;
 
     /** The maximum number of tiles to drop in. */
-    final private int MAXIMUM_TOTAL_DROP_AMOUNT = 8;
+    final private int maximumTotalDropAmount = 8;
 
     /**
      * The timer upper bound, in ms.
@@ -49,12 +52,12 @@ public class EasyDifficulty implements IDifficultyStrategy
     {
 
         // The number of tiles for the current level.
-        int levelDrop = (level / this.LEVEL_INTERVAL);
+        int levelDrop = (level / this.levelInterval);
 
         // Check for difficulty ramp up.
-        if (level > this.MINIMUM_LEVEL)
+        if (level > this.minimumLevel)
         {
-            levelDrop = (this.MINIMUM_LEVEL / this.LEVEL_INTERVAL);
+            levelDrop = (this.minimumLevel / this.levelInterval);
         }
 
         // The percent of the board to readd.
@@ -65,52 +68,52 @@ public class EasyDifficulty implements IDifficultyStrategy
 
         // We are low. drop in a percentage of the tiles, increasing if there
         // are fewer tiles.
-        if ((numberOfTiles / numberOfCells) * 100 < this.TILE_RATIO)
+        if ((numberOfTiles / numberOfCells) * 100 < this.tileRatio)
         {
             // If we are past the level ramp up point, drop in more.
-            if (level > this.MINIMUM_LEVEL)
+            if (level > this.minimumLevel)
             {
                 dropAmount = pieceSize + levelDrop
-                        + (level - this.MINIMUM_LEVEL)
-                        + boardPercentage + this.MINIMUM_DROP;
+                        + (level - this.minimumLevel)
+                        + boardPercentage + this.minimumDrop;
 
-                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
+                if (dropAmount > this.maximumTotalDropAmount + pieceSize)
                 {
-                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
+                    dropAmount = this.maximumTotalDropAmount + pieceSize;
                 }
             }
             else
             {
                 dropAmount = pieceSize + levelDrop + boardPercentage
-                        + this.MINIMUM_DROP;
+                        + this.minimumDrop;
 
-                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
+                if (dropAmount > this.maximumTotalDropAmount + pieceSize)
                 {
-                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
+                    dropAmount = this.maximumTotalDropAmount + pieceSize;
                 }
             }
         }
         else
         {
             // If we are past the level ramp up point, drop in more.
-            if (level > this.MINIMUM_LEVEL)
+            if (level > this.minimumLevel)
             {
                 dropAmount = pieceSize + levelDrop
-                        + (level - this.MINIMUM_LEVEL)
-                        + this.MINIMUM_DROP;
+                        + (level - this.minimumLevel)
+                        + this.minimumDrop;
 
-                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
+                if (dropAmount > this.maximumTotalDropAmount + pieceSize)
                 {
-                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
+                    dropAmount = this.maximumTotalDropAmount + pieceSize;
                 }
             }
             else
             {
-                dropAmount = pieceSize + levelDrop + this.MINIMUM_DROP;
+                dropAmount = pieceSize + levelDrop + this.minimumDrop;
 
-                if (dropAmount > this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize)
+                if (dropAmount > this.maximumTotalDropAmount + pieceSize)
                 {
-                    dropAmount = this.MAXIMUM_TOTAL_DROP_AMOUNT + pieceSize;
+                    dropAmount = this.maximumTotalDropAmount + pieceSize;
                 }
             }
         } // end if
@@ -139,5 +142,10 @@ public class EasyDifficulty implements IDifficultyStrategy
     public int determineTimeForLevel(int level)
     {
         return Math.max(timeUpper - (level/2) * 1000, timeLower);
+    }
+
+    public Rational getScoreModifier()
+    {
+        return scoreModifier;
     }
 }
