@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.menu;
 
-import ca.couchware.wezzle2d.ui.group.IGroup;
+import ca.couchware.wezzle2d.group.IGroup;
 
 /**
  * An interface for creating menus.

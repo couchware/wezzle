@@ -41,7 +41,7 @@ import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.RadioItem;
 import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.ui.Button;
-import ca.couchware.wezzle2d.ui.group.GameOverGroup;
+import ca.couchware.wezzle2d.group.GameOverGroup;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;

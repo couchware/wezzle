@@ -9,7 +9,7 @@ import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ui.IButton;
-import ca.couchware.wezzle2d.ui.group.IGroup;
+import ca.couchware.wezzle2d.group.IGroup;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;

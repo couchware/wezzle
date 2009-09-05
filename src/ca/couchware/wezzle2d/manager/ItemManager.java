@@ -136,8 +136,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
     {
         // Set the rules.
         List<Rule> mutableList = new ArrayList<Rule>();
-        
-        
+                
         // Make it so the rocket block is added.
         mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 3)
         {
@@ -149,12 +148,14 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                         new Item.Builder(TileType.ROCKET)
                         .initialAmount(1).weight(55).maximumOnBoard(3).build());
 
-                // Notify the user.
-                TileNotification notif = new TileNotification.Builder(0, 0, TileType.ROCKET)
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .build();
+                if (hub.statMan.getStartLevel() < 3)
+                {
+                    TileNotification notif = new TileNotification.Builder(0, 0, TileType.ROCKET)
+                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                        .build();
 
-                hub.notificationMan.offer(notif);
+                    hub.notificationMan.offer(notif);
+                }
             }            
         });  
         
@@ -163,20 +164,20 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         {
             @Override
             public void onMatch()
-            {
-                CouchLogger.get().recordMessage(this.getClass(), "Gravity item enabled.");
-                
+            {                
                 // Add the bomb.
                 itemMap.put(TileType.GRAVITY,
                         new Item.Builder(TileType.GRAVITY)
                         .initialAmount(1).weight(50).maximumOnBoard(1).build());
 
-                // Notify the user.
-                TileNotification notif = new TileNotification.Builder(0, 0, TileType.BOMB)
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                    .build();
+                if (hub.statMan.getStartLevel() < 4)
+                {
+                    TileNotification notif = new TileNotification.Builder(0, 0, TileType.GRAVITY)
+                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                        .build();
 
-                hub.notificationMan.offer(notif);
+                    hub.notificationMan.offer(notif);
+                }
             }            
         });  
         
@@ -185,13 +186,20 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         {
             @Override
             public void onMatch()
-            {
-                CouchLogger.get().recordMessage(this.getClass(), "Bomb item enabled.");
-                
+            {                
                 // Add the bomb.
                 itemMap.put(TileType.BOMB,
                         new Item.Builder(TileType.BOMB)
                         .initialAmount(1).weight(10).maximumOnBoard(1).build());
+
+                if (hub.statMan.getStartLevel() < 5)
+                {
+                    TileNotification notif = new TileNotification.Builder(0, 0, TileType.BOMB)
+                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                        .build();
+
+                    hub.notificationMan.offer(notif);
+                }
             }            
         }); 
         
@@ -205,6 +213,15 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 itemMap.put(TileType.STAR,
                         new Item.Builder(TileType.STAR)
                         .initialAmount(0).weight(10).maximumOnBoard(1).build());
+
+                if (hub.statMan.getStartLevel() < 6)
+                {
+                    TileNotification notif = new TileNotification.Builder(0, 0, TileType.STAR)
+                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                        .build();
+
+                    hub.notificationMan.offer(notif);
+                }
             }            
         });           
         

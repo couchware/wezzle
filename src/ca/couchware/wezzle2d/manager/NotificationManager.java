@@ -57,20 +57,19 @@ public class NotificationManager implements IManager
         // Check to see if there are any notifications to show.
         if (!this.notificationQueue.isEmpty() && this.notificationAnimation.isFinished())
         {
-            final INotification notif = this.notificationQueue.remove();
+            final INotification notif = this.notificationQueue.remove();            
+            notif.setPosition(670, 490);
 
-            int x = Game.SCREEN_WIDTH + 10 + notif.getWidth() / 2;
-            notif.setPosition(x, 490);
-
-            IAnimation slideIn = new MoveAnimation.Builder(notif)
-                    .speed(375).minX(670).duration(4000).theta(180).build();
-
-            IAnimation fadeOut = new FadeAnimation.Builder(FadeAnimation.Type.OUT, notif)
+            final IAnimation fadeIn = new FadeAnimation.Builder(FadeAnimation.Type.IN, notif)
                     .duration(500).build();
 
-            IAnimation meta = new MetaAnimation.Builder()
+            final IAnimation fadeOut = new FadeAnimation.Builder(FadeAnimation.Type.OUT, notif)
+                    .wait(4000)
+                    .duration(500).build();
+
+            final IAnimation meta = new MetaAnimation.Builder()
                     .runRule(RunRule.SEQUENCE)
-                    .add(slideIn)
+                    .add(fadeIn)
                     .add(fadeOut)
                     .build();
 

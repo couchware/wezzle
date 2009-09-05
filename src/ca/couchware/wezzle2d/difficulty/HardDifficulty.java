@@ -137,7 +137,7 @@ public class HardDifficulty implements IDifficultyStrategy
      */
     public int determineTimeForLevel(int level)
     {
-        return Math.max(timeUpper - (level*2 - 2) * 1000, timeLower);
+        return Math.max(timeUpper - (level - 1) * 1500, timeLower);
     }
 
 }

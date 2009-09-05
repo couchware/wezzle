@@ -20,7 +20,7 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
-import ca.couchware.wezzle2d.ui.group.AbstractGroup;
+import ca.couchware.wezzle2d.group.AbstractGroup;
 import java.util.EnumSet;
 
 /**
