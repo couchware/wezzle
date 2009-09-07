@@ -13,7 +13,7 @@ import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Achievement;
-import ca.couchware.wezzle2d.manager.Achievement.Difficulty;
+import ca.couchware.wezzle2d.manager.Achievement.Level;
 import ca.couchware.wezzle2d.manager.AchievementManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
@@ -194,7 +194,7 @@ public class AchievementMenu extends AbstractMenu
         achievementTitle.setText(ach.getTitle());
         
         // Set the difficulty.
-        Difficulty difficulty = ach.getDifficulty();
+        Achievement.Level difficulty = ach.getDifficulty();
         achievementDifficulty.setText(difficulty.toString());
         achievementDifficulty.setColor(difficulty.getColor());
         

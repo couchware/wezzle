@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jdom.Element;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 
 /**
  * An achievement will hold all the state information required for that 
@@ -53,7 +54,7 @@ public class Achievement implements IXMLizable
 {
    
     /** The levels of achievement difficulty. */
-    public static enum Difficulty
+    public static enum Level
     {
         BRONZE, 
         SILVER, 
@@ -61,8 +62,8 @@ public class Achievement implements IXMLizable
         PLATINUM;
         
         /** The color map for the difficulties. */
-        final private static Map<Difficulty, Color> difficultyColorMap
-                = new EnumMap<Difficulty, Color>(Difficulty.class);
+        final private static Map<Achievement.Level, Color> difficultyColorMap
+                = new EnumMap<Achievement.Level, Color>(Achievement.Level.class);
 
         /**
          * Initializes the difficulty colour map.  Can only be called once
@@ -70,18 +71,18 @@ public class Achievement implements IXMLizable
          * 
          * @param settingsMan
          */
-        final public static void initializeDifficultyColorMap(SettingsManager settingsMan)
+        final public static void initializeAchievementColorMap(SettingsManager settingsMan)
         {
             if (!difficultyColorMap.isEmpty())
             {
                 throw new IllegalStateException("Color map already created!");
             }
             
-            Map<Difficulty, Color> map = difficultyColorMap;
-            map.put(Difficulty.BRONZE,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE));
-            map.put(Difficulty.SILVER,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_SILVER));
-            map.put(Difficulty.GOLD,     settingsMan.getColor(Key.ACHIEVEMENT_COLOR_GOLD));
-            map.put(Difficulty.PLATINUM, settingsMan.getColor(Key.ACHIEVEMENT_COLOR_PLATINUM));             
+            Map<Achievement.Level, Color> map = difficultyColorMap;
+            map.put(Achievement.Level.BRONZE,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE));
+            map.put(Achievement.Level.SILVER,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_SILVER));
+            map.put(Achievement.Level.GOLD,     settingsMan.getColor(Key.ACHIEVEMENT_COLOR_GOLD));
+            map.put(Achievement.Level.PLATINUM, settingsMan.getColor(Key.ACHIEVEMENT_COLOR_PLATINUM));
         }
         
         /**
@@ -113,10 +114,13 @@ public class Achievement implements IXMLizable
     private final String description;
 
     /** The difficulty level of the achievment. */
-    private final Difficulty difficulty;
+    private final Achievement.Level difficulty;
 
     /** The dete the achievement was completed, if any. */
     private CouchDate dateCompleted = null;
+
+    /** the Game Difficulty level associated with the achievement **/
+    private GameDifficulty gameDifficulty = GameDifficulty.NONE;
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -131,8 +135,9 @@ public class Achievement implements IXMLizable
             String title,
             String formattedDescription,
             String description, 
-            Difficulty difficulty, 
-            CouchDate dateCompleted)
+            Achievement.Level difficulty,
+            CouchDate dateCompleted,
+            GameDifficulty gameDifficulty )
     {
         this.ruleList             = ruleList;
         this.title                = title;
@@ -140,20 +145,24 @@ public class Achievement implements IXMLizable
         this.description          = description;
         this.difficulty           = difficulty;
         this.dateCompleted        = dateCompleted;
+        this.gameDifficulty       = gameDifficulty;
     }
         
     public static Achievement newInstance(List<Rule> ruleList, 
             String title,
             String description, 
-            Difficulty difficulty, 
-            CouchDate dateCompleted)
+            Achievement.Level difficulty,
+            CouchDate dateCompleted,
+            GameDifficulty gameDifficulty
+            )
     {
        return new Achievement(ruleList, 
                title, 
                description, 
                description, 
                difficulty, 
-               dateCompleted);
+               dateCompleted,
+               gameDifficulty);
     }
     
     public static Achievement newInstance(Achievement achievement, CouchDate dateCompleted)
@@ -164,7 +173,8 @@ public class Achievement implements IXMLizable
                 achievement.formattedDescription,
                 achievement.description,
                 achievement.difficulty,
-                dateCompleted);
+                dateCompleted,
+                achievement.gameDifficulty);
     }
 
     @SuppressWarnings("unchecked") 
@@ -179,7 +189,8 @@ public class Achievement implements IXMLizable
         String description = descriptionElement.getTextTrim().replaceAll("\n +", "\n");
         
         // Get the difficulty.
-        Difficulty difficulty = Difficulty.valueOf(element.getAttributeValue("difficulty"));        
+        Achievement.Level difficulty = Achievement.Level.valueOf(element.getAttributeValue("level"));
+        GameDifficulty gameDifficulty = GameDifficulty.valueOf(element.getAttributeValue("difficulty"));
         
         // Get the date.
         Element dateElement = element.getChild("date");
@@ -220,7 +231,8 @@ public class Achievement implements IXMLizable
         } // end while
         
         // Get the collisions.
-        return new Achievement(rules, name, formattedDescription, description, difficulty, dateCompleted);
+        return new Achievement(rules, name, formattedDescription, description, 
+                difficulty, dateCompleted, gameDifficulty);
     }
 
     private static Rule createMetaRule(Element rule)
@@ -444,7 +456,9 @@ public class Achievement implements IXMLizable
         // meet the requirements. any null values are automatically
         // accepted.
 
-     
+         if(this.gameDifficulty != gameDifficulty.NONE &&
+                 !game.getDifficulty().equals(this.gameDifficulty))
+            return false;
         
         for (Rule rule : ruleList)
         {
@@ -455,12 +469,16 @@ public class Achievement implements IXMLizable
         return true;       
     }   
     
-    public boolean evaluateCollision(Node<Tile> tileTree)
+    public boolean evaluateCollision(Node<Tile> tileTree, GameDifficulty difficulty)
     {
         // Use the private helper method to test if all of the fields
         // meet the requirements. any null values are automatically
         // accepted.
-        
+
+         if(this.gameDifficulty != gameDifficulty.NONE &&
+                 !difficulty.equals(this.gameDifficulty))
+            return false;
+
         for (Rule rule : ruleList)
         {
            if (!rule.evaluateCollision(tileTree))
@@ -470,11 +488,15 @@ public class Achievement implements IXMLizable
         return true;       
     }
 
-    public boolean evaluateMeta(AchievementManager achievementMan)
+    public boolean evaluateMeta(AchievementManager achievementMan, GameDifficulty difficulty)
     {
         // Use the private helper method to test if all of the fields
         // meet the requirements. any null values are automatically
         // accepted.
+
+         if(this.gameDifficulty != gameDifficulty.NONE &&
+                 !difficulty.equals(this.gameDifficulty))
+            return false;
 
         for (Rule rule : ruleList)
         {
@@ -485,7 +507,7 @@ public class Achievement implements IXMLizable
         return true;
     }
 
-    public Difficulty getDifficulty()
+    public Achievement.Level getDifficulty()
     {
         return difficulty;
     }   
@@ -525,7 +547,8 @@ public class Achievement implements IXMLizable
     {
         Element element = new Element("achievement");
         element.setAttribute("name",  this.title);        
-        element.setAttribute("difficulty", String.valueOf(this.difficulty));
+        element.setAttribute("level", String.valueOf(this.difficulty));
+        element.setAttribute("difficulty", String.valueOf(this.gameDifficulty));
        
         Element descriptionElement = new Element("description");
         descriptionElement.setText(this.formattedDescription);

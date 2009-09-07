@@ -6,7 +6,9 @@
 
 package ca.couchware.wezzle2d.event;
 
+
 import ca.couchware.wezzle2d.ManagerHub;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 
 /**
  *
@@ -14,5 +16,5 @@ import ca.couchware.wezzle2d.ManagerHub;
  */
 public interface ICollisionListener extends IListener
 {
-    public void collisionOccured(CollisionEvent event, ManagerHub hub);
+    public void collisionOccured(CollisionEvent event, ManagerHub hub, GameDifficulty difficulty);
 }

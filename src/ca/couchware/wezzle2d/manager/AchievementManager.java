@@ -5,9 +5,10 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.ManagerHub;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -188,6 +189,7 @@ public class AchievementManager implements ICollisionListener
         if(true == hub.tutorialMan.isTutorialRunning())
             return false;
 
+
         boolean achieved = false;
         
         for (Iterator<Achievement> it = incompletedList.iterator(); it.hasNext(); )
@@ -209,7 +211,7 @@ public class AchievementManager implements ICollisionListener
             {
                 Achievement ach = itr.next();
 
-                if (ach.evaluateMeta(this))
+                if (ach.evaluateMeta(this, game.getDifficulty()))
                 {
                     completeAchievement(ach);
                     itr.remove();
@@ -231,7 +233,7 @@ public class AchievementManager implements ICollisionListener
      * 
      * @param e
      */
-    public void collisionOccured(CollisionEvent e, ManagerHub hub)
+    public void collisionOccured(CollisionEvent e, ManagerHub hub, GameDifficulty difficulty)
     {
         if(true == hub.tutorialMan.isTutorialRunning())
             return;
@@ -245,7 +247,7 @@ public class AchievementManager implements ICollisionListener
         {
             Achievement achievement = it.next();
 
-            if (achievement.evaluateCollision(e.getChain().getTree()))
+            if (achievement.evaluateCollision(e.getChain().getTree(), difficulty))
             {
                 completeAchievement(achievement);
                 it.remove();
@@ -260,7 +262,7 @@ public class AchievementManager implements ICollisionListener
             {
                 Achievement ach = itr.next();
 
-                if (ach.evaluateMeta(this))
+                if (ach.evaluateMeta(this, difficulty))
                 {
                     completeAchievement(ach);
                     itr.remove();

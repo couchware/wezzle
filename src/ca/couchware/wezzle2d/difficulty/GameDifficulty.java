@@ -4,7 +4,7 @@ package ca.couchware.wezzle2d.difficulty;
  * An enum containing all the difficulties.
  * @author cdmckay
  */
-public enum Difficulty
+public enum GameDifficulty
 {
     NONE("None", null),
     EASY("Easy", new EasyDifficulty()),
@@ -14,7 +14,7 @@ public enum Difficulty
     private String description;
     private IDifficultyStrategy difficulty;
 
-    Difficulty(String description, IDifficultyStrategy difficulty)
+    GameDifficulty(String description, IDifficultyStrategy difficulty)
     {
         this.description = description;
         this.difficulty = difficulty;

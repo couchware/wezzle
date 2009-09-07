@@ -7,7 +7,7 @@
     <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 
     <!-- Rocket Achievements -->      
-    <achievement name="A Tale of Two Rockets" difficulty="BRONZE">
+    <achievement name="A Tale of Two Rockets" level="BRONZE" difficulty="NONE">
       <description>Fire a rocket into another rocket.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="ROCKET">
@@ -15,7 +15,7 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="A Tale of Three Rockets" difficulty="SILVER">
+    <achievement name="A Tale of Three Rockets" level="SILVER" difficulty="NONE">
       <description>Fire a rocket into another rocket 
       into yet another rocket.</description>      
       <rule type="COLLISION" operation="BETWEEN">
@@ -26,7 +26,7 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="Missile Defense Shield" difficulty="SILVER">
+    <achievement name="Missile Defense Shield" level="SILVER" difficulty="NONE">
         <description>Fire a rocket into two other rockets.</description>
         <rule type="COLLISION" operation="BETWEEN">
             <item type="ROCKET">
@@ -37,7 +37,7 @@
     </achievement>   
 
     <!-- Gravity Achievements -->
-    <achievement name="Gravitron" difficulty="BRONZE">
+    <achievement name="Gravitron" level="BRONZE" difficulty="NONE">
       <description>Activate a gravity tile.</description>      
       <rule type="COLLISION" operation="BETWEEN">
         <item type="GRAVITY" />
@@ -46,7 +46,7 @@
     
 
     <!-- Bomb Achievements -->    
-    <achievement name="Missile Launcher" difficulty="SILVER">
+    <achievement name="Missile Launcher" level="SILVER" difficulty="NONE">
       <description>Explode a bomb into two rockets.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="BOMB">
@@ -55,7 +55,7 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="Collateral Damage" difficulty="SILVER">
+    <achievement name="Collateral Damage" level="SILVER" difficulty="NONE">
       <description>Make a bomb explode into another item tile.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="BOMB">
@@ -65,7 +65,7 @@
     </achievement>
 
     <!-- Star Achievements -->       
-    <achievement name="Starry-Eyed Surprise" difficulty="SILVER">
+    <achievement name="Starry-Eyed Surprise" level="SILVER" difficulty="NONE">
       <description>Make a star tile activate another item tile.</description>
       <rule type="COLLISION" operation="BETWEEN">
         <item type="STAR">
@@ -73,7 +73,7 @@
         </item>
       </rule>
     </achievement>
-    <achievement name="The Perfect Star Storm" difficulty="GOLD">
+    <achievement name="The Perfect Star Storm" level="GOLD" difficulty="NONE">
         <description>Use a star to remove three multiplier tiles
         and two item tiles, all in the same move.</description>
         <rule type="COLLISION" operation="BETWEEN">
@@ -88,56 +88,56 @@
     </achievement>
 
     <!-- Score Achievements -->   
-    <achievement name="Get 60,000 Points" difficulty="BRONZE">
+    <achievement name="Get 60,000 Points" level="BRONZE" difficulty="NONE">
       <description>Get over 60,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="60000" />
     </achievement>
-    <achievement name="Get 100,000 Points" difficulty="SILVER">
+    <achievement name="Get 100,000 Points" level="SILVER" difficulty="NONE">
       <description>Get over 100,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="100000" />
     </achievement>
-    <achievement name="Get 300,000 Points" difficulty="GOLD">
+    <achievement name="Get 300,000 Points" level="GOLD" difficulty="NONE">
       <description>Get over 300,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="300000" />
     </achievement>
-    <achievement name="Get 1,000,000 Points" difficulty="PLATINUM">
+    <achievement name="Get 1,000,000 Points" level="PLATINUM" difficulty="NONE">
       <description>Get over 1,000,000 points in a game.</description>
       <rule type="SCORE" operation="GTEQ" value="1000000" />
     </achievement>
 
     <!-- Level Achievements -->
-    <achievement name="Get To Level 5" difficulty="BRONZE">
+    <achievement name="Get To Level 5" level="BRONZE" difficulty="NONE">
       <description>Starting from level 1, get to level 5 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="5" />
     </achievement>
-    <achievement name="Get To Level 10" difficulty="SILVER">
+    <achievement name="Get To Level 10" level="SILVER" difficulty="NONE">
       <description>Starting from level 1, get to level 10 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="10" />
     </achievement>
-    <achievement name="Get To Level 15" difficulty="GOLD">
+    <achievement name="Get To Level 15" level="GOLD" difficulty="NONE">
       <description>Starting from level 1, get to level 15 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="15" />
     </achievement>
-    <achievement name="Get To Level 20" difficulty="PLATINUM">
+    <achievement name="Get To Level 20" level="PLATINUM" difficulty="NONE">
       <description>Starting from level 1, get to level 20 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="20" />
     </achievement>
-    <achievement name="Get 30,000 By Level 5" difficulty="SILVER">
+    <achievement name="Get 30,000 By Level 5" level="SILVER" difficulty="NONE">
       <description>Starting from level 1, accumulate 30,000
       points by level 5.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
       <rule type="LEVEL" operation="EQ" value="5" />
       <rule type="SCORE" operation="GTEQ" value="30000" />
     </achievement>
-    <achievement name="Get 60,000 By Level 5" difficulty="GOLD">
+    <achievement name="Get 60,000 By Level 5" level="GOLD" difficulty="NONE">
       <description>Starting from level 1, accumulate 60,000
       points by level 5.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />
@@ -146,7 +146,7 @@
     </achievement>
 
     <!-- Story Achievements -->
-    <achievement name="Doomed Space Mission" difficulty="GOLD">
+    <achievement name="Doomed Space Mission" level="GOLD" difficulty="NONE">
         <description>Blast off in a rocket to the stars, only to
         tragically blow up at the end.</description>
         <rule type="COLLISION" operation="BETWEEN">
@@ -162,21 +162,21 @@
     <!-- Rate Achievements                                                   -->
     <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 
-    <achievement name="On A Roll" difficulty="GOLD">
+    <achievement name="On A Roll" level="GOLD" difficulty="NONE">
         <description>Use 5 item tiles over the course of 5 moves.</description>
         <rule type="RATE">
             <numerator type="COLLISION" sub-type="ALL_ITEMS" operation="GTEQ" value="5" />
             <denominator type="MOVE" operation="LTEQ" value="5" />
         </rule>
     </achievement>
-    <achievement name="Itemizer" difficulty="GOLD">
+    <achievement name="Itemizer" level="GOLD" difficulty="NONE">
         <description>Use 10 item tiles over the course of 10 moves.</description>
         <rule type="RATE">
             <numerator type="COLLISION" sub-type="ALL_ITEMS" operation="GTEQ" value="10" />
             <denominator type="MOVE" operation="LTEQ" value="10" />
         </rule>
     </achievement>
-    <achievement name="Item Addict" difficulty="GOLD">
+    <achievement name="Item Addict" level="GOLD" difficulty="NONE">
         <description>Use 10 item tiles over the course of 5 moves.</description>
         <rule type="RATE">
             <numerator type="COLLISION" sub-type="ALL_ITEMS" operation="GTEQ" value="10" />
@@ -185,14 +185,14 @@
     </achievement>
 
     <!-- Line 'Em Up -->
-    <achievement name="Beginner's Luck" difficulty="BRONZE">
+    <achievement name="Beginner's Luck" level="BRONZE" difficulty="NONE">
         <description>Get 3 lines in 2 moves.</description>
         <rule type="RATE">
             <numerator type="LINES" operation="GTEQ" value="3" />
             <denominator type="MOVE" operation="LTEQ" value="2" />
         </rule>
     </achievement>
-    <achievement name="Line 'Em Up!" difficulty="BRONZE">
+    <achievement name="Line 'Em Up!" level="BRONZE" difficulty="NONE">
         <description>Get 4 lines in 2 moves.</description>
         <rule type="RATE">
             <numerator type="LINES" operation="GTEQ" value="4" />

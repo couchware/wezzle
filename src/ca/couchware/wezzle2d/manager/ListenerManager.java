@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.manager;
 
 
 import ca.couchware.wezzle2d.ManagerHub;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.ICollisionListener;
@@ -236,13 +237,13 @@ public class ListenerManager
         }
     }   
     
-    public void notifyCollisionOccured(CollisionEvent e, ManagerHub hub)
+    public void notifyCollisionOccured(CollisionEvent e, ManagerHub hub, GameDifficulty difficulty)
     {
         List<IListener> list = listenerMap.get(Listener.COLLISION);
          
         for (IListener listener : list)
         {
-            ((ICollisionListener) listener).collisionOccured(e, hub);
+            ((ICollisionListener) listener).collisionOccured( e, hub, difficulty);
         }
          
     }

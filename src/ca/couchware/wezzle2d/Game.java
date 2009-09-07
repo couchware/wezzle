@@ -13,7 +13,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.difficulty.Difficulty;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -190,7 +190,7 @@ public class Game extends Canvas implements IWindowCallback
     /**
      * The game difficulty setting.
      */
-    private Difficulty difficulty = Difficulty.NORMAL;
+    private GameDifficulty difficulty = GameDifficulty.NORMAL;
                 
     //--------------------------------------------------------------------------
     // Constructor
@@ -997,12 +997,12 @@ public class Game extends Canvas implements IWindowCallback
         return ui;
     }
 
-    public Difficulty getDifficulty()
+    public GameDifficulty getDifficulty()
     {
         return this.difficulty;
     }
 
-    public void setDifficulty(Difficulty difficulty)
+    public void setDifficulty(GameDifficulty difficulty)
     {
         this.difficulty = difficulty;
     }
@@ -1042,7 +1042,7 @@ public class Game extends Canvas implements IWindowCallback
         RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        Achievement.Difficulty.initializeDifficultyColorMap(settingsMan);
+        Achievement.Level.initializeAchievementColorMap(settingsMan);
 
         // Set the BasicPlayer logger level.
         Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);

@@ -12,7 +12,7 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
-import ca.couchware.wezzle2d.difficulty.Difficulty;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IEntity;
@@ -60,7 +60,7 @@ public class PlayNowMenu extends AbstractMenu
     private SliderBar levelNumberSlider;   
 
     final private static int MIN_DIFFICULTY = 1;
-    final private static int MAX_DIFFICULTY = Difficulty.values().length - 1;
+    final private static int MAX_DIFFICULTY = GameDifficulty.values().length - 1;
 
     private int difficultyValue;
     private ITextLabel difficultyLabel;
@@ -187,7 +187,7 @@ public class PlayNowMenu extends AbstractMenu
     {
         // Get the user set difficulty and make sure it's within range.
         String difficultyStr = hub.settingsMan.getString(Key.USER_DIFFICULTY_DEFAULT);
-        this.difficultyValue = Difficulty.valueOf(difficultyStr).ordinal();
+        this.difficultyValue = GameDifficulty.valueOf(difficultyStr).ordinal();
 
         this.difficultyLabel = new LabelBuilder(
                     levelLabel.getX(),
@@ -204,7 +204,7 @@ public class PlayNowMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(optionColor)
                 .size(20).visible(false)
-                .text(Difficulty.valueOf(difficultyStr).getDescription())
+                .text(GameDifficulty.valueOf(difficultyStr).getDescription())
                 .build();
         this.entityList.add(this.difficultyValueLabel);
 
@@ -413,9 +413,9 @@ public class PlayNowMenu extends AbstractMenu
         {
             this.difficultyValue = difficultyValueSlider.getVirtualValue();
             this.difficultyValueLabel.setText(
-                    Difficulty.values()[this.difficultyValue].getDescription());
+                    GameDifficulty.values()[this.difficultyValue].getDescription());
             hub.settingsMan.setString(Key.USER_DIFFICULTY_DEFAULT,
-                    Difficulty.values()[this.difficultyValue].toString());
+                    GameDifficulty.values()[this.difficultyValue].toString());
         }
         else if (this.startButton.clicked())
         {
@@ -430,7 +430,7 @@ public class PlayNowMenu extends AbstractMenu
         hub.groupMan.hideAllGroups(!game.isCompletelyBusy());       
 
          // Set the difficulty.
-        Difficulty difficulty = Difficulty.values()[this.difficultyValue];
+        GameDifficulty difficulty = GameDifficulty.values()[this.difficultyValue];
         game.setDifficulty( difficulty );
 
         // Reset the core managers.

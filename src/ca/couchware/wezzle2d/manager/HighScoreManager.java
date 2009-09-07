@@ -5,7 +5,7 @@
 
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.difficulty.Difficulty;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
@@ -106,7 +106,7 @@ public class HighScoreManager
      * @param export
      */    
     public void offerScore(
-            String name, int score, int level, Difficulty difficulty, boolean export)
+            String name, int score, int level, GameDifficulty difficulty, boolean export)
     {
         // See if the score belongs on the list.
         if ( this.scoreList.size() == NUMBER_OF_SCORES && score < this.getLowestScore() )
@@ -130,7 +130,7 @@ public class HighScoreManager
         if (export) this.exportSettings();
     }
     
-    public void offerScore(String name, int score, int level, Difficulty difficulty)
+    public void offerScore(String name, int score, int level, GameDifficulty difficulty)
     {
         offerScore(name, score, level, difficulty, true);
     }
@@ -210,7 +210,7 @@ public class HighScoreManager
     public void resetScoreList()
     {
         CouchLogger.get().recordWarning(this.getClass(), "High Score table reset!");
-        HighScore score = HighScore.newInstance("", 0, 0, Difficulty.NONE);
+        HighScore score = HighScore.newInstance("", 0, 0, GameDifficulty.NONE);
         scoreList.clear();
         
         // Load with dummy scores.

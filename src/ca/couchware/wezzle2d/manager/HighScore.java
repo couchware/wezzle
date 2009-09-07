@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.manager;
 
-import ca.couchware.wezzle2d.difficulty.Difficulty;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.util.IXMLizable;
 import org.jdom.Element;
 
@@ -15,10 +15,10 @@ public class HighScore implements IXMLizable
     private final String name;
     private final int score;   
     private final int level;
-    private final Difficulty difficulty;
+    private final GameDifficulty difficulty;
     
     private HighScore(
-            String name, int score, int level, Difficulty difficulty)
+            String name, int score, int level, GameDifficulty difficulty)
     {
         this.name = name;
         this.score = score;
@@ -27,7 +27,7 @@ public class HighScore implements IXMLizable
     }
     
     public static HighScore newInstance(
-            String name, int score, int level, Difficulty difficulty)
+            String name, int score, int level, GameDifficulty difficulty)
     {
         return new HighScore(name, score, level, difficulty);
     }
@@ -47,8 +47,8 @@ public class HighScore implements IXMLizable
         int level = Integer.parseInt(levelStr);
 
         String difficultyStr = element.getAttributeValue("difficulty");
-        if (difficultyStr == null) difficultyStr = Difficulty.NONE.toString();
-        final Difficulty difficulty = Difficulty.valueOf(difficultyStr);
+        if (difficultyStr == null) difficultyStr = GameDifficulty.NONE.toString();
+        final GameDifficulty difficulty = GameDifficulty.valueOf(difficultyStr);
         
         return newInstance(name, score, level, difficulty);
     }
@@ -68,7 +68,7 @@ public class HighScore implements IXMLizable
         return level;
     }
 
-    public Difficulty getDifficulty()
+    public GameDifficulty getDifficulty()
     {
         return difficulty;
     }

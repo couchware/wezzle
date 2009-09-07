@@ -457,7 +457,7 @@ public class TileRemover implements IResettable, ILevelListener
             }
             else if (!this.itemSetMap.get(TileType.GRAVITY).isEmpty())
             {                
-                game.getTracker().finishChain(hub);
+                game.getTracker().finishChain(game, hub);
 
                 shiftGravity(hub.boardMan);
 
@@ -472,7 +472,7 @@ public class TileRemover implements IResettable, ILevelListener
             // Otherwise, start a new refactor.
             else
             {               
-                game.getTracker().finishChain(hub);
+                game.getTracker().finishChain(game, hub);
                 
                 Refactorer refactorer = game.getRefactorer();
                 //refactorer.setRefactorSpeed(this.refactorSpeed);

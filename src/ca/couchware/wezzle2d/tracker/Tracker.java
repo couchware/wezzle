@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.tracker;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.Rule.NumeratorSubType;
@@ -85,14 +86,14 @@ public class Tracker implements IScoreListener
      * Complete the current chain.  Automatically starts a new chain.
      * @return The chain that was just completed.
      */
-    public Chain finishChain(ManagerHub hub)
+    public Chain finishChain(Game game, ManagerHub hub)
     {
         // Add the current move to the history.
         Chain chain = Chain.newInstance(tileGroupList);
         this.chainList.add(chain);
 
         // Notify all listeners that a collision might've occured.
-        this.listenerMan.notifyCollisionOccured(new CollisionEvent(this, chain), hub);
+        this.listenerMan.notifyCollisionOccured(new CollisionEvent(this, chain), hub, game.getDifficulty());
 
         // Create a new chain list for the next move.
         this.tileGroupList = new ArrayList<TileGroup>();
