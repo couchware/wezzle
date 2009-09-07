@@ -106,7 +106,7 @@
     </achievement>
 
     <!-- Level Achievements -->
-    <achievement name="Get To Level 5" level="BRONZE" difficulty="NONE">
+    <achievement name="Get To Level 5" level="BRONZE" difficulty="NORMAL">
       <description>Starting from level 1, get to level 5 without
       getting a game over.</description>
       <rule type="START_LEVEL" operation="EQ" value="1" />

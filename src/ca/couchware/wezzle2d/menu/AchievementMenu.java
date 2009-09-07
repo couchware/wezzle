@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.graphics.IEntity;
@@ -57,14 +58,17 @@ public class AchievementMenu extends AbstractMenu
     /** The label for the title of the achievement. */
     private ITextLabel achievementTitle;
     
-    /** The difficulty of the achievement. */
-    private ITextLabel achievementDifficulty;
+    /** The level of the achievement. */
+    private ITextLabel achievementLevel;
     
     /** The array of labels for the description. */
     private ITextLabel[] achievementDescriptionArray;
-        
-    /** The label for the status of the achievement. */
-    private ITextLabel achievementStatus;    
+
+    /** The label for the difficulty of the achievement. */
+    private ITextLabel achievementStatus;
+
+    /** The label for the required difficulty of the achievement. */
+    private ITextLabel achievementDifficulty;
            
     public AchievementMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
     {
@@ -148,12 +152,12 @@ public class AchievementMenu extends AbstractMenu
         this.entityList.add(this.achievementTitle);
         
         // The achievement description text.
-        this.achievementDifficulty = new ResourceFactory.LabelBuilder(440, 381)
+        this.achievementLevel = new ResourceFactory.LabelBuilder(440, 381)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .visible(false)
                 .text("BRONZE").size(12)
                 .build();
-        this.entityList.add(this.achievementDifficulty);
+        this.entityList.add(this.achievementLevel);
                
         this.achievementDescriptionArray = new ITextLabel[3];
         
@@ -170,11 +174,18 @@ public class AchievementMenu extends AbstractMenu
         achievementDescriptionArray[0].setPosition(96, 410);
         achievementDescriptionArray[1].setPosition(96, 430);
         achievementDescriptionArray[2].setPosition(96, 450);          
-        
+
+        this.achievementDifficulty = new ResourceFactory.LabelBuilder(96, 471)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .visible(false)
+                .text("Achievement requires ??? difficulty.").size(12)
+                .build();
+        this.entityList.add(this.achievementDifficulty);
+
         this.achievementStatus = new ResourceFactory.LabelBuilder(96, 491)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .visible(false)
-                .text("This achievement has not been completed.").size(12)
+                .text("Achievement has not been completed.").size(12)
                 .build();
         this.entityList.add(this.achievementStatus);
         
@@ -194,9 +205,9 @@ public class AchievementMenu extends AbstractMenu
         achievementTitle.setText(ach.getTitle());
         
         // Set the difficulty.
-        Achievement.Level difficulty = ach.getDifficulty();
-        achievementDifficulty.setText(difficulty.toString());
-        achievementDifficulty.setColor(difficulty.getColor());
+        Achievement.Level level = ach.getLevel();
+        achievementLevel.setText(level.toString());
+        achievementLevel.setColor(level.getColor());
         
         // Split description up.
         String[] lineArray;
@@ -217,16 +228,30 @@ public class AchievementMenu extends AbstractMenu
             else
                 achievementDescriptionArray[i].setText("");
         }
-        
+
+        // Set the difficuly requirements.
+        GameDifficulty difficulty = ach.getDifficulty();
+        if (difficulty != GameDifficulty.NONE)
+        {
+            String text = String.format(
+                    "Achievement requires %s difficulty mode.",
+                    difficulty.toString());
+            achievementDifficulty.setText( text );
+        }
+        else
+        {
+            achievementDifficulty.setText( "Achievement has no difficulty requirements." );
+        }
+
         // Set the status.
         CouchDate date = ach.getDateCompleted();
         if (date == null)
         {
-            achievementStatus.setText("This achievement has not been completed.");            
+            achievementStatus.setText("Achievement has not been completed.");
         }
         else
         {            
-            achievementStatus.setText("This achievement was completed " + dateFormatter.format(date.getTime()) + ".");
+            achievementStatus.setText("Achievement was completed " + dateFormatter.format(date.getTime()) + ".");
         }
     }
     

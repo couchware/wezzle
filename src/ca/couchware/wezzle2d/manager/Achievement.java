@@ -62,7 +62,7 @@ public class Achievement implements IXMLizable
         PLATINUM;
         
         /** The color map for the difficulties. */
-        final private static Map<Achievement.Level, Color> difficultyColorMap
+        final private static Map<Achievement.Level, Color> levelColorMap
                 = new EnumMap<Achievement.Level, Color>(Achievement.Level.class);
 
         /**
@@ -73,12 +73,12 @@ public class Achievement implements IXMLizable
          */
         final public static void initializeAchievementColorMap(SettingsManager settingsMan)
         {
-            if (!difficultyColorMap.isEmpty())
+            if (!levelColorMap.isEmpty())
             {
                 throw new IllegalStateException("Color map already created!");
             }
             
-            Map<Achievement.Level, Color> map = difficultyColorMap;
+            Map<Achievement.Level, Color> map = levelColorMap;
             map.put(Achievement.Level.BRONZE,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE));
             map.put(Achievement.Level.SILVER,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_SILVER));
             map.put(Achievement.Level.GOLD,     settingsMan.getColor(Key.ACHIEVEMENT_COLOR_GOLD));
@@ -92,12 +92,12 @@ public class Achievement implements IXMLizable
          */
         public Color getColor()
         {
-            if (difficultyColorMap.isEmpty())
+            if (levelColorMap.isEmpty())
             {
                 throw new IllegalStateException("Color map has not been created!");
             }
             
-            return difficultyColorMap.get(this);
+            return levelColorMap.get(this);
         }
     }
 
@@ -114,13 +114,13 @@ public class Achievement implements IXMLizable
     private final String description;
 
     /** The difficulty level of the achievment. */
-    private final Achievement.Level difficulty;
+    private final Achievement.Level level;
 
     /** The dete the achievement was completed, if any. */
     private CouchDate dateCompleted = null;
 
     /** the Game Difficulty level associated with the achievement **/
-    private GameDifficulty gameDifficulty = GameDifficulty.NONE;
+    private GameDifficulty difficulty = GameDifficulty.NONE;
 
     /**
      * The achievement is a list of rules which all have to be true for an
@@ -143,9 +143,9 @@ public class Achievement implements IXMLizable
         this.title                = title;
         this.formattedDescription = formattedDescription;
         this.description          = description;
-        this.difficulty           = difficulty;
+        this.level           = difficulty;
         this.dateCompleted        = dateCompleted;
-        this.gameDifficulty       = gameDifficulty;
+        this.difficulty       = gameDifficulty;
     }
         
     public static Achievement newInstance(List<Rule> ruleList, 
@@ -172,9 +172,9 @@ public class Achievement implements IXMLizable
                 achievement.title,
                 achievement.formattedDescription,
                 achievement.description,
-                achievement.difficulty,
+                achievement.level,
                 dateCompleted,
-                achievement.gameDifficulty);
+                achievement.difficulty);
     }
 
     @SuppressWarnings("unchecked") 
@@ -456,8 +456,8 @@ public class Achievement implements IXMLizable
         // meet the requirements. any null values are automatically
         // accepted.
 
-         if(this.gameDifficulty != gameDifficulty.NONE &&
-                 !game.getDifficulty().equals(this.gameDifficulty))
+         if(this.difficulty != difficulty.NONE &&
+                 !game.getDifficulty().equals(this.difficulty))
             return false;
         
         for (Rule rule : ruleList)
@@ -475,8 +475,8 @@ public class Achievement implements IXMLizable
         // meet the requirements. any null values are automatically
         // accepted.
 
-         if(this.gameDifficulty != gameDifficulty.NONE &&
-                 !difficulty.equals(this.gameDifficulty))
+         if(this.difficulty != difficulty.NONE &&
+                 !difficulty.equals(this.difficulty))
             return false;
 
         for (Rule rule : ruleList)
@@ -494,8 +494,8 @@ public class Achievement implements IXMLizable
         // meet the requirements. any null values are automatically
         // accepted.
 
-         if(this.gameDifficulty != gameDifficulty.NONE &&
-                 !difficulty.equals(this.gameDifficulty))
+         if(this.difficulty != difficulty.NONE &&
+                 !difficulty.equals(this.difficulty))
             return false;
 
         for (Rule rule : ruleList)
@@ -505,21 +505,46 @@ public class Achievement implements IXMLizable
         }
 
         return true;
-    }
+    }    
 
-    public Achievement.Level getDifficulty()
-    {
-        return difficulty;
-    }   
-    
+    /**
+     * Get the achievement title.
+     * @return
+     */
     public String getTitle()
     {
         return title;
-    }    
+    }
     
     /**
+     * Get the description of the achievement.
+     * @return The description.
+     */
+    public String getDescription()
+    {
+        return this.description;
+    }
+
+    /**
+     * Get the achievement level (i.e. Bronze, Silver...)
+     * @return
+     */
+    public Achievement.Level getLevel()
+    {
+        return level;
+    }
+
+    /**
+     * Get the difficulty requirement of the achievement.
+     * @return
+     */
+    public GameDifficulty getDifficulty()
+    {
+        return difficulty;
+    }
+
+    /**
      * Get the date completed.
-     * 
      * @return the date.
      */
     public CouchDate getDateCompleted()
@@ -527,28 +552,18 @@ public class Achievement implements IXMLizable
         return dateCompleted;
     }
     
-    /**
-     * Get the description of the achievement.
-     * 
-     * @return The description.
-     */
-    public String getDescription()
-    {
-        return this.description;
-    }
-    
     @Override
     public String toString()
     {
-        return String.format("[ %s - %s ] %s", this.title, this.difficulty, this.description);
+        return String.format("[ %s - %s ] %s", this.title, this.level, this.description);
     }    
     
     public Element toXmlElement()
     {
         Element element = new Element("achievement");
         element.setAttribute("name",  this.title);        
-        element.setAttribute("level", String.valueOf(this.difficulty));
-        element.setAttribute("difficulty", String.valueOf(this.gameDifficulty));
+        element.setAttribute("level", String.valueOf(this.level));
+        element.setAttribute("difficulty", String.valueOf(this.difficulty));
        
         Element descriptionElement = new Element("description");
         descriptionElement.setText(this.formattedDescription);

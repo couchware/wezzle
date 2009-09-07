@@ -70,8 +70,8 @@ public class AchievementNotification extends AbstractNotification
                     this.x + 15 + offsetX,
                     this.y + 81 + offsetY)                    
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .text(this.achievement.getDifficulty().toString()).size(12)
-                .color(this.achievement.getDifficulty().getColor())
+                .text(this.achievement.getLevel().toString()).size(12)
+                .color(this.achievement.getLevel().getColor())
                 .build();
         
         this.entityGroup = new EntityGroup(this.title, this.achTitle, this.achDifficulty);
