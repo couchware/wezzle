@@ -859,6 +859,9 @@ public class Game extends Canvas implements IWindowCallback
         // The level we reset to.
         int level = hub.levelMan.getLevel();
 
+        // Reset the tracker.
+        game.tracker.resetState();
+        
         // Reset a bunch of stuff.
         if (restartActivated)
         {
@@ -878,6 +881,8 @@ public class Game extends Canvas implements IWindowCallback
 
         // Reset the stat man.
         hub.statMan.resetState();
+
+        
     }
     
     //--------------------------------------------------------------------------

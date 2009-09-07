@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.Rule.NumeratorSubType;
 import ca.couchware.wezzle2d.event.CollisionEvent;
 import ca.couchware.wezzle2d.event.IScoreListener;
 import ca.couchware.wezzle2d.event.ScoreEvent;
+import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.manager.ListenerManager;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
@@ -29,14 +30,14 @@ import java.util.Set;
  * by the achievement system.
  * @author Cameron McKay
  */
-public class Tracker implements IScoreListener
+public class Tracker implements IScoreListener, IResettable
 {
 
     /** The listener manager. */
     final private ListenerManager listenerMan;
 
     /** The game history. */
-    final private List<Move> history = new ArrayList<Move>();
+    final private List<Move> history;
 
     /** The current move being tracked. */
     private List<Chain> chainList;
@@ -57,6 +58,9 @@ public class Tracker implements IScoreListener
 
         // Add a chain list to hold the first move.
         this.chainList = new ArrayList<Chain>();
+
+        // The history.
+        this.history = new ArrayList<Move>();
 
         // Add a tile group list to hold the first chain.
         this.tileGroupList = new ArrayList<TileGroup>();
@@ -249,6 +253,15 @@ public class Tracker implements IScoreListener
 
     public void targetScoreChanged(ScoreEvent event) {
         //do nothing.
+    }
+
+    public void resetState()
+    {
+        // Clear the lists and Score.
+        this.chainList.clear();
+        this.tileGroupList.clear();
+        this.history.clear();
+        this.score = 0;
     }
 
 }
