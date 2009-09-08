@@ -44,16 +44,15 @@ public class GroupManager implements IResettable
      * method.  This list is useful for performing commands on all the groups,
      * such as running updateLogic().
      */
-    protected List<IGroup> groupList;       
+    private List<IGroup> groupList;
     
-    /** The list of groups currently being shown. */
-    protected List<Entry> entryList;    
+    /** 
+     * The list of groups currently being shown.
+     */
+    private List<Entry> entryList;
           
-    /** A reference to the layer manager. */
-    protected LayerManager layerMan;
-    
-    /** A reference to the piece manager. */
-    protected PieceManager pieceMan;
+    private Game game;
+    private ManagerHub hub;
 
     /**
      * Holds the visiblility of the piece grid before the board was hidden so
@@ -66,14 +65,13 @@ public class GroupManager implements IResettable
      * @param layerMan
      * @param pieceMan
      */
-    private GroupManager(LayerManager layerMan, PieceManager pieceMan)
+    private GroupManager(Game game, ManagerHub hub)
     {
         groupList = new ArrayList<IGroup>();
         entryList = new LinkedList<Entry>();        
         
-        this.layerMan = layerMan;
-        this.pieceMan = pieceMan;
-        //this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
+        this.game = game;
+        this.hub = hub;
     }             
 
     public void resetState()
@@ -87,9 +85,9 @@ public class GroupManager implements IResettable
      * @param pieceMan
      * @return
      */
-    public static GroupManager newInstance(LayerManager layerMan, PieceManager pieceMan)
+    public static GroupManager newInstance(Game game, ManagerHub hub)
     {
-        return new GroupManager(layerMan, pieceMan);
+        return new GroupManager(game, hub);
     }
 
     /**
@@ -142,8 +140,9 @@ public class GroupManager implements IResettable
         }
 
         // Hide the board and associated layers.
-        pieceMan.clearMouseButtonSet();
+        hub.pieceMan.clearMouseButtonSet();
         hideBoard();
+        hidePiecePreview();
         
         CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }    
@@ -184,10 +183,11 @@ public class GroupManager implements IResettable
         }
                     
         // Make the top of the list visible.
-        if (entryList.isEmpty() == true)
+        if ( entryList.isEmpty() )
         {
-            pieceMan.clearMouseButtonSet();
+            hub.pieceMan.clearMouseButtonSet();
             showBoard(showGrid);
+            showPiecePreview();
         }
         else
         {
@@ -214,9 +214,9 @@ public class GroupManager implements IResettable
         }
                 
         // Make the top of the list visible.
-        if (entryList.isEmpty() == true)
+        if ( entryList.isEmpty() )
         {
-            pieceMan.clearMouseButtonSet();
+            hub.pieceMan.clearMouseButtonSet();
             showBoard(showGrid);
         }
         else
@@ -240,8 +240,9 @@ public class GroupManager implements IResettable
             it.remove();                       
         }
         
-        pieceMan.clearMouseButtonSet();
+        hub.pieceMan.clearMouseButtonSet();
         showBoard(showGrid);
+        showPiecePreview();
     }   
 
     /**
@@ -250,11 +251,11 @@ public class GroupManager implements IResettable
     private void showBoard(boolean showGrid)
     {
         // Make piece grid visible contingent on the saved visibility.
-        if (showGrid) pieceMan.showPieceGrid();
-        else pieceMan.hidePieceGrid();
+        if (showGrid) hub.pieceMan.showPieceGrid();
+        else hub.pieceMan.hidePieceGrid();
 
-        layerMan.show(LayerManager.Layer.TILE);
-        layerMan.show(LayerManager.Layer.EFFECT);
+        hub.layerMan.show(LayerManager.Layer.TILE);
+        hub.layerMan.show(LayerManager.Layer.EFFECT);
     }
 
     /**
@@ -265,14 +266,23 @@ public class GroupManager implements IResettable
         // Remember the old visibility.
         //this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
 
-        pieceMan.hidePieceGrid();
-        layerMan.hide(LayerManager.Layer.TILE);
-        layerMan.hide(LayerManager.Layer.EFFECT);
+        hub.pieceMan.hidePieceGrid();
+        hub.layerMan.hide(LayerManager.Layer.TILE);
+        hub.layerMan.hide(LayerManager.Layer.EFFECT);
+    }
+
+    private void showPiecePreview()
+    {
+        game.getUI().setOverlayPiecePreviewVisible( true );
+    }
+
+    private void hidePiecePreview()
+    {
+        game.getUI().setOverlayPiecePreviewVisible( false );
     }
     
     /**
      * Registers this group with the Group linked list.
-     * 
      * @param group The group to register.
      */
     public void register(IGroup group)
@@ -283,15 +293,13 @@ public class GroupManager implements IResettable
     
     /**
      * Update the logic of all groups if they have detected clicks.
-     * 
      * @param game The game state.
      */
     public void updateLogic(Game game, ManagerHub hub)
     {
         for (IGroup group : groupList)
         {
-            if (group.isActivated() == true
-                    && group.controlChanged() == true)
+            if (group.isActivated() && group.controlChanged())
             {
                 group.updateLogic(game, hub);
                 group.clearChanged();

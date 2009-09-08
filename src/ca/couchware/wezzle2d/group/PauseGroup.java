@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.event.ILineListener;
@@ -35,22 +36,17 @@ public class PauseGroup extends AbstractGroup implements
     
     /** A reference to the manager hub. */
     final private ManagerHub hub;
-       
-    /** The main label showing the paused text. */
-    private ITextLabel mainLabel;
-    
-    /** The moves label. */
-    private ITextLabel movesLabel;
-    
-    /** The lines label. */
-    private ITextLabel linesLabel;
-    
-    /** The lines per move label. */
+           
+    private ITextLabel mainLabel;  
+    private ITextLabel movesLabel;    
+    private ITextLabel linesLabel;    
     private ITextLabel linesPerMoveLabel;
+    private ITextLabel difficultyLabel;
     
-    private int    moves = 0;
-    private int    lines = 0;
+    private int moves = 0;
+    private int lines = 0;
     private double linesPerMove = 0.0;
+    private GameDifficulty difficulty = GameDifficulty.NONE;
        
     /**
      * The constructor.    
@@ -63,33 +59,40 @@ public class PauseGroup extends AbstractGroup implements
         this.hub = hub;
                
         // Create the "Paused" text.
-        mainLabel = new LabelBuilder(400, 245)
+        mainLabel = new LabelBuilder(400, 215)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(32)
                 .text("Paused")
                 .visible(false).build();
         entityList.add(mainLabel);
 
-        movesLabel = new LabelBuilder(400, 310)
+        difficultyLabel = new LabelBuilder(400, 280)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
+                .text("No Difficulty")
+                .visible(false).build();
+        entityList.add(difficultyLabel);
+
+        movesLabel = new LabelBuilder(400, 315)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0 moves")
                 .visible(false).build();
         entityList.add(movesLabel);
 
-        linesLabel = new LabelBuilder(400, 340)
+        linesLabel = new LabelBuilder(400, 350)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0 lines")
                 .visible(false).build();
         entityList.add(linesLabel);
 
-        linesPerMoveLabel = new LabelBuilder(400, 370)
+        linesPerMoveLabel = new LabelBuilder(400, 385)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0.0 lines/move")
                 .visible(false).build();
-        entityList.add(linesPerMoveLabel);
+        entityList.add(linesPerMoveLabel);      
 
         // Add all entities to the layer manager.
         for (IEntity entity : entityList)
@@ -131,7 +134,15 @@ public class PauseGroup extends AbstractGroup implements
         
         // Set the lines per move label.        
         linesPerMoveLabel.setText(linesPerMove + " lines/move");        
-    }      
+    }
+
+    private void setDifficulty(GameDifficulty difficulty)
+    {
+        if (this.difficulty == difficulty) return;
+
+        this.difficulty = difficulty;
+        this.difficultyLabel.setText( difficulty.getDescription() + " Difficulty" );
+    }
     
     @Override
     public void setVisible(final boolean visible)
@@ -194,7 +205,7 @@ public class PauseGroup extends AbstractGroup implements
 
     public void gameStarted(GameEvent event)
     {
-        // Intentionally left blank.
+        setDifficulty( event.getDifficulty() );
     }
 
     public void gameReset(GameEvent event)
@@ -202,6 +213,7 @@ public class PauseGroup extends AbstractGroup implements
         setMoves(0);
         setLines(0);
         setLinesPerMove(0.0);
+        setDifficulty( event.getDifficulty() );
     }
 
     public void gameOver(GameEvent event)

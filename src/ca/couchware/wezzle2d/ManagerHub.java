@@ -241,7 +241,7 @@ public class ManagerHub
         if (set.contains(Manager.GROUP))
         {
             // Create group manager.
-            this.groupMan = GroupManager.newInstance(this.layerMan, this.pieceMan);
+            this.groupMan = GroupManager.newInstance(game, this);
         }
 	        
         if (set.contains(Manager.SCORE))

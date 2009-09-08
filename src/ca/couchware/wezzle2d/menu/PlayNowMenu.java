@@ -497,6 +497,7 @@ public class PlayNowMenu extends AbstractMenu
 
         // Notify that the game started.
         hub.listenerMan.notifyGameStarted(new GameEvent(this,
+                game.getDifficulty(),
                 hub.levelMan.getLevel(),
                 hub.scoreMan.getTotalScore()));
 
