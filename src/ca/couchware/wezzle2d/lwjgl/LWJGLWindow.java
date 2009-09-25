@@ -489,6 +489,7 @@ public class LWJGLWindow implements IWindow
         {
             boolean state = Keyboard.getEventKeyState();
             int i = Keyboard.getEventKey();
+            
 
             Modifier modifier;
             switch (i)
@@ -559,9 +560,14 @@ public class LWJGLWindow implements IWindow
 
 //            LogManager.recordMessage(Keyboard.getKeyName(i) + " was pressed.");
 //            LogManager.recordMessage("State is " + state + ".");
+           
 
+            // WARNING: the ctrl mask randomly subtracts 96 from the ascii
+            // of any character returned from getEventCharacter(). This is because
+            // LWJGL is fucked. We had a 30 min convo about this and decided
+            // to fuck the ctrl key. Alt is better.
             char ch = Keyboard.getEventCharacter();
-
+            
             KeyEvent event = new KeyEvent(this, ch, this.modifiers, arrow);
 
             for (IKeyListener listener : list)

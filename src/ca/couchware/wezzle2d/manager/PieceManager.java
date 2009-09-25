@@ -927,12 +927,18 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     public void keyPressed(KeyEvent event)
     {
         if (event.getModifierSet().contains(Modifier.LEFT_CTRL)
-                || event.getModifierSet().contains(Modifier.LEFT_ALT)
-                || event.getModifierSet().contains(Modifier.RIGHT_ALT)
-                || event.getModifierSet().contains(Modifier.RIGHT_CTRL))
-        {                
+                || event.getModifierSet().contains(Modifier.RIGHT_CTRL)
+              )
+        {
             mouseButtonSet.add(MouseButton.RIGHT);
             return;
+        }
+
+        if(event.getModifierSet().contains(Modifier.LEFT_ALT)
+                || event.getModifierSet().contains(Modifier.RIGHT_ALT))
+        {
+             handleMusicKeys(event);
+             return;
         }
 
         switch (event.getChar())
@@ -942,10 +948,21 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 return;
         }
 
+        switch(event.getArrow())
+        {
+            case KEY_DOWN:
+            case KEY_UP:
+                mouseButtonSet.add(MouseButton.LEFT);
+                return;
+            case KEY_LEFT:
+            case KEY_RIGHT:
+                mouseButtonSet.add(MouseButton.RIGHT);
+                return;
+        }
+
         if (hub.boardMan != null)
         {                                
-            handleItemKeys(event);            
-            handleMusicKeys(event);
+            handleItemKeys(event);           
         }
     }
 
@@ -1003,7 +1020,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 oldTile = hub.boardMan.getTile(index);
                 if (oldTile == null) break;
 
-                TileType type;
+                TileType type = null;
                 switch (event.getChar()) {
                     case 'b':
                         type = TileType.BOMB;
@@ -1012,7 +1029,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                         type = TileType.GRAVITY;
                         break;
                     case 's':
-                        type = TileType.STAR;
+                            type = TileType.STAR;
                         break;
                     case '2':
                         type = TileType.X2;
@@ -1028,44 +1045,48 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 }
                 hub.boardMan.replaceTile(index, TileHelper.makeTile(type, oldTile.getColor()));
                 break;
-            case 'S':
-            {
-                hub.soundMan.setPaused(!hub.soundMan.isPaused());
-                break;
-            }
-            case 'M':
-            {
-                hub.musicMan.setPaused(!hub.musicMan.isPaused());
-                break;
-            }
         }
     }
 
     private final double AUDIO_DELTA = 0.1;
     private void handleMusicKeys(KeyEvent event)
     {
+
+       
+        switch(event.getChar())
+        {
+            case 's':
+            {
+               hub.soundMan.setPaused(!hub.soundMan.isPaused());
+               break;
+            }
+            case 'm':
+            {
+               hub.musicMan.setPaused(!hub.musicMan.isPaused());
+               break;
+            }
+        }
+
+
         switch (event.getArrow())
         {
             case KEY_UP:
-                if (event.getModifierSet().contains(Modifier.LEFT_SHIFT))
-                    hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain() + AUDIO_DELTA);
+               hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain() + AUDIO_DELTA);
                 break;
 
             case KEY_DOWN:
-                if (event.getModifierSet().contains(Modifier.LEFT_SHIFT))
-                    hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain() - AUDIO_DELTA);
+                hub.musicMan.setNormalizedGain(hub.musicMan.getNormalizedGain() - AUDIO_DELTA);
                 break;
-                
+
             case KEY_LEFT:
-                if (event.getModifierSet().contains(Modifier.LEFT_SHIFT))
-                    hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain() - AUDIO_DELTA);
+                hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain() - AUDIO_DELTA);
                 break;
 
             case KEY_RIGHT:
-                if (event.getModifierSet().contains(Modifier.LEFT_SHIFT))
-                    hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain() + AUDIO_DELTA);
+                hub.soundMan.setNormalizedGain(hub.soundMan.getNormalizedGain() + AUDIO_DELTA);
                 break;
         } // end switch
+        
     }
     
 }
