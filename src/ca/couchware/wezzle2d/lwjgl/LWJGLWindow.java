@@ -556,11 +556,7 @@ public class LWJGLWindow implements IWindow
                 default:
                     arrow = KeyEvent.Arrow.NONE;
 
-            }
-
-//            LogManager.recordMessage(Keyboard.getKeyName(i) + " was pressed.");
-//            LogManager.recordMessage("State is " + state + ".");
-           
+            }                
 
             // WARNING: the ctrl mask randomly subtracts 96 from the ascii
             // of any character returned from getEventCharacter(). This is because
@@ -568,6 +564,8 @@ public class LWJGLWindow implements IWindow
             // to fuck the ctrl key. Alt is better.
             char ch = Keyboard.getEventCharacter();
             
+            //CouchLogger.get().recordMessage( this.getClass(), (int) ch + " " + Keyboard.getKeyName( i ) );
+
             KeyEvent event = new KeyEvent(this, ch, this.modifiers, arrow);
 
             for (IKeyListener listener : list)

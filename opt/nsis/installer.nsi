@@ -9,7 +9,7 @@
   !define APP_VENDOR "Couchware"
   !define APP_SHORT_NAME "Wezzle"
   !define APP_FULL_NAME "Wezzle"
-  !define APP_VERSION "1.0-test7"
+  !define APP_VERSION "1.0-beta1"
   !define JAVA_REQUIRED "1.5.0"
   !define JAVA_INSTALLER "..\jre-installer\jre-6u13-windows-i586-p.exe"
   !define REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"  
@@ -26,7 +26,7 @@
 
   ; Name and file
   Name "${APP_FULL_NAME}"
-  OutFile "${APP_SHORT_NAME}-${APP_VERSION}-win32-setup.exe"
+  OutFile "${APP_SHORT_NAME}-${APP_VERSION}-setup.exe"
 
   ; Default installation folder
   InstallDir "$PROGRAMFILES\${APP_VENDOR}\${APP_FULL_NAME}"

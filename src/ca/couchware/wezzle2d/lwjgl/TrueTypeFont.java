@@ -250,8 +250,6 @@ public class TrueTypeFont
                 positionX += charInfo.width;
 
                 charArray[i] = charInfo;
-
-                charImage = null;
             }
 
             fontTexture = textureLoader.getTexture(font.toString(), image);
@@ -316,7 +314,7 @@ public class TrueTypeFont
      */
     public int stringWidth(String str)
     {
-        CharacterInfo charInfo = null;
+        CharacterInfo charInfo;
         
         int totalWidth = 0;                
         int currentChar = 0;
@@ -383,7 +381,7 @@ public class TrueTypeFont
         // Bind the texture.
         fontTexture.bind();
 
-        CharacterInfo charInfo = null;
+        CharacterInfo charInfo;
         int currentChar;
         int totalWidth = 0;
         

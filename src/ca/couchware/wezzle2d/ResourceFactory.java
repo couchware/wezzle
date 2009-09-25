@@ -344,7 +344,7 @@ public class ResourceFactory
         else
         {
             // The directory of sprites.
-            File dir = null;
+            File dir;
 
             try
             {

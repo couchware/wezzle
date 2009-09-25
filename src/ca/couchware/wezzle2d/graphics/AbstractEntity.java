@@ -390,7 +390,6 @@ public abstract class AbstractEntity implements IEntity
 
             rect2.translate(offsetX, offsetY);            
             rect1.add(rect2);
-            rect2 = null;
             
             drawRect = rect1;
         }

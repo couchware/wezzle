@@ -177,7 +177,7 @@ public class SettingsManager
                 
                 // Check for children.
                 List children = entry.getChildren();
-                Object value = null;
+                Object value;
                 
                 if (children.isEmpty() == true)                
                 {                                        
@@ -581,7 +581,7 @@ public class SettingsManager
         // Return an unmodifiable list.
         Object object = currentMap.get(key);
         
-        List list = null;
+        List list;
         
         if (object instanceof List)
         {

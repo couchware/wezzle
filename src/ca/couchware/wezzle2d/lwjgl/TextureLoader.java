@@ -293,7 +293,7 @@ public class TextureLoader
      */
     private ByteBuffer convertImageData(BufferedImage bufferedImage, Texture texture)
     {
-        ByteBuffer imageBuffer = null;
+        ByteBuffer imageBuffer;
         WritableRaster raster;
         BufferedImage textureImage;
 

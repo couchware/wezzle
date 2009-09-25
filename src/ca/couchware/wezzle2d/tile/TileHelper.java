@@ -100,10 +100,12 @@ public class TileHelper
      */
     public static Tile cloneTile(Tile tile)
     {
-        assert tile != null;
+        if (tile == null)
+            throw new IllegalArgumentException("Tile cannot be null");
 
         TileType type = tile.getType();
-        Tile clone = TileHelper.makeTile(type, tile.getColor(), tile.getX(), tile.getY());
+        Tile clone = TileHelper.makeTile(type,
+                tile.getColor(), tile.getX(), tile.getY());
 
         switch (type)
         {
