@@ -934,7 +934,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             return;
         }
 
-        if(event.getModifierSet().contains(Modifier.LEFT_ALT)
+        if (event.getModifierSet().contains(Modifier.LEFT_ALT)
                 || event.getModifierSet().contains(Modifier.RIGHT_ALT))
         {
              handleMusicKeys(event);
@@ -954,7 +954,11 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             case KEY_UP:
                 mouseButtonSet.add(MouseButton.LEFT);
                 return;
+
             case KEY_LEFT:
+                mouseButtonSet.add(MouseButton.MIDDLE);
+                return;
+
             case KEY_RIGHT:
                 mouseButtonSet.add(MouseButton.RIGHT);
                 return;
