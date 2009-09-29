@@ -884,9 +884,7 @@ public class Game extends Canvas implements IWindowCallback
                 hub.scoreMan.getLevelScore()));
 
         // Reset the stat man.
-        hub.statMan.resetState();
-
-        
+        hub.statMan.resetState();        
     }
     
     //--------------------------------------------------------------------------

@@ -18,29 +18,10 @@ import java.util.EnumSet;
 public class GameOverGroup extends AbstractGroup implements IGameListener
 {         
     
-    /**
-     * The header label.
-     */
     private ITextLabel headerLabel;
-    
-    /**
-     * The final score header label.
-     */
     private ITextLabel scoreHeaderLabel;
-    
-    /**
-     * The final score label.
-     */
     private ITextLabel scoreLabel;
-    
-    /**
-     * The restart button.
-     */
     private IButton restartButton;
-    
-    /**
-     * The continue button.
-     */
     private IButton continueButton;
     
     /**
@@ -51,7 +32,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
     {    
         // Sanity check.
         if( hub == null)
-            throw new IllegalArgumentException("hub must not be null.");
+            throw new IllegalArgumentException("Hub must not be null");
         
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
