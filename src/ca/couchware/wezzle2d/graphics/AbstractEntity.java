@@ -378,32 +378,6 @@ public abstract class AbstractEntity implements IEntity
     public boolean isDirty()
     {
         return dirty;
-    }
-    
-    public Rectangle getDrawRect()
-    {
-        // Check if the draw rect is null.  If it is, generate a new one.
-        if (drawRect == null)
-        {        
-            Rectangle rect1 = new Rectangle(x_, y_, width_ + 2, height_ + 2);                
-            Rectangle rect2 = new Rectangle(x, y, width + 2, height + 2);        
-
-            rect2.translate(offsetX, offsetY);            
-            rect1.add(rect2);
-            
-            drawRect = rect1;
-        }
-        
-        return drawRect;
-    }
-
-    public void resetDrawRect()
-    {
-        x_ = x;
-        y_ = y;
-        
-        width_ = width;
-        height_ = height;
     }        
     
     public void dispose()

@@ -66,28 +66,28 @@ public class PauseGroup extends AbstractGroup implements
                 .visible(false).build();
         entityList.add(mainLabel);
 
-        difficultyLabel = new LabelBuilder(400, 280)
+        difficultyLabel = new LabelBuilder(400, 290)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("No Difficulty")
                 .visible(false).build();
         entityList.add(difficultyLabel);
 
-        movesLabel = new LabelBuilder(400, 315)
+        movesLabel = new LabelBuilder(400, 325)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0 moves")
                 .visible(false).build();
         entityList.add(movesLabel);
 
-        linesLabel = new LabelBuilder(400, 350)
+        linesLabel = new LabelBuilder(400, 360)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0 lines")
                 .visible(false).build();
         entityList.add(linesLabel);
 
-        linesPerMoveLabel = new LabelBuilder(400, 385)
+        linesPerMoveLabel = new LabelBuilder(400, 395)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY)).size(18)
                 .text("0.0 lines/move")

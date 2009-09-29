@@ -380,25 +380,6 @@ public class PieceGrid extends AbstractEntity
         
         // Restore the old color.
         gfx.setColor(oldColor);
-    }
-    
-    @Override
-    public Rectangle getDrawRect()
-    {
-        // If the draw rect is null, generate it.
-        if (drawRect == null)
-        {
-            Rectangle rect = new Rectangle(x_, y_, width + 1, height + 1);
-
-            if (x_ != x || y_ != y)
-                rect.add(new Rectangle(x, y, width + 1, height + 1));
-
-            rect.translate(-cellWidth, -cellHeight);
-            
-            drawRect = rect;
-        }
-
-        return drawRect;
     }    
 
     @Override
@@ -420,10 +401,9 @@ public class PieceGrid extends AbstractEntity
 
     public void setColor(Color color)
     {
-        if(color == null)
-        {
-           throw new IllegalArgumentException("color must not be null.");
-        }
+        if (color == null)
+           throw new IllegalArgumentException("Color must not be null");
+        
         this.color = color;
     }  
     

@@ -163,30 +163,7 @@ public class EntityGroup extends AbstractEntity
     public EnumSet<Alignment> getAlignment()
     {
         return alignment;
-    }      
-    
-    private Rectangle EMPTY_RECTANGLE = new Rectangle();
-    
-    @Override
-    public Rectangle getDrawRect()
-    {
-        if (entityList.size() == 0)
-            return EMPTY_RECTANGLE;
-        
-        drawRect = entityList.get(0).getDrawRect();
-                        
-        for (IEntity e : entityList)
-            drawRect.add(e.getDrawRect());
-        
-        return drawRect;
-    }
-
-    @Override
-    public void resetDrawRect()
-    {        
-        for (IEntity e : entityList)
-            e.resetDrawRect();
-    }
+    }               
     
     public int size()
     {

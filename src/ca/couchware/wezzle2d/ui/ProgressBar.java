@@ -496,41 +496,6 @@ public class ProgressBar extends AbstractEntity
         // Wig out.
         throw new UnsupportedOperationException(
                 "Height cannot be set on progress bar." );
-    }
-
-    @Override
-    public Rectangle getDrawRect()
-    {
-        // If the draw rect is null, generate it.
-        if ( drawRect == null )
-        {
-            Rectangle rect = new Rectangle( x_, y_,
-                    getWidth() + 2, getHeight() + 2 );
-
-            if ( x_ != x || y_ != y )
-            {
-                rect.add( new Rectangle( x, y, getWidth() + 2, getHeight() + 2 ) );
-            }
-
-            rect.translate( offsetX, offsetY );
-
-            // Add the text too.
-            if ( textPosition != TextPosition.NONE )
-            {
-                rect.add( progressLabel.getDrawRect() );
-            }
-
-            drawRect = rect;
-        }
-
-        return drawRect;
-    }
-
-    @Override
-    public void resetDrawRect()
-    {
-        x_ = x;
-        y_ = y;
-    }
+    }    
 
 }

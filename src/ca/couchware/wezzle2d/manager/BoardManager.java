@@ -1100,8 +1100,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         
         // Make sure the tile is located properly.
         t.setPosition(x + (index % columns) * cellWidth, 
-                y + (index / columns) * cellHeight);
-        t.resetDrawRect();           
+                y + (index / columns) * cellHeight);        
                                        
         // If we're overwriting a tile, remove it first.
         if (getTile(index) != null)

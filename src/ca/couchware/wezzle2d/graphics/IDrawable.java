@@ -16,19 +16,7 @@ public interface IDrawable
      * @return True if it was drawn (i.e. it was visible and dirty) 
      * or false otherwise.
      */
-	public boolean draw();
-    
-    /**
-     * Get a rectangle that contains the area of drawable.
-     * 
-     * @return
-     */
-    public Rectangle getDrawRect();
-    
-    /**
-     * Force a recalculation of the draw rectangle.
-     */
-    public void resetDrawRect();
+    public boolean draw();
     
     /**
      * Sets the visibility of the drawable.

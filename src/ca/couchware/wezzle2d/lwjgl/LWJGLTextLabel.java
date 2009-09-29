@@ -183,18 +183,7 @@ public class LWJGLTextLabel extends AbstractEntity implements ITextLabel
     }
     
     /** An empty rectangle for use with getDrawRect(). */
-    final private static Rectangle EMPTY_RECTANGLE = new Rectangle();
-    
-    /**
-     * Since draw rectangles are not used in LWJGL, return nothing.
-     * 
-     * @return
-     */        
-    @Override
-    public Rectangle getDrawRect()
-    {
-        return EMPTY_RECTANGLE;
-    }
+    final private static Rectangle EMPTY_RECTANGLE = new Rectangle();      
     
     @Override
     public String toString()

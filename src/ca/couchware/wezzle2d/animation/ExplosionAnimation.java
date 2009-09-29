@@ -96,7 +96,6 @@ public class ExplosionAnimation extends AbstractAnimation
         this.initialPosition = explosion.getPosition();                                                            
         
         // Reset the draw rectangle.
-        explosion.resetDrawRect();
         explosion.setDirty(true);
         
         // Add explosion to the layer manager.
