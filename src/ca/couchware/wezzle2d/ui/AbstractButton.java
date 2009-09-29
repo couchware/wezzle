@@ -231,7 +231,7 @@ public abstract class AbstractButton extends AbstractEntity implements
     public void setVisible(boolean visible)
     {
         // Ignore if visibility not changed.
-        if (this.visible == visible || this.disabled == true)
+        if (this.visible == visible || this.disabled)
         {
             this.visible = visible;
             return;
@@ -250,7 +250,7 @@ public abstract class AbstractButton extends AbstractEntity implements
         //LogManager.recordMessage("Disabled");
         
         // Ignore if disabled or invisible.
-        if (this.disabled == disabled || this.visible == false)            
+        if (this.disabled == disabled || !this.visible)
         {
             this.disabled = disabled;
             return;        
@@ -259,7 +259,7 @@ public abstract class AbstractButton extends AbstractEntity implements
         // Invoke super class.
         super.setDisabled(disabled);
         
-        // Add or remove listener based on disabledness..
+        // Add or remove listener based on disabledness.
         swapMouseListener(!disabled);
     }        
     

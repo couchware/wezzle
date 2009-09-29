@@ -240,7 +240,7 @@ public class AchievementMenu extends AbstractMenu
         }
         else
         {
-            achievementDifficulty.setText( "Achievement has no difficulty requirements." );
+            achievementDifficulty.setText( "" );
         }
 
         // Set the status.

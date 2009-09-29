@@ -43,6 +43,9 @@ public class Scroller extends AbstractEntity implements IMouseListener
     
     /** The list of options in the scroller. */
     final private List<IButton> buttonList;
+
+    private int visibleStart;
+    private int visibleEnd;
     
     /** The slider bar used to scroll the scroller. */
     final private SliderBar scrollBar;      
@@ -138,13 +141,14 @@ public class Scroller extends AbstractEntity implements IMouseListener
                     scrollOffset = offset;
 
                     // Update the button position.
-                    updateButtonPositions();
+                    showButtons();
                 }              
             }
         });
         
         // Update the button positions.
-        updateButtonPositions();
+        if (this.visible) showButtons();
+        else hideButtons();
     }
     
     public static class Builder implements IBuilder<Scroller>
@@ -240,14 +244,17 @@ public class Scroller extends AbstractEntity implements IMouseListener
             return scroller;
         }                
     }
-    
-    private void updateButtonPositions()
+
+    /**
+     * Updates the buttons in the scroller, setting their positions
+     * and visibility.
+     */
+    private void showButtons()
     {
         // Make sure the offset isn't too high.
         if ( scrollOffset > (buttonList.size() - rows) )
             throw new IllegalStateException("Offset too high.");
-        
-            
+                    
         // Make all labels invisible.
         for (IButton button : buttonList)
         {
@@ -263,6 +270,12 @@ public class Scroller extends AbstractEntity implements IMouseListener
             button.setVisible(true);                           
         }
     }
+
+    private void hideButtons()
+    {
+        for ( IButton button : this.buttonList )
+            button.setVisible(false);
+    }
     
     @Override
     public void setVisible(boolean visible)
@@ -272,17 +285,22 @@ public class Scroller extends AbstractEntity implements IMouseListener
             return;
         
         // Invoke super.
-        super.setVisible(visible);      
-        
+        super.setVisible(visible);             
+
         // Add or remove listener based on visibility.
-        if (visible == true)
-        {                           
-            //LogManager.recordMessage("Added");
+        if (visible)
+        {                                       
             window.addMouseListener(this);
+
+            // Show the buttons.
+            showButtons();
         }
         else
         {                            
-            window.removeMouseListener(this);            
+            window.removeMouseListener(this);
+
+            // Hide all the buttons.
+            hideButtons();
         }                   
     }
     
@@ -394,7 +412,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     public void mouseReleased(MouseEvent e)
     {
         // See if the mouse was released over this.
-        if (shape.contains(e.getPosition()) == true)
+        if ( shape.contains(e.getPosition()) )
         {            
             // See which one it was released over.
             for (int i = 0; i < buttonList.size(); i++)
