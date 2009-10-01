@@ -7,7 +7,7 @@ import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.util.ImmutableDimension;
+import ca.couchware.wezzle2d.util.ImmutableDimensions;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 
 /**
@@ -51,7 +51,7 @@ public class ExplosionAnimation extends AbstractAnimation
     /**
      * The initial dimensions.
      */
-    final private ImmutableDimension initialDimensions;
+    final private ImmutableDimensions initialDimensions;
     
     /**
      * Explode out/in duration, in ms.
@@ -88,7 +88,7 @@ public class ExplosionAnimation extends AbstractAnimation
         // Set the initial dimensions to 2x2.
         explosion.setWidth(SettingsManager.get().getInt(Key.ANIMATION_EXPLOSION_INITIAL_WIDTH));
         explosion.setHeight(SettingsManager.get().getInt(Key.ANIMATION_EXPLOSION_INITIAL_HEIGHT));
-        this.initialDimensions = new ImmutableDimension(2, 2);
+        this.initialDimensions = new ImmutableDimensions(2, 2);
         
         // Move it to the centre of the entity.
         explosion.setX(entity.getX() + (entity.getWidth()  / 2) - 1);

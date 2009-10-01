@@ -10,12 +10,12 @@ package ca.couchware.wezzle2d.util;
  * 
  * @author cdmckay
  */
-public final class ImmutableDimension 
+public final class ImmutableDimensions
 {
     private final int width;
     private final int height;
     
-    public ImmutableDimension(int width, int height)
+    public ImmutableDimensions(int width, int height)
     {
         this.width = width;
         this.height = height;

@@ -128,12 +128,8 @@ public class MoveAnimation extends AbstractAnimation
         this.finishRule = builder.finishRule;
         
         // If the duration is 0, warn and end now.
-        if (builder.duration == 0)
-        {
-            CouchLogger.get().recordWarning(this.getClass(), "Animation had a zero duration!");
-            setFinished();
-            return;
-        }
+        if (builder.duration == 0)        
+            throw new RuntimeException("Animation had a zero duration!");
         
         // Record other values.
         this.theta   = builder.theta;
@@ -196,14 +192,14 @@ public class MoveAnimation extends AbstractAnimation
     public void nextFrame()
     {                   
         // Make sure we've set the started flag.
-        if (this.started == false)
+        if (!this.started)
         {
             // Record the initial position.                
             setStarted();
         }
         
         // Check if we're done, if we are, return.
-        if (this.finished == true)
+        if (this.finished)
         {
             //LogManager.recordMessage("Move finished!");
             return;
@@ -274,8 +270,8 @@ public class MoveAnimation extends AbstractAnimation
             entity.setY(newY);                        
             entity.setRotation((ms * omega) / 1000);            
                     
-            if ((finishRule == FinishRule.FIRST && (doneX == true || doneY == true))
-                || (finishRule == FinishRule.BOTH && (doneX == true && doneY == true)))                
+            if ((finishRule == FinishRule.FIRST && (doneX || doneY ))
+                || (finishRule == FinishRule.BOTH && (doneX && doneY)))                
             {
                 if (duration < 0) setFinished();
                 else skip = true;
