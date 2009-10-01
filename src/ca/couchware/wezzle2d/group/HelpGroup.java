@@ -11,10 +11,15 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.tile.Tile;
+import ca.couchware.wezzle2d.tile.TileColor;
+import ca.couchware.wezzle2d.tile.TileHelper;
+import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * This group implements the help function, a dialog that shows the
@@ -36,9 +41,14 @@ public class HelpGroup extends AbstractGroup
         this.groupBox = createGroupBox();
         this.entityList.add( this.groupBox );
 
+        createLineAnimation(this.entityList);
+
          // Add all entities to the layer manager.
-        for (IEntity entity : entityList)        
-            hub.layerMan.add(entity, Layer.UI);        
+        for (IEntity entity : entityList)
+        {
+            entity.setVisible(false);
+            hub.layerMan.add(entity, Layer.UI);
+        }
     }
 
     private static ImmutableRectangle GroupBoxRect =
@@ -47,7 +57,8 @@ public class HelpGroup extends AbstractGroup
                 Game.SCREEN_HEIGHT / 2 - 200,
                 600, 400);
 
-    private static Padding quadrantPad = Padding.newInstance( 10 );
+    private static Padding quadrantPad = Padding.newInstance( 20 );
+    private static Padding tilePad = Padding.newInstance( 5 );
 
     /**
      * Creates the group box that surrounds the help dialog.
@@ -60,8 +71,7 @@ public class HelpGroup extends AbstractGroup
                     GroupBoxRect.getCenterY())
                 .alignment( EnumSet.of( Alignment.MIDDLE, Alignment.CENTER) )
                 .width(  GroupBoxRect.getWidth()  )
-                .height( GroupBoxRect.getHeight() )
-                .visible(false)
+                .height( GroupBoxRect.getHeight() )                
                 .build();
 
         return box;
@@ -79,14 +89,47 @@ public class HelpGroup extends AbstractGroup
     
     // (0,0) is the top-left tile and 
     // (2, 1) is the bottom-right.
-    private IEntity[][] lineTileGrid = new IEntity[LineColumns][LineRows];
+    private Tile[][] lineTileGrid = new Tile[LineColumns][LineRows];
 
-    private IAnimation createLineAnimation()
+    private void createLineAnimationEntites(List<IEntity> entityList)
     {
-        //this.lineTileGrid[0][0] = TileHelper.makeTile(TileType.NORMAL, );
+        this.lineTileGrid[0][0] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.BLUE,
+                LineRect.getX(), LineRect.getY());
+
+        this.lineTileGrid[1][0] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.RED);
+        TileHelper.toRightOf( this.lineTileGrid[0][0], this.lineTileGrid[1][0], 0);
+
+        this.lineTileGrid[2][0] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.RED);
+        TileHelper.toRightOf( this.lineTileGrid[1][0], this.lineTileGrid[2][0], 0);
+
+        this.lineTileGrid[0][1] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.RED);
+        TileHelper.toBottomOf( this.lineTileGrid[0][0], this.lineTileGrid[0][1], 0);
+
+        this.lineTileGrid[1][1] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.BLUE);
+        TileHelper.toRightOf( this.lineTileGrid[0][1], this.lineTileGrid[1][1], 0);
+
+        this.lineTileGrid[2][1] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.BLUE);
+        TileHelper.toRightOf( this.lineTileGrid[1][1], this.lineTileGrid[2][1], 0);
+
+        for (int i = 0; i < LineRows; i++)
+            for (int j = 0; j < LineColumns; j++)
+                entityList.add( lineTileGrid[j][i] );
+    }
+
+    private IAnimation createLineAnimation(List<IEntity> entityList)
+    {
+        createLineAnimationEntites(entityList);
 
         return null;
     }
+
+
 
     @Override
     public void setActivated(final boolean activated)

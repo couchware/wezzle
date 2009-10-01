@@ -224,7 +224,7 @@ public class MoveAnimation extends AbstractAnimation
             return;
         }
         
-        if (waitFinished == false && ms > wait)
+        if (!waitFinished && ms > wait)
         {
             // Record initial position now.
             initialPosition = entity.getPosition();   
@@ -235,7 +235,7 @@ public class MoveAnimation extends AbstractAnimation
             ms = ticks * Settings.getMillisecondsPerTick();
         }                
        
-        if (waitFinished == true)
+        if (waitFinished)
         {
             // Determine the current x and y.   
             // d = speed * ticks

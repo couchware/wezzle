@@ -26,50 +26,63 @@ public class Refactorer implements IResettable
     public static enum RefactorSpeed
     {
         /** The slower refactor speed, used in tutorials. */
-        SLOWER( settingsMan.getInt( Key.REFACTOR_SPEED_X_SLOWER ),
-            settingsMan.getInt( Key.REFACTOR_SPEED_Y_SLOWER ) ),
+        SLOWER( settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_X ),
+            settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_Y ),
+            settingsMan.getInt( Key.REFACTOR_SLOWER_GRAVITY )),
 
         /** The slow refactor speed, used in tutorials. */
-        SLOW( settingsMan.getInt( Key.REFACTOR_SPEED_X_SLOW ),
-            settingsMan.getInt( Key.REFACTOR_SPEED_Y_SLOW ) ),
+        SLOW( settingsMan.getInt( Key.REFACTOR_SLOW_SPEED_X ),
+            settingsMan.getInt( Key.REFACTOR_SLOW_SPEED_Y ),
+            settingsMan.getInt( Key.REFACTOR_SLOW_GRAVITY )),
 
         /** The normal refactor speed, used during normal operation. */
-        NORMAL( settingsMan.getInt( Key.REFACTOR_SPEED_X_NORMAL ),
-            settingsMan.getInt( Key.REFACTOR_SPEED_Y_NORMAL ) ),
+        NORMAL( settingsMan.getInt( Key.REFACTOR_NORMAL_SPEED_X ),
+            settingsMan.getInt( Key.REFACTOR_NORMAL_SPEED_Y ),
+            settingsMan.getInt( Key.REFACTOR_NORMAL_GRAVITY )),
 
         /** The fast refactor speed, used during hard mode. */
-        FAST( settingsMan.getInt( Key.REFACTOR_SPEED_X_FAST ),
-            settingsMan.getInt( Key.REFACTOR_SPEED_Y_FAST ) ),
+        FAST( settingsMan.getInt( Key.REFACTOR_FAST_SPEED_X ),
+            settingsMan.getInt( Key.REFACTOR_FAST_SPEED_Y ),
+            settingsMan.getInt( Key.REFACTOR_FAST_GRAVITY )),
 
         /** The shift refactor speed, used during gravity shifts. */
-        SHIFT( settingsMan.getInt( Key.REFACTOR_SPEED_X_SHIFT ),
-            settingsMan.getInt( Key.REFACTOR_SPEED_Y_SHIFT ) );
+        SHIFT( settingsMan.getInt( Key.REFACTOR_SHIFT_SPEED_X ),
+            settingsMan.getInt( Key.REFACTOR_SHIFT_SPEED_Y ),
+            settingsMan.getInt( Key.REFACTOR_SHIFT_GRAVITY ));
+        
+        private int horizontalSpeed;
+        private int verticalSpeed;
+        private int gravity;
 
-        /** The slide speed associated with the key. */
-        private int horizontal;
-
-        /** The drop speed associated with the key. */
-        private int vertical;
-
-        RefactorSpeed(int horizontal, int vertical)
+        RefactorSpeed(int horizontal, int vertical, int gravity)
         {
-            if ( horizontal == 0 || vertical == 0 )
-            {
-                throw new IllegalArgumentException( "Horizontal and vertical must" +
-                        " both be non-zero." );
-            }
-            this.horizontal = horizontal;
-            this.vertical = vertical;
+            if ( horizontal == 0 )            
+                throw new IllegalArgumentException( "Horzontal speed must > 0" );
+
+            if ( vertical == 0 )
+                throw new IllegalArgumentException( "Vertical speed must > 0" );
+
+            if ( gravity < 0 )
+                throw new IllegalArgumentException( "Gravity must be >= 0" );
+
+            this.horizontalSpeed = horizontal;
+            this.verticalSpeed = vertical;
+            this.gravity = gravity;
         }
 
         public int getHorizontalSpeed()
         {
-            return horizontal;
+            return horizontalSpeed;
         }
 
         public int getVerticalSpeed()
         {
-            return vertical;
+            return verticalSpeed;
+        }
+
+        public int getGravity()
+        {
+            return gravity;
         }
 
     }   
@@ -202,23 +215,24 @@ public class Refactorer implements IResettable
     public void updateLogic(Game game, ManagerHub hub)
     {
         // Make sure game is not null.
-        if ( game == null || hub == null )
-        {
-            throw new IllegalArgumentException( "Game and hub must not be null" );
-        }
+        if (game == null)
+            throw new IllegalArgumentException( "Game must not be null" );
+
+        if (hub == null)
+            throw new IllegalArgumentException( "Hub must not be null" );
 
         // Reset the finished flag.
         this.finishedRefactor = false;
 
         // See if we need to activate the refactor.
-        if ( activateRefactor == true )
+        if ( activateRefactor )
         {
             // Hide piece.
             hub.pieceMan.hidePieceGrid();
 
             // Start down refactor.                           
             this.refactorAnimationList =
-                    hub.boardMan.startVerticalShift( speed.getVerticalSpeed() );
+                    hub.boardMan.startVerticalShift( speed.getVerticalSpeed(), speed.getGravity() );
 
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
@@ -233,13 +247,13 @@ public class Refactorer implements IResettable
         }
 
         // See if we're down refactoring.
-        if ( this.refactorVerticalInProgress == true )
+        if ( this.refactorVerticalInProgress )
         {
             handleVerticalRefactor( hub );
         }
 
         // See if we're left refactoring.
-        if ( this.refactorHorizontalInProgress == true )
+        if ( this.refactorHorizontalInProgress )
         {
             handleHorizontalRefactor( hub );
         }
@@ -269,7 +283,7 @@ public class Refactorer implements IResettable
             }
         }
 
-        if ( done == true )
+        if ( done )
         {
             // Clear the animation list.
             refactorAnimationList = null;

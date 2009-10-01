@@ -224,7 +224,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     /**
      * The gravity corner.
      */
-    private EnumSet<Direction> gravity;
+    private EnumSet<Direction> gravityDirection;
 	
 	/**
 	 * The array representing the game board.
@@ -295,7 +295,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     public void resetState() 
     {
         // Set the gravity to be to the bottom left by default.
-        this.gravity = EnumSet.of(Direction.DOWN, Direction.LEFT);
+        this.gravityDirection = EnumSet.of(Direction.DOWN, Direction.LEFT);
         
         // Set the number of various things.
         this.numberOfColors      = DEFAULT_NUMBER_OF_COLORS;
@@ -336,7 +336,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         managerState.put(Keys.NUMBER_OF_ITEMS, numberOfItems);
         managerState.put(Keys.NUMBER_OF_MULTIPLIERS, numberOfMultipliers);
         managerState.put(Keys.NUMBER_OF_TILES, numberOfTiles);
-        managerState.put(Keys.GRAVITY, gravity);
+        managerState.put(Keys.GRAVITY, gravityDirection);
         managerState.put(Keys.BOARD, board.clone());
         managerState.put(Keys.SCRATCH_BOARD, scratchBoard.clone());
         
@@ -358,7 +358,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         numberOfItems = (Integer) managerState.get(Keys.NUMBER_OF_ITEMS);
         numberOfTiles = (Integer) managerState.get(Keys.NUMBER_OF_TILES);  
         numberOfMultipliers = (Integer) managerState.get(Keys.NUMBER_OF_MULTIPLIERS);
-        gravity = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
+        gravityDirection = (EnumSet<Direction>) managerState.get(Keys.GRAVITY);
         scratchBoard = (Tile[]) managerState.get(Keys.SCRATCH_BOARD);   
         board = (Tile[]) managerState.get(Keys.BOARD);     
                        
@@ -521,7 +521,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 	public void instantRefactorBoard()
 	{
         // Check the vertical direction.
-        if (gravity.contains(Direction.DOWN) == true)
+        if (gravityDirection.contains(Direction.DOWN) == true)
         {
             for (int i = 0; i < cells; i++)
             {
@@ -561,7 +561,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         synchronize();
         
         // Check the horizontal direction.
-        if (gravity.contains(Direction.LEFT) == true)
+        if (gravityDirection.contains(Direction.LEFT) == true)
         {
             for (int i = 0; i < cells; i++)
             {
@@ -818,8 +818,10 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      * 
      * @param direction
      * @param speed
+     * @param gravity
      */
-    public List<IAnimation> startShift(final Direction direction, final int speed)
+    public List<IAnimation> startShift(final Direction direction, 
+            final int speed, final int gravity)
     {
         // The list of new animations made.
         List<IAnimation> animationList = new ArrayList<IAnimation>();
@@ -866,6 +868,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                                 countTilesInDirection(direction, i));
                         
                         a = new MoveAnimation.Builder(board[i]).speed(v)
+                                .gravity( 1000 )
                                 .maxY(bound).theta(-90).build();
                         animationList.add(a);
                     }
@@ -927,15 +930,20 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      * currently set gravity.
      * 
      * @param speed
+     * @param gravity
      */
-    public List<IAnimation> startVerticalShift(final int speed)
+    public List<IAnimation> startVerticalShift(int speed, int gravity)
     {
-        assert speed != 0;
+        if (speed == 0)
+            throw new IllegalArgumentException("Speed must be > 0");
+
+        if (gravity < 0)
+            throw new IllegalArgumentException("Gravity must be >= 0");
         
-        if (gravity.contains(Direction.DOWN))
-            return startShift(Direction.DOWN, speed);
+        if (this.gravityDirection.contains(Direction.DOWN))
+            return startShift(Direction.DOWN, speed, gravity);
         else
-            return startShift(Direction.UP, speed);
+            return startShift(Direction.UP, speed, gravity);
     }
     
     /**
@@ -946,12 +954,14 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      */
     public List<IAnimation> startHorizontalShift(final int speed)
     {
-        assert speed != 0;
+         if (speed == 0)
+            throw new IllegalArgumentException("Speed must be > 0");
+
         
-        if (gravity.contains(Direction.LEFT))
-            return startShift(Direction.LEFT, speed);
+        if (gravityDirection.contains(Direction.LEFT))
+            return startShift(Direction.LEFT, speed, 0);
         else
-            return startShift(Direction.RIGHT, speed);
+            return startShift(Direction.RIGHT, speed, 0);
     }
     
 	/**
@@ -2329,12 +2339,12 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 
     public EnumSet<Direction> getGravity()
     {
-        return gravity;
+        return gravityDirection;
     }      
 
     public void setGravity(EnumSet<Direction> gravity)
     {
-        this.gravity = gravity;
+        this.gravityDirection = gravity;
     }            
     
     public boolean isVisible()

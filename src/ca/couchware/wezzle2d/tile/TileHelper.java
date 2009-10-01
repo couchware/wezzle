@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.tile;
 
+import ca.couchware.wezzle2d.ui.Padding;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
@@ -117,6 +118,30 @@ public class TileHelper
         }
 
         return clone;
+    }
+
+    public static void toLeftOf(Tile origin, Tile target, int spacing)
+    {
+        target.setX( origin.getX() - origin.getWidth() - spacing );
+        target.setY( origin.getY() );
+    }
+
+    public static void toRightOf(Tile origin, Tile target, int spacing)
+    {
+        target.setX( origin.getX() + origin.getWidth() + spacing );
+        target.setY( origin.getY() );
+    }
+
+    public static void toTopOf(Tile origin, Tile target, int spacing)
+    {
+        target.setX( origin.getX() );
+        target.setY( origin.getY() - origin.getHeight() - spacing );
+    }
+
+    public static void toBottomOf(Tile origin, Tile target, int spacing)
+    {
+        target.setX( origin.getX() );
+        target.setY( origin.getY() + origin.getHeight() + spacing );
     }
 
 }

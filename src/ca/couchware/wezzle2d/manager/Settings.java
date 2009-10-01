@@ -76,16 +76,25 @@ public class Settings
         
         // Refactor values.
         
-        REFACTOR_SPEED_X_SLOWER(Integer.class),
-        REFACTOR_SPEED_Y_SLOWER(Integer.class),
-        REFACTOR_SPEED_X_SLOW(Integer.class),
-        REFACTOR_SPEED_Y_SLOW(Integer.class),
-        REFACTOR_SPEED_X_NORMAL(Integer.class),
-        REFACTOR_SPEED_Y_NORMAL(Integer.class),
-        REFACTOR_SPEED_X_FAST(Integer.class),
-        REFACTOR_SPEED_Y_FAST(Integer.class),
-        REFACTOR_SPEED_X_SHIFT(Integer.class),
-        REFACTOR_SPEED_Y_SHIFT(Integer.class),
+        REFACTOR_SLOWER_SPEED_X(Integer.class),
+        REFACTOR_SLOWER_SPEED_Y(Integer.class),
+        REFACTOR_SLOWER_GRAVITY(Integer.class),
+
+        REFACTOR_SLOW_SPEED_X(Integer.class),
+        REFACTOR_SLOW_SPEED_Y(Integer.class),
+        REFACTOR_SLOW_GRAVITY(Integer.class),
+
+        REFACTOR_NORMAL_SPEED_X(Integer.class),
+        REFACTOR_NORMAL_SPEED_Y(Integer.class),
+        REFACTOR_NORMAL_GRAVITY(Integer.class),
+
+        REFACTOR_FAST_SPEED_X(Integer.class),
+        REFACTOR_FAST_SPEED_Y(Integer.class),
+        REFACTOR_FAST_GRAVITY(Integer.class),
+
+        REFACTOR_SHIFT_SPEED_X(Integer.class),
+        REFACTOR_SHIFT_SPEED_Y(Integer.class),
+        REFACTOR_SHIFT_GRAVITY(Integer.class),
         
         // Animation values.
             
