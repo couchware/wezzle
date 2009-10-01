@@ -110,15 +110,15 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
      */
     public void clearChanged()
     {
-        CouchLogger.get().recordMessage(this.getClass(), "Cleared by a group.");
+        //CouchLogger.get().recordMessage(this.getClass(), "Cleared by a group.");
 
         for (IEntity e : entityList)
-            if (e instanceof IButton)
-                ((IButton) e).clicked();
-            else if (e instanceof SliderBar)
-                ((SliderBar) e).changed();
-            else if (e instanceof RadioGroup)
-                ((RadioGroup) e).changed();
+        {
+            if (false) { }
+            else if (e instanceof IButton)    ((IButton)    e).clicked();
+            else if (e instanceof SliderBar)  ((SliderBar)  e).changed();
+            else if (e instanceof RadioGroup) ((RadioGroup) e).changed();
+        }
     }    
     
     @Override

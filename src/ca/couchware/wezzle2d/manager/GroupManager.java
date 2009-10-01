@@ -24,11 +24,12 @@ import java.util.List;
 public class GroupManager implements IResettable
 {
     
-    public enum Class
+    public enum Type
     {
         GAME_OVER,
         PAUSE,
         OPTIONS,
+        HELP,
         HIGH_SCORE
     }
     
@@ -95,11 +96,11 @@ public class GroupManager implements IResettable
      * it is activated.
      * @param button
      * @param showGroup
-     * @param groupClass
+     * @param groupType
      * @param layer
      */
     public void showGroup(IButton button, IGroup showGroup, 
-            Class groupClass, Layer layer)
+            Type groupType, Layer layer)
     {
         // Remove all groups that aren't part of the passed class.
         // Hide all existing members of the passed clas.
@@ -110,7 +111,7 @@ public class GroupManager implements IResettable
             
             if (e.getLayer() == layer)
             {
-                if (e.getGroupClass() == groupClass)
+                if (e.getGroupType() == groupType)
                 {
                     e.getGroup().setVisible(false);
                 }
@@ -127,7 +128,7 @@ public class GroupManager implements IResettable
         }
        
         // Add the group on top.
-        entryList.add(0, new Entry(showGroup, button, groupClass, layer)); 
+        entryList.add(0, new Entry(showGroup, button, groupType, layer));
         
         // Make the group visible.
         showGroup.setVisible(true);
@@ -163,7 +164,7 @@ public class GroupManager implements IResettable
             entry.getButton().setActivated(false);
     }
     
-    public void hideGroup(Class cls, Layer layer, boolean showGrid)
+    public void hideGroup(Type cls, Layer layer, boolean showGrid)
     {
         // Go through the entry list, removing all entries with the
         // passed class name.
@@ -172,7 +173,7 @@ public class GroupManager implements IResettable
             // The entry we are looking at.
             Entry e = it.next();
             
-            if (e.getLayer() == layer && e.getGroupClass() == cls)
+            if (e.getLayer() == layer && e.getGroupType() == cls)
             {
                 // Deactivate the entry.
                 deactivateEntry(e);     
@@ -299,12 +300,9 @@ public class GroupManager implements IResettable
     {
         for (IGroup group : groupList)
         {
-            if (group.isActivated() && group.controlChanged())
-            {
-                group.updateLogic(game, hub);
-                group.clearChanged();
-            }
-        } // end for
+            if (group.isActivated())            
+                group.updateLogic(game, hub);            
+        }
     }
     
     public boolean isActivated()
@@ -333,7 +331,7 @@ public class GroupManager implements IResettable
          * The class of the group.  This is used to hide or show many groups
          * at once.
          */        
-        final protected Class groupClass;
+        final protected Type groupType;
         
         /**
          * The layer that the group is on.  This is mainly used to keep
@@ -345,12 +343,12 @@ public class GroupManager implements IResettable
          * The constructor.
          */
         public Entry(IGroup group, IButton button, 
-                Class groupClass, Layer layer)
+                Type groupType, Layer layer)
         {
             // Set the references.
             this.group = group;
             this.button = button;
-            this.groupClass = groupClass;
+            this.groupType = groupType;
             this.layer = layer;
         }
 
@@ -364,9 +362,9 @@ public class GroupManager implements IResettable
             return button;
         }
 
-        public Class getGroupClass()
+        public Type getGroupType()
         {
-            return groupClass;
+            return groupType;
         }
 
         public Layer getLayer()

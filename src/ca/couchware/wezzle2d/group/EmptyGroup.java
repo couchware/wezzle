@@ -19,7 +19,7 @@ public class EmptyGroup extends AbstractGroup
     
     public void updateLogic(Game game, ManagerHub hub)
     {
-        // Del nadras.
+        // Del nadras.  I am honoured.
     }  
     
 }

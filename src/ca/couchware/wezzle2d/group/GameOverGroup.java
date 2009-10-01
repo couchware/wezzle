@@ -31,7 +31,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
     public GameOverGroup(ManagerHub hub)
     {    
         // Sanity check.
-        if( hub == null)
+        if (hub == null)
             throw new IllegalArgumentException("Hub must not be null");
         
         // Create the game over header.
@@ -85,9 +85,19 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
      */    
     public void updateLogic(Game game, ManagerHub hub)
     {
+        // Sanity check.
+        if (game == null)
+            throw new IllegalArgumentException("Game must not be null");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub must not be null");
+
+        // Make sure something changed.
+        if ( !this.controlChanged() ) return;
+
         // Hide the screen.
         hub.groupMan.hideGroup(
-                GroupManager.Class.GAME_OVER,
+                GroupManager.Type.GAME_OVER,
                 GroupManager.Layer.BOTTOM,
                 !game.isCompletelyBusy());
                        
@@ -114,7 +124,10 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         
         // Deactivate button.
         this.restartButton.setActivated(false);
-        this.continueButton.setActivated(false);        
+        this.continueButton.setActivated(false);
+
+        // Clear the change setting.
+        this.clearChanged();
     }
 
     public void gameStarted(GameEvent event)

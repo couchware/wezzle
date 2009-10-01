@@ -139,17 +139,24 @@ public class AudioGroup extends AbstractGroup
     public void updateLogic(Game game, ManagerHub hub)
     {                
         // Sanity check.
-        if(game == null || hub == null)
-            throw new IllegalArgumentException("game and hub must not be null.");
+        if (game == null)
+            throw new IllegalArgumentException("Game must not be null");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub must not be null");
+
+        // Make sure something changed.
+        if ( !this.controlChanged() ) return;
         
         // Check if the back button was pressed.
-        if (backButton.isActivated() == true)
+        if ( false ) { }
+        else if ( backButton.isActivated() )
         {                                    
             // Hide all side triggered menues.
             backButton.setActivated(false);
             hub.groupMan.hideGroup(this, !game.isCompletelyBusy());
         }   
-        else if (soundRadio.changed() == true)
+        else if ( soundRadio.changed() )
         {
             boolean soundOn = soundRadio.getSelectedIndex() == SOUND_ON;
             
@@ -160,7 +167,7 @@ public class AudioGroup extends AbstractGroup
             // the button is activated.
             hub.soundMan.setPaused(!soundOn);            
         }
-        else if (musicRadio.changed() == true)
+        else if ( musicRadio.changed() )
         {
             boolean musicOn = musicRadio.getSelectedIndex() == MUSIC_ON;
             
@@ -170,7 +177,7 @@ public class AudioGroup extends AbstractGroup
             // Set the pausedness.
             hub.musicMan.setPaused(!musicOn);           
         } 
-        else if (soundSlider.changed() == true)
+        else if ( soundSlider.changed() )
         {
             // The new sound value.
             double gain = soundSlider.getVirtualPercent();                  
@@ -178,7 +185,7 @@ public class AudioGroup extends AbstractGroup
             // Set the volume.
             hub.soundMan.setNormalizedGain(gain);
         }
-        else if (musicSlider.changed() == true)
+        else if ( musicSlider.changed() )
         {
             // The new sound value.
             double gain = musicSlider.getVirtualPercent();
@@ -187,5 +194,8 @@ public class AudioGroup extends AbstractGroup
             hub.musicMan.setNormalizedGain(gain);
             hub.musicMan.exportSettings();
         }
+
+        // Clear the change setting.
+        this.clearChanged();
     }
 }

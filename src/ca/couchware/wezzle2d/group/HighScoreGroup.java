@@ -164,13 +164,26 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
      */    
     public void updateLogic(Game game, ManagerHub hub)
     {
+        // Sanity check.
+        if (game == null)
+            throw new IllegalArgumentException("Game must not be null");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub must not be null");
+
+        // Make sure something changed.
+        if ( !this.controlChanged() ) return;
+
         // Check if the back button was pressed.
         if (closeButton.isActivated())
         {            
             // Hide all side triggered menues.
             closeButton.setActivated(false);
             hub.groupMan.hideGroup(this, !game.isCompletelyBusy());
-        }       
+        }
+
+        // Clear the change setting.
+        this.clearChanged();
     }
     
     private String format(int rank, HighScore highScore)

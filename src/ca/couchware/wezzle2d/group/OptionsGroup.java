@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ITextLabel;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
@@ -24,31 +25,17 @@ import java.util.logging.Logger;
  */
 public class OptionsGroup extends AbstractGroup
 {
-    
-    /** The browser launcher. */
-    BrowserLauncher launcher;
-    
-    /** The manager hub. */
     final private ManagerHub hub;
+
+    private BrowserLauncher launcher;       
     
-    /** The header label. */
     private ITextLabel headerLabel;
-    
-    /** The help button. */
     private IButton upgradeButton;
-    
-    /** The audio button. */
     private IButton audioButton;
-    
-    /** The audio group. */
+    private IButton mainMenuButton;
+    private IButton closeButton;    
     private AudioGroup audioGroup;
 
-    /** The main menu button. */
-    private IButton mainMenuButton;
-
-    /** The back button. */
-    private IButton closeButton;    
-    
     /**
      * The constructor.
      * 
@@ -108,11 +95,11 @@ public class OptionsGroup extends AbstractGroup
         }
         catch (BrowserLaunchingInitializingException ex)
         {
-            Logger.getLogger(OptionsGroup.class.getName()).log(Level.SEVERE, null, ex);
+            CouchLogger.get().recordException(this.getClass(), ex);
         }
         catch (UnsupportedOperatingSystemException ex)
         {
-            Logger.getLogger(OptionsGroup.class.getName()).log(Level.SEVERE, null, ex);
+            CouchLogger.get().recordException(this.getClass(), ex);
         }
     }      
     
@@ -147,6 +134,16 @@ public class OptionsGroup extends AbstractGroup
      */    
     public void updateLogic(Game game, ManagerHub hub)
     {
+        // Sanity check.
+        if (game == null)
+            throw new IllegalArgumentException("Game must not be null");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub must not be null");
+
+        // Make sure something changed.
+        if ( !this.controlChanged() ) return;
+
         // See if Buy Now was pressed.
         if (upgradeButton.clicked() == true)
         {
@@ -155,21 +152,21 @@ public class OptionsGroup extends AbstractGroup
         }
         
         // Check if the back button was pressed.
-        if (closeButton.isActivated() == true)
+        if (closeButton.isActivated())
         {            
             // Hide all side triggered menues.
             closeButton.setActivated(false);
             hub.groupMan.hideGroup(this, !game.isCompletelyBusy());
         }
         // Check if the sound/music button was pressed.
-        else if (audioButton.isActivated() == true)
+        else if (audioButton.isActivated())
         {                        
             // Show the sound/music group.            
             hub.groupMan.showGroup(audioButton, audioGroup, 
-                GroupManager.Class.OPTIONS,
+                GroupManager.Type.OPTIONS,
                 GroupManager.Layer.MIDDLE);
         }             
-        else if (mainMenuButton.isActivated() == true)
+        else if (mainMenuButton.isActivated())
         {
             // Deactivate the button.
             mainMenuButton.setActivated(false);              
@@ -186,6 +183,9 @@ public class OptionsGroup extends AbstractGroup
             // Start the transition.
             game.startTransitionTo(TransitionTarget.MENU);
         }
+
+        // Clear the change setting.
+        this.clearChanged();
     }
     
 }

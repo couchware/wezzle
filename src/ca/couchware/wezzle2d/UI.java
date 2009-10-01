@@ -34,6 +34,7 @@ import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.MammothButton;
 import ca.couchware.wezzle2d.group.GameOverGroup;
+import ca.couchware.wezzle2d.group.HelpGroup;
 import ca.couchware.wezzle2d.group.HighScoreGroup;
 import ca.couchware.wezzle2d.group.OptionsGroup;
 import ca.couchware.wezzle2d.group.PauseGroup;
@@ -69,16 +70,7 @@ public class UI implements
             + "/Header_HighScore" + FILE_EXT;          
     
     /** The background sprite. */
-    private GraphicEntity background;    
-    
-    /** The pause button. */
-    private IButton pauseButton;
-       
-    /** The options button. */
-    private IButton optionsButton;
-    
-    /** The help button. */
-    private IButton helpButton;
+    private GraphicEntity background;
     
     /** The timer bar. */
     private ProgressBar timerBar;
@@ -106,9 +98,6 @@ public class UI implements
     /** The high score text. */
     private ITextLabel highScoreLabel;
     
-    /** The high score header button. */
-    private IButton highScoreButton;
-    
     /** The level header graphic. */
     private GraphicEntity levelHeader;
     
@@ -120,18 +109,18 @@ public class UI implements
     
     /** The copyright label. */
     private ITextLabel copyrightLabel;
-    
-    /** The pause group. */
-    private PauseGroup pauseGroup;
-    
-    /** The game over group. */
-    private GameOverGroup gameOverGroup;    
-    
-    /** The options group. */
+
+    private IButton pauseButton;
+    private IButton optionsButton;
+    private IButton helpButton;
+    private IButton highScoreButton;
+
+    private PauseGroup pauseGroup;      
     private OptionsGroup optionsGroup;
-    
-    /** The high score group. */
-    private HighScoreGroup highScoreGroup;     
+    private HelpGroup helpGroup;
+    private HighScoreGroup highScoreGroup;
+
+    private GameOverGroup gameOverGroup;
        
     /**
      * Private constructor to ensure singletonness.
@@ -372,23 +361,25 @@ public class UI implements
         
         hub.listenerMan.registerListener(Listener.MOVE, this.pauseGroup);
         hub.listenerMan.registerListener(Listener.LINE, this.pauseGroup);
-        hub.listenerMan.registerListener(Listener.GAME, this.pauseGroup);
-             
-        // Initialize game over group.
-        this.gameOverGroup = new GameOverGroup(hub);    
-        hub.groupMan.register(this.gameOverGroup);
-        
-        hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
+        hub.listenerMan.registerListener(Listener.GAME, this.pauseGroup);                     
         
         // Initialize options group.
         this.optionsGroup = new OptionsGroup(hub);
         hub.groupMan.register(this.optionsGroup);
+
+        // Initialize help group.
+        this.helpGroup = new HelpGroup(hub);
+        hub.groupMan.register(this.helpGroup);
         
         // Initialize high score group.
         this.highScoreGroup = new HighScoreGroup(hub); 
         hub.groupMan.register(this.highScoreGroup);
-        
-        hub.listenerMan.registerListener(Listener.GAME, this.highScoreGroup);                
+        hub.listenerMan.registerListener(Listener.GAME, this.highScoreGroup);
+
+        // Initialize game over group.
+        this.gameOverGroup = new GameOverGroup(hub);
+        hub.groupMan.register(this.gameOverGroup);
+        hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
     }
     
     public void showGameOverGroup(GroupManager groupMan)
@@ -396,14 +387,14 @@ public class UI implements
         // Draw game over screen.
         //gameOverGroup.setScore(scoreMan.getTotalScore());
         groupMan.showGroup(null, gameOverGroup, 
-                GroupManager.Class.GAME_OVER,
+                GroupManager.Type.GAME_OVER,
                 GroupManager.Layer.BOTTOM);  
     }
     
     public void showPauseGroup(GroupManager groupMan)
     {
         groupMan.showGroup(pauseButton, pauseGroup, 
-                GroupManager.Class.PAUSE,
+                GroupManager.Type.PAUSE,
                 GroupManager.Layer.MIDDLE);
     }      
 
@@ -478,13 +469,13 @@ public class UI implements
             if (highScoreButton.isActivated())            
             {                           
                 hub.groupMan.showGroup(highScoreButton, highScoreGroup, 
-                        GroupManager.Class.HIGH_SCORE,
+                        GroupManager.Type.HIGH_SCORE,
                         GroupManager.Layer.MIDDLE);            
             }
             else
             {
                 hub.groupMan.hideGroup(
-                        GroupManager.Class.HIGH_SCORE,
+                        GroupManager.Type.HIGH_SCORE,
                         GroupManager.Layer.MIDDLE,
                         !game.isCompletelyBusy());
             }
@@ -496,13 +487,13 @@ public class UI implements
             if (pauseButton.isActivated())            
             {                
                 hub.groupMan.showGroup(pauseButton, pauseGroup, 
-                        GroupManager.Class.PAUSE,
+                        GroupManager.Type.PAUSE,
                         GroupManager.Layer.MIDDLE);            
             }
             else
             {
                 hub.groupMan.hideGroup(
-                        GroupManager.Class.PAUSE,
+                        GroupManager.Type.PAUSE,
                         GroupManager.Layer.MIDDLE,
                         !game.isCompletelyBusy());
             }
@@ -514,20 +505,35 @@ public class UI implements
             if (optionsButton.isActivated())  
             {                
                 hub.groupMan.showGroup(optionsButton, optionsGroup,
-                        GroupManager.Class.OPTIONS,
+                        GroupManager.Type.OPTIONS,
                         GroupManager.Layer.MIDDLE);            
             }
             else     
             {
                 hub.groupMan.hideGroup(
-                        GroupManager.Class.OPTIONS,
+                        GroupManager.Type.OPTIONS,
                         GroupManager.Layer.MIDDLE,
                         !game.isCompletelyBusy());
             }
-        } // end if  
-        
-        // Update the timer bar.
-        //this.timerBar.setProgressValue(timerMan.getCurrrentTime());
+        } // end if
+
+         // If the options button was just clicked.
+        if (helpButton.clicked())
+        {
+            if (helpButton.isActivated())
+            {
+                hub.groupMan.showGroup(helpButton, helpGroup,
+                        GroupManager.Type.HELP,
+                        GroupManager.Layer.MIDDLE);
+            }
+            else
+            {
+                hub.groupMan.hideGroup(
+                        GroupManager.Type.HELP,
+                        GroupManager.Layer.MIDDLE,
+                        !game.isCompletelyBusy());
+            }
+        } // end if
 
         // Draw the high score text.
         if (!highScoreLabel.getText().equals(String.valueOf(hub.scoreMan.getHighScore())))        

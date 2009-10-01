@@ -103,7 +103,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     private EnumMap<Menu, IButton> buttonMap;
     
     /** A map containing all the groups in the main menu. */
-    private EnumMap<Menu, IGroup> groupMap;
+    private EnumMap<Menu, IGroup> menuMap;
     
     /** The current button that is activated. */
     private Menu currentButton = Menu.NONE;    
@@ -120,10 +120,9 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     public MainMenu(ManagerHub hub)
     {               
         // Invoke super.
-        if(hub == null)
-        {
-           throw new IllegalArgumentException("hub must not be null.");
-        }
+        if (hub == null)
+           throw new IllegalArgumentException("Hub must not be null");
+        
         this.hub = hub;
                 
         // Set the main menu as activated.
@@ -132,16 +131,9 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         // Create the menu's layer manager.
         this.menuLayerMan = LayerManager.newInstance();
               
-        // Create the background.
         initializeBackground(hub);
-        
-        // Create the logo.
         initializeLogo(hub);
-               
-        // Create the buttons.
         initializeButtons(hub);
-        
-        // Create the groups.
         initializeGroups(hub);
                 
         // Create the slide animation.
@@ -257,35 +249,35 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     private void initializeGroups(ManagerHub hub)
     {
         // Create the group map.
-        this.groupMap = new EnumMap<Menu, IGroup>(Menu.class);
+        this.menuMap = new EnumMap<Menu, IGroup>(Menu.class);
         
         // A temporary group holder.
-        IGroup group = null;
+        IGroup menu = null;
         
         // Create the None group.
-        group = new EmptyGroup();
-        group.setActivated(true);
-        this.groupMap.put(Menu.NONE, group);
+        menu = new EmptyGroup();
+        menu.setActivated(true);
+        this.menuMap.put(Menu.NONE, menu);
         
         // Create the "Play Now" group.
-        group = new PlayNowMenu(this, hub, this.menuLayerMan);
-        this.groupMap.put(Menu.PLAY_NOW, group);
+        menu = new PlayNowMenu(this, hub, this.menuLayerMan);
+        this.menuMap.put(Menu.PLAY_NOW, menu);
 
         // Create the "Achievements" group.
-        group = new AchievementMenu(this, hub, this.menuLayerMan);
-        this.groupMap.put(Menu.ACHIEVEMENTS, group);
+        menu = new AchievementMenu(this, hub, this.menuLayerMan);
+        this.menuMap.put(Menu.ACHIEVEMENTS, menu);
 
         // Create the "Achievements" group.
-        group = new OptionsMenu(this, hub, this.menuLayerMan);
-        this.groupMap.put(Menu.OPTIONS, group);
+        menu = new OptionsMenu(this, hub, this.menuLayerMan);
+        this.menuMap.put(Menu.OPTIONS, menu);
         
         // Create the "High Scores" group.
-        group = new HighScoreMenu(this, hub, this.menuLayerMan);
-        this.groupMap.put(Menu.HIGH_SCORES, group);
+        menu = new HighScoreMenu(this, hub, this.menuLayerMan);
+        this.menuMap.put(Menu.HIGH_SCORES, menu);
         
          // Create the "Buy Now" group.
-        group = new HighScoreMenu(this, hub, this.menuLayerMan);
-        this.groupMap.put(Menu.UPGRADE, group);
+        menu = new HighScoreMenu(this, hub, this.menuLayerMan);
+        this.menuMap.put(Menu.UPGRADE, menu);
     }
     
     public void updateLogic(Game game, ManagerHub hub)
@@ -334,15 +326,15 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                             this.currentAnimation = new MetaAnimation.Builder()
                                     .finishRule(MetaAnimation.FinishRule.ALL)
                                     //.runRule(MetaAnimation.RunRule.SEQUENCE)
-                                    .add(this.groupMap.get(currentButton).animateHide())
-                                    .add(this.groupMap.get(menu).animateShow())
+                                    .add(this.menuMap.get(currentButton).animateHide())
+                                    .add(this.menuMap.get(menu).animateShow())
                                     .build();
                             
                             // Set the new current button.                            
                             this.currentButton = menu;
                             
                             // Activate the current group.
-                            this.groupMap.get(menu).setActivated(true);
+                            this.menuMap.get(menu).setActivated(true);
                         }
                         else
                         {
@@ -350,7 +342,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                             button.setDisabled(false);
                             
                             // Deactivate the other groups.
-                            this.groupMap.get(menu).setActivated(false);
+                            this.menuMap.get(menu).setActivated(false);
                         }                        
                     } // end for
                 } // end if
@@ -359,8 +351,8 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 // then we need to hide the group and deactivate the button.
                 // This will bring us back to the initial menu screen with
                 // no buttons activated.
-                IGroup group = this.groupMap.get(currentButton);
-                if (group.isActivated() == false)
+                IGroup group = this.menuMap.get(currentButton);
+                if ( !group.isActivated() )
                 {
                     this.buttonMap.get(currentButton).setActivated(false);
                     this.buttonMap.get(currentButton).setDisabled(false);
@@ -380,7 +372,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                     
                     // See if the group deactivated the main menu.  If the main
                     // menu is deactivated, then we need to start the game.                    
-                    if (this.activated == false)
+                    if ( !this.activated )
                     {                      
                         // Create the hide animation.
                         final IAnimation anim = animateHide();                        
@@ -405,7 +397,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 
             case ANIMATING:
                 
-                if (this.currentAnimation.isFinished() == true)
+                if ( this.currentAnimation.isFinished() )
                 {                    
                     this.state = State.READY;
                 }
@@ -468,7 +460,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .finishRule(MetaAnimation.FinishRule.ALL);
         
         // Hide the current group.
-        builder.add(this.groupMap.get(this.currentButton).animateHide());
+        builder.add(this.menuMap.get(this.currentButton).animateHide());
         
         // Fade out the logo.
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
@@ -547,7 +539,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         for (IButton button : buttonMap.values())
             button.dispose();
         
-        for (IGroup group : groupMap.values())
+        for (IGroup group : menuMap.values())
             group.dispose();
     }
     

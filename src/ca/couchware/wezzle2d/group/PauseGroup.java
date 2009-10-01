@@ -95,10 +95,8 @@ public class PauseGroup extends AbstractGroup implements
         entityList.add(linesPerMoveLabel);      
 
         // Add all entities to the layer manager.
-        for (IEntity entity : entityList)
-        {
-            hub.layerMan.add(entity, Layer.UI);
-        }
+        for (IEntity entity : entityList)        
+            hub.layerMan.add(entity, Layer.UI);        
     }
         
     private void setMoves(int moves)
