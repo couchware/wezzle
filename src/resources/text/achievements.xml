@@ -415,49 +415,49 @@
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="20" />
         </achievement>
-        <achievement name="Get To Level 5" level="BRONZE" difficulty="NORMAL">
+        <achievement name="Get to Level 5" level="BRONZE" difficulty="NORMAL">
             <description>Starting from level 1, get to level 5 without
             getting a game over.</description>
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="5" />
         </achievement>
-        <achievement name="Get To Level 10" level="SILVER" difficulty="NORMAL">
+        <achievement name="Get to Level 10" level="SILVER" difficulty="NORMAL">
             <description>Starting from level 1, get to level 10 without
             getting a game over.</description>
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="10" />
         </achievement>
-        <achievement name="Get To Level 15" level="GOLD" difficulty="NORMAL">
+        <achievement name="Get to Level 15" level="GOLD" difficulty="NORMAL">
             <description>Starting from level 1, get to level 15 without
             getting a game over.</description>
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="15" />
         </achievement>
-        <achievement name="Get To Level 20" level="PLATINUM" difficulty="NORMAL">
+        <achievement name="Get to Level 20" level="PLATINUM" difficulty="NORMAL">
             <description>Starting from level 1, get to level 20 without
             getting a game over.</description>
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="20" />
         </achievement>
-        <achievement name="Survive To Level 5" level="BRONZE" difficulty="HARD">
+        <achievement name="Survive to Level 5" level="BRONZE" difficulty="HARD">
             <description>Starting from level 1, get to level 5 without
             getting a game over.</description>
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="5" />
         </achievement>
-        <achievement name="Survive To Level 10" level="SILVER" difficulty="HARD">
+        <achievement name="Survive to Level 10" level="SILVER" difficulty="HARD">
             <description>Starting from level 1, get to level 10 without
             getting a game over.</description>
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="10" />
         </achievement>
-        <achievement name="Survive To Level 15" level="GOLD" difficulty="HARD">
+        <achievement name="Survive to Level 15" level="GOLD" difficulty="HARD">
             <description>Starting from level 1, get to level 15 without
             getting a game over.</description>
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="15" />
         </achievement>
-        <achievement name="Survive To Level 20" level="PLATINUM" difficulty="HARD">
+        <achievement name="Survive to Level 20" level="PLATINUM" difficulty="HARD">
             <description>Starting from level 1, get to level 20 without
             getting a game over.</description>
             <rule type="START_LEVEL" operation="EQ" value="1" />
