@@ -345,9 +345,10 @@ public class PieceGrid extends AbstractEntity
 				if (structure[i][j])
                 {
                     spriteArray[i][j].draw(
-                                x + offsetX + (i) * cellWidth,
-                                y + offsetY + (j) * cellHeight
-                            ).end();
+                            x + offsetX + (i) * cellWidth,
+                            y + offsetY + (j) * cellHeight)
+                            .opacity( this.opacity )
+                            .end();
                 } // end if
             } // end for
         } // end for	

@@ -7,24 +7,31 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
+import ca.couchware.wezzle2d.ResourceFactory;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FadeAnimation.Type;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.piece.PieceDot;
+import ca.couchware.wezzle2d.piece.PieceGrid;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.Box;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import java.awt.Color;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -100,8 +107,11 @@ public class HelpGroup extends AbstractGroup
     
     // (0,0) is the top-left tile and 
     // (2, 1) is the bottom-right.
-    private ImmutablePosition[][] linePositionGrid = new ImmutablePosition[LineColumns][LineRows];
+    private ImmutablePosition[][] lineTileGridPositions = new ImmutablePosition[LineColumns][LineRows];
     private Tile[][] lineTileGrid = new Tile[LineColumns][LineRows];
+
+    private ImmutablePosition linePieceGridPosition;
+    private PieceGrid linePieceGrid;
 
     private void createLineAnimationEntites(List<IEntity> entityList)
     {
@@ -109,8 +119,8 @@ public class HelpGroup extends AbstractGroup
         final int totalHeight = hub.boardMan.getCellWidth() * LineRows;
 
         final int gridX = LineRect.getX() + (LineRect.getWidth()  - totalWidth)  / 2;
-        final int gridY = LineRect.getY() + (LineRect.getHeight() - totalHeight) / 2;
-        
+        final int gridY = LineRect.getY() + (LineRect.getHeight() - totalHeight) / 2;      
+
         this.lineTileGrid[0][0] = TileHelper.makeTile(
                 TileType.NORMAL, TileColor.BLUE, gridX, gridY);
 
@@ -139,9 +149,32 @@ public class HelpGroup extends AbstractGroup
             for (int j = 0; j < LineColumns; j++)
             {
                 entityList.add( this.lineTileGrid[j][i] );
-                this.linePositionGrid[j][i] = this.lineTileGrid[j][i].getPosition();
+                this.lineTileGridPositions[j][i] = this.lineTileGrid[j][i].getPosition();
             }
         }
+
+        this.linePieceGrid = new PieceGrid
+                .Builder(
+                    gridX - hub.boardMan.getCellWidth(),
+                    gridY + hub.boardMan.getCellHeight(),
+                    PieceGrid.RenderMode.SPRITE )
+                .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT ) )
+                .alignmentMode( PieceGrid.AlignmentMode.TO_PIECE )
+                .build();
+
+        this.linePieceGrid.loadStructure( new PieceDot().getStructure() );
+        this.linePieceGridPosition = this.linePieceGrid.getPosition();
+
+        entityList.add(this.linePieceGrid);
+
+        final ITextLabel label = new ResourceFactory
+                .LabelBuilder(LineRect.getCenterX(), LineRect.getMaxY())
+                .alignment( EnumSet.of(Alignment.CENTER, Alignment.BOTTOM) )
+                .text( "Remove tiles to make lines." )
+                .color( hub.settingsMan.getColor( Key.GAME_COLOR_PRIMARY) )
+                .build();
+
+        entityList.add(label);
     }
 
     private void resetLineAnimationEntities()
@@ -152,10 +185,13 @@ public class HelpGroup extends AbstractGroup
             {
                 this.lineTileGrid[j][i].setWidth( hub.boardMan.getCellWidth() );
                 this.lineTileGrid[j][i].setHeight( hub.boardMan.getCellHeight() );
-                this.lineTileGrid[j][i].setPosition( this.linePositionGrid[j][i] );
+                this.lineTileGrid[j][i].setPosition( this.lineTileGridPositions[j][i] );
                 this.lineTileGrid[j][i].setOpacity( 100 );
             }
         }
+
+        this.linePieceGrid.setPosition( this.linePieceGridPosition );
+        this.linePieceGrid.setOpacity( 100 );
     }
 
     private IAnimation createLineAnimation()
@@ -167,8 +203,16 @@ public class HelpGroup extends AbstractGroup
         Tile line2 = this.lineTileGrid[1][1];
         Tile line3 = this.lineTileGrid[2][1];
 
+        IAnimation moveGrid = new MoveAnimation
+                .Builder( this.linePieceGrid )
+                .wait( 1000 )
+                .speed( 100 )
+                .theta( 0 )
+                .maxX( this.linePieceGrid.getX() + hub.boardMan.getCellWidth() )
+                .build();      
+
         IAnimation fade = new FadeAnimation
-                .Builder(FadeAnimation.Type.OUT, clicked)
+                .Builder(FadeAnimation.Type.OUT, new EntityGroup(clicked, this.linePieceGrid))
                 .wait( 500 )
                 .duration( 500 )
                 .build();
@@ -277,6 +321,7 @@ public class HelpGroup extends AbstractGroup
 
         IAnimation meta = new MetaAnimation
                 .Builder()
+                .add( moveGrid )
                 .add( fade )
                 .add( moveDownBlue )
                 .add( moveLeftRed )
