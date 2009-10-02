@@ -34,8 +34,234 @@
                 <item type="ROCKET" />
             </item>
         </rule>
-    </achievement>   
-
+    </achievement>
+    <achievement name="Missile Launch" level="BRONZE" difficulty="NONE">
+      <description>Fire a rocket into a bomb.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="BOMB" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Pod Shot" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into another rocket
+      into a bomb.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="ROCKET">
+                <item type="BOMB" />
+            </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Gravity Blast" level="BRONZE" difficulty="NONE">
+      <description>Fire a rocket into a gravity.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="GRAVITY" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Gravity snipe" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into another rocket
+      into a gravity.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="ROCKET">
+                <item type="GRAVITY" />
+            </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Explosion" level="BRONZE" difficulty="NONE">
+      <description>Fire a rocket into a star.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="STAR" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Bazooka Blast" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into another rocket
+      into a star.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="ROCKET">
+                <item type="STAR" />
+            </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Gravity Blast!" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into a bomb
+      into a gravity.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="BOMB">
+                <item type="GRAVITY" />
+            </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Trifecta!" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into a bomb
+      into a star.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="BOMB">
+                <item type="STAR" />
+            </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="KABOOM!" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into a bomb
+      into a rocket.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="BOMB">
+                <item type="ROCKET" />
+            </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Money Shot" level="BRONZE" difficulty="NONE">
+      <description>Fire a rocket into a X2</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X2" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Trick Shot" level="BRONZE" difficulty="NONE">
+      <description>Fire a rocket into a X3.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X3" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Slick" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into a gravity.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X4" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Money Lover" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into two X2.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X2" />
+            <item type="X2" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Small Time" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into three X3.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X2" />
+            <item type="X2" />
+            <item type="X2" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Greedy" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into a X2 and a X3.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X2" />
+            <item type="X3" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Big Eyes" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into a X2 and a X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X2" />
+            <item type="X4" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Reaching" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into a an X3 and X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X3" />
+            <item type="X4" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Once in a lifetime" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into an X2, X3 and X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+            <item type="X2" />
+            <item type="X3" />
+            <item type="X4" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Incredible!" level="PLATINUM" difficulty="NONE">
+      <description>Fire a rocket into a rocket into an X2, X3 and X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+           <item type="ROCKET">
+            <item type="X2" />
+            <item type="X3" />
+            <item type="X4" />
+           </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Super" level="PLATINUM" difficulty="NONE">
+      <description>Fire a rocket into a rocket into an X3 and X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+           <item type="ROCKET">
+            <item type="X3" />
+            <item type="X4" />
+           </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Wow!" level="PLATINUM" difficulty="NONE">
+      <description>Fire a rocket into a rocket into an X2 and X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+           <item type="ROCKET">
+            <item type="X2" />
+            <item type="X4" />
+           </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Unreal!" level="PLATINUM" difficulty="NONE">
+      <description>Fire a rocket into a rocket into an X2 and X3.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+           <item type="ROCKET">
+            <item type="X2" />
+            <item type="X3" />
+           </item>
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="End Game" level="PLATINUM" difficulty="NONE">
+      <description>Fire a rocket into a rocket into three X2s.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="ROCKET">
+           <item type="ROCKET">
+            <item type="X2" />
+            <item type="X2" />
+            <item type="X2" />
+           </item>
+        </item>
+      </rule>
+    </achievement>
     <!-- Gravity Achievements -->
     <achievement name="Gravitron" level="BRONZE" difficulty="NONE">
       <description>Activate a gravity tile.</description>      
@@ -60,6 +286,105 @@
       <rule type="COLLISION" operation="BETWEEN">
         <item type="BOMB">
             <item type="ALL_ITEMS" />
+        </item>
+      </rule>
+    </achievement>
+     <achievement name="Money blast" level="BRONZE" difficulty="NONE">
+      <description>Fire a bomb into a X2</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X2" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Trick Blast" level="BRONZE" difficulty="NONE">
+      <description>Fire a bomb into a X3.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X3" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Slack" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into a gravity.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X4" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Money Blaster" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into two X2.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X2" />
+            <item type="X2" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Small Time Bomber" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into three X3.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X2" />
+            <item type="X2" />
+            <item type="X2" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Greedier" level="SILVER" difficulty="NONE">
+      <description>Fire a rocket into a X2 and a X3.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X2" />
+            <item type="X3" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Big Eyed Blast" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into a X2 and a X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X2" />
+            <item type="X4" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Lurching" level="GOLD" difficulty="NONE">
+      <description>Fire a rocket into a an X3 and X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X3" />
+            <item type="X4" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Once in two lifetimes" level="PLATINUM" difficulty="NONE">
+      <description>Fire a bomb into an X2, X3 and X4.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="X2" />
+            <item type="X3" />
+            <item type="X4" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Unlikely" level="PLATINUM" difficulty="NONE">
+      <description>Fire a bomb into a rocket and a gravity.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="ROCKET" />
+            <item type="GRAVITY" />
+        </item>
+      </rule>
+    </achievement>
+    <achievement name="Rare" level="PLATINUM" difficulty="NONE">
+      <description>Fire a bomb into a rocket into a gravity.</description>
+      <rule type="COLLISION" operation="BETWEEN">
+        <item type="BOMB">
+            <item type="ROCKET" >
+                <item type="GRAVITY" />
+            </item>
         </item>
       </rule>
     </achievement>
