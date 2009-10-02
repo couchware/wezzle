@@ -1,10 +1,10 @@
 package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.util.IBuilder;
+import ca.couchware.wezzle2d.util.ImmutableDimensions;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.util.ImmutableDimensions;
 
 /**
  * An animation that can zoom an entity in, out, or in and out in a loop.
@@ -47,14 +47,10 @@ public class ZoomAnimation extends AbstractAnimation
         LOOP_OUT
     }        
     
-    /**
-     * The entity being animated.
-     */
+    /** The entity being animated. */
     private IEntity entity;
     
-    /**
-     * The counter.
-     */
+    /** The counter. */
     private int ticks = 0;
     
     /**
@@ -64,44 +60,78 @@ public class ZoomAnimation extends AbstractAnimation
      */
     private int totalTicks = 0;
     
+    /** The speed of the zoom in. */
     private int speedIn;      
+    
+    /** The speed of the zoom in. */
     private int speedOut;      
           
+    /**
+     * The minimum width the entity may become before switching 
+     * states.
+     */
     final private int minWidth;
+    
+    /**
+     * The maximum width the entity may become before switching
+     * states.
+     */
     final private int maxWidth;
     
+    /** The current zoom type. */
     private Type type;
     
+    /** The initial dimensions of the entity. */
     private ImmutableDimensions dimensions;
+    
+    /** The initial position of the entity. */
     private ImmutablePosition position;
     
+    /** The amount of time, in ms, to wait before starting the zoom. */
     final private int wait;        
-    final private int duration;
     
+    /** The maximum duration of the zoom. */
+    final private int duration;
+
+    /**
+     * If this is set to true, the position won't be recorded until the
+     * animation is run.
+     */
+    final private boolean lateInitialization;
+
+    /**
+     * Builds a zoom animation.
+     * @param builder
+     */
     private ZoomAnimation(Builder builder)
     {                        
         // Save a reference to the entity.
-        this.type = builder.type;
-        this.entity = builder.entity;   
-        this.speedIn = builder.speedIn;
+        this.type     = builder.type;
+        this.entity   = builder.entity;
+        this.speedIn  = builder.speedIn;
         this.speedOut = builder.speedOut;
-        this.wait = builder.wait;
-        this.duration = builder.duration;                
+        this.wait     = builder.wait;
+        this.duration = builder.duration;
+        this.lateInitialization = builder.lateInitialization;
         
         // Round min width to nearest even number.
-        this.minWidth = builder.minWidth < 0 ? 0 : builder.minWidth;
+        minWidth = builder.minWidth < 0 ? 0 : builder.minWidth;
                 
         // Round max width to nearest even number.
-        this.maxWidth = builder.maxWidth < 0 ? entity.getWidth() : builder.maxWidth;
+        maxWidth = builder.maxWidth < 0 ? entity.getWidth() : builder.maxWidth;
                
         // Remember initial dimensions.
-        this.dimensions = new ImmutableDimensions(entity.getWidth(), entity.getHeight());                
+        dimensions =
+                new ImmutableDimensions(entity.getWidth(), entity.getHeight());
+        
+        if (!this.lateInitialization) initialize();
     }
 
-    private void determinePosition()
+    private void initialize()
     {
         // Remember initial position.
-        this.position = new ImmutablePosition(entity.getX(), entity.getY());
+        position =
+                new ImmutablePosition(entity.getX(), entity.getY());
 
         // Set the entity up based on what type of zoom we're doing.
         int dw = 0;
@@ -144,6 +174,7 @@ public class ZoomAnimation extends AbstractAnimation
         private int maxWidth = -1;
         private int speedIn = 8;
         private int speedOut = 8;
+        private boolean lateInitialization = false;
         
         public Builder(Type type, IEntity entity)
         {
@@ -164,6 +195,23 @@ public class ZoomAnimation extends AbstractAnimation
         public Builder speedOut(int val) { speedOut = val; return this; }
         public Builder speed(int val) { speedIn = val; speedOut = val; return this; }
 
+        /**
+         * This is a hack hack hack parameter.  Basically it exists to allow
+         * the help animations to work properly.  It is to compensate for a
+         * crappy class design.
+         * @param val
+         * @return
+         */
+        public Builder lateInitialization(boolean val) 
+        {
+            if (this.type != Type.IN)
+                throw new IllegalArgumentException(
+                        "Late initialization is only available for Zoom IN");
+
+            lateInitialization = val;
+            return this;
+        }
+
         public ZoomAnimation build()
         {
             return new ZoomAnimation(this);
@@ -175,8 +223,7 @@ public class ZoomAnimation extends AbstractAnimation
         // Make sure we've set the started flag.
         if (!this.started)
         {            
-            // Record the initial position.
-            determinePosition();
+            if (this.lateInitialization) initialize();
             setStarted();                       
         }
         
@@ -273,7 +320,8 @@ public class ZoomAnimation extends AbstractAnimation
                     
                     break;
                                                         
-                default: throw new AssertionError();
+                default:
+                    throw new AssertionError();
             }                       
         } // end if            
     }
