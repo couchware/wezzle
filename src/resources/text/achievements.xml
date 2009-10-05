@@ -33,7 +33,7 @@
             </rule>
         </achievement>
         <achievement name="Gravimetric Blast" level="BRONZE" difficulty="NONE">
-            <description>Fire a rocket into a gravity.</description>
+            <description>Fire a rocket into a gravity well.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
                     <item type="GRAVITY" />
@@ -128,6 +128,14 @@
                 </item>
             </rule>
         </achievement>
+        <achievement name="Sniper" level="PLATINUM" difficulty="NONE">
+            <description>Complete five "Sniped" achievements.</description>
+            <rule type="META">
+                <amount type="COMPLETE" value="5" operation="GTEQ" />
+                <achievement name="Sniped Chain Reaction" />
+                <!-- And the rest when we're done... -->
+            </rule>
+        </achievement>
 
         <!-- All two item achievements prefixed with a bomb are -->
         <!-- called "Flared" achievements. -->
@@ -140,6 +148,14 @@
                         <item type="GRAVITY" />
                     </item>
                 </item>
+            </rule>
+        </achievement>
+        <achievement name="Grenadier" level="PLATINUM" difficulty="NONE">
+            <description>Complete five "Flared" achievements.</description>
+            <rule type="META">
+                <amount type="COMPLETE" value="5" operation="GTEQ" />
+                <achievement name="Flared Gravimetric Blast" />
+                <!-- And the rest when we're done... -->
             </rule>
         </achievement>
 
@@ -252,7 +268,7 @@
 
         <!-- Bomb Achievements -->
         <achievement name="Missile Launcher" level="SILVER" difficulty="NONE">
-            <description>Explode a bomb into two rockets.</description>
+            <description>Explode a bomb into two rockets at once.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="ROCKET" />
@@ -261,7 +277,7 @@
             </rule>
         </achievement>
         <achievement name="Collateral Damage" level="SILVER" difficulty="NONE">
-            <description>Make a bomb explode into another item tile.</description>
+            <description>Make a bomb explode into another item.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="ALL_ITEMS" />
@@ -312,7 +328,8 @@
             </rule>
         </achievement>        
         <achievement name="Silvered Bronze Bomb" level="SILVER" difficulty="NONE">
-            <description>Explode a bomb into a 2X and 3X multipler.</description>
+            <description>Explode a bomb into a 2X multiplier
+            and a 3X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X2" />
@@ -321,7 +338,8 @@
             </rule>
         </achievement>
         <achievement name="Gilded Bronze Bomb" level="GOLD" difficulty="NONE">
-            <description>Explode a bomb into a 2X and 4X multipler.</description>
+            <description>Explode a bomb into a 2X multiplier
+            and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X2" />
@@ -330,7 +348,8 @@
             </rule>
         </achievement>
         <achievement name="Gilded Silver Bomb" level="GOLD" difficulty="NONE">
-            <description>Explode a bomb into a 3X and 4X multipler.</description>
+            <description>Explode a bomb into a 3X multiplier
+            and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X3" />
@@ -339,7 +358,8 @@
             </rule>
         </achievement>
         <achievement name="Platinum Bomb" level="PLATINUM" difficulty="NONE">
-            <description>Explode a bomb into a 2x, 3X and 4X multipler.</description>
+            <description>Explode a bomb into a 2x multiplier, 
+            a 3X multiplier and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X2" />
@@ -349,27 +369,31 @@
             </rule>
         </achievement>
         <achievement name="Sniped Platinum Bomb" level="PLATINUM" difficulty="NONE">
-            <description>Fire a rocket into a bomb and a gravity.</description>
+            <description>Fire a rocket into a bomb into a 2x multiplier,
+            a 3X multiplier and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
-                <item type="BOMB">
-                    <item type="ROCKET" />
-                    <item type="GRAVITY" />
+                <item type="ROCKET">
+                    <item type="BOMB">
+                        <item type="X2" />
+                        <item type="X3" />
+                        <item type="X4" />
+                    </item>
                 </item>
             </rule>
         </achievement>        
 
         <!-- Star Achievements -->
         <achievement name="Starry-Eyed Surprise" level="SILVER" difficulty="NONE">
-            <description>Make a star tile activate another item tile.</description>
+            <description>Make a star tile activate another item.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="STAR">
                     <item type="ALL_ITEMS" />
                 </item>
             </rule>
         </achievement>
-        <achievement name="The Perfect Star Storm" level="GOLD" difficulty="NONE">
-            <description>Use a star to remove three multiplier tiles
-            and two item tiles, all in the same move.
+        <achievement name="The Perfect Star Storm" level="PLATINUM" difficulty="NONE">
+            <description>Use a star to remove any three multipliers
+            and any two items, all in the same move.
             </description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="STAR">
@@ -394,6 +418,10 @@
         <achievement name="Get 300,000 Points" level="GOLD" difficulty="NONE">
             <description>Get over 300,000 points in a game.</description>
             <rule type="SCORE" operation="GTEQ" value="300000" />
+        </achievement>
+        <achievement name="Get 600,000 Points" level="GOLD" difficulty="NONE">
+            <description>Get over 600,000 points in a game.</description>
+            <rule type="SCORE" operation="GTEQ" value="600000" />
         </achievement>
         <achievement name="Get 1,000,000 Points" level="PLATINUM" difficulty="NONE">
             <description>Get over 1,000,000 points in a game.</description>
@@ -473,6 +501,28 @@
             <rule type="START_LEVEL" operation="EQ" value="1" />
             <rule type="LEVEL" operation="EQ" value="20" />
         </achievement>
+     
+        <achievement name="Wezzle Veteran" level="GOLD" difficulty="NONE">
+            <description>Get to Level 10 on Easy, Normal
+            and Hard difficulties.</description>
+            <rule type="META">
+                <amount type="COMPLETE" value="3" operation="EQ" />
+                <achievement name="Stroll to Level 10" />
+                <achievement name="Get to Level 10" />
+                <achievement name="Survive to Level 10" />
+            </rule>
+        </achievement>      
+        <achievement name="Wezzle Champion" level="PLATINUM" difficulty="NONE">
+            <description>Get to Level 20 on Easy, Normal
+            and Hard difficulties.</description>
+            <rule type="META">
+                <amount type="COMPLETE" value="3" operation="EQ" />
+                <achievement name="Stroll to Level 20" />
+                <achievement name="Get to Level 20" />
+                <achievement name="Survive to Level 20" />
+            </rule>
+        </achievement>
+
         <achievement name="Get 30,000 By Level 5" level="SILVER" difficulty="NONE">
             <description>Starting from level 1, accumulate 30,000
             points by level 5.</description>

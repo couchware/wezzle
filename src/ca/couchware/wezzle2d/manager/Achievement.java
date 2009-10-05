@@ -238,7 +238,7 @@ public class Achievement implements IXMLizable
     private static Rule createMetaRule(Element rule)
     {
         Element amount = rule.getChild("amount");
-        Rule.Status metaType = Rule.Status.valueOf(amount.getAttributeValue("metatype").toString());
+        Rule.Status metaType = Rule.Status.valueOf(amount.getAttributeValue("type").toString());
         int value = Integer.parseInt(amount.getAttributeValue("value").toString());
         Rule.Operation operation = Rule.Operation.valueOf(amount.getAttributeValue("operation"));
 
