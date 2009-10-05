@@ -57,7 +57,7 @@ class HelpGroupLineQuadrant
             groupBoxRect.getX() + quadrantPad.getLeft(),
             groupBoxRect.getY() + quadrantPad.getTop(),
             groupBoxRect.getWidth()  / 2 - quadrantPad.getLeft() - quadrantPad.getRight(),
-            groupBoxRect.getHeight() / 2 - quadrantPad.getTop()  - quadrantPad.getBottom());
+            (groupBoxRect.getHeight() - 95) / 2 - quadrantPad.getTop()  - quadrantPad.getBottom());
 
         createEntites(this.entityList);
     }
@@ -76,10 +76,10 @@ class HelpGroupLineQuadrant
     private void createEntites(List<IEntity> entityList)
     {
         final int totalWidth  = hub.boardMan.getCellWidth() * columns;
-        final int totalHeight = hub.boardMan.getCellWidth() * rows;
+        //final int totalHeight = hub.boardMan.getCellWidth() * rows;
 
         final int gridX = rect.getX() + (rect.getWidth()  - totalWidth)  / 2;
-        final int gridY = rect.getY() + (rect.getHeight() - totalHeight) / 2;
+        final int gridY = rect.getY() + quadrantPad.getTop();
 
         this.tileGrid[0][0] = TileHelper.makeTile(
                 TileType.NORMAL, TileColor.BLUE, gridX, gridY);
@@ -128,7 +128,7 @@ class HelpGroupLineQuadrant
         entityList.add(this.pieceGrid);
 
         final ITextLabel label = new ResourceFactory
-                .LabelBuilder(rect.getCenterX(), rect.getMaxY())
+                .LabelBuilder(rect.getCenterX(), rect.getMaxY() - quadrantPad.getBottom())
                 .alignment( EnumSet.of(Alignment.CENTER, Alignment.BOTTOM) )
                 .text( "Remove tiles to make lines." )
                 .color( hub.settingsMan.getColor( Key.GAME_COLOR_PRIMARY) )

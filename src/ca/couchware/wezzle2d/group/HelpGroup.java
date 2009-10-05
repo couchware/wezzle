@@ -7,33 +7,18 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
-import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.animation.AnimationAdapter;
-import ca.couchware.wezzle2d.animation.FadeAnimation;
-import ca.couchware.wezzle2d.animation.FadeAnimation.Type;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
-import ca.couchware.wezzle2d.animation.MoveAnimation;
-import ca.couchware.wezzle2d.animation.ZoomAnimation;
-import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.piece.PieceDot;
-import ca.couchware.wezzle2d.piece.PieceGrid;
-import ca.couchware.wezzle2d.tile.Tile;
-import ca.couchware.wezzle2d.tile.TileColor;
-import ca.couchware.wezzle2d.tile.TileHelper;
-import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.Box;
-import ca.couchware.wezzle2d.ui.ITextLabel;
+import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.Padding;
-import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
-import java.awt.Color;
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * This group implements the help function, a dialog that shows the
@@ -53,7 +38,12 @@ public class HelpGroup extends AbstractGroup
     private HelpGroupLineQuadrant lineQuadrant;
 
     private Padding rotateQuadrantPad;
-    private HelpGroupRotateQuadrant rotateQuadrant;    
+    private HelpGroupRotateQuadrant rotateQuadrant;
+
+    private Padding itemQuadrantPad;
+    private HelpGroupItemQuadrant itemQuadrant;
+
+    private IButton closeButton;
 
     public HelpGroup(ManagerHub hub)
     {
@@ -67,13 +57,27 @@ public class HelpGroup extends AbstractGroup
         this.groupBox = createGroupBox();
         this.entityList.add( this.groupBox );
 
-        this.lineQuadrantPad = Padding.newInstance( 40, 20 );
+        this.lineQuadrantPad = Padding.newInstance( 40, 20, 25, 0 );
         this.lineQuadrant = new HelpGroupLineQuadrant(
                 hub, entityList, GroupBoxRect, lineQuadrantPad );
 
-        this.rotateQuadrantPad = Padding.newInstance( 20, 40 );
+        this.rotateQuadrantPad = Padding.newInstance( 20, 40, 25, 0 );
         this.rotateQuadrant = new HelpGroupRotateQuadrant(
                 hub, entityList, GroupBoxRect, rotateQuadrantPad );
+
+        this.itemQuadrantPad = Padding.newInstance( 40, 20, 25, 0 );
+        this.itemQuadrant = new HelpGroupItemQuadrant(
+                hub, entityList, GroupBoxRect, itemQuadrantPad );
+
+        // Create close button.
+        this.closeButton = new Button.Builder(400, 450)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .text("Close")
+                .normalOpacity(70)
+                .visible(false)
+                .build();
+        
+        this.entityList.add(this.closeButton);
         
         for (IEntity entity : entityList)
         {
@@ -116,6 +120,7 @@ public class HelpGroup extends AbstractGroup
                     .Builder()
                     .add( this.lineQuadrant.createAnimation() )
                     .add( this.rotateQuadrant.createAnimation() )
+                    .add( this.itemQuadrant.createAnimation() )
                     .runRule( MetaAnimation.RunRule.SEQUENCE )
                     .finishRule( MetaAnimation.FinishRule.ALL )
                     .build();
@@ -132,6 +137,7 @@ public class HelpGroup extends AbstractGroup
             this.animation = null;
             this.lineQuadrant.resetEntities();
             this.rotateQuadrant.resetEntities();
+            this.itemQuadrant.resetEntities();
         }
 
         // Invoke super.
