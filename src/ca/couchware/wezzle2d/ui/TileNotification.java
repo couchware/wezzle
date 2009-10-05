@@ -44,7 +44,7 @@ public class TileNotification extends AbstractNotification
                     this.x + offsetX + this.width / 2,
                     this.y + offsetY + 30)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Tile Available!")
+                .text("New Item Available")
                 .size(16)
                 .build();
 

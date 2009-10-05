@@ -48,7 +48,10 @@
                 </item>
             </rule>Supe
         </achievement>
-        <achievement name="Sniped Chain Reaction" level="SILVER" difficulty="NONE">
+
+        <!-- All two item achievements prefixed with a bomb are -->
+        <!-- called "Sniped" achievements. -->
+        <achievement name="Sniped Chain Reaction" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into another rocket
             into yet another rocket.
             </description>
@@ -60,7 +63,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Sniped Fireworks" level="SILVER" difficulty="NONE">
+        <achievement name="Sniped Fireworks" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into another rocket
             into a bomb.
             </description>
@@ -72,7 +75,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Sniped Gravimetric Blast" level="SILVER" difficulty="NONE">
+        <achievement name="Sniped Gravimetric Blast" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into another rocket
             into a gravity well.
             </description>
@@ -84,7 +87,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Sniped Supernova" level="SILVER" difficulty="NONE">
+        <achievement name="Sniped Supernova" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into another rocket
             into a star.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -125,6 +128,21 @@
                 </item>
             </rule>
         </achievement>
+
+        <!-- All two item achievements prefixed with a bomb are -->
+        <!-- called "Flared" achievements. -->
+        <achievement name="Flared Gravimetric Blast" level="PLATINUM" difficulty="NONE">
+            <description>Explode a bomb into a rocket which in turn hits
+            a gravity well.</description>
+            <rule type="COLLISION" operation="BETWEEN">
+                <item type="BOMB">
+                    <item type="ROCKET" >
+                        <item type="GRAVITY" />
+                    </item>
+                </item>
+            </rule>
+        </achievement>
+
         <achievement name="Bronze Rocket" level="BRONZE" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -133,7 +151,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Bronze Rocket (x2)" level="SILVER" difficulty="NONE">
+        <achievement name="Double Bronze Rocket" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into two 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -142,7 +160,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Bronze Rocket (x3)" level="SILVER" difficulty="NONE">
+        <achievement name="Triple Bronze Rocket" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into three 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -168,7 +186,7 @@
                 </item>
             </rule>
         </achievement>              
-        <achievement name="Bronze + Silver Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="Silvered Bronze Rocket" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier
             and a 3X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -178,7 +196,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Bronze + Gold Rocket" level="GOLD" difficulty="NONE">
+        <achievement name="Gilded Bronze Rocket" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier
             and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -188,8 +206,8 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Silver + Gold Rocket" level="GOLD" difficulty="NONE">
-            <description>Fire a rocket into a an 2X multiplier
+        <achievement name="Gilded Silver Rocket" level="GOLD" difficulty="NONE">
+            <description>Fire a rocket into a an 3X multiplier
             and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -199,7 +217,8 @@
             </rule>
         </achievement>
         <achievement name="Platinum Rocket" level="GOLD" difficulty="NONE">
-            <description>Fire a rocket into an X2, X3 and X4.</description>
+            <description>Fire a rocket into a 2X multiplier, a 3X multiplier
+            and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
                     <item type="X2" />
@@ -209,7 +228,8 @@
             </rule>
         </achievement>
         <achievement name="Sniped Platinum Rocket" level="PLATINUM" difficulty="NONE">
-            <description>Fire a rocket into a rocket into an X2, X3 and X4.</description>
+            <description>Fire a rocket into a rocket into a 2X multiplier,
+            a 3X multiplier and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
                     <item type="ROCKET">
@@ -248,51 +268,51 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Money blast" level="BRONZE" difficulty="NONE">
-            <description>Fire a bomb into a X2.</description>
+        <achievement name="Bronze Bomb" level="BRONZE" difficulty="NONE">
+            <description>Explode a bomb into a 2X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X2" />
                 </item>
             </rule>
         </achievement>
-        <achievement name="Trick Blast" level="BRONZE" difficulty="NONE">
-            <description>Fire a bomb into a X3.</description>
+        <achievement name="Double-Bronze Bomb" level="SILVER" difficulty="NONE">
+            <description>Explode a bomb into two 2X multipliers.</description>
+            <rule type="COLLISION" operation="BETWEEN">
+                <item type="BOMB">
+                    <item type="X2" />
+                    <item type="X2" />
+                </item>
+            </rule>
+        </achievement>
+        <achievement name="Triple-Bronze Bomb" level="GOLD" difficulty="NONE">
+            <description>Explode a bomb into three 2X multipliers.</description>
+            <rule type="COLLISION" operation="BETWEEN">
+                <item type="BOMB">
+                    <item type="X2" />
+                    <item type="X2" />
+                    <item type="X2" />
+                </item>
+            </rule>
+        </achievement>
+        <achievement name="Silver Bomb" level="BRONZE" difficulty="NONE">
+            <description>Explode a bomb into a 3X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X3" />
                 </item>
             </rule>
         </achievement>
-        <achievement name="Slack" level="SILVER" difficulty="NONE">
-            <description>Fire a rocket into a gravity.</description>
+        <achievement name="Gold Bomb" level="SILVER" difficulty="NONE">
+            <description>Explode a bomb into a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X4" />
                 </item>
             </rule>
-        </achievement>
-        <achievement name="Money Blaster" level="SILVER" difficulty="NONE">
-            <description>Fire a rocket into two X2.</description>
-            <rule type="COLLISION" operation="BETWEEN">
-                <item type="BOMB">
-                    <item type="X2" />
-                    <item type="X2" />
-                </item>
-            </rule>
-        </achievement>
-        <achievement name="Small Time Bomber" level="GOLD" difficulty="NONE">
-            <description>Fire a rocket into three X3.</description>
-            <rule type="COLLISION" operation="BETWEEN">
-                <item type="BOMB">
-                    <item type="X2" />
-                    <item type="X2" />
-                    <item type="X2" />
-                </item>
-            </rule>
-        </achievement>
-        <achievement name="Greedier" level="SILVER" difficulty="NONE">
-            <description>Fire a rocket into a X2 and a X3.</description>
+        </achievement>        
+        <achievement name="Silvered Bronze Bomb" level="SILVER" difficulty="NONE">
+            <description>Explode a bomb into a 2X and 3X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X2" />
@@ -300,8 +320,8 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Big Eyed Blast" level="GOLD" difficulty="NONE">
-            <description>Fire a rocket into a X2 and a X4.</description>
+        <achievement name="Gilded Bronze Bomb" level="GOLD" difficulty="NONE">
+            <description>Explode a bomb into a 2X and 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X2" />
@@ -309,8 +329,8 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Lurching" level="GOLD" difficulty="NONE">
-            <description>Fire a rocket into a an X3 and X4.</description>
+        <achievement name="Gilded Silver Bomb" level="GOLD" difficulty="NONE">
+            <description>Explode a bomb into a 3X and 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X3" />
@@ -318,8 +338,8 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Once in two lifetimes" level="PLATINUM" difficulty="NONE">
-            <description>Fire a bomb into an X2, X3 and X4.</description>
+        <achievement name="Platinum Bomb" level="PLATINUM" difficulty="NONE">
+            <description>Explode a bomb into a 2x, 3X and 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="X2" />
@@ -328,25 +348,15 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Unlikely" level="PLATINUM" difficulty="NONE">
-            <description>Fire a bomb into a rocket and a gravity.</description>
+        <achievement name="Sniped Platinum Bomb" level="PLATINUM" difficulty="NONE">
+            <description>Fire a rocket into a bomb and a gravity.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
                     <item type="ROCKET" />
                     <item type="GRAVITY" />
                 </item>
             </rule>
-        </achievement>
-        <achievement name="Rare" level="PLATINUM" difficulty="NONE">
-            <description>Fire a bomb into a rocket into a gravity.</description>
-            <rule type="COLLISION" operation="BETWEEN">
-                <item type="BOMB">
-                    <item type="ROCKET" >
-                        <item type="GRAVITY" />
-                    </item>
-                </item>
-            </rule>
-        </achievement>
+        </achievement>        
 
         <!-- Star Achievements -->
         <achievement name="Starry-Eyed Surprise" level="SILVER" difficulty="NONE">
