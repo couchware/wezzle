@@ -245,7 +245,7 @@ class HelpGroupRotateQuadrant
                 .build();
 
         IAnimation removeRed = new MetaAnimation
-                .Builder()
+                .Builder()                
                 .add( zoom1 )
                 .add( zoom2 )
                 .add( zoom3 )
@@ -306,6 +306,7 @@ class HelpGroupRotateQuadrant
                 .add( moveGrid )
                 .add( fade )
                 .add( moveDownRed )
+                .add( new WaitAnimation(500) )
                 .add( removeRed )
                 .add( moveDownBlue )
                 .add( fadeBlue )

@@ -80,13 +80,16 @@ public class MoveAnimation extends AbstractAnimation
     /**
      * The maximum y that the animation may move to.
      */
-    private int maxY;
-    
+    private int maxY;   
+
     /**
      * The launch angle, in degrees.
      */
     private int theta;
-    
+
+    /** The theta offset. */
+    private double thetaOffset;
+
     /**
      * The anglar velocity, in degrees / sec.
      */
@@ -194,7 +197,8 @@ public class MoveAnimation extends AbstractAnimation
         // Make sure we've set the started flag.
         if (!this.started)
         {
-            // Record the initial position.                
+            // Record the initial position.
+            this.thetaOffset = this.entity.getRotation();
             setStarted();
         }
         
@@ -267,8 +271,8 @@ public class MoveAnimation extends AbstractAnimation
             }           
             
             entity.setX(newX);                        
-            entity.setY(newY);                        
-            entity.setRotation((ms * omega) / 1000);            
+            entity.setY(newY);              
+            entity.setRotation( thetaOffset + (Math.min( ms, duration ) * omega) / 1000 );
                     
             if ((finishRule == FinishRule.FIRST && (doneX || doneY ))
                 || (finishRule == FinishRule.BOTH && (doneX && doneY)))                

@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.animation.WaitAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IEntity;
@@ -210,25 +211,25 @@ class HelpGroupLineQuadrant
                 .build();
 
         IAnimation zoom1 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line1 )
+                .Builder( ZoomAnimation.Type.IN, line1 )                
                 .lateInitialization( true )
                 .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
                 .build();
 
         IAnimation zoom2 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line2 )
+                .Builder( ZoomAnimation.Type.IN, line2 )                
                 .lateInitialization( true )
                 .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
                 .build();
 
         IAnimation zoom3 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line3 )
+                .Builder( ZoomAnimation.Type.IN, line3 )                
                 .lateInitialization( true )
                 .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
                 .build();
 
         IAnimation removeBlue = new MetaAnimation
-                .Builder()
+                .Builder()                
                 .add( zoom1 )
                 .add( zoom2 )
                 .add( zoom3 )
@@ -288,6 +289,7 @@ class HelpGroupLineQuadrant
                 .add( fade )
                 .add( moveDownBlue )
                 .add( moveLeftRed )
+                .add( new WaitAnimation(500) )
                 .add( removeBlue )
                 .add( moveDownRed )
                 .add( fadeRed )

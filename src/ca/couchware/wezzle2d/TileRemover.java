@@ -16,7 +16,9 @@ import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation.FinishRule;
+import ca.couchware.wezzle2d.animation.MetaAnimation.RunRule;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.animation.WaitAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
@@ -1060,17 +1062,59 @@ public class TileRemover implements IResettable, ILevelListener
 
     private IAnimation animateRemove(final ManagerHub hub, final Tile t)
     {
-        IAnimation a1 = new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
+        int minOpacity = 60;
+        int duration   = 50;
+
+        IAnimation fadeOut = new FadeAnimation
+                .Builder( FadeAnimation.Type.OUT, t )
+                .duration( duration )
+                .minOpacity( minOpacity )
+                .build();
+
+        IAnimation fadeIn = new FadeAnimation
+                .Builder( FadeAnimation.Type.IN, t )
+                .duration( duration )
+                .minOpacity( minOpacity )
+                .build();
+
+        IAnimation fadeOut2 = new FadeAnimation
+                .Builder( FadeAnimation.Type.OUT, t )
+                .duration( duration )
+                .minOpacity( minOpacity )
+                .build();
+
+        IAnimation fadeIn2 = new FadeAnimation
+                .Builder( FadeAnimation.Type.IN, t )
+                .duration( duration )
+                .minOpacity( minOpacity )
+                .build();
+
+        IAnimation zoom = new ZoomAnimation.Builder(ZoomAnimation.Type.IN, t)
                 .speed(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED))
                 .build();
 
-        IAnimation a2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, t)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_FADE_DURATION))
                 .build();
 
-        IAnimation meta = new MetaAnimation.Builder().finishRule(FinishRule.ALL)
-                .add(a1).add(a2).build();
+        IAnimation zoomFade = new MetaAnimation.Builder()                
+                .add( zoom )
+                .add( fade )
+                .runRule( RunRule.SIMULTANEOUS )
+                .finishRule( FinishRule.ALL )
+                .build();
+
+        IAnimation meta = new MetaAnimation.Builder()
+                .add( fadeOut )
+                .add( fadeIn )
+                .add( fadeOut2 )
+                .add( fadeIn2 )
+                //.add( new WaitAnimation(10000) )
+                .add( zoomFade )
+                .runRule( RunRule.SEQUENCE )
+                .finishRule( FinishRule.ALL )
+                .build();
 
         return meta;
     }
