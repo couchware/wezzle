@@ -139,7 +139,7 @@
 
         <!-- All two item achievements prefixed with a bomb are -->
         <!-- called "Flared" achievements. -->
-        <achievement name="Flared Gravimetric Blast" level="PLATINUM" difficulty="NONE">
+        <achievement name="Flared Gravimetric Blast" level="GOLD" difficulty="NONE">
             <description>Explode a bomb into a rocket which in turn hits
             a gravity well.</description>
             <rule type="COLLISION" operation="BETWEEN">

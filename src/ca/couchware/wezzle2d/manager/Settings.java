@@ -110,7 +110,10 @@ public class Settings
         ANIMATION_LEVEL_MOVE_DURATION(Integer.class),
         ANIMATION_LEVEL_MOVE_GRAVITY(Integer.class),
         ANIMATION_LEVEL_FADE_DURATION(Integer.class),
-        
+
+        ANIMATION_LINE_REMOVE_PULSE_MIN_OPACITY(Integer.class),
+        ANIMATION_LINE_REMOVE_PULSE_CYCLE_DURATION(Integer.class),
+        ANIMATION_LINE_REMOVE_PULSE_CYCLE_COUNT(Integer.class),
         ANIMATION_LINE_REMOVE_ZOOM_SPEED(Integer.class),
         ANIMATION_LINE_REMOVE_FADE_WAIT(Integer.class),
         ANIMATION_LINE_REMOVE_FADE_DURATION(Integer.class),

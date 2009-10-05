@@ -38,6 +38,9 @@
   <entry name="Animation.Level.Move.Duration">400</entry>  
   <entry name="Animation.Level.Move.Gravity">0</entry>
   <entry name="Animation.Level.Fade.Duration">400</entry>
+  <entry name="Animation.Line.Remove.Pulse.Min.Opacity">60</entry>
+  <entry name="Animation.Line.Remove.Pulse.Cycle.Duration">100</entry>
+  <entry name="Animation.Line.Remove.Pulse.Cycle.Count">2</entry>
   <entry name="Animation.Line.Remove.Zoom.Speed">50</entry>
   <entry name="Animation.Line.Remove.Fade.Wait">0</entry>
   <entry name="Animation.Line.Remove.Fade.Duration">0</entry>

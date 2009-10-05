@@ -7,12 +7,13 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
+import ca.couchware.wezzle2d.TileRemover;
+import ca.couchware.wezzle2d.animation.AnimationHelper;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.animation.WaitAnimation;
-import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -222,29 +223,57 @@ class HelpGroupLineQuadrant
                 .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
                 .build();
 
-        IAnimation zoom1 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line1 )                
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
-                .build();
+//        IAnimation fadeOut = new FadeAnimation
+//                .Builder( FadeAnimation.Type.OUT, t )
+//                .duration( duration )
+//                .minOpacity( minOpacity )
+//                .build();
+//
+//        IAnimation fadeIn = new FadeAnimation
+//                .Builder( FadeAnimation.Type.IN, t )
+//                .duration( duration )
+//                .minOpacity( minOpacity )
+//                .build();
+//
+//        IAnimation fadeOut2 = new FadeAnimation
+//                .Builder( FadeAnimation.Type.OUT, t )
+//                .duration( duration )
+//                .minOpacity( minOpacity )
+//                .build();
+//
+//        IAnimation fadeIn2 = new FadeAnimation
+//                .Builder( FadeAnimation.Type.IN, t )
+//                .duration( duration )
+//                .minOpacity( minOpacity )
+//                .build();
 
-        IAnimation zoom2 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line2 )                
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
-                .build();
+//        IAnimation zoom1 = new ZoomAnimation
+//                .Builder( ZoomAnimation.Type.IN, line1 )
+//                .lateInitialization( true )
+//                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
+//                .build();
+//
+//        IAnimation zoom2 = new ZoomAnimation
+//                .Builder( ZoomAnimation.Type.IN, line2 )
+//                .lateInitialization( true )
+//                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
+//                .build();
+//
+//        IAnimation zoom3 = new ZoomAnimation
+//                .Builder( ZoomAnimation.Type.IN, line3 )
+//                .lateInitialization( true )
+//                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
+//                .build();
 
-        IAnimation zoom3 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line3 )                
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
-                .build();
+        IAnimation remove1 = AnimationHelper.animateRemove( hub, line1 );
+        IAnimation remove2 = AnimationHelper.animateRemove( hub, line2 );
+        IAnimation remove3 = AnimationHelper.animateRemove( hub, line3 );
 
         IAnimation removeBlue = new MetaAnimation
                 .Builder()                
-                .add( zoom1 )
-                .add( zoom2 )
-                .add( zoom3 )
+                .add( remove1 )
+                .add( remove2 )
+                .add( remove3 )
                 .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
                 .finishRule( MetaAnimation.FinishRule.ALL )
                 .build();
