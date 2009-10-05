@@ -22,6 +22,7 @@ import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
@@ -80,6 +81,17 @@ class HelpGroupItemQuadrant
 
         final int gridX = rect.getX() + (rect.getWidth()  - totalWidth)  / 2;
         final int gridY = rect.getY() + quadrantPad.getTop();
+
+        Box box = new Box
+                .Builder( rect.getX(), rect.getY() )
+                .width( rect.getWidth() )
+                .height( rect.getHeight() + 21 )
+                .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT) )
+                .border( Box.Border.MEDIUM )
+                .opacity( 80 )
+                .build();
+
+        entityList.add(box);
 
         this.tileGrid[0][0] = TileHelper.makeTile(
                 TileType.NORMAL, TileColor.BLUE, gridX, gridY);

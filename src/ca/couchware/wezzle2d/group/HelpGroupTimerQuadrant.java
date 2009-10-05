@@ -11,7 +11,6 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
-import ca.couchware.wezzle2d.animation.WaitAnimation;
 import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IEntity;
@@ -37,7 +36,7 @@ import java.util.List;
  *
  * @author cdmckay
  */
-class HelpGroupLineQuadrant
+class HelpGroupTimerQuadrant
 {
     private final ManagerHub hub;
     private final List<IEntity> entityList;
@@ -47,7 +46,7 @@ class HelpGroupLineQuadrant
 
     private final ImmutableRectangle rect;
 
-    public HelpGroupLineQuadrant(ManagerHub hub, List<IEntity> entityList,
+    public HelpGroupTimerQuadrant(ManagerHub hub, List<IEntity> entityList,
             ImmutableRectangle groupBoxRect, Padding quadrantPadding)
     {
         this.hub = hub;
@@ -56,8 +55,8 @@ class HelpGroupLineQuadrant
         this.quadrantPad = quadrantPadding;
 
         this.rect = new ImmutableRectangle(
-            groupBoxRect.getX() + quadrantPad.getLeft(),
-            groupBoxRect.getY() + quadrantPad.getTop(),
+            groupBoxRect.getCenterX() + quadrantPad.getLeft(),
+            (groupBoxRect.getCenterY() - 48) + quadrantPad.getTop(),
             groupBoxRect.getWidth()  / 2 - quadrantPad.getLeft() - quadrantPad.getRight(),
             (groupBoxRect.getHeight() - 95) / 2 - quadrantPad.getTop()  - quadrantPad.getBottom());
 
@@ -143,7 +142,7 @@ class HelpGroupLineQuadrant
         final ITextLabel label = new ResourceFactory
                 .LabelBuilder(rect.getCenterX(), rect.getMaxY() - quadrantPad.getBottom())
                 .alignment( EnumSet.of(Alignment.CENTER, Alignment.BOTTOM) )
-                .text( "Remove tiles to make lines." )
+                .text( "Make lines to use items." )
                 .color( hub.settingsMan.getColor( Key.GAME_COLOR_PRIMARY) )
                 .build();
 
@@ -179,7 +178,7 @@ class HelpGroupLineQuadrant
         IAnimation moveGrid = new MoveAnimation
                 .Builder( this.pieceGrid )
                 .wait( 1000 )
-                .speed( 100 )
+                .speed( 150 )
                 .theta( 0 )
                 .maxX( this.pieceGrid.getX() + hub.boardMan.getCellWidth() )
                 .build();
@@ -223,25 +222,25 @@ class HelpGroupLineQuadrant
                 .build();
 
         IAnimation zoom1 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line1 )                
+                .Builder( ZoomAnimation.Type.IN, line1 )
                 .lateInitialization( true )
                 .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
                 .build();
 
         IAnimation zoom2 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line2 )                
+                .Builder( ZoomAnimation.Type.IN, line2 )
                 .lateInitialization( true )
                 .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
                 .build();
 
         IAnimation zoom3 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line3 )                
+                .Builder( ZoomAnimation.Type.IN, line3 )
                 .lateInitialization( true )
                 .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
                 .build();
 
         IAnimation removeBlue = new MetaAnimation
-                .Builder()                
+                .Builder()
                 .add( zoom1 )
                 .add( zoom2 )
                 .add( zoom3 )
@@ -301,7 +300,6 @@ class HelpGroupLineQuadrant
                 .add( fade )
                 .add( moveDownBlue )
                 .add( moveLeftRed )
-                .add( new WaitAnimation(500) )
                 .add( removeBlue )
                 .add( moveDownRed )
                 .add( fadeRed )

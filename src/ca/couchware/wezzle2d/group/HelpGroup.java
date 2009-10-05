@@ -43,6 +43,9 @@ public class HelpGroup extends AbstractGroup
     private Padding itemQuadrantPad;
     private HelpGroupItemQuadrant itemQuadrant;
 
+    private Padding timerQuadrantPad;
+    private HelpGroupTimerQuadrant timerQuadrant;
+
     private IButton closeButton;
 
     public HelpGroup(ManagerHub hub)
@@ -57,23 +60,26 @@ public class HelpGroup extends AbstractGroup
         this.groupBox = createGroupBox();
         this.entityList.add( this.groupBox );
 
-        this.lineQuadrantPad = Padding.newInstance( 40, 20, 25, 0 );
+        this.lineQuadrantPad = Padding.newInstance( 24, 2, 25, 0 );
         this.lineQuadrant = new HelpGroupLineQuadrant(
                 hub, entityList, GroupBoxRect, lineQuadrantPad );
 
-        this.rotateQuadrantPad = Padding.newInstance( 20, 40, 25, 0 );
+        this.rotateQuadrantPad = Padding.newInstance( 2, 24, 25, 0 );
         this.rotateQuadrant = new HelpGroupRotateQuadrant(
                 hub, entityList, GroupBoxRect, rotateQuadrantPad );
 
-        this.itemQuadrantPad = Padding.newInstance( 40, 20, 25, 0 );
+        this.itemQuadrantPad = Padding.newInstance( 24, 2, 25, 0 );
         this.itemQuadrant = new HelpGroupItemQuadrant(
                 hub, entityList, GroupBoxRect, itemQuadrantPad );
 
+        this.timerQuadrantPad = Padding.newInstance( 2, 24, 25, 0 );
+        this.timerQuadrant = new HelpGroupTimerQuadrant(
+                hub, entityList, GroupBoxRect, timerQuadrantPad );
+
         // Create close button.
-        this.closeButton = new Button.Builder(400, 450)
+        this.closeButton = new Button.Builder(400, 460)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Close")
-                .normalOpacity(70)
+                .text("Close")                
                 .visible(false)
                 .build();
         
@@ -102,8 +108,9 @@ public class HelpGroup extends AbstractGroup
                     GroupBoxRect.getCenterX(),
                     GroupBoxRect.getCenterY())
                 .alignment( EnumSet.of( Alignment.MIDDLE, Alignment.CENTER) )
-                .width(  GroupBoxRect.getWidth()  )
-                .height( GroupBoxRect.getHeight() )                
+                .width(  GroupBoxRect.getWidth() )
+                .height( GroupBoxRect.getHeight() )
+                .opacity( 95 )
                 .build();
 
         return box;
@@ -121,6 +128,7 @@ public class HelpGroup extends AbstractGroup
                     .add( this.lineQuadrant.createAnimation() )
                     .add( this.rotateQuadrant.createAnimation() )
                     .add( this.itemQuadrant.createAnimation() )
+                    .add( this.timerQuadrant.createAnimation() )
                     .runRule( MetaAnimation.RunRule.SEQUENCE )
                     .finishRule( MetaAnimation.FinishRule.ALL )
                     .build();
@@ -138,6 +146,7 @@ public class HelpGroup extends AbstractGroup
             this.lineQuadrant.resetEntities();
             this.rotateQuadrant.resetEntities();
             this.itemQuadrant.resetEntities();
+            this.timerQuadrant.resetEntities();
         }
 
         // Invoke super.
