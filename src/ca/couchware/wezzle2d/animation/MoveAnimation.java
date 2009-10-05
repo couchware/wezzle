@@ -271,8 +271,10 @@ public class MoveAnimation extends AbstractAnimation
             }           
             
             entity.setX(newX);                        
-            entity.setY(newY);              
-            entity.setRotation( thetaOffset + (Math.min( ms, duration ) * omega) / 1000 );
+            entity.setY(newY);
+
+            int t = duration != -1 ? Math.min( ms, duration ) : ms;
+            entity.setRotation( thetaOffset + (t * omega) / 1000 );
                     
             if ((finishRule == FinishRule.FIRST && (doneX || doneY ))
                 || (finishRule == FinishRule.BOTH && (doneX && doneY)))                
