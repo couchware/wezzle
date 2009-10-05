@@ -348,6 +348,7 @@ public class PieceGrid extends AbstractEntity
                             x + offsetX + (i) * cellWidth,
                             y + offsetY + (j) * cellHeight)
                             .opacity( this.opacity )
+                            .theta( this.theta )
                             .end();
                 } // end if
             } // end for

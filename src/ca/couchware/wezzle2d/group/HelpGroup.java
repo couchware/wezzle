@@ -147,6 +147,14 @@ public class HelpGroup extends AbstractGroup
     public void updateLogic(Game game, ManagerHub hub)
     {
         this.animationMan.animate();
+
+        // Check if the back button was pressed.
+        if (closeButton.isActivated())
+        {
+            // Hide all side triggered menues.
+            closeButton.setActivated(false);
+            hub.groupMan.hideGroup(this, !game.isCompletelyBusy());
+        }
     }
 
 }

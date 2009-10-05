@@ -166,7 +166,7 @@ class HelpGroupLineQuadrant
         IAnimation moveGrid = new MoveAnimation
                 .Builder( this.pieceGrid )
                 .wait( 1000 )
-                .speed( 150 )
+                .speed( 100 )
                 .theta( 0 )
                 .maxX( this.pieceGrid.getX() + hub.boardMan.getCellWidth() )
                 .build();

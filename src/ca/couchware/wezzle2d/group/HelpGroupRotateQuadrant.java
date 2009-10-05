@@ -26,6 +26,7 @@ import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
+import ca.couchware.wezzle2d.tutorial.RotateTutorial;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
@@ -66,7 +67,7 @@ class HelpGroupRotateQuadrant
         createEntites(this.entityList);
     }
             
-    private final static int Columns = 3;
+    private final static int Columns = 4;
     private final static int Rows    = 2;
 
     // (0,0) is the top-left tile and
@@ -83,7 +84,7 @@ class HelpGroupRotateQuadrant
         final int totalWidth  = hub.boardMan.getCellWidth() * Columns;
         //final int totalHeight = hub.boardMan.getCellWidth() * Rows;
 
-        final int gridX = rect.getX() + (rect.getWidth()  - totalWidth)  / 2;
+        final int gridX = rect.getX() + (rect.getWidth() - totalWidth) / 2;
         final int gridY = rect.getY() + quadrantPad.getTop();
 
         this.tileGrid[0][0] = TileHelper.makeTile(
@@ -97,6 +98,10 @@ class HelpGroupRotateQuadrant
                 TileType.NORMAL, TileColor.RED);
         TileHelper.toRightOf( this.tileGrid[1][0], this.tileGrid[2][0], 0);
 
+        this.tileGrid[3][0] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.PURPLE);
+        TileHelper.toRightOf( this.tileGrid[2][0], this.tileGrid[3][0], 0);
+
         this.tileGrid[0][1] = TileHelper.makeTile(
                 TileType.NORMAL, TileColor.RED);
         TileHelper.toBottomOf( this.tileGrid[0][0], this.tileGrid[0][1], 0);
@@ -108,6 +113,10 @@ class HelpGroupRotateQuadrant
         this.tileGrid[2][1] = TileHelper.makeTile(
                 TileType.NORMAL, TileColor.YELLOW);
         TileHelper.toRightOf( this.tileGrid[1][1], this.tileGrid[2][1], 0);
+
+        this.tileGrid[3][1] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.PURPLE);
+        TileHelper.toRightOf( this.tileGrid[2][1], this.tileGrid[3][1], 0);
 
         for (int i = 0; i < Rows; i++)
         {
@@ -122,7 +131,7 @@ class HelpGroupRotateQuadrant
         this.pieceGrid = new PieceGrid
                 .Builder(
                     gridX + hub.boardMan.getCellWidth() * 2,
-                    gridY,
+                    gridY - hub.boardMan.getCellHeight(),
                     PieceGrid.RenderMode.SPRITE )
                 .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT ) )
                 .alignmentMode( PieceGrid.AlignmentMode.TO_FULL_GRID )
@@ -164,7 +173,9 @@ class HelpGroupRotateQuadrant
 
     public IAnimation createAnimation()
     {
-        Tile clicked = this.tileGrid[2][1];
+        Tile clicked1 = this.tileGrid[2][1];
+        Tile clicked2 = this.tileGrid[3][1];
+        Tile clicked3 = this.tileGrid[3][0];
         Tile blue1 = this.tileGrid[0][0];
         Tile blue2 = this.tileGrid[1][0];
         Tile line1 = this.tileGrid[0][1];
@@ -179,7 +190,7 @@ class HelpGroupRotateQuadrant
             {
                 piece.rotateRight();
             }
-        });
+        });        
 
         IAnimation rotate2 = new WaitAnimation( 1000 );
         rotate2.addAnimationListener( new AnimationAdapter()
@@ -191,8 +202,17 @@ class HelpGroupRotateQuadrant
             }
         });
 
+        IAnimation moveGrid = new MoveAnimation
+                .Builder( pieceGrid )
+                .wait( 1000 )
+                .speed( 100 )
+                .theta( -90 )
+                .maxY( pieceGrid.getY() + hub.boardMan.getCellHeight())
+                .build();
+
         IAnimation fade = new FadeAnimation
-                .Builder(FadeAnimation.Type.OUT, new EntityGroup(clicked, this.pieceGrid))
+                .Builder(FadeAnimation.Type.OUT, 
+                    new EntityGroup(clicked1, clicked2, clicked3, this.pieceGrid))
                 .wait( 500 )
                 .duration( 500 )
                 .build();
@@ -203,7 +223,7 @@ class HelpGroupRotateQuadrant
                 .speed( hub.settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_Y ))
                 //.gravity( hub.settingsMan.getInt( Key.REFACTOR_SLOWER_GRAVITY ) )
                 .theta( -90 )
-                .maxY( clicked.getY() )
+                .maxY( clicked1.getY() )
                 .build();
 
         IAnimation zoom1 = new ZoomAnimation
@@ -238,7 +258,7 @@ class HelpGroupRotateQuadrant
                 .wait( 250 )
                 .speed( hub.settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_Y ))
                 .theta( -90 )
-                .maxY( clicked.getY() )
+                .maxY( clicked1.getY() )
                 .build();
 
         IAnimation moveDownBlue2 = new MoveAnimation
@@ -246,7 +266,7 @@ class HelpGroupRotateQuadrant
                 .wait( 250 )
                 .speed( hub.settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_Y ))
                 .theta( -90 )
-                .maxY( clicked.getY() )
+                .maxY( clicked1.getY() )
                 .build();
 
         IAnimation moveDownBlue = new MetaAnimation
@@ -283,6 +303,7 @@ class HelpGroupRotateQuadrant
                 .Builder()
                 .add( rotate1 )
                 .add( rotate2 )
+                .add( moveGrid )
                 .add( fade )
                 .add( moveDownRed )
                 .add( removeRed )
