@@ -120,8 +120,11 @@ public class AchievementMenu extends AbstractMenu
                 .rows(4)
                 .visible(false);
         for (Achievement ach : achievementList)
-        {            
-            builder.add(ach.getTitle());             
+        {
+            if (ach.getDateCompleted() != null)
+               builder.add("* " + ach.getTitle());
+            else
+                builder.add(ach.getTitle());
         }         
         scroller = builder.selectedIndex(0).build();
         entityList.add(scroller);
@@ -129,10 +132,7 @@ public class AchievementMenu extends AbstractMenu
         for (int i = 0; i < achievementList.size(); i++)
         {
             Achievement ach = achievementList.get(i);
-//            if (ach.getDateCompleted() == null)
-//                scroller.setColor(i, COLOR_NOT_COMPLETED);
-//            else
-                scroller.setColor(i, getColour(ach.getLevel().toString(), settingsMan));
+            scroller.setColor(i, getColor(ach.getLevel().toString(), settingsMan));
         }
         
         // The first box.
@@ -267,7 +267,7 @@ public class AchievementMenu extends AbstractMenu
     }
 
 
-    private Color getColour(String col, SettingsManager settingsMan){
+    private Color getColor(String col, SettingsManager settingsMan){
         if(col.equals("BRONZE"))
             return settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE);
         else if (col.equals("SILVER"))
