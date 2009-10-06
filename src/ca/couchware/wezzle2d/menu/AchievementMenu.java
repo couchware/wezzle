@@ -121,10 +121,7 @@ public class AchievementMenu extends AbstractMenu
                 .visible(false);
         for (Achievement ach : achievementList)
         {
-            if (ach.getDateCompleted() != null)
-               builder.add("* " + ach.getTitle());
-            else
-                builder.add(ach.getTitle());
+             builder.add(getPrefix(ach.getLevel().toString()) + ach.getTitle());
         }         
         scroller = builder.selectedIndex(0).build();
         entityList.add(scroller);
@@ -132,7 +129,10 @@ public class AchievementMenu extends AbstractMenu
         for (int i = 0; i < achievementList.size(); i++)
         {
             Achievement ach = achievementList.get(i);
-            scroller.setColor(i, getColor(ach.getLevel().toString(), settingsMan));
+             if (ach.getDateCompleted() == null)
+                scroller.setColor(i, COLOR_NOT_COMPLETED);
+             else
+                scroller.setColor(i, COLOR_COMPLETED);
         }
         
         // The first box.
@@ -276,6 +276,21 @@ public class AchievementMenu extends AbstractMenu
             return settingsMan.getColor(Key.ACHIEVEMENT_COLOR_GOLD);
         else if (col.equals("PLATINUM"))
             return settingsMan.getColor(Key.ACHIEVEMENT_COLOR_PLATINUM);
+
+        CouchLogger.get().recordMessage(this.getClass(), "Colour undefined");
+        return null;
+    }
+
+    private String getPrefix(String col)
+    {
+         if(col.equals("BRONZE"))
+            return "Brz - ";
+        else if (col.equals("SILVER"))
+            return "Sil - ";
+        else if (col.equals("GOLD"))
+            return "Gld - ";
+        else if (col.equals("PLATINUM"))
+            return "Plt - ";
 
         CouchLogger.get().recordMessage(this.getClass(), "Colour undefined");
         return null;
