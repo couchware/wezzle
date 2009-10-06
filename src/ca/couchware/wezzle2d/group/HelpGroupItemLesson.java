@@ -27,6 +27,7 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -36,25 +37,25 @@ import java.util.List;
  *
  * @author cdmckay
  */
-class HelpGroupItemQuadrant
+class HelpGroupItemLesson
 {
     private final ManagerHub hub;
-    private final List<IEntity> entityList;
+    private final List<IEntity> entities;
     
     private final Padding quadrantPad;
 
     private final ImmutableRectangle rect;
 
-    public HelpGroupItemQuadrant(ManagerHub hub, List<IEntity> entityList,
+    public HelpGroupItemLesson(ManagerHub hub, List<IEntity> parentEntities,
             ImmutableRectangle rect, Padding quadrantPadding)
     {
         this.hub = hub;
-        this.entityList = entityList;        
+        this.entities = new ArrayList<IEntity>();
         this.quadrantPad = quadrantPadding;
-
         this.rect = rect;
 
-        createEntites(this.entityList);
+        createEntities( this.entities );
+        //parentEntities.addAll( this.entities );
     }
             
     private final static int columns = 3;
@@ -68,24 +69,13 @@ class HelpGroupItemQuadrant
     private ImmutablePosition pieceGridPosition;
     private PieceGrid pieceGrid;
 
-    private void createEntites(List<IEntity> entityList)
+    private void createEntities(List<IEntity> entityList)
     {
         final int totalWidth  = hub.boardMan.getCellWidth() * columns;
         //final int totalHeight = hub.boardMan.getCellWidth() * rows;
 
         final int gridX = rect.getX() + (rect.getWidth()  - totalWidth)  / 2;
         final int gridY = rect.getY() + quadrantPad.getTop();
-
-        Box box = new Box
-                .Builder( rect.getX(), rect.getY() )
-                .width( rect.getWidth() )
-                .height( rect.getHeight() )
-                .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT) )
-                .border( Box.Border.MEDIUM )
-                .opacity( 90 )
-                .build();
-
-        entityList.add(box);
 
         this.tileGrid[0][0] = TileHelper.makeTile(
                 TileType.NORMAL, TileColor.BLUE, gridX, gridY);

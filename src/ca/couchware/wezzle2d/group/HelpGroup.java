@@ -7,16 +7,16 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
+import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
+import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.AnimationManager;
-import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.Box;
-import ca.couchware.wezzle2d.ui.Button;
-import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.util.EnumSet;
@@ -36,14 +36,19 @@ public class HelpGroup extends AbstractGroup
     private AnimationManager animationMan;
     private IAnimation animation;
 
-    private Padding lineQuadrantPad;
-    private HelpGroupLineQuadrant lineQuadrant;
+    private Padding linePad;
+    private Box lineBox;
+    private HelpGroupLineLesson lineLesson;
 
-    private Padding rotateQuadrantPad;
-    private HelpGroupRotateQuadrant rotateQuadrant;
+    private Padding rotatePad;
+    private Box rotateBox;
+    private HelpGroupRotateLesson rotateLesson;
 
-    private Padding itemQuadrantPad;
-    private HelpGroupItemQuadrant itemQuadrant;   
+    private Padding itemPad;
+    private Box itemBox;
+    private HelpGroupItemLesson itemLesson;
+
+    private int originalX;
 
 //    private IButton closeButton;
 
@@ -66,42 +71,12 @@ public class HelpGroup extends AbstractGroup
         int h = 150;
         int spacing = 10;
 
-        this.lineQuadrantPad = Padding.newInstance( 30 );
-        ImmutableRectangle lineRect = new ImmutableRectangle(
-                centerX - w / 2, 
-                centerY - h / 2 - spacing - h,
-                w, h);
+        createLineLessonEntities(centerX, centerY, w, h, spacing);
+        createRotateLessonEntities(centerX, centerY, w, h, spacing);
+        createItemLessonEntities(centerX, centerY, w, h, spacing);
 
-        this.lineQuadrant = new HelpGroupLineQuadrant(
-                hub, entityList, lineRect, lineQuadrantPad );
+        originalX = centerX - w / 2;
 
-        this.rotateQuadrantPad = Padding.newInstance( 30 );
-        ImmutableRectangle rotateRect = new ImmutableRectangle(
-                centerX - w / 2,
-                centerY - h / 2,
-                w, h);
-
-        this.rotateQuadrant = new HelpGroupRotateQuadrant(
-                hub, entityList, rotateRect, rotateQuadrantPad );
-
-        this.itemQuadrantPad = Padding.newInstance( 30 );
-        ImmutableRectangle itemRect = new ImmutableRectangle(
-                centerX - w / 2,
-                centerY - h / 2 + h + spacing,
-                w, h);
-
-        this.itemQuadrant = new HelpGroupItemQuadrant(
-                hub, entityList, itemRect, itemQuadrantPad );
-
-        // Create close button.
-//        this.closeButton = new Button.Builder(400, 460)
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .text("Close")
-//                .visible(false)
-//                .build();
-        
-//        this.entityList.add(this.closeButton);
-        
         for (IEntity entity : entityList)
         {
             entity.setVisible(false);
@@ -114,18 +89,18 @@ public class HelpGroup extends AbstractGroup
     {
         if (activated)
         {
-            hub.musicMan.fadeToGain(0.05);
-            //hub.layerMan.hide( Layer.UI );
-            //hub.layerMan.hide( Layer.BOARD );
+            hub.musicMan.fadeToGain(0.05);            
             game.getUI().hideBarsUsingFade();
             game.getUI().hideBoardUsingFade();
             //game.getUI().hideTraditionalPieceBoxUsingFade();
 
+            this.animationMan.remove( this.animation );
             this.animation = new MetaAnimation
                     .Builder()
-                    .add( this.lineQuadrant.createAnimation() )
-                    .add( this.rotateQuadrant.createAnimation() )
-                    .add( this.itemQuadrant.createAnimation() )         
+                    .add( createSlideFadeIn() )
+                    .add( this.lineLesson.createAnimation() )
+                    .add( this.rotateLesson.createAnimation() )
+                    .add( this.itemLesson.createAnimation() )
                     .runRule( MetaAnimation.RunRule.SEQUENCE )
                     .finishRule( MetaAnimation.FinishRule.ALL )
                     .build();
@@ -136,18 +111,18 @@ public class HelpGroup extends AbstractGroup
         {
             int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
             double gain = (double) intGain / 100.0;
-            hub.musicMan.fadeToGain(gain);
-            //hub.layerMan.show( Layer.UI );
-            //hub.layerMan.show( Layer.BOARD );
+            hub.musicMan.fadeToGain(gain);          
             game.getUI().showBarsUsingFade();
             game.getUI().showBoardUsingFade();
             //game.getUI().showTraditionalPieceBoxUsingFade();
 
-            this.animationMan.remove( this.animation );
-            this.animation = null;
-            this.lineQuadrant.resetEntities();
-            this.rotateQuadrant.resetEntities();
-            this.itemQuadrant.resetEntities();
+            this.animationMan.remove( this.animation );            
+            this.animation = createSlideFadeOut();            
+            game.getUI().getUIAnimationManager().add( this.animation );
+
+            this.lineLesson.resetEntities();
+            this.rotateLesson.resetEntities();
+            this.itemLesson.resetEntities();
         }
 
         // Invoke super.
@@ -164,23 +139,176 @@ public class HelpGroup extends AbstractGroup
             throw new IllegalArgumentException("Hub must not be null");
 
         this.animationMan.animate();
+    }
 
-        // Make sure something changed.
-        if ( !this.controlChanged() ) return;
+    private void createLineLessonEntities(
+            int centerX, int centerY, int w, int h, int spacing)
+    {        
+        ImmutableRectangle lineRect = new ImmutableRectangle(
+                centerX - w / 2,
+                centerY - h / 2 - spacing - h,
+                w, h );
+        
+        this.lineBox = new Box.Builder(
+                        lineRect.getX(),
+                        lineRect.getY() )
+                    .width( lineRect.getWidth() )
+                    .height( lineRect.getHeight() )
+                    .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
+                    .border( Box.Border.MEDIUM )
+                    .opacity( 90 )
+                    .build();
 
-        // Check if the back button was pressed.
-//        if (closeButton.isActivated())
-//        {
-//            // Hide all side triggered menues.
-//            closeButton.setActivated(false);
-//            hub.groupMan.hideGroup(
-//                        GroupManager.Type.OPTIONS,
-//                        GroupManager.Layer.MIDDLE,
-//                        !game.isCompletelyBusy());
-//        }
+        entityList.add( this.lineBox );
 
-        // Clear the change setting.
-        this.clearChanged();
+        this.linePad = Padding.newInstance( 30 );
+        this.lineLesson = new HelpGroupLineLesson( hub, entityList, lineRect, linePad );      
+    }
+
+    private void createRotateLessonEntities(
+            int centerX, int centerY, int w, int h, int spacing)
+    {
+        ImmutableRectangle rotateRect = new ImmutableRectangle(
+                centerX - w / 2,
+                centerY - h / 2,
+                w, h );
+
+        this.rotateBox = new Box.Builder(
+                        rotateRect.getX(),
+                        rotateRect.getY() )
+                    .width( rotateRect.getWidth() )
+                    .height( rotateRect.getHeight() )
+                    .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
+                    .border( Box.Border.MEDIUM )
+                    .opacity( 90 )
+                    .build();
+
+        entityList.add( this.rotateBox );
+
+        this.rotatePad = Padding.newInstance( 30 );
+        this.rotateLesson = new HelpGroupRotateLesson( hub, entityList, rotateRect, rotatePad );
+    }
+
+    private void createItemLessonEntities(
+            int centerX, int centerY, int w, int h, int spacing)
+    {
+        ImmutableRectangle itemRect = new ImmutableRectangle(
+                centerX - w / 2,
+                centerY - h / 2 + h + spacing,
+                w, h );
+
+        this.itemBox = new Box.Builder(
+                        itemRect.getX(),
+                        itemRect.getY() )
+                    .width( itemRect.getWidth() )
+                    .height( itemRect.getHeight() )
+                    .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
+                    .border( Box.Border.MEDIUM )
+                    .opacity( 90 )
+                    .build();
+
+        entityList.add( this.itemBox );
+
+        this.itemPad = Padding.newInstance( 30 );
+        this.itemLesson = new HelpGroupItemLesson( hub, entityList, itemRect, linePad );
+    }
+
+    private IAnimation createSlideFadeIn()
+    {
+        EntityGroup boxes = new EntityGroup( this.lineBox, this.rotateBox, this.itemBox );
+        boxes.setOpacity( 0 );
+
+        IAnimation fadeIn = new FadeAnimation
+                .Builder( FadeAnimation.Type.IN, boxes )
+                .duration( 500 )
+                .maxOpacity( 90 )
+                .build();       
+
+        EntityGroup rightBoxes = new EntityGroup( this.lineBox, this.itemBox );
+        EntityGroup leftBoxes  = new EntityGroup( this.rotateBox );
+
+        rightBoxes.setX( originalX - 50 );
+        leftBoxes.setX( originalX + 50 );
+
+        IAnimation slideRight1 = new MoveAnimation
+                .Builder( this.lineBox )
+                .duration( 250 )
+                .theta( 0 )
+                .maxX( originalX )
+                .speed( (50 * 1000) / 250 )
+                .build();
+
+        IAnimation slideLeft = new MoveAnimation
+                .Builder( this.rotateBox )
+                .duration( 250 )
+                .theta( 180 )
+                .minX( originalX )
+                .speed( (50 * 1000) / 250 )
+                .build();
+
+        IAnimation slideRight2 = new MoveAnimation
+                .Builder( this.itemBox )
+                .duration( 250 )
+                .theta( 0 )
+                .maxX( originalX )
+                .speed( (50 * 1000) / 250 )
+                .build();
+
+        IAnimation slideFade = new MetaAnimation
+                .Builder()
+                .add( fadeIn )
+                .add( slideRight1 )
+                .add( slideLeft )
+                .add( slideRight2 )
+                .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
+                .finishRule( MetaAnimation.FinishRule.ALL )
+                .build();
+
+        return slideFade;
+    }
+
+    private IAnimation createSlideFadeOut()
+    {
+        EntityGroup boxes = new EntityGroup( this.lineBox, this.rotateBox, this.itemBox );
+        boxes.setOpacity( 0 );
+
+        IAnimation fadeOut = new FadeAnimation
+                .Builder( FadeAnimation.Type.OUT, boxes )
+                .duration( 300 )
+                .build();
+        
+        IAnimation slideLeft1 = new MoveAnimation
+                .Builder( this.lineBox )
+                .duration( 400 )
+                .theta( 180 )
+                .speed( (50 * 1000) / 250 )
+                .build();
+
+        IAnimation slideRight = new MoveAnimation
+                .Builder( this.rotateBox )
+                .duration( 400 )
+                .theta( 0 )
+                .speed( (50 * 1000) / 250 )
+                .build();
+
+        IAnimation slideLeft2 = new MoveAnimation
+                .Builder( this.itemBox )
+                .duration( 400 )
+                .theta( 180 )
+                .speed( (50 * 1000) / 250 )
+                .build();
+
+        IAnimation slideFade = new MetaAnimation
+                .Builder()
+                .add( fadeOut )
+                .add( slideLeft1 )
+                .add( slideRight )
+                .add( slideLeft2 )
+                .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
+                .finishRule( MetaAnimation.FinishRule.ALL )
+                .build();
+
+        return slideFade;
     }
 
 }
