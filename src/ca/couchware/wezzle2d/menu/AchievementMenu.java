@@ -23,6 +23,7 @@ import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.ui.Scroller;
 import ca.couchware.wezzle2d.util.CouchDate;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -128,10 +129,10 @@ public class AchievementMenu extends AbstractMenu
         for (int i = 0; i < achievementList.size(); i++)
         {
             Achievement ach = achievementList.get(i);
-            if (ach.getDateCompleted() == null)
-                scroller.setColor(i, COLOR_NOT_COMPLETED);
-            else
-                scroller.setColor(i, COLOR_COMPLETED);
+//            if (ach.getDateCompleted() == null)
+//                scroller.setColor(i, COLOR_NOT_COMPLETED);
+//            else
+                scroller.setColor(i, getColour(ach.getLevel().toString(), settingsMan));
         }
         
         // The first box.
@@ -264,5 +265,19 @@ public class AchievementMenu extends AbstractMenu
             updateAchievementText(ach);
         }
     }
-    
+
+
+    private Color getColour(String col, SettingsManager settingsMan){
+        if(col.equals("BRONZE"))
+            return settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE);
+        else if (col.equals("SILVER"))
+            return settingsMan.getColor(Key.ACHIEVEMENT_COLOR_SILVER);
+        else if (col.equals("GOLD"))
+            return settingsMan.getColor(Key.ACHIEVEMENT_COLOR_GOLD);
+        else if (col.equals("PLATINUM"))
+            return settingsMan.getColor(Key.ACHIEVEMENT_COLOR_PLATINUM);
+
+        CouchLogger.get().recordMessage(this.getClass(), "Colour undefined");
+        return null;
+    }
 }
