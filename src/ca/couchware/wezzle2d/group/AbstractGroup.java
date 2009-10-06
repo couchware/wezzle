@@ -7,7 +7,6 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -16,9 +15,7 @@ import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.ui.SliderBar;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The group class is a way for controlling a bunch of entities at once.

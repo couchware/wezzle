@@ -362,6 +362,7 @@ public class PieceGrid extends AbstractEntity
     {
         // Save the old color and set the new one.
         CouchColor oldColor = gfx.getColor();
+
         gfx.setColor(color);
 
         

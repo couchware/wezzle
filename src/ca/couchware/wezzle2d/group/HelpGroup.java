@@ -29,6 +29,7 @@ import java.util.EnumSet;
  */
 public class HelpGroup extends AbstractGroup
 {
+    private Game game;
     private ManagerHub hub;
     private Box groupBox;
 
@@ -42,80 +43,71 @@ public class HelpGroup extends AbstractGroup
     private HelpGroupRotateQuadrant rotateQuadrant;
 
     private Padding itemQuadrantPad;
-    private HelpGroupItemQuadrant itemQuadrant;
+    private HelpGroupItemQuadrant itemQuadrant;   
 
-    private Padding timerQuadrantPad;
-    private HelpGroupTimerQuadrant timerQuadrant;
+//    private IButton closeButton;
 
-    private IButton closeButton;
-
-    public HelpGroup(ManagerHub hub)
+    public HelpGroup(Game game, ManagerHub hub)
     {
+        if (game == null)
+            throw new IllegalArgumentException("Game must not be null");
+
         if (hub == null)
             throw new IllegalArgumentException("Hub must not be null");
 
+        this.game = game;
         this.hub = hub;
 
-        this.animationMan = AnimationManager.newInstance();
-       
-        this.groupBox = createGroupBox();
-        this.entityList.add( this.groupBox );
+        this.animationMan = AnimationManager.newInstance();             
 
-        this.lineQuadrantPad = Padding.newInstance( 24, 2, 25, 0 );
+        int centerX = Game.SCREEN_WIDTH  / 2;
+        int centerY = Game.SCREEN_HEIGHT / 2;
+        int w = 280;
+        int h = 150;
+        int spacing = 10;
+
+        this.lineQuadrantPad = Padding.newInstance( 30 );
+        ImmutableRectangle lineRect = new ImmutableRectangle(
+                centerX - w / 2, 
+                centerY - h / 2 - spacing - h,
+                w, h);
+
         this.lineQuadrant = new HelpGroupLineQuadrant(
-                hub, entityList, GroupBoxRect, lineQuadrantPad );
+                hub, entityList, lineRect, lineQuadrantPad );
 
-        this.rotateQuadrantPad = Padding.newInstance( 2, 24, 25, 0 );
+        this.rotateQuadrantPad = Padding.newInstance( 30 );
+        ImmutableRectangle rotateRect = new ImmutableRectangle(
+                centerX - w / 2,
+                centerY - h / 2,
+                w, h);
+
         this.rotateQuadrant = new HelpGroupRotateQuadrant(
-                hub, entityList, GroupBoxRect, rotateQuadrantPad );
+                hub, entityList, rotateRect, rotateQuadrantPad );
 
-        this.itemQuadrantPad = Padding.newInstance( 24, 2, 25, 0 );
+        this.itemQuadrantPad = Padding.newInstance( 30 );
+        ImmutableRectangle itemRect = new ImmutableRectangle(
+                centerX - w / 2,
+                centerY - h / 2 + h + spacing,
+                w, h);
+
         this.itemQuadrant = new HelpGroupItemQuadrant(
-                hub, entityList, GroupBoxRect, itemQuadrantPad );
-
-        this.timerQuadrantPad = Padding.newInstance( 2, 24, 25, 0 );
-        this.timerQuadrant = new HelpGroupTimerQuadrant(
-                hub, entityList, GroupBoxRect, timerQuadrantPad );
+                hub, entityList, itemRect, itemQuadrantPad );
 
         // Create close button.
-        this.closeButton = new Button.Builder(400, 460)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .text("Close")                
-                .visible(false)
-                .build();
+//        this.closeButton = new Button.Builder(400, 460)
+//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+//                .text("Close")
+//                .visible(false)
+//                .build();
         
-        this.entityList.add(this.closeButton);
+//        this.entityList.add(this.closeButton);
         
         for (IEntity entity : entityList)
         {
             entity.setVisible(false);
-            hub.layerMan.add(entity, Layer.UI);
+            hub.layerMan.add(entity, Layer.HELP);
         }
-    }
-
-    private static final ImmutableRectangle GroupBoxRect =
-            new ImmutableRectangle(
-                Game.SCREEN_WIDTH / 2 - 300,
-                Game.SCREEN_HEIGHT / 2 - 200,
-                600, 400);  
-
-    /**
-     * Creates the group box that surrounds the help dialog.
-     * @return
-     */
-    private Box createGroupBox()
-    {
-        Box box = new Box.Builder( 
-                    GroupBoxRect.getCenterX(),
-                    GroupBoxRect.getCenterY())
-                .alignment( EnumSet.of( Alignment.MIDDLE, Alignment.CENTER) )
-                .width(  GroupBoxRect.getWidth() )
-                .height( GroupBoxRect.getHeight() )
-                .opacity( 95 )
-                .build();
-
-        return box;
-    }
+    }   
 
     @Override
     public void setActivated(final boolean activated)
@@ -123,13 +115,17 @@ public class HelpGroup extends AbstractGroup
         if (activated)
         {
             hub.musicMan.fadeToGain(0.05);
+            //hub.layerMan.hide( Layer.UI );
+            //hub.layerMan.hide( Layer.BOARD );
+            game.getUI().hideBarsUsingFade();
+            game.getUI().hideBoardUsingFade();
+            //game.getUI().hideTraditionalPieceBoxUsingFade();
 
             this.animation = new MetaAnimation
                     .Builder()
                     .add( this.lineQuadrant.createAnimation() )
                     .add( this.rotateQuadrant.createAnimation() )
-                    .add( this.itemQuadrant.createAnimation() )
-                    .add( this.timerQuadrant.createAnimation() )
+                    .add( this.itemQuadrant.createAnimation() )         
                     .runRule( MetaAnimation.RunRule.SEQUENCE )
                     .finishRule( MetaAnimation.FinishRule.ALL )
                     .build();
@@ -141,13 +137,17 @@ public class HelpGroup extends AbstractGroup
             int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
             double gain = (double) intGain / 100.0;
             hub.musicMan.fadeToGain(gain);
+            //hub.layerMan.show( Layer.UI );
+            //hub.layerMan.show( Layer.BOARD );
+            game.getUI().showBarsUsingFade();
+            game.getUI().showBoardUsingFade();
+            //game.getUI().showTraditionalPieceBoxUsingFade();
 
             this.animationMan.remove( this.animation );
             this.animation = null;
             this.lineQuadrant.resetEntities();
             this.rotateQuadrant.resetEntities();
             this.itemQuadrant.resetEntities();
-            this.timerQuadrant.resetEntities();
         }
 
         // Invoke super.
@@ -169,15 +169,15 @@ public class HelpGroup extends AbstractGroup
         if ( !this.controlChanged() ) return;
 
         // Check if the back button was pressed.
-        if (closeButton.isActivated())
-        {
-            // Hide all side triggered menues.
-            closeButton.setActivated(false);
-            hub.groupMan.hideGroup(
-                        GroupManager.Type.OPTIONS,
-                        GroupManager.Layer.MIDDLE,
-                        !game.isCompletelyBusy());
-        }
+//        if (closeButton.isActivated())
+//        {
+//            // Hide all side triggered menues.
+//            closeButton.setActivated(false);
+//            hub.groupMan.hideGroup(
+//                        GroupManager.Type.OPTIONS,
+//                        GroupManager.Layer.MIDDLE,
+//                        !game.isCompletelyBusy());
+//        }
 
         // Clear the change setting.
         this.clearChanged();

@@ -90,7 +90,7 @@ public class NotificationManager implements IManager
             });
 
             this.notificationAnimation = meta;
-            hub.animationMan.add(meta);
+            game.getUI().getUIAnimationManager().add(meta);
         }
     }
 }

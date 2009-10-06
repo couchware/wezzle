@@ -117,7 +117,7 @@ public class FadeAnimation extends AbstractAnimation
     public void nextFrame()
     {        
         // Make sure we've set the started flag.
-        if (this.started == false)
+        if (!this.started)
         {
             // Set the initial opacity.
             if (type == Type.IN)        
@@ -133,7 +133,7 @@ public class FadeAnimation extends AbstractAnimation
         }
         
         // Check if we're done, if we are, return.
-        if (this.finished == true)
+        if (this.finished)
         {
             //LogManager.recordMessage("Fade finished!");
             return;              

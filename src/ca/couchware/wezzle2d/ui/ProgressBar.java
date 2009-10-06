@@ -348,6 +348,7 @@ public class ProgressBar extends AbstractEntity
         // Draw the text.
         if ( textPosition != TextPosition.NONE )
         {
+            progressLabel.setOpacity( this.opacity );
             progressLabel.draw();
         }
 

@@ -49,48 +49,44 @@ class HelpGroupLineQuadrant
     private final ImmutableRectangle rect;
 
     public HelpGroupLineQuadrant(ManagerHub hub, List<IEntity> entityList,
-            ImmutableRectangle groupBoxRect, Padding quadrantPadding)
+            ImmutableRectangle rect, Padding quadrantPadding)
     {
         this.hub = hub;
         this.entityList = entityList;
-        this.groupBoxRect = groupBoxRect;
+        this.groupBoxRect = rect;
         this.quadrantPad = quadrantPadding;
 
-        this.rect = new ImmutableRectangle(
-            groupBoxRect.getX() + quadrantPad.getLeft(),
-            groupBoxRect.getY() + quadrantPad.getTop(),
-            groupBoxRect.getWidth()  / 2 - quadrantPad.getLeft() - quadrantPad.getRight(),
-            (groupBoxRect.getHeight() - 95) / 2 - quadrantPad.getTop()  - quadrantPad.getBottom());
+        this.rect = rect;
 
         createEntites(this.entityList);
     }
             
-    private final static int columns = 3;
-    private final static int rows    = 2;
+    private final static int Columns = 3;
+    private final static int Rows    = 2;
 
     // (0,0) is the top-left tile and
     // (2, 1) is the bottom-right.
-    private ImmutablePosition[][] tileGridPositions = new ImmutablePosition[columns][rows];
-    private Tile[][] tileGrid = new Tile[columns][rows];
+    private ImmutablePosition[][] tileGridPositions = new ImmutablePosition[Columns][Rows];
+    private Tile[][] tileGrid = new Tile[Columns][Rows];
 
     private ImmutablePosition pieceGridPosition;
     private PieceGrid pieceGrid;
 
     private void createEntites(List<IEntity> entityList)
     {
-        final int totalWidth  = hub.boardMan.getCellWidth() * columns;
+        final int totalWidth  = hub.boardMan.getCellWidth() * Columns;
         //final int totalHeight = hub.boardMan.getCellWidth() * rows;
 
-        final int gridX = rect.getX() + (rect.getWidth()  - totalWidth)  / 2;
+        final int gridX = rect.getX() + (rect.getWidth() - totalWidth) / 2;
         final int gridY = rect.getY() + quadrantPad.getTop();
 
         Box box = new Box
                 .Builder( rect.getX(), rect.getY() )
                 .width( rect.getWidth() )
-                .height( rect.getHeight() + 21 )
+                .height( rect.getHeight() )
                 .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT) )
                 .border( Box.Border.MEDIUM )
-                .opacity( 80 )
+                .opacity( 90 )
                 .build();
 
         entityList.add(box);
@@ -118,9 +114,9 @@ class HelpGroupLineQuadrant
                 TileType.NORMAL, TileColor.BLUE);
         TileHelper.toRightOf( this.tileGrid[1][1], this.tileGrid[2][1], 0);
 
-        for (int i = 0; i < rows; i++)
+        for (int i = 0; i < Rows; i++)
         {
-            for (int j = 0; j < columns; j++)
+            for (int j = 0; j < Columns; j++)
             {
                 entityList.add( this.tileGrid[j][i] );
                 this.tileGridPositions[j][i] = this.tileGrid[j][i].getPosition();
@@ -153,9 +149,9 @@ class HelpGroupLineQuadrant
 
     public void resetEntities()
     {
-        for (int i = 0; i < rows; i++)
+        for (int i = 0; i < Rows; i++)
         {
-            for (int j = 0; j < columns; j++)
+            for (int j = 0; j < Columns; j++)
             {
                 this.tileGrid[j][i].setWidth( hub.boardMan.getCellWidth() );
                 this.tileGrid[j][i].setHeight( hub.boardMan.getCellHeight() );

@@ -46,25 +46,19 @@ class HelpGroupRotateQuadrant
 {
     private final ManagerHub hub;
     private final List<IEntity> entityList;
-
-    private final ImmutableRectangle groupBoxRect;
+    
     private final Padding quadrantPad;
 
     private final ImmutableRectangle rect;
 
     public HelpGroupRotateQuadrant(ManagerHub hub, List<IEntity> entityList,
-            ImmutableRectangle groupBoxRect, Padding quadrantPadding)
+            ImmutableRectangle rect, Padding quadrantPadding)
     {
         this.hub = hub;
-        this.entityList = entityList;
-        this.groupBoxRect = groupBoxRect;
+        this.entityList = entityList;        
         this.quadrantPad = quadrantPadding;
 
-        this.rect = new ImmutableRectangle(
-            groupBoxRect.getCenterX() + quadrantPad.getLeft(),
-            groupBoxRect.getY() + quadrantPad.getTop(),
-            groupBoxRect.getWidth()  / 2 - quadrantPad.getLeft() - quadrantPad.getRight(),
-            (groupBoxRect.getHeight() - 95) / 2 - quadrantPad.getTop()  - quadrantPad.getBottom());
+        this.rect = rect;
 
         createEntites(this.entityList);
     }
@@ -92,10 +86,10 @@ class HelpGroupRotateQuadrant
         Box box = new Box
                 .Builder( rect.getX(), rect.getY() )
                 .width( rect.getWidth() )
-                .height( rect.getHeight() + 21 )
+                .height( rect.getHeight() )
                 .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT) )
                 .border( Box.Border.MEDIUM )
-                .opacity( 80 )
+                .opacity( 90 )
                 .build();
 
         entityList.add(box);

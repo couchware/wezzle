@@ -29,11 +29,14 @@ public class LayerManager implements IDisposable, IDrawer
      */
     public enum Layer
     {
-        BACKGROUND,        
+        BACKGROUND,
+        INFORMATION,
+        BOARD,
         TILE,
         PIECE_GRID,
         EFFECT,        
-        UI
+        UI,
+        HELP
     }        
         
     /**

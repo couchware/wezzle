@@ -280,7 +280,7 @@ public class Game extends Canvas implements IWindowCallback
     private void initializeCoreManagers()
     {
         // Create the UI.
-        ui = UI.newInstance(hub);        
+        ui = UI.newInstance(this, hub);
         hub.listenerMan.registerListener(Listener.LEVEL, this.ui);
         hub.listenerMan.registerListener(Listener.PIECE, this.ui);
         hub.listenerMan.registerListener(Listener.SCORE, this.ui);       
@@ -566,10 +566,13 @@ public class Game extends Canvas implements IWindowCallback
         
         // If the pause button is not on, then we proceed with the
         // normal game loop.
-        if (hub.groupMan.isActivated() == false)
+        if (!hub.groupMan.isActivated())
         {
             updateBoard();
         }
+
+        // Animate the UI animation manager.
+        ui.getUIAnimationManager().animate();
                         
         // Fire all the queued mouse events.
         window.fireMouseEvents();                
@@ -695,7 +698,7 @@ public class Game extends Canvas implements IWindowCallback
         } // end if
 
         // See if it's game ovaries.
-        if (activateGameOver == true)
+        if (activateGameOver)
         {
             // Clear flag.
             activateGameOver = false;                            

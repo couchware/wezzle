@@ -6,6 +6,9 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.animation.FinishedAnimation;
+import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.IPieceListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
@@ -14,6 +17,7 @@ import ca.couchware.wezzle2d.event.LevelEvent;
 import ca.couchware.wezzle2d.event.PieceEvent;
 import ca.couchware.wezzle2d.event.ScoreEvent;
 import ca.couchware.wezzle2d.event.TimerEvent;
+import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -38,6 +42,7 @@ import ca.couchware.wezzle2d.group.HelpGroup;
 import ca.couchware.wezzle2d.group.HighScoreGroup;
 import ca.couchware.wezzle2d.group.OptionsGroup;
 import ca.couchware.wezzle2d.group.PauseGroup;
+import ca.couchware.wezzle2d.manager.AnimationManager;
 import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.util.EnumSet;
@@ -67,47 +72,38 @@ public class UI implements
     /** The high score header path. */
     final private static String HIGH_SCORE_HEADER_PATH = 
             Settings.getSpriteResourcesPath()
-            + "/Header_HighScore" + FILE_EXT;          
-    
-    /** The background sprite. */
+            + "/Header_HighScore" + FILE_EXT;
+
+    /** The game board. */
+    final private String BOARD_PATH =
+            Settings.getSpriteResourcesPath()
+            + "/Board" + FILE_EXT;
+
+    private AnimationManager animationMan;
+
     private GraphicEntity background;
-    
-    /** The timer bar. */
+    private GraphicEntity board;
+        
     private ProgressBar timerBar;
-    
-    /** The progress bar. */
+        
     private ProgressBar progressBar; 
-       
-    /** The next piece preview. */
+           
     private IEntity traditionalPieceBox;
     private IEntity traditionalPieceBoxLabel;
     private PieceGrid traditionalPieceBoxGrid;
     
-    /** The next piece preview grid. */
     private PieceGrid overlayPieceBoxGrid;    
-    
-    /** The score header graphic. */
+
     private GraphicEntity scoreHeaderLabel;
-        
-    /** The score text. */
     private ITextLabel scoreLabel;
-    
-    /** The high score header graphic. */
+
     private GraphicEntity highScoreHeaderLabel;
-            
-    /** The high score text. */
     private ITextLabel highScoreLabel;
     
-    /** The level header graphic. */
     private GraphicEntity levelHeader;
-    
-    /** The level text. */
     private ITextLabel levelLabel;            
     
-    /** The version label. */
     private ITextLabel versionLabel;     
-    
-    /** The copyright label. */
     private ITextLabel copyrightLabel;
 
     private IButton pauseButton;
@@ -125,34 +121,26 @@ public class UI implements
     /**
      * Private constructor to ensure singletonness.
      */
-    private UI(ManagerHub hub)
-    {        
-        // Initialize the buttons.
-        initializeButtons(hub);
-        
-        // Initialize the labels.
-        initializeLabels(hub);
-        
-        // Initialize the background.
+    private UI(Game game, ManagerHub hub)
+    {
+        this.animationMan = AnimationManager.newInstance();
+
+        initializeButtons(hub);        
+        initializeLabels(hub);       
         initializeBackground(hub);
-        
-        // Initialize piece box.
+        initializeBoard(hub);
         initializeTraditionalPieceBox(hub);
         initializeOverlayPieceBox(hub);
-        
-        // Initialize the progress bars.
         initializeBars(hub);
-        
-        // Initialize the groups.
-        initializeGroups(hub);        
+        initializeGroups(game, hub);
     }        
     
     /**
      * Create a new UI instance.
      */
-    public static UI newInstance(ManagerHub hub)
+    public static UI newInstance(Game game, ManagerHub hub)
     {
-        return new UI(hub);
+        return new UI(game, hub);
     }       
     
     /**
@@ -201,7 +189,7 @@ public class UI implements
                 .alignment(EnumSet.of(Alignment.BOTTOM, Alignment.LEFT))
                 .color(PRIMARY_COLOR).size(12)                
                 .text(Game.COPYRIGHT).build();
-        hub.layerMan.add(copyrightLabel, Layer.UI);
+        hub.layerMan.add(copyrightLabel, Layer.INFORMATION);
         
         // Set up the version label.	
         versionLabel = new LabelBuilder(800 - 10, 600 - 10)
@@ -209,7 +197,7 @@ public class UI implements
                 .color(PRIMARY_COLOR).size(12)                
                 .text(Game.TITLE)
                 .build();
-        hub.layerMan.add(versionLabel, Layer.UI);
+        hub.layerMan.add(versionLabel, Layer.INFORMATION);
         		  
         
         // Set up the level header.
@@ -257,8 +245,24 @@ public class UI implements
                 .Builder(0, 0, Settings.getSpriteResourcesPath() + "/Background2.png")
                 .build();
         
-        hub.layerMan.add(this.background, Layer.BACKGROUND);   
-        hub.layerMan.toBack(this.background, Layer.BACKGROUND);     
+        hub.layerMan.add(this.background, Layer.BACKGROUND);           
+    }
+
+    /**
+     * Initializes the board layer.
+     */
+    private void initializeBoard(ManagerHub hub)
+    {
+        // Create the background.
+		this.board = new GraphicEntity
+                .Builder(
+                        hub.boardMan.getX() - 12,
+                        hub.boardMan.getY() - 12,
+                        BOARD_PATH)
+                .opacity( 90 )
+                .build();
+
+        hub.layerMan.add(this.board, Layer.BOARD);
     }
 
     /**
@@ -277,6 +281,7 @@ public class UI implements
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(90)
                 .width(80).height(80).build();
+
         hub.layerMan.add(this.traditionalPieceBox, Layer.UI);        
 
         Color c = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
@@ -353,7 +358,7 @@ public class UI implements
     /**
      * Initialize the various groups.
      */
-    private void initializeGroups(ManagerHub hub)
+    private void initializeGroups(Game game, ManagerHub hub)
     {        
         // Initialize pause group.                
         this.pauseGroup = new PauseGroup(hub);
@@ -368,7 +373,7 @@ public class UI implements
         hub.groupMan.register(this.optionsGroup);
 
         // Initialize help group.
-        this.helpGroup = new HelpGroup(hub);
+        this.helpGroup = new HelpGroup(game, hub);
         hub.groupMan.register(this.helpGroup);
         
         // Initialize high score group.
@@ -381,7 +386,12 @@ public class UI implements
         hub.groupMan.register(this.gameOverGroup);
         hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
     }
-    
+
+    public AnimationManager getUIAnimationManager()
+    {
+        return animationMan;
+    }
+
     public void showGameOverGroup(GroupManager groupMan)
     {
         // Draw game over screen.
@@ -454,6 +464,128 @@ public class UI implements
     {
         this.traditionalPieceBoxGrid.loadStructure(piece.getStructure());
         this.overlayPieceBoxGrid.loadStructure(piece.getStructure());
+    }
+
+    /** This is used to fade in and out the progress bars. */
+    private IAnimation barFadeAnimation = FinishedAnimation.get();
+
+    public void showBarsUsingFade()
+    {
+        if (this.timerBar.getOpacity() == 100 && this.progressBar.getOpacity() == 100)
+            return;
+
+        animationMan.remove( this.barFadeAnimation );
+
+        this.barFadeAnimation = new FadeAnimation
+                .Builder(
+                    FadeAnimation.Type.IN,
+                    new EntityGroup( this.timerBar, this.progressBar ))
+                .duration( 250 )
+                .build();
+
+        animationMan.add( this.barFadeAnimation );
+    }
+
+    public void hideBarsUsingFade()
+    {
+        if (this.timerBar.getOpacity() == 0 && this.progressBar.getOpacity() == 0)
+            return;
+
+        animationMan.remove( this.barFadeAnimation );
+
+        this.barFadeAnimation = new FadeAnimation
+                .Builder(
+                    FadeAnimation.Type.OUT,
+                    new EntityGroup( this.timerBar, this.progressBar ))
+                .duration( 250 )
+                .build();
+
+        animationMan.add( this.barFadeAnimation );
+    }
+
+    /** This is used to fade in and out the progress bars. */
+    private IAnimation boardFadeAnimation = FinishedAnimation.get();
+
+    public void showBoardUsingFade()
+    {
+        if (this.board.getOpacity() == 90)
+            return;
+
+        animationMan.remove( this.boardFadeAnimation );
+
+        this.boardFadeAnimation = new FadeAnimation
+                .Builder(
+                    FadeAnimation.Type.IN,
+                    this.board)
+                .duration( 250 )
+                .maxOpacity( 90 )
+                .build();
+
+        animationMan.add( this.boardFadeAnimation );
+    }
+
+    public void hideBoardUsingFade()
+    {
+        if (this.board.getOpacity() == 0)
+            return;
+
+        animationMan.remove( this.boardFadeAnimation );
+
+        this.boardFadeAnimation = new FadeAnimation
+                .Builder(
+                    FadeAnimation.Type.OUT,
+                    this.board)
+                .duration( 250 )
+                .build();
+
+        animationMan.add( this.boardFadeAnimation );
+    }
+    
+    /** This is used to fade in and out the progress bars. */
+    private IAnimation boxFadeAnimation = FinishedAnimation.get();
+
+    public void showTraditionalPieceBoxUsingFade()
+    {
+        if (!this.traditionalPiecePreviewVisible
+                || this.traditionalPieceBox.getOpacity() == 100)
+            return;
+
+        animationMan.remove( this.boxFadeAnimation );
+
+        this.boxFadeAnimation = new FadeAnimation
+                .Builder(
+                    FadeAnimation.Type.IN,
+                    new EntityGroup(
+                        this.traditionalPieceBoxLabel,
+                        this.traditionalPieceBox))
+                .duration( 250 )
+                .build();
+
+        this.traditionalPieceBoxGrid.setVisible( true );
+
+        animationMan.add( this.boxFadeAnimation );
+    }
+
+    public void hideTraditionalPieceBoxUsingFade()
+    {
+        if (!this.traditionalPiecePreviewVisible
+                || this.traditionalPieceBox.getOpacity() == 0)
+            return;
+
+        animationMan.remove( this.boxFadeAnimation );
+
+        this.boxFadeAnimation = new FadeAnimation
+                .Builder(
+                    FadeAnimation.Type.OUT,
+                    new EntityGroup(
+                        this.traditionalPieceBoxLabel,
+                        this.traditionalPieceBox))
+                .duration( 250 )
+                .build();
+
+        this.traditionalPieceBoxGrid.setVisible( false );
+
+        animationMan.add( this.boxFadeAnimation );
     }
 
     /**

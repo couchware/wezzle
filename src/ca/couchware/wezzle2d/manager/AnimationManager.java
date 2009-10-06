@@ -45,7 +45,7 @@ public class AnimationManager implements ISaveable
     
     public void remove(IAnimation a)
     {
-        if (contains(a) == true)
+        if ( this.contains(a) )
             animationList.remove(a);
     }
     
