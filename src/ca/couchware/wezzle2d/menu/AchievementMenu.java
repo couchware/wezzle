@@ -121,7 +121,7 @@ public class AchievementMenu extends AbstractMenu
                 .visible(false);
         for (Achievement ach : achievementList)
         {
-             builder.add(getPrefix(ach.getLevel().toString()) + ach.getTitle());
+             builder.add(ach.getTitle());
         }         
         scroller = builder.selectedIndex(0).build();
         entityList.add(scroller);
@@ -134,6 +134,42 @@ public class AchievementMenu extends AbstractMenu
              else
                 scroller.setColor(i, COLOR_COMPLETED);
         }
+
+        // -----
+        
+        ITextLabel x1 = new ResourceFactory.LabelBuilder(
+                    scroller.getX() + scroller.getWidth() - 50, 162)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .visible(false)
+                .text("BRONZE").size(12)
+                .build();
+        this.entityList.add(x1);
+
+        ITextLabel x2 = new ResourceFactory.LabelBuilder(
+                    scroller.getX() + scroller.getWidth() - 50, 207)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .visible(false)
+                .text("SILVER").size(12)
+                .build();
+        this.entityList.add(x2);
+
+        ITextLabel x3 = new ResourceFactory.LabelBuilder(
+                    scroller.getX() + scroller.getWidth() - 50, 252)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .visible(false)
+                .text("PLATINUM").size(12)
+                .build();
+        this.entityList.add(x3);
+
+        ITextLabel x4 = new ResourceFactory.LabelBuilder(
+                    scroller.getX() + scroller.getWidth() - 50, 297)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .visible(false)
+                .text("GOLD").size(12)
+                .build();
+        this.entityList.add(x4);
+
+        // -----
         
         // The first box.
         Box descriptionBox = new Box.Builder(68, 346)
@@ -258,7 +294,7 @@ public class AchievementMenu extends AbstractMenu
     
     public void updateLogic(Game game, ManagerHub hub)
     {    
-        if (scroller.changed() == true)
+        if (scroller.changed())
         {
             //LogManager.recordMessage("Scroller is at " + scroller.getSelectedIndex());            
             Achievement ach = achievementList.get(scroller.getSelectedIndex());
@@ -266,8 +302,8 @@ public class AchievementMenu extends AbstractMenu
         }
     }
 
-
-    private Color getColor(String col, SettingsManager settingsMan){
+    private Color getColor(String col, SettingsManager settingsMan)
+    {
         if(col.equals("BRONZE"))
             return settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE);
         else if (col.equals("SILVER"))
@@ -284,13 +320,13 @@ public class AchievementMenu extends AbstractMenu
     private String getPrefix(String col)
     {
          if(col.equals("BRONZE"))
-            return "Brz - ";
+            return "Br";
         else if (col.equals("SILVER"))
-            return "Sil - ";
+            return "Si";
         else if (col.equals("GOLD"))
-            return "Gld - ";
+            return "Gd";
         else if (col.equals("PLATINUM"))
-            return "Plt - ";
+            return "Pl";
 
         CouchLogger.get().recordMessage(this.getClass(), "Colour undefined");
         return null;

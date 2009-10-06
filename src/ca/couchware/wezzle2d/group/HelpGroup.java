@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.AnimationManager;
+import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.Box;
@@ -155,15 +156,31 @@ public class HelpGroup extends AbstractGroup
 
     public void updateLogic(Game game, ManagerHub hub)
     {
+        // Sanity check.
+        if (game == null)
+            throw new IllegalArgumentException("Game must not be null");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub must not be null");
+
         this.animationMan.animate();
+
+        // Make sure something changed.
+        if ( !this.controlChanged() ) return;
 
         // Check if the back button was pressed.
         if (closeButton.isActivated())
         {
             // Hide all side triggered menues.
             closeButton.setActivated(false);
-            hub.groupMan.hideGroup(this, !game.isCompletelyBusy());
+            hub.groupMan.hideGroup(
+                        GroupManager.Type.OPTIONS,
+                        GroupManager.Layer.MIDDLE,
+                        !game.isCompletelyBusy());
         }
+
+        // Clear the change setting.
+        this.clearChanged();
     }
 
 }

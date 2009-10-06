@@ -156,7 +156,10 @@ public class OptionsGroup extends AbstractGroup
         {            
             // Hide all side triggered menues.
             closeButton.setActivated(false);
-            hub.groupMan.hideGroup(this, !game.isCompletelyBusy());
+            hub.groupMan.hideGroup(
+                        GroupManager.Type.OPTIONS,
+                        GroupManager.Layer.MIDDLE,
+                        !game.isCompletelyBusy());
         }
         // Check if the sound/music button was pressed.
         else if (audioButton.isActivated())
