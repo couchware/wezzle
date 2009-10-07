@@ -30,6 +30,7 @@ import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -43,6 +44,7 @@ class HelpGroupLineLesson
 {
     private final ManagerHub hub;
     private final List<IEntity> entities;
+    private final List<IEntity> unmodifiableEntities;
     
     private final Padding quadrantPad;
 
@@ -53,11 +55,12 @@ class HelpGroupLineLesson
     {
         this.hub = hub;
         this.entities = new ArrayList<IEntity>();
+        this.unmodifiableEntities = Collections.unmodifiableList( entities );
         this.quadrantPad = quadrantPadding;
         this.rect = rect;
 
         createEntities( this.entities );
-        //parentEntities.addAll( this.entities );
+        parentEntities.addAll( this.entities );
     }
             
     private final static int Columns = 3;
@@ -133,6 +136,11 @@ class HelpGroupLineLesson
                 .build();
 
         entities.add(label);
+    }
+
+    public List<IEntity> getEntities()
+    {
+        return unmodifiableEntities;
     }
 
     public void resetEntities()

@@ -192,7 +192,7 @@ public class Loader implements IDrawer
                 // to the animation.
                 if (loaderQueue.isEmpty() == true)
                 {                    
-                    hub.animationMan.add(animation);
+                    hub.gameAnimationMan.add(animation);
                     state = state.ANIMATING;
                 }
                 

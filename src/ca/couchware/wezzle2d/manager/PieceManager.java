@@ -409,8 +409,8 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             }
         });
 
-        hub.animationMan.add(a1);
-        hub.animationMan.add(a2);
+        hub.gameAnimationMan.add(a1);
+        hub.gameAnimationMan.add(a2);
     }
 
     private void startAnimationAt(final ImmutablePosition p, int speed)
@@ -420,7 +420,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         getSelectedIndexSet(p, indexSet, null);
 
         // Create convenience variables.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager boardMan = hub.boardMan;
         
         for (Iterator it = indexSet.iterator(); it.hasNext(); )
@@ -481,7 +481,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         getSelectedIndexSet(p, indexSet, null);
 
         // Create convenience variable.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager boardMan = hub.boardMan;
 
         for (Iterator it = indexSet.iterator(); it.hasNext(); )

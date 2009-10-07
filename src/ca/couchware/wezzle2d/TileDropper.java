@@ -99,7 +99,7 @@ public class TileDropper implements IResettable
         }
         
         // Some convenience variables.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager     boardMan     = hub.boardMan;
         final ItemManager      itemMan      = hub.itemMan;
         final SettingsManager  settingsMan  = hub.settingsMan;      

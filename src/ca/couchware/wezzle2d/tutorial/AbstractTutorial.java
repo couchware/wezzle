@@ -136,7 +136,7 @@ public abstract class AbstractTutorial implements ITutorial
     protected boolean update(final Game game, final ManagerHub hub)
     {
         // Make convenience variables for the managers used.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager boardMan = hub.boardMan;
         final PieceManager pieceMan = hub.pieceMan;
         final StatManager statMan = hub.statMan;
@@ -320,7 +320,7 @@ public abstract class AbstractTutorial implements ITutorial
     protected void repeat(final Game game, ManagerHub hub)
     {
         // Make convenience variables for the managers used.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager boardMan = hub.boardMan;
         final PieceManager pieceMan = hub.pieceMan;
         final ScoreManager scoreMan = hub.scoreMan;

@@ -60,8 +60,11 @@ public class ManagerHub
     /** The manager in charge of achievements */
     public AchievementManager achievementMan;	
     
-    /** The animation manager in charge of animations. */
-    public AnimationManager animationMan;
+    /** The animation manager in charge of game animations. */
+    public AnimationManager gameAnimationMan;
+
+    /** The animation manager in charge of UI animations. */
+    public AnimationManager uiAnimationMan;
     
     /** The manager in charge of maintaining the board. */
     public BoardManager boardMan;
@@ -182,7 +185,8 @@ public class ManagerHub
         if (set.contains(Manager.ANIMATION))
         {
             // Create the animation manager.
-            this.animationMan = AnimationManager.newInstance();                
+            this.gameAnimationMan = AnimationManager.newInstance();
+            this.uiAnimationMan   = AnimationManager.newInstance();
         }
         
         if (set.contains(Manager.HIGHSCORE))
@@ -219,7 +223,7 @@ public class ManagerHub
         {            
             // Create the board manager.
             this.boardMan = BoardManager.newInstance(
-                    this.animationMan, 
+                    this.gameAnimationMan,
                     this.layerMan, 
                     this.itemMan);             
             

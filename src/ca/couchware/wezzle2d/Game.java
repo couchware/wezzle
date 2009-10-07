@@ -268,7 +268,7 @@ public class Game extends Canvas implements IWindowCallback
                 });
 
                 // Queue in the animation manager.
-                hub.animationMan.add(transition);
+                hub.gameAnimationMan.add(transition);
                
                 break;
         }
@@ -363,7 +363,7 @@ public class Game extends Canvas implements IWindowCallback
         if (this.drawer == loader)
         {   
             // Animate all animations.
-            if (hub.animationMan != null) hub.animationMan.animate();
+            if (hub.gameAnimationMan != null) hub.gameAnimationMan.animate();
             
             // Update the logic.
             loader.updateLogic(this, hub);
@@ -387,7 +387,7 @@ public class Game extends Canvas implements IWindowCallback
         if (this.drawer == mainMenu)
         {
             // Animate all animations.
-            if (hub.animationMan != null) hub.animationMan.animate();
+            if (hub.gameAnimationMan != null) hub.gameAnimationMan.animate();
             
             // Update the main menu logic.
             mainMenu.updateLogic(this, hub);
@@ -415,7 +415,7 @@ public class Game extends Canvas implements IWindowCallback
                 });
                 
                 // Queue in the animation manager.
-                hub.animationMan.add(transition);
+                hub.gameAnimationMan.add(transition);
                 
                 // Start the music.
                 hub.musicMan.play();
@@ -441,7 +441,7 @@ public class Game extends Canvas implements IWindowCallback
         if (this.drawer == transition)
         {
             // Animate all animations.
-            if (hub.animationMan != null) hub.animationMan.animate();
+            if (hub.gameAnimationMan != null) hub.gameAnimationMan.animate();
             
             // Otherwise see if the transition is over.
             if (transition.isFinished() == false) return;           
@@ -572,7 +572,7 @@ public class Game extends Canvas implements IWindowCallback
         }
 
         // Animate the UI animation manager.
-        ui.getUIAnimationManager().animate();
+        hub.uiAnimationMan.animate();
                         
         // Fire all the queued mouse events.
         window.fireMouseEvents();                
@@ -690,8 +690,8 @@ public class Game extends Canvas implements IWindowCallback
                     { hub.layerMan.remove(label, Layer.EFFECT); }
                 });
 
-                hub.animationMan.add(a1);
-                hub.animationMan.add(a2);
+                hub.gameAnimationMan.add(a1);
+                hub.gameAnimationMan.add(a2);
                 a1 = null;
                 a2 = null;                    
             }
@@ -726,7 +726,7 @@ public class Game extends Canvas implements IWindowCallback
         }
 
         // Animation all animations.
-        hub.animationMan.animate();
+        hub.gameAnimationMan.animate();
 
         // Update the tutorial manager logic. This must be done after the world
         // manager because it relies on the proper items being in the item list.
@@ -1000,7 +1000,7 @@ public class Game extends Canvas implements IWindowCallback
     public TileRemover getTileRemover()
     {
         return tileRemover;
-    }
+    }   
 
     public UI getUI()
     {

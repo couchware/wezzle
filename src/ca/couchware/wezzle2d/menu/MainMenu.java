@@ -143,7 +143,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .build();
         
         // Add it to the manager.
-        hub.animationMan.add(this.slideAnimation);
+        hub.gameAnimationMan.add(this.slideAnimation);
     };
     
     private void initializeBackground(ManagerHub hub)
@@ -182,7 +182,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .gravity(0).speed(0)
                 .omega(SettingsManager.get().getDouble(Key.MAIN_MENU_STARBURST_OMEGA))
                 .build();
-        hub.animationMan.add(this.rotateAnimation);
+        hub.gameAnimationMan.add(this.rotateAnimation);
         
         IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).build();
@@ -289,7 +289,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 // Check for a new animation to load.
                 if (this.currentAnimation.isFinished() == false)
                 {
-                    hub.animationMan.add(this.currentAnimation);
+                    hub.gameAnimationMan.add(this.currentAnimation);
                     this.state = State.ANIMATING;
                     break;
                 }
@@ -420,6 +420,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .finishRule(MetaAnimation.FinishRule.ALL);
         
         // Add the wezzle logo fade in.
+        this.logoEntity.setOpacity( 0 );
         builder.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, logoEntity)
                 .wait(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_WAIT))
                 .duration(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_DURATION)).build());

@@ -123,7 +123,7 @@ public class StarTutorial extends AbstractTutorial
     protected void createBoard(final Game game, ManagerHub hub)
     {
         // Make convenience variables for the managers used.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager boardMan = hub.boardMan;
 
         // Clear it first.

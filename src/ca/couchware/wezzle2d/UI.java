@@ -123,7 +123,7 @@ public class UI implements
      */
     private UI(Game game, ManagerHub hub)
     {
-        this.animationMan = AnimationManager.newInstance();
+        this.animationMan = hub.uiAnimationMan;
 
         initializeButtons(hub);        
         initializeLabels(hub);       
@@ -385,12 +385,7 @@ public class UI implements
         this.gameOverGroup = new GameOverGroup(hub);
         hub.groupMan.register(this.gameOverGroup);
         hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
-    }
-
-    public AnimationManager getUIAnimationManager()
-    {
-        return animationMan;
-    }
+    }  
 
     public void showGameOverGroup(GroupManager groupMan)
     {

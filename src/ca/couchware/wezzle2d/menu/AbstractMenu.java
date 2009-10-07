@@ -79,8 +79,11 @@ public abstract class AbstractMenu extends AbstractGroup
         for (IEntity entity : entityList)
         {
             //CouchLogger.get().recordMessage(this.getClass(), "Got here!");
+            entity.setOpacity( 0 );
             IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.IN, entity)
-                    .duration(200).build();
+                    .duration(200)
+                    .build();
+
             fadeList.add(anim);
         }
 

@@ -527,7 +527,7 @@ public class TileRemover implements IResettable, ILevelListener
             throw new IllegalArgumentException("Hub cannot be null.");
         
         // Shortcuts to managers.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager boardMan         = hub.boardMan;
         final LayerManager layerMan         = hub.layerMan;
         final ScoreManager scoreMan         = hub.scoreMan;
@@ -652,7 +652,7 @@ public class TileRemover implements IResettable, ILevelListener
         if (hub == null)
             throw new IllegalArgumentException("Hub cannot be null.");
         
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager     boardMan     = hub.boardMan;
         final LayerManager     layerMan     = hub.layerMan;
         final ScoreManager     scoreMan     = hub.scoreMan;
@@ -790,7 +790,7 @@ public class TileRemover implements IResettable, ILevelListener
             throw new IllegalArgumentException("Hub cannot be null.");
         
         // Create shortcuts to all the managers.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager     boardMan     = hub.boardMan;
         final LayerManager     layerMan     = hub.layerMan;
         final ScoreManager     scoreMan     = hub.scoreMan;
@@ -924,7 +924,7 @@ public class TileRemover implements IResettable, ILevelListener
             throw new IllegalArgumentException("Hub cannot be null.");
         
         // Create shortcuts to all the managers.
-        final AnimationManager animationMan = hub.animationMan;
+        final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager boardMan         = hub.boardMan;
         final LayerManager layerMan         = hub.layerMan;
         final ScoreManager scoreMan         = hub.scoreMan;

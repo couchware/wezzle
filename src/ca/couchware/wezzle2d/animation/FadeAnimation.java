@@ -23,12 +23,12 @@ public class FadeAnimation extends AbstractAnimation
     /**
      * The minimum opacity the fade should go to.
      */
-    final private int minOpacity;
+    private int minOpacity;
     
     /**
      * The maximum opacity the fade should go to.
      */
-    final private int maxOpacity;
+    private int maxOpacity;
     
     /**
      * The fade possibilities.
@@ -95,7 +95,7 @@ public class FadeAnimation extends AbstractAnimation
         private int wait = 0;
         private int duration = 500;
         private int minOpacity = 0;
-        private int maxOpacity = 100;
+        private int maxOpacity = 100;        
         
         public Builder(Type type, IEntity entity)
         {
@@ -106,7 +106,7 @@ public class FadeAnimation extends AbstractAnimation
         public Builder wait(int val) { wait = val; return this; }
         public Builder duration(int val) { duration = val; return this; }
         public Builder minOpacity(int val) { minOpacity = val; return this; }
-        public Builder maxOpacity(int val) { maxOpacity = val; return this; }
+        public Builder maxOpacity(int val) { maxOpacity = val; return this; }        
 
         public FadeAnimation build()
         {
@@ -120,10 +120,18 @@ public class FadeAnimation extends AbstractAnimation
         if (!this.started)
         {
             // Set the initial opacity.
-            if (type == Type.IN)        
-                this.entity.setOpacity(minOpacity);
-            else
-                this.entity.setOpacity(maxOpacity);
+            switch (type)
+            {
+                case IN:
+                    this.minOpacity = this.entity.getOpacity();
+                    //this.entity.setOpacity(minOpacity);
+                    break;
+                    
+                case OUT:
+                    this.maxOpacity = this.entity.getOpacity();
+                    //this.entity.setOpacity(maxOpacity);
+                    break;
+            }
 
             // Make sure the entities are visible.
             this.entity.setVisible(true);

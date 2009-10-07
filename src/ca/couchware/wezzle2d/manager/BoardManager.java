@@ -1913,6 +1913,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 
             if ( t != null )
             {
+                t.setOpacity( 0 );
                 IAnimation a = new FadeAnimation.Builder( FadeAnimation.Type.IN, t ).
                         wait( wait ).duration( duration ).build();
 
@@ -1989,6 +1990,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 int fadeDuration = settingsMan.getInt( Key.ANIMATION_SLIDEFADE_FADE_DURATION );
 
                 // Create the animation.
+                t.setOpacity( 0 );
                 a1 = new FadeAnimation.Builder( FadeAnimation.Type.IN, t ).wait( fadeWait ).
                         duration( fadeDuration ).build();
 

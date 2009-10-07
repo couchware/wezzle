@@ -237,7 +237,7 @@ public class Refactorer implements IResettable
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
             // automatically when they are done.
-            hub.animationMan.addAll( refactorAnimationList );
+            hub.gameAnimationMan.addAll( refactorAnimationList );
 
             // Set the refactor in progress flag.
             this.refactorVerticalInProgress = true;
@@ -301,7 +301,7 @@ public class Refactorer implements IResettable
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen
             // automatically when they are done.
-            hub.animationMan.addAll( refactorAnimationList );
+            hub.gameAnimationMan.addAll( refactorAnimationList );
 
             // Set the refactor in progress flag.
             refactorHorizontalInProgress = true;
