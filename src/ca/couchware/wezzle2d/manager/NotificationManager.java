@@ -59,6 +59,7 @@ public class NotificationManager implements IManager
         {
             final INotification notif = this.notificationQueue.remove();            
             notif.setPosition(670, 490);
+            notif.setOpacity( 0 );
 
             final IAnimation fadeIn = new FadeAnimation.Builder(FadeAnimation.Type.IN, notif)
                     .duration(500).build();

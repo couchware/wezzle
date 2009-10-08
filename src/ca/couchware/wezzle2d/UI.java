@@ -471,10 +471,11 @@ public class UI implements
 
         animationMan.remove( this.barFadeAnimation );
 
+        EntityGroup bars = new EntityGroup( this.timerBar, this.progressBar );
+        bars.setOpacity( 0 );
+
         this.barFadeAnimation = new FadeAnimation
-                .Builder(
-                    FadeAnimation.Type.IN,
-                    new EntityGroup( this.timerBar, this.progressBar ))
+                .Builder( FadeAnimation.Type.IN, bars )
                 .duration( 250 )
                 .build();
 
@@ -488,10 +489,11 @@ public class UI implements
 
         animationMan.remove( this.barFadeAnimation );
 
+        EntityGroup bars = new EntityGroup( this.timerBar, this.progressBar );
+        bars.setOpacity( 100 );
+
         this.barFadeAnimation = new FadeAnimation
-                .Builder(
-                    FadeAnimation.Type.OUT,
-                    new EntityGroup( this.timerBar, this.progressBar ))
+                .Builder( FadeAnimation.Type.OUT, bars )
                 .duration( 250 )
                 .build();
 
@@ -547,12 +549,14 @@ public class UI implements
 
         animationMan.remove( this.boxFadeAnimation );
 
+        EntityGroup pieceBoxEntities = new EntityGroup(
+                this.traditionalPieceBoxLabel,
+                this.traditionalPieceBox );
+
+        pieceBoxEntities.setOpacity( 0 );
+
         this.boxFadeAnimation = new FadeAnimation
-                .Builder(
-                    FadeAnimation.Type.IN,
-                    new EntityGroup(
-                        this.traditionalPieceBoxLabel,
-                        this.traditionalPieceBox))
+                .Builder( FadeAnimation.Type.IN, pieceBoxEntities )
                 .duration( 250 )
                 .build();
 
@@ -569,12 +573,14 @@ public class UI implements
 
         animationMan.remove( this.boxFadeAnimation );
 
+        EntityGroup pieceBoxEntities = new EntityGroup(
+                this.traditionalPieceBoxLabel,
+                this.traditionalPieceBox );
+
+        pieceBoxEntities.setOpacity( 100 );
+
         this.boxFadeAnimation = new FadeAnimation
-                .Builder(
-                    FadeAnimation.Type.OUT,
-                    new EntityGroup(
-                        this.traditionalPieceBoxLabel,
-                        this.traditionalPieceBox))
+                .Builder( FadeAnimation.Type.OUT, pieceBoxEntities )
                 .duration( 250 )
                 .build();
 

@@ -97,7 +97,7 @@ public class HelpGroup extends AbstractGroup
             hub.musicMan.fadeToGain(0.05);            
             game.getUI().hideBarsUsingFade();
             game.getUI().hideBoardUsingFade();
-            //game.getUI().hideTraditionalPieceBoxUsingFade();           
+            game.getUI().hideTraditionalPieceBoxUsingFade();           
 
             this.animationMan.remove( this.animation );            
 
@@ -130,7 +130,7 @@ public class HelpGroup extends AbstractGroup
             hub.musicMan.fadeToGain(gain);          
             game.getUI().showBarsUsingFade();
             game.getUI().showBoardUsingFade();
-            //game.getUI().showTraditionalPieceBoxUsingFade();
+            game.getUI().showTraditionalPieceBoxUsingFade();
 
             this.animationMan.remove( this.animation );
 
