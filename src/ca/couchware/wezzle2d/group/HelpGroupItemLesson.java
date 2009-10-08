@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
+import ca.couchware.wezzle2d.animation.AnimationHelper;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
@@ -15,9 +16,11 @@ import ca.couchware.wezzle2d.animation.ZoomAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.piece.PieceDot;
 import ca.couchware.wezzle2d.piece.PieceGrid;
+import ca.couchware.wezzle2d.tile.RocketTile;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileHelper;
@@ -96,7 +99,8 @@ class HelpGroupItemLesson
         TileHelper.toBottomOf( this.tileGrid[0][0], this.tileGrid[0][1], 0);
 
         this.tileGrid[1][1] = TileHelper.makeTile(
-                TileType.NORMAL, TileColor.BLUE);
+                TileType.ROCKET, TileColor.BLUE);
+        ((RocketTile) this.tileGrid[1][1]).setDirection( RocketTile.Direction.UP );
         TileHelper.toRightOf( this.tileGrid[0][1], this.tileGrid[1][1], 0);
 
         this.tileGrid[2][1] = TileHelper.makeTile(
@@ -164,8 +168,8 @@ class HelpGroupItemLesson
         Tile red1 = this.tileGrid[1][0];
         Tile red2 = this.tileGrid[2][0];
         Tile line1 = this.tileGrid[0][0];
-        Tile line2 = this.tileGrid[1][1];
-        Tile line3 = this.tileGrid[2][1];
+        Tile rocket1 = this.tileGrid[1][1];
+        Tile line2 = this.tileGrid[2][1];
 
         IAnimation moveGrid = new MoveAnimation
                 .Builder( this.pieceGrid )
@@ -213,29 +217,15 @@ class HelpGroupItemLesson
                 .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
                 .build();
 
-        IAnimation zoom1 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line1 )
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
-                .build();
-
-        IAnimation zoom2 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line2 )
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
-                .build();
-
-        IAnimation zoom3 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line3 )
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
-                .build();
+        IAnimation remove1 = AnimationHelper.animateRemove( hub, line1 );
+        IAnimation activate1 = AnimationHelper.animateItemActivation( hub, rocket1, Layer.HELP );
+        IAnimation remove2 = AnimationHelper.animateRemove( hub, line2 );
 
         IAnimation removeBlue = new MetaAnimation
                 .Builder()
-                .add( zoom1 )
-                .add( zoom2 )
-                .add( zoom3 )
+                .add( remove1 )
+                .add( activate1 )
+                .add( remove2 )
                 .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
                 .finishRule( MetaAnimation.FinishRule.ALL )
                 .build();

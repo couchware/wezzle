@@ -189,15 +189,16 @@ class HelpGroupRotateLesson
         Tile line2 = this.tileGrid[1][1];
         Tile line3 = this.tileGrid[2][0];       
 
-        IAnimation rotate = new MoveAnimation
+        IAnimation rotate = new MoveAnimation                
                 .Builder( pieceGrid )
-                .omega( 2.0 * Math.PI / 4.0 )
-                .duration( 1000 )
+                .wait( 1000 )
+                .omega( Math.PI )
+                .duration( 500 )
                 .build();
 
         IAnimation moveGrid1 = new MoveAnimation
                 .Builder( pieceGrid )
-                .wait( 1000 )
+                .wait( 800 )
                 .speed( 100 )
                 .theta( -90 )
                 .maxY( pieceGrid.getY() + hub.boardMan.getCellHeight())

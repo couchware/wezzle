@@ -154,7 +154,16 @@ public class AnimationHelper
                 .add(move).add(fade).build();
     }
 
-    public static  IAnimation animateItemActivation(final ManagerHub hub, final Tile tile)
+    /**
+     * Create the item activation animation.
+     *
+     * @param hub
+     * @param tile
+     * @param layer The layer to place the activation graphics.
+     * @return
+     */
+    public static  IAnimation animateItemActivation(
+            final ManagerHub hub, final Tile tile, final Layer layer)
     {
         // Sanity check.
         if (hub == null)
@@ -165,10 +174,7 @@ public class AnimationHelper
 
         // The clone of tile, used to make the effect.
         final Tile clone = TileHelper.cloneTile(tile);
-
-        // Add the clone to the layer man.
-        hub.layerMan.add(clone, Layer.EFFECT);
-
+        
         // Make the animation.
         IAnimation anim1 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, clone)
                 .minWidth(clone.getWidth())
@@ -187,11 +193,21 @@ public class AnimationHelper
                 .add(anim2)
                 .build();
 
-        meta.addAnimationListener(new AnimationAdapter()
+        meta.addAnimationListener( new AnimationAdapter()
         {
+
+            @Override
+            public void animationStarted()
+            {
+                hub.layerMan.add(clone, layer);
+            }
+
             @Override
             public void animationFinished()
-            { hub.layerMan.remove(clone, Layer.EFFECT); }
+            {
+                hub.layerMan.remove(clone, layer);
+            }
+
         });
 
         clone.setAnimation(meta);
@@ -218,19 +234,16 @@ public class AnimationHelper
                 .add(move).add(fade).build();
     }
 
-    public static  IAnimation animateRocket(final ManagerHub hub, final Tile tile)
+    public static  IAnimation animateRocket(final ManagerHub hub, final RocketTile rocketTile)
     {
-        // Cast it.
-        RocketTile rocket = (RocketTile) tile;
-
-        IAnimation move = new MoveAnimation.Builder(rocket)
+        IAnimation move = new MoveAnimation.Builder(rocketTile)
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_DURATION))
-                .theta(rocket.getDirection().toDegrees())
+                .theta(rocketTile.getDirection().toDegrees())
                 .speed(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_SPEED))
                 .gravity(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_MOVE_GRAVITY))
                 .build();
 
-        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, tile)
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, rocketTile)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_ROCKET_FADE_DURATION))
                 .build();

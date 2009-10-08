@@ -118,7 +118,23 @@ public class MetaAnimation extends AbstractAnimation
             default: throw new AssertionError();            
         }                
     }
-    
+
+    @Override
+    public void setFinished()
+    {
+        if (!this.finished)
+        {
+            this.finished = true;
+
+            for ( IAnimation a : animationList )
+                a.setFinished();
+
+            // Run the on-finish runnable.
+            //onFinish();
+            this.fireAnimationFinishedEvent();
+        }
+    }
+
     /**
      * This method handles the behavoiur of the meta animation if the
      * simultaneous run rule.
@@ -171,7 +187,7 @@ public class MetaAnimation extends AbstractAnimation
             setFinished();
     }
     
-     /**
+    /**
      * This method handles the behavoiur of the meta animation if the
      * sequence run rule.
      * 
@@ -194,6 +210,6 @@ public class MetaAnimation extends AbstractAnimation
             setFinished();
             return;
         }
-    }        
+    }
 
 }

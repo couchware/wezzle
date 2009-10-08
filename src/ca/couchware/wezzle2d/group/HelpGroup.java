@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
+import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
@@ -37,7 +38,7 @@ public class HelpGroup extends AbstractGroup
     private ManagerHub hub;
 
     private AnimationManager animationMan;
-    private IAnimation animation;
+    private IAnimation animation = FinishedAnimation.get();
 
     final private Padding linePad = Padding.newInstance( 0, 0, 30, 24 );
     private Box lineBox;
@@ -99,7 +100,8 @@ public class HelpGroup extends AbstractGroup
             game.getUI().hideBoardUsingFade();
             game.getUI().hideTraditionalPieceBoxUsingFade();           
 
-            this.animationMan.remove( this.animation );            
+            this.animationMan.remove( this.animation );
+            this.animation.setFinished();
 
             this.animation = new MetaAnimation
                     .Builder()
@@ -133,6 +135,7 @@ public class HelpGroup extends AbstractGroup
             game.getUI().showTraditionalPieceBoxUsingFade();
 
             this.animationMan.remove( this.animation );
+            this.animation.setFinished();
 
             this.animation = createSlideFadeOut();
 

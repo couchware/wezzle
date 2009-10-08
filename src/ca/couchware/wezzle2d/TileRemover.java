@@ -620,7 +620,7 @@ public class TileRemover implements IResettable, ILevelListener
                     Tile itemTile = boardMan.getTile(itemIndex);
                    
                     // Create and add the animation.                    
-                    animationMan.add(AnimationHelper.animateItemActivation(hub, itemTile));
+                    animationMan.add(AnimationHelper.animateItemActivation(hub, itemTile, Layer.EFFECT));
                 }
             } // end for
         } // end if    
@@ -741,7 +741,7 @@ public class TileRemover implements IResettable, ILevelListener
             
             if (t == null) continue;
             
-            t.setAnimation(AnimationHelper.animateItemActivation(hub, t));
+            t.setAnimation(AnimationHelper.animateItemActivation(hub, t, Layer.EFFECT));
             animationMan.add(t.getAnimation());
         }
 
@@ -757,7 +757,7 @@ public class TileRemover implements IResettable, ILevelListener
             IAnimation anim;
             if (tile.getType() == TileType.ROCKET)
             {                
-                anim = AnimationHelper.animateRocket(hub, tile);
+                anim = AnimationHelper.animateRocket(hub, (RocketTile) tile);
                 
             }
             else
@@ -864,7 +864,7 @@ public class TileRemover implements IResettable, ILevelListener
             // Make sure the item has not already been removed.
             if (t == null) continue;
             
-            t.setAnimation(AnimationHelper.animateItemActivation(hub, t));
+            t.setAnimation(AnimationHelper.animateItemActivation(hub, t, Layer.EFFECT));
             animationMan.add(t.getAnimation());
         }
 
