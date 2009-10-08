@@ -8,6 +8,7 @@ package ca.couchware.wezzle2d.group;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
+import ca.couchware.wezzle2d.animation.AnimationHelper;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
@@ -67,7 +68,7 @@ class HelpGroupRotateLesson
         parentEntities.addAll( this.entities );
     }
             
-    private final static int Columns = 3;
+    private final static int Columns = 4;
     private final static int Rows    = 2;
 
     // (0,0) is the top-left tile and
@@ -82,7 +83,7 @@ class HelpGroupRotateLesson
     private void createEntities(List<IEntity> entityList)
     {
         final int totalWidth  = hub.boardMan.getCellWidth() * Columns;
-        //final int totalHeight = hub.boardMan.getCellWidth() * Rows;
+        final int totalHeight = hub.boardMan.getCellWidth() * Rows;
 
         final int gridX = rect.getX() + (rect.getWidth() - totalWidth) / 2;
         final int gridY = rect.getY() + quadrantPad.getTop();      
@@ -98,9 +99,9 @@ class HelpGroupRotateLesson
                 TileType.NORMAL, TileColor.RED);
         TileHelper.toRightOf( this.tileGrid[1][0], this.tileGrid[2][0], 0);
 
-//        this.tileGrid[3][0] = TileHelper.makeTile(
-//                TileType.NORMAL, TileColor.PURPLE);
-//        TileHelper.toRightOf( this.tileGrid[2][0], this.tileGrid[3][0], 0);
+        this.tileGrid[3][0] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.PURPLE);
+        TileHelper.toRightOf( this.tileGrid[2][0], this.tileGrid[3][0], 0);
 
         this.tileGrid[0][1] = TileHelper.makeTile(
                 TileType.NORMAL, TileColor.RED);
@@ -114,9 +115,9 @@ class HelpGroupRotateLesson
                 TileType.NORMAL, TileColor.YELLOW);
         TileHelper.toRightOf( this.tileGrid[1][1], this.tileGrid[2][1], 0);
 
-//        this.tileGrid[3][1] = TileHelper.makeTile(
-//                TileType.NORMAL, TileColor.PURPLE);
-//        TileHelper.toRightOf( this.tileGrid[2][1], this.tileGrid[3][1], 0);
+        this.tileGrid[3][1] = TileHelper.makeTile(
+                TileType.NORMAL, TileColor.PURPLE);
+        TileHelper.toRightOf( this.tileGrid[2][1], this.tileGrid[3][1], 0);
 
         for (int i = 0; i < Rows; i++)
         {
@@ -130,7 +131,7 @@ class HelpGroupRotateLesson
         this.piece = new PieceDash();
         this.pieceGrid = new PieceGrid
                 .Builder(
-                    gridX + hub.boardMan.getCellWidth() * 2,
+                    gridX + hub.boardMan.getCellWidth() * 3,
                     gridY - hub.boardMan.getCellHeight(),
                     PieceGrid.RenderMode.SPRITE )
                 .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT ) )
@@ -174,40 +175,45 @@ class HelpGroupRotateLesson
         this.pieceGrid.loadStructure( piece.getStructure() );
         this.pieceGrid.setPosition( this.pieceGridPosition );
         this.pieceGrid.setOpacity( 100 );
+        this.pieceGrid.setRotation( 0.0 );
     }
 
     public IAnimation createAnimation()
     {
         Tile clicked1 = this.tileGrid[2][1];
-//        Tile clicked2 = this.tileGrid[3][1];
-//        Tile clicked3 = this.tileGrid[3][0];
+        Tile clicked2 = this.tileGrid[3][1];
+        Tile purple1 = this.tileGrid[3][0];
         Tile blue1 = this.tileGrid[0][0];
         Tile blue2 = this.tileGrid[1][0];
         Tile line1 = this.tileGrid[0][1];
         Tile line2 = this.tileGrid[1][1];
-        Tile line3 = this.tileGrid[2][0];
-       
-        IAnimation rotate = new WaitAnimation( 1000 );
-        rotate.addAnimationListener( new AnimationAdapter()
-        {
-            @Override
-            public void animationFinished()
-            {
-                piece.rotateRight();
-            }
-        });              
+        Tile line3 = this.tileGrid[2][0];       
 
-        IAnimation moveGrid = new MoveAnimation
+        IAnimation rotate = new MoveAnimation
+                .Builder( pieceGrid )
+                .omega( 2.0 * Math.PI / 4.0 )
+                .duration( 1000 )
+                .build();
+
+        IAnimation moveGrid1 = new MoveAnimation
                 .Builder( pieceGrid )
                 .wait( 1000 )
                 .speed( 100 )
-                .theta( -135 )
+                .theta( -90 )
                 .maxY( pieceGrid.getY() + hub.boardMan.getCellHeight())
+                .build();
+
+        IAnimation moveGrid2 = new MoveAnimation
+                .Builder( pieceGrid )
+                .wait( 1000 )
+                .speed( 100 )
+                .theta( 180 )
+                .minX( pieceGrid.getX() - hub.boardMan.getCellWidth())
                 .build();
 
         IAnimation fade = new FadeAnimation
                 .Builder(FadeAnimation.Type.OUT, 
-                    new EntityGroup(clicked1, this.pieceGrid))
+                    new EntityGroup(clicked1, clicked2, this.pieceGrid))
                 .wait( 500 )
                 .duration( 500 )
                 .build();
@@ -221,29 +227,32 @@ class HelpGroupRotateLesson
                 .maxY( clicked1.getY() )
                 .build();
 
-        IAnimation zoom1 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line1 )
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
+        IAnimation moveDownPurple = new MoveAnimation
+                .Builder( purple1 )
+                .wait( 500 )
+                .speed( hub.settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_Y ))
+                //.gravity( hub.settingsMan.getInt( Key.REFACTOR_SLOWER_GRAVITY ) )
+                .theta( -90 )
+                .maxY( clicked1.getY() )
                 .build();
 
-        IAnimation zoom2 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line2 )
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
+        IAnimation moveDown = new MetaAnimation
+                .Builder()
+                .add(moveDownRed)
+                .add(moveDownPurple)
+                .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
+                .finishRule( MetaAnimation.FinishRule.ALL )
                 .build();
 
-        IAnimation zoom3 = new ZoomAnimation
-                .Builder( ZoomAnimation.Type.IN, line3 )
-                .lateInitialization( true )
-                .speed( hub.settingsMan.getInt(Key.ANIMATION_LINE_REMOVE_ZOOM_SPEED) )
-                .build();
+        IAnimation remove1 = AnimationHelper.animateRemove( hub, line1 );
+        IAnimation remove2 = AnimationHelper.animateRemove( hub, line2 );
+        IAnimation remove3 = AnimationHelper.animateRemove( hub, line3 );
 
         IAnimation removeRed = new MetaAnimation
                 .Builder()                
-                .add( zoom1 )
-                .add( zoom2 )
-                .add( zoom3 )
+                .add( remove1 )
+                .add( remove2 )
+                .add( remove3 )
                 .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
                 .finishRule( MetaAnimation.FinishRule.ALL )
                 .build();
@@ -272,38 +281,33 @@ class HelpGroupRotateLesson
                 .finishRule( MetaAnimation.FinishRule.ALL )
                 .build();
 
-        IAnimation fadeBlue1 = new FadeAnimation
-                .Builder( FadeAnimation.Type.OUT, blue1 )
+        IAnimation moveLeftPurple = new MoveAnimation
+                .Builder( purple1 )
+                .wait( 250 )
+                .speed( hub.settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_X ))
+                .theta( 180 )
+                .minX( clicked1.getX() )
+                .build();
+
+        IAnimation fadeRemainder = new FadeAnimation
+                .Builder( FadeAnimation.Type.OUT, new EntityGroup(blue1, blue2, purple1))
                 .wait( 250 )
                 .duration( 500 )
                 .minOpacity( 30 )
-                .build();
-
-        IAnimation fadeBlue2 = new FadeAnimation
-                .Builder( FadeAnimation.Type.OUT, blue2 )
-                .wait( 250 )
-                .duration( 500 )
-                .minOpacity( 30 )
-                .build();
-
-        IAnimation fadeBlue = new MetaAnimation
-                .Builder()
-                .add( fadeBlue1 )
-                .add( fadeBlue2 )
-                .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
-                .finishRule( MetaAnimation.FinishRule.ALL )
-                .build();
+                .build();       
       
         IAnimation meta = new MetaAnimation
                 .Builder()
                 .add( rotate )                
-                .add( moveGrid )
+                .add( moveGrid1 )
+                .add( moveGrid2 )
                 .add( fade )
-                .add( moveDownRed )
+                .add( moveDown )
                 .add( new WaitAnimation(500) )
                 .add( removeRed )
                 .add( moveDownBlue )
-                .add( fadeBlue )
+                .add( moveLeftPurple )
+                .add( fadeRemainder )
                 .runRule( MetaAnimation.RunRule.SEQUENCE )
                 .finishRule( MetaAnimation.FinishRule.ALL )
                 .build();
