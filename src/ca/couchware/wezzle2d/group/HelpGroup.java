@@ -349,7 +349,7 @@ public class HelpGroup extends AbstractGroup
     private IAnimation createSlideFadeOut()
     {
         EntityGroup boxes = new EntityGroup( this.lineBox, this.rotateBox, this.itemBox );
-        boxes.setOpacity( 0 );
+        boxes.setOpacity( 100 );
 
         IAnimation fadeOut = new FadeAnimation
                 .Builder( FadeAnimation.Type.OUT, boxes )
