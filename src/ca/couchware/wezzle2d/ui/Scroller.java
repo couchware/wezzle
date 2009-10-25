@@ -327,7 +327,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     
     public boolean changed(boolean preserve)
     {
-        if (preserve == true)
+        if (preserve)
             return changed;
         else
             return changed();
@@ -368,7 +368,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         }                
         else
         {
-            throw new UnsupportedOperationException();
+            throw new RuntimeException("No button instance found");
         }
     }
     
@@ -385,7 +385,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         }                
         else
         {
-            throw new UnsupportedOperationException();
+            throw new RuntimeException("No button instance found");
         }                
     }
 
@@ -477,22 +477,15 @@ public class Scroller extends AbstractEntity implements IMouseListener
                     break;
                 }
             }
-        }
-
-//        LogManager.recordMessage(itemList.size() + "");
-//        for (RadioItem item : itemList)
-//            LogManager.recordMessage("isActivated = " + item.isActivated());
+        } // end if
     }
 
     public void mouseDragged(MouseEvent e)
     {
-        // Intentionally left blank.
     }
 
     public void mouseMoved(MouseEvent e)
     {
-//        if (shape.contains(e.getPosition()))
-//            LogManager.recordMessage("I'm over the area!");
     }    
     
     public void mouseWheel(MouseEvent e)
@@ -513,6 +506,28 @@ public class Scroller extends AbstractEntity implements IMouseListener
         // Stop listening to the mouse events.
         if (this.visible && !this.disabled)
             window.removeMouseListener(this);
+    }
+
+    private class ScrollerRow
+    {
+        private Button button;
+        private ITextLabel label;
+
+        public ScrollerRow(Button b, ITextLabel l)
+        {
+            this.button = b;
+            this.label = l;
+        }
+
+        public Button getButton()
+        {
+            return button;
+        }
+
+        public ITextLabel getLabel()
+        {
+            return label;
+        }
     }
 
 }
