@@ -119,9 +119,11 @@ public class AchievementMenu extends AbstractMenu
                 .padding(Padding.newInstance(12, 30, 12, 12))                
                 .rows(4)
                 .visible(false);
+
         for (Achievement ach : achievementList)
         {
              builder.add(ach.getTitle());
+
         }         
         scroller = builder.selectedIndex(0).build();
         entityList.add(scroller);
@@ -133,43 +135,11 @@ public class AchievementMenu extends AbstractMenu
                 scroller.setColor(i, COLOR_NOT_COMPLETED);
              else
                 scroller.setColor(i, COLOR_COMPLETED);
+
+            scroller.setLabelText(i, ach.getLevel().toString());
+            scroller.setLabelColor(i, getColor(ach.getLevel().toString(), settingsMan));
         }
 
-        // -----
-        
-        ITextLabel x1 = new ResourceFactory.LabelBuilder(
-                    scroller.getX() + scroller.getWidth() - 50, 162)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .visible(false)
-                .text("BRONZE").size(12)
-                .build();
-        this.entityList.add(x1);
-
-        ITextLabel x2 = new ResourceFactory.LabelBuilder(
-                    scroller.getX() + scroller.getWidth() - 50, 207)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .visible(false)
-                .text("SILVER").size(12)
-                .build();
-        this.entityList.add(x2);
-
-        ITextLabel x3 = new ResourceFactory.LabelBuilder(
-                    scroller.getX() + scroller.getWidth() - 50, 252)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .visible(false)
-                .text("PLATINUM").size(12)
-                .build();
-        this.entityList.add(x3);
-
-        ITextLabel x4 = new ResourceFactory.LabelBuilder(
-                    scroller.getX() + scroller.getWidth() - 50, 297)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .visible(false)
-                .text("GOLD").size(12)
-                .build();
-        this.entityList.add(x4);
-
-        // -----
         
         // The first box.
         Box descriptionBox = new Box.Builder(68, 346)

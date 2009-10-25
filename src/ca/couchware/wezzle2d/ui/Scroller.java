@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
+import ca.couchware.wezzle2d.menu.ScrollerRow;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     private Padding padding;
     
     /** The list of options in the scroller. */
-    final private List<IButton> buttonList;
+    final private List<ScrollerRow> rowList;
 
     private int visibleStart;
     private int visibleEnd;
@@ -88,7 +89,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
                 width, height);
         
         // Create the button list.
-        this.buttonList = new ArrayList<IButton>();
+        this.rowList = new ArrayList<ScrollerRow>();
         
         // Create all the buttons.
         IButton templateButton = new Button.Builder(0, 0)
@@ -96,22 +97,27 @@ public class Scroller extends AbstractEntity implements IMouseListener
                 .build();
         
         for (String optionText : builder.optionList)
-        {            
-            buttonList.add(new Button.Builder((Button) templateButton) 
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                    .autoWidth(true)
-                    .normalOpacity(0)
-                    //.hoverOpacity(10)
-                    .activeOpacity(100)
-                    .visible(false)
-                    .text(optionText).build());
+        { 
+            rowList.add(new ScrollerRow(new Button.Builder((Button) templateButton)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .autoWidth(true)
+                .normalOpacity(0)
+                //.hoverOpacity(10)
+                .activeOpacity(100)
+                .visible(false)
+                .text(optionText).build(), new ResourceFactory.LabelBuilder(
+                    0, 0)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .visible(false)
+                .text("GOLD").size(12)
+                .build()) );
         }
         
         // Set the selected index.
         this.selectedIndex = builder.selectedIndex;
         if (builder.selectedIndex != -1)            
         {
-            buttonList.get(selectedIndex).setActivated(true);            
+            rowList.get(selectedIndex).getButton().setActivated(true);
         }            
             
         // Create the scroll bar.
@@ -122,7 +128,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
                 .height(this.height - padding.getTop() - padding.getBottom())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .orientation(SliderBar.Orientation.VERTICAL)
-                .virtualRange(0, Math.max(0, buttonList.size() - rows))
+                .virtualRange(0, Math.max(0, rowList.size() - rows))
                 .virtualValue(0)                
                 .build();
         
@@ -159,12 +165,12 @@ public class Scroller extends AbstractEntity implements IMouseListener
         private int y;     
         
         // Optional values.
-        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);                      
+        private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);  
         private int width = 400;
         private int height = 200;       
         private boolean visible = true;
         private int textSize = 18;
-        private List<String> optionList = new ArrayList<String>();        
+        private List<String> optionList = new ArrayList<String>(); 
         private int rows = 5;        
         private Padding padding = Padding.NONE;
         private int selectedIndex = -1;
@@ -211,7 +217,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
             
             return this;
         }
-        
+
         public Builder add(String option)
         {
             return add(option, false);
@@ -252,29 +258,38 @@ public class Scroller extends AbstractEntity implements IMouseListener
     private void showButtons()
     {
         // Make sure the offset isn't too high.
-        if ( scrollOffset > (buttonList.size() - rows) )
+        if ( scrollOffset > (rowList.size() - rows) )
             throw new IllegalStateException("Offset too high.");
                     
         // Make all labels invisible.
-        for (IButton button : buttonList)
+        for (ScrollerRow r : rowList)
         {
-            button.setVisible(false);
+            r.getButton().setVisible(false);
+            r.getLabel().setVisible(false);
         }
         
         // Move the labels into the right position.
         for (int i = 0; i < rows; i++)
         {
-            IButton button = buttonList.get(i + scrollOffset);
+            IButton button = rowList.get(i + scrollOffset).getButton();
             button.setX(this.x + offsetX + padding.getLeft());
             button.setY(this.y + offsetY + padding.getTop() + (spacing / 2) + spacing * i);
-            button.setVisible(true);                           
+            button.setVisible(true);
+
+            ITextLabel label = rowList.get(i + scrollOffset).getLabel();
+            label.setX(getX() + getWidth() - 50);
+            label.setY(this.y + offsetY + padding.getTop() + (spacing / 2) + spacing * i);
+            label.setVisible(true);
         }
     }
 
     private void hideButtons()
     {
-        for ( IButton button : this.buttonList )
-            button.setVisible(false);
+        for ( ScrollerRow r : this.rowList )
+        {
+            r.getButton().setVisible(false);
+            r.getLabel().setVisible(false);
+        }
     }
     
     @Override
@@ -331,21 +346,22 @@ public class Scroller extends AbstractEntity implements IMouseListener
         
         this.selectedIndex = selectedIndex;
         
-        for (int i = 0; i < buttonList.size(); i++)
+        for (int i = 0; i < rowList.size(); i++)
         {
             if (i != selectedIndex)          
             {
-                this.buttonList.get(i).setActivated(false);
+                this.rowList.get(i).getButton().setActivated(false);
+
             }            
         } // end for            
     }      
     
     public Color getColor(int index)
     {
-        if(index < 0 || index >= buttonList.size())
+        if(index < 0 || index >= rowList.size())
             throw new IllegalArgumentException("index out of range.");
         
-        IButton button = buttonList.get(index);
+        IButton button = rowList.get(index).getButton();
         
         if (button instanceof Button)
         {
@@ -359,10 +375,10 @@ public class Scroller extends AbstractEntity implements IMouseListener
     
     public void setColor(int index, Color color)
     {
-        if(index < 0 || index >= buttonList.size())
+        if(index < 0 || index >= rowList.size())
             throw new IllegalArgumentException("index out of range.");
         
-        IButton button = buttonList.get(index);
+        IButton button = rowList.get(index).getButton();
         
         if (button instanceof Button)
         {
@@ -373,6 +389,40 @@ public class Scroller extends AbstractEntity implements IMouseListener
             throw new UnsupportedOperationException();
         }                
     }
+
+    public void setLabelColor(int index, Color color)
+    {
+        if(index < 0 || index >= rowList.size())
+            throw new IllegalArgumentException("index out of range.");
+
+        ITextLabel label = rowList.get(index).getLabel();
+
+        if (label instanceof ITextLabel)
+        {
+            ((ITextLabel) label).setColor(color);
+        }
+        else
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void setLabelText(int index, String text)
+    {
+        if(index < 0 || index >= rowList.size())
+            throw new IllegalArgumentException("index out of range.");
+
+        ITextLabel label = rowList.get(index).getLabel();
+
+        if (label instanceof ITextLabel)
+        {
+            ((ITextLabel) label).setText(text);
+        }
+        else
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
     
     @Override
     public boolean draw()
@@ -381,9 +431,11 @@ public class Scroller extends AbstractEntity implements IMouseListener
         if (visible == false)
             return false;        
         
-        for (IButton button : buttonList)
-            button.draw();
-        
+        for (ScrollerRow row : rowList)
+        {
+            row.getButton().draw();
+            row.getLabel().draw();
+        }
         scrollBar.draw();
         
         return true;
@@ -415,9 +467,9 @@ public class Scroller extends AbstractEntity implements IMouseListener
         if ( shape.contains(e.getPosition()) )
         {            
             // See which one it was released over.
-            for (int i = 0; i < buttonList.size(); i++)
+            for (int i = 0; i < rowList.size(); i++)
             {
-                IButton button = buttonList.get(i);
+                IButton button = rowList.get(i).getButton();
                 
                 if (button.isVisible()
                         && button.getShape().contains(e.getPosition()))
@@ -449,7 +501,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         int signum = -e.getDeltaWheel() / Math.abs(e.getDeltaWheel());
         int offset = scrollOffset + signum;
         
-        if (offset >= 0 && offset <= buttonList.size() - rows)
+        if (offset >= 0 && offset <= rowList.size() - rows)
         {
             //scrollOffset = offset;
             scrollBar.setVirtualValue(offset);            
