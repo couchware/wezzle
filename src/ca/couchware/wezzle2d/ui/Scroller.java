@@ -11,7 +11,6 @@ import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
-import ca.couchware.wezzle2d.menu.ScrollerRow;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Color;
 import java.util.ArrayList;

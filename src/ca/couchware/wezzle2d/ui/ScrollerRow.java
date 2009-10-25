@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package ca.couchware.wezzle2d.menu;
+package ca.couchware.wezzle2d.ui;
 
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.ITextLabel;
