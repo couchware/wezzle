@@ -28,32 +28,23 @@ import java.util.EnumSet;
  */
 public class AudioGroup extends AbstractGroup
 {           
-    
-    /** The header label. */
+
+    private ManagerHub hub;
+
     private ITextLabel headerLabel;       
-        
-    /** The sound radio group options. */    
+            
     final private static int SOUND_ON  = 0;
     final private static int SOUND_OFF = 1;
-    
-    /** The sound on/off radio group. */        
-    private RadioGroup soundRadio;    
-    
-    /** The sound slider bar. */
+        
+    private RadioGroup soundRadio;           
     private SliderBar soundSlider;
     
-    /** The music radio group options. */
-    //private enum Music { ON, OFF }
     final private static int MUSIC_ON  = 0;
     final private static int MUSIC_OFF = 1;
-    
-    /** The music on/off radio group. */     
-    private RadioGroup musicRadio;         
-    
-    /** The music slider bar. */
+        
+    private RadioGroup musicRadio;            
     private SliderBar musicSlider;    
-    
-    /** The back button. */
+        
     private IButton backButton; 
     
     /**
@@ -65,7 +56,12 @@ public class AudioGroup extends AbstractGroup
      * @param propertyMan
      */    
     public AudioGroup(ManagerHub hub)
-    {        
+    {
+        if (hub == null)
+            throw new IllegalArgumentException("Hub must not be null");
+
+        this.hub = hub;
+
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
@@ -80,8 +76,8 @@ public class AudioGroup extends AbstractGroup
         RadioItem soundItem2 = new RadioItem.Builder().text("Off").build();
         soundRadio = new RadioGroup.Builder(400, 233)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(soundItem1, SettingsManager.get().getBool(Key.USER_SOUND))
-                .add(soundItem2, !SettingsManager.get().getBool(Key.USER_SOUND))
+                .add(soundItem1, hub.settingsMan.getBool(Key.USER_SOUND))
+                .add(soundItem2, !hub.settingsMan.getBool(Key.USER_SOUND))
                 .visible(false).build();
         hub.layerMan.add(soundRadio, Layer.UI);
         entityList.add(soundRadio);
@@ -93,7 +89,7 @@ public class AudioGroup extends AbstractGroup
         soundSlider = new SliderBar.Builder(400, 272)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0, 100)                    
-                .virtualValue(SettingsManager.get().getInt(Key.USER_SOUND_VOLUME))
+                .virtualValue(hub.settingsMan.getInt(Key.USER_SOUND_VOLUME))
                 .visible(false).build();
         hub.layerMan.add(soundSlider, Layer.UI);
         entityList.add(soundSlider);
@@ -104,8 +100,8 @@ public class AudioGroup extends AbstractGroup
         RadioItem musicItem2 = new RadioItem.Builder().text("Off").build();
         musicRadio = new RadioGroup.Builder(400, 321)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(musicItem1, SettingsManager.get().getBool(Key.USER_MUSIC))
-                .add(musicItem2, !SettingsManager.get().getBool(Key.USER_MUSIC))
+                .add(musicItem1, hub.settingsMan.getBool(Key.USER_MUSIC))
+                .add(musicItem2, !hub.settingsMan.getBool(Key.USER_MUSIC))
                 .visible(false).build();
         hub.layerMan.add(musicRadio, Layer.UI);
         entityList.add(musicRadio);
@@ -117,7 +113,7 @@ public class AudioGroup extends AbstractGroup
         musicSlider = new SliderBar.Builder(400, 359)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0, 100)
-                .virtualValue(SettingsManager.get().getInt(Key.USER_MUSIC_VOLUME))
+                .virtualValue(hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME))
                 .visible(false).build();
         hub.layerMan.add(musicSlider, Layer.UI);
         entityList.add(musicSlider);
@@ -129,6 +125,18 @@ public class AudioGroup extends AbstractGroup
                 .text("Back").normalOpacity(70).visible(false).build();
         hub.layerMan.add(backButton, Layer.UI);     
         entityList.add(backButton);
+    }
+
+    @Override
+    public void setActivated(boolean activated)
+    {
+        if (activated)
+        {
+            soundSlider.setVirtualValue( hub.settingsMan.getInt(Key.USER_SOUND_VOLUME) );
+            musicSlider.setVirtualValue( hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME) );
+        }
+
+        super.setActivated( activated );
     }
     
     /**

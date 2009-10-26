@@ -159,7 +159,7 @@
             </rule>
         </achievement>
 
-        <achievement name="Bronze Rocket" level="BRONZE" difficulty="NONE">
+        <achievement name="2-Rocket" level="BRONZE" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -167,7 +167,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Double Bronze Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="2-2-Rocket" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into two 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -176,7 +176,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Triple Bronze Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="2-2-2-Rocket" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into three 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -186,7 +186,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Silver Rocket" level="BRONZE" difficulty="NONE">
+        <achievement name="3-Rocket" level="BRONZE" difficulty="NONE">
             <description>Fire a rocket into a 3X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -194,7 +194,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Gold Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="4-Rocket" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -202,7 +202,7 @@
                 </item>
             </rule>
         </achievement>              
-        <achievement name="Silvered Bronze Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="2-3-Rocket" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier
             and a 3X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -212,7 +212,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Gilded Bronze Rocket" level="GOLD" difficulty="NONE">
+        <achievement name="2-4-Rocket" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier
             and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -222,7 +222,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Gilded Silver Rocket" level="GOLD" difficulty="NONE">
+        <achievement name="3-4-Rocket" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into a an 3X multiplier
             and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -232,7 +232,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Platinum Rocket" level="GOLD" difficulty="NONE">
+        <achievement name="2-3-4-Rocket" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier, a 3X multiplier
             and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -243,7 +243,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Sniped Platinum Rocket" level="PLATINUM" difficulty="NONE">
+        <achievement name="Sniped 2-3-4-Rocket" level="PLATINUM" difficulty="NONE">
             <description>Fire a rocket into a rocket into a 2X multiplier,
             a 3X multiplier and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -284,7 +284,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Bronze Bomb" level="BRONZE" difficulty="NONE">
+        <achievement name="2-Bomb" level="BRONZE" difficulty="NONE">
             <description>Explode a bomb into a 2X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -292,7 +292,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Double-Bronze Bomb" level="SILVER" difficulty="NONE">
+        <achievement name="2-2-Bomb" level="SILVER" difficulty="NONE">
             <description>Explode a bomb into two 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -301,7 +301,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Triple-Bronze Bomb" level="GOLD" difficulty="NONE">
+        <achievement name="2-2-2-Bomb" level="GOLD" difficulty="NONE">
             <description>Explode a bomb into three 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -311,7 +311,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Silver Bomb" level="BRONZE" difficulty="NONE">
+        <achievement name="3-Bomb" level="BRONZE" difficulty="NONE">
             <description>Explode a bomb into a 3X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -319,7 +319,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Gold Bomb" level="SILVER" difficulty="NONE">
+        <achievement name="4-Bomb" level="SILVER" difficulty="NONE">
             <description>Explode a bomb into a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -327,7 +327,7 @@
                 </item>
             </rule>
         </achievement>        
-        <achievement name="Silvered Bronze Bomb" level="SILVER" difficulty="NONE">
+        <achievement name="2-3-Bomb" level="SILVER" difficulty="NONE">
             <description>Explode a bomb into a 2X multiplier
             and a 3X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -337,7 +337,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Gilded Bronze Bomb" level="GOLD" difficulty="NONE">
+        <achievement name="2-4-Bomb" level="GOLD" difficulty="NONE">
             <description>Explode a bomb into a 2X multiplier
             and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -347,7 +347,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Gilded Silver Bomb" level="GOLD" difficulty="NONE">
+        <achievement name="3-4-Bomb" level="GOLD" difficulty="NONE">
             <description>Explode a bomb into a 3X multiplier
             and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -357,7 +357,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Platinum Bomb" level="PLATINUM" difficulty="NONE">
+        <achievement name="2-3-4-Bomb" level="PLATINUM" difficulty="NONE">
             <description>Explode a bomb into a 2x multiplier, 
             a 3X multiplier and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -368,7 +368,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="Sniped Platinum Bomb" level="PLATINUM" difficulty="NONE">
+        <achievement name="Sniped 2-3-4-Bomb" level="PLATINUM" difficulty="NONE">
             <description>Fire a rocket into a bomb into a 2x multiplier,
             a 3X multiplier and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -391,7 +391,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="The Perfect Star Storm" level="PLATINUM" difficulty="NONE">
+        <achievement name="Perfect Star Storm" level="PLATINUM" difficulty="NONE">
             <description>Use a star to remove any three multipliers
             and any two items, all in the same move.
             </description>

@@ -567,6 +567,7 @@ public class OptionsMenu extends AbstractMenu
             musicVolumeValue = musicVolumeValueSlider.getVirtualValue();
             this.musicVolumeValueLabel.setText("" + musicVolumeValue);
             hub.settingsMan.setInt(Key.USER_MUSIC_VOLUME, this.musicVolumeValue);
+            //hub.musicMan.setNormalizedGain( musicVolumeValueSlider.getVirtualPercent() );
 
             try
             {
@@ -587,8 +588,7 @@ public class OptionsMenu extends AbstractMenu
             soundVolumeValue = soundVolumeValueSlider.getVirtualValue();
             this.soundVolumeValueLabel.setText("" + soundVolumeValue);
             hub.settingsMan.setInt(Key.USER_SOUND_VOLUME, this.soundVolumeValue);
-
-            hub.soundMan.setNormalizedGain( soundVolumeValueSlider.getVirtualPercent() );
+            //hub.soundMan.setNormalizedGain( soundVolumeValueSlider.getVirtualPercent() );
         }
 
         if ( this.musicTestButton.clicked() )

@@ -76,7 +76,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         ACHIEVEMENTS(1),
         OPTIONS(2),
         HIGH_SCORES(3),
-        UPGRADE(4);
+        ABOUT(4);
                 
         private int rank;
         
@@ -240,10 +240,10 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         buttonMap.put(Menu.HIGH_SCORES, button);
         
         button = new Button.Builder((Button) templateButton)
-                .y(startY + 50 * Menu.UPGRADE.getRank())
-                .text("Buy Now").build();
+                .y(startY + 50 * Menu.ABOUT.getRank())
+                .text("About").build();
         this.menuLayerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.UPGRADE, button);                                                   
+        buttonMap.put(Menu.ABOUT, button);
     };
     
     private void initializeGroups(ManagerHub hub)
@@ -277,7 +277,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         
          // Create the "Buy Now" group.
         menu = new HighScoreMenu(this, hub, this.menuLayerMan);
-        this.menuMap.put(Menu.UPGRADE, menu);
+        this.menuMap.put(Menu.ABOUT, menu);
     }
     
     public void updateLogic(Game game, ManagerHub hub)

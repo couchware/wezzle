@@ -366,7 +366,7 @@ public class MusicManager
     public void exportSettings()
     {
         // Write the music volume.
-        int intGain =(int) (normalizedGain * 100.0);
+        int intGain = (int) (normalizedGain * 100.0);
         settingsMan.setInt(Key.USER_MUSIC_VOLUME, intGain);
     }
 

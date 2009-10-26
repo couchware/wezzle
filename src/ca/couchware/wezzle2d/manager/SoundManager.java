@@ -210,6 +210,22 @@ public class SoundManager
         this.normalizedGain = nGain;                
     }               
 
+    public void exportSettings()
+    {
+        // Write the music volume.
+        int intGain = (int) (normalizedGain * 100.0);
+        settingsMan.setInt(Key.USER_SOUND_VOLUME, intGain);
+    }
+
+    public final void importSettings()
+    {
+        // Read the music volume.
+        final double nGain =
+                (double) settingsMan.getInt(Key.USER_SOUND_VOLUME) / 100.0;
+
+        setNormalizedGain(nGain);
+    }
+
     public boolean isPaused()
     {
         return paused;

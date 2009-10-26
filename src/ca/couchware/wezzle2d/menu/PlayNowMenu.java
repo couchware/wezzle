@@ -490,6 +490,11 @@ public class PlayNowMenu extends AbstractMenu
         hub.settingsMan.setString(Key.USER_MUSIC_DEFAULT, theme.toString());
         hub.musicMan.setTheme(theme);
 
+        // Make sure the latest sound volume and
+        // music volume settings are being used.
+        hub.soundMan.importSettings();
+        hub.musicMan.importSettings();
+
         // Set the target score.
         hub.levelMan.setLevel(levelNumber, false);        
         hub.scoreMan.setTargetTotalScore(hub.scoreMan.generateTargetLevelScore(levelNumber));

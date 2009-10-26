@@ -43,9 +43,6 @@ public class Scroller extends AbstractEntity implements IMouseListener
     
     /** The list of options in the scroller. */
     final private List<ScrollerRow> rowList;
-
-    private int visibleStart;
-    private int visibleEnd;
     
     /** The slider bar used to scroll the scroller. */
     final private SliderBar scrollBar;      
@@ -96,20 +93,23 @@ public class Scroller extends AbstractEntity implements IMouseListener
                 .build();
         
         for (String optionText : builder.optionList)
-        { 
-            rowList.add(new ScrollerRow(new Button.Builder((Button) templateButton)
+        {
+            IButton button = new Button.Builder((Button) templateButton)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .autoWidth(true)
                 .normalOpacity(0)
-                //.hoverOpacity(10)
                 .activeOpacity(100)
                 .visible(false)
-                .text(optionText).build(), new ResourceFactory.LabelBuilder(
-                    0, 0)
+                .text(optionText)
+                .build();
+
+            ITextLabel label = new ResourceFactory.LabelBuilder(0, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .visible(false)
-                .text("GOLD").size(12)
-                .build()) );
+                .text("").size(12)
+                .build();
+
+            rowList.add( new ScrollerRow(button, label) );
         }
         
         // Set the selected index.
@@ -510,16 +510,16 @@ public class Scroller extends AbstractEntity implements IMouseListener
 
     private class ScrollerRow
     {
-        private Button button;
+        private IButton button;
         private ITextLabel label;
 
-        public ScrollerRow(Button b, ITextLabel l)
+        public ScrollerRow(IButton b, ITextLabel l)
         {
             this.button = b;
             this.label = l;
         }
 
-        public Button getButton()
+        public IButton getButton()
         {
             return button;
         }
