@@ -818,11 +818,11 @@ public class Game extends Canvas implements IWindowCallback
     public void startBoardHideAnimation(AnimationType type)
     {
         // Set the flag.
-        if (activateBoardShowAnimation == true)
+        if (activateBoardShowAnimation)
             throw new IllegalStateException(
                     "Attempted to hide board while it is being shown.");
         
-        if (activateBoardHideAnimation == true)
+        if (activateBoardHideAnimation)
             throw new IllegalStateException(
                     "Attempted to hide board while it is already being hidden.");
         

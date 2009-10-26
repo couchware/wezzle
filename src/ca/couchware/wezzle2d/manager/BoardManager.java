@@ -1994,16 +1994,6 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 a1 = new FadeAnimation.Builder( FadeAnimation.Type.IN, t ).wait( fadeWait ).
                         duration( fadeDuration ).build();
 
-                // Make the animation remove itself.                
-//                a1.setFinishRunnable(new Runnable()
-//                {
-//                   public void run()
-//                   {
-//                       layerMan.remove(t, Layer.TILE);
-//                       tile.setVisible(true);
-//                   }
-//                });
-
                 a1.addAnimationListener( new AnimationAdapter()
                 {
                     @Override

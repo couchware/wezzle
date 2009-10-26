@@ -928,7 +928,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     {
         if (event.getModifierSet().contains(Modifier.LEFT_CTRL)
                 || event.getModifierSet().contains(Modifier.RIGHT_CTRL)
-              )
+                || event.getChar() == '\t')
         {
             mouseButtonSet.add(MouseButton.RIGHT);
             return;

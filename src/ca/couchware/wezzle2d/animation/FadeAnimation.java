@@ -83,6 +83,10 @@ public class FadeAnimation extends AbstractAnimation
         }
         
         // Set the opacities.
+        if (this.maxOpacity < this.minOpacity)
+            throw new IllegalArgumentException(
+                    String.format("maxOpacity (%d) < minOpacity (%d)", maxOpacity, minOpacity));
+
         this.minOpacity = builder.minOpacity;
         this.maxOpacity = builder.maxOpacity;                        
     }

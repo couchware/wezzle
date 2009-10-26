@@ -174,12 +174,14 @@ public abstract class AbstractTutorial implements ITutorial
              
             //f = new FadeAnimation(FadeType.IN, 100, 500, repeatButton);
             //f.setMaxOpacity(70);
+            repeatButton.setOpacity(0);
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, repeatButton)
                     .wait(100).duration(500).maxOpacity(70).build();
             animationMan.add(fade);
                          
             //f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
             //f.setMaxOpacity(70);
+            continueButton.setOpacity(0);
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, continueButton)
                     .wait(100).duration(500).maxOpacity(70).build();
             animationMan.add(fade);
@@ -345,7 +347,7 @@ public abstract class AbstractTutorial implements ITutorial
                 boardMan.getNumberOfCells() - 1);
         
         e.setVisible(false);
-        
+        e.setOpacity(0);
         IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
                 .wait(0).duration(300).build();
         

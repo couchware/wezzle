@@ -72,10 +72,13 @@ public class NumUtil
     public static int scaleInt(int fromLower, int fromUpper,
             int toLower, int toUpper, int fromNumber)
     {
-        if(fromUpper < fromLower)
-            throw new IllegalArgumentException("fromUpper < fromLower.");
-        if(toUpper < toLower)
-            throw new IllegalArgumentException("toUpper < toLower");
+        if (fromUpper < fromLower)
+            throw new IllegalArgumentException(
+                    String.format("fromUpper < fromLower: %d < %d", fromUpper, toUpper));
+        
+        if (toUpper < toLower)
+            throw new IllegalArgumentException(
+                    String.format("toUpper < toLower: %d < %d", toUpper, toLower));
        
         
         if (fromNumber < fromLower)
