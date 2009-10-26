@@ -850,7 +850,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     {
         for ( Tile tile : board )
         {
-            if ( tile != null && layerMan.exists( tile, Layer.TILE ) == false )
+            if ( tile != null && layerMan.contains( tile, Layer.TILE ) == false )
             {
                 tile.setVisible( visible );
                 layerMan.add( tile, Layer.TILE );
@@ -1449,7 +1449,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         }
 
         // Remove from layer manager.
-        if ( layerMan.exists( t, Layer.TILE ) )
+        if ( layerMan.contains( t, Layer.TILE ) )
         {
             layerMan.remove( t, Layer.TILE );
         }

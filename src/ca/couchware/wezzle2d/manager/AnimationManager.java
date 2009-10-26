@@ -61,7 +61,7 @@ public class AnimationManager implements ISaveable
         for (Iterator it = animationList.iterator(); it.hasNext(); ) 
         {
             IAnimation a = (IAnimation) it.next();
-            if (a.isFinished() == true)
+            if (a.isFinished())
             {
                 //a.onFinish();
                 it.remove();

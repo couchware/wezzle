@@ -55,7 +55,8 @@ public class PauseGroup extends AbstractGroup implements
     {
         // Sanity check and assignment.
         if(hub == null)
-            throw new IllegalArgumentException("hub must not be null.");
+            throw new IllegalArgumentException("Hub must not be null");
+
         this.hub = hub;
                
         // Create the "Paused" text.
@@ -158,15 +159,19 @@ public class PauseGroup extends AbstractGroup implements
     @Override
     public void setActivated(final boolean activated)
     {
-        if (activated)
+        int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
+
+        if (intGain > 5)
         {
-            hub.musicMan.fadeToGain(0.05);            
-        }
-        else
-        {
-            int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
-            double gain = (double) intGain / 100.0;
-            hub.musicMan.fadeToGain(gain);
+            if (activated)
+            {
+                hub.musicMan.fadeToGain(0.05);
+            }
+            else
+            {               
+                double gain = (double) intGain / 100.0;
+                hub.musicMan.fadeToGain(gain);
+            }
         }
 
         // Invoke super.

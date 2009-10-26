@@ -148,7 +148,39 @@ public class LayerManager implements IDisposable, IDrawer
         {
             throw new RuntimeException("Tried to remove non-exist element!");            
         }
-    }           
+    }
+
+    /**
+     * Remove an element from the layer specified.
+     * @return True if the element was removed, false if it was not found.
+     */
+    public void c(final IDrawable drawable, Layer layer)
+    {
+        // The drawable cannot be null.
+        if (drawable == null)
+            throw new NullPointerException("Drawable does not exist!");
+
+        if (layer == null)
+            throw new NullPointerException("Layer does not exist!");
+
+        // Get the layer.
+        final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
+
+        // Get the index.
+        int index = list.indexOf(drawable);
+
+        // If the index is -1, the element is not in this layer.
+        if (index != -1)
+        {
+//            Rectangle r = list.get(index).getDrawRect();
+//            if (r != null) addRemoveRect(r);
+            list.remove(index);
+        }
+        else
+        {
+            throw new RuntimeException("Tried to remove non-exist element!");
+        }
+    }
     
     /**
      * Returns a read-only list representing the specified layer.
@@ -175,7 +207,7 @@ public class LayerManager implements IDisposable, IDrawer
         layerList.get(layer.ordinal()).clear();
     }        
     
-    public boolean exists(final IDrawable drawable, Layer layer)
+    public boolean contains(final IDrawable drawable, Layer layer)
     {
         // The drawable cannot be null.
         if (drawable == null)

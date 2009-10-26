@@ -93,9 +93,15 @@ public class HelpGroup extends AbstractGroup
     @Override
     public void setActivated(final boolean activated)
     {
+        int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
+
         if (activated)
         {
-            hub.musicMan.fadeToGain(0.05);            
+            if (intGain > 5)
+            {
+                hub.musicMan.fadeToGain(0.05);
+            }
+            
             game.getUI().hideBarsUsingFade();
             game.getUI().hideBoardUsingFade();
             game.getUI().hideTraditionalPieceBoxUsingFade();           
@@ -127,9 +133,12 @@ public class HelpGroup extends AbstractGroup
         }
         else
         {
-            int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
-            double gain = (double) intGain / 100.0;
-            hub.musicMan.fadeToGain(gain);          
+            if (intGain > 5)
+            {               
+                double gain = (double) intGain / 100.0;
+                hub.musicMan.fadeToGain(gain);
+            }
+            
             game.getUI().showBarsUsingFade();
             game.getUI().showBoardUsingFade();
             game.getUI().showTraditionalPieceBoxUsingFade();

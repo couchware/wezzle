@@ -205,7 +205,8 @@ public class AnimationHelper
             @Override
             public void animationFinished()
             {
-                hub.layerMan.remove(clone, layer);
+                if (hub.layerMan.contains(clone, layer))
+                    hub.layerMan.remove(clone, layer);
             }
 
         });
