@@ -191,7 +191,7 @@ public class Button extends AbstractButton
         protected int pressedOpacity = 100;
         protected int hoverOpacity   = 100;        
         protected int activeOpacity  = 100;
-        protected int normalOpacity  = 80;
+        protected int normalOpacity  = 100;
         protected int opacity        = 100;
         protected boolean visible = true;
         protected boolean disabled = false;
@@ -490,9 +490,10 @@ public class Button extends AbstractButton
             return false;
 
         // See what state we're in.
-        if (state.contains(State.PRESSED))        
+        if (false) { /* To line up the ensuing statements. */ }
+        else if (!disabled && state.contains(State.PRESSED))
             drawPressed();        
-        else if (state.contains(State.HOVERED))
+        else if (!disabled && state.contains(State.HOVERED))
             drawHovered();
         else if (state.contains(State.ACTIVATED))
             drawActivated();

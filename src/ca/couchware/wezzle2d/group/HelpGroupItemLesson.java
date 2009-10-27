@@ -168,7 +168,7 @@ class HelpGroupItemLesson
         Tile red1 = this.tileGrid[1][0];
         Tile red2 = this.tileGrid[2][0];
         Tile line1 = this.tileGrid[0][0];
-        Tile rocket1 = this.tileGrid[1][1];
+        RocketTile rocket1 = (RocketTile) this.tileGrid[1][1];
         Tile line2 = this.tileGrid[2][1];
 
         IAnimation moveGrid = new MoveAnimation
@@ -221,11 +221,22 @@ class HelpGroupItemLesson
         IAnimation activate1 = AnimationHelper.animateItemActivation( hub, rocket1, Layer.HELP );
         IAnimation remove2 = AnimationHelper.animateRemove( hub, line2 );
 
-        IAnimation removeBlue = new MetaAnimation
+        IAnimation activateRocket = new MetaAnimation
                 .Builder()
                 .add( remove1 )
                 .add( activate1 )
                 .add( remove2 )
+                .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
+                .finishRule( MetaAnimation.FinishRule.ALL )
+                .build();
+        
+        IAnimation moveRocket = AnimationHelper.animateRocket( hub, rocket1 );
+        IAnimation jumpRed2 = AnimationHelper.animateJump( hub, red2, 70 );
+
+        IAnimation fireRocket = new MetaAnimation
+                .Builder()
+                .add( moveRocket )
+                .add( jumpRed2 )
                 .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
                 .finishRule( MetaAnimation.FinishRule.ALL )
                 .build();
@@ -238,43 +249,12 @@ class HelpGroupItemLesson
                 .maxY( clicked.getY() )
                 .build();
 
-        IAnimation moveDownRed2 = new MoveAnimation
-                .Builder( red2 )
-                .wait( 250 )
-                .speed( hub.settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_Y ))
-                .theta( -90 )
-                .maxY( clicked.getY() )
-                .build();
-
-        IAnimation moveDownRed = new MetaAnimation
-                .Builder()
-                .add( moveDownRed1 )
-                .add( moveDownRed2 )
-                .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
-                .finishRule( MetaAnimation.FinishRule.ALL )
-                .build();
-
         IAnimation fadeRed1 = new FadeAnimation
                 .Builder( FadeAnimation.Type.OUT, red1 )
                 .wait( 250 )
                 .duration( 500 )
                 .minOpacity( 30 )
-                .build();
-
-        IAnimation fadeRed2 = new FadeAnimation
-                .Builder( FadeAnimation.Type.OUT, red2 )
-                .wait( 250 )
-                .duration( 500 )
-                .minOpacity( 30 )
-                .build();
-
-        IAnimation fadeRed = new MetaAnimation
-                .Builder()
-                .add( fadeRed1 )
-                .add( fadeRed2 )
-                .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
-                .finishRule( MetaAnimation.FinishRule.ALL )
-                .build();
+                .build();             
 
         IAnimation meta = new MetaAnimation
                 .Builder()
@@ -282,9 +262,10 @@ class HelpGroupItemLesson
                 .add( fade )
                 .add( moveDownBlue )
                 .add( moveLeftRed )
-                .add( removeBlue )
-                .add( moveDownRed )
-                .add( fadeRed )
+                .add( activateRocket )
+                .add( fireRocket )
+                .add( moveDownRed1 )
+                .add( fadeRed1 )
                 .runRule( MetaAnimation.RunRule.SEQUENCE )
                 .finishRule( MetaAnimation.FinishRule.ALL )
                 .build();

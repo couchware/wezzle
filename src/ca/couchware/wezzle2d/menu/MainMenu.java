@@ -208,8 +208,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .text("")
                 .textSize(20)
                 .hoverOpacity(70)
-                .normalOpacity(0)
-                .disabled(true)
+                .normalOpacity(0)               
                 .build();
 
         // The Y-coordinate that we draw the first button at.
@@ -442,10 +441,18 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
             builder.add(anim);
             
             anim.addAnimationListener(new AnimationAdapter()
-            {                
+            {
+                @Override
+                public void animationStarted()
+                {
+                    button.setDisabled(true);
+                }
+
                 @Override
                 public void animationFinished()
-                { button.setDisabled(false); }
+                { 
+                    button.setDisabled(false);
+                }
             });
         }
         
@@ -499,7 +506,9 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
             {
                 @Override
                 public void animationStarted()
-                { button.setDisabled(true); }                                
+                { 
+                    button.setDisabled(true);
+                }
             });
         }
         

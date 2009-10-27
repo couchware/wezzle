@@ -176,21 +176,21 @@ public class AnimationHelper
         final Tile clone = TileHelper.cloneTile(tile);
         
         // Make the animation.
-        IAnimation anim1 = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, clone)
+        IAnimation zoom = new ZoomAnimation.Builder(ZoomAnimation.Type.OUT, clone)
                 .minWidth(clone.getWidth())
                 .maxWidth(Integer.MAX_VALUE)
                 .speed(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_SPEED))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_ZOOM_DURATION))
                 .build();
 
-        IAnimation anim2 = new FadeAnimation.Builder(FadeAnimation.Type.OUT, clone)
+        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, clone)
                 .wait(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_WAIT))
                 .duration(hub.settingsMan.getInt(Key.ANIMATION_ITEM_ACTIVATE_FADE_DURATION))
                 .build();
 
         MetaAnimation meta = new MetaAnimation.Builder()
-                .add(anim1)
-                .add(anim2)
+                .add(zoom)
+                .add(fade)
                 .build();
 
         meta.addAnimationListener( new AnimationAdapter()

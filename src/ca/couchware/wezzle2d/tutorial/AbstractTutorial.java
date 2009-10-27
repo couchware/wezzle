@@ -122,14 +122,21 @@ public abstract class AbstractTutorial implements ITutorial
         this.pieceBeforeInitialization = hub.pieceMan.getPiece();
 
         // Create repeat button.
-        repeatButton = new Button.Builder(400, 330)
+        Button templateButton = new Button.Builder(400, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .text("Repeat").visible(false).build();
-        layerMan.add(repeatButton, Layer.EFFECT);
+                .text("")
+                .normalOpacity( 80 )                
+                .visible(false)
+                .build();
+
+        repeatButton = new Button
+                .Builder(templateButton).y(330).text("Repeat").build();
         
-         // Create continue button, using the repeat button as a template.
-        continueButton = new Button.Builder((Button) repeatButton)
-                .y(390).text("Continue").build();
+        layerMan.add(repeatButton, Layer.EFFECT);
+              
+        continueButton = new Button
+                .Builder(templateButton).y(390).text("Continue").build();
+
         layerMan.add(continueButton, Layer.EFFECT);          
     }
        
@@ -176,14 +183,14 @@ public abstract class AbstractTutorial implements ITutorial
             //f.setMaxOpacity(70);
             repeatButton.setOpacity(0);
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, repeatButton)
-                    .wait(100).duration(500).maxOpacity(70).build();
+                    .wait(100).duration(500).maxOpacity(100).build();
             animationMan.add(fade);
                          
             //f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
             //f.setMaxOpacity(70);
             continueButton.setOpacity(0);
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, continueButton)
-                    .wait(100).duration(500).maxOpacity(70).build();
+                    .wait(100).duration(500).maxOpacity(100).build();
             animationMan.add(fade);
             
             // Menu is now shown.

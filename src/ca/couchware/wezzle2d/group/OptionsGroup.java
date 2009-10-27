@@ -30,7 +30,6 @@ public class OptionsGroup extends AbstractGroup
     private BrowserLauncher launcher;       
     
     private ITextLabel headerLabel;
-    private IButton upgradeButton;
     private IButton audioButton;
     private IButton mainMenuButton;
     private IButton closeButton;    
@@ -46,7 +45,8 @@ public class OptionsGroup extends AbstractGroup
     {
         // Check the hub instance and save it.
         if(hub == null)
-            throw new IllegalArgumentException("hub must not be null.");
+            throw new IllegalArgumentException("Hub must not be null");
+
         this.hub = hub;
         
         // Create the options header.
@@ -57,18 +57,22 @@ public class OptionsGroup extends AbstractGroup
                 .visible(false).build();
         hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
-        
+
+        // Old Y-values...
+        // Buy Now:   246
+        // Audio:     300
+        // Main Menu: 354
+
+
         // Create upgrade button.
-        upgradeButton = new Button.Builder(400, 246)
+        IButton templateButton = new Button.Builder(400, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
-                .text("Buy Now").normalOpacity(80).visible(false).build();
-        hub.layerMan.add(upgradeButton, Layer.UI);
-        entityList.add(upgradeButton);
+                .text("").normalOpacity(80).visible(false).build();
         
         // Create audio button.
-        audioButton = new Button.Builder((Button) upgradeButton).y(300)
-            .text("Sound/Music").build();
+        audioButton = new Button.Builder((Button) templateButton).y(266)
+            .text("Audio").build();
         hub.layerMan.add(audioButton, Layer.UI);
         entityList.add(audioButton);
         
@@ -77,13 +81,13 @@ public class OptionsGroup extends AbstractGroup
         hub.groupMan.register(audioGroup);
         
         // Create main menu button.
-        mainMenuButton = new Button.Builder((Button) upgradeButton).y(354)
+        mainMenuButton = new Button.Builder((Button) templateButton).y(320)
             .text("Main Menu").build();
         hub.layerMan.add(mainMenuButton, Layer.UI);
         entityList.add(mainMenuButton);
         
         // Create back button.
-        closeButton = new Button.Builder((Button) upgradeButton).y(420)
+        closeButton = new Button.Builder((Button) templateButton).y(420)
             .text("Close").build();
         hub.layerMan.add(closeButton, Layer.UI);     
         entityList.add(closeButton);
@@ -142,14 +146,7 @@ public class OptionsGroup extends AbstractGroup
             throw new IllegalArgumentException("Hub must not be null");
 
         // Make sure something changed.
-        if ( !this.controlChanged() ) return;
-
-        // See if Buy Now was pressed.
-        if (upgradeButton.clicked() == true)
-        {
-            upgradeButton.setActivated(false);
-            launcher.openURLinBrowser(Settings.getUpgradeUrl());
-        }
+        if ( !this.controlChanged() ) return;     
         
         // Check if the back button was pressed.
         if (closeButton.isActivated())
