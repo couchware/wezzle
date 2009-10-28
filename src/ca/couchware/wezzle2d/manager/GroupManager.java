@@ -10,6 +10,7 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.group.IGroup;
+import ca.couchware.wezzle2d.manager.Settings.Key;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -143,7 +144,7 @@ public class GroupManager implements IResettable
         // Hide the board and associated layers.
         hub.pieceMan.clearMouseButtonSet();
         hideBoard();
-        hidePiecePreview();
+        hideOverlayPiecePreview();
         
         CouchLogger.get().recordMessage(this.getClass(), "Groups open: " + entryList.size());
     }    
@@ -188,7 +189,7 @@ public class GroupManager implements IResettable
         {
             hub.pieceMan.clearMouseButtonSet();
             showBoard(showGrid);
-            showPiecePreview();
+            showOverlayPiecePreviewIfVisible();
         }
         else
         {
@@ -243,7 +244,7 @@ public class GroupManager implements IResettable
         
         hub.pieceMan.clearMouseButtonSet();
         showBoard(showGrid);
-        showPiecePreview();
+        showOverlayPiecePreviewIfVisible();
     }   
 
     /**
@@ -272,12 +273,13 @@ public class GroupManager implements IResettable
         hub.layerMan.hide(LayerManager.Layer.EFFECT);
     }
 
-    private void showPiecePreview()
+    private void showOverlayPiecePreviewIfVisible()
     {
-        game.getUI().setOverlayPiecePreviewVisible( true );
+        boolean visible = hub.settingsMan.getBool( Key.USER_PIECE_PREVIEW_OVERLAY );
+        game.getUI().setOverlayPiecePreviewVisible( visible );
     }
 
-    private void hidePiecePreview()
+    private void hideOverlayPiecePreview()
     {
         game.getUI().setOverlayPiecePreviewVisible( false );
     }
