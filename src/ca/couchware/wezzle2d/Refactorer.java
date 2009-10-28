@@ -228,7 +228,7 @@ public class Refactorer implements IResettable
         if ( activateRefactor )
         {
             // Hide piece.
-            hub.pieceMan.hidePieceGrid();
+            //hub.pieceMan.hidePieceGrid();
 
             // Start down refactor.                           
             this.refactorAnimationList =

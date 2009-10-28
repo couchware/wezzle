@@ -133,7 +133,7 @@ class HelpGroupRotateLesson
                 .Builder(
                     gridX + hub.boardMan.getCellWidth() * 3,
                     gridY - hub.boardMan.getCellHeight(),
-                    PieceGrid.RenderMode.SPRITE )
+                    PieceGrid.RenderMode.SPRITE_OUTLINE )
                 .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT ) )
                 .alignmentMode( PieceGrid.AlignmentMode.TO_FULL_GRID )
                 .build();

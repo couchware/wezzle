@@ -115,11 +115,11 @@ public class TileDropper implements IResettable
         //
         // The if statement encompasses the entire function in order to ensure
         // that the board is locked while tiles are dropping.
-        if (tileDropping == true)
+        if (tileDropping)
         {
             // Is the tile dropped currently being animated?
             // If not, that means we need to drop a new one.            
-            if (animating == false)
+            if (!animating)
             {                      
                 // Get the number of parallel tiles to drop this turn.
                 int parallelDropAmount = MAXIMUM_PARALLEL_DROP_AMOUNT;

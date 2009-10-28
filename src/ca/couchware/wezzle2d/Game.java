@@ -444,7 +444,7 @@ public class Game extends Canvas implements IWindowCallback
             if (hub.gameAnimationMan != null) hub.gameAnimationMan.animate();
             
             // Otherwise see if the transition is over.
-            if (transition.isFinished() == false) return;           
+            if (!transition.isFinished()) return;
             else 
             {
                 switch(transitionTo)          
@@ -470,7 +470,7 @@ public class Game extends Canvas implements IWindowCallback
         ui.updateLogic(this, hub);
         
         // Check on board animation.
-        if (boardAnimation != null && boardAnimation.isFinished() == true)
+        if (boardAnimation != null && boardAnimation.isFinished())
         {
             // Set animation visible depending on what animation
             // was just performed.
@@ -485,6 +485,7 @@ public class Game extends Canvas implements IWindowCallback
                         
                         hub.boardMan.setVisible(true);
                         hub.pieceMan.showPieceGrid();
+                        //hub.pieceMan.showShadowPieceGrid();
                         hub.pieceMan.startAnimation(hub.timerMan);
                         break;
                         
@@ -492,6 +493,7 @@ public class Game extends Canvas implements IWindowCallback
                         
                         hub.boardMan.setVisible(false);
                         hub.pieceMan.hidePieceGrid();
+                        //hub.pieceMan.hideShadowPieceGrid();
                         break;
                         
                     default:
@@ -513,7 +515,7 @@ public class Game extends Canvas implements IWindowCallback
             hub.pieceMan.clearMouseButtonSet();
 
             // If game over is in progress, make a new board and start.
-            if (gameOverInProgress == true)
+            if (gameOverInProgress)
             {
                 // Show the game over screen.
                 ui.showGameOverGroup(hub.groupMan);

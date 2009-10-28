@@ -305,9 +305,7 @@ public class TileRemover implements IResettable, ILevelListener
     }   
     
     private void startNextMove(
-            PieceManager pieceMan, 
-            TimerManager timerMan,
-            boolean newPiece)
+            PieceManager pieceMan, TimerManager timerMan, boolean newPiece)
     {
         // Load new piece and make it visible.
         if (newPiece) pieceMan.nextPiece();
@@ -328,7 +326,7 @@ public class TileRemover implements IResettable, ILevelListener
     private boolean areItemSetsEmpty()
     {
         if (this.itemSetMap == null)
-            throw new IllegalStateException("itemSetMap is null.");
+            throw new IllegalStateException("itemSetMap is null");
                     
         for (TileType t : this.itemSetMap.keySet())
         {

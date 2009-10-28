@@ -12,6 +12,7 @@ import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
 
 /**
@@ -25,15 +26,19 @@ public class PieceGrid extends AbstractEntity
 {
     /** Path to the piece selector sprite. */
     final private String PATH = Settings.getSpriteResourcesPath() + "/Selector.png";
+    final private String SHADOW_PATH = Settings.getSpriteResourcesPath() + "/ShadowSelector.png";
+
+    final private EnumMap<RenderMode, String> pathMap =
+            new EnumMap<RenderMode, String>(RenderMode.class);
 
     /** The render options. */
     public enum RenderMode
     {
         /** Use the selector sprite to draw the grid. */
-        SPRITE,
+        SPRITE_OUTLINE,
+        SPRITE_FILLED,
         /** Draw the grid using the drawing methods of the underlying renderer. */
         VECTOR
-
     }
     /** The current render mode */
     private RenderMode renderMode;
@@ -127,12 +132,17 @@ public class PieceGrid extends AbstractEntity
 
         // Set the color.
         this.color = builder.color;
+        this.opacity = builder.opacity;
 
         // Set the render mode.
         this.renderMode = builder.renderMode;
 
+        this.pathMap.put( RenderMode.SPRITE_OUTLINE, PATH);
+        this.pathMap.put( RenderMode.SPRITE_FILLED, SHADOW_PATH);
+
         // Load in all the sprites.
-        if ( renderMode == RenderMode.SPRITE )
+        if ( renderMode == RenderMode.SPRITE_OUTLINE
+                || renderMode == RenderMode.SPRITE_FILLED )
         {
             spriteArray = new ISprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 
@@ -140,7 +150,7 @@ public class PieceGrid extends AbstractEntity
             {
                 for ( int j = 0; j < spriteArray[0].length; j++ )
                 {
-                    spriteArray[i][j] = factory.getSprite( PATH );
+                    spriteArray[i][j] = factory.getSprite( this.pathMap.get(renderMode) );
                 }
             }
         }
@@ -175,22 +185,16 @@ public class PieceGrid extends AbstractEntity
     public static class Builder implements IBuilder<PieceGrid>
     {
         final int x;
-
         final int y;
-
         final RenderMode renderMode;
 
         AlignmentMode alignmentMode = AlignmentMode.TO_FULL_GRID;
-
         EnumSet<Alignment> alignment = EnumSet.of( Alignment.TOP, Alignment.LEFT );
-
         int cellWidth = 32;
-
         int cellHeight = 32;
-
         Color color = Color.ORANGE;
-
         boolean visible = true;
+        int opacity = 100;
 
         public Builder(int x, int y, RenderMode renderMode)
         {
@@ -232,6 +236,12 @@ public class PieceGrid extends AbstractEntity
         public Builder visible(boolean val)
         {
             visible = val;
+            return this;
+        }
+
+        public Builder opacity(int val)
+        {
+            opacity = val;
             return this;
         }
 
@@ -354,7 +364,8 @@ public class PieceGrid extends AbstractEntity
 
         switch ( renderMode )
         {
-            case SPRITE:
+            case SPRITE_OUTLINE:
+            case SPRITE_FILLED:
                 renderSprite();
                 break;
 
@@ -399,9 +410,7 @@ public class PieceGrid extends AbstractEntity
     {
         // Save the old color and set the new one.
         CouchColor oldColor = gfx.getColor();
-
         gfx.setColor( color );
-
 
         // Cycle through, drawing only the sprites that should be shown.
         for ( int i = 0; i < structure.length; i++ )
@@ -409,11 +418,11 @@ public class PieceGrid extends AbstractEntity
             for ( int j = 0; j < structure[0].length; j++ )
             {
                 if ( structure[i][j] == true )
-                {
+                {                    
                     gfx.fillEllipse(
                             x + offsetX + i * cellWidth,
-                            y + offsetY + j * cellHeight + 1,
-                            cellWidth - 1, cellHeight - 1 );
+                            y + offsetY + j * cellHeight,
+                            cellWidth, cellHeight);
                 } // end if
             } // end for
         } // end for	
