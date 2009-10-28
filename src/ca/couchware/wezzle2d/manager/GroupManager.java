@@ -253,8 +253,14 @@ public class GroupManager implements IResettable
     private void showBoard(boolean showGrid)
     {
         // Make piece grid visible contingent on the saved visibility.
-        if (showGrid) hub.pieceMan.showPieceGrid();
-        else hub.pieceMan.hidePieceGrid();
+        if (showGrid)
+        {
+            hub.pieceMan.showPieceGrid();
+        }
+        else 
+        {
+            hub.pieceMan.hidePieceGrid();
+        }
 
         hub.layerMan.show(LayerManager.Layer.TILE);
         hub.layerMan.show(LayerManager.Layer.EFFECT);
@@ -269,6 +275,7 @@ public class GroupManager implements IResettable
         //this.lastPieceGridVisible = pieceMan.isPieceGridVisible();
 
         hub.pieceMan.hidePieceGrid();
+        hub.pieceMan.hideShadowPieceGrid();
         hub.layerMan.hide(LayerManager.Layer.TILE);
         hub.layerMan.hide(LayerManager.Layer.EFFECT);
     }

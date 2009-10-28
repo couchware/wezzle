@@ -129,14 +129,16 @@ public class TutorialManager implements IResettable
                 ITutorial t = it.next();
                 
                 // Check to see if the tutorial is activated.                
-                if (t.evaluateRules(game, hub) == true)
+                if (t.evaluateRules(game, hub))
                 {       
-                    if (hub.boardMan.isVisible() == true)                    
+                    if (hub.boardMan.isVisible())                    
                     {
                         // Hide the board nicely.
                         // Make sure the grid doesn't flicker on for a second.
-                        game.startBoardHideAnimation(AnimationType.SLIDE_FADE);    
+                        game.startBoardHideAnimation(AnimationType.SLIDE_FADE);
+                        hub.pieceMan.stopAnimation();
                         hub.pieceMan.hidePieceGrid();
+                        hub.pieceMan.hideShadowPieceGrid();
                         break;
                     }
                     
@@ -152,10 +154,12 @@ public class TutorialManager implements IResettable
         if (tutorial != null)
         {
             tutorial.updateLogic(game, hub);
-            if (tutorial.isDone() == true)
+            if (tutorial.isDone())
             {
                 hub.boardMan.setVisible(false);
                 game.startBoardShowAnimation(AnimationType.SLIDE_FADE);
+                hub.pieceMan.hidePieceGrid();
+                hub.pieceMan.hideShadowPieceGrid();
                 tutorial = null;
             }
         } // end if       

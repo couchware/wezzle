@@ -173,6 +173,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
         // Rehide piece grid.
         this.hidePieceGrid();
+        this.hideShadowPieceGrid();
 
         // Clear the refactored flag.
         this.refactored = false;
@@ -464,10 +465,14 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 continue;
             }
 
-            // Make sure they have a pulse animation.                   
-            t.setAnimation( new ZoomAnimation.Builder( ZoomAnimation.Type.LOOP_IN, t ).
-                    minWidth( t.getWidth() - 8 ).speed( speed ).build() );
-            animationMan.add( t.getAnimation() );
+            // Make sure they have a pulse animation.
+            IAnimation zoom = new ZoomAnimation
+                    .Builder( ZoomAnimation.Type.LOOP_IN, t )
+                    .minWidth( t.getWidth() - 8 )
+                    .speed( speed )
+                    .build();
+            t.setAnimation( zoom );
+            animationMan.add( zoom );
         }
     }
 
@@ -755,6 +760,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
 
         hidePieceGrid();
+
+        if ( hub.tutorialMan.isTutorialRunning() )
+        {
+            hideShadowPieceGrid();
+        }
+
+
         game.getRefactorer().startRefactor();
         clearMouseButtonSet();
 
@@ -849,17 +861,18 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         this.shadowPieceGrid.setVisible( true );
     }
 
-//    public void showShadowPieceGrid()
-//    {
-//        //CouchLogger.get().recordWarning(this.getClass(), "Grid is shown");
-//        this.shadowPieceGrid.setVisible(true);
-//    }
-//
-//    public void hideShadowPieceGrid()
-//    {
-//        //CouchLogger.get().recordWarning(this.getClass(), "Grid is hidden");
-//        this.shadowPieceGrid.setVisible(false);
-//    }
+    public void showShadowPieceGrid()
+    {
+        //CouchLogger.get().recordWarning(this.getClass(), "Grid is shown");
+        this.shadowPieceGrid.setVisible(true);
+    }
+
+    public void hideShadowPieceGrid()
+    {
+        //CouchLogger.get().recordWarning(this.getClass(), "Grid is hidden");
+        this.shadowPieceGrid.setVisible(false);
+    }
+    
     private void movePieceGridTo(ImmutablePosition position)
     {
         // Create convenience variable.

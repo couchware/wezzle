@@ -493,6 +493,7 @@ public class Game extends Canvas implements IWindowCallback
                         
                         hub.boardMan.setVisible(false);
                         hub.pieceMan.hidePieceGrid();
+                        hub.pieceMan.hideShadowPieceGrid();
                         //hub.pieceMan.hideShadowPieceGrid();
                         break;
                         
@@ -541,6 +542,7 @@ public class Game extends Canvas implements IWindowCallback
         {
             // Hide the piece.            
             hub.pieceMan.hidePieceGrid();
+            hub.pieceMan.hideShadowPieceGrid();
             hub.pieceMan.stopAnimation();
             
             // Start board show animation.            
@@ -556,6 +558,7 @@ public class Game extends Canvas implements IWindowCallback
         {
             // Hide the piece.
             hub.pieceMan.hidePieceGrid();
+            hub.pieceMan.hideShadowPieceGrid();
             hub.pieceMan.stopAnimation();
             
             // Start board hide animation.            

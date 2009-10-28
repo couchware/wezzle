@@ -235,7 +235,8 @@ public class ManagerHub
         {
             // Create the piece manager.
             this.pieceMan = PieceManager.newInstance(this);
-            this.pieceMan.hidePieceGrid();            
+            this.pieceMan.hidePieceGrid();
+            this.pieceMan.hideShadowPieceGrid();
             
             // Listen for the key and mouse.
             game.getWindow().addKeyListener(pieceMan);

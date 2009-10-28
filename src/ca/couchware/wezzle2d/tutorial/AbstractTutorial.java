@@ -153,6 +153,7 @@ public abstract class AbstractTutorial implements ITutorial
         {               
             // Stop the piece animation.
             pieceMan.hidePieceGrid();
+            pieceMan.hideShadowPieceGrid();
             pieceMan.stopAnimation();                                            
             
             // Lock the whole board.
@@ -198,13 +199,13 @@ public abstract class AbstractTutorial implements ITutorial
             
             return true;
         }
-        else if (menuShown == true)
+        else if (menuShown)
         {
-            if (repeatButton.isActivated() == true)
+            if (repeatButton.isActivated())
             {
                 repeat(game, hub);
             }
-            else if (continueButton.isActivated() == true)
+            else if (continueButton.isActivated())
             {
                 return false;
             }
@@ -234,7 +235,7 @@ public abstract class AbstractTutorial implements ITutorial
     {
         // Check all the rules.  If any of them are false, return false.
         for (Rule rule : ruleList)
-            if (rule.evaluate(game, hub) == false)
+            if (!rule.evaluate(game, hub))
                 return false;
         
         // If all the rules are true, then return true.        
@@ -251,7 +252,7 @@ public abstract class AbstractTutorial implements ITutorial
     public void updateLogic(Game game, ManagerHub hub)
     {                
         // If we're activated, run the tutorial logic.
-        if (initialized == true && update(game, hub) == false)
+        if (initialized && !update(game, hub))
         {
             initialized = false;
             finish(game, hub);

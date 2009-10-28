@@ -248,10 +248,17 @@ public class TileRemover implements IResettable, ILevelListener
                     }
                     
                     // Start the next move.
-                    boolean getNextPiece = !this.levelUpInProgress
-                            && !hub.tutorialMan.isTutorialRunning();
-                    startNextMove(pieceMan, timerMan, getNextPiece);
-                    CouchLogger.get().recordWarning(this.getClass(), "getNextPiece = " + getNextPiece);
+//                    boolean shouldGetNextPiece = !this.levelUpInProgress
+//                            && !hub.tutorialMan.isTutorialRunning();
+
+                    boolean levelUpImminent =
+                            hub.scoreMan.getLevelScore() >= hub.scoreMan.getTargetLevelScore();
+
+                    boolean shouldGetNextPiece =
+                            !levelUpImminent && !hub.tutorialMan.isTutorialRunning();
+
+                    startNextMove(pieceMan, timerMan, shouldGetNextPiece);
+                    //CouchLogger.get().recordWarning(this.getClass(), "getNextPiece = " + shouldGetNextPiece);
                     
                     // Clear the level up in progress flag.
                     this.levelUpInProgress = false;                                             
@@ -303,15 +310,24 @@ public class TileRemover implements IResettable, ILevelListener
         // Activate the line removal.
         this.activateLineRemoval = true;
     }   
-    
+
+    /**
+     * This method is hack, but basically, it starts the next move by
+     * getting a piece ready and fiddling with a bunch of shit.
+     * @param pieceMan
+     * @param timerMan     
+     * @param shouldGetNextPiece
+     */
     private void startNextMove(
-            PieceManager pieceMan, TimerManager timerMan, boolean newPiece)
+            PieceManager pieceMan, TimerManager timerMan, boolean shouldGetNextPiece)
     {
         // Load new piece and make it visible.
-        if (newPiece) pieceMan.nextPiece();
-
-        pieceMan.showPieceGrid();
-        pieceMan.startAnimation(timerMan);
+        if (shouldGetNextPiece) 
+        {
+            pieceMan.nextPiece();
+            pieceMan.showPieceGrid();
+            pieceMan.startAnimation(timerMan);
+        }
 
         // Reset the mouse.
         pieceMan.clearMouseButtonSet();
@@ -354,8 +370,8 @@ public class TileRemover implements IResettable, ILevelListener
         // Set some flags for the level up.
         this.activateLineRemoval = true;
         this.levelUpInProgress   = true;
-        this.doNotAwardScore = true;
-        this.doNotActivateItems = true;
+        this.doNotAwardScore     = true;
+        this.doNotActivateItems  = true;
         
         // Clear the tile removal set.        
         this.tileRemovalSet.clear();
@@ -1031,9 +1047,7 @@ public class TileRemover implements IResettable, ILevelListener
         // Clear the gravity tiles.
         this.itemSetMap.get(TileType.GRAVITY).clear();
     }
-
     
-
     public void levelChanged(LevelEvent event)
     {                
         this.activateLevelUp = event.isLevelUp();
