@@ -274,8 +274,8 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         menu = new HighScoreMenu(this, hub, this.menuLayerMan);
         this.menuMap.put(Menu.HIGH_SCORES, menu);
         
-         // Create the "Buy Now" group.
-        menu = new HighScoreMenu(this, hub, this.menuLayerMan);
+         // Create the "About" group.
+        menu = new AboutMenu(this, hub, this.menuLayerMan);
         this.menuMap.put(Menu.ABOUT, menu);
     }
     

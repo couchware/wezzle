@@ -127,13 +127,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         this.shadowPieceGrid = new PieceGrid.Builder(
                 boardMan.getX() + boardMan.getCellWidth(),
                 boardMan.getY() + boardMan.getCellHeight(),
-                PieceGrid.RenderMode.SPRITE_FILLED ).visible( false ).opacity( 60 )
+                PieceGrid.RenderMode.SPRITE_DARK ).visible( false ).opacity( 60 )
                 .build();
 
         this.pieceGrid = new PieceGrid.Builder(
                 boardMan.getX() + boardMan.getCellWidth(),
                 boardMan.getY() + boardMan.getCellHeight(),
-                PieceGrid.RenderMode.SPRITE_OUTLINE ).visible( false ).opacity( 100 )
+                PieceGrid.RenderMode.SPRITE_LIGHT ).visible( false ).opacity( 100 )
                 .build();
 
         // Create the piece queue and load it up.

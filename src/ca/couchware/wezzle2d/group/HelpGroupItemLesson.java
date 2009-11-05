@@ -120,7 +120,7 @@ class HelpGroupItemLesson
                 .Builder(
                     gridX - hub.boardMan.getCellWidth(),
                     gridY + hub.boardMan.getCellHeight(),
-                    PieceGrid.RenderMode.SPRITE_OUTLINE )
+                    PieceGrid.RenderMode.SPRITE_LIGHT )
                 .alignment( EnumSet.of(Alignment.TOP, Alignment.LEFT ) )
                 .alignmentMode( PieceGrid.AlignmentMode.TO_PIECE )
                 .build();

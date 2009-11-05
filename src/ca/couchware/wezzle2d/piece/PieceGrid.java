@@ -35,8 +35,8 @@ public class PieceGrid extends AbstractEntity
     public enum RenderMode
     {
         /** Use the selector sprite to draw the grid. */
-        SPRITE_OUTLINE,
-        SPRITE_FILLED,
+        SPRITE_LIGHT,
+        SPRITE_DARK,
         /** Draw the grid using the drawing methods of the underlying renderer. */
         VECTOR
     }
@@ -137,12 +137,12 @@ public class PieceGrid extends AbstractEntity
         // Set the render mode.
         this.renderMode = builder.renderMode;
 
-        this.pathMap.put( RenderMode.SPRITE_OUTLINE, PATH);
-        this.pathMap.put( RenderMode.SPRITE_FILLED, SHADOW_PATH);
+        this.pathMap.put( RenderMode.SPRITE_LIGHT, PATH);
+        this.pathMap.put( RenderMode.SPRITE_DARK, SHADOW_PATH);
 
         // Load in all the sprites.
-        if ( renderMode == RenderMode.SPRITE_OUTLINE
-                || renderMode == RenderMode.SPRITE_FILLED )
+        if ( renderMode == RenderMode.SPRITE_LIGHT
+                || renderMode == RenderMode.SPRITE_DARK )
         {
             spriteArray = new ISprite[Piece.MAX_COLUMNS][Piece.MAX_ROWS];
 
@@ -364,8 +364,8 @@ public class PieceGrid extends AbstractEntity
 
         switch ( renderMode )
         {
-            case SPRITE_OUTLINE:
-            case SPRITE_FILLED:
+            case SPRITE_LIGHT:
+            case SPRITE_DARK:
                 renderSprite();
                 break;
 
