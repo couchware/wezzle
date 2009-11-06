@@ -63,7 +63,6 @@ public class AboutMenu extends AbstractMenu
 
         int titleX = 110;
         int nameX  = 130;
-
         int startY = 182;
 
         // The design label.

@@ -133,13 +133,15 @@
             <rule type="META">
                 <amount type="COMPLETE" value="5" operation="GTEQ" />
                 <achievement name="Sniped Chain Reaction" />
-                <!-- And the rest when we're done... -->
+                <achievement name="Sniped Fireworks" />
+                <achievement name="Sniped Gravimetric Blast" />
+                <achievement name="Sniped Supernova" />
+                <achievement name="Sniped Black Hole" />
+                <achievement name="Sniped Star Destroyer" />
+                <achievement name="Sniped Missile Launch" />                
             </rule>
-        </achievement>
-
-        <!-- All two item achievements prefixed with a bomb are -->
-        <!-- called "Flared" achievements. -->
-        <achievement name="Flared Gravimetric Blast" level="GOLD" difficulty="NONE">
+        </achievement>        
+        <achievement name="Gravibombic Blast" level="GOLD" difficulty="NONE">
             <description>Explode a bomb into a rocket which in turn hits
             a gravity well.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -149,15 +151,7 @@
                     </item>
                 </item>
             </rule>
-        </achievement>
-        <achievement name="Grenadier" level="PLATINUM" difficulty="NONE">
-            <description>Complete five "Flared" achievements.</description>
-            <rule type="META">
-                <amount type="COMPLETE" value="5" operation="GTEQ" />
-                <achievement name="Flared Gravimetric Blast" />
-                <!-- And the rest when we're done... -->
-            </rule>
-        </achievement>
+        </achievement>      
 
         <achievement name="2-Rocket" level="BRONZE" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier.</description>
@@ -555,168 +549,160 @@
         <!-- Rate Achievements                                                   -->
         <!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 
-        <achievement name="On A Roll" level="GOLD" difficulty="NONE">
-            <description>Use 5 item tiles over the course of 5 moves.</description>
+        <!-- Item / Move -->
+        <achievement name="Use 5 Items in 5 Moves" level="GOLD" difficulty="NONE">
+            <description>Use 5 items over the course of 5 moves.</description>
             <rule type="RATE">
                 <numerator type="COLLISION" sub-type="ALL_ITEMS" operation="GTEQ" value="5" />
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="On A Rocket Roll" level="SILVER" difficulty="NONE">
-            <description>Use 3 rocket tiles over the course of 5 moves.</description>
+        <achievement name="Use 10 Items in 10 Moves" level="GOLD" difficulty="NONE">
+            <description>Use 10 items over the course of 10 moves.</description>
             <rule type="RATE">
-                <numerator type="COLLISION" sub-type="ROCKET" operation="GTEQ" value="3" />
+                <numerator type="COLLISION" sub-type="ALL_ITEMS" operation="GTEQ" value="10" />
+                <denominator type="MOVE" operation="LTEQ" value="10" />
+            </rule>
+        </achievement>
+        <achievement name="Use 10 Items in 5 Moves" level="GOLD" difficulty="NONE">
+            <description>Use 10 items over the course of 5 moves.</description>
+            <rule type="RATE">
+                <numerator type="COLLISION" sub-type="ALL_ITEMS" operation="GTEQ" value="10" />
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="On A Star Roll" level="PLATINUM" difficulty="NONE">
-            <description>Use 2 star tiles over the course of 5 moves.</description>
+        <achievement name="Rocket n' Roll" level="SILVER" difficulty="NONE">
+            <description>Use 5 rockets over the course of 5 moves.</description>
+            <rule type="RATE">
+                <numerator type="COLLISION" sub-type="ROCKET" operation="GTEQ" value="5" />
+                <denominator type="MOVE" operation="LTEQ" value="5" />
+            </rule>
+        </achievement>
+        <achievement name="A Starring Roll" level="PLATINUM" difficulty="NONE">
+            <description>Use 2 stars over the course of 5 moves.</description>
             <rule type="RATE">
                 <numerator type="COLLISION" sub-type="STAR" operation="GTEQ" value="2" />
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="On A Bomb Roll" level="GOLD" difficulty="NONE">
-            <description>Use 3 bomb tiles over the course of 5 moves.</description>
+        <achievement name="Bomb Rollin'" level="GOLD" difficulty="NONE">
+            <description>Use 3 bombs over the course of 5 moves.</description>
             <rule type="RATE">
                 <numerator type="COLLISION" sub-type="BOMB" operation="GTEQ" value="3" />
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="On A Gravity Roll" level="SILVER" difficulty="NONE">
-            <description>Use 2 gravity tiles over the course of 5 moves.</description>
+        <achievement name="2 Much Gravity" level="SILVER" difficulty="NONE">
+            <description>Use 2 gravity wells over the course of 5 moves.</description>
             <rule type="RATE">
                 <numerator type="COLLISION" sub-type="GRAVITY" operation="GTEQ" value="3" />
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
-        </achievement>
-        <achievement name="On A Multiplier Roll" level="SILVER" difficulty="NONE">
-            <description>Use 5 multiplier tiles over the course of 5 moves.</description>
-            <rule type="RATE">
-                <numerator type="COLLISION" sub-type="ALL_MULTIPLIERS" operation="GTEQ" value="5" />
-                <denominator type="MOVE" operation="LTEQ" value="5" />
-            </rule>
-        </achievement>
-        <achievement name="On A X4 Roll" level="PLATINUM" difficulty="NONE">
-            <description>Use 2 X4 tiles over the course of 6 moves.</description>
-            <rule type="RATE">
-                <numerator type="COLLISION" sub-type="X4" operation="GTEQ" value="2" />
-                <denominator type="MOVE" operation="LTEQ" value="6" />
-            </rule>
-        </achievement>
-        <achievement name="On A X2 Roll" level="GOLD" difficulty="NONE">
-            <description>Use 5 X2 tiles over the course of 5 moves.</description>
+        </achievement>        
+        <achievement name="Get 5 2Xs in 5 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 5 2X multipliers over
+            the course of 5 moves.</description>
             <rule type="RATE">
                 <numerator type="COLLISION" sub-type="X2" operation="GTEQ" value="5" />
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="On A X3 Roll" level="GOLD" difficulty="NONE">
-            <description>Use 2 X3 tiles over the course of 5 moves.</description>
+        <achievement name="Get 2 3Xs in 5 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 2 3X multipliers over
+            the course of 5 moves.</description>
             <rule type="RATE">
                 <numerator type="COLLISION" sub-type="X3" operation="GTEQ" value="2" />
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="Itemizer" level="GOLD" difficulty="NONE">
-            <description>Use 10 item tiles over the course of 10 moves.</description>
+        <achievement name="Get 2 4Xs in 6 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 2 4X multipliers over
+            the course of 6 moves.</description>
             <rule type="RATE">
-                <numerator type="COLLISION" sub-type="ALL_ITEMS" operation="GTEQ" value="10" />
-                <denominator type="MOVE" operation="LTEQ" value="10" />
+                <numerator type="COLLISION" sub-type="X4" operation="GTEQ" value="2" />
+                <denominator type="MOVE" operation="LTEQ" value="6" />
             </rule>
         </achievement>
-        <achievement name="Multiplier" level="GOLD" difficulty="NONE">
-            <description>Use 10 multiplier tiles over the course of 10 moves.</description>
+        <achievement name="Get 5 Xs in 5 Moves" level="SILVER" difficulty="NONE">
+            <description>Consume 5 4X, 3X or 2X multipliers over
+            the course of 5 moves.</description>
+            <rule type="RATE">
+                <numerator type="COLLISION" sub-type="ALL_MULTIPLIERS" operation="GTEQ" value="5" />
+                <denominator type="MOVE" operation="LTEQ" value="5" />
+            </rule>
+        </achievement>
+        <achievement name="Get 10 Xs in 10 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 10 4X, 3X or 2X multipliers over
+            the course of 10 moves.</description>
             <rule type="RATE">
                 <numerator type="COLLISION" sub-type="ALL_MULTIPLIERS" operation="GTEQ" value="10" />
                 <denominator type="MOVE" operation="LTEQ" value="10" />
             </rule>
         </achievement>
-        <achievement name="Item Addict" level="GOLD" difficulty="NONE">
-            <description>Use 10 item tiles over the course of 5 moves.</description>
-            <rule type="RATE">
-                <numerator type="COLLISION" sub-type="ALL_ITEMS" operation="GTEQ" value="10" />
-                <denominator type="MOVE" operation="LTEQ" value="5" />
-            </rule>
-        </achievement>
-         <achievement name="Multiplier Addict" level="PLATINUM" difficulty="NONE">
-            <description>Use 10 item tiles over the course of 7 moves.</description>
+         <achievement name="Get 10 Xs in 5 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 10 4X, 3X or 2X multipliers over
+            the course of 7 moves.</description>
             <rule type="RATE">
                 <numerator type="COLLISION" sub-type="ALL_MULTIPLIERS" operation="GTEQ" value="10" />
                 <denominator type="MOVE" operation="LTEQ" value="7" />
             </rule>
         </achievement>
 
-        <!-- Line 'Em Up -->
-        <achievement name="Beginner's Luck" level="BRONZE" difficulty="NONE">
-            <description>Get 3 lines in 2 moves.</description>
+        <!-- Line / Move -->            
+        <achievement name="4 Lines in 2 Moves" level="SILVER" difficulty="NONE">
+            <description>Consume 4 lines in 2 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="3" />
+                <numerator type="LINES" operation="GTEQ" value="6" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="Line 'Em Up!" level="BRONZE" difficulty="NONE">
-            <description>Get 4 lines in 2 moves.</description>
+        <achievement name="8 Lines in 2 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 8 lines in 2 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="4" />
+                <numerator type="LINES" operation="GTEQ" value="10" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="Ring 'Em Up!" level="SILVER" difficulty="NONE">
-            <description>Get 5 lines in 2 moves.</description>
+        <achievement name="12 Lines in 2 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 12 lines in 2 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="5" />
+                <numerator type="LINES" operation="GTEQ" value="12" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="Rang 'Em Up!" level="GOLD" difficulty="NONE">
-            <description>Get 6 lines in 2 moves.</description>
-            <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="4" />
-                <denominator type="MOVE" operation="LTEQ" value="2" />
-            </rule>
-        </achievement>
-        <achievement name="Run 'Em Up!" level="PLATINUM" difficulty="NONE">
-            <description>Get 8 lines in 2 moves.</description>
+        <achievement name="8 Lines in 3 Moves" level="SILVER" difficulty="NONE">
+            <description>Consume 6 lines in 3 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="8" />
-                <denominator type="MOVE" operation="LTEQ" value="2" />
+                <denominator type="MOVE" operation="LTEQ" value="3" />
             </rule>
         </achievement>
-
-        <achievement name="Intermediate's Luck" level="SILVER" difficulty="NONE">
-            <description>Get 5 lines in 3 moves.</description>
+        <achievement name="12 Lines in 3 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 12 lines in 3 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="3" />
-                <denominator type="MOVE" operation="LTEQ" value="2" />
+                <numerator type="LINES" operation="GTEQ" value="12" />
+                <denominator type="MOVE" operation="LTEQ" value="3" />
             </rule>
         </achievement>
-        <achievement name="Line 'Em Up! II" level="SILVER" difficulty="NONE">
-            <description>Get 7 lines in 3 moves.</description>
+        <achievement name="18 Lines in 3 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 18 lines in 3 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="4" />
-                <denominator type="MOVE" operation="LTEQ" value="2" />
+                <numerator type="LINES" operation="GTEQ" value="18" />
+                <denominator type="MOVE" operation="LTEQ" value="3" />
             </rule>
         </achievement>
-        <achievement name="Ring 'Em Up! II" level="GOLD" difficulty="NONE">
-            <description>Get 9 lines in 3 moves.</description>
+        <achievement name="20 Lines in 4 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 20 lines in 4 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="5" />
-                <denominator type="MOVE" operation="LTEQ" value="2" />
+                <numerator type="LINES" operation="GTEQ" value="20" />
+                <denominator type="MOVE" operation="LTEQ" value="4" />
             </rule>
         </achievement>
-        <achievement name="Rang 'Em Up! II" level="GOLD" difficulty="NONE">
-            <description>Get 12 lines in 4 moves.</description>
+        <achievement name="24 Lines in 4 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 24 lines in 4 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="4" />
-                <denominator type="MOVE" operation="LTEQ" value="2" />
-            </rule>
-        </achievement>
-        <achievement name="Run 'Em Up! II" level="PLATINUM" difficulty="NONE">
-            <description>Get 15 lines in 4 moves.</description>
-            <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="8" />
-                <denominator type="MOVE" operation="LTEQ" value="2" />
+                <numerator type="LINES" operation="GTEQ" value="24" />
+                <denominator type="MOVE" operation="LTEQ" value="4" />
             </rule>
         </achievement>
 
