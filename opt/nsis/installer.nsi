@@ -11,8 +11,9 @@
   !define APP_FULL_NAME "Wezzle"
   !define APP_VERSION "1.0-beta1"
   !define JAVA_REQUIRED "1.5.0"
-  !define JAVA_INSTALLER "..\jre-installer\jre-6u13-windows-i586-p.exe"
-  !define REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"  
+  !define JAVA_INSTALLER "..\jre-installer\jre-6u17-windows-i586-s.exe"
+  !define HKCU_REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"
+  !define HKLM_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_FULL_NAME}"
 
 ;--------------------------------
 ; Include Modern UI
@@ -29,10 +30,7 @@
   OutFile "${APP_SHORT_NAME}-${APP_VERSION}-setup.exe"
 
   ; Default installation folder
-  InstallDir "$PROGRAMFILES\${APP_VENDOR}\${APP_FULL_NAME}"
-
-  ; Get installation folder from registry if available
-  InstallDirRegKey HKCU "${REG_KEY}" ""
+  InstallDir "$PROGRAMFILES\${APP_VENDOR}\${APP_FULL_NAME}" 
 
   ; Request application privileges for Windows Vista
   RequestExecutionLevel admin
@@ -63,6 +61,12 @@
 ;--------------------------------
 ; Installer Sections
 
+Section "" SecUninstallPrevious
+
+    Call UninstallPrevious
+
+SectionEnd
+
 Section "Wezzle" SecWezzle
   
   ; Make it required.
@@ -73,7 +77,15 @@ Section "Wezzle" SecWezzle
   File /r ..\..\dist\*.*
 
   ; Store installation folder
-  WriteRegStr HKCU "${REG_KEY}" "" $INSTDIR
+  WriteRegStr HKLM "${HKLM_REG_KEY}" "InstallDir" $INSTDIR
+
+  ; Setup Add/Remove information.
+  WriteRegStr HKLM "${HKLM_REG_KEY}" "DisplayName" ${APP_FULL_NAME}
+  WriteRegStr HKLM "${HKLM_REG_KEY}" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
+  WriteRegStr HKLM "${HKLM_REG_KEY}" "Publisher" ${APP_VENDOR}
+  WriteRegStr HKLM "${HKLM_REG_KEY}" "DisplayVersion" ${APP_VERSION}
+  WriteRegDWORD HKLM "${HKLM_REG_KEY}" "NoModify" 0x00000001
+  WriteRegDWORD HKLM "${HKLM_REG_KEY}" "NoRepair" 0x00000001
 
   ; Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -95,7 +107,8 @@ Section "Java Runtime Environment" SecJava
   ; See if it was not found.
   ${If} $0 == ""
 
-    MessageBox MB_OKCANCEL "The correct version of Java was not detected.$\r$\nSetup will now attempt to install the Java Runtime Environment." IDCANCEL JavaInstallerFailure
+    ; Don't ask, just do.  Spolsky's teachings.
+    ; MessageBox MB_OKCANCEL "The correct version of Java was not detected.$\r$\nSetup will now attempt to install the Java Runtime Environment." IDCANCEL JavaInstallerFailure
 
     DetailPrint "Installing the Java Runtime Environment..."   
 
@@ -108,11 +121,11 @@ Section "Java Runtime Environment" SecJava
     Call DetectJava
     Pop $0
 
-    JavaInstallerFailure:
-
-      ${If} $0 == ""
-        MessageBox MB_OK|MB_ICONEXCLAMATION "Setup was unable to install the Java Runtime Environment."
-      ${EndIf}
+    ;JavaInstallerFailure:
+    ;
+    ;  ${If} $0 == ""
+    ;    MessageBox MB_OK|MB_ICONEXCLAMATION "Setup was unable to install the Java Runtime Environment."
+    ;  ${EndIf}
 
   ${EndIf}
 
@@ -128,6 +141,40 @@ SectionEnd
 
 ;--------------------------------
 ; Functions
+
+Function .onInit
+
+    ; Get installation folder from registry if available
+    ReadRegStr $R0 HKLM "${HKLM_REG_KEY}" "InstallDir"
+    ReadRegStr $R1 HKCU "${HKCU_REG_KEY}" ""
+
+    ${IfNot} $R0 == ""
+        StrCpy $INSTDIR $R0
+    ${ElseIfNot} $R1 == ""
+        StrCpy $INSTDIR $R1
+    ${EndIf}
+
+FunctionEnd
+
+Function UninstallPrevious
+
+    ; Check for uninstaller.
+    ReadRegStr $R0 HKLM "${HKLM_REG_KEY}" "InstallDir"
+    ReadRegStr $R1 HKCU "${HKCU_REG_KEY}" ""
+
+    ${If} $R0 == ""
+    ${AndIf} $R1 == ""
+        Goto Done
+    ${EndIf}
+
+    DetailPrint "Removing previous Wezzle installation."    
+
+    ; Run the uninstaller.
+    ExecWait '"$INSTDIR\Uninstall.exe /S"'
+
+    Done:
+
+FunctionEnd
 
 Function DetectJava
 
@@ -202,15 +249,15 @@ Function DetectJava
 
     ; Stack   => rv,r4,r3,r2,r1,r0
     Exch	; => r4,rv,r3,r2,r1,r0
-	Pop $4	; => rv,r3,r2,r1,r0
-	Exch	; => r3,rv,r2,r1,r0
-	Pop $3	; => rv,r2,r1,r0
-	Exch 	; => r2,rv,r1,r0
-	Pop $2	; => rv,r1,r0
-	Exch	; => r1,rv,r0
-	Pop $1	; => rv,r0
-	Exch	; => r0,rv
-	Pop $0	; => rv
+    Pop $4	; => rv,r3,r2,r1,r0
+    Exch	; => r3,rv,r2,r1,r0
+    Pop $3	; => rv,r2,r1,r0
+    Exch 	; => r2,rv,r1,r0
+    Pop $2	; => rv,r1,r0
+    Exch	; => r1,rv,r0
+    Pop $1	; => rv,r0
+    Exch	; => r0,rv
+    Pop $0	; => rv
 
 FunctionEnd
 
@@ -237,8 +284,6 @@ Section "Uninstall"
   ; ADD YOUR OWN FILES HERE...
 
   Delete "$INSTDIR\Uninstall.exe"
-  ;DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_FULL_NAME}"
-  ;DeleteRegKey HKLM "SOFTWARE\${VENDOR}\${APP_FULL_NAME}"
 
   ; Remove shortcuts.
   Delete "$SMPROGRAMS\${APP_SHORT_NAME}\*.*"
@@ -246,6 +291,7 @@ Section "Uninstall"
 
   RMDir /r "$INSTDIR"
 
-  DeleteRegKey /ifempty HKCU "${REG_KEY}"
+  DeleteRegKey /ifempty HKCU "${HKCU_REG_KEY}"
+  DeleteRegKey /ifempty HKLM "${HKLM_REG_KEY}"
 
 SectionEnd
