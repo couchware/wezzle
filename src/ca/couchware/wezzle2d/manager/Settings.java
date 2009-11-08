@@ -34,11 +34,9 @@ public class Settings
         USER_TUTORIAL_DEFAULT(Boolean.class),
         USER_MUSIC_DEFAULT(String.class),
 
-        /** Use the "traditional" piece preview. */
         USER_PIECE_PREVIEW_TRADITIONAL(Boolean.class),
-
-        /** use the overlay piece preview. */
         USER_PIECE_PREVIEW_OVERLAY(Boolean.class),
+        USER_PIECE_PREVIEW_SHADOW(Boolean.class),
 
         /** The number of FSAA samples. */
         USER_GRAPHICS_ANTIALIASING_SAMPLES(Integer.class),

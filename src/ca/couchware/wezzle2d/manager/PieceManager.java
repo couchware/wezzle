@@ -851,26 +851,28 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     {
         //CouchLogger.get().recordWarning(this.getClass(), "Grid is shown");
         this.pieceGrid.setVisible( true );
-        this.shadowPieceGrid.setVisible( false );
+        hideShadowPieceGrid();
     }
 
     public void hidePieceGrid()
     {
         //CouchLogger.get().recordWarning(this.getClass(), "Grid is hidden");
         this.pieceGrid.setVisible( false );
-        this.shadowPieceGrid.setVisible( true );
+        showShadowPieceGrid();
     }
 
     public void showShadowPieceGrid()
     {
         //CouchLogger.get().recordWarning(this.getClass(), "Grid is shown");
-        this.shadowPieceGrid.setVisible(true);
+        if (hub.settingsMan.getBool( Key.USER_PIECE_PREVIEW_SHADOW ))
+            this.shadowPieceGrid.setVisible(true);
     }
 
     public void hideShadowPieceGrid()
     {
         //CouchLogger.get().recordWarning(this.getClass(), "Grid is hidden");
-        this.shadowPieceGrid.setVisible(false);
+        if (hub.settingsMan.getBool( Key.USER_PIECE_PREVIEW_SHADOW ))
+            this.shadowPieceGrid.setVisible(false);
     }
     
     private void movePieceGridTo(ImmutablePosition position)

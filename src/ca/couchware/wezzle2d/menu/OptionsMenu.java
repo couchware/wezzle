@@ -73,7 +73,7 @@ public class OptionsMenu extends AbstractMenu
             
     private RadioGroup autoPauseRadio;        
     private RadioGroup piecePreviewBoxRadio;        
-    private RadioGroup piecePreviewOverlayRadio;
+    private RadioGroup piecePreviewShadowRadio;
     
     private RadioGroup musicRadio;
     private ITextLabel musicVolumeValueLabel;    
@@ -328,10 +328,10 @@ public class OptionsMenu extends AbstractMenu
         this.gamePageEntities.add(piecePreviewBoxRadio);
         // </editor-fold>
 
-        // <editor-fold defaultstate="collapsed" desc="Piece Preview Overlay">
+        // <editor-fold defaultstate="collapsed" desc="Piece Preview Shadow">
         ITextLabel piecePreviewOverlayLabel = new LabelBuilder(
                 piecePreviewBoxLabel.getX(),
-                piecePreviewBoxLabel.getY() + 85).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Overlay").size(20).visible(false).build();
+                piecePreviewBoxLabel.getY() + 85).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Shadow").size(20).visible(false).build();
         this.gamePageEntities.add(piecePreviewOverlayLabel);
 
         // Creat the level limit radio group.
@@ -340,18 +340,18 @@ public class OptionsMenu extends AbstractMenu
         RadioItem overlayItem2 = new RadioItem.Builder().color(optionColor).text("Off").build();
 
         // Attempt to get the user's music preference.
-        final boolean piecePreviewOverlaySetting = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_OVERLAY);
+        final boolean piecePreviewShadowSetting = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_SHADOW);
 
-        this.piecePreviewOverlayRadio = new RadioGroup.Builder(
+        this.piecePreviewShadowRadio = new RadioGroup.Builder(
                     268,
                     piecePreviewOverlayLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(overlayItem1, piecePreviewOverlaySetting)
-                .add(overlayItem2, !piecePreviewOverlaySetting)
+                .add(overlayItem1, piecePreviewShadowSetting)
+                .add(overlayItem2, !piecePreviewShadowSetting)
                 .itemSpacing(20)
                 .visible(false)
                 .build();
-        this.gamePageEntities.add(piecePreviewOverlayRadio);
+        this.gamePageEntities.add(piecePreviewShadowRadio);
         // </editor-fold>
     }
 
@@ -537,13 +537,13 @@ public class OptionsMenu extends AbstractMenu
             game.getUI().setTraditionalPiecePreviewVisible(isOn);
         }
 
-        if ( this.piecePreviewOverlayRadio.changed() )
+        if ( this.piecePreviewShadowRadio.changed() )
         {
-            int selected = this.piecePreviewOverlayRadio.getSelectedIndex();
+            int selected = this.piecePreviewShadowRadio.getSelectedIndex();
             boolean isOn = selected == ON;
 
-            hub.settingsMan.setBool(Key.USER_PIECE_PREVIEW_OVERLAY, isOn);
-            game.getUI().setOverlayPiecePreviewVisible(isOn);
+            hub.settingsMan.setBool(Key.USER_PIECE_PREVIEW_SHADOW, isOn);
+            //game.getUI().setOverlayPiecePreviewVisible(isOn);
         }
 
         if ( this.musicRadio.changed() )
