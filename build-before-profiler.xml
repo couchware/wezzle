@@ -5,12 +5,72 @@
 <project name="Wezzle2D" default="default" basedir=".">
     <description>Builds, tests, and runs the project Wezzle2D.</description>
     <import file="nbproject/build-impl.xml"/>
-    <import file="nbproject/profiler-build-impl.xml"/>
-    <import file="nbproject/profiler-build-impl.xml"/>
-	<buildnumber file="build.number" />
-	<target name="-pre-compile">
-		<copy file="${basedir}/build.number" todir="${src.dir}/resources"/>
+    <import file="nbproject/profiler-build-impl.xml"/>   	
+
+    <!-- Override the default task so that it includes the native libraries -->
+    <!-- for all supported platforms.                                       -->
+    <target depends="test,jar,windows,macosx,linux" description="Build and test whole project." name="default"/>
+
+    <target name="windows" depends="test,jar" description="Build the Windows version of Wezzle">
+        <!-- This copies the native LWJGL library. -->
+        <copy todir="${dist.dir}/lib/native/windows">
+            <fileset dir="lib/native/windows" excludes="*.jar"/>
+        </copy>
     </target>
+
+    <target name="macosx" depends="test,jar" description="Build the Mac OS X version of Wezzle">
+        <!-- This copies the native LWJGL library. -->
+        <copy todir="${dist.dir}/lib/native/macosx">
+            <fileset dir="lib/native/macosx" excludes="*.jar"/>
+        </copy>
+    </target>
+
+    <target name="linux" depends="test,jar" description="Build the Linux version of Wezzle">
+        <!-- This copies the native LWJGL library. -->
+        <copy todir="${dist.dir}/lib/native/linux">
+            <fileset dir="lib/native/linux" excludes="*.jar"/>
+        </copy>
+    </target>
+
+    <!-- This task creates the .exe for Windows. -->
+    <target name="exe" depends="jar,windows" description="Build the Wezzle Windows .exe">
+        <!-- This task creates the exe file. -->
+        <taskdef name="launch4j"
+            classname="net.sf.launch4j.ant.Launch4jTask"
+            classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"/>
+        <launch4j configFile="./l4j-config.xml"/>
+    </target>
+
+    <!-- This target excludes the resources from the main JAR. -->
+    <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available+main.class+mkdist.available" name="-do-jar-with-libraries">
+        <property location="${build.classes.dir}" name="build.classes.dir.resolved"/>
+        <pathconvert property="run.classpath.without.build.classes.dir">
+            <path path="${run.classpath}"/>
+            <map from="${build.classes.dir.resolved}" to=""/>
+        </pathconvert>
+        <pathconvert pathsep=" " property="jar.classpath">
+            <path path="${run.classpath.without.build.classes.dir}"/>
+            <chainedmapper>
+                <flattenmapper/>
+                <globmapper from="*" to="lib/*"/>
+            </chainedmapper>
+        </pathconvert>
+        <taskdef classname="org.netbeans.modules.java.j2seproject.copylibstask.CopyLibs" classpath="${libs.CopyLibs.classpath}" name="copylibs"/>
+        <copylibs compress="${jar.compress}" jarfile="${dist.jar}" manifest="${manifest.file}" runtimeclasspath="${run.classpath.without.build.classes.dir}">
+            <fileset dir="${build.classes.dir}" excludes="resources/**"/>
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Class-Path" value="${jar.classpath} lib/resources.jar"/>
+            </manifest>
+        </copylibs>
+        <!-- Delete the stupid fucking README.TXT that CopyLibs creates and has no switch to disable. -->
+        <delete file="${dist.dir}/README.TXT" />
+        <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="resources/**" />
+        <echo>To run this application from the command line without Ant, try:</echo>
+        <property location="${dist.jar}" name="dist.jar.resolved"/>
+        <echo>java -jar "${dist.jar.resolved}"</echo>        
+    </target>  
+    
     <!--
 
     There exist several targets which are by default empty and which can be 

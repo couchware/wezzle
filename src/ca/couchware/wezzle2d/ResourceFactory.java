@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -273,7 +274,7 @@ public class ResourceFactory
      * This method will preload all the sprites in the sprite directory.  It 
      * can only be run once.
      */
-    public void preloadSprites(Loader loader)
+    public Collection<Runnable> preloadSprites()
     {
         // Check to see if the sprites have been preloaded.
         if ( this.spritesPreloaded )
@@ -299,13 +300,13 @@ public class ResourceFactory
         {
             e.printStackTrace();
         }
-        boolean isJar = (jarPathUrl.toString().endsWith( ".jar" ) || jarPathUrl.
-                toString().endsWith( ".exe" ));
+        boolean isJar = (jarPathUrl.toString().endsWith( ".jar" )
+                || jarPathUrl.toString().endsWith( ".exe" ));
 
 
         // If we're running from a JAR, then we need to read the JAR entries to
         // figure out all the names of the sprites.
-        if ( isJar == true )
+        if ( isJar )
         {
             try
             {
@@ -371,9 +372,10 @@ public class ResourceFactory
         }
 
         // Get the contents of the directory.
+        List<Runnable> runnableList = new ArrayList<Runnable>();
         for ( final String spriteFilePath : spriteList )
         {
-            loader.addTask( new Runnable()
+            runnableList.add( new Runnable()
             {
                 public void run()
                 {
@@ -384,6 +386,8 @@ public class ResourceFactory
 
             } );
         } // end for
+
+        return runnableList;
     }
 
     public static class LabelBuilder implements IBuilder<ITextLabel>

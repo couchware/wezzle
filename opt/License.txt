@@ -1,0 +1,5 @@
+Copyright 2007-2009 Couchware Inc.
+
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
+
+You are a beta tester of this software and we request that you don't share it with anyone.  If you have a friend that wants to try Wezzle, send us an e-mail at dev@couchware.ca and we can talk about getting them hooked up.  Thanks! :)

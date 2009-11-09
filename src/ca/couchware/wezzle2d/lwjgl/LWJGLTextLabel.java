@@ -23,7 +23,7 @@ public class LWJGLTextLabel extends AbstractEntity implements ITextLabel
     /** 
      * The game window to which this text is going to be drawn 
      */
-	final private LWJGLWindow window;	            
+    final private LWJGLWindow window;
     
     /**
      * The size of the label.

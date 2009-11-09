@@ -42,7 +42,7 @@ public class FontStore
      * The font map.
      */
     private static final HashMap<Integer, TrueTypeFont> fontMap =
-            new HashMap<Integer, TrueTypeFont>();
+            new HashMap<Integer, TrueTypeFont>();  
 
     public TrueTypeFont getFont(Integer size, TextureLoader textureLoader)
     {
@@ -92,6 +92,8 @@ public class FontStore
             Font font = baseFont.deriveFont( (float) size );
             TrueTypeFont ttfont = new TrueTypeFont( textureLoader, font );
             fontMap.put( size, ttfont );
+
+            CouchLogger.get().recordMessage( this.getClass(), String.format( "Create new font size: %d", size ) );
 
             return ttfont;
         }

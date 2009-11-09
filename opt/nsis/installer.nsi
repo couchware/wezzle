@@ -14,6 +14,7 @@
   !define JAVA_INSTALLER "..\jre-installer\jre-6u17-windows-i586-s.exe"
   !define HKCU_REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"
   !define HKLM_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_FULL_NAME}"
+  !define USER_DIR "$PROFILE\.Couchware\Wezzle"
 
 ;--------------------------------
 ; Include Modern UI
@@ -45,7 +46,7 @@
 
   !define MUI_COMPONENTSPAGE_SMALLDESC
 
-  !insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
+  !insertmacro MUI_PAGE_LICENSE "..\License.txt"
   !insertmacro MUI_PAGE_COMPONENTS  
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
@@ -63,6 +64,10 @@
 
 Section "" SecUninstallPrevious
 
+    ; Deletes user files.  This should only be used in test versions.
+    Call DeleteUserFiles
+
+    ; Runs uninstaller
     Call UninstallPrevious
 
 SectionEnd
@@ -153,6 +158,13 @@ Function .onInit
     ${ElseIfNot} $R1 == ""
         StrCpy $INSTDIR $R1
     ${EndIf}
+
+FunctionEnd
+
+Function DeleteUserFiles
+
+    ; Delete the user directory.
+    RMDir /r "${USER_DIR}"
 
 FunctionEnd
 

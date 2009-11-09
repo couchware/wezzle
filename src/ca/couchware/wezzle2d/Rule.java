@@ -439,7 +439,7 @@ public class Rule
         if (this.type != Type.COLLISION)
             return false;                
 
-        CouchLogger.get().recordMessage(this.getClass(), this.itemSubTree.toString());
+        //CouchLogger.get().recordMessage(this.getClass(), this.itemSubTree.toString());
 
         // This filter is used with the .findAll() method of the Node class
         // to find all item tiles.

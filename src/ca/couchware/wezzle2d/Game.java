@@ -215,8 +215,8 @@ public class Game extends Canvas implements IWindowCallback
         CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
         CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
 
-                // Create a window based on a chosen rendering method.
-                ResourceFactory.get().setRenderer(renderer);
+        // Create a window based on a chosen rendering method.
+        ResourceFactory.get().setRenderer(renderer);
 
         window = ResourceFactory.get().getWindow();
         window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -337,7 +337,25 @@ public class Game extends Canvas implements IWindowCallback
         setDrawer(loader);
 
         // Preload the sprites.
-        resourceFactory.preloadSprites(loader);
+        loader.addTasks( resourceFactory.preloadSprites() );
+
+        // Preload fonts.
+        final int MIN_FONT = 10;
+        final int MAX_FONT = 50;
+        for (int i = MIN_FONT; i <= MAX_FONT; i++)
+        {
+            final int size = i;
+            loader.addTask(new Runnable()
+            {
+                public void run()
+                {
+                    new ResourceFactory
+                            .LabelBuilder( 0, 0 )
+                            .size( size )
+                            .build();
+                }
+            });
+        }     
 
         // Initialize managers.
         loader.addTask(new Runnable()

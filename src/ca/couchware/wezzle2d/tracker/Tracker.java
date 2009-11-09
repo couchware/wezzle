@@ -139,12 +139,11 @@ public class Tracker implements IScoreListener, IResettable
             throw new IllegalArgumentException("n must be a positive integer");
 
         int historySize = history.size();
+
         // Limit the size.
         if (numMoves >historySize) numMoves = historySize;
 
-        // Reverse the list.
        
-
         // Get the sublist.
         return Collections.unmodifiableList(history.subList(historySize-numMoves, historySize));
     }
@@ -172,9 +171,15 @@ public class Tracker implements IScoreListener, IResettable
             score += m.getScore();
         }
 
-
-        //count items;
-        int rocket = 0, gravity = 0, bomb = 0, star = 0, x2 = 0, x3 = 0, x4 = 0;
+        // Count items.
+        int
+                rocket = 0,
+                gravity = 0,
+                bomb = 0,
+                star = 0,
+                x2 = 0,
+                x3 = 0,
+                x4 = 0;
 
         for(Tile t : tiles)
         {
@@ -225,9 +230,9 @@ public class Tracker implements IScoreListener, IResettable
 
         countMap.put(NumeratorSubType.BOMB, bomb);
         countMap.put(NumeratorSubType.GRAVITY, gravity);
-        countMap.put(NumeratorSubType.ALL_ITEMS, (rocket+bomb+gravity+star));
+        countMap.put(NumeratorSubType.ALL_ITEMS, (rocket + bomb + gravity + star));
         countMap.put(NumeratorSubType.LINES, lines);
-        countMap.put(NumeratorSubType.ALL_MULTIPLIERS, (x2+x3+x4));
+        countMap.put(NumeratorSubType.ALL_MULTIPLIERS, (x2 + x3 + x4));
         countMap.put(NumeratorSubType.ROCKET, rocket);
         countMap.put(NumeratorSubType.SCORE, score);
         countMap.put(NumeratorSubType.STAR, star);
@@ -235,10 +240,10 @@ public class Tracker implements IScoreListener, IResettable
         countMap.put(NumeratorSubType.X3, x3);
         countMap.put(NumeratorSubType.X4, x4);
 
-        String message = "Bomb: " + bomb + " Gravity: "+ gravity + " ROCKET: " +
-                rocket + " Star " + star;
-
-        CouchLogger.get().recordMessage(this.getClass(), message);
+//        String message = "Bomb: " + bomb + " Gravity: "+ gravity + " ROCKET: " +
+//                rocket + " Star " + star;
+//
+//        CouchLogger.get().recordMessage(this.getClass(), message);
         
         return countMap;
     }
