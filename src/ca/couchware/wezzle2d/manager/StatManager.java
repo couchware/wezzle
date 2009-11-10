@@ -140,7 +140,7 @@ public class StatManager implements IResettable, ISaveable, IGameListener, ILine
         this.lineCount = lineCount;
     }
 
-	public void incrementLineCount()
+    public void incrementLineCount()
     {
         this.lineCount++;
     }

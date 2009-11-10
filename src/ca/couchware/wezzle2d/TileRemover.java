@@ -415,7 +415,7 @@ public class TileRemover implements IResettable, ILevelListener
         statMan.incrementCycleLineCount(cycleY);
         
         //  Handle any lines we may have had.       
-        if (hub.tutorialMan.isTutorialRunning() == true)
+        if (hub.tutorialMan.isTutorialRunning())
         {
             hub.listenerMan.notifyLineConsumed(new LineEvent(
                     hub.statMan.getCycleLineCount(), this),

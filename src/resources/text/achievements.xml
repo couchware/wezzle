@@ -153,7 +153,7 @@
             </rule>
         </achievement>      
 
-        <achievement name="2-Rocket" level="BRONZE" difficulty="NONE">
+        <achievement name="Rocket into 2X" level="BRONZE" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -161,7 +161,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-2-Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="Rocket into 2X+2X" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into two 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -170,7 +170,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-2-2-Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="Rocket into 2X+2X+2X" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into three 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -180,7 +180,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="3-Rocket" level="BRONZE" difficulty="NONE">
+        <achievement name="Rocket into 3X" level="BRONZE" difficulty="NONE">
             <description>Fire a rocket into a 3X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -188,7 +188,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="4-Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="Rocket into 4X" level="BRONZE" difficulty="NONE">
             <description>Fire a rocket into a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="ROCKET">
@@ -196,7 +196,7 @@
                 </item>
             </rule>
         </achievement>              
-        <achievement name="2-3-Rocket" level="SILVER" difficulty="NONE">
+        <achievement name="Rocket into 2X+3X" level="SILVER" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier
             and a 3X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -206,7 +206,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-4-Rocket" level="GOLD" difficulty="NONE">
+        <achievement name="Rocket into 2X+4X" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier
             and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -216,7 +216,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="3-4-Rocket" level="GOLD" difficulty="NONE">
+        <achievement name="Rocket into 3X+4X" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into a an 3X multiplier
             and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -226,7 +226,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-3-4-Rocket" level="GOLD" difficulty="NONE">
+        <achievement name="Rocket into 2X+3X+4X" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into a 2X multiplier, a 3X multiplier
             and a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -236,29 +236,7 @@
                     <item type="X4" />
                 </item>
             </rule>
-        </achievement>
-        <achievement name="Sniped 2-3-4-Rocket" level="PLATINUM" difficulty="NONE">
-            <description>Fire a rocket into a rocket into a 2X multiplier,
-            a 3X multiplier and a 4X multiplier.</description>
-            <rule type="COLLISION" operation="BETWEEN">
-                <item type="ROCKET">
-                    <item type="ROCKET">
-                        <item type="X2" />
-                        <item type="X3" />
-                        <item type="X4" />
-                    </item>
-                </item>
-            </rule>
-        </achievement>
-       
-        <!-- Gravity Achievements -->
-        <achievement name="Gravitron" level="BRONZE" difficulty="NONE">
-            <description>Activate a gravity tile.</description>
-            <rule type="COLLISION" operation="BETWEEN">
-                <item type="GRAVITY" />
-            </rule>
-        </achievement>
-    
+        </achievement>              
 
         <!-- Bomb Achievements -->
         <achievement name="Missile Launcher" level="SILVER" difficulty="NONE">
@@ -278,7 +256,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-Bomb" level="BRONZE" difficulty="NONE">
+        <achievement name="Explode into 2X" level="BRONZE" difficulty="NONE">
             <description>Explode a bomb into a 2X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -286,7 +264,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-2-Bomb" level="SILVER" difficulty="NONE">
+        <achievement name="Explode into 2X+2X" level="SILVER" difficulty="NONE">
             <description>Explode a bomb into two 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -295,7 +273,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-2-2-Bomb" level="GOLD" difficulty="NONE">
+        <achievement name="Explode into 2X+2X+2X" level="GOLD" difficulty="NONE">
             <description>Explode a bomb into three 2X multipliers.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -305,7 +283,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="3-Bomb" level="BRONZE" difficulty="NONE">
+        <achievement name="Explode into 3X" level="BRONZE" difficulty="NONE">
             <description>Explode a bomb into a 3X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -313,7 +291,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="4-Bomb" level="SILVER" difficulty="NONE">
+        <achievement name="Explode into 4X" level="BRONZE" difficulty="NONE">
             <description>Explode a bomb into a 4X multiplier.</description>
             <rule type="COLLISION" operation="BETWEEN">
                 <item type="BOMB">
@@ -321,7 +299,7 @@
                 </item>
             </rule>
         </achievement>        
-        <achievement name="2-3-Bomb" level="SILVER" difficulty="NONE">
+        <achievement name="Explode into 2X+3X" level="SILVER" difficulty="NONE">
             <description>Explode a bomb into a 2X multiplier
             and a 3X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -331,7 +309,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-4-Bomb" level="GOLD" difficulty="NONE">
+        <achievement name="Explode into 2X+4X" level="SILVER" difficulty="NONE">
             <description>Explode a bomb into a 2X multiplier
             and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -341,7 +319,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="3-4-Bomb" level="GOLD" difficulty="NONE">
+        <achievement name="Explode into 3X+4X" level="GOLD" difficulty="NONE">
             <description>Explode a bomb into a 3X multiplier
             and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -351,7 +329,7 @@
                 </item>
             </rule>
         </achievement>
-        <achievement name="2-3-4-Bomb" level="PLATINUM" difficulty="NONE">
+        <achievement name="Explode into 2X+3X+4X" level="PLATINUM" difficulty="NONE">
             <description>Explode a bomb into a 2x multiplier, 
             a 3X multiplier and a 4X multipler.</description>
             <rule type="COLLISION" operation="BETWEEN">
@@ -361,20 +339,7 @@
                     <item type="X4" />
                 </item>
             </rule>
-        </achievement>
-        <achievement name="Sniped 2-3-4-Bomb" level="PLATINUM" difficulty="NONE">
-            <description>Fire a rocket into a bomb into a 2x multiplier,
-            a 3X multiplier and a 4X multipler.</description>
-            <rule type="COLLISION" operation="BETWEEN">
-                <item type="ROCKET">
-                    <item type="BOMB">
-                        <item type="X2" />
-                        <item type="X3" />
-                        <item type="X4" />
-                    </item>
-                </item>
-            </rule>
-        </achievement>        
+        </achievement>       
 
         <!-- Star Achievements -->
         <achievement name="Starry-Eyed Surprise" level="SILVER" difficulty="NONE">
@@ -531,6 +496,20 @@
             <rule type="LEVEL" operation="EQ" value="5" />
             <rule type="SCORE" operation="GTEQ" value="60000" />
         </achievement>
+        <achievement name="Get 60,000 By Level 10" level="GOLD" difficulty="NONE">
+            <description>Starting from level 1, accumulate 60,000
+            points by level 10.</description>
+            <rule type="START_LEVEL" operation="EQ" value="1" />
+            <rule type="LEVEL" operation="EQ" value="10" />
+            <rule type="SCORE" operation="GTEQ" value="60000" />
+        </achievement>
+        <achievement name="Get 120,000 By Level 10" level="PLATINUM" difficulty="NONE">
+            <description>Starting from level 1, accumulate 120,000
+            points by level 10.</description>
+            <rule type="START_LEVEL" operation="EQ" value="1" />
+            <rule type="LEVEL" operation="EQ" value="10" />
+            <rule type="SCORE" operation="GTEQ" value="120000" />
+        </achievement>
 
         <!-- Story Achievements -->
         <achievement name="Doomed Space Mission" level="GOLD" difficulty="NONE">
@@ -599,7 +578,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>        
-        <achievement name="Get 5 2Xs in 5 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="Get 5 2X in 5 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 5 2X multipliers over
             the course of 5 moves.</description>
             <rule type="RATE">
@@ -607,7 +586,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="Get 2 3Xs in 5 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="Get 2 3X in 5 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 2 3X multipliers over
             the course of 5 moves.</description>
             <rule type="RATE">
@@ -615,7 +594,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="Get 2 4Xs in 6 Moves" level="PLATINUM" difficulty="NONE">
+        <achievement name="Get 2 4X in 6 Moves" level="PLATINUM" difficulty="NONE">
             <description>Consume 2 4X multipliers over
             the course of 6 moves.</description>
             <rule type="RATE">
@@ -623,7 +602,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="6" />
             </rule>
         </achievement>
-        <achievement name="Get 5 Xs in 5 Moves" level="SILVER" difficulty="NONE">
+        <achievement name="Get 5 #X in 5 Moves" level="SILVER" difficulty="NONE">
             <description>Consume 5 4X, 3X or 2X multipliers over
             the course of 5 moves.</description>
             <rule type="RATE">
@@ -631,7 +610,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="Get 10 Xs in 10 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="Get 10 #X in 10 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 10 4X, 3X or 2X multipliers over
             the course of 10 moves.</description>
             <rule type="RATE">
@@ -639,7 +618,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="10" />
             </rule>
         </achievement>
-         <achievement name="Get 10 Xs in 5 Moves" level="PLATINUM" difficulty="NONE">
+         <achievement name="Get 10 #X in 5 Moves" level="PLATINUM" difficulty="NONE">
             <description>Consume 10 4X, 3X or 2X multipliers over
             the course of 7 moves.</description>
             <rule type="RATE">
@@ -648,9 +627,9 @@
             </rule>
         </achievement>
 
-        <!-- Line / Move -->            
-        <achievement name="4 Lines in 2 Moves" level="SILVER" difficulty="NONE">
-            <description>Consume 4 lines in 2 moves.</description>
+        <!-- Line / Move -->                    
+        <achievement name="6 Lines in 2 Moves" level="SILVER" difficulty="NONE">
+            <description>Consume 6 lines in 2 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="6" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
@@ -659,21 +638,28 @@
         <achievement name="8 Lines in 2 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 8 lines in 2 moves.</description>
             <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="8" />
+                <denominator type="MOVE" operation="LTEQ" value="2" />
+            </rule>
+        </achievement>
+        <achievement name="10 Lines in 2 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 4 lines in 2 moves.</description>
+            <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="10" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="12 Lines in 2 Moves" level="PLATINUM" difficulty="NONE">
-            <description>Consume 12 lines in 2 moves.</description>
-            <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="12" />
-                <denominator type="MOVE" operation="LTEQ" value="2" />
-            </rule>
-        </achievement>
-        <achievement name="8 Lines in 3 Moves" level="SILVER" difficulty="NONE">
+        <achievement name="6 Lines in 3 Moves" level="SILVER" difficulty="NONE">
             <description>Consume 6 lines in 3 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="8" />
+                <numerator type="LINES" operation="GTEQ" value="6" />
+                <denominator type="MOVE" operation="LTEQ" value="3" />
+            </rule>
+        </achievement>
+        <achievement name="9 Lines in 3 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 9 lines in 3 moves.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="9" />
                 <denominator type="MOVE" operation="LTEQ" value="3" />
             </rule>
         </achievement>
@@ -683,28 +669,41 @@
                 <numerator type="LINES" operation="GTEQ" value="12" />
                 <denominator type="MOVE" operation="LTEQ" value="3" />
             </rule>
-        </achievement>
-        <achievement name="18 Lines in 3 Moves" level="PLATINUM" difficulty="NONE">
-            <description>Consume 18 lines in 3 moves.</description>
+        </achievement>   
+         <achievement name="15 Lines in 3 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 15 lines in 3 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="18" />
+                <numerator type="LINES" operation="GTEQ" value="15" />
                 <denominator type="MOVE" operation="LTEQ" value="3" />
             </rule>
         </achievement>
-        <achievement name="20 Lines in 4 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="8 Lines in 4 Moves" level="SILVER" difficulty="NONE">
+            <description>Consume 8 lines in 4 moves.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="8" />
+                <denominator type="MOVE" operation="LTEQ" value="4" />
+            </rule>
+        </achievement>
+        <achievement name="12 Lines in 4 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 12 lines in 4 moves.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="12" />
+                <denominator type="MOVE" operation="LTEQ" value="4" />
+            </rule>
+        </achievement>
+        <achievement name="16 Lines in 4 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 16 lines in 4 moves.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="16" />
+                <denominator type="MOVE" operation="LTEQ" value="4" />
+            </rule>
+        </achievement>
+        <achievement name="20 Lines in 4 Moves" level="PLATINUM" difficulty="NONE">
             <description>Consume 20 lines in 4 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="20" />
                 <denominator type="MOVE" operation="LTEQ" value="4" />
             </rule>
         </achievement>
-        <achievement name="24 Lines in 4 Moves" level="PLATINUM" difficulty="NONE">
-            <description>Consume 24 lines in 4 moves.</description>
-            <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="24" />
-                <denominator type="MOVE" operation="LTEQ" value="4" />
-            </rule>
-        </achievement>
-
     </entry>
 </settings>

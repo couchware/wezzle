@@ -95,7 +95,7 @@ public class Game extends Canvas implements IWindowCallback
     final public static String APPLICATION_NAME = "Wezzle";
     
     /** The version of the application. */
-    final public static String APPLICATION_VERSION = "Beta 1";
+    final public static String APPLICATION_VERSION = "Beta 2";
     
     /** The full title of the game. */
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
@@ -355,7 +355,7 @@ public class Game extends Canvas implements IWindowCallback
                             .build();
                 }
             });
-        }     
+        }    
 
         // Initialize managers.
         loader.addTask(new Runnable()
