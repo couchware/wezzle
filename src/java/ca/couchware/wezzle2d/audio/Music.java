@@ -22,7 +22,8 @@ public enum Music
     ELECTRONIC3(Settings.getMusicResourcesPath() + "/Electronic3.ogg"),
     HIPPOP1(Settings.getMusicResourcesPath() + "/HipPop1.ogg"),
     HIPPOP2(Settings.getMusicResourcesPath() + "/HipPop2.ogg"),
-    HIPPOP3(Settings.getMusicResourcesPath() + "/HipPop3.ogg");
+    HIPPOP3(Settings.getMusicResourcesPath() + "/HipPop3.ogg"),
+    ERHU(Settings.getMusicResourcesPath() + "/Erhu.ogg");
     
     private String path;
     

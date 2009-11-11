@@ -54,6 +54,8 @@ public class PlayNowMenu extends AbstractMenu
     final private static int MIN_LEVEL = 1;
     final private static int MAX_LEVEL = 15;             
 
+    private MusicPlayer menuPlayer;
+
     private int levelNumber;
     private ITextLabel levelLabel;
     private ITextLabel levelNumberLabel;    
@@ -91,7 +93,9 @@ public class PlayNowMenu extends AbstractMenu
         // The colors.
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
         final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);                    
-               
+
+        this.menuPlayer = ((MainMenu) this.parent).getPlayer();
+
         // The title label.
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
@@ -536,6 +540,7 @@ public class PlayNowMenu extends AbstractMenu
     public IAnimation animateShow()
     {
         playTheme(themeRadio.getSelectedIndex());
+        this.menuPlayer.fadeToGain( 0.0 );
         return super.animateShow();
     }
 
@@ -543,6 +548,11 @@ public class PlayNowMenu extends AbstractMenu
     public IAnimation animateHide()
     {
         stopThemes();
+        
+        int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);
+        double gain = (double) intGain / 100.0;
+        this.menuPlayer.fadeToGain( gain );
+
         return super.animateHide();
     }
 

@@ -50,6 +50,8 @@ public class OptionsMenu extends AbstractMenu
     final private static int ON = 0;
     final private static int OFF = 1;
 
+    private MusicPlayer menuPlayer;
+
     private enum GraphicsQuality
     {
         LOWEST("Lowest"),
@@ -73,14 +75,12 @@ public class OptionsMenu extends AbstractMenu
             
     private RadioGroup autoPauseRadio;        
     private RadioGroup piecePreviewBoxRadio;        
-    private RadioGroup piecePreviewShadowRadio;
-    
+    private RadioGroup piecePreviewShadowRadio;   
+
     private RadioGroup musicRadio;
     private ITextLabel musicVolumeValueLabel;    
     private int musicVolumeValue;    
-    private SliderBar musicVolumeValueSlider;
-    private IButton musicTestButton;
-    private MusicPlayer musicTestPlayer;
+    private SliderBar musicVolumeValueSlider;    
 
     private RadioGroup soundRadio;
     private ITextLabel soundVolumeValueLabel;    
@@ -119,10 +119,8 @@ public class OptionsMenu extends AbstractMenu
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
         final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
 
-        // Create the music player.
-        this.musicTestPlayer = MusicManager.createPlayer( Music.ELECTRONIC1 );
-        this.musicTestPlayer.setLooping(true);
-
+        this.menuPlayer = ((MainMenu) this.parent).getPlayer();
+        
         createMenuEntities(hub, LABEL_COLOR, OPTION_COLOR);
         createEntitiesForGamePage(hub, LABEL_COLOR, OPTION_COLOR);
         createEntitiesForAudioPage(hub, LABEL_COLOR, OPTION_COLOR);
@@ -480,26 +478,12 @@ public class OptionsMenu extends AbstractMenu
                 .visible(false)
                 .build();
         this.audioPageEntities.add(soundVolumeValueSlider);
-        // </editor-fold>
-
-        this.musicTestButton = new Button.Builder(
-                    258,
-                    soundVolumeValueSlider.getY() + 65)
-                .alignment( EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT) )
-                .color( labelColor )
-                .normalOpacity(90)
-                .activeOpacity(90)
-                .visible(false)
-                .text("Test Music").textSize(16)
-                .activeText( "Stop Music" )
-                .width( 140 )
-                .build();       
-        this.audioPageEntities.add(this.musicTestButton);
+        // </editor-fold>        
 
         this.soundTestButton = new Button.Builder(
-                    278,
+                    268,
                     soundVolumeValueSlider.getY() + 65)
-                .alignment( EnumSet.of(Alignment.MIDDLE, Alignment.LEFT) )
+                .alignment( EnumSet.of(Alignment.MIDDLE, Alignment.CENTER) )
                 .color( labelColor )
                 .normalOpacity(90)
                 .activeOpacity(90)
@@ -549,17 +533,33 @@ public class OptionsMenu extends AbstractMenu
         if ( this.musicRadio.changed() )
         {
             int selected = this.musicRadio.getSelectedIndex();
-            boolean isOn = selected == ON;
+            boolean isSwitchedOn = selected == ON;
 
-            hub.settingsMan.setBool(Key.USER_MUSIC, isOn);
+            try
+            {
+                if (isSwitchedOn)
+                {
+                    this.menuPlayer.resume();
+                }
+                else
+                {
+                    this.menuPlayer.pause();
+                }
+            }
+            catch ( BasicPlayerException e )
+            {
+                CouchLogger.get().recordException(this.getClass(), e);
+            }
+
+            hub.settingsMan.setBool(Key.USER_MUSIC, isSwitchedOn);
         }
 
         if ( this.soundRadio.changed() )
         {
             int selected = this.soundRadio.getSelectedIndex();
-            boolean isOn = selected == ON;
+            boolean isSwitchedOn = selected == ON;
 
-            hub.settingsMan.setBool(Key.USER_SOUND, isOn);
+            hub.settingsMan.setBool(Key.USER_SOUND, isSwitchedOn);
         }
 
         if ( this.musicVolumeValueSlider.changed() )
@@ -570,12 +570,9 @@ public class OptionsMenu extends AbstractMenu
             //hub.musicMan.setNormalizedGain( musicVolumeValueSlider.getVirtualPercent() );
 
             try
-            {
-                if (this.musicTestButton.isActivated())
-                {
-                    this.musicTestPlayer.setNormalizedGain(
-                            musicVolumeValueSlider.getVirtualPercent() );
-                }
+            {             
+                this.menuPlayer.setNormalizedGain(
+                        musicVolumeValueSlider.getVirtualPercent() );
             }
             catch ( BasicPlayerException e )
             {
@@ -588,50 +585,13 @@ public class OptionsMenu extends AbstractMenu
             soundVolumeValue = soundVolumeValueSlider.getVirtualValue();
             this.soundVolumeValueLabel.setText("" + soundVolumeValue);
             hub.settingsMan.setInt(Key.USER_SOUND_VOLUME, this.soundVolumeValue);
-            //hub.soundMan.setNormalizedGain( soundVolumeValueSlider.getVirtualPercent() );
-        }
-
-        if ( this.musicTestButton.clicked() )
-        {
-            try
-            {
-                if (this.musicTestButton.isActivated())
-                {
-                    this.musicTestPlayer.play();
-                    this.musicTestPlayer.setNormalizedGain(
-                            musicVolumeValueSlider.getVirtualPercent() );
-                }
-                else
-                {
-                    this.musicTestPlayer.stop();
-                }
-            }
-            catch ( BasicPlayerException e )
-            {
-                CouchLogger.get().recordException(this.getClass(), e);
-            }
-        }
+            hub.soundMan.setNormalizedGain( soundVolumeValueSlider.getVirtualPercent() );
+        }       
 
         if ( this.soundTestButton.clicked() )
         {            
             hub.soundMan.play( Sound.ROCKET );
         }
-    }  
-
-    @Override
-    public IAnimation animateHide()
-    {
-        try
-        {
-            this.musicTestButton.setActivated( false );
-            this.musicTestPlayer.stop();
-        }
-        catch ( BasicPlayerException e )
-        {
-            CouchLogger.get().recordException(this.getClass(), e);
-        }
-
-        return super.animateHide();
-    }
+    }     
 
 } // end class

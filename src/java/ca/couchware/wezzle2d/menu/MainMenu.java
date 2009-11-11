@@ -16,6 +16,8 @@ import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.audio.Music;
+import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IDrawer;
@@ -30,9 +32,14 @@ import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.group.AbstractGroup;
 import ca.couchware.wezzle2d.group.EmptyGroup;
 import ca.couchware.wezzle2d.group.IGroup;
+import ca.couchware.wezzle2d.manager.MusicManager;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.awt.Shape;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
  *
@@ -112,7 +119,10 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     private IAnimation slideAnimation = FinishedAnimation.get();    
     
     /** The animation that is currently being run. */        
-    private IAnimation currentAnimation = FinishedAnimation.get();            
+    private IAnimation currentAnimation = FinishedAnimation.get();
+
+    /** The main menu music player. */
+    private MusicPlayer player;
     
     /**
      * Create a new main menu.
@@ -130,7 +140,33 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
 
         // Create the menu's layer manager.
         this.menuLayerMan = LayerManager.newInstance();
-              
+
+        // Initialize the menu music.
+        this.player = MusicManager.createPlayer( Music.ERHU );
+        try
+        {
+            int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);
+            double gain = (double) intGain / 100.0;
+            this.player.setLooping(true);
+            this.player.play();
+
+            boolean isOn = SettingsManager.get().getBool(Settings.Key.USER_MUSIC);
+            if (isOn)
+            {
+                this.player.setNormalizedGain( 0.0 );
+                this.player.fadeToGain( gain );
+            }
+            else
+            {
+                this.player.setNormalizedGain( gain );
+                this.player.pause();
+            }
+        }
+        catch ( BasicPlayerException ex )
+        {
+            CouchLogger.get().recordException( this.getClass(), ex );
+        }
+
         initializeBackground(hub);
         initializeLogo(hub);
         initializeButtons(hub);
@@ -143,7 +179,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .build();
         
         // Add it to the manager.
-        hub.gameAnimationMan.add(this.slideAnimation);
+        hub.gameAnimationMan.add(this.slideAnimation);       
     };
     
     private void initializeBackground(ManagerHub hub)
@@ -519,7 +555,12 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     public State getState()
     {
         return state;
-    }        
+    }
+
+    public MusicPlayer getPlayer()
+    {
+        return player;
+    }
     
     @Override
     public boolean draw()
