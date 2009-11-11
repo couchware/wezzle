@@ -228,85 +228,49 @@ public class TrueTypeFont implements Serializable
     {                
         try
         {
-            BufferedImage image;
-            File imageFile = new File(String.format("%s/%s.png", Settings.getCachePath(), font.toString()));
-            File charFile = new File(String.format("%s/%s.chr", Settings.getCachePath(), font.toString()));
+            BufferedImage image = new BufferedImage(
+                FontTextureWidth, FontTextureHeight,
+                BufferedImage.TYPE_INT_ARGB);
 
-            if (imageFile.exists() && charFile.exists())
+            Graphics2D gfx = (Graphics2D) image.getGraphics();
+            determineHeight( gfx );
+
+            int rowHeight = 0;
+            int positionX = 0;
+            int positionY = 0;
+
+            for (int i = 0; i < 256; i++)
             {
-                image = ImageIO.read( imageFile );
+                char ch = (char) i;
 
-                Graphics2D gfx = (Graphics2D) image.getGraphics();
-                determineHeight( gfx );
+                CharacterInfo charInfo = new CharacterInfo();
+                BufferedImage charImage = getCharImage(ch, charInfo);
 
-                FileInputStream fileIn = new FileInputStream( charFile );
-                ObjectInputStream objectIn = new ObjectInputStream( fileIn );
-                this.charArray = (CharacterInfo[]) objectIn.readObject();
-            }
-            else
-            {
-                image = new BufferedImage(
-                    FontTextureWidth, FontTextureHeight,
-                    BufferedImage.TYPE_INT_ARGB);
-
-                Graphics2D gfx = (Graphics2D) image.getGraphics();
-                determineHeight( gfx );
-
-                int rowHeight = 0;
-                int positionX = 0;
-                int positionY = 0;
-
-                for (int i = 0; i < 256; i++)
+                if (positionX + charInfo.width >= FontTextureWidth)
                 {
-                    char ch = (char) i;
-
-                    CharacterInfo charInfo = new CharacterInfo();
-                    BufferedImage charImage = getCharImage(ch, charInfo);
-
-                    if (positionX + charInfo.width >= FontTextureWidth)
-                    {
-                        positionX = 0;
-                        positionY += rowHeight;
-                        rowHeight = 0;
-                    }
-
-                    charInfo.x = positionX;
-                    charInfo.y = positionY;
-
-                    if (charInfo.height > rowHeight)
-                    {
-                        rowHeight = charInfo.height;
-                    }
-
-                    // Draw it here
-                    gfx.drawImage(charImage, positionX, positionY, null);
-
-                    positionX += charInfo.width;
-
-                    charArray[i] = charInfo;
+                    positionX = 0;
+                    positionY += rowHeight;
+                    rowHeight = 0;
                 }
 
-                // Write the image to disk.
-                imageFile.getParentFile().mkdirs();
-                imageFile.delete();
-                imageFile.createNewFile();
-                
-                ImageIO.write( image, "png", imageFile );
+                charInfo.x = positionX;
+                charInfo.y = positionY;
 
-                // Write the char array to disk.
-                charFile.delete();
-                charFile.createNewFile();
-                FileOutputStream fileOut = new FileOutputStream( charFile );
-                ObjectOutputStream objectOut = new ObjectOutputStream( fileOut );
-                objectOut.writeObject( this.charArray );
+                if (charInfo.height > rowHeight)
+                {
+                    rowHeight = charInfo.height;
+                }
+
+                // Draw it here
+                gfx.drawImage(charImage, positionX, positionY, null);
+
+                positionX += charInfo.width;
+
+                charArray[i] = charInfo;
             }
             
             fontTexture = textureLoader.getTexture(font.toString(), image);
-        }
-        catch (ClassNotFoundException e)
-        {
-            CouchLogger.get().recordException(this.getClass(), e);
-        }
+        }        
         catch (IOException e)
         {
             CouchLogger.get().recordException(this.getClass(), e);
