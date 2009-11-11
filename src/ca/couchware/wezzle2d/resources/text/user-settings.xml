@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>  
+  <entry name="User.Music">true</entry>
+  <entry name="User.Music.Volume">30</entry>
+  <entry name="User.Sound">true</entry>
+  <entry name="User.Sound.Volume">50</entry>
+  <entry name="User.Highscore">
+      <high-score name="" score="0" level="0" difficulty="NORMAL" />
+  </entry>
+  <entry name="User.Difficulty.Default">NORMAL</entry>
+  <entry name="User.Level.Default">1</entry>
+  <entry name="User.Tutorial.Default">false</entry>
+  <entry name="User.Music.Default">TRON</entry>
+  <entry name="User.Piece.Preview.Traditional">true</entry>
+  <entry name="User.Piece.Preview.Overlay">false</entry>
+  <entry name="User.Piece.Preview.Shadow">true</entry>
+  <entry name="User.Graphics.Antialiasing.Samples">4</entry>
+  <entry name="User.Auto.Pause">true</entry>  
+  <entry name="User.Tutorial.Basic.Ran">false</entry>
+  <entry name="User.Tutorial.Rotate.Ran">false</entry>
+  <entry name="User.Tutorial.Rocket.Ran">false</entry>
+  <entry name="User.Tutorial.Gravity.Ran">false</entry>
+  <entry name="User.Tutorial.Bomb.Ran">false</entry>
+  <entry name="User.Tutorial.Star.Ran">false</entry>
+</settings>
