@@ -221,7 +221,7 @@ public class Settings
     final private static String lineSeparator = System.getProperty("line.separator");
     
     /** The path to the resources. */
-    final private static String resourcesPath = "resources";        
+    final private static String resourcesPath = "ca/couchware/wezzle2d/resources";
 
     /** The path to the fonts. */
     final private static String fontResourcesPath = resourcesPath + "/fonts";
