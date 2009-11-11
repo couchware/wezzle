@@ -408,7 +408,17 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                     // See if the group deactivated the main menu.  If the main
                     // menu is deactivated, then we need to start the game.                    
                     if ( !this.activated )
-                    {                      
+                    {
+                        try
+                        {
+                            // Turn off the menu music.
+                            this.player.stop();
+                        }
+                        catch ( BasicPlayerException ex )
+                        {
+                            CouchLogger.get().recordException( this.getClass(), ex);
+                        }
+
                         // Create the hide animation.
                         final IAnimation anim = animateHide();                        
                         
