@@ -18,6 +18,7 @@ import java.awt.image.WritableRaster;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -42,7 +43,7 @@ import org.lwjgl.opengl.GL11;
  * @author Cameron McKay
  */
  
-public class TextureLoader 
+public class TextureLoader
 {
 
     /**

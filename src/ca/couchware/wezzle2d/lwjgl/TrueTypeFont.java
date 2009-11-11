@@ -27,6 +27,8 @@
  */
 package ca.couchware.wezzle2d.lwjgl;
 
+import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -35,7 +37,14 @@ import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import javax.imageio.ImageIO;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -47,7 +56,7 @@ import org.lwjgl.opengl.GL11;
  * @author Jeremy Adams (elias4444)
  * @author Kevin Glass (kevglass)
  */
-public class TrueTypeFont
+public class TrueTypeFont implements Serializable
 {
 
     /** Array that holds necessary information about the font characters. */
@@ -63,16 +72,18 @@ public class TrueTypeFont
     private Texture fontTexture;
     
     /** Default font texture width. */
-    private float fontTextureWidth = 512.0f;
+    final static private int FontTextureWidth = 1024;
+    final static private float FlFontTextureWidth = 1024f;
     
     /** Default font texture height. */
-    private float fontTextureHeight = 512.0f;
+    final static private int FontTextureHeight = 512;
+    final static private float FlFontTextureHeight= 512f;
     
     /** The texture loader. */
     private TextureLoader textureLoader;
     
     /** A reference to Java's AWT Font that we create our font texture from */
-    private Font font;    
+    private Font font;
     
     /** 
      * A text layout with the two characters that have the lowest descent 
@@ -84,14 +95,14 @@ public class TrueTypeFont
      * A text layout with the character having the highest ascent, giving the
      * baseline information.
      */
-    private TextLayout ascentLayout;    
+    private TextLayout ascentLayout;
 
     /**
      * This is a special internal class that holds our necessary information for
      * the font characters. This includes width, height, and where the character
      * is stored on the font texture.
      */
-    private class CharacterInfo
+    private static class CharacterInfo implements Serializable
     {                
         /** Character width. */
         public int width;
@@ -140,6 +151,14 @@ public class TrueTypeFont
         this.textureLoader = textureLoader;                
 
         createFont();
+    }
+
+    private void determineHeight(Graphics2D gfx)
+    {
+        // Create the text layout instances for measuring.
+        this.heightLayout = createTextLayout( gfx, "Yg", font );
+        this.ascentLayout = createTextLayout( gfx, "Y", font );
+        this.fontHeight = (int) ascentLayout.getBounds().getHeight();
     }
 
     /**
@@ -209,55 +228,88 @@ public class TrueTypeFont
     {                
         try
         {
-            BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D gfx = (Graphics2D) image.getGraphics();            
-            
-            // Create the text layout instances for measuring.
-            this.heightLayout = createTextLayout(gfx, "Yg", font);        
-            this.ascentLayout = createTextLayout(gfx, "Y", font);
-            
-            this.fontHeight = (int) ascentLayout.getBounds().getHeight();
+            BufferedImage image;
+            File imageFile = new File(String.format("%s/%s.png", Settings.getCachePath(), font.toString()));
+            File charFile = new File(String.format("%s/%s.chr", Settings.getCachePath(), font.toString()));
 
-            int rowHeight = 0;
-            int positionX = 0;
-            int positionY = 0;
-
-            for (int i = 0; i < 256; i++)
+            if (imageFile.exists() && charFile.exists())
             {
-                char ch = (char) i;
-                
-                CharacterInfo charInfo = new CharacterInfo();
-                BufferedImage charImage = getCharImage(ch, charInfo);                
-               
-                if (positionX + charInfo.width >= 512)
-                {
-                    positionX = 0;
-                    positionY += rowHeight;
-                    rowHeight = 0;
-                }
+                image = ImageIO.read( imageFile );
 
-                charInfo.x = positionX;
-                charInfo.y = positionY;
-               
-                if (charInfo.height > rowHeight)
-                {
-                    rowHeight = charInfo.height;
-                }
+                Graphics2D gfx = (Graphics2D) image.getGraphics();
+                determineHeight( gfx );
 
-                // Draw it here
-                gfx.drawImage(charImage, positionX, positionY, null);
-
-                positionX += charInfo.width;
-
-                charArray[i] = charInfo;
+                FileInputStream fileIn = new FileInputStream( charFile );
+                ObjectInputStream objectIn = new ObjectInputStream( fileIn );
+                this.charArray = (CharacterInfo[]) objectIn.readObject();
             }
+            else
+            {
+                image = new BufferedImage(
+                    FontTextureWidth, FontTextureHeight,
+                    BufferedImage.TYPE_INT_ARGB);
 
+                Graphics2D gfx = (Graphics2D) image.getGraphics();
+                determineHeight( gfx );
+
+                int rowHeight = 0;
+                int positionX = 0;
+                int positionY = 0;
+
+                for (int i = 0; i < 256; i++)
+                {
+                    char ch = (char) i;
+
+                    CharacterInfo charInfo = new CharacterInfo();
+                    BufferedImage charImage = getCharImage(ch, charInfo);
+
+                    if (positionX + charInfo.width >= FontTextureWidth)
+                    {
+                        positionX = 0;
+                        positionY += rowHeight;
+                        rowHeight = 0;
+                    }
+
+                    charInfo.x = positionX;
+                    charInfo.y = positionY;
+
+                    if (charInfo.height > rowHeight)
+                    {
+                        rowHeight = charInfo.height;
+                    }
+
+                    // Draw it here
+                    gfx.drawImage(charImage, positionX, positionY, null);
+
+                    positionX += charInfo.width;
+
+                    charArray[i] = charInfo;
+                }
+
+                // Write the image to disk.
+                imageFile.getParentFile().mkdirs();
+                imageFile.delete();
+                imageFile.createNewFile();
+                
+                ImageIO.write( image, "png", imageFile );
+
+                // Write the char array to disk.
+                charFile.delete();
+                charFile.createNewFile();
+                FileOutputStream fileOut = new FileOutputStream( charFile );
+                ObjectOutputStream objectOut = new ObjectOutputStream( fileOut );
+                objectOut.writeObject( this.charArray );
+            }
+            
             fontTexture = textureLoader.getTexture(font.toString(), image);
+        }
+        catch (ClassNotFoundException e)
+        {
+            CouchLogger.get().recordException(this.getClass(), e);
         }
         catch (IOException e)
         {
-            System.err.println("Failed to create font.");
-            e.printStackTrace();
+            CouchLogger.get().recordException(this.getClass(), e);
         }
 
     }
@@ -287,12 +339,12 @@ public class TrueTypeFont
     {
         float drawWidth = drawX2 - drawX;
         float drawHeight = drawY2 - drawY;
-        float textureSrcX = srcX / fontTextureWidth;
-        float textureSrcY = srcY / fontTextureHeight;
+        float textureSrcX = srcX / FlFontTextureWidth;
+        float textureSrcY = srcY / FlFontTextureHeight;
         float srcWidth = srcX2 - srcX;
         float srcHeight = srcY2 - srcY;
-        float renderWidth = (srcWidth / fontTextureWidth);
-        float renderHeight = (srcHeight / fontTextureHeight);
+        float renderWidth = (srcWidth / FlFontTextureWidth);
+        float renderHeight = (srcHeight / FlFontTextureHeight);
 
         GL11.glTexCoord2f(textureSrcX, textureSrcY);
         GL11.glVertex2f(drawX, drawY);

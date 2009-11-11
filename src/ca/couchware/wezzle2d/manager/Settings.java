@@ -274,6 +274,9 @@ public class Settings
     /** The file path of external user settings file. */
     final private static String achievementsFilePath = externalSettingsPath 
             + "/" + achievementsFileName;
+
+    /** The file path to the disk cache. */
+    final private static String cachePath = externalSettingsPath + "/Cache";
     
     /** The path to the log file. */
     final private static String logPath = externalSettingsPath;
@@ -355,6 +358,11 @@ public class Settings
     public static String getLineSeparator()
     {
         return lineSeparator;
+    }
+
+    public static String getCachePath()
+    {
+        return cachePath;
     }
 
     public static String getLogFilePath()
