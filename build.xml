@@ -66,7 +66,7 @@
         </copylibs>
         <!-- Delete the stupid fucking README.TXT that CopyLibs creates and has no switch to disable. -->
         <delete file="${dist.dir}/README.TXT" />
-        <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.base.dir}" includes="resources/**" />
+        <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="resources/**" />
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <echo>java -jar "${dist.jar.resolved}"</echo>        

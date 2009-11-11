@@ -11,7 +11,7 @@
             <name>Wezzle2D</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <source-roots>
-                <root id="src.dir" name="src"/>
+                <root id="src.java.dir" name="src"/>
             </source-roots>
             <test-roots/>
         </data>
