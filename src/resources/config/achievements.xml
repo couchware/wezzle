@@ -698,24 +698,24 @@
                 <denominator type="MOVE" operation="LTEQ" value="20" />
             </rule>
         </achievement>
-        <achievement name="One Move Wonder" level="GOLD" difficulty="NONE">
+        <achievement name="A Long Move" level="GOLD" difficulty="NONE">
             <description>Consume 8 lines in a single move.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="8" />
                 <denominator type="MOVE" operation="LTEQ" value="1" />
             </rule>
         </achievement>
-        <achievement name="Line Phenom" level="PLATINUM" difficulty="NONE">
+        <achievement name="A Longer Move" level="PLATINUM" difficulty="NONE">
             <description>Consume 10 lines in a single move.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="10" />
                 <denominator type="MOVE" operation="LTEQ" value="1" />
             </rule>
         </achievement>
-        <achievement name="The Longest Turn Ever" level="PLATINUM" difficulty="NONE">
+        <achievement name="The Longest Move Ever" level="PLATINUM" difficulty="NONE">
             <description>Consume 12 lines in a single move.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="16" />
+                <numerator type="LINES" operation="GTEQ" value="12" />
                 <denominator type="MOVE" operation="LTEQ" value="1" />
             </rule>
         </achievement>
