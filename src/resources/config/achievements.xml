@@ -49,7 +49,7 @@
             </rule>Supe
         </achievement>
 
-        <!-- All two item achievements prefixed with a bomb are -->
+        <!-- All two item achievements prefixed with a rocket are -->
         <!-- called "Sniped" achievements. -->
         <achievement name="Sniped Chain Reaction" level="GOLD" difficulty="NONE">
             <description>Fire a rocket into another rocket
@@ -698,17 +698,24 @@
                 <denominator type="MOVE" operation="LTEQ" value="20" />
             </rule>
         </achievement>
-        <achievement name="One Hit Wonder" level="GOLD" difficulty="NONE">
-            <description>Get 8 lines in a single move.</description>
+        <achievement name="One Move Wonder" level="GOLD" difficulty="NONE">
+            <description>Consume 8 lines in a single move.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="8" />
                 <denominator type="MOVE" operation="LTEQ" value="1" />
             </rule>
         </achievement>
-        <achievement name="Phenom" level="PLATINUM" difficulty="NONE">
-            <description>Get 10 lines in a single move.</description>
+        <achievement name="Line Phenom" level="PLATINUM" difficulty="NONE">
+            <description>Consume 10 lines in a single move.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="10" />
+                <denominator type="MOVE" operation="LTEQ" value="1" />
+            </rule>
+        </achievement>
+        <achievement name="The Longest Turn Ever" level="PLATINUM" difficulty="NONE">
+            <description>Consume 12 lines in a single move.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="16" />
                 <denominator type="MOVE" operation="LTEQ" value="1" />
             </rule>
         </achievement>
