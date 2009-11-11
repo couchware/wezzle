@@ -221,22 +221,27 @@ public class Settings
     final private static String lineSeparator = System.getProperty("line.separator");
     
     /** The path to the resources. */
-    final private static String resourcesPath = "ca/couchware/wezzle2d/resources";
+    final private static String resourcesPath = "resources";
 
     /** The path to the fonts. */
-    final private static String fontResourcesPath = resourcesPath + "/fonts";
+    final private static String fontResourcesPath
+            = resourcesPath + "/fonts";
     
     /** The path to the sprites. */
-    final private static String spriteResourcesPath = resourcesPath + "/sprites";
+    final private static String spriteResourcesPath
+            = resourcesPath + "/sprites";
     
     /** The path to the sounds. */
-    final private static String soundResourcesPath = resourcesPath + "/sounds";
+    final private static String soundResourcesPath
+            = resourcesPath + "/sounds";
     
     /** The path to the music. */
-    final private static String musicResourcesPath = resourcesPath + "/music";
+    final private static String musicResourcesPath
+            = resourcesPath + "/music";
     
      /** The path to the XML data. */
-    final private static String textResourcesPath = resourcesPath + "/text";
+    final private static String configResourcesPath
+            = resourcesPath + "/config";
         
     /** The name of the settings file. */
     final private static String gameSettingsFileName = "game-settings.xml";     
@@ -248,15 +253,15 @@ public class Settings
     final private static String achievementsFileName = "achievements.xml";
     
     /** The file path of default game settings file. */
-    final private static String defaultGameSettingsFilePath = textResourcesPath 
+    final private static String defaultGameSettingsFilePath = configResourcesPath
             + "/" + gameSettingsFileName;
     
     /** The file path of default user settings file. */    
-    final private static String defaultUserSettingsFilePath = textResourcesPath 
+    final private static String defaultUserSettingsFilePath = configResourcesPath
             + "/" + userSettingsFileName;
     
     /** The file path of default achievements file. */    
-    final private static String defaultAchievementsFilePath = textResourcesPath 
+    final private static String defaultAchievementsFilePath = configResourcesPath
             + "/" + achievementsFileName;
     
     /** The path to the user settings file. */
@@ -402,7 +407,7 @@ public class Settings
 
     public static String getTextResourcesPath()
     {
-        return textResourcesPath;
+        return configResourcesPath;
     }   
 
     public static String getSoundResourcesPath()
