@@ -93,7 +93,7 @@ public class FontStore
             TrueTypeFont ttfont = new TrueTypeFont( textureLoader, font );
             fontMap.put( size, ttfont );
 
-            CouchLogger.get().recordMessage( this.getClass(), String.format( "Create new font size: %d", size ) );
+            //CouchLogger.get().recordMessage( this.getClass(), String.format( "Create new font size: %d", size ) );
 
             return ttfont;
         }

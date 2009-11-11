@@ -642,39 +642,18 @@
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="10 Lines in 2 Moves" level="PLATINUM" difficulty="NONE">
-            <description>Consume 4 lines in 2 moves.</description>
+        <achievement name="10 Lines in 2 Moves" level="GOLD" difficulty="NONE">
+            <description>Consume 10 lines in 2 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="10" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="6 Lines in 3 Moves" level="SILVER" difficulty="NONE">
-            <description>Consume 6 lines in 3 moves.</description>
-            <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="6" />
-                <denominator type="MOVE" operation="LTEQ" value="3" />
-            </rule>
-        </achievement>
-        <achievement name="9 Lines in 3 Moves" level="GOLD" difficulty="NONE">
-            <description>Consume 9 lines in 3 moves.</description>
-            <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="9" />
-                <denominator type="MOVE" operation="LTEQ" value="3" />
-            </rule>
-        </achievement>
-        <achievement name="12 Lines in 3 Moves" level="GOLD" difficulty="NONE">
-            <description>Consume 12 lines in 3 moves.</description>
+        <achievement name="12 Lines in 2 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 12 lines in 2 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="12" />
-                <denominator type="MOVE" operation="LTEQ" value="3" />
-            </rule>
-        </achievement>   
-         <achievement name="15 Lines in 3 Moves" level="PLATINUM" difficulty="NONE">
-            <description>Consume 15 lines in 3 moves.</description>
-            <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="15" />
-                <denominator type="MOVE" operation="LTEQ" value="3" />
+                <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
         <achievement name="8 Lines in 4 Moves" level="SILVER" difficulty="NONE">
@@ -698,11 +677,39 @@
                 <denominator type="MOVE" operation="LTEQ" value="4" />
             </rule>
         </achievement>
-        <achievement name="20 Lines in 4 Moves" level="PLATINUM" difficulty="NONE">
+        <achievement name="20 Lines in 4 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 20 lines in 4 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="20" />
                 <denominator type="MOVE" operation="LTEQ" value="4" />
+            </rule>
+        </achievement>
+        <achievement name="24 Lines in 4 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 24 lines in 4 moves.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="24" />
+                <denominator type="MOVE" operation="LTEQ" value="4" />
+            </rule>
+        </achievement>
+        <achievement name="Consistency" level="PLATINUM" difficulty="NONE">
+            <description>Consume 60 lines in 20 moves.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="60" />
+                <denominator type="MOVE" operation="LTEQ" value="20" />
+            </rule>
+        </achievement>
+        <achievement name="One Hit Wonder" level="GOLD" difficulty="NONE">
+            <description>Get 8 lines in a single move.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="8" />
+                <denominator type="MOVE" operation="LTEQ" value="1" />
+            </rule>
+        </achievement>
+        <achievement name="Phenom" level="PLATINUM" difficulty="NONE">
+            <description>Get 10 lines in a single move.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="10" />
+                <denominator type="MOVE" operation="LTEQ" value="1" />
             </rule>
         </achievement>
     </entry>
