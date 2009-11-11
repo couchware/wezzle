@@ -58,7 +58,7 @@
         </pathconvert>
         <taskdef classname="org.netbeans.modules.java.j2seproject.copylibstask.CopyLibs" classpath="${libs.CopyLibs.classpath}" name="copylibs"/>
         <copylibs compress="${jar.compress}" jarfile="${dist.jar}" manifest="${manifest.file}" runtimeclasspath="${run.classpath.without.build.classes.dir}">
-            <fileset dir="${build.classes.dir}" excludes="resources/**"/>
+            <fileset dir="${build.classes.dir}" excludes="ca/couchware/wezzle2d/resources/**"/>
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
                 <attribute name="Class-Path" value="${jar.classpath} lib/resources.jar"/>
@@ -66,7 +66,7 @@
         </copylibs>
         <!-- Delete the stupid fucking README.TXT that CopyLibs creates and has no switch to disable. -->
         <delete file="${dist.dir}/README.TXT" />
-        <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="resources/**" />
+        <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="ca/couchware/wezzle2d/resources/**" />
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <echo>java -jar "${dist.jar.resolved}"</echo>        
