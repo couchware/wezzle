@@ -1,5 +1,54 @@
-Copyright 2007-2009 Couchware Inc.
+Couchware Inc. License Agreement
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
+You are entering into a software license agreement ("Agreement") with Couchware Inc. ("Couchware") for Couchware's consumer game software, Wezzle (the "Software") that you are about to accept through downloading. By clicking on the "I AGREE" button below you will have agreed to be bound by the terms and conditions of this Agreement. This Agreement is the entire agreement relating to the Software and is to be governed by and construed in accordance with the laws of the Province of Ontario, Canada. Your use of the Software after purchasing a full license is subject to other commercial terms or conditions which are set out below.  We also have privacy policies for the information you provide to us through the Software.  Those policies are also set out below. Please read these conditions and policies carefully and signify your agreement by clicking on the "I AGREE" button that will enable you to proceed. Thank you.
 
-You are a beta tester of this software and we request that you don't share it with anyone.  If you have a friend that wants to try Wezzle, send us an e-mail at dev@couchware.ca and we can talk about getting them hooked up.  Thanks! :)
+The Software is protected by copyright and other intellectual property rights that are all owned by Couchware. You may not use it in any way that could be harmful or competitive to Couchware's interests.
+
+Couchware grants to you and you accept a non-exclusive, non-transferable, revocable license (the "license") to use the Software, but you are not the owner and this Agreement does not constitute a sale of Software. Couchware and Couchware's licensors are the exclusive owners of the Software. This license permits you to use one copy of the Software on a single computer for your personal use only for the Permitted Launches or, if you have purchased a full license, permanently subject to the termination provisions set out below.
+
+YOU MAY NOT RENT, LEASE, SUBLICENSE, ASSIGN OR OTHERWISE TRANSFER USE OF THE SOFTWARE TO ANYONE ELSE, NOR MAY YOU COPY OR MODIFY THE SOFTWARE IN WHOLE OR IN PART AND YOU MAY NOT REVERSE ENGINEER, REVERSE COMPILE, DISASSEMBLE OR OTHERWISE MODIFY THE SOFTWARE IN ANY WAY, OR OTHERWISE RENDER THE SOFTWARE INTO HUMAN READABLE FORM. YOU MAY NOT DISABLE THE PORTION OF THE SOFTWARE THAT RENDERS THE SOFTWARE INOPERABLE NOR MAY YOU CONTINUE TO USE THE SOFTWARE AFTER THE PERMITTED LAUNCHES HAVE BEEN REACHED. YOU MAY NOT REMOVE ANY PROPRIETARY NOTICES THAT ARE PROVIDED WITH THE SOFTWARE. You assume responsibility for the selection of the Software and for the proper use, installation and results obtained from the use of the Software. Neither the Software nor any underlying information or technology may be exported to any country to which either the United States or Canada has prohibited export.
+
+The license shall remain in effect until terminated.  You may terminate this license at any time by un-installing the Software and destroying all copies of the Software.  This license will also terminate upon conditions set forth in other parts of this Agreement or if you fail to comply with any term or condition of this Agreement.  You agree upon such termination to immediately un-install the Software and destroy all copies of the Software in your possession.
+
+IF THE SOFTWARE DOES NOT FUNCTION PROPERLY, COUCHWARE WILL PROVIDE ANOTHER COPY OF THE SOFTWARE UPON REQUEST, BUT COUCHWARE DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE OR THAT ITS USE WILL BE UNINTERRUPTED OR VIRUS-FREE.  YOUR USE OF THE SOFTWARE BOTH BEFORE AND AFTER PURCHASE OF A FULL LICENSE, IF ANY, IS AT YOUR OWN RISK.  COUCHWARE WILL NOT BE LIABLE FOR ANY DAMAGES WHATSOEVER ARISING OUT OF YOUR USE OR INABILITY TO USE THE SOFTWARE. WITHOUT LIMITING THE GENERAL NATURE OF THE PREVIOUS STATEMENTS, THE SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND AND COUCHWARE MAKES NO REPRESENTATION OR WARRANTY OF ANY KIND WITH RESPECT TO THE SOFTWARE OR THE RESULTS OBTAINED FROM ITS USE. ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING THE IMPLIED WARRANTIES OR CONDITIONS OF MERCHANTIBILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT AND THOSE ARISING BY STATUTE OR OTHERWISE IN LAW OR FROM A COURSE OF DEALING OR USAGE OF TRADE ARE EXPRESSLY DISCLAIMED. COUCHWARE EXPRESSLY DISCLAIMS ANY IMPLIED WARRANTY THAT ANY OTHER PRODUCT (INCLUDING WITHOUT LIMITATION ANY COPY OF THE SOFTWARE YOU MAY SUBSEQUENTLY PURCHASE) WILL CONFORM TO THE SOFTWARE PROVIDED TO YOU UNDER THIS AGREEMENT. IN NO EVENT SHALL Couchware BE LIABLE FOR ANY DAMAGE, INCLUDING WITHOUT LIMITATION DIRECT, CONSEQUENTIAL, INDIRECT, EXEMPLARY, AND AGGRAVATED OR PUNITIVE DAMAGES, WHETHER OR NOT SUCH DAMAGES WERE FORESEEABLE AND EVEN IF Couchware WAS ADVISED THAT SUCH DAMAGES WERE LIKELY OR POSSIBLE.  THE AGGREGATE LIABILITY OF COUCHWARE, ARISING OUT OF THIS AGREEMENT OR THE SUBJECT MATTER OF THIS AGREEMENT, IS LIMITED TO DIRECT MONEY DAMAGES NOT TO EXCEED THE TOTAL OF PRIOR PAYMENTS MADE BY YOU TO COUCHWARE, IF ANY, FOR THE SOFTWARE, OR, AT COUCHWARE'S DISCRETION, TO REPLACEMENT OF THE SOFTWARE OR EQUITABLE ADJUSTMENT OF THE PAYMENTS.  The foregoing limitations shall survive the termination of this Agreement.
+
+Couchware Online Privacy Policy
+
+Thank you for visiting www.couchware.ca.  Your personal privacy is important to us. This notice describes the policies followed by Couchware with respect to the collection, use and disclosure of personal information submitted by you on our website. Our policy covers the types of information collected, how that information is used, what information is retained, to whom we may disclose that information, and the steps we take to maintain your personal privacy.
+
+Your Consent to the Collection, Use, Retention and Disclosure of Personal Information
+
+Please Note: If you submit personal information to Couchware on www.couchware.ca, we will assume that you have consented to the collection, use and disclosure of personal information for the purposes and to the extent set out in this privacy policy.
+
+Why do we collect information?
+
+We collect personal information to fulfill customer requests for products or support services as well as to promote our current and new products and updates.  For example, if you place an order for a game on our site or request on-line technical support, we will ask you for the personal information necessary to fulfill your request, such as email address, name, address, age, credit card information and telephone number. The collection of that information is necessary for us to fulfill your request, and if at any point in the submission of personal information you decide that you do not wish to provide the requested information, we may not be able to complete your request. We also deliver new product and product update announcements from time to time, primarily through email. If you do not wish to receive product and update announcements, please contact us at info@couchware.ca and we will stop that service.
+
+What information is collected?
+
+When you purchase a Couchware product, download a software update, or contact customer support by email or telephone, you may be providing and we may ask for personal information that is reasonably necessary for Couchware to fulfill your request, which information may include your name, address, e-mail address, telephone number, and credit card information. We may also collect other information, such as the date you purchased the Couchware product, and information relevant to a support solution.
+
+When we disclose your information
+
+Couchware will not disclose your personal information to third parties to enable them to market products to you.  Couchware may disclose your personal information to third party companies who provide services to Couchware. Couchware asks third parties who perform services for Couchware and who have access to personal information to protect this information in a manner consistent with this policy.
+
+Couchware may be required, by law to disclose your personal information, including to law enforcement or related authorities or their agents and advisors.
+
+How we protect your personal information
+
+Couchware utilizes physical, administrative and technical measures to protect your personal information against misuse or disclosure.
+
+Collection of Information by Sponsors, Third-Party Sites and Ad Servers
+
+Couchware site may contain links to other sites which have privacy policies different from the Couchware privacy policy.  The technologies used by these third party sites, including cookies and web beacons, is subject to their own privacy policies and is not covered by Couchware privacy policy.
+
+Access to your personal information and Privacy questions
+
+Couchware will provide you on request with access to any personal information that has been submitted by you and collected by Couchware and that remains in our possession after reasonable measures have been taken to verify your identity. You may correct any errors in that personal information.  To inquire about what personal information has been collected about you, please contact us at info@couchware.ca.
+
+Couchware Inc.,
+64 Golfview Avenue
+Toronto, ON
+M4E 2K2
+
+Last updated Novemeber 12, 2009
