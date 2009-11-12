@@ -1122,7 +1122,7 @@ public class Game extends Canvas implements IWindowCallback
             }
 
             System.out.println("md5 version is "+hexString.toString());
-            System.out.println("the stored code is"+ code);
+            System.out.println("the stored code is "+ code);
 
             if(code.equals(hexString.toString()))
                 return true;
