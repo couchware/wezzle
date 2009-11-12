@@ -628,42 +628,42 @@
         </achievement>
 
         <!-- Line / Move -->                    
-        <achievement name="6 Lines in 2 Moves" level="SILVER" difficulty="NONE">
+        <achievement name="6 Lines in 2 Moves" level="BRONZE" difficulty="NONE">
             <description>Consume 6 lines in 2 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="6" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="8 Lines in 2 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="8 Lines in 2 Moves" level="SILVER" difficulty="NONE">
             <description>Consume 8 lines in 2 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="8" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="10 Lines in 2 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="10 Lines in 2 Moves" level="SILVER" difficulty="NONE">
             <description>Consume 10 lines in 2 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="10" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="12 Lines in 2 Moves" level="PLATINUM" difficulty="NONE">
+        <achievement name="12 Lines in 2 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 12 lines in 2 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="12" />
                 <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
         </achievement>
-        <achievement name="8 Lines in 4 Moves" level="SILVER" difficulty="NONE">
-            <description>Consume 8 lines in 4 moves.</description>
+        <achievement name="14 Lines in 2 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 14 lines in 2 moves.</description>
             <rule type="RATE">
-                <numerator type="LINES" operation="GTEQ" value="8" />
-                <denominator type="MOVE" operation="LTEQ" value="4" />
+                <numerator type="LINES" operation="GTEQ" value="14" />
+                <denominator type="MOVE" operation="LTEQ" value="2" />
             </rule>
-        </achievement>
-        <achievement name="12 Lines in 4 Moves" level="GOLD" difficulty="NONE">
+        </achievement>       
+        <achievement name="12 Lines in 4 Moves" level="SILVER" difficulty="NONE">
             <description>Consume 12 lines in 4 moves.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="12" />
@@ -691,6 +691,13 @@
                 <denominator type="MOVE" operation="LTEQ" value="4" />
             </rule>
         </achievement>
+        <achievement name="28 Lines in 4 Moves" level="PLATINUM" difficulty="NONE">
+            <description>Consume 28 lines in 4 moves.</description>
+            <rule type="RATE">
+                <numerator type="LINES" operation="GTEQ" value="28" />
+                <denominator type="MOVE" operation="LTEQ" value="4" />
+            </rule>
+        </achievement>
         <achievement name="Consistency" level="PLATINUM" difficulty="NONE">
             <description>Consume 60 lines in 20 moves.</description>
             <rule type="RATE">
@@ -712,7 +719,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="1" />
             </rule>
         </achievement>
-        <achievement name="The Longest Move Ever" level="PLATINUM" difficulty="NONE">
+        <achievement name="Longest Move Ever" level="PLATINUM" difficulty="NONE">
             <description>Consume 12 lines in a single move.</description>
             <rule type="RATE">
                 <numerator type="LINES" operation="GTEQ" value="12" />
