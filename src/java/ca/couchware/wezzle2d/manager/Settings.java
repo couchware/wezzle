@@ -33,6 +33,8 @@ public class Settings
         USER_LEVEL_DEFAULT(Integer.class),
         USER_TUTORIAL_DEFAULT(Boolean.class),
         USER_MUSIC_DEFAULT(String.class),
+        USER_REGISTRATION_NAME(String.class),
+        USER_REGISTRATION_CODE(String.class),
 
         USER_PIECE_PREVIEW_TRADITIONAL(Boolean.class),
         USER_PIECE_PREVIEW_OVERLAY(Boolean.class),

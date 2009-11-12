@@ -46,6 +46,7 @@ import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Canvas;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
@@ -373,6 +374,8 @@ public class Game extends Canvas implements IWindowCallback
            public void run()
            { initializeCoreManagers(); }
         });
+
+        System.out.println("USER REGISTERRED?? " + this.validateRegistry());
     }
     
     public void update()
@@ -1093,4 +1096,44 @@ public class Game extends Canvas implements IWindowCallback
         }
     }
   
+
+
+
+    private boolean validateRegistry()
+    {
+        StringBuffer name = new StringBuffer();
+        name.append(this.hub.settingsMan.getString(Key.USER_REGISTRATION_NAME));
+        name.append("minsquibbion");
+
+        String code = this.hub.settingsMan.getString(Key.USER_REGISTRATION_CODE);
+
+
+
+        byte[] defaultBytes = name.toString().getBytes();
+        try{
+            MessageDigest algorithm = MessageDigest.getInstance("MD5");
+            algorithm.reset();
+            algorithm.update(defaultBytes);
+            byte messageDigest[] = algorithm.digest();
+
+            StringBuffer hexString = new StringBuffer();
+            for (int i=0;i<messageDigest.length;i++) {
+                    hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            }
+
+            System.out.println("md5 version is "+hexString.toString());
+            System.out.println("the stored code is"+ code);
+
+            if(code.equals(hexString.toString()))
+                return true;
+
+        }
+        catch(Exception e)
+        {
+            CouchLogger.get().recordException(this.getClass(), e);
+        }
+
+        return false;
+    }
+
 }
