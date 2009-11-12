@@ -19,6 +19,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.TileNotification;
 import ca.couchware.wezzle2d.util.ArrayUtil;
+import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -316,7 +317,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 	{	        
         // Check if we do not return  a normal tile. There is
         // a flat 5% chance of this.
-        int test = ArrayUtil.random.nextInt(100);
+        int test = NumUtil.random.nextInt(100);
         if (test <= 5)
         {
             return itemMap.get(TileType.NORMAL);
@@ -340,7 +341,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
             probItems = 0;
 
         // Select a number from 1 - 100.
-        int pick = ArrayUtil.random.nextInt(100);
+        int pick = NumUtil.random.nextInt(100);
 
 
         if (numberOfMultipliers < maximumMultipliers && numberOfItems < maximumItems)
@@ -419,7 +420,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 		}
 		               
 		// Pick a random number between 0 and dist[dist.length - 1].
-		int randomNumber = ArrayUtil.random.nextInt(dist[dist.length - 1]);
+		int randomNumber = NumUtil.random.nextInt(dist[dist.length - 1]);
 		
 		for (int j = 1; j < dist.length; j++)
 		{

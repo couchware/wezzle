@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.animation;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.util.ArrayUtil;
 import ca.couchware.wezzle2d.*;
+import ca.couchware.wezzle2d.util.NumUtil;
 
 /**
  * An animation that zooms the animation into nothing.
@@ -84,7 +85,7 @@ public class JiggleAnimation extends AbstractAnimation
             jiggles++;
             
             entity.setRotation(Math.toRadians(
-                ArrayUtil.random.nextInt(JIGGLE_FACTOR) - JIGGLE_FACTOR / 2));
+                NumUtil.random.nextInt(JIGGLE_FACTOR) - JIGGLE_FACTOR / 2));
         }        
 
         // If we reach the minimum opacity, then we're done.            

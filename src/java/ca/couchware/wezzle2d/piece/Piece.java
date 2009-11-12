@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.piece;
 
 import ca.couchware.wezzle2d.util.ArrayUtil;
+import ca.couchware.wezzle2d.util.NumUtil;
 
 public abstract class Piece
 {
@@ -77,7 +78,7 @@ public abstract class Piece
      */
     public void rotateRandomly()
     {
-        int numberOfRotations = ArrayUtil.random.nextInt( 4 );
+        int numberOfRotations = NumUtil.random.nextInt( 4 );
         for ( int i = 0; i <= numberOfRotations; i++ )
         {
             this.rotateRight();

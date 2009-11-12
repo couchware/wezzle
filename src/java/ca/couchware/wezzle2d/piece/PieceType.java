@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.piece;
 
 import ca.couchware.wezzle2d.util.ArrayUtil;
+import ca.couchware.wezzle2d.util.NumUtil;
 import java.awt.Color;
 
 /**
@@ -61,7 +62,7 @@ public enum PieceType
         PieceType[] pt = PieceType.values();
         
         // Load a random one.
-		return pt[ArrayUtil.random.nextInt(pt.length)];
+		return pt[NumUtil.random.nextInt(pt.length)];
     }
     
 }    

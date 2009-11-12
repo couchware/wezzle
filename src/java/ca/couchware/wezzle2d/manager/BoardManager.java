@@ -23,6 +23,7 @@ import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import ca.couchware.wezzle2d.util.ArrayUtil;
+import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -522,7 +523,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     {
         for ( int i = 0; i < cells; i++ )
         {
-            swapTile( i, ArrayUtil.random.nextInt( cells ) );
+            swapTile( i, NumUtil.random.nextInt( cells ) );
         }
     }
 
@@ -2386,7 +2387,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         }
 
         // Get a random index.
-        Collections.shuffle( indexSet, ArrayUtil.random );
+        Collections.shuffle( indexSet, NumUtil.random );
         int index = indexSet.get( 0 );
 
         // Replace the tile.

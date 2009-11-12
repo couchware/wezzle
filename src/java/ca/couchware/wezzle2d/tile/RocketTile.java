@@ -4,6 +4,7 @@ import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.ArrayUtil;
+import ca.couchware.wezzle2d.util.NumUtil;
 
 /**
  * A rocket tile.
@@ -63,7 +64,7 @@ public class RocketTile extends ItemTile
                                
         // Determine a random rotation.
         Direction[] values = Direction.values();
-        direction = values[ArrayUtil.random.nextInt(values.length)];
+        direction = values[NumUtil.random.nextInt(values.length)];
         
         // Set the item theta.
         itemTheta = determineItemTheta(direction);

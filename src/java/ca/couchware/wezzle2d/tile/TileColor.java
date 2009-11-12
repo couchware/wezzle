@@ -5,6 +5,7 @@
 package ca.couchware.wezzle2d.tile;
 
 import ca.couchware.wezzle2d.util.ArrayUtil;
+import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +55,7 @@ public enum TileColor
         colorList.removeAll( EnumSet.range( colors[max], colors[colors.length - 1] ) );
         colorList.removeAll( filterSet );
 
-        return colorList.get( ArrayUtil.random.nextInt( colorList.size() ) );
+        return colorList.get( NumUtil.random.nextInt( colorList.size() ) );
     }
 
 } 

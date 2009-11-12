@@ -5,6 +5,8 @@
 
 package ca.couchware.wezzle2d.util;
 
+import java.util.Random;
+
 /**
  * A collection of utility methods for use with numbers.
  * 
@@ -12,6 +14,10 @@ package ca.couchware.wezzle2d.util;
  */
 public class NumUtil 
 {
+    /**
+     * The random number generator.
+     */
+    public static Random random = new Random();
 
     /**
      * A method for squaring integers.

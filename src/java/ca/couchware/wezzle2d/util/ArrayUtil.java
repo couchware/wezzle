@@ -13,12 +13,7 @@ import java.util.Random;
  * @author cdmckay
  */
 public class ArrayUtil
-{
-    /**
-     * The random number generator.
-     */
-    public static Random random = new Random();
-
+{    
     /**
      * A method for transposing square 2D arrays in-place.
      */
@@ -80,7 +75,7 @@ public class ArrayUtil
      */
     public static <T> T getRandomElement(Collection<T> collection)
     {
-        int rnd = random.nextInt( collection.size() );
+        int rnd = NumUtil.random.nextInt( collection.size() );
 
         int count = 0;
         for ( T t : collection )
