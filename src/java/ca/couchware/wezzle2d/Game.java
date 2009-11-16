@@ -337,6 +337,24 @@ public class Game extends Canvas implements IWindowCallback
         loader = new Loader("Loading Wezzle...", hub.settingsMan);
         setDrawer(loader);
 
+        // Check registration.
+        loader.addTask( new Runnable()
+        {
+            public void run()
+            {
+                boolean registered = validateRegistration();
+                if (registered)
+                {
+                    CouchLogger.get().recordMessage( this.getClass(), "Registration code is OK.");
+                }
+                else
+                {
+                    CouchLogger.get().recordWarning( this.getClass(), "Registration code is invalid.");
+                    System.exit(0);
+                }
+            }
+        });
+
         // Preload the sprites.
         loader.addTasks( resourceFactory.preloadSprites() );
 
@@ -373,9 +391,7 @@ public class Game extends Canvas implements IWindowCallback
         {
            public void run()
            { initializeCoreManagers(); }
-        });
-
-        System.out.println("USER REGISTERRED?? " + this.validateRegistry());
+        });        
     }
     
     public void update()
@@ -1095,40 +1111,44 @@ public class Game extends Canvas implements IWindowCallback
             CouchLogger.get().write();
         }
     }
-  
 
+    /**
+     * The secret part of the registration code.  Shhh.  Don't tell anyone.
+     */
+    final static String SECRET_CODE = "minsquibbion";
 
-
-    private boolean validateRegistry()
+    /**
+     * Validates the registration information for Wezzle.
+     * @return True if the registration is validated, false otherwise.
+     */
+    private boolean validateRegistration()
     {
-        StringBuffer name = new StringBuffer();
-        name.append(this.hub.settingsMan.getString(Key.USER_REGISTRATION_NAME));
-        name.append("minsquibbion");
+        final String storedName = hub.settingsMan.getString(Key.USER_REGISTRATION_NAME);
+        final String storedCode = this.hub.settingsMan.getString(Key.USER_REGISTRATION_CODE);
+        
+        final String plainText = storedName + SECRET_CODE;
 
-        String code = this.hub.settingsMan.getString(Key.USER_REGISTRATION_CODE);
-
-
-
-        byte[] defaultBytes = name.toString().getBytes();
-        try{
+        byte[] defaultBytes = plainText.getBytes();
+        try
+        {
             MessageDigest algorithm = MessageDigest.getInstance("MD5");
             algorithm.reset();
             algorithm.update(defaultBytes);
             byte messageDigest[] = algorithm.digest();
 
-            StringBuffer hexString = new StringBuffer();
-            for (int i=0;i<messageDigest.length;i++) {
-                    hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            StringBuffer hexBuffer = new StringBuffer();
+            for (int i = 0; i<messageDigest.length; i++)
+            {
+                    hexBuffer.append(Integer.toHexString(0xFF & messageDigest[i]));
             }
 
-            System.out.println("md5 version is "+hexString.toString());
-            System.out.println("the stored code is "+ code);
+            CouchLogger.get().recordMessage(this.getClass(), "Generated code: " + hexBuffer.toString());
+            CouchLogger.get().recordMessage(this.getClass(), "Stored code:    "+ storedCode);
 
-            if(code.equals(hexString.toString()))
+            if (storedCode.equals(hexBuffer.toString()))
                 return true;
-
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e);
         }
