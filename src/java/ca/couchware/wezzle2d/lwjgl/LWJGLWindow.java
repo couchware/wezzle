@@ -59,11 +59,13 @@ public class LWJGLWindow implements IWindow
     /** True if the window is active. */
     private boolean active = false;
 
+    /** True if the game is fullscreen. */
+    private boolean fullscreen = false;
+
     /** The width of the game display area. */
-
     private int width;
-    /** The height of the game display area. */
 
+    /** The height of the game display area. */
     private int height;
 
     /** The loader responsible for converting images into OpenGL textures. */
@@ -74,6 +76,10 @@ public class LWJGLWindow implements IWindow
      * until needed.
      */
     private String title;
+
+    /**
+     * Contains all the modifiers currently set.
+     */
     private Set<Modifier> modifiers;
 
     /**
@@ -83,6 +89,10 @@ public class LWJGLWindow implements IWindow
     public LWJGLWindow(SettingsManager settingsMan)
     {
         this.settingsMan = settingsMan;
+
+        this.fullscreen =
+                this.settingsMan.getBool( Key.USER_GRAPHICS_FULLSCREEN );
+        
         this.keyPressSet = new HashSet<Character>();
 
         this.mouseStateMap =
@@ -92,8 +102,7 @@ public class LWJGLWindow implements IWindow
         this.mouseStateMap.put(Button.RIGHT, false);
         this.mouseStateMap.put(Button.MIDDLE, false);
 
-        modifiers = EnumSet.noneOf(Modifier.class);
-
+        this.modifiers = EnumSet.noneOf(Modifier.class);
     }
 
     /**
@@ -163,7 +172,7 @@ public class LWJGLWindow implements IWindow
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            CouchLogger.get().recordException( this.getClass(), e );
             System.out.println(
                     "Unable to enter fullscreen, continuing in windowed mode.");
         }
@@ -268,8 +277,9 @@ public class LWJGLWindow implements IWindow
     {
         // Get the number of samples and make sure they're
         // with in the correct range.
-        int samples = settingsMan.getInt(
-                Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
+        int samples = 
+                this.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
+
         if (samples < 0)
         {
             throw new IndexOutOfBoundsException(
@@ -284,7 +294,7 @@ public class LWJGLWindow implements IWindow
                 .withSamples(samples);
 
         this.originalDisplayMode = Display.getDisplayMode();
-        setDisplayMode(width, height, false);
+        setDisplayMode(width, height, fullscreen);
         Display.setVSyncEnabled(true);
         Display.setTitle(this.title);
 

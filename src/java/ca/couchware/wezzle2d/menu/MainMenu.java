@@ -54,7 +54,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     
     /** The wezzle logo path. */
     final private static String WEZZLE_LOGO_PATH = Settings.getSpriteResourcesPath()
-            + "/WezzleLogo.png"; 
+            + "/WezzleLogoLeaf.png";
     
     /** The wezzle logo starburst path. */
     final private static String WEZZLE_LOGO_STARBURST_PATH = Settings.getSpriteResourcesPath()
@@ -220,7 +220,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .build();
         hub.gameAnimationMan.add(this.rotateAnimation);
         
-        IEntity e2 = new GraphicEntity.Builder(268, 300, WEZZLE_LOGO_PATH)
+        IEntity e2 = new GraphicEntity.Builder(268, 336, WEZZLE_LOGO_PATH)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).build();
         this.menuLayerMan.add(e2, Layer.BACKGROUND);
         

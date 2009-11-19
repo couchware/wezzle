@@ -40,6 +40,8 @@ public class Settings
         USER_PIECE_PREVIEW_OVERLAY(Boolean.class),
         USER_PIECE_PREVIEW_SHADOW(Boolean.class),
 
+        USER_GRAPHICS_FULLSCREEN(Boolean.class),
+
         /** The number of FSAA samples. */
         USER_GRAPHICS_ANTIALIASING_SAMPLES(Integer.class),
 
