@@ -6,7 +6,9 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.audio.Music;
@@ -69,11 +71,12 @@ public class OptionsMenu extends AbstractMenu
         { return description; }
     }
         
-    private ITextLabel qualityValueLabel;        
-    private int qualityValue = 1;        
-    private SliderBar qualityValueSlider;
+    private ITextLabel fsaaValueLabel;
+    private int fsaaValue = 1;
+    private SliderBar fsaaValueSlider;
             
-    private RadioGroup autoPauseRadio;        
+    private RadioGroup autoPauseRadio;
+    private RadioGroup fullscreenRadio;
     private RadioGroup piecePreviewBoxRadio;        
     private RadioGroup piecePreviewShadowRadio;   
 
@@ -263,33 +266,82 @@ public class OptionsMenu extends AbstractMenu
     {
         // <editor-fold defaultstate="collapsed" desc="Quality Value">
         // Get the user set level and make sure it's within range.
-        this.qualityValue = hub.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
-        this.qualityValue = Math.max(MIN_QUALITY, this.qualityValue);
-        this.qualityValue = Math.min(MAX_QUALITY, this.qualityValue);
+        this.fsaaValue = hub.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
+        this.fsaaValue = Math.max(MIN_QUALITY, this.fsaaValue);
+        this.fsaaValue = Math.min(MAX_QUALITY, this.fsaaValue);
 
-        ITextLabel qualityLabel = new LabelBuilder(110, 180).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Graphics Quality").size(20).visible(false).build();
+        ITextLabel qualityLabel = new LabelBuilder(110, 180)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(labelColor)
+                .text("FSAA Samples")
+                .size(20)
+                .visible(false)
+                .build();
+
         this.gamePageEntities.add(qualityLabel);
 
-        this.qualityValueLabel = new LabelBuilder(
+        this.fsaaValueLabel = new LabelBuilder(
                 qualityLabel.getX() + qualityLabel.getWidth() + 20,
-                qualityLabel.getY()).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(optionColor).size(20).visible(false).text(GraphicsQuality.values()[qualityValue].getDescription()).build();
-        this.gamePageEntities.add(this.qualityValueLabel);
+                qualityLabel.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(optionColor)
+                .size(20)
+                .visible(false)
+                .text(fsaaValue + "")
+                .build();
 
-        this.qualityValueSlider = new SliderBar.Builder(
-                268,
-                qualityLabel.getY() + 35).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER)).width(340).virtualRange(MIN_QUALITY, MAX_QUALITY).virtualValue(this.qualityValue).visible(false).build();
-        this.gamePageEntities.add(qualityValueSlider);
+        this.gamePageEntities.add(this.fsaaValueLabel);
+
+        this.fsaaValueSlider = new SliderBar
+                .Builder(268, qualityLabel.getY() + 35)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .width(340)
+                .virtualRange(MIN_QUALITY, MAX_QUALITY)
+                .virtualValue(this.fsaaValue)
+                .visible(false)
+                .build();
+        
+        this.gamePageEntities.add(fsaaValueSlider);
         // </editor-fold>
 
-        // <editor-fold defaultstate="collapsed" desc="Auto Pause">
-        ITextLabel autoPauseLabel = new LabelBuilder(
+        // <editor-fold defaultstate="collapsed" desc="Fullscreen">
+        ITextLabel fullscreenLabel = new LabelBuilder(
                 qualityLabel.getX(),
                 qualityLabel.getY() + 80)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor)
-                .text("Automatic Pause").size(20)
+                .text("Fullscreen").size(20)
                 .visible(false)
                 .build();
+
+        this.gamePageEntities.add(fullscreenLabel);
+
+        RadioItem fullscreenOn = new RadioItem.Builder().color(optionColor).text("On").build();
+        RadioItem fullscreenOff = new RadioItem.Builder().color(optionColor).text("Off").build();
+
+        final boolean fullscreenSetting = hub.settingsMan.getBool(Key.USER_GRAPHICS_FULLSCREEN);
+        this.fullscreenRadio = new RadioGroup.Builder(
+                268 + 160,
+                fullscreenLabel.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                .add(fullscreenOn, fullscreenSetting)
+                .add(fullscreenOff, !fullscreenSetting)
+                .visible(false)
+                .build();
+
+        this.gamePageEntities.add(fullscreenRadio);
+        // </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="Auto Pause">
+        ITextLabel autoPauseLabel = new LabelBuilder(
+                fullscreenLabel.getX(),
+                fullscreenLabel.getY() + 40)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(labelColor)
+                .text("Auto-Pause").size(20)
+                .visible(false)
+                .build();
+        
         this.gamePageEntities.add(autoPauseLabel);
 
         RadioItem autoPauseOn = new RadioItem.Builder().color(optionColor).text("On").build();
@@ -297,20 +349,21 @@ public class OptionsMenu extends AbstractMenu
 
         final boolean autoPauseSetting = hub.settingsMan.getBool(Key.USER_AUTO_PAUSE);
         this.autoPauseRadio = new RadioGroup.Builder(
-                268,
-                autoPauseLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                268 + 160,
+                autoPauseLabel.getY())
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .add(autoPauseOn, autoPauseSetting)
                 .add(autoPauseOff, !autoPauseSetting)
                 .visible(false)
-                .build();        
+                .build();
+
         this.gamePageEntities.add(autoPauseRadio);
         // </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="Piece Preview Box">
         ITextLabel piecePreviewBoxLabel = new LabelBuilder(
                 autoPauseLabel.getX(),
-                autoPauseLabel.getY() + 85).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Box").size(20).visible(false).build();
+                autoPauseLabel.getY() + 45).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Box").size(20).visible(false).build();
         this.gamePageEntities.add(piecePreviewBoxLabel);
 
         // Creat the level limit radio group.
@@ -490,18 +543,28 @@ public class OptionsMenu extends AbstractMenu
                 .visible(false)
                 .text("Test Sound").textSize(16)
                 .width( 140 )
-                .build();      
+                .build();
+        
         this.audioPageEntities.add(this.soundTestButton);
     }
 
     public void updateLogic(Game game, ManagerHub hub)
     {
-        if ( this.qualityValueSlider.changed() )
+        if ( this.fsaaValueSlider.changed() )
         {
-            qualityValue = qualityValueSlider.getVirtualValue();
-            this.qualityValueLabel.setText(
-                    GraphicsQuality.values()[qualityValue].getDescription());
-            hub.settingsMan.setInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES, this.qualityValue);
+            fsaaValue = fsaaValueSlider.getVirtualValue();
+            this.fsaaValueLabel.setText(fsaaValue + "");
+            hub.settingsMan.setInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES, this.fsaaValue);
+        }
+
+        if ( this.fullscreenRadio.changed() )
+        {
+            int selected = this.fullscreenRadio.getSelectedIndex();
+            boolean isOn = selected == ON;
+
+            IWindow win = ResourceFactory.get().getWindow();
+            win.setFullscreen( isOn );
+            hub.settingsMan.setBool( Key.USER_GRAPHICS_FULLSCREEN, win.isFullscreen() );
         }
 
         if ( this.autoPauseRadio.changed() )
@@ -590,7 +653,8 @@ public class OptionsMenu extends AbstractMenu
 
         if ( this.soundTestButton.clicked() )
         {            
-            hub.soundMan.play( Sound.ROCKET );
+            //hub.soundMan.play( Sound.ROCKET );
+            ResourceFactory.get().getWindow().setFullscreen( true );
         }
     }     
 

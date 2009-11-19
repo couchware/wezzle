@@ -198,8 +198,7 @@ public class HighScoreManager
         
         for (Object object : list)     
         {
-            HighScore score = (HighScore) object;
-            CouchLogger.get().recordWarning(this.getClass(), score.toString());
+            HighScore score = (HighScore) object;            
             offerScore(score, false);                
         }
     }

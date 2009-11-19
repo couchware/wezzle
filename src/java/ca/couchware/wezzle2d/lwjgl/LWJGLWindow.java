@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -59,9 +61,6 @@ public class LWJGLWindow implements IWindow
     /** True if the window is active. */
     private boolean active = false;
 
-    /** True if the game is fullscreen. */
-    private boolean fullscreen = false;
-
     /** The width of the game display area. */
     private int width;
 
@@ -90,9 +89,6 @@ public class LWJGLWindow implements IWindow
     {
         this.settingsMan = settingsMan;
 
-        this.fullscreen =
-                this.settingsMan.getBool( Key.USER_GRAPHICS_FULLSCREEN );
-        
         this.keyPressSet = new HashSet<Character>();
 
         this.mouseStateMap =
@@ -148,6 +144,50 @@ public class LWJGLWindow implements IWindow
     }
 
     /**
+     * Set the fullscreenness of the game window.
+     * 
+     * @param fullscreen
+     */
+    public void setFullscreen(boolean fullscreen)
+    {
+        if (Display.isFullscreen() == fullscreen)
+        {
+            return;
+        }                
+
+        DisplayMode mode = Display.getDisplayMode();
+        
+        try
+        {            
+            setDisplayMode( width, height, fullscreen );            
+        }
+        catch ( LWJGLException e )
+        {
+            CouchLogger.get().recordException( this.getClass(), e );
+
+            try
+            {
+                Display.setDisplayMode( mode );
+            }
+            catch ( LWJGLException ex )
+            {
+                CouchLogger.get().recordException( this.getClass(), ex );
+                CouchLogger.get().recordWarning( this.getClass(), "Unable to create game window");
+            }
+        }
+    }
+
+    /**
+     * Get the fullscreenness.
+     *
+     * @return
+     */
+    public boolean isFullscreen()
+    {
+        return Display.isFullscreen();
+    }
+
+    /**
      * Sets the display mode for fullscreen mode.
      */
     private boolean setDisplayMode()
@@ -195,7 +235,7 @@ public class LWJGLWindow implements IWindow
      * @param fullscreen True if we want fullscreen mode
      * @throws SlickException Indicates a failure to initialise the display
      */
-    public void setDisplayMode(int width, int height, boolean fullscreen)
+    public void setDisplayMode(int width, int height, boolean fullscreen) throws LWJGLException
     {
         try
         {
@@ -244,28 +284,18 @@ public class LWJGLWindow implements IWindow
                         "Failed to find value mode: " + width + "x" + height + " fullscreen=" + fullscreen + ".");
             }
 
-//            this.width = width;
-//            this.height = height;
 
             Display.setDisplayMode(targetDisplayMode);
             Display.setFullscreen(fullscreen);
 
-//            if (Display.isCreated())
-//            {
-//                initGL();
-//                enterOrtho();
-//            }
-//
-//            if (targetDisplayMode.getBitsPerPixel() == 16)
-//            {
-//                InternalTextureLoader.get().set16BitMode();
-//            }
         }
         catch (LWJGLException e)
         {
-            throw new RuntimeException(
-                    "Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + ".",
-                                       e);
+            String message = String.format(
+                    "Unable to setup mode %dx%d (fullscreen = %s).",
+                    width, height, fullscreen);
+
+            throw new LWJGLException(message, e);
         }
     }
 
@@ -293,8 +323,30 @@ public class LWJGLWindow implements IWindow
                 .withStencilBits(1)
                 .withSamples(samples);
 
+        final boolean fullscreen =
+                this.settingsMan.getBool( Key.USER_GRAPHICS_FULLSCREEN );
+
         this.originalDisplayMode = Display.getDisplayMode();
-        setDisplayMode(width, height, fullscreen);
+        
+        try
+        {
+            setDisplayMode( width, height, fullscreen );
+        }
+        catch ( LWJGLException fsex )
+        {
+            CouchLogger.get().recordException( this.getClass(), fsex );
+
+            try
+            {
+                setDisplayMode( width, height, false );
+            }
+            catch ( LWJGLException nofsex )
+            {
+                CouchLogger.get().recordException( this.getClass(), nofsex );
+                CouchLogger.get().recordWarning( this.getClass(), "Unable to start game window");
+            }
+        }
+
         Display.setVSyncEnabled(true);
         Display.setTitle(this.title);
 
@@ -851,4 +903,5 @@ public class LWJGLWindow implements IWindow
 
         mouseListenerList.remove(l);
     }
+
 }

@@ -101,6 +101,7 @@ public class PlayNowMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR).text("Play Now").size(20)                
                 .visible(false).build();
+
         this.entityList.add(titleLabel);
         
         // The first box.
@@ -110,6 +111,7 @@ public class PlayNowMenu extends AbstractMenu
                 .opacity(80)
                 .visible(false)
                 .build();
+
         this.entityList.add(optionBox);
 
         createLevelNumberEntities(hub, LABEL_COLOR, OPTION_COLOR);
@@ -125,6 +127,7 @@ public class PlayNowMenu extends AbstractMenu
                 .visible(false)                
                 .text("Start")
                 .build();
+
         this.entityList.add(this.startButton);
                 
         // Add them all to the layer manager.

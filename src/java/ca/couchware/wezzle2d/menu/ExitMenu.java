@@ -55,7 +55,7 @@ public class ExitMenu extends AbstractMenu
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR)
-                .text("Exit Confirmation").size(20)
+                .text("Confirmation").size(20)
                 .visible( false ).build();
 
         this.entityList.add(titleLabel);
