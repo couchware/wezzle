@@ -32,7 +32,7 @@ import java.util.Locale;
  * 
  * @author cdmckay
  */
-public class AboutMenu extends AbstractMenu
+public class CreditsMenu extends AbstractMenu
 {
     private int designer1 = NumUtil.random.nextInt( 2 );
     private int designer2 = (designer1 + 1) % 2;
@@ -54,7 +54,7 @@ public class AboutMenu extends AbstractMenu
         "Design, Programming"
     };
 
-    public AboutMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
+    public CreditsMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
     {
         // Invoke super.
         super(parent, hub, menuLayerMan);
@@ -67,7 +67,7 @@ public class AboutMenu extends AbstractMenu
         ITextLabel titleLabel = new LabelBuilder(74, 97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(LABEL_COLOR)
-                .text("About").size(20)
+                .text("Credits").size(20)
                 .visible( false ).build();
 
         this.entityList.add(titleLabel);               

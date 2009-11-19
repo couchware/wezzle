@@ -42,9 +42,14 @@ public abstract class AbstractMenu extends AbstractGroup
         super(parentMenu);
 
         // Sanity checks and assigments.
-        if(hub == null || menuLayerMan == null)
+        if (hub == null)
         {
-           throw new IllegalArgumentException("hub and menuLayerMan must not be null.");
+            throw new IllegalArgumentException("Hub must not be null");
+        }
+
+        if (menuLayerMan == null)
+        {
+            throw new IllegalArgumentException("Menu Layer Manager must not be null");
         }
 
         this.hub = hub;
@@ -55,6 +60,7 @@ public abstract class AbstractMenu extends AbstractGroup
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
                 .visible(false).build();
+        
         this.menuLayerMan.add(this.menuBox, Layer.UI);
     }
 
@@ -79,8 +85,10 @@ public abstract class AbstractMenu extends AbstractGroup
         for (IEntity entity : entityList)
         {
             //CouchLogger.get().recordMessage(this.getClass(), "Got here!");
+            final int maxOpacity = entity.getOpacity();
             entity.setOpacity( 0 );
             IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.IN, entity)
+                    .maxOpacity( maxOpacity )
                     .duration(200)
                     .build();
 

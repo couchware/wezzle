@@ -83,7 +83,8 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         ACHIEVEMENTS(1),
         OPTIONS(2),
         HIGH_SCORES(3),
-        ABOUT(4);
+        CREDITS(4),
+        EXIT(5);
                 
         private int rank;
         
@@ -231,54 +232,59 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     {                
         // Create the button list.
         this.buttonMap = new EnumMap<Menu, IButton>(Menu.class);
-        
-        // The button that will be used as a template for all buttons.
-        IButton templateButton = null;
-        
+                
         // A temporary button holder.
         IButton button = null;
         
         // Create the buttons.               
-        templateButton = new Button.Builder(910, 0)
+        Button templateButton = new Button.Builder(910, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                               
                 .text("")
                 .textSize(20)
+                //.autoWidth( true )
+                //.autoWidthPadding( 80 )
                 .hoverOpacity(70)
                 .normalOpacity(0)               
                 .build();
 
         // The Y-coordinate that we draw the first button at.
-        int startY = 200;
+        int startY = 175;
 
-        button = new Button.Builder((Button) templateButton)
+        button = new Button.Builder(templateButton)
                 .y(startY + 50 * Menu.PLAY_NOW.getRank())
                 .text("Play Now").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.PLAY_NOW, button);                                          
         
-        button = new Button.Builder((Button) templateButton)
+        button = new Button.Builder(templateButton)
                 .y(startY + 50 * Menu.ACHIEVEMENTS.getRank())
                 .text("Achievements").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.ACHIEVEMENTS, button);
 
-        button = new Button.Builder((Button) templateButton)
+        button = new Button.Builder(templateButton)
                 .y(startY + 50 * Menu.OPTIONS.getRank())
                 .text("Options").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.OPTIONS, button);
         
-        button = new Button.Builder((Button) templateButton)
+        button = new Button.Builder(templateButton)
                 .y(startY + 50 * Menu.HIGH_SCORES.getRank())
                 .text("High Scores").build();
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.HIGH_SCORES, button);
         
-        button = new Button.Builder((Button) templateButton)
-                .y(startY + 50 * Menu.ABOUT.getRank())
-                .text("About").build();
+        button = new Button.Builder(templateButton)
+                .y(startY + 50 * Menu.CREDITS.getRank())
+                .text("Credits").build();
         this.menuLayerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.ABOUT, button);
+        buttonMap.put(Menu.CREDITS, button);
+
+        button = new Button.Builder(templateButton)
+                .y(startY + 50 * Menu.EXIT.getRank())
+                .text("Exit").build();
+        this.menuLayerMan.add(button, Layer.UI);
+        buttonMap.put(Menu.EXIT, button);
     };
     
     private void initializeGroups(ManagerHub hub)
@@ -310,9 +316,13 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         menu = new HighScoreMenu(this, hub, this.menuLayerMan);
         this.menuMap.put(Menu.HIGH_SCORES, menu);
         
-         // Create the "About" group.
-        menu = new AboutMenu(this, hub, this.menuLayerMan);
-        this.menuMap.put(Menu.ABOUT, menu);
+        // Create the "Credits" group.
+        menu = new CreditsMenu(this, hub, this.menuLayerMan);
+        this.menuMap.put(Menu.CREDITS, menu);
+
+        // Create the "Credits" group.
+        menu = new ExitMenu(this, hub, this.menuLayerMan);
+        this.menuMap.put(Menu.EXIT, menu);
     }
     
     public void updateLogic(Game game, ManagerHub hub)
@@ -466,7 +476,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         
         // Add the wezzle logo fade in.
         this.logoEntity.setOpacity( 0 );
-        builder.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, logoEntity)
+        builder.add(new FadeAnimation.Builder(FadeAnimation.Type.IN, logoEntity)                
                 .wait(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_WAIT))
                 .duration(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_IN_DURATION)).build());
         

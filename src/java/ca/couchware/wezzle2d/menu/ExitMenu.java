@@ -21,6 +21,7 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.group.AbstractGroup;
+import java.awt.Color;
 import java.util.EnumSet;
 
 /**
@@ -28,18 +29,9 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class ExitMenu extends AbstractGroup
+public class ExitMenu extends AbstractMenu
 {
-
-    /** The settings manager. */
-    final private SettingsManager settingsMan;
-    
-    /** The layer manager. */
-    final private LayerManager layerMan;
-    
-    /** The background window. */
-    final private Box box;        
-    
+      
     /** The "Yes" button. */
     final private IButton yesButton;
     
@@ -50,134 +42,110 @@ public class ExitMenu extends AbstractGroup
      * The constructor.
      * @param layerMan
      */    
-    public ExitMenu(
-            SettingsManager settingsMan,
-            LayerManager layerMan)
+    public ExitMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
     {
-        // Set the layer manager.
-        this.settingsMan = settingsMan;
-        this.layerMan    = layerMan;        
-                        
-        // Create the window.
-        box = new Box.Builder(268, 300).width(430).height(470)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .opacity(settingsMan.getInt(Key.MAIN_MENU_WINDOW_OPACITY))
-                .visible(false).build();
-        this.layerMan.add(box, Layer.UI);               
-               
+        // Invoke super.
+        super(parent, hub, menuLayerMan);
+
+        // The colors.
+        final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
+        final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
+
+        // The title label.
+        ITextLabel titleLabel = new LabelBuilder(74, 97)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
+                .color(LABEL_COLOR)
+                .text("Exit Confirmation").size(20)
+                .visible( false ).build();
+
+        this.entityList.add(titleLabel);
+
+        // The box.
+        Box optionBox = new Box.Builder(68, 122)
+                .width(400).height(398)
+                .border(Box.Border.MEDIUM)
+                .opacity(80)
+                .visible(false)
+                .build();
+
+        this.entityList.add(optionBox);
+
+        final int labelStartY = 205;
+        final int labelSpacing = 30;
+
         // Line 1.
-        ITextLabel l1 = new LabelBuilder(266, 155)
+        ITextLabel label1 = new LabelBuilder(266, labelStartY)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .size(22).visible(false)
-                .text("Are you sure").build();
-        this.entityList.add(l1);
+                .color(OPTION_COLOR)
+                .size(22)
+                .visible(false)
+                .text("Are you sure")
+                .build();
+
+        this.entityList.add(label1);
         
         // Line 2.
-        ITextLabel l2 = new LabelBuilder(l1).y(l1.getY() + 30)
-                .text("you want to exit?").build();
-        this.entityList.add(l2);
-        
-        // Add the "Yes" button.
-//        this.yesButton = new SpriteButton.Builder(174, 405)
-//                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-//                .type(SpriteButton.Type.LARGE).visible(false).offOpacity(90)
-//                .text("Yes").end();
-//        this.entityList.add(this.yesButton);
-//        
-//        // Add the "No" button.
-//        this.noButton = new SpriteButton.Builder((SpriteButton) yesButton).x(357)
-//                .text("No").end();
-//        this.entityList.add(this.noButton);
-        
-        this.yesButton = new Button.Builder(266, 400)
+        ITextLabel label2 =  new LabelBuilder(266, labelStartY + labelSpacing)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                //.type(SpriteButton.Type.THIN)
-                .visible(false).normalOpacity(90)
-                .text("Yes").build();
+                .color(OPTION_COLOR)
+                .size(22)
+                .visible(false)
+                .text("you want to exit?")
+                .build();
+
+        this.entityList.add(label2);
+
+        final int buttonStartY  = 360;
+        final int buttonSpacing = 60;
+
+        Button templateButton = new Button.Builder(266, 400)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(LABEL_COLOR)
+                .normalOpacity(90)
+                .visible( false )
+                .text("")
+                .width( 150 )
+                .build();
+
+        this.yesButton = new Button.Builder( templateButton )
+                .y(buttonStartY)
+                .text("Yes")
+                .build();
+
         this.entityList.add(this.yesButton);
         
         // Add the "No" button.
-        this.noButton = new Button.Builder((Button) yesButton)
-                .y(yesButton.getY() + 60).text("No").build();
+        this.noButton = new Button.Builder( templateButton )
+                .y(buttonStartY + buttonSpacing)
+                .text("No")
+                .build();
+
         this.entityList.add(this.noButton);
         
         // Add them all to the layer manager.
         for (IEntity e : this.entityList)
-            this.layerMan.add(e, Layer.UI);
-    }
-    
-     @Override
-    public IAnimation animateShow()
-    {       
-        box.setPosition(268, -300);
-        box.setVisible(true);        
-        
-        IAnimation anim = new MoveAnimation.Builder(box).theta(-90).maxY(300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .build();
-        
-//        a.setFinishRunnable(new Runnable()
-//        {
-//           public void run()
-//           { setVisible(true); }
-//        });
-        
-        anim.addAnimationListener(new AnimationAdapter()
-        {          
-            @Override
-            public void animationFinished()
-            { setVisible(true); }
-        });
-        
-        return anim;
-    }
-    
-    @Override
-    public IAnimation animateHide()
-    {        
-        IAnimation anim = new MoveAnimation.Builder(box).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
-                .build();
-        
-//        a.setStartRunnable(new Runnable()
-//        {
-//           public void run()
-//           { setVisible(false); }
-//        });
-        
-        anim.addAnimationListener(new AnimationAdapter()
         {
-            @Override
-            public void animationStarted()
-            { setVisible(false); }
-        });
-        
-        return anim;
-    }
+            this.menuLayerMan.add(e, Layer.UI);
+        }
+    }        
         
     public void updateLogic(Game game, ManagerHub hub)
     {
         // See if any control was touched.
-        if (controlChanged() == true)
+        // See if the "Yes" button was pressed.
+        if (yesButton.isActivated() == true)
         {
-            // See if the "Yes" button was pressed.
-            if (yesButton.isActivated() == true)
-            {
-                // Close the game.
-                game.windowClosed();
-            }
-            // See if the "No" button was pressed.
-            else if (noButton.isActivated() == true)
-            {
-                // Deactivate this group.
-                setActivated(false);
-            }
-        } // end if
-    }
-    
+            // Close the game.
+            game.windowClosed();
+        }
+        // See if the "No" button was pressed.
+        else if (noButton.isActivated() == true)
+        {
+            // Deactivate this group.
+            setActivated(false);
+        }
+    }       
+
     @Override
     public void resetControls()
     {
@@ -185,5 +153,4 @@ public class ExitMenu extends AbstractGroup
         this.yesButton.setActivated(false);
         this.noButton.setActivated(false);
     }
-
 };

@@ -90,7 +90,10 @@ public class Button extends AbstractButton
     protected final String hoverText;
     
     /** The active text. */
-    protected final String activeText;       
+    protected final String activeText;
+
+    protected final boolean autoWidth;
+    protected final int autoWidthPadding;
     
     /**
      * Creates a button at the coordinates provided.
@@ -118,6 +121,8 @@ public class Button extends AbstractButton
         // Set the visibility.
         this.visible = builder.visible;
         this.disabled = builder.disabled;
+        this.autoWidth = builder.autoWidth;
+        this.autoWidthPadding = builder.autoWidthPadding;
                                                                    
         // Load the sprites.
         leftSprite   = ResourceFactory.get().getSprite(LEFT_SPRITE_PATH);      
@@ -149,8 +154,8 @@ public class Button extends AbstractButton
         }
         
         // Assign values based on the values from builder.        
-        this.width = builder.autoWidth 
-               ? normalLabel.getWidth() + 40
+        this.width = this.autoWidth
+               ? normalLabel.getWidth() + autoWidthPadding
                : builder.width;
         
         this.height = middleSprite.getHeight();
@@ -196,6 +201,7 @@ public class Button extends AbstractButton
         protected boolean visible = true;
         protected boolean disabled = false;
         protected boolean autoWidth = false;
+        protected int autoWidthPadding = 40;
         
         public Builder(int x, int y)
         {            
@@ -221,6 +227,8 @@ public class Button extends AbstractButton
             this.opacity          = button.opacity;            
             this.visible          = button.visible;
             this.disabled         = button.disabled;
+            this.autoWidth        = button.autoWidth;
+            this.autoWidthPadding = button.autoWidthPadding;
         }
         
         public Builder x(int val) { x = val; return this; }        
@@ -252,6 +260,9 @@ public class Button extends AbstractButton
         
         public Builder autoWidth(boolean val)
         { autoWidth = val; return this; }
+
+        public Builder autoWidthPadding(int val)
+        { autoWidthPadding = val; return this; }
         
         public Builder textSize(int val)
         { textSize = val; return this; }
