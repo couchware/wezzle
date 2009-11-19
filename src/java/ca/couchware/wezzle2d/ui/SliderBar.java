@@ -374,6 +374,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             case LEFT:
 
                 state = State.PRESSED;
+                fireSliderBarPressedEvent( this.virtualValue );
 
                 switch (orientation)
                 {
@@ -403,6 +404,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
 
         // Snap the slider bar to the virtual value.
         setVirtualValue(this.virtualValue);
+
+        fireSliderBarReleasedEvent( this.virtualValue );
         
         // Reset the state.
         state = State.NORMAL;
@@ -622,6 +625,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     public static interface ISliderBarListener 
     {
         public void sliderBarChanged(int virtualValue);
+        public void sliderBarPressed(int virtualValue);
+        public void sliderBarReleased(int virtualValue);
     }
     
     /** The change listener list. */
@@ -631,6 +636,18 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     {
         for (ISliderBarListener listener : sliderBarListenerList)
             listener.sliderBarChanged(virtualValue);
+    }
+
+    private void fireSliderBarPressedEvent(int virtualValue)
+    {
+        for (ISliderBarListener listener : sliderBarListenerList)
+            listener.sliderBarPressed(virtualValue);
+    }
+
+    private void fireSliderBarReleasedEvent(int virtualValue)
+    {
+        for (ISliderBarListener listener : sliderBarListenerList)
+            listener.sliderBarReleased(virtualValue);
     }
     
     public void addSliderBarListener(ISliderBarListener listener)

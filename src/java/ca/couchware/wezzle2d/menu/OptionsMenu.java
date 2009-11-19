@@ -31,6 +31,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
@@ -52,28 +53,7 @@ public class OptionsMenu extends AbstractMenu
     final private static int ON = 0;
     final private static int OFF = 1;
 
-    private MusicPlayer menuPlayer;
-
-    private enum GraphicsQuality
-    {
-        LOWEST("Lowest"),
-        LOW("Low"),
-        MEDIUM("Medium"),
-        HIGH("High"),
-        HIGHEST("Highest");
-
-        GraphicsQuality(String description)
-        { this.description = description; }
-
-        private String description;
-
-        public String getDescription()
-        { return description; }
-    }
-        
-    private ITextLabel fsaaValueLabel;
-    private int fsaaValue = 1;
-    private SliderBar fsaaValueSlider;
+    private MusicPlayer menuPlayer;          
             
     private RadioGroup autoPauseRadio;
     private RadioGroup fullscreenRadio;
@@ -122,8 +102,8 @@ public class OptionsMenu extends AbstractMenu
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
         final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
 
-        this.menuPlayer = ((MainMenu) this.parent).getPlayer();
-        
+        this.menuPlayer = ((MainMenu) this.parent).getPlayer();       
+   
         createMenuEntities(hub, LABEL_COLOR, OPTION_COLOR);
         createEntitiesForGamePage(hub, LABEL_COLOR, OPTION_COLOR);
         createEntitiesForAudioPage(hub, LABEL_COLOR, OPTION_COLOR);
@@ -224,7 +204,7 @@ public class OptionsMenu extends AbstractMenu
                 .normalOpacity(90)
                 .visible(false)
                 .width(80)
-                .text(Page.AUDIO.getDescription()).textSize(14)
+                .text(Page.AUDIO.getDescription()).textSize(12)
                 .build();
 
         this.audioButton.addButtonListener(new Button.IButtonListener()
@@ -247,7 +227,7 @@ public class OptionsMenu extends AbstractMenu
                 .normalOpacity(90)
                 .visible(false)
                 .width(80)
-                .text(Page.GAME.getDescription()).textSize(14)
+                .text(Page.GAME.getDescription()).textSize(12)
                 .build();
 
         this.gameButton.addButtonListener(new Button.IButtonListener()
@@ -263,51 +243,9 @@ public class OptionsMenu extends AbstractMenu
 
     private void createEntitiesForGamePage(ManagerHub hub,
             Color labelColor, Color optionColor)
-    {
-        // <editor-fold defaultstate="collapsed" desc="Quality Value">
-        // Get the user set level and make sure it's within range.
-        this.fsaaValue = hub.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
-        this.fsaaValue = Math.max(MIN_QUALITY, this.fsaaValue);
-        this.fsaaValue = Math.min(MAX_QUALITY, this.fsaaValue);
-
-        ITextLabel qualityLabel = new LabelBuilder(110, 180)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(labelColor)
-                .text("FSAA Samples")
-                .size(20)
-                .visible(false)
-                .build();
-
-        this.gamePageEntities.add(qualityLabel);
-
-        this.fsaaValueLabel = new LabelBuilder(
-                qualityLabel.getX() + qualityLabel.getWidth() + 20,
-                qualityLabel.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
-                .color(optionColor)
-                .size(20)
-                .visible(false)
-                .text(fsaaValue + "")
-                .build();
-
-        this.gamePageEntities.add(this.fsaaValueLabel);
-
-        this.fsaaValueSlider = new SliderBar
-                .Builder(268, qualityLabel.getY() + 35)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .width(340)
-                .virtualRange(MIN_QUALITY, MAX_QUALITY)
-                .virtualValue(this.fsaaValue)
-                .visible(false)
-                .build();
-        
-        this.gamePageEntities.add(fsaaValueSlider);
-        // </editor-fold>
-
+    {       
         // <editor-fold defaultstate="collapsed" desc="Fullscreen">
-        ITextLabel fullscreenLabel = new LabelBuilder(
-                qualityLabel.getX(),
-                qualityLabel.getY() + 80)
+        ITextLabel fullscreenLabel = new LabelBuilder(110, 190)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor)
                 .text("Fullscreen").size(20)
@@ -321,7 +259,7 @@ public class OptionsMenu extends AbstractMenu
 
         final boolean fullscreenSetting = hub.settingsMan.getBool(Key.USER_GRAPHICS_FULLSCREEN);
         this.fullscreenRadio = new RadioGroup.Builder(
-                268 + 160,
+                268 + 150,
                 fullscreenLabel.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .add(fullscreenOn, fullscreenSetting)
@@ -335,7 +273,7 @@ public class OptionsMenu extends AbstractMenu
         // <editor-fold defaultstate="collapsed" desc="Auto Pause">
         ITextLabel autoPauseLabel = new LabelBuilder(
                 fullscreenLabel.getX(),
-                fullscreenLabel.getY() + 40)
+                fullscreenLabel.getY() + 60)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor)
                 .text("Auto-Pause").size(20)
@@ -349,7 +287,7 @@ public class OptionsMenu extends AbstractMenu
 
         final boolean autoPauseSetting = hub.settingsMan.getBool(Key.USER_AUTO_PAUSE);
         this.autoPauseRadio = new RadioGroup.Builder(
-                268 + 160,
+                268 + 150,
                 autoPauseLabel.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .add(autoPauseOn, autoPauseSetting)
@@ -363,7 +301,7 @@ public class OptionsMenu extends AbstractMenu
         // <editor-fold defaultstate="collapsed" desc="Piece Preview Box">
         ITextLabel piecePreviewBoxLabel = new LabelBuilder(
                 autoPauseLabel.getX(),
-                autoPauseLabel.getY() + 45).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Box").size(20).visible(false).build();
+                autoPauseLabel.getY() + 65).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Box").size(20).visible(false).build();
         this.gamePageEntities.add(piecePreviewBoxLabel);
 
         // Creat the level limit radio group.
@@ -380,25 +318,25 @@ public class OptionsMenu extends AbstractMenu
         // </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="Piece Preview Shadow">
-        ITextLabel piecePreviewOverlayLabel = new LabelBuilder(
+        ITextLabel piecePreviewShadow = new LabelBuilder(
                 piecePreviewBoxLabel.getX(),
-                piecePreviewBoxLabel.getY() + 85).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Shadow").size(20).visible(false).build();
-        this.gamePageEntities.add(piecePreviewOverlayLabel);
+                piecePreviewBoxLabel.getY() + 95).alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT)).color(labelColor).text("Piece Preview Shadow").size(20).visible(false).build();
+        this.gamePageEntities.add(piecePreviewShadow);
 
         // Creat the level limit radio group.
-        RadioItem overlayItem1 = new RadioItem.Builder().color(optionColor).text("On").build();
+        RadioItem shadowItem1 = new RadioItem.Builder().color(optionColor).text("On").build();
 
-        RadioItem overlayItem2 = new RadioItem.Builder().color(optionColor).text("Off").build();
+        RadioItem shadowItem2 = new RadioItem.Builder().color(optionColor).text("Off").build();
 
         // Attempt to get the user's music preference.
         final boolean piecePreviewShadowSetting = hub.settingsMan.getBool(Key.USER_PIECE_PREVIEW_SHADOW);
 
         this.piecePreviewShadowRadio = new RadioGroup.Builder(
                     268,
-                    piecePreviewOverlayLabel.getY() + 35)
+                    piecePreviewShadow.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .add(overlayItem1, piecePreviewShadowSetting)
-                .add(overlayItem2, !piecePreviewShadowSetting)
+                .add(shadowItem1, piecePreviewShadowSetting)
+                .add(shadowItem2, !piecePreviewShadowSetting)
                 .itemSpacing(20)
                 .visible(false)
                 .build();
@@ -410,7 +348,7 @@ public class OptionsMenu extends AbstractMenu
             Color labelColor, Color optionColor)
     {
         // <editor-fold defaultstate="collapsed" desc="Music On/Off">
-        ITextLabel musicLabel = new LabelBuilder(110, 180)                
+        ITextLabel musicLabel = new LabelBuilder(110, 190)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor)
                 .text("Music").size(20)
@@ -473,7 +411,7 @@ public class OptionsMenu extends AbstractMenu
         // <editor-fold defaultstate="collapsed" desc="Sound On/Off">
         ITextLabel soundLabel = new LabelBuilder(
                     musicVolumeLabel.getX(),
-                    musicVolumeValueSlider.getY() + 60)
+                    musicVolumeValueSlider.getY() + 55)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .color(labelColor)
                 .text("Sound").size(20)
@@ -533,9 +471,8 @@ public class OptionsMenu extends AbstractMenu
         this.audioPageEntities.add(soundVolumeValueSlider);
         // </editor-fold>        
 
-        this.soundTestButton = new Button.Builder(
-                    268,
-                    soundVolumeValueSlider.getY() + 65)
+        this.soundTestButton = new Button
+                .Builder( 268, soundVolumeValueSlider.getY() + 60 )
                 .alignment( EnumSet.of(Alignment.MIDDLE, Alignment.CENTER) )
                 .color( labelColor )
                 .normalOpacity(90)
@@ -549,14 +486,7 @@ public class OptionsMenu extends AbstractMenu
     }
 
     public void updateLogic(Game game, ManagerHub hub)
-    {
-        if ( this.fsaaValueSlider.changed() )
-        {
-            fsaaValue = fsaaValueSlider.getVirtualValue();
-            this.fsaaValueLabel.setText(fsaaValue + "");
-            hub.settingsMan.setInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES, this.fsaaValue);
-        }
-
+    {       
         if ( this.fullscreenRadio.changed() )
         {
             int selected = this.fullscreenRadio.getSelectedIndex();
@@ -653,8 +583,7 @@ public class OptionsMenu extends AbstractMenu
 
         if ( this.soundTestButton.clicked() )
         {            
-            //hub.soundMan.play( Sound.ROCKET );
-            ResourceFactory.get().getWindow().setFullscreen( true );
+            hub.soundMan.play( Sound.ROCKET );            
         }
     }     
 

@@ -186,7 +186,7 @@ public class LWJGLWindow implements IWindow
     {
         return Display.isFullscreen();
     }
-
+    
     /**
      * Sets the display mode for fullscreen mode.
      */

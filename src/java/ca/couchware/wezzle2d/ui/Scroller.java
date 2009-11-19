@@ -149,6 +149,16 @@ public class Scroller extends AbstractEntity implements IMouseListener
                     showButtons();
                 }              
             }
+
+            public void sliderBarPressed(int virtualValue)
+            {
+
+            }
+
+            public void sliderBarReleased(int virtualValue)
+            {
+                
+            }
         });
         
         // Update the button positions.
