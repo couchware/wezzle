@@ -282,6 +282,7 @@ public class Game extends Canvas implements IWindowCallback
     {
         // Create the UI.
         ui = UI.newInstance(this, hub);
+        hub.listenerMan.registerListener(Listener.GAME, this.ui);
         hub.listenerMan.registerListener(Listener.LEVEL, this.ui);
         hub.listenerMan.registerListener(Listener.PIECE, this.ui);
         hub.listenerMan.registerListener(Listener.SCORE, this.ui);       
