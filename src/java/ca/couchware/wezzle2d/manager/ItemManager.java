@@ -18,7 +18,6 @@ import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.ui.TileNotification;
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,9 +37,9 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 {
 
     /**
-	 * The item list.
-	 */
-	private Map<TileType, Item> itemMap;
+     * The item list.
+     */
+    private Map<TileType, Item> itemMap;
         
     /**
      * The multiplier list
@@ -57,7 +56,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
      * The current rule list.  Contains all the rules that have not yet 
      * been realized for the current game.
      */
-    private List<Rule> currentRuleList;
+    private List<Rule> ruleList;
     
     /**
      * The maximum items on the screen at once.
@@ -93,7 +92,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         masterRuleList = createMasterRuleList(hub);
                         
         // Create the rule list.
-        currentRuleList = new LinkedList<Rule>();        
+        ruleList = new LinkedList<Rule>();
         
         importSettings();
         assert(starCooldown != -1);
@@ -124,8 +123,8 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 .initialAmount(0).weight(0).maximumOnBoard(1).build());
         
         // Reset the rules.
-        currentRuleList.clear();
-        currentRuleList.addAll(masterRuleList);
+        ruleList.clear();
+        ruleList.addAll(masterRuleList);
     }
     
     public static ItemManager newInstance(ManagerHub hub)
@@ -469,7 +468,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
     
     public void evaluateRules(Game game, ManagerHub hub)
     {
-        for (Iterator<Rule> it = currentRuleList.iterator(); it.hasNext(); )
+        for (Iterator<Rule> it = ruleList.iterator(); it.hasNext(); )
         {
             Rule rule = it.next();
             

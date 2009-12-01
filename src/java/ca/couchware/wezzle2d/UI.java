@@ -6,9 +6,11 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.event.ILevelListener;
 import ca.couchware.wezzle2d.event.IPieceListener;
 import ca.couchware.wezzle2d.event.IScoreListener;
@@ -43,9 +45,15 @@ import ca.couchware.wezzle2d.group.HighScoreGroup;
 import ca.couchware.wezzle2d.group.OptionsGroup;
 import ca.couchware.wezzle2d.group.PauseGroup;
 import ca.couchware.wezzle2d.manager.AnimationManager;
+import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A class for handling the Wezzle UI.
@@ -59,9 +67,21 @@ public class UI implements
     /** The graphics file extension. */
     final private static String FILE_EXT = ".png";
 
-    final private static String BACKGROUND_PATH =
+    final private static String BLUE_BACKGROUND_PATH =
             Settings.getSpriteResourcesPath()
             + "/Background_Circles_Blue" + FILE_EXT;
+
+    final private static String PURPLE_BACKGROUND_PATH =
+            Settings.getSpriteResourcesPath()
+            + "/Background_Circles_Purple" + FILE_EXT;
+
+    final private static String GREEN_BACKGROUND_PATH =
+            Settings.getSpriteResourcesPath()
+            + "/Background_Circles_Green" + FILE_EXT;
+
+    final private static String GOLD_BACKGROUND_PATH =
+            Settings.getSpriteResourcesPath()
+            + "/Background_Circles_Gold" + FILE_EXT;
 
     /** The level header path. */
     final private static String LEVEL_HEADER_PATH = 
@@ -84,6 +104,17 @@ public class UI implements
             + "/Board" + FILE_EXT;
 
     private AnimationManager animationMan;
+
+    private enum Background
+    {
+        Blue,
+        Purple,
+        Green,
+        Gold
+    }
+
+    private EnumMap<Background, GraphicEntity> backgroundMap
+            = new EnumMap<Background, GraphicEntity>(Background.class);
 
     private GraphicEntity background;
     private GraphicEntity board;
@@ -119,9 +150,20 @@ public class UI implements
     private OptionsGroup optionsGroup;
     private HelpGroup helpGroup;
     private HighScoreGroup highScoreGroup;
-
     private GameOverGroup gameOverGroup;
-       
+
+    /**
+     * The master rule list.  Contains all the rules that should exist
+     * at the start of a new game.
+     */
+    private List<Rule> masterRuleList;
+
+    /**
+     * The current rule list.  Contains all the rules that have not yet
+     * been realized for the current game.
+     */
+    private List<Rule> ruleList;
+
     /**
      * Private constructor to ensure singletonness.
      */
@@ -131,24 +173,86 @@ public class UI implements
 
         initializeButtons(hub);        
         initializeLabels(hub);       
-        initializeBackground(hub);
+        initializeBackgrounds(hub);
         initializeBoard(hub);
         initializeTraditionalPieceBox(hub);
         initializeOverlayPieceBox(hub);
         initializeBars(hub);
         initializeGroups(game, hub);
+
+        initalizeMasterList( hub );
+        this.ruleList = new ArrayList<Rule>(this.masterRuleList);
     }        
     
     /**
      * Create a new UI instance.
+     * 
+     * @param game
+     * @param hub
+     * @return
      */
     public static UI newInstance(Game game, ManagerHub hub)
     {
         return new UI(game, hub);
     }       
-    
+
+    /**
+     * Create the master rule list.
+     *
+     * @param hub
+     */
+    private void initalizeMasterList(ManagerHub hub)
+    {
+        final AnimationManager animMan = hub.gameAnimationMan;
+        final LayerManager layerMan = hub.layerMan;
+        List<Rule> list = new ArrayList<Rule>();
+
+        // Make it so the rocket block is added.
+        list.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 5)
+        {
+            @Override
+            public void onMatch()
+            {
+                IAnimation animation
+                        = animateBackgroundTo( Background.Purple, layerMan );
+
+                animMan.add( animation );
+            }
+        });
+
+        // Make it so the rocket block is added.
+        list.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 10)
+        {
+            @Override
+            public void onMatch()
+            {
+                IAnimation animation
+                        = animateBackgroundTo( Background.Green, layerMan );
+
+                animMan.add( animation );
+            }
+        });
+
+        // Make it so the rocket block is added.
+        list.add(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 15)
+        {
+            @Override
+            public void onMatch()
+            {
+                IAnimation animation
+                        = animateBackgroundTo( Background.Gold, layerMan );
+
+                animMan.add( animation );
+            }
+        });
+
+        this.masterRuleList = Collections.unmodifiableList( list );
+    }    
+
     /**
      * Initializes all the buttons that appear on the main game screen.
+     *
+     * @param hub
      */
     private void initializeButtons(ManagerHub hub)
     {        
@@ -181,6 +285,8 @@ public class UI implements
     
     /**
      * Initializes all the labels.
+     *
+     * @param hub
      */
     private void initializeLabels(ManagerHub hub)
     {          
@@ -241,19 +347,32 @@ public class UI implements
     
     /**
      * Initializes the background.
+     *
+     * @param hub
      */
-    private void initializeBackground(ManagerHub hub)
+    private void initializeBackgrounds(ManagerHub hub)
     {
-        // Create the background.
-		this.background = new GraphicEntity
-                .Builder(0, 0, BACKGROUND_PATH)
-                .build();
+        this.backgroundMap.put( Background.Blue,
+                new GraphicEntity.Builder( 0, 0, BLUE_BACKGROUND_PATH ).build());
+
+        this.backgroundMap.put( Background.Purple,
+                new GraphicEntity.Builder( 0, 0, PURPLE_BACKGROUND_PATH ).build());
+
+        this.backgroundMap.put( Background.Green,
+                new GraphicEntity.Builder( 0, 0, GREEN_BACKGROUND_PATH ).build());
+
+        this.backgroundMap.put( Background.Gold,
+                new GraphicEntity.Builder( 0, 0, GOLD_BACKGROUND_PATH ).build());
+        
+        this.background = this.backgroundMap.get( Background.Blue );
         
         hub.layerMan.add(this.background, Layer.BACKGROUND);           
     }
 
     /**
      * Initializes the board layer.
+     *
+     * @param hub
      */
     private void initializeBoard(ManagerHub hub)
     {
@@ -271,6 +390,8 @@ public class UI implements
 
     /**
      * Initialize the traditional piece box
+     *
+     * @param hub
      */
     private void initializeTraditionalPieceBox(ManagerHub hub)
     {        
@@ -312,6 +433,7 @@ public class UI implements
 
     /**
      * Initialize the overlay piece box.
+     *
      * @param hub
      */
     private void initializeOverlayPieceBox(ManagerHub hub)
@@ -339,6 +461,7 @@ public class UI implements
     
     /**
      * Initialize the bars.
+     *
      * @param hub
      */
     private void initializeBars(ManagerHub hub)
@@ -361,6 +484,9 @@ public class UI implements
     
     /**
      * Initialize the various groups.
+     *
+     * @param game
+     * @param hub
      */
     private void initializeGroups(Game game, ManagerHub hub)
     {        
@@ -389,7 +515,60 @@ public class UI implements
         this.gameOverGroup = new GameOverGroup(hub);
         hub.groupMan.register(this.gameOverGroup);
         hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
-    }  
+    }
+
+    /**
+     * Creates an animation that will fade the current background into
+     * the specified background.
+     *
+     * @param bg
+     * @param layerMan
+     * @return
+     */
+    private IAnimation animateBackgroundTo(
+            final Background bg,
+            final LayerManager layerMan)
+    {
+        final GraphicEntity oldBg = background;
+        final GraphicEntity newBg
+                = backgroundMap.get( bg );
+
+        background = newBg;
+
+        newBg.setOpacity( 0 );
+        layerMan.add( newBg, Layer.BACKGROUND );
+
+        IAnimation fadeOutOldBg = new FadeAnimation
+                .Builder( FadeAnimation.Type.OUT, oldBg)
+                .duration( 5000 )
+                .build();
+
+        fadeOutOldBg.addAnimationListener( new AnimationAdapter()
+        {
+
+            @Override
+            public void animationFinished()
+            {
+                layerMan.remove( oldBg, Layer.BACKGROUND );
+            }
+
+        });
+
+        IAnimation fadeInNewBg = new FadeAnimation
+                .Builder( FadeAnimation.Type.IN, newBg )
+                .duration( 5000 )
+                .build();
+
+        IAnimation meta = new MetaAnimation
+                .Builder()
+                .add( fadeOutOldBg )
+                .add( fadeInNewBg )
+                .runRule( MetaAnimation.RunRule.SIMULTANEOUS )
+                .finishRule( MetaAnimation.FinishRule.ALL )
+                .build();
+
+        return meta;
+    }
 
     public void showGameOverGroup(GroupManager groupMan)
     {
@@ -594,13 +773,35 @@ public class UI implements
     }
 
     /**
+     * Evalutes all rules in the current rule list and runs any
+     * matching rules.
+     *
+     * @param game
+     * @param hub
+     */
+    public void evaluateRules(Game game, ManagerHub hub)
+    {
+        for (Iterator<Rule> it = ruleList.iterator(); it.hasNext(); )
+        {
+            Rule rule = it.next();
+
+            if (rule.evaluate(game, hub) == true)
+            {
+                rule.onMatch();
+                it.remove();
+            }
+        } // end for
+    }
+
+    /**
      * Update the UI logic.
      * 
      * @param game The current game state.
      */
     public void updateLogic(Game game, ManagerHub hub)
-    {              
-        // If the high score button was just clicked.
+    {
+        evaluateRules( game, hub );
+        
         if (highScoreButton.clicked())
         {
             if (highScoreButton.isActivated())            
@@ -617,8 +818,7 @@ public class UI implements
                         !game.isCompletelyBusy());
             }
         } // end if
-        
-        // If the pause button was just clicked.
+                
         if (pauseButton.clicked())
         {            
             if (pauseButton.isActivated())            
@@ -635,8 +835,7 @@ public class UI implements
                         !game.isCompletelyBusy());
             }
         } // end if
-        
-        // If the options button was just clicked.
+                
         if (optionsButton.clicked())
         {                           
             if (optionsButton.isActivated())  
@@ -654,7 +853,6 @@ public class UI implements
             }
         } // end if
 
-         // If the options button was just clicked.
         if (helpButton.clicked())
         {
             if (helpButton.isActivated())
@@ -672,29 +870,37 @@ public class UI implements
             }
         } // end if
 
-        // Draw the high score text.
         if (!highScoreLabel.getText().equals(String.valueOf(hub.scoreMan.getHighScore())))        
             highScoreLabel.setText(String.format("%,d", hub.scoreMan.getHighScore()));
                                 
-        if (!hub.tutorialMan.isTutorialRunning())
+        if ( !hub.tutorialMan.isTutorialRunning() )
         {
-            // Set the level text.
-            if (!levelLabel.getText().equals(String.valueOf(hub.levelMan.getLevel())))
-                levelLabel.setText(String.valueOf(hub.levelMan.getLevel()));
+            if ( !levelLabel.getText().equals(
+                    String.valueOf( hub.levelMan.getLevel() ) ) )
+            {
+                levelLabel.setText( String.valueOf( hub.levelMan.getLevel() ) );
+            }
 
-            // Set the score text.
-            if (!scoreLabel.getText().equals(String.valueOf(hub.scoreMan.getTotalScore())))
-                scoreLabel.setText(String.format("%,d", hub.scoreMan.getTotalScore()));
+            if ( !scoreLabel.getText().equals(
+                    String.valueOf( hub.scoreMan.getTotalScore() ) ) )
+            {
+                scoreLabel.setText( String.format( "%,d", hub.scoreMan.
+                        getTotalScore() ) );
+            }
         }
         else
         {
-            // Set the level text.
-            if (!levelLabel.getText().equals(hub.tutorialMan.getRunningTutorial().getName()))                            
-                levelLabel.setText(hub.tutorialMan.getRunningTutorial().getName());            
+            if ( !levelLabel.getText().equals(
+                    hub.tutorialMan.getRunningTutorial().getName() ) )
+            {
+                levelLabel.setText( hub.tutorialMan.getRunningTutorial().getName() );
+            }
 
-            // Set the score text.
-            if (!scoreLabel.getText().equals("")) scoreLabel.setText("");
-            
+            if ( !scoreLabel.getText().equals( "" ) )
+            {
+                scoreLabel.setText( "" );
+            }
+
         } // end if      
     }
 
