@@ -47,7 +47,7 @@ public class RotateTutorial extends AbstractTutorial
         super(refactorer, "Rotate Tutorial");
         
         // This tutorial has a single rule.  It activates on level one.        
-        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 2));
+        addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));
     }
     
     @Override

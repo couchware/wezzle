@@ -124,30 +124,21 @@ public class TutorialManager implements IResettable
         // If no tutorial is running, look for a new one to run.
         if (tutorial == null && !tutorialList.isEmpty())
         {
-            for (Iterator<ITutorial> it = tutorialList.iterator(); it.hasNext(); ) 
+            ITutorial t = getNextTutorial( game, hub );
+
+            if (t != null)
             {
-                ITutorial t = it.next();
-                
-                // Check to see if the tutorial is activated.                
-                if (t.evaluateRules(game, hub))
-                {       
-                    if (hub.boardMan.isVisible())                    
-                    {
-                        // Hide the board nicely.
-                        // Make sure the grid doesn't flicker on for a second.
-                        game.startBoardHideAnimation(AnimationType.SLIDE_FADE);
-                        hub.pieceMan.stopAnimation();
-                        hub.pieceMan.hidePieceGrid();
-                        hub.pieceMan.hideShadowPieceGrid();
-                        break;
-                    }
-                    
+                if (hub.boardMan.isVisible())
+                {
+                    tutorialSetup( game, hub );
+                }
+                else
+                {
                     tutorial = t;
                     tutorial.initialize(game, hub);
-                    it.remove();                    
-                    break;
-                }                                                                    
-            } // end for
+                    tutorialList.remove( t );
+                }
+            }            
         }    
         
         // See if there is a tutorial running.
@@ -155,16 +146,76 @@ public class TutorialManager implements IResettable
         {
             tutorial.updateLogic(game, hub);
             if (tutorial.isDone())
-            {
-                hub.boardMan.setVisible(false);
-                game.startBoardShowAnimation(AnimationType.SLIDE_FADE);
-                hub.pieceMan.hidePieceGrid();
-                hub.pieceMan.hideShadowPieceGrid();
-                tutorial = null;
+            {               
+                ITutorial t = getNextTutorial( game, hub );
+                
+                if (t != null)
+                {
+                    tutorial = t;
+                    tutorial.initialize(game, hub);
+                    tutorialList.remove( t );                                   
+                }             
+                else
+                {
+                    tutorial = null;
+                    tutorialTeardown( game, hub );
+                }
             }
         } // end if       
     }                 
-    
+
+    /**
+     * Setup the tutorial environment.
+     *
+     * @param game
+     * @param hub
+     */
+    private void tutorialSetup(Game game, ManagerHub hub)
+    {                   
+        game.startBoardHideAnimation(AnimationType.SLIDE_FADE);
+        hub.pieceMan.stopAnimation();
+        hub.pieceMan.hidePieceGrid();
+        hub.pieceMan.hideShadowPieceGrid();      
+    }
+
+    /**
+     * Teardown the tutorial environment.
+     *
+     * @param game
+     * @param hub
+     */
+    private void tutorialTeardown(Game game, ManagerHub hub)
+    {
+        hub.boardMan.setVisible(false);
+        game.startBoardShowAnimation(AnimationType.SLIDE_FADE);
+        hub.pieceMan.hidePieceGrid();
+        hub.pieceMan.hideShadowPieceGrid();        
+    }
+
+    /**
+     * Get the next tutorial that is ready to run.  Returns null if there
+     * are no tutorials currently ready to run.
+     * 
+     * @param game
+     * @param hub
+     * @return
+     */
+    private ITutorial getNextTutorial(Game game, ManagerHub hub)
+    {
+        for (Iterator<ITutorial> it = tutorialList.iterator(); it.hasNext(); )
+        {
+            ITutorial t = it.next();
+
+            // Check to see if the tutorial is activated.
+            if (t.evaluateRules(game, hub))
+            {
+                return t;
+            }
+        } // end for
+
+        return null;
+    }
+
     public void resetState()
     {
         // Check to see if a tutorial is running, if it is, then we're

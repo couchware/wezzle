@@ -58,7 +58,11 @@ public class UI implements
      
     /** The graphics file extension. */
     final private static String FILE_EXT = ".png";
-    
+
+    final private static String BACKGROUND_PATH =
+            Settings.getSpriteResourcesPath()
+            + "/Background_Circles_Blue" + FILE_EXT;
+
     /** The level header path. */
     final private static String LEVEL_HEADER_PATH = 
             Settings.getSpriteResourcesPath()
@@ -242,7 +246,7 @@ public class UI implements
     {
         // Create the background.
 		this.background = new GraphicEntity
-                .Builder(0, 0, Settings.getSpriteResourcesPath() + "/Background2.png")
+                .Builder(0, 0, BACKGROUND_PATH)
                 .build();
         
         hub.layerMan.add(this.background, Layer.BACKGROUND);           

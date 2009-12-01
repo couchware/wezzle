@@ -21,12 +21,9 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -457,6 +454,10 @@ public class LWJGLWindow implements IWindow
                 Display.destroy();
                 callback.windowClosed();
             }
+            //else if (Display.)
+            //{
+
+            //}
             // The window is in the foreground, so we should play the game
             else // if (Display.isActive())
             {
