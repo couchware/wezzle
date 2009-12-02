@@ -121,6 +121,8 @@ public class UI implements
 
     private Background background;
     private GraphicEntity backgroundGraphic;
+    private IAnimation backgroundAnimation = FinishedAnimation.get();
+
     private GraphicEntity board;
         
     private ProgressBar timerBar;
@@ -217,8 +219,7 @@ public class UI implements
 
                 Background bg = getBackgroundForLevel( 5 );
                 IAnimation animation = animateBackgroundTo( bg );
-
-                hub.gameAnimationMan.add( animation );
+                enqueueBackgroundAnimation( animation );
             }
         });
 
@@ -233,7 +234,7 @@ public class UI implements
                 Background bg = getBackgroundForLevel( 10 );
                 IAnimation animation = animateBackgroundTo( bg );
 
-                hub.gameAnimationMan.add( animation );
+                enqueueBackgroundAnimation( animation );
             }
         });
 
@@ -248,7 +249,7 @@ public class UI implements
                 Background bg = getBackgroundForLevel( 15 );
                 IAnimation animation = animateBackgroundTo( bg );
 
-                hub.gameAnimationMan.add( animation );
+                enqueueBackgroundAnimation( animation );
             }
         });
 
@@ -363,9 +364,8 @@ public class UI implements
 
         this.backgroundMap.put( Background.Gold,
                 new GraphicEntity.Builder( 0, 0, GOLD_BACKGROUND_PATH ).build());
-
-        this.background = Background.Blue;
-        setBackgroundTo( this.background );
+        
+        setBackgroundTo( Background.Blue );
     }
 
     /**
@@ -522,17 +522,20 @@ public class UI implements
             return FinishedAnimation.get();
         }
 
-        final GraphicEntity oldBg = backgroundGraphic;
-        final GraphicEntity newBg
+        final GraphicEntity oldBgGraphic = backgroundGraphic;
+        final GraphicEntity newBgGraphic
                 = backgroundMap.get( bg );
 
-        backgroundGraphic = newBg;
+        background = bg;
+        backgroundGraphic = newBgGraphic;
 
-        newBg.setOpacity( 0 );
-        hub.layerMan.add( newBg, Layer.BACKGROUND );
+        newBgGraphic.setOpacity( 0 );
+        
+        assert( !hub.layerMan.contains( newBgGraphic, Layer.BACKGROUND ) );
+        hub.layerMan.add( newBgGraphic, Layer.BACKGROUND );
 
         IAnimation fadeOutOldBg = new FadeAnimation
-                .Builder( FadeAnimation.Type.OUT, oldBg)
+                .Builder( FadeAnimation.Type.OUT, oldBgGraphic)
                 .duration( 5000 )
                 .build();
 
@@ -542,13 +545,13 @@ public class UI implements
             @Override
             public void animationFinished()
             {
-                hub.layerMan.remove( oldBg, Layer.BACKGROUND );
+                hub.layerMan.remove( oldBgGraphic, Layer.BACKGROUND );
             }
 
         });
 
         IAnimation fadeInNewBg = new FadeAnimation
-                .Builder( FadeAnimation.Type.IN, newBg )
+                .Builder( FadeAnimation.Type.IN, newBgGraphic )
                 .duration( 5000 )
                 .build();
 
@@ -570,9 +573,42 @@ public class UI implements
      */
     private void setBackgroundTo(Background bg)
     {
+        if (this.backgroundGraphic != null)
+            hub.layerMan.remove( this.backgroundGraphic, Layer.BACKGROUND );
+
         this.background = bg;
         this.backgroundGraphic = this.backgroundMap.get( bg );
+        this.backgroundGraphic.setOpacity( 100 );
+
+        assert( !hub.layerMan.contains( this.backgroundGraphic, Layer.BACKGROUND ) );
         hub.layerMan.add(this.backgroundGraphic, Layer.BACKGROUND);
+    }
+
+    /**
+     * Get the appropriate background for a specified level.
+     * 
+     * @param level
+     * @return
+     */
+    private Background getBackgroundForLevel(int level)
+    {
+        if (level < 5) return Background.Blue;
+        if (level < 10) return Background.Purple;
+        if (level < 15) return Background.Green;
+        else return Background.Gold;
+    }
+
+    private void enqueueBackgroundAnimation(IAnimation animation)
+    {
+        if (animation == null)
+            throw new IllegalArgumentException("Animation cannot be null");
+
+        // Cancel the existing animation, if it's still running.
+        if ( !this.backgroundAnimation.isFinished() )        
+            this.backgroundAnimation.setFinished();
+
+        this.backgroundAnimation = animation;
+        hub.gameAnimationMan.add( this.backgroundAnimation );
     }
 
     public void showGameOverGroup(GroupManager groupMan)
@@ -936,38 +972,24 @@ public class UI implements
         // Update the piece preview.
         Piece piece = event.getNextPiece();
         this.overlayPieceBoxGrid.loadStructure(piece.getStructure());
-        this.traditionalPieceBoxGrid.loadStructure(piece.getStructure());
-        //this.nextPieceGrid.setColor(event.getNextPiece().getType().getColor());
+        this.traditionalPieceBoxGrid.loadStructure(piece.getStructure());       
     }
 
     public void tickOccurred(TimerEvent event)
-    {
-        //LogManager.recordMessage("Tick! Current time is " + event.getCurrentTime() + ".");
+    {        
         this.timerBar.setProgressValue(event.getCurrentTime());
     }
 
     public void currentTimeReset(TimerEvent event)
-    {
-        CouchLogger.get().recordMessage(this.getClass(),
-                "Time Reset! Current time is " + event.getCurrentTime() + ".");
+    {       
         this.timerBar.setProgressValue(event.getCurrentTime());
     }
 
     public void startTimeChanged(TimerEvent event)
-    {
-        CouchLogger.get().recordMessage(this.getClass(),
-                "Start time changed! Start time is " + event.getStartTime() + ".");
+    {        
         this.timerBar.setProgressUpper(event.getStartTime());
     }
-
-    private Background getBackgroundForLevel(int level)
-    {
-        if (level < 5) return Background.Blue;
-        if (level < 10) return Background.Purple;
-        if (level < 15) return Background.Green;
-        else return Background.Gold;
-    }
-
+    
     public void gameStarted(GameEvent event)
     {        
         Background bg = getBackgroundForLevel( event.getLevel() );
@@ -980,7 +1002,7 @@ public class UI implements
 
         Background bg = getBackgroundForLevel( event.getLevel() );        
         IAnimation animation = animateBackgroundTo( bg );
-        hub.gameAnimationMan.add(animation);
+        enqueueBackgroundAnimation( animation );
     }
 
     public void gameOver(GameEvent event)
