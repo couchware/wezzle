@@ -40,13 +40,13 @@ Couchware utilizes physical, administrative and technical measures to protect yo
 
 Collection of Information by Sponsors, Third-Party Sites and Ad Servers
 
-Couchware site may contain links to other sites which have privacy policies different from the Couchware privacy policy.  The technologies used by these third party sites, including cookies and web beacons, is subject to their own privacy policies and is not covered by Couchware privacy policy.
+The Couchware site may contain links to other sites which have privacy policies different from the Couchware privacy policy.  The technologies used by these third party sites, including cookies and web beacons, is subject to their own privacy policies and is not covered by Couchware privacy policy.
 
 Access to your personal information and Privacy questions
 
 Couchware will provide you on request with access to any personal information that has been submitted by you and collected by Couchware and that remains in our possession after reasonable measures have been taken to verify your identity. You may correct any errors in that personal information.  To inquire about what personal information has been collected about you, please contact us at info@couchware.ca.
 
-Couchware Inc.,
+Couchware Inc.
 64 Golfview Avenue
 Toronto, ON
 M4E 2K2

@@ -9,17 +9,21 @@
   !define APP_VENDOR "Couchware"
   !define APP_SHORT_NAME "Wezzle"
   !define APP_FULL_NAME "Wezzle"
-  !define APP_VERSION "1.0-beta1"
+  !define APP_VERSION "1.0-beta2"
   !define JAVA_REQUIRED "1.5.0"
   !define JAVA_INSTALLER "..\jre-installer\jre-6u17-windows-i586-s.exe"
   !define HKCU_REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"
   !define HKLM_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_FULL_NAME}"
   !define USER_DIR "$PROFILE\.Couchware\Wezzle"
+  
+  !define HEXADECIMAL "0123456789abcdefABCDEF"
 
 ;--------------------------------
+; Include InstallOptions
 ; Include Modern UI
 ; Include LogicLib
 
+  !include "InstallOptions.nsh"
   !include "MUI2.nsh"
   !include "LogicLib.nsh"
 
@@ -47,8 +51,9 @@
   !define MUI_COMPONENTSPAGE_SMALLDESC
 
   !insertmacro MUI_PAGE_LICENSE "..\License.txt"
+  Page custom CreateRegistrationPage ValidateRegistrationPage
   !insertmacro MUI_PAGE_COMPONENTS  
-  !insertmacro MUI_PAGE_DIRECTORY
+  !insertmacro MUI_PAGE_DIRECTORY  
   !insertmacro MUI_PAGE_INSTFILES
 
   !insertmacro MUI_UNPAGE_CONFIRM
@@ -158,6 +163,68 @@ Function .onInit
     ${ElseIfNot} $R1 == ""
         StrCpy $INSTDIR $R1
     ${EndIf}
+    
+    ; Extract the INI file for the registration page.
+    InitPluginsDir
+    File /oname=$PLUGINSDIR\registration.ini registration.ini
+    
+
+FunctionEnd
+
+LangString PAGE_TITLE ${LANG_ENGLISH} "Registration"
+LangString PAGE_SUBTITLE ${LANG_ENGLISH} "Please enter your registration information."
+
+Function CreateRegistrationPage
+
+   !insertmacro MUI_HEADER_TEXT $(PAGE_TITLE) $(PAGE_SUBTITLE)
+   
+   Push $R0
+   InstallOptions::dialog $PLUGINSDIR\registration.ini
+   Pop $R0    
+
+FunctionEnd
+
+Function ValidateRegistrationPage
+   
+   Push $R0
+   Push $R1
+   
+   ; Blank out $R1.
+   StrCpy $R1 ""
+   
+   ; Field 1 is the Full Name
+   ; Field 4 is the 1st code block
+   ; Field 5 is the 2nd code block
+   ; ...
+   ; Field 8 is the 5th code block
+      
+   ; Ensure each code block is hexadecimal.
+   
+   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 4" "State"
+   StrCpy $R1 "$R1$R0"         
+   Push ${HEXADECIMAL}
+   Push $R0 
+   Call StrCSpnReverse
+   Pop $R0   
+   StrCmp $R0 "" +3   
+   MessageBox MB_OK|MB_ICONEXCLAMATION 'First code block contains an invalid character: $R0'
+   Abort   
+   StrCpy $R1 "$R1$R0"
+   
+   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 5" "State"
+   StrCpy $R1 "$R1$R0"         
+   Push ${HEXADECIMAL}
+   Push $R0 
+   Call StrCSpnReverse
+   Pop $R0   
+   StrCmp $R0 "" +3   
+   MessageBox MB_OK|MB_ICONEXCLAMATION 'Second code block contains an invalid character: $R0'
+   Abort   
+   
+   MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration code is $R1'
+   
+   Pop $R1
+   Pop $R0
 
 FunctionEnd
 
@@ -271,6 +338,55 @@ Function DetectJava
     Exch	; => r0,rv
     Pop $0	; => rv
 
+FunctionEnd
+
+;--------------------------------
+; General Purpose Functions
+
+; This function checks a string for invalid characters not in a list.
+; @param1 string to check
+; @param2 string of allowed characters
+Function StrCSpnReverse
+
+   Exch $R0 ; string to check
+   Exch
+   Exch $R1 ; string of characters
+   Push $R2 ; current char
+   Push $R3 ; current char
+   Push $R4 ; char loop
+   Push $R5 ; char loop
+ 
+   StrCpy $R4 -1
+ 
+   NextCharCheck:
+   
+   StrCpy $R2 $R0 1 $R4
+   IntOp $R4 $R4 - 1
+   StrCmp $R2 "" StrOK 
+   StrCpy $R5 -1
+ 
+   NextChar:
+   
+   StrCpy $R3 $R1 1 $R5
+   IntOp $R5 $R5 - 1
+   StrCmp $R3 "" +2
+   StrCmp $R3 $R2 NextCharCheck NextChar
+   StrCpy $R0 $R2
+   Goto Done
+ 
+   StrOK:
+   
+   StrCpy $R0 ""
+ 
+   Done:
+ 
+   Pop $R5
+   Pop $R4
+   Pop $R3
+   Pop $R2
+   Pop $R1
+   Exch $R0
+   
 FunctionEnd
 
 ;--------------------------------
