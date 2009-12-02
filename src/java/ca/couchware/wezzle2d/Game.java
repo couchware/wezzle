@@ -351,7 +351,7 @@ public class Game extends Canvas implements IWindowCallback
                 else
                 {
                     CouchLogger.get().recordWarning( this.getClass(), "Registration code is invalid.");
-                    System.exit(0);
+                    //System.exit(0);
                 }
             }
         });
@@ -1126,8 +1126,8 @@ public class Game extends Canvas implements IWindowCallback
      */
     private boolean validateRegistration()
     {
-        final String storedName = hub.settingsMan.getString(Key.USER_REGISTRATION_NAME);
-        final String storedCode = this.hub.settingsMan.getString(Key.USER_REGISTRATION_CODE);
+        final String storedName = hub.settingsMan.getString(Key.REGISTRATION_NAME);
+        final String storedCode = this.hub.settingsMan.getString(Key.REGISTRATION_CODE);
         
         final String plainText = storedName + SECRET_CODE;
 
@@ -1140,16 +1140,19 @@ public class Game extends Canvas implements IWindowCallback
             byte messageDigest[] = algorithm.digest();
 
             StringBuffer hexBuffer = new StringBuffer();
-            for (int i = 0; i<messageDigest.length; i++)
+            for (int i = 0; i < messageDigest.length; i++)
             {
-                    hexBuffer.append(Integer.toHexString(0xFF & messageDigest[i]));
+                int hex = 0xFF & messageDigest[i];
+                hexBuffer.append(String.format("%02x", hex));
             }
 
             CouchLogger.get().recordMessage(this.getClass(), "Generated code: " + hexBuffer.toString());
-            CouchLogger.get().recordMessage(this.getClass(), "Stored code:    "+ storedCode);
+            CouchLogger.get().recordMessage(this.getClass(), "Stored code:    " + storedCode);
 
-            if (storedCode.equals(hexBuffer.toString()))
+            if (storedCode.toLowerCase().equals(hexBuffer.toString().toLowerCase()))
+            {
                 return true;
+            }
         }
         catch (Exception e)
         {

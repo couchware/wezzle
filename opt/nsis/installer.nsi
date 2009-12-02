@@ -16,7 +16,26 @@
   !define HKLM_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_FULL_NAME}"
   !define USER_DIR "$PROFILE\.Couchware\Wezzle"
   
+  !define SECRET_CODE "minsquibbion"
   !define HEXADECIMAL "0123456789abcdefABCDEF"
+  ; R8 contains the registration name
+  ; R9 contains the registration code
+
+  ; This is for making the registration code take uppercase only    
+  !define UPPERCASE 0x8  
+  
+  !macro STYLE HWND STYLE
+    
+    ; Retrieve current style
+    System::Call 'user32::GetWindowLongA(i ${HWND},i -16) i .r1'
+    
+    ; Append provided style
+    IntOp $1 $1 | ${STYLE}
+    
+    ; Apply new style
+    System::Call 'user32::SetWindowLongA(i ${HWND},i -16,i r1) n'
+    
+  !macroend  
 
 ;--------------------------------
 ; Include InstallOptions
@@ -37,7 +56,7 @@
   ; Default installation folder
   InstallDir "$PROGRAMFILES\${APP_VENDOR}\${APP_FULL_NAME}" 
 
-  ; Request application privileges for Windows Vista
+  ; Request application privileges for Windows Vista and Windows 7
   RequestExecutionLevel admin
 
 ;--------------------------------
@@ -70,7 +89,7 @@
 Section "" SecUninstallPrevious
 
     ; Deletes user files.  This should only be used in test versions.
-    Call DeleteUserFiles
+    ;Call DeleteUserFiles
 
     ; Runs uninstaller
     Call UninstallPrevious
@@ -82,9 +101,37 @@ Section "Wezzle" SecWezzle
   ; Make it required.
   SectionIn RO
 
+  ;MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration name is: $R8'
+  ;MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration code is: $R9'
+
   SetOutPath "$INSTDIR"
 
   File /r ..\..\dist\*.*
+
+  ; Write registration code information.
+  ; We write to the game-settings.xml instead of
+  ; the user-settings.xml so we don't clobber any
+  ; existing user settings like high scores.
+  ; Upon the first running of the game, Wezzle will
+  ; automatically move the registration information
+  ; into the user-settings.xml file.
+  Delete "${USER_DIR}\registration.xml"
+  
+  Var /GLOBAL ln0
+  Var /GLOBAL ln1
+  Var /GLOBAL ln2
+  Var /GLOBAL ln3
+  Var /GLOBAL ln4
+  
+  StrCpy $ln0 `<?xml version="1.0" encoding="UTF-8"?>$\r$\n`
+  StrCpy $ln1 `<settings>$\r$\n`
+  StrCpy $ln2 `  <entry name="Registration.Name">$R8</entry>$\r$\n`
+  StrCpy $ln3 `  <entry name="Registration.Code">$R9</entry>$\r$\n`
+  StrCpy $ln4 `</settings>$\r$\n`
+  
+  Push "$ln0$ln1$ln2$ln3$ln4"
+  Push "${USER_DIR}\registration.xml"
+  Call WriteToFile
 
   ; Store installation folder
   WriteRegStr HKLM "${HKLM_REG_KEY}" "InstallDir" $INSTDIR
@@ -95,7 +142,7 @@ Section "Wezzle" SecWezzle
   WriteRegStr HKLM "${HKLM_REG_KEY}" "Publisher" ${APP_VENDOR}
   WriteRegStr HKLM "${HKLM_REG_KEY}" "DisplayVersion" ${APP_VERSION}
   WriteRegDWORD HKLM "${HKLM_REG_KEY}" "NoModify" 0x00000001
-  WriteRegDWORD HKLM "${HKLM_REG_KEY}" "NoRepair" 0x00000001
+  WriteRegDWORD HKLM "${HKLM_REG_KEY}" "NoRepair" 0x00000001  
 
   ; Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -150,7 +197,7 @@ Section "Start Menu Shortcuts" SecStartMenuShortcuts
 SectionEnd
 
 ;--------------------------------
-; Functions
+; Init
 
 Function .onInit
 
@@ -165,22 +212,44 @@ Function .onInit
     ${EndIf}
     
     ; Extract the INI file for the registration page.
-    InitPluginsDir
-    File /oname=$PLUGINSDIR\registration.ini registration.ini
-    
+    !insertmacro INSTALLOPTIONS_EXTRACT "registration.ini"    
 
 FunctionEnd
+
+;--------------------------------
+; Registration
 
 LangString PAGE_TITLE ${LANG_ENGLISH} "Registration"
 LangString PAGE_SUBTITLE ${LANG_ENGLISH} "Please enter your registration information."
 
 Function CreateRegistrationPage
 
-   !insertmacro MUI_HEADER_TEXT $(PAGE_TITLE) $(PAGE_SUBTITLE)
+   !insertmacro MUI_HEADER_TEXT $(PAGE_TITLE) $(PAGE_SUBTITLE)     
    
-   Push $R0
-   InstallOptions::dialog $PLUGINSDIR\registration.ini
-   Pop $R0    
+   InstallOptions::initDialog /NOUNLOAD "$PLUGINSDIR\registration.ini"
+   Pop $R0
+   
+   GetDlgItem $R1 $R0 1203 ; 1200 + Field number - 1
+   !insertmacro STYLE $R1 ${UPPERCASE}
+   
+   GetDlgItem $R1 $R0 1204 ; 1200 + Field number - 1
+   !insertmacro STYLE $R1 ${UPPERCASE}
+   
+   GetDlgItem $R1 $R0 1205 ; 1200 + Field number - 1
+   !insertmacro STYLE $R1 ${UPPERCASE}
+   
+   GetDlgItem $R1 $R0 1206 ; 1200 + Field number - 1
+   !insertmacro STYLE $R1 ${UPPERCASE}
+   
+   InstallOptions::show
+   Pop $R0            
+      
+   ; Read the registration name into R8.
+   ReadINIStr $R8 "$PLUGINSDIR\registration.ini" "Field 2" "State"  
+   
+   ; Read the registration code into R9.
+   Call GetRegistrationCode
+   Pop $R9    
 
 FunctionEnd
 
@@ -188,45 +257,74 @@ Function ValidateRegistrationPage
    
    Push $R0
    Push $R1
-   
-   ; Blank out $R1.
-   StrCpy $R1 ""
-   
-   ; Field 1 is the Full Name
-   ; Field 4 is the 1st code block
-   ; Field 5 is the 2nd code block
-   ; ...
-   ; Field 8 is the 5th code block
-      
-   ; Ensure each code block is hexadecimal.
-   
-   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 4" "State"
-   StrCpy $R1 "$R1$R0"         
-   Push ${HEXADECIMAL}
-   Push $R0 
-   Call StrCSpnReverse
-   Pop $R0   
-   StrCmp $R0 "" +3   
-   MessageBox MB_OK|MB_ICONEXCLAMATION 'First code block contains an invalid character: $R0'
-   Abort   
-   StrCpy $R1 "$R1$R0"
-   
-   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 5" "State"
-   StrCpy $R1 "$R1$R0"         
-   Push ${HEXADECIMAL}
-   Push $R0 
-   Call StrCSpnReverse
-   Pop $R0   
-   StrCmp $R0 "" +3   
-   MessageBox MB_OK|MB_ICONEXCLAMATION 'Second code block contains an invalid character: $R0'
-   Abort   
-   
-   MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration code is $R1'
-   
+   Push $R2
+             
+   ; Field 1 is the Full Name.
+   ReadINIStr $R2 "$PLUGINSDIR\registration.ini" "Field 2" "State"  
+                 
+   ; Read all the code blocks into one string.   
+   Call GetRegistrationCode
    Pop $R1
+   
+   ; Make sure there are no non-hex characters.
+   Push ${HEXADECIMAL}
+   Push $R1 
+   Call StrCSpnReverse
+   Pop $R0   
+   StrCmp $R0 "" +3   
+   MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration code contains an invalid character "$R0".   '
+   Abort               
+   
+   ; Make sure the registration code is correct for the given name.
+   md5dll::GetMD5String "$R2${SECRET_CODE}"   
+   Pop $R0
+   StrCmp $R0 $R1 +3
+   MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration code is incorrect.   '
+   Abort               
+   
+   Pop $R2
+   Pop $R1    
    Pop $R0
 
 FunctionEnd
+
+Function GetRegistrationCode
+
+   Push $R0 ; Code block
+   Push $R1 ; Code
+
+   StrCpy $R1 ""
+
+   ; Field 4 is the 1st code block
+   ; Field 5 is the 2nd code block
+   ; ...
+   ; Field 7 is the 4th code block      
+
+   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 4" "State"
+   StrCpy $R1 "$R1$R0"         
+   
+   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 5" "State"
+   StrCpy $R1 "$R1$R0"
+   
+   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 6" "State"
+   StrCpy $R1 "$R1$R0"
+   
+   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 7" "State"
+   StrCpy $R1 "$R1$R0"   
+   
+   ; Push the full code onto the stack
+   Push $R1
+      
+   ; Stack   => rv,r1,r0
+   Exch    ; => r1,rv,r0
+   Pop $R1 ; => rv,r0
+   Exch    ; => r0,rv
+   Pop $R0 ; => rv
+
+FunctionEnd
+
+;--------------------------------
+; Uninstall Previous
 
 Function DeleteUserFiles
 
@@ -254,6 +352,9 @@ Function UninstallPrevious
     Done:
 
 FunctionEnd
+
+;--------------------------------
+; Java Detection
 
 Function DetectJava
 
@@ -312,14 +413,14 @@ Function DetectJava
   ; If we got here, Java was found within parameters.
   JavaFound:
 
-    DetailPrint "The detected version of Java is correct."
+    DetailPrint "The detected version of Java is compatible."
     Push "$2\bin\java.exe"
     Goto DetectJavaEnd
 
   ; If we got here, Java was not found or was too low.
   JavaNotFound:
 
-    DetailPrint "The detected version of Java is incorrect."
+    DetailPrint "The detected version of Java is incompatible."
     Push ""
     Goto DetectJavaEnd
 
@@ -388,6 +489,26 @@ Function StrCSpnReverse
    Exch $R0
    
 FunctionEnd
+
+; Writes a string to a file.
+; @param1 The text to write to the file.
+; @param2 The file to write to.
+Function WriteToFile
+
+   Exch $0 ; File to write to
+   Exch
+   Exch $1 ; Text to write
+ 
+   FileOpen $0 $0 a
+      FileSeek $0 0 END ; Go to the end
+      FileWrite $0 $1   ; Write to the file
+   FileClose $0
+ 
+   Pop $1
+   Pop $0
+   
+FunctionEnd
+
 
 ;--------------------------------
 ; Descriptions

@@ -33,8 +33,6 @@ public class Settings
         USER_LEVEL_DEFAULT(Integer.class),
         USER_TUTORIAL_DEFAULT(Boolean.class),
         USER_MUSIC_DEFAULT(String.class),
-        USER_REGISTRATION_NAME(String.class),
-        USER_REGISTRATION_CODE(String.class),
 
         USER_PIECE_PREVIEW_TRADITIONAL(Boolean.class),
         USER_PIECE_PREVIEW_OVERLAY(Boolean.class),
@@ -55,6 +53,11 @@ public class Settings
         USER_TUTORIAL_GRAVITY_RAN(Boolean.class),
         USER_TUTORIAL_BOMB_RAN(Boolean.class),
         USER_TUTORIAL_STAR_RAN(Boolean.class),
+
+        // Registration values.
+
+        REGISTRATION_NAME(String.class),
+        REGISTRATION_CODE(String.class),
 
         // Graphics values.              
         
@@ -255,6 +258,9 @@ public class Settings
     
     /** The name of the achievements file. */
     final private static String achievementsFileName = "achievements.xml";
+
+    /** The name of the registration file. */
+    final private static String registrationFileName = "registration.xml";
     
     /** The file path of default game settings file. */
     final private static String defaultGameSettingsFilePath = configResourcesPath
@@ -284,6 +290,10 @@ public class Settings
     final private static String achievementsFilePath = externalSettingsPath 
             + "/" + achievementsFileName;
 
+     /** The file path of external registration settings file. */
+    final private static String registrationFilePath = externalSettingsPath
+            + "/" + registrationFileName;
+
     /** The file path to the disk cache. */
     final private static String cachePath = externalSettingsPath + "/Cache";
     
@@ -312,10 +322,25 @@ public class Settings
                 set.add(key);       
         
         return set;
-    }     
+    }
+
+    /**
+     * Determines all the registration settings keys and returns them.
+     * @return
+     */
+    final private static EnumSet<Key> calculateRegistrationKeys()
+    {
+        EnumSet<Key> set = EnumSet.noneOf(Key.class);
+
+        for (Key key : Key.values())
+            if (key.toString().startsWith("REGISTRATION_"))
+                set.add(key);
+
+        return set;
+    }
             
     /**
-     * Determines all the user settings keys and returns them.
+     * Determines all the achievement settings keys and returns them.
      * @return
      */
     final private static EnumSet<Key> calculateAchievementKeys()
@@ -407,7 +432,12 @@ public class Settings
     public static String getAchievementsFileName()
     {
         return achievementsFileName;
-    }        
+    }
+
+    public static String getRegistrationFileName()
+    {
+        return registrationFileName;
+    }
 
     public static String getTextResourcesPath()
     {
@@ -437,7 +467,12 @@ public class Settings
     public static String getAchievementsFilePath()
     {
         return achievementsFilePath;
-    }        
+    }
+
+    public static String getRegistrationFilePath()
+    {
+        return registrationFilePath;
+    }
 
     public static String getExternalSettingsPath()
     {
