@@ -51,11 +51,8 @@ public class BombTutorial extends AbstractTutorial
     }
     
     @Override
-    public void initialize(final Game game, ManagerHub hub)
-    {
-        // Invoke the super.
-        super.initialize(game, hub);
-
+    public void tutorialInitialize(final Game game, ManagerHub hub)
+    {        
         // Make convenience variables for the managers used.
         final BoardManager boardMan = hub.boardMan;
         final LayerManager layerMan = hub.layerMan;
@@ -107,11 +104,7 @@ public class BombTutorial extends AbstractTutorial
                         - boardMan.getCellHeight() * 3)
                 .type(BubbleType.VERTICAL).text("Click here").build();
         layerMan.add(bubble, Layer.EFFECT);   
-        layerMan.toFront(bubble, Layer.EFFECT);                        
-        
-        // Run the repeat tutorial method, that sets up the things that must
-        // be reset each time the tutorial is run.
-        repeat(game, hub);
+        layerMan.toFront(bubble, Layer.EFFECT);                                        
     }
        
     protected void createBoard(final Game game, ManagerHub hub)

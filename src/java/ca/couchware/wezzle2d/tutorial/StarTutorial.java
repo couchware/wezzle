@@ -52,13 +52,9 @@ public class StarTutorial extends AbstractTutorial
         // Activate the tutorial on a specific level.
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 6));
     }
-    
-    @Override
-    public void initialize(final Game game, final ManagerHub hub)
-    {
-        // Invoke the super.
-        super.initialize(game, hub);
-
+        
+    public void tutorialInitialize(final Game game, final ManagerHub hub)
+    {        
         // Make convenience variables for the managers used.
         final BoardManager boardMan = hub.boardMan;
         final LayerManager layerMan = hub.layerMan;
@@ -113,11 +109,7 @@ public class StarTutorial extends AbstractTutorial
                         - boardMan.getCellHeight() * 3)
                 .type(BubbleType.VERTICAL).text("Click here").build();
         layerMan.add(this.bubble, Layer.EFFECT);   
-        layerMan.toFront(this.bubble, Layer.EFFECT);                            
-        
-        // Run the repeat tutorial method, that sets up the things that must
-        // be reset each time the tutorial is run.
-        repeat(game, hub);
+        layerMan.toFront(this.bubble, Layer.EFFECT);
     }   
     
     protected void createBoard(final Game game, ManagerHub hub)

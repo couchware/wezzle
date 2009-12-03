@@ -15,17 +15,9 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
-import ca.couchware.wezzle2d.manager.AnimationManager;
-import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.BoardManager.Direction;
-import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.manager.PieceManager;
-import ca.couchware.wezzle2d.manager.ScoreManager;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.manager.SettingsManager;
-import ca.couchware.wezzle2d.manager.StatManager;
-import ca.couchware.wezzle2d.manager.TimerManager;
 import ca.couchware.wezzle2d.piece.Piece;
 import ca.couchware.wezzle2d.piece.PieceType;
 import ca.couchware.wezzle2d.ui.IButton;
@@ -94,25 +86,18 @@ public abstract class AbstractTutorial implements ITutorial
     public void initialize(final Game game, final ManagerHub hub)
     {
         // Set the activataed variable.
-        this.initialized = true;
-        
-        // Make convenience variables for the managers used.
-        final BoardManager boardMan = hub.boardMan;
-        final LayerManager layerMan = hub.layerMan;
-        final ScoreManager scoreMan = hub.scoreMan;
-        final StatManager statMan = hub.statMan;        
-        final TimerManager timerMan = hub.timerMan;
+        this.initialized = true;              
 
         // Save the manager states.
-        boardMan.saveState();
-        statMan.saveState();
-        scoreMan.saveState();
+        hub.boardMan.saveState();
+        hub.statMan .saveState();
+        hub.scoreMan.saveState();
              
         // Stop the piece manager from dropping.
         game.getTileDropper().setDropOnCommit(false);
         
         // Stop the timer.
-        timerMan.setStopped(true);
+        hub.timerMan.setStopped(true);
 
         // Hide the piece preview.
         game.getUI().setTraditionalPiecePreviewVisible(false);
@@ -132,68 +117,97 @@ public abstract class AbstractTutorial implements ITutorial
         repeatButton = new Button
                 .Builder(templateButton).y(330).text("Repeat").build();
         
-        layerMan.add(repeatButton, Layer.EFFECT);
+        hub.layerMan.add(repeatButton, Layer.EFFECT);
               
         continueButton = new Button
                 .Builder(templateButton).y(390).text("Continue").build();
 
-        layerMan.add(continueButton, Layer.EFFECT);          
-    }
-       
-    protected boolean update(final Game game, final ManagerHub hub)
-    {
-        // Make convenience variables for the managers used.
-        final AnimationManager animationMan = hub.gameAnimationMan;
-        final BoardManager boardMan = hub.boardMan;
-        final PieceManager pieceMan = hub.pieceMan;
-        final StatManager statMan = hub.statMan;
+        hub.layerMan.add(continueButton, Layer.EFFECT);
 
+        // Run the tutorials initialization.
+        tutorialInitialize( game, hub );
+
+        // Run any post initialization.
+        postInitialize( game, hub );
+
+        // Run the repeat tutorial method, that sets up the things that must
+        // be reset each time the tutorial is run.
+        repeat( game, hub );
+    }
+
+    /**
+     * This method should contain all initialization logic for an individual
+     * tutorial.
+     */
+    protected abstract void tutorialInitialize(final Game game, final ManagerHub hub);
+
+    /**
+     * This will be run at the end of the initialize method.
+     *
+     * @param game
+     * @param hub
+     */
+    private void postInitialize(final Game game, final ManagerHub hub)
+    {
+        if (this.labelList != null && !this.labelList.isEmpty())
+        {
+            EntityGroup text = new EntityGroup( this.labelList );
+            text.setOpacity( 0 );
+            IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, text)
+                    .duration(300).maxOpacity(100).build();
+
+            hub.gameAnimationMan.add( fade );
+        }
+    }
+
+    protected boolean update(final Game game, final ManagerHub hub)
+    {        
         // If the move count is not 0, then the tutorial is over.
-        if (statMan.getMoveCount() != 0 && menuShown == false)
+        if (hub.statMan.getMoveCount() != 0 && !menuShown)
         {               
             // Stop the piece animation.
-            pieceMan.hidePieceGrid();
-            pieceMan.hideShadowPieceGrid();
-            pieceMan.stopAnimation();                                            
+            hub.pieceMan.hidePieceGrid();
+            hub.pieceMan.hideShadowPieceGrid();
+            hub.pieceMan.stopAnimation();
             
             // Lock the whole board.
-            pieceMan.clearRestrictionBoard();
-            pieceMan.reverseRestrictionBoard();
+            hub.pieceMan.clearRestrictionBoard();
+            hub.pieceMan.reverseRestrictionBoard();
             
             // Fade the board out.            
-            final EntityGroup entityGroup = boardMan.getTileRange(
-                    boardMan.getNumberOfCells() / 2,
-                    boardMan.getNumberOfCells() - 1);
+            final EntityGroup entityGroup = hub.boardMan.getTileRange(
+                    hub.boardMan.getNumberOfCells() / 2,
+                    hub.boardMan.getNumberOfCells() - 1);
             
-            IAnimation anim = new FadeAnimation.Builder(FadeAnimation.Type.OUT, entityGroup)
+            IAnimation fadeTiles = new FadeAnimation.Builder(FadeAnimation.Type.OUT, entityGroup)
                     .wait(0).duration(500).build();
             
-            anim.addAnimationListener(new AnimationAdapter()
+            fadeTiles.addAnimationListener(new AnimationAdapter()
             {                
                 @Override
                 public void animationFinished()
                 { entityGroup.setVisible(false); }
             });           
             
-            animationMan.add(anim);            
+            hub.gameAnimationMan.add(fadeTiles);
                                     
             // Fade in two new buttons.
             FadeAnimation fade;                        
              
             //f = new FadeAnimation(FadeType.IN, 100, 500, repeatButton);
             //f.setMaxOpacity(70);
-            repeatButton.setOpacity(0);
+            repeatButton.setOpacity( 0 );
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, repeatButton)
-                    .wait(100).duration(500).maxOpacity(100).build();
-            animationMan.add(fade);
+                    .wait(100).duration(300).maxOpacity(100).build();
+            hub.gameAnimationMan.add( fade );
                          
             //f = new FadeAnimation(FadeType.IN, 100, 500, continueButton);
             //f.setMaxOpacity(70);
-            continueButton.setOpacity(0);
+            continueButton.setOpacity( 0 );
             fade = new FadeAnimation.Builder(FadeAnimation.Type.IN, continueButton)
-                    .wait(100).duration(500).maxOpacity(100).build();
-            animationMan.add(fade);
-            
+                    .wait(100).duration(300).maxOpacity(100).build();
+            hub.gameAnimationMan.add( fade );
+
             // Menu is now shown.
             menuShown = true;                  
             
@@ -260,58 +274,80 @@ public abstract class AbstractTutorial implements ITutorial
         }
     }       
     
-    public void finish(final Game game, ManagerHub hub)
-    {
-        // Make convenience variables for the managers used.
-        final BoardManager boardMan = hub.boardMan;
-        final LayerManager layerMan = hub.layerMan;
-        final PieceManager pieceMan = hub.pieceMan;
-        final ScoreManager scoreMan = hub.scoreMan;
-        final StatManager statMan = hub.statMan;
-        final TimerManager timerMan = hub.timerMan;
-        final SettingsManager settingsMan = hub.settingsMan;
-
+    public void finish(final Game game, final ManagerHub hub)
+    {        
         // Write out completion.
-        settingsMan.setBool(this.getHasRunSettingsKey(), true);
+        hub.settingsMan.setBool(this.getHasRunSettingsKey(), true);
 
         // Load the score managers state.
-        boardMan.loadState();
-        statMan.loadState();
-        scoreMan.loadState();                                                
+        hub.boardMan.loadState();
+        hub.statMan .loadState();
+        hub.scoreMan.loadState();
         
-        // Remove the repeat button.
-        repeatButton.setVisible(false);
-        layerMan.remove(repeatButton, Layer.EFFECT);
-        repeatButton.dispose();
-        repeatButton = null;
-        
-        // Remove the continue button.
-        continueButton.setVisible(false);
-        layerMan.remove(continueButton, Layer.EFFECT);
-        continueButton.dispose();
-        continueButton = null;
-        
-        // Remove the speech bubble.
-        layerMan.remove(bubble, Layer.EFFECT);
-        bubble.dispose();
-        bubble = null;
-        
-        // Remove the text label.
-        for (ITextLabel label : labelList)
+        EntityGroup buttons = new EntityGroup(repeatButton, continueButton);
+
+        IAnimation fadeButtons = new FadeAnimation
+                .Builder(FadeAnimation.Type.OUT, buttons)
+                .duration( 300 )
+                .build();
+
+        fadeButtons.addAnimationListener( new AnimationAdapter()
         {
-            layerMan.remove(label, Layer.EFFECT);       
-            label.dispose();
-        }
-        labelList = null;
+
+            @Override
+            public void animationFinished()
+            {
+                hub.layerMan.remove(repeatButton, Layer.EFFECT);
+                repeatButton.dispose();
+                repeatButton = null;
+
+                hub.layerMan.remove(continueButton, Layer.EFFECT);
+                continueButton.dispose();
+                continueButton = null;
+            }
+
+        });
+
+        hub.gameAnimationMan.add( fadeButtons );
+                        
+        EntityGroup text = new EntityGroup( labelList );
+        EntityGroup entities = new EntityGroup( text, bubble );
+
+        IAnimation fadeEntities = new FadeAnimation
+                .Builder(FadeAnimation.Type.OUT, entities)
+                .duration( 300 )
+                .build();
+
+        fadeEntities.addAnimationListener( new AnimationAdapter()
+        {
+
+            @Override
+            public void animationFinished()
+            {
+                hub.layerMan.remove(bubble, Layer.EFFECT);
+                bubble.dispose();
+                bubble = null;
+
+                for (ITextLabel label : labelList)
+                {
+                    hub.layerMan.remove(label, Layer.EFFECT);
+                    label.dispose();
+                }
+                labelList = null;
+            }
+
+        });
+
+        hub.gameAnimationMan.add( fadeEntities );
         
         // Remove the restriction board.
-        pieceMan.clearRestrictionBoard();
+        hub.pieceMan.clearRestrictionBoard();
         
         // Turn on tile drops.
         game.getTileDropper().setDropOnCommit(true);
         
         // Start the timer.        
-        timerMan.setStopped(false);  
+        hub.timerMan.setStopped(false);
         
         // Reset the refactor speed.
         RefactorSpeed speed = game.getDifficulty().getStrategy().getRefactorSpeed();
@@ -325,44 +361,36 @@ public abstract class AbstractTutorial implements ITutorial
 
         // Reset the piece we had before the tutorial ran.
         hub.pieceMan.setPiece(pieceBeforeInitialization);
-    }
-        
-    protected void repeat(final Game game, ManagerHub hub)
-    {
-        // Make convenience variables for the managers used.
-        final AnimationManager animationMan = hub.gameAnimationMan;
-        final BoardManager boardMan = hub.boardMan;
-        final PieceManager pieceMan = hub.pieceMan;
-        final ScoreManager scoreMan = hub.scoreMan;
-        final StatManager statMan = hub.statMan;
-        final TimerManager timerMan = hub.timerMan;
+    }   
 
+    protected void repeat(final Game game, final ManagerHub hub)
+    {        
         // Make sure to reset the gravity.
-        boardMan.setGravity(EnumSet.of(Direction.DOWN, Direction.LEFT));
+        hub.boardMan.setGravity(EnumSet.of(Direction.DOWN, Direction.LEFT));
         
         // Reset move counter.
-        statMan.resetMoveCount();      
+        hub.statMan.resetMoveCount();
         
         // Reset the scores.
-        scoreMan.resetScore();
+        hub.scoreMan.resetScore();
         
         // Create the fake board.
         createBoard(game, hub);
         
         // Fade board in.
-        final EntityGroup e = boardMan.getTileRange(
-                boardMan.getNumberOfCells() / 2,
-                boardMan.getNumberOfCells() - 1);
+        final EntityGroup e = hub.boardMan.getTileRange(
+                hub.boardMan.getNumberOfCells() / 2,
+                hub.boardMan.getNumberOfCells() - 1);
         
         e.setVisible(false);
         e.setOpacity(0);
         IAnimation a = new FadeAnimation.Builder(FadeAnimation.Type.IN, e)
                 .wait(0).duration(300).build();
         
-        animationMan.add(a);
+        hub.gameAnimationMan.add(a);        
         
         // Change the piece to the dot.
-        pieceMan.setPiece(PieceType.DOT.getPiece());
+        hub.pieceMan.setPiece(PieceType.DOT.getPiece());
         
         // Make sure buttons aren't visible.
         repeatButton.setVisible(false);
@@ -384,8 +412,8 @@ public abstract class AbstractTutorial implements ITutorial
         bubble.setOpacity(100);            
         
         // Piece is visible.
-        pieceMan.showPieceGrid();
-        pieceMan.startAnimation(timerMan);
+        hub.pieceMan.showPieceGrid();
+        hub.pieceMan.startAnimation(hub.timerMan);
     }    
     
     protected abstract void createBoard(final Game game, final ManagerHub hub);

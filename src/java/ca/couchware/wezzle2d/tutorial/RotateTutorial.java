@@ -49,13 +49,9 @@ public class RotateTutorial extends AbstractTutorial
         // This tutorial has a single rule.  It activates on level one.        
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));
     }
-    
-    @Override
-    public void initialize(final Game game, ManagerHub hub)
-    {
-        // Invoke the super.
-        super.initialize(game, hub);
-
+        
+    public void tutorialInitialize(final Game game, ManagerHub hub)
+    {        
         // Make convenience variables for the managers used.
         final BoardManager boardMan = hub.boardMan;
         final SettingsManager settingsMan = hub.settingsMan;
@@ -96,11 +92,7 @@ public class RotateTutorial extends AbstractTutorial
                     boardMan.getY() + boardMan.getHeight() - boardMan.getCellHeight())
                 .type(BubbleType.VERTICAL).text("Click here").build();
         layerMan.add(bubble, Layer.EFFECT);   
-        layerMan.toFront(bubble, Layer.EFFECT);                         
-        
-        // Run the repeat tutorial method, that sets up the things that must
-        // be reset each time the tutorial is run.
-        repeat(game, hub);
+        layerMan.toFront(bubble, Layer.EFFECT);
     }  
         
     protected void createBoard(final Game game, ManagerHub hub)
