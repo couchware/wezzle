@@ -13,10 +13,14 @@ import ca.couchware.wezzle2d.event.KeyEvent.Arrow;
 import ca.couchware.wezzle2d.event.KeyEvent.Modifier;
 import ca.couchware.wezzle2d.event.MouseEvent;
 import ca.couchware.wezzle2d.event.MouseEvent.Button;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -24,6 +28,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -346,6 +353,33 @@ public class LWJGLWindow implements IWindow
 
         Display.setVSyncEnabled(true);
         Display.setTitle(this.title);
+
+        final String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
+        InputStream in16 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_16_PATH);
+        PNGImageData icon16 = new PNGImageData();
+
+//        final String ICON_24_PATH = Settings.getResourcesPath() + "/" + "Icon_24x24.png";
+//        InputStream in24 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_24_PATH);
+//        PNGImageData icon24 = new PNGImageData();
+//
+//        final String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
+//        InputStream in32 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_32_PATH);
+//        PNGImageData icon32 = new PNGImageData();
+
+        ByteBuffer[] iconBuffers = new ByteBuffer[1];
+
+        try
+        {
+            iconBuffers[0] = icon16.loadImage( in16 );            
+//            iconBuffers[1] = icon32.loadImage( in32 );
+//            iconBuffers[2] = icon24.loadImage( in24 );
+        }
+        catch ( IOException ex )
+        {
+            CouchLogger.get().recordException( this.getClass(), ex );
+        }
+
+        Display.setIcon( iconBuffers );
 
         try
         {
