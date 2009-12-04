@@ -24,12 +24,7 @@ public abstract class AbstractEntity implements IEntity
      * It is atomic because it is used by some event handlers.
      */
     protected boolean dirty = true;
-    
-    /**
-     * The cached draw rectangle.
-     */
-    protected Rectangle drawRect = null;
-    
+       
     /** 
      * Is this visible? 
      */
@@ -320,7 +315,8 @@ public abstract class AbstractEntity implements IEntity
      * 
      * @param alignment
      */
-    final protected int determineOffsetX(final EnumSet<Alignment> alignment,
+    final protected int determineOffsetX(
+            final EnumSet<Alignment> alignment,
             int width)
     {       				
 		if (alignment.contains(Alignment.LEFT))
@@ -341,7 +337,8 @@ public abstract class AbstractEntity implements IEntity
 		}	
     }
     
-    final protected int determineOffsetY(final EnumSet<Alignment> alignment,
+    final protected int determineOffsetY(
+            final EnumSet<Alignment> alignment,
             int height)
     {       
 		if (alignment.contains(Alignment.BOTTOM))
@@ -369,10 +366,7 @@ public abstract class AbstractEntity implements IEntity
     
     public void setDirty(boolean dirty)
     {
-        this.dirty = dirty;
-        
-        // Set draw rect to null so it'll be regenerated.
-        this.drawRect = null;
+        this.dirty = dirty;       
     }
 
     public boolean isDirty()

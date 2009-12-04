@@ -52,7 +52,7 @@ public class LayerManager implements IDisposable, IDrawer
     /**
      * The list of hidden layers.
      */
-    private boolean[] hiddenArray;
+    private boolean[] hidden;
     
     /**
      * The graphics instance.  Used when drawing regions of the screen.
@@ -77,13 +77,13 @@ public class LayerManager implements IDisposable, IDrawer
         layerList = new ArrayList<ArrayList<IDrawable>>(Layer.values().length);
         
         // Initialize hidden layer map.
-        hiddenArray = new boolean[Layer.values().length];
+        hidden = new boolean[Layer.values().length];
         
         // Create layers.
         for (int i = 0; i < Layer.values().length; i++)
         {
             layerList.add(new ArrayList<IDrawable>());
-            hiddenArray[i] = false;
+            hidden[i] = false;
         }        
         
         // Initialize remove clip.
@@ -228,16 +228,19 @@ public class LayerManager implements IDisposable, IDrawer
         if (layer == null)
             throw new NullPointerException("Layer does not exist!");
         
-        if (hiddenArray[layer.ordinal()] == false)
+        if (!hidden[layer.ordinal()])
             return;
         
-        hiddenArray[layer.ordinal()] = false;
+        hidden[layer.ordinal()] = false;
         
         // Grab the layer.
         final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
         
         for (IDrawable d : list)
+        {
             d.setDirty(true);
+            if (d instanceof IEntity) ((IEntity) d).setDisabled( false );
+        }
     }
     
     public void hide(Layer layer)
@@ -245,16 +248,19 @@ public class LayerManager implements IDisposable, IDrawer
         if (layer == null)
             throw new RuntimeException("Layer does not exist!");
         
-        if (hiddenArray[layer.ordinal()] == true)
+        if (hidden[layer.ordinal()])
             return;
         
-        hiddenArray[layer.ordinal()] = true;
+        hidden[layer.ordinal()] = true;
         
         // Grab the layer.
         final ArrayList<IDrawable> list = layerList.get(layer.ordinal());
         
         for (IDrawable d : list)
+        {
             d.setDirty(true);
+            if (d instanceof IEntity) ((IEntity) d).setDisabled( true );
+        }
     }
     
     public void toFront(final IDrawable d, Layer layer)
@@ -297,7 +303,7 @@ public class LayerManager implements IDisposable, IDrawer
         for (int i = 0; i < Layer.values().length; i++)
         {                        
             // Check if layer exists, if it doesn't, skip this iteration.
-            if (hiddenArray[i] == true)                 
+            if (hidden[i] == true)
                 continue;
             
             // Grab this layer.
