@@ -100,13 +100,13 @@ public class Scroller extends AbstractEntity implements IMouseListener
                 .normalOpacity(0)
                 .activeOpacity(100)
                 .visible(false)
-                .text(optionText)
+                .text(optionText)                
                 .build();
 
             ITextLabel label = new ResourceFactory.LabelBuilder(0, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .visible(false)
-                .text("").size(12)
+                .text("").size(11)
                 .build();
 
             rowList.add( new ScrollerRow(button, label) );

@@ -118,6 +118,7 @@ public class AchievementMenu extends AbstractMenu
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .padding(Padding.newInstance(12, 30, 12, 12))                
                 .rows(4)
+                .textSize( 17 )
                 .visible(false);
 
         for (Achievement ach : achievementList)
