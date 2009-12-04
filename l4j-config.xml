@@ -12,7 +12,7 @@
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
   <manifest></manifest>
-  <icon></icon>
+  <icon>src/resources/wezzle.ico</icon>
   <jre>
     <path></path>
     <minVersion>1.5.0</minVersion>
