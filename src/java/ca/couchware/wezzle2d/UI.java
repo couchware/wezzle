@@ -104,9 +104,7 @@ public class UI implements
     /** The game board. */
     final private String BOARD_PATH =
             Settings.getSpriteResourcesPath()
-            + "/Board" + FILE_EXT;
-
-    private AnimationManager animationMan;
+            + "/Board" + FILE_EXT;   
 
     private enum Background
     {
@@ -693,7 +691,7 @@ public class UI implements
         if (this.timerBar.getOpacity() == 100 && this.progressBar.getOpacity() == 100)
             return;
 
-        animationMan.remove( this.barFadeAnimation );
+        hub.uiAnimationMan.remove( this.barFadeAnimation );
 
         EntityGroup bars = new EntityGroup( this.timerBar, this.progressBar );
         bars.setOpacity( 0 );
@@ -703,7 +701,7 @@ public class UI implements
                 .duration( 250 )
                 .build();
 
-        animationMan.add( this.barFadeAnimation );
+        hub.uiAnimationMan.add( this.barFadeAnimation );
     }
 
     public void hideBarsUsingFade()
@@ -711,7 +709,7 @@ public class UI implements
         if (this.timerBar.getOpacity() == 0 && this.progressBar.getOpacity() == 0)
             return;
 
-        animationMan.remove( this.barFadeAnimation );
+        hub.uiAnimationMan.remove( this.barFadeAnimation );
 
         EntityGroup bars = new EntityGroup( this.timerBar, this.progressBar );
         bars.setOpacity( 100 );
@@ -721,7 +719,7 @@ public class UI implements
                 .duration( 250 )
                 .build();
 
-        animationMan.add( this.barFadeAnimation );
+        hub.uiAnimationMan.add( this.barFadeAnimation );
     }
 
     /** This is used to fade in and out the progress bars. */
@@ -732,7 +730,7 @@ public class UI implements
         if (this.board.getOpacity() == 90)
             return;
 
-        animationMan.remove( this.boardFadeAnimation );
+        hub.uiAnimationMan.remove( this.boardFadeAnimation );
 
         this.boardFadeAnimation = new FadeAnimation
                 .Builder(
@@ -742,7 +740,7 @@ public class UI implements
                 .maxOpacity( 90 )
                 .build();
 
-        animationMan.add( this.boardFadeAnimation );
+        hub.uiAnimationMan.add( this.boardFadeAnimation );
     }
 
     public void hideBoardUsingFade()
@@ -750,7 +748,7 @@ public class UI implements
         if (this.board.getOpacity() == 0)
             return;
 
-        animationMan.remove( this.boardFadeAnimation );
+        hub.uiAnimationMan.remove( this.boardFadeAnimation );
 
         this.boardFadeAnimation = new FadeAnimation
                 .Builder(
@@ -759,7 +757,7 @@ public class UI implements
                 .duration( 250 )
                 .build();
 
-        animationMan.add( this.boardFadeAnimation );
+        hub.uiAnimationMan.add( this.boardFadeAnimation );
     }
     
     /** This is used to fade in and out the progress bars. */
@@ -771,7 +769,7 @@ public class UI implements
                 || this.traditionalPieceBox.getOpacity() == 100)
             return;
 
-        animationMan.remove( this.boxFadeAnimation );
+        hub.uiAnimationMan.remove( this.boxFadeAnimation );
 
         EntityGroup pieceBoxEntities = new EntityGroup(
                 this.traditionalPieceBoxLabel,
@@ -786,7 +784,7 @@ public class UI implements
 
         this.traditionalPieceBoxGrid.setVisible( true );
 
-        animationMan.add( this.boxFadeAnimation );
+        hub.uiAnimationMan.add( this.boxFadeAnimation );
     }
 
     public void hideTraditionalPieceBoxUsingFade()
@@ -795,7 +793,7 @@ public class UI implements
                 || this.traditionalPieceBox.getOpacity() == 0)
             return;
 
-        animationMan.remove( this.boxFadeAnimation );
+        hub.uiAnimationMan.remove( this.boxFadeAnimation );
 
         EntityGroup pieceBoxEntities = new EntityGroup(
                 this.traditionalPieceBoxLabel,
@@ -810,7 +808,7 @@ public class UI implements
 
         this.traditionalPieceBoxGrid.setVisible( false );
 
-        animationMan.add( this.boxFadeAnimation );
+        hub.uiAnimationMan.add( this.boxFadeAnimation );
     }
 
     /**
