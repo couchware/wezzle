@@ -32,8 +32,12 @@ public class OptionsGroup extends AbstractGroup
     private ITextLabel headerLabel;
     private IButton audioButton;
     private IButton mainMenuButton;
-    private IButton closeButton;    
-    private AudioGroup audioGroup;
+    private IButton exitGameButton;
+    private IButton closeButton;
+
+    private AudioGroup audio;
+    private MainMenuGroup mainMenu;
+    private ExitGameGroup exitGame;
 
     /**
      * The constructor.
@@ -58,37 +62,42 @@ public class OptionsGroup extends AbstractGroup
         hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
 
+        audio = new AudioGroup( hub );
+        hub.groupMan.register( audio );
+
+        mainMenu = new MainMenuGroup( hub );
+        hub.groupMan.register( mainMenu );
+
+        exitGame = new ExitGameGroup( hub );
+        hub.groupMan.register( exitGame );
+
         // Old Y-values...
         // Buy Now:   246
         // Audio:     300
         // Main Menu: 354
 
-
         // Create upgrade button.
-        IButton templateButton = new Button.Builder(400, 0)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                //.type(SpriteButton.Type.THIN)
+        Button templateButton = new Button.Builder(400, 0)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("").normalOpacity(80).visible(false).build();
-        
-        // Create audio button.
-        audioButton = new Button.Builder((Button) templateButton).y(266)
+
+        audioButton = new Button.Builder(templateButton).y(246)
             .text("Audio").build();
         hub.layerMan.add(audioButton, Layer.UI);
-        entityList.add(audioButton);
-        
-        // Create the audio group.
-        audioGroup = new AudioGroup(hub);
-        hub.groupMan.register(audioGroup);
-        
-        // Create main menu button.
-        mainMenuButton = new Button.Builder((Button) templateButton).y(320)
+        entityList.add(audioButton);                
+                
+        mainMenuButton = new Button.Builder(templateButton).y(300)
             .text("Main Menu").build();
         hub.layerMan.add(mainMenuButton, Layer.UI);
         entityList.add(mainMenuButton);
-        
-        // Create back button.
-        closeButton = new Button.Builder((Button) templateButton).y(420)
-            .text("Close").build();
+
+        exitGameButton = new Button.Builder(templateButton).y(354)
+            .text("Exit Game").build();
+        hub.layerMan.add(exitGameButton, Layer.UI);
+        entityList.add(exitGameButton);
+
+        closeButton = new Button.Builder(templateButton).y(420)
+            .text("Back to Game").build();
         hub.layerMan.add(closeButton, Layer.UI);     
         entityList.add(closeButton);
         
@@ -147,42 +156,33 @@ public class OptionsGroup extends AbstractGroup
 
         // Make sure something changed.
         if ( !this.controlChanged() ) return;     
-        
-        // Check if the back button was pressed.
+                
         if (closeButton.isActivated())
-        {            
-            // Hide all side triggered menues.
+        {                        
             closeButton.setActivated(false);
             hub.groupMan.hideGroup(
                         GroupManager.Type.OPTIONS,
                         GroupManager.Layer.MIDDLE,
                         !game.isCompletelyBusy());
-        }
-        // Check if the sound/music button was pressed.
+        }       
         else if (audioButton.isActivated())
-        {                        
-            // Show the sound/music group.            
-            hub.groupMan.showGroup(audioButton, audioGroup, 
+        {                                               
+            hub.groupMan.showGroup(audioButton, audio,
                 GroupManager.Type.OPTIONS,
                 GroupManager.Layer.MIDDLE);
-        }             
+        }
         else if (mainMenuButton.isActivated())
         {
-            // Deactivate the button.
-            mainMenuButton.setActivated(false);              
-            
-            // Stop the tutorial if necessary.
-            if (hub.tutorialMan.isTutorialRunning())
-            {
-                hub.tutorialMan.finishTutorial(game, hub);
-            }
-            
-            // Disable the layer manager.
-            hub.layerMan.setDisabled(true);
-            
-            // Start the transition.
-            game.startTransitionTo(TransitionTarget.MENU);
+            hub.groupMan.showGroup(mainMenuButton, mainMenu,
+                GroupManager.Type.OPTIONS,
+                GroupManager.Layer.MIDDLE);
         }
+        else if (exitGameButton.isActivated())
+        {            
+            hub.groupMan.showGroup(exitGameButton, exitGame,
+                GroupManager.Type.OPTIONS,
+                GroupManager.Layer.MIDDLE);
+        }        
 
         // Clear the change setting.
         this.clearChanged();

@@ -29,7 +29,7 @@ import java.util.EnumSet;
  * 
  * @author cdmckay
  */
-public class ExitMenu extends AbstractMenu
+public class ExitGameMenu extends AbstractMenu
 {
       
     /** The "Yes" button. */
@@ -42,7 +42,7 @@ public class ExitMenu extends AbstractMenu
      * The constructor.
      * @param layerMan
      */    
-    public ExitMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
+    public ExitGameMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
     {
         // Invoke super.
         super(parent, hub, menuLayerMan);

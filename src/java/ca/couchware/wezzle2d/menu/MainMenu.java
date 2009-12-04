@@ -321,7 +321,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.menuMap.put(Menu.CREDITS, menu);
 
         // Create the "Credits" group.
-        menu = new ExitMenu(this, hub, this.menuLayerMan);
+        menu = new ExitGameMenu(this, hub, this.menuLayerMan);
         this.menuMap.put(Menu.EXIT, menu);
     }
     
