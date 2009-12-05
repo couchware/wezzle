@@ -310,34 +310,37 @@ public class LWJGLWindow implements IWindow
      * display to redraw as fast as possible.
      */
     public void start()
-    {      
-        final int ALPHA_BITS   = 0;
-        final int DEPTH_BITS   = 16;
-        final int STENCIL_BITS = 1;
+    {                         
+        initializeDisplayMode();
 
-        // Get the number of samples and make sure they're
-        // with in the correct range.
-        int samples = 
-                this.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
+        Display.setVSyncEnabled(true);
+        Display.setTitle(this.title);        
 
-        if (samples < 0)
+        initializeIcons();
+        initializePixelFormat();
+
+        initializeOpenGL();
+
+        textureLoader = new TextureLoader();
+
+        if (callback != null)
         {
-            throw new IndexOutOfBoundsException(
-                    "Number of samples must be 0 or more");
+            callback.initialize();
         }
 
-        // Try to set the pixel format.
-        PixelFormat pixelFormat = new PixelFormat()
-                .withAlphaBits(ALPHA_BITS)
-                .withDepthBits(DEPTH_BITS)
-                .withStencilBits(STENCIL_BITS)
-                .withSamples(samples);
+        loop();
+    }
 
+    /**
+     * Initialize the display mode to something that'll work.
+     */
+    private void initializeDisplayMode()
+    {
         final boolean fullscreen =
                 this.settingsMan.getBool( Key.USER_GRAPHICS_FULLSCREEN );
 
         this.originalDisplayMode = Display.getDisplayMode();
-        
+
         try
         {
             setDisplayMode( width, height, fullscreen );
@@ -356,27 +359,22 @@ public class LWJGLWindow implements IWindow
                 CouchLogger.get().recordWarning( this.getClass(), "Unable to start game window");
             }
         }
+    }
 
-        Display.setVSyncEnabled(true);
-        Display.setTitle(this.title);
+    final private static String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
+    final private static String ICON_24_PATH = Settings.getResourcesPath() + "/" + "Icon_24x24.png";
+    final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
 
-        final String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
-        InputStream in16 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_16_PATH);
-        PNGImageData icon16 = new PNGImageData();
-
-        final String ICON_24_PATH = Settings.getResourcesPath() + "/" + "Icon_24x24.png";
-        InputStream in24 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_24_PATH);
-        PNGImageData icon24 = new PNGImageData();
-
-        final String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
-        InputStream in32 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_32_PATH);
-        PNGImageData icon32 = new PNGImageData();
-
+    /**
+     * Initialize Wezzle icons.
+     */
+    private void initializeIcons()
+    {     
         ByteBuffer[] iconBuffers = new ByteBuffer[1];
 
         try
         {
-            iconBuffers[0] = icon16.loadImage( in16 );
+            iconBuffers[0] = loadIconBuffer(ICON_16_PATH);
             //iconBuffers[1] = icon32.loadImage( in32 );
             //iconBuffers[2] = icon24.loadImage( in24 );
         }
@@ -386,6 +384,50 @@ public class LWJGLWindow implements IWindow
         }
 
         Display.setIcon( iconBuffers );
+    }
+
+    /**
+     * Get a PNG icon image byte buffer.
+     *
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    private ByteBuffer loadIconBuffer( String path ) throws IOException
+    {
+        if (!path.endsWith( "png" ))
+            throw new IllegalArgumentException("Icon must be in PNG format");
+
+        InputStream in = LWJGLWindow.class.getClassLoader().getResourceAsStream(path);
+        PNGImageData imageData = new PNGImageData();
+        return imageData.loadImage( in );
+    }
+
+    final static int ALPHA_BITS   = 0;
+    final static int DEPTH_BITS   = 16;
+    final static int STENCIL_BITS = 1;
+
+    /**
+     * Initialize the pixel format.
+     */
+    private void initializePixelFormat()
+    {
+        // Get the number of samples and make sure they're
+        // with in the correct range.
+        int samples =
+                this.settingsMan.getInt(Key.USER_GRAPHICS_ANTIALIASING_SAMPLES);
+
+        if (samples < 0)
+        {
+            throw new IndexOutOfBoundsException(
+                    "Number of samples must be 0 or more");
+        }
+
+        PixelFormat pixelFormat = new PixelFormat()
+                .withAlphaBits(ALPHA_BITS)
+                .withDepthBits(DEPTH_BITS)
+                .withStencilBits(STENCIL_BITS)
+                .withSamples(samples);
 
         try
         {
@@ -397,7 +439,7 @@ public class LWJGLWindow implements IWindow
             // If we failed, try using 0 samples.
             CouchLogger.get().recordWarning(this.getClass(),
                     "Could not set samples to: " + pixelFormat.getSamples());
-            
+
             pixelFormat = new PixelFormat()
                 .withAlphaBits(ALPHA_BITS)
                 .withDepthBits(DEPTH_BITS)
@@ -412,8 +454,14 @@ public class LWJGLWindow implements IWindow
             {
                 throw new RuntimeException("LWJGL exception", le);
             }
-        }
+        } // end catch
+    }
 
+    /**
+     * Initialize OpenGL.
+     */
+    private void initializeOpenGL()
+    {
         // Enable textures since we're going to use these for our sprites.
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
@@ -431,15 +479,6 @@ public class LWJGLWindow implements IWindow
         //GL11.glEnable(GL11.GL_LINE_SMOOTH);
         //GL11.glEnable(GL11.GL_POLYGON_SMOOTH);
         //GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);
-
-        textureLoader = new TextureLoader();
-
-        if (callback != null)
-        {
-            callback.initialize();
-        }
-
-        loop();
     }
 
     /**
