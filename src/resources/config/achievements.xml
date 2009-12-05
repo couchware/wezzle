@@ -578,7 +578,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>        
-        <achievement name="5 of 2X in 5 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="5 2X in 5 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 5 2X multipliers over
             the course of 5 moves.</description>
             <rule type="RATE">
@@ -586,7 +586,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="2 of 3X in 5 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="2 3X in 5 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 2 3X multipliers over
             the course of 5 moves.</description>
             <rule type="RATE">
@@ -594,7 +594,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="2 of 4X in 6 Moves" level="PLATINUM" difficulty="NONE">
+        <achievement name="2 4X in 6 Moves" level="PLATINUM" difficulty="NONE">
             <description>Consume 2 4X multipliers over
             the course of 6 moves.</description>
             <rule type="RATE">
@@ -602,7 +602,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="6" />
             </rule>
         </achievement>
-        <achievement name="5 of 2/3/4X in 5 Moves" level="SILVER" difficulty="NONE">
+        <achievement name="5 2/3/4X in 5 Moves" level="SILVER" difficulty="NONE">
             <description>Consume 5 4X, 3X or 2X multipliers over
             the course of 5 moves.</description>
             <rule type="RATE">
@@ -610,7 +610,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="5" />
             </rule>
         </achievement>
-        <achievement name="10 of 2/3/4X in 10 Moves" level="GOLD" difficulty="NONE">
+        <achievement name="10 2/3/4X in 10 Moves" level="GOLD" difficulty="NONE">
             <description>Consume 10 4X, 3X or 2X multipliers over
             the course of 10 moves.</description>
             <rule type="RATE">
@@ -618,7 +618,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="10" />
             </rule>
         </achievement>
-         <achievement name="10 of 2/3/4X in 5 Moves" level="PLATINUM" difficulty="NONE">
+         <achievement name="10 2/3/4X in 5 Moves" level="PLATINUM" difficulty="NONE">
             <description>Consume 10 4X, 3X or 2X multipliers over
             the course of 7 moves.</description>
             <rule type="RATE">
