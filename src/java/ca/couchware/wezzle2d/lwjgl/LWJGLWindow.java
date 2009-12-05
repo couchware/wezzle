@@ -18,6 +18,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -308,7 +310,11 @@ public class LWJGLWindow implements IWindow
      * display to redraw as fast as possible.
      */
     public void start()
-    {
+    {      
+        final int ALPHA_BITS   = 0;
+        final int DEPTH_BITS   = 16;
+        final int STENCIL_BITS = 1;
+
         // Get the number of samples and make sure they're
         // with in the correct range.
         int samples = 
@@ -322,9 +328,9 @@ public class LWJGLWindow implements IWindow
 
         // Try to set the pixel format.
         PixelFormat pixelFormat = new PixelFormat()
-                .withAlphaBits(0)
-                .withDepthBits(16)
-                .withStencilBits(1)
+                .withAlphaBits(ALPHA_BITS)
+                .withDepthBits(DEPTH_BITS)
+                .withStencilBits(STENCIL_BITS)
                 .withSamples(samples);
 
         final boolean fullscreen =
@@ -358,21 +364,21 @@ public class LWJGLWindow implements IWindow
         InputStream in16 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_16_PATH);
         PNGImageData icon16 = new PNGImageData();
 
-//        final String ICON_24_PATH = Settings.getResourcesPath() + "/" + "Icon_24x24.png";
-//        InputStream in24 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_24_PATH);
-//        PNGImageData icon24 = new PNGImageData();
-//
-//        final String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
-//        InputStream in32 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_32_PATH);
-//        PNGImageData icon32 = new PNGImageData();
+        final String ICON_24_PATH = Settings.getResourcesPath() + "/" + "Icon_24x24.png";
+        InputStream in24 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_24_PATH);
+        PNGImageData icon24 = new PNGImageData();
+
+        final String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
+        InputStream in32 = LWJGLWindow.class.getClassLoader().getResourceAsStream(ICON_32_PATH);
+        PNGImageData icon32 = new PNGImageData();
 
         ByteBuffer[] iconBuffers = new ByteBuffer[1];
 
         try
         {
-            iconBuffers[0] = icon16.loadImage( in16 );            
-//            iconBuffers[1] = icon32.loadImage( in32 );
-//            iconBuffers[2] = icon24.loadImage( in24 );
+            iconBuffers[0] = icon16.loadImage( in16 );
+            //iconBuffers[1] = icon32.loadImage( in32 );
+            //iconBuffers[2] = icon24.loadImage( in24 );
         }
         catch ( IOException ex )
         {
@@ -393,9 +399,9 @@ public class LWJGLWindow implements IWindow
                     "Could not set samples to: " + pixelFormat.getSamples());
             
             pixelFormat = new PixelFormat()
-                .withAlphaBits(0)
-                .withDepthBits(16)
-                .withStencilBits(1)
+                .withAlphaBits(ALPHA_BITS)
+                .withDepthBits(DEPTH_BITS)
+                .withStencilBits(STENCIL_BITS)
                 .withSamples(0);
 
             try

@@ -829,7 +829,7 @@ public class PNGImageData
             throw new IOException("Only RGB formatted images are supported by the PNGLoader");
         }
 
-        textureWidth = get2Fold(width);
+        textureWidth  = get2Fold(width);
         textureHeight = get2Fold(height);
 
         int perPixel = hasAlpha() ? 4 : 3;
