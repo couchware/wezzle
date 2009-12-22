@@ -618,7 +618,7 @@
                 <denominator type="MOVE" operation="LTEQ" value="10" />
             </rule>
         </achievement>
-         <achievement name="10 2/3/4X in 5 Moves" level="PLATINUM" difficulty="NONE">
+         <achievement name="10 2/3/4X in 7 Moves" level="PLATINUM" difficulty="NONE">
             <description>Consume 10 4X, 3X or 2X multipliers over
             the course of 7 moves.</description>
             <rule type="RATE">

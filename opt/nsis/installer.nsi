@@ -20,7 +20,10 @@
   !define HEXADECIMAL "0123456789abcdefABCDEF"
   ; R8 contains the registration name
   ; R9 contains the registration code
-
+    
+  !define MUI_FINISHPAGE_RUN  
+  !define MUI_FINISHPAGE_RUN_FUNCTION ExecApplication
+  
   ; This is for making the registration code take uppercase only    
   !define UPPERCASE 0x8  
   
@@ -56,8 +59,8 @@
   ; Default installation folder
   InstallDir "$PROGRAMFILES\${APP_VENDOR}\${APP_FULL_NAME}" 
 
-  ; Request application privileges for Windows Vista and Windows 7
-  RequestExecutionLevel admin
+  ; Request user privileges so we can use UAC plugin
+  RequestExecutionLevel user 
 
 ;--------------------------------
 ; Interface Settings
@@ -74,6 +77,7 @@
   !insertmacro MUI_PAGE_COMPONENTS  
   !insertmacro MUI_PAGE_DIRECTORY  
   !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_PAGE_FINISH  
 
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
@@ -190,15 +194,15 @@ SectionEnd
 
 Section "Start Menu Shortcuts" SecStartMenuShortcuts
 
-  CreateDirectory "$SMPROGRAMS\${APP_FULL_NAME}"  
-  CreateShortCut "$SMPROGRAMS\${APP_FULL_NAME}\${APP_SHORT_NAME}.lnk" "$INSTDIR\${APP_SHORT_NAME}.exe" "" "$INSTDIR\${APP_SHORT_NAME}.exe" 0
-  CreateShortCut "$SMPROGRAMS\${APP_FULL_NAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
+    GetFunctionAddress $0 CreateStartMenuShortcuts
+    UAC::ExecCodeSegment $0     
 
 SectionEnd
 
 Section "Desktop Shortcut" SecDesktopShortcut
 
-  CreateShortCut "$DESKTOP\${APP_SHORT_NAME}.lnk" "$INSTDIR\${APP_SHORT_NAME}.exe" "" "$INSTDIR\${APP_SHORT_NAME}.exe" 0
+    GetFunctionAddress $0 CreateDesktopShortcut
+    UAC::ExecCodeSegment $0
 
 SectionEnd
 
@@ -206,6 +210,28 @@ SectionEnd
 ; Init
 
 Function .onInit
+    
+    UAC_Elevate:
+        UAC::RunElevated 
+        StrCmp 1223 $0 UAC_ElevationAborted ; UAC dialog aborted by user?
+        StrCmp 0 $0 0 UAC_Err ; Error?
+        StrCmp 1 $1 0 UAC_Success ; Are we the real deal or just the wrapper?
+        Quit
+ 
+    UAC_Err:
+        MessageBox mb_iconstop "Setup was unable to elevate access (error $0)."
+        Abort
+     
+    UAC_ElevationAborted:
+        ; Elevation was aborted, run as normal?
+        MessageBox mb_iconstop "Setup requires Administrator access to install."
+        Abort
+     
+    UAC_Success:
+        StrCmp 1 $3 +4 ; Admin?
+        StrCmp 3 $1 0 UAC_ElevationAborted ; Try again?
+        MessageBox mb_iconstop "Setup requires Administrator access to install."
+        goto UAC_Elevate     
 
     ; Get installation folder from registry if available
     ReadRegStr $R0 HKLM "${HKLM_REG_KEY}" "InstallDir"
@@ -218,8 +244,16 @@ Function .onInit
     ${EndIf}
     
     ; Extract the INI file for the registration page.
-    !insertmacro INSTALLOPTIONS_EXTRACT "registration.ini"    
+    !insertmacro INSTALLOPTIONS_EXTRACT "registration.ini"           
 
+FunctionEnd
+
+Function .OnInstFailed
+    UAC::Unload ; Must call unload DLL.
+FunctionEnd
+ 
+Function .OnInstSuccess
+    UAC::Unload ; Must call unload DLL.
 FunctionEnd
 
 ;--------------------------------
@@ -332,12 +366,12 @@ FunctionEnd
 ;--------------------------------
 ; Uninstall Previous
 
-Function DeleteUserFiles
-
-    ; Delete the user directory.
-    RMDir /r "${USER_DIR}"
-
-FunctionEnd
+;Function DeleteUserFiles
+;
+;    ; Delete the user directory.
+;    RMDir /r "${USER_DIR}"
+;
+;FunctionEnd
 
 Function UninstallPrevious
 
@@ -448,6 +482,30 @@ Function DetectJava
 FunctionEnd
 
 ;--------------------------------
+; Create Shortcuts
+ 
+Function CreateStartMenuShortcuts
+
+    CreateDirectory "$SMPROGRAMS\${APP_FULL_NAME}"  
+    CreateShortCut "$SMPROGRAMS\${APP_FULL_NAME}\${APP_SHORT_NAME}.lnk" "$INSTDIR\${APP_SHORT_NAME}.exe" "" "$INSTDIR\${APP_SHORT_NAME}.exe" 0
+    CreateShortCut "$SMPROGRAMS\${APP_FULL_NAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
+
+FunctionEnd
+
+Function CreateDesktopShortcut
+
+    CreateShortCut "$DESKTOP\${APP_SHORT_NAME}.lnk" "$INSTDIR\${APP_SHORT_NAME}.exe" "" "$INSTDIR\${APP_SHORT_NAME}.exe" 0
+
+FunctionEnd
+
+;--------------------------------
+; Execute Application with User Access
+
+Function ExecApplication
+    UAC::Exec '' '"$INSTDIR\${APP_SHORT_NAME}.exe"' '' ''
+FunctionEnd
+
+;--------------------------------
 ; General Purpose Functions
 
 ; This function checks a string for invalid characters not in a list.
@@ -530,6 +588,7 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecWezzle} $(DESC_SecWezzle)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecJava} $(DESC_SecJava)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenuShortcuts} $(DESC_SecStartMenuShortcuts)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktopShortcut} $(DESC_SecDesktopShortcut)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
