@@ -196,6 +196,12 @@ Section "Start Menu Shortcuts" SecStartMenuShortcuts
 
 SectionEnd
 
+Section "Desktop Shortcut" SecDesktopShortcut
+
+  CreateShortCut "$DESKTOP\${APP_SHORT_NAME}.lnk" "$INSTDIR\${APP_SHORT_NAME}.exe" "" "$INSTDIR\${APP_SHORT_NAME}.exe" 0
+
+SectionEnd
+
 ;--------------------------------
 ; Init
 
@@ -517,6 +523,7 @@ FunctionEnd
   LangString DESC_SecWezzle ${LANG_ENGLISH} "Installs the Wezzle game files."
   LangString DESC_SecJava ${LANG_ENGLISH} "Installs the Java Runtime Environment if needed."
   LangString DESC_SecStartMenuShortcuts ${LANG_ENGLISH} "Create Start Menu shortcuts for Wezzle."
+  LangString DESC_SecDesktopShortcut ${LANG_ENGLISH} "Create Desktop shortcut for Wezzle."
 
   ; Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

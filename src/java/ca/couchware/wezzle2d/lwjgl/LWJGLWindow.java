@@ -318,7 +318,6 @@ public class LWJGLWindow implements IWindow
 
         initializeIcons();
         initializePixelFormat();
-
         initializeOpenGL();
 
         textureLoader = new TextureLoader();
