@@ -159,6 +159,7 @@ public class HelpGroup extends AbstractGroup
         super.setActivated(activated);
     }
 
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
     {
         // Sanity check.

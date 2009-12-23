@@ -185,11 +185,6 @@ public class CreditsMenu extends AbstractMenu
         this.designer2CreditsLabel.setText( this.designerCredits[designer2] );
 
         return super.animateShow();
-    }
-
-    public void updateLogic(Game game, ManagerHub hub)
-    { 
-        
-    }
+    }    
 
 }

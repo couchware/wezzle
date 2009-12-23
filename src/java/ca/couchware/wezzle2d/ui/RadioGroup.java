@@ -275,15 +275,8 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         
         for (int i = 0; i < itemList.size(); i++)
         {
-            if (i == selectedIndex)
-            {
-                this.itemList.get(i).setActivated(true);                
-            }
-            else
-            {
-                this.itemList.get(i).setActivated(false);
-            }            
-        } // end for            
+            this.itemList.get(i).setActivated(i == selectedIndex);
+        }           
     }        
             
     public boolean changed()

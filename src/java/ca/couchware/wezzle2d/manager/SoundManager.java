@@ -24,7 +24,7 @@ import java.util.concurrent.Executor;
  * @author Kevin, Cameron
  */
 
-public class SoundManager 
+public class SoundManager implements IResettable
 {               
       
     /**
@@ -82,19 +82,8 @@ public class SoundManager
         {
             this.create(sound, path + "/" + sound.toString() + ".wav");
         }
-             
-        // Get the default volume.
-        setNormalizedGain((double) settingsMan.getInt(Key.USER_SOUND_VOLUME) / 100.0);
-        
-        // Check if on or off.
-        if (SettingsManager.get().getBool(Key.USER_SOUND) == true)
-        {
-            setPaused(false);
-        }
-        else
-        {
-            setPaused(true);
-        }
+                             
+        resetState();
     }
     
     /**
@@ -238,6 +227,12 @@ public class SoundManager
     public void setPaused(boolean paused)
     {
         this.paused = paused;
-    }    
+    }
+
+    public final void resetState()
+    {        
+        setNormalizedGain((double) settingsMan.getInt(Key.USER_SOUND_VOLUME) / 100.0);        
+        setPaused( !settingsMan.getBool(Key.USER_SOUND) );
+    }
     
 }

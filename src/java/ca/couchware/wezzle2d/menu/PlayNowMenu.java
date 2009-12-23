@@ -7,13 +7,11 @@ package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
-import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
-import ca.couchware.wezzle2d.difficulty.IDifficultyStrategy;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.IResettable;
@@ -54,6 +52,7 @@ public class PlayNowMenu extends AbstractMenu
     final private static int MIN_LEVEL = 1;
     final private static int MAX_LEVEL = 15;             
 
+    private ManagerHub hub;
     private MusicPlayer menuPlayer;
 
     private int levelNumber;
@@ -89,12 +88,13 @@ public class PlayNowMenu extends AbstractMenu
     {                
         // Invoke the super.
         super(parentMenu, hub, menuLayerMan);
-               
+        
+        this.hub = hub;
+        this.menuPlayer = ((MainMenu) this.parent).getPlayer();
+
         // The colors.
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
-        final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);                    
-
-        this.menuPlayer = ((MainMenu) this.parent).getPlayer();
+        final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);       
 
         // The title label.
         ITextLabel titleLabel = new LabelBuilder(74, 97)
@@ -408,9 +408,12 @@ public class PlayNowMenu extends AbstractMenu
         }
     }
         
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
-    {      
-        if (this.levelNumberSlider.changed())
+    {
+        super.updateLogic( game, hub );
+
+        if ( this.levelNumberSlider.changed() )
         {
             levelNumber = (int) levelNumberSlider.getVirtualValue();
             this.levelNumberLabel.setText("" + levelNumber);
@@ -428,6 +431,9 @@ public class PlayNowMenu extends AbstractMenu
         {
             startGame(game, hub);
         }
+
+        tutorialRadio.changed();
+        themeRadio.changed();
     }
 
     private void startGame(Game game, ManagerHub hub)
@@ -441,14 +447,14 @@ public class PlayNowMenu extends AbstractMenu
         game.setDifficulty( difficulty );
 
         // Reset the core managers.
-        IResettable coreArray[] = new IResettable[]
+        IResettable coreManagers[] = new IResettable[]
         {
             game.getRefactorer(),
             game.getTileDropper(),
             game.getTileRemover()
         };
 
-        for (IResettable core : coreArray)
+        for (IResettable core : coreManagers)
         {
             core.resetState();
         }
@@ -461,17 +467,18 @@ public class PlayNowMenu extends AbstractMenu
         hub.layerMan.clearLayer(Layer.EFFECT);
 
         // Reset the various other managers.
-        IResettable[] manArray = new IResettable[]
+        IResettable[] managers = new IResettable[]
         {
             hub.levelMan,
             hub.pieceMan,
+            hub.soundMan,
             hub.scoreMan,
             hub.statMan,
             hub.timerMan,
             hub.tutorialMan
         };
 
-        for (IResettable man : manArray)
+        for (IResettable man : managers)
         {
             man.resetState();
         }
@@ -542,20 +549,30 @@ public class PlayNowMenu extends AbstractMenu
     @Override
     public IAnimation animateShow()
     {
-        playTheme(themeRadio.getSelectedIndex());
+        boolean isMusicOn = hub.settingsMan.getBool(Key.USER_MUSIC);        
+        if (isMusicOn)
+        {
+            playTheme(themeRadio.getSelectedIndex());            
+        }
+
         this.menuPlayer.fadeToGain( 0.0 );
+        
         return super.animateShow();
     }
 
     @Override
     public IAnimation animateHide()
     {
-        stopThemes();
-        
-        int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);
+        boolean isMusicOn = hub.settingsMan.getBool(Key.USER_MUSIC);
+        if (isMusicOn)
+        {
+            stopThemes();                             
+        }
+
+        int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
         double gain = (double) intGain / 100.0;
         this.menuPlayer.fadeToGain( gain );
-
+        
         return super.animateHide();
     }
 

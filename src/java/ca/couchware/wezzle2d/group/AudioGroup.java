@@ -33,14 +33,11 @@ public class AudioGroup extends AbstractGroup
 
     private ITextLabel headerLabel;       
             
-    final private static int SOUND_ON  = 0;
-    final private static int SOUND_OFF = 1;
+    final private static int ON  = 0;
+    final private static int OFF = 1;
         
     private RadioGroup soundRadio;           
-    private SliderBar soundSlider;
-    
-    final private static int MUSIC_ON  = 0;
-    final private static int MUSIC_OFF = 1;
+    private SliderBar soundSlider;      
         
     private RadioGroup musicRadio;            
     private SliderBar musicSlider;    
@@ -132,8 +129,10 @@ public class AudioGroup extends AbstractGroup
     {
         if (activated)
         {
-            soundSlider.setVirtualValue( hub.settingsMan.getInt(Key.USER_SOUND_VOLUME) );
+            musicRadio.setSelectedIndex( hub.settingsMan.getBool( Key.USER_MUSIC ) ? 0 : 1 );
             musicSlider.setVirtualValue( hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME) );
+            soundRadio.setSelectedIndex( hub.settingsMan.getBool( Key.USER_SOUND ) ? 0 : 1 );
+            soundSlider.setVirtualValue( hub.settingsMan.getInt(Key.USER_SOUND_VOLUME) );            
         }
 
         super.setActivated( activated );
@@ -144,8 +143,11 @@ public class AudioGroup extends AbstractGroup
      * 
      * @param game The game state.
      */    
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
-    {                
+    {
+        super.updateLogic( game, hub );
+
         // Sanity check.
         if (game == null)
             throw new IllegalArgumentException("Game must not be null");
@@ -166,7 +168,7 @@ public class AudioGroup extends AbstractGroup
         }   
         else if ( soundRadio.changed() )
         {
-            boolean soundOn = soundRadio.getSelectedIndex() == SOUND_ON;
+            boolean soundOn = soundRadio.getSelectedIndex() == ON;
             
             // Set the property.            
             SettingsManager.get().setBool(Key.USER_SOUND, soundOn);
@@ -177,7 +179,7 @@ public class AudioGroup extends AbstractGroup
         }
         else if ( musicRadio.changed() )
         {
-            boolean musicOn = musicRadio.getSelectedIndex() == MUSIC_ON;
+            boolean musicOn = musicRadio.getSelectedIndex() == ON;
             
             // Set the property.            
             SettingsManager.get().setBool(Key.USER_MUSIC, musicOn);

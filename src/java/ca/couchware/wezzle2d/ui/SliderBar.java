@@ -566,6 +566,9 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      */
     final protected void setSlideOffset(final int slideOffset)
     {
+        if (slideOffset == this.slideOffset)
+            return;
+
         // Make sure the slider stays on the rail.
         if (slideOffset < 0)
             this.slideOffset = 0;

@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.event.ILevelListener;
@@ -843,6 +844,7 @@ public class UI implements
         
         if (highScoreButton.clicked())
         {
+            hub.soundMan.play( Sound.CLICK_LIGHT );
             if (highScoreButton.isActivated())            
             {                           
                 hub.groupMan.showGroup(highScoreButton, highScoreGroup, 
@@ -859,7 +861,8 @@ public class UI implements
         } // end if
                 
         if (pauseButton.clicked())
-        {            
+        {
+            hub.soundMan.play( Sound.CLICK_LIGHT );
             if (pauseButton.isActivated())            
             {                
                 hub.groupMan.showGroup(pauseButton, pauseGroup, 
@@ -876,7 +879,8 @@ public class UI implements
         } // end if
                 
         if (optionsButton.clicked())
-        {                           
+        {
+            hub.soundMan.play( Sound.CLICK_LIGHT );
             if (optionsButton.isActivated())  
             {                
                 hub.groupMan.showGroup(optionsButton, optionsGroup,
@@ -894,6 +898,7 @@ public class UI implements
 
         if (helpButton.clicked())
         {
+            hub.soundMan.play( Sound.CLICK_LIGHT );
             if (helpButton.isActivated())
             {
                 hub.groupMan.showGroup(helpButton, helpGroup,

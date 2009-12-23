@@ -102,7 +102,8 @@ public class OptionsMenu extends AbstractMenu
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);        
         final Color OPTION_COLOR = hub.settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
 
-        this.menuPlayer = ((MainMenu) this.parent).getPlayer();       
+        this.menuPlayer = ((MainMenu) this.parent).getPlayer();
+        hub.soundMan.setPaused( false );
    
         createMenuEntities(hub, LABEL_COLOR, OPTION_COLOR);
         createEntitiesForGamePage(hub, LABEL_COLOR, OPTION_COLOR);
@@ -201,7 +202,10 @@ public class OptionsMenu extends AbstractMenu
                     97)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .color(labelColor)
-                .normalOpacity(90)
+                .normalOpacity( 90 )
+                .activeOpacity( 90 )
+                .hoverOpacity( 100 )
+                .pressedOpacity( 100 )
                 .visible(false)
                 .width(80)
                 .text(Page.AUDIO.getDescription()).textSize(12)
@@ -210,7 +214,9 @@ public class OptionsMenu extends AbstractMenu
         this.audioButton.addButtonListener(new Button.IButtonListener()
         {
             public void buttonClicked()
-            { switchPage(Page.AUDIO); }
+            {
+                switchPage(Page.AUDIO);
+            }
         });
 
         this.entityList.add(this.audioButton);
@@ -224,7 +230,10 @@ public class OptionsMenu extends AbstractMenu
                     this.audioButton.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                 .color(labelColor)
-                .normalOpacity(90)
+                .normalOpacity( 90 )
+                .activeOpacity( 90 )
+                .hoverOpacity( 100 )
+                .pressedOpacity( 100 )
                 .visible(false)
                 .width(80)
                 .text(Page.GAME.getDescription()).textSize(12)
@@ -233,7 +242,9 @@ public class OptionsMenu extends AbstractMenu
         this.gameButton.addButtonListener(new Button.IButtonListener()
         {
             public void buttonClicked()
-            { switchPage(Page.GAME); }
+            { 
+                switchPage(Page.GAME);
+            }
         });
 
         this.entityList.add(this.gameButton);
@@ -485,8 +496,11 @@ public class OptionsMenu extends AbstractMenu
         this.audioPageEntities.add(this.soundTestButton);
     }
 
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
-    {       
+    {
+        super.updateLogic( game, hub );
+
         if ( this.fullscreenRadio.changed() )
         {
             int selected = this.fullscreenRadio.getSelectedIndex();
@@ -585,6 +599,11 @@ public class OptionsMenu extends AbstractMenu
         {            
             hub.soundMan.play( Sound.ROCKET );            
         }
+
+        // Clear the clicked flag.
+        gameButton.clicked();
+        audioButton.clicked();
+
     }     
 
 } // end class

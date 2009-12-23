@@ -103,8 +103,11 @@ public class ExitGameGroup extends AbstractGroup
      * 
      * @param game The game state.
      */    
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
-    {                
+    {
+        super.updateLogic( game, hub );
+
         // Sanity check.
         if (game == null)
             throw new IllegalArgumentException("Game must not be null");

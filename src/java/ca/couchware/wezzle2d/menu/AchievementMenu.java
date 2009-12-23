@@ -263,8 +263,11 @@ public class AchievementMenu extends AbstractMenu
         }
     }
     
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
-    {    
+    {
+        super.updateLogic( game, hub );
+
         if (scroller.changed())
         {
             //LogManager.recordMessage("Scroller is at " + scroller.getSelectedIndex());            

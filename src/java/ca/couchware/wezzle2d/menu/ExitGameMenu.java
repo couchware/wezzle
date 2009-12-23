@@ -129,8 +129,11 @@ public class ExitGameMenu extends AbstractMenu
         }
     }        
         
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
     {
+        super.updateLogic( game, hub );
+        
         // See if any control was touched.
         // See if the "Yes" button was pressed.
         if (yesButton.isActivated() == true)

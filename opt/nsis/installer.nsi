@@ -21,7 +21,8 @@
   ; R8 contains the registration name
   ; R9 contains the registration code
     
-  !define MUI_FINISHPAGE_RUN  
+  !define MUI_FINISHPAGE_RUN
+  !define MUI_FINISHPAGE_RUN_TEXT "Run Wezzle"  
   !define MUI_FINISHPAGE_RUN_FUNCTION ExecApplication
   
   ; This is for making the registration code take uppercase only    

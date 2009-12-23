@@ -22,6 +22,7 @@ public enum Sound
     LINE_7(1),
     BLEEP(1),
     CLICK(1),
+    CLICK_LIGHT(1),
     LEVEL_UP(1),
     STAR(1),
     ROCKET(3),

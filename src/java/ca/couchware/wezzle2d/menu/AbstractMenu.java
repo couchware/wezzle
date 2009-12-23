@@ -7,6 +7,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -14,6 +15,9 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.group.AbstractGroup;
+import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.IButton;
+import ca.couchware.wezzle2d.ui.RadioGroup;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -62,14 +66,7 @@ public abstract class AbstractMenu extends AbstractGroup
                 .visible(false).build();
         
         this.menuLayerMan.add(this.menuBox, Layer.UI);
-    }
-
-    /**
-     * The menu logic updater.
-     * @param game
-     * @param hub
-     */
-    public abstract void updateLogic(Game game, ManagerHub hub);
+    } 
 
     @Override
     public IAnimation animateShow()

@@ -178,8 +178,11 @@ public class PauseGroup extends AbstractGroup implements
         super.setActivated(activated);               
     }
     
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
     {
+        super.updateLogic( game, hub );
+
         // Intentionally left blank.
     }
             

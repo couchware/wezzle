@@ -128,8 +128,11 @@ public class HighScoreMenu extends AbstractMenu
         }
     }
 
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
-    { 
+    {
+        super.updateLogic( game, hub );
+
         if (this.resetButton.clicked())
         {
             // Reset the scores.

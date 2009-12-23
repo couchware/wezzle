@@ -16,8 +16,7 @@ import java.util.EnumSet;
  * @author cdmckay
  */
 public class GameOverGroup extends AbstractGroup implements IGameListener
-{         
-    
+{             
     private ITextLabel headerLabel;
     private ITextLabel scoreHeaderLabel;
     private ITextLabel scoreLabel;
@@ -83,8 +82,11 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
      * Override the update logic method.
      * @param game The game state.
      */    
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
     {
+        super.updateLogic( game, hub );
+
         // Sanity check.
         if (game == null)
             throw new IllegalArgumentException("Game must not be null");

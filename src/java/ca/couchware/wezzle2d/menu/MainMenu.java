@@ -18,6 +18,7 @@ import ca.couchware.wezzle2d.animation.MetaAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IDrawer;
@@ -114,7 +115,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     private EnumMap<Menu, IGroup> menuMap;
     
     /** The current button that is activated. */
-    private Menu currentButton = Menu.NONE;    
+    private Menu currentMenu = Menu.NONE;
       
     /** The animation that slides in the options when the menu is first shown. */        
     private IAnimation slideAnimation = FinishedAnimation.get();    
@@ -325,6 +326,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.menuMap.put(Menu.EXIT, menu);
     }
     
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
     {       
         switch (state)
@@ -332,7 +334,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
             case READY:                                                                                             
                 
                 // Check for a new animation to load.
-                if (this.currentAnimation.isFinished() == false)
+                if ( !this.currentAnimation.isFinished() )
                 {
                     hub.gameAnimationMan.add(this.currentAnimation);
                     this.state = State.ANIMATING;
@@ -344,10 +346,11 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 
                 for (IButton button : this.buttonMap.values())
                 {
-                    if (button.clicked() == true)
+                    if ( button.clicked() )
                     {
-                        clickedButton = button;                        
-                        // Do not short-circuit!                        
+                        hub.soundMan.play( Sound.CLICK_LIGHT );                        
+                        clickedButton = button;
+                        break;
                     }                   
                 } // end for
                 
@@ -361,7 +364,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                         IButton button = buttonMap.get(menu);
                         
                         // Activate the button if it is the clicked button.
-                        if (button.equals(clickedButton) == true)
+                        if ( button == clickedButton )
                         {
                             // Activate the new button.
                             button.setActivated(true);
@@ -371,20 +374,21 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                             this.currentAnimation = new MetaAnimation.Builder()
                                     .finishRule(MetaAnimation.FinishRule.ALL)
                                     //.runRule(MetaAnimation.RunRule.SEQUENCE)
-                                    .add(this.menuMap.get(currentButton).animateHide())
+                                    .add(this.menuMap.get(currentMenu).animateHide())
                                     .add(this.menuMap.get(menu).animateShow())
                                     .build();
                             
                             // Set the new current button.                            
-                            this.currentButton = menu;
+                            this.currentMenu = menu;
                             
                             // Activate the current group.
                             this.menuMap.get(menu).setActivated(true);
                         }
                         else
                         {
+                            button.clicked();
                             button.setActivated(false);
-                            button.setDisabled(false);
+                            button.setDisabled(true);
                             
                             // Deactivate the other groups.
                             this.menuMap.get(menu).setActivated(false);
@@ -396,16 +400,16 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 // then we need to hide the group and deactivate the button.
                 // This will bring us back to the initial menu screen with
                 // no buttons activated.
-                IGroup group = this.menuMap.get(currentButton);
+                IGroup group = this.menuMap.get(currentMenu);
                 if ( !group.isActivated() )
                 {
-                    this.buttonMap.get(currentButton).setActivated(false);
-                    this.buttonMap.get(currentButton).setDisabled(false);
+                    this.buttonMap.get(currentMenu).setActivated(false);
+                    this.buttonMap.get(currentMenu).setDisabled(false);
                     
                     this.currentAnimation = group.animateHide();
                     //this.animationMan.add(this.animation);
                     
-                    this.currentButton = Menu.NONE;
+                    this.currentMenu = Menu.NONE;
                                        
                     group.resetControls();
                 }
@@ -455,6 +459,11 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 if ( this.currentAnimation.isFinished() )
                 {                    
                     this.state = State.READY;
+                    for (IButton button : this.buttonMap.values())
+                    {
+                        if (button != this.buttonMap.get(currentMenu))
+                            button.setDisabled( false );
+                    }
                 }
                 
             case FINISHED:
@@ -524,7 +533,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 .finishRule(MetaAnimation.FinishRule.ALL);
         
         // Hide the current group.
-        builder.add(this.menuMap.get(this.currentButton).animateHide());
+        builder.add(this.menuMap.get(this.currentMenu).animateHide());
         
         // Fade out the logo.
         IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)

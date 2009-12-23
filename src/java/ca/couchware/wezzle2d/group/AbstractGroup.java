@@ -5,14 +5,18 @@
 
 package ca.couchware.wezzle2d.group;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IWindow;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.animation.FinishedAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
+import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.RadioGroup;
+import ca.couchware.wezzle2d.ui.Scroller;
 import ca.couchware.wezzle2d.ui.SliderBar;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +83,25 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     //--------------------------------------------------------------------------
     // Instance Members
     //--------------------------------------------------------------------------
+
+    /**
+     * Updates the logic for the group.
+     *
+     * @param game
+     * @param hub
+     */
+    public void updateLogic(Game game, ManagerHub hub)
+    {
+        for (IEntity entity : entityList)
+        {
+            boolean isClickable =
+                    (entity instanceof IButton && ((IButton) entity).clicked( true )) ||
+                    (entity instanceof RadioGroup && ((RadioGroup) entity).changed( true )) ||
+                    (entity instanceof Scroller && ((Scroller) entity).changed( true ));
+
+            if (isClickable) hub.soundMan.play( Sound.CLICK_LIGHT );
+        }
+    }
 
     /**
      * A convenience method for determining if any of the controls in the

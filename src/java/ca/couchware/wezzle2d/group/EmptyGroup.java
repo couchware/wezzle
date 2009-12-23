@@ -17,6 +17,7 @@ import ca.couchware.wezzle2d.ManagerHub;
 public class EmptyGroup extends AbstractGroup 
 {           
     
+    @Override
     public void updateLogic(Game game, ManagerHub hub)
     {
         // Del nadras.  I am honoured.
