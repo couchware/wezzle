@@ -308,6 +308,7 @@ public class LWJGLWindow implements IWindow
      * Start the rendering process. This method will cause the
      * display to redraw as fast as possible.
      */
+    @Override
     public void start()
     {                         
         initializeDisplayMode();
@@ -486,6 +487,7 @@ public class LWJGLWindow implements IWindow
      * @param callback The callback that should be notified of game
      * window events.
      */
+    @Override
     public void setGameWindowCallback(IWindowCallback callback)
     {
         this.callback = callback;
@@ -563,11 +565,13 @@ public class LWJGLWindow implements IWindow
     //--------------------------------------------------------------------------
     // Color & clip code.
     //--------------------------------------------------------------------------
+    @Override
     public void setCursor(int type)
     {
         // Intentionally left blank.
     }
 
+    @Override
     public ImmutablePosition getMouseImmutablePosition()
     {
         return new ImmutablePosition(Mouse.getX(), height - Mouse.getY());
@@ -578,6 +582,7 @@ public class LWJGLWindow implements IWindow
     //--------------------------------------------------------------------------
     List<IKeyListener> keyListenerList = new ArrayList<IKeyListener>();
 
+    @Override
     public void addKeyListener(IKeyListener l)
     {
         //CouchLogger.get().recordMessage(this.getClass(), "Added key listener for " + l);
@@ -595,6 +600,7 @@ public class LWJGLWindow implements IWindow
         keyListenerList.add(l);
     }
 
+    @Override
     public void removeKeyListener(IKeyListener l)
     {
         CouchLogger.get().recordMessage(this.getClass(),
@@ -613,6 +619,7 @@ public class LWJGLWindow implements IWindow
         keyListenerList.remove(l);
     }
 
+    @Override
     public void updateKeyPresses()
     {
         // Before we start, make a copy of the listener list in case
@@ -733,6 +740,7 @@ public class LWJGLWindow implements IWindow
      * @param keyCode The code associated with the key to check
      * @return True if the specified key is pressed
      */
+    @Override
     public boolean isKeyPressed(int key)
     {
         return this.keyPressSet.contains((char) key);
@@ -803,6 +811,7 @@ public class LWJGLWindow implements IWindow
     /**
      * Fires all the queued up mouse events.
      */
+    @Override
     public void fireMouseEvents()
     {
         // Before we start, make a copy of the listener list in case
@@ -942,6 +951,7 @@ public class LWJGLWindow implements IWindow
      */
 
     @SuppressWarnings("empty-statement") // Not sure if this is doing anything.
+    @Override
     public void clearMouseEvents()
     {
         // Empty the mouse events.
@@ -955,6 +965,7 @@ public class LWJGLWindow implements IWindow
         }
     }
 
+    @Override
     public void addMouseListener(IMouseListener l)
     {
         if (l == null)
@@ -970,6 +981,7 @@ public class LWJGLWindow implements IWindow
         mouseListenerList.add(l);
     }
 
+    @Override
     public void removeMouseListener(IMouseListener l)
     {
         if (l == null)
