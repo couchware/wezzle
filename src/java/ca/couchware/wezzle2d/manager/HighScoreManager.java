@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * TODO Describe how class works.
+ * The manager responsible for loading and maintaining high scores.
  * 
  * @author Kevin, Cameron
  */

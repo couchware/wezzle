@@ -5,7 +5,7 @@ import ca.couchware.wezzle2d.util.IXMLizable;
 import org.jdom.Element;
 
 /**
- * TODO Describe the class.
+ * Class to hold high scores. Controls writing and reading from XML.
  * 
  * @author Kevin
  */

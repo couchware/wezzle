@@ -45,7 +45,7 @@ public class LayerManager implements IDisposable, IDrawer
     private boolean disabled = false;
     
     /**
-     * TODO Add documentation.
+     * The list of all layers.
      */
     private ArrayList<ArrayList<IDrawable>> layerList;
     

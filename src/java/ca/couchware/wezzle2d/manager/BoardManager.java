@@ -860,7 +860,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
     }
 
     /**
-     * TODO Documentation.
+     * Start shifting the tiles in a specified direction.
      * 
      * @param direction
      * @param speed

@@ -381,7 +381,7 @@ public class PlayNowMenu extends AbstractMenu
         }
         catch (BasicPlayerException e)
         {
-            // TODO Should try to do more than this, but this is OK for now.
+            // Should try to do more than this, but this is OK for now.
             CouchLogger.get().recordException(this.getClass(), e);
         }             
     }
