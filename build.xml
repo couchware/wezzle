@@ -40,7 +40,15 @@
             classname="net.sf.launch4j.ant.Launch4jTask"
             classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"/>
         <launch4j configFile="./l4j-config.xml"/>
+		
+		<taskdef name="nsis" classname="net.sf.nsisant.Task">
+			<classpath location="./lib/nsis/nsisant-1.2.jar"/>
+		</taskdef>
+		
+		<nsis script="./opt/nsis/installer.nsi"/>
     </target>
+	
+	
 
     <!-- This target excludes the resources from the main JAR. -->
     <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available+main.class+mkdist.available" name="-do-jar-with-libraries">
