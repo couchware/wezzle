@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.lwjgl;
 
-import java.io.Serializable;
 import org.lwjgl.opengl.GL11;
 
 /**

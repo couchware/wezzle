@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d.tile;
 
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
-import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.Settings;
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,6 @@
  */
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.ArrayList;
 import java.util.Arrays;

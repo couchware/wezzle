@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.ui;
 
-import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;

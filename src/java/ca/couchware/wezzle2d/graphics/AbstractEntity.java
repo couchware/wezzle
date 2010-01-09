@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.util.ImmutablePosition;
-import java.awt.Rectangle;
 import java.util.EnumSet;
 
 /**

@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.util.IBuilder;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.tile.TileType;
 
 /**

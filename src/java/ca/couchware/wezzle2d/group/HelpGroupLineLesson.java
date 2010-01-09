@@ -7,7 +7,6 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
-import ca.couchware.wezzle2d.TileRemover;
 import ca.couchware.wezzle2d.animation.AnimationHelper;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -24,7 +23,6 @@ import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.Padding;
 import ca.couchware.wezzle2d.util.ImmutablePosition;

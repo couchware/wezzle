@@ -20,7 +20,6 @@ import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.manager.ListenerManager.GameType;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.EnumSet;
 

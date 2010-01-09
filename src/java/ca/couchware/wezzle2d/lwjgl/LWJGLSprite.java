@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.lwjgl;
 
-import ca.couchware.wezzle2d.IGraphics;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.ISpriteDrawer;
 import ca.couchware.wezzle2d.util.ImmutablePosition;

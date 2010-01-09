@@ -3,9 +3,6 @@ package ca.couchware.wezzle2d;
 import ca.couchware.wezzle2d.event.IKeyListener;
 import ca.couchware.wezzle2d.event.IMouseListener;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.Shape;
 
 /**
  * The window in which the game will be displayed. This interface exposes just

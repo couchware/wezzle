@@ -13,7 +13,6 @@ import ca.couchware.wezzle2d.tile.TileHelper;
 import ca.couchware.wezzle2d.tile.TileType;
 import ca.couchware.wezzle2d.tracker.Move;
 import ca.couchware.wezzle2d.tracker.Tracker;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.Node;
 import java.util.ArrayList;
 import java.util.Iterator;

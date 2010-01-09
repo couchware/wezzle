@@ -5,8 +5,6 @@
 
 package ca.couchware.wezzle2d.graphics;
 
-import ca.couchware.wezzle2d.util.CouchLogger;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;

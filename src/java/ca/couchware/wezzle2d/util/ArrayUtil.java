@@ -5,7 +5,6 @@
 package ca.couchware.wezzle2d.util;
 
 import java.util.Collection;
-import java.util.Random;
 
 /**
  * A utilty static class providing various convenience methods.

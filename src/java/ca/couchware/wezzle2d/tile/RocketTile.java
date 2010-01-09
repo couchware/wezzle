@@ -1,9 +1,6 @@
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.*;
-import ca.couchware.wezzle2d.manager.BoardManager;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import ca.couchware.wezzle2d.util.NumUtil;
 
 /**

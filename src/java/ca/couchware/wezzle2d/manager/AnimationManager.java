@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.animation.*;
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;

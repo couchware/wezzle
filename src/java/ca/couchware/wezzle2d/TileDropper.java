@@ -19,7 +19,6 @@ import ca.couchware.wezzle2d.manager.SoundManager;
 import ca.couchware.wezzle2d.tile.TileColor;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.ArrayList;
 import java.util.Collections;

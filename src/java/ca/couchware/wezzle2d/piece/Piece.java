@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.piece;
 
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import ca.couchware.wezzle2d.util.NumUtil;
 
 public abstract class Piece

@@ -7,16 +7,12 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
-import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ITextLabel;
-import ca.couchware.wezzle2d.ui.RadioGroup;
-import ca.couchware.wezzle2d.ui.RadioItem;
-import ca.couchware.wezzle2d.ui.SliderBar;
 import java.awt.Color;
 import java.util.EnumSet;
 

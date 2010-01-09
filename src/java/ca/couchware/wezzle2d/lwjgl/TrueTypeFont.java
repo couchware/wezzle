@@ -27,7 +27,6 @@
  */
 package ca.couchware.wezzle2d.lwjgl;
 
-import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.awt.Color;
 import java.awt.Font;
@@ -37,14 +36,8 @@ import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import javax.imageio.ImageIO;
 import org.lwjgl.opengl.GL11;
 
 /**

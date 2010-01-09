@@ -1,6 +1,5 @@
 package ca.couchware.wezzle2d.graphics;
 
-import java.awt.Rectangle;
 
 /**
  * An interface for describing an entity that can be drawn.

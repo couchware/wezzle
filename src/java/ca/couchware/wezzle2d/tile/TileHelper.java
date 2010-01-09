@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.tile;
 
-import ca.couchware.wezzle2d.ui.Padding;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;

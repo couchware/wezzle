@@ -10,7 +10,6 @@ import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.ui.Box.Border;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;

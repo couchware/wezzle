@@ -18,7 +18,6 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -29,10 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -126,6 +121,7 @@ public class LWJGLWindow implements IWindow
      *
      * @param title The title to set on this window
      */
+    @Override
     public void setTitle(String title)
     {
         this.title = title;
@@ -143,6 +139,7 @@ public class LWJGLWindow implements IWindow
      * @param x The width of the game display area
      * @param y The height of the game display area
      */
+    @Override
     public void setResolution(int x, int y)
     {
         width = x;
@@ -154,6 +151,7 @@ public class LWJGLWindow implements IWindow
      * 
      * @param fullscreen
      */
+    @Override
     public void setFullscreen(boolean fullscreen)
     {
         if (Display.isFullscreen() == fullscreen)
@@ -188,6 +186,7 @@ public class LWJGLWindow implements IWindow
      *
      * @return
      */
+    @Override
     public boolean isFullscreen()
     {
         return Display.isFullscreen();
@@ -941,9 +940,12 @@ public class LWJGLWindow implements IWindow
     /**
      * Clears the mouse events instead of firing them.
      */
+
+    @SuppressWarnings("empty-statement") // Not sure if this is doing anything.
     public void clearMouseEvents()
     {
         // Empty the mouse events.
+
         while (Mouse.next());
 
         // Update the mouse state map.

@@ -6,11 +6,9 @@ import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.StringUtil;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.EnumSet;
 
 /**

@@ -6,7 +6,6 @@
 package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.util.IBuilder;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.List;
 

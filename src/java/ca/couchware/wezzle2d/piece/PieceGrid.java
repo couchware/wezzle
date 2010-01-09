@@ -10,7 +10,6 @@ import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;

@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.event;
 
-import ca.couchware.wezzle2d.Game;
 import java.util.EventObject;
 
 /**

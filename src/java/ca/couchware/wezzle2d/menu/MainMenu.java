@@ -38,8 +38,6 @@ import ca.couchware.wezzle2d.util.CouchLogger;
 import java.awt.Shape;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**

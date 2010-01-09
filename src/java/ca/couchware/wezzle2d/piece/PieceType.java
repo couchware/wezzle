@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.piece;
 
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.awt.Color;
 

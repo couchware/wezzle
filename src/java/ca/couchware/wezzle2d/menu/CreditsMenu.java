@@ -5,26 +5,18 @@
 
 package ca.couchware.wezzle2d.menu;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.graphics.IEntity;
-import ca.couchware.wezzle2d.manager.HighScore;
-import ca.couchware.wezzle2d.manager.HighScoreManager;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.Box;
-import ca.couchware.wezzle2d.ui.Button;
-import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * The high score menu, which holds all the high scores for the user to peruse

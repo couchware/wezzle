@@ -16,7 +16,6 @@ import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.manager.ListenerManager;
 import ca.couchware.wezzle2d.tile.Tile;
 import ca.couchware.wezzle2d.tile.TileType;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

@@ -1,7 +1,5 @@
 package ca.couchware.wezzle2d.animation;
 
-import ca.couchware.wezzle2d.*;
-
 /**
  * An interface for animating entities.
  * 

@@ -9,7 +9,6 @@ import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.NumUtil;
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.EnumSet;

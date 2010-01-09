@@ -1,7 +1,6 @@
 package ca.couchware.wezzle2d.animation;
 
 import ca.couchware.wezzle2d.util.IBuilder;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.ImmutablePosition;

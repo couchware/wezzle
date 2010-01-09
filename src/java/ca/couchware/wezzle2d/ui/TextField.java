@@ -18,7 +18,6 @@ import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import ca.couchware.wezzle2d.util.NumUtil;
 import ca.couchware.wezzle2d.util.StringUtil;
 import ca.couchware.wezzle2d.util.CouchColor;
-import ca.couchware.wezzle2d.util.ArrayUtil;
 import java.awt.Color;
 import java.util.EnumSet;
 import java.util.Set;
