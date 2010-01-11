@@ -360,22 +360,20 @@ public class LWJGLWindow implements IWindow
         }
     }
 
-    final private static String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
-    final private static String ICON_24_PATH = Settings.getResourcesPath() + "/" + "Icon_24x24.png";
-    final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
+    final private static String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";    
+    final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";    
 
     /**
      * Initialize Wezzle icons.
      */
     private void initializeIcons()
     {     
-        ByteBuffer[] iconBuffers = new ByteBuffer[1];
+        ByteBuffer[] iconBuffers = new ByteBuffer[2];
 
         try
         {
-            iconBuffers[0] = loadIconBuffer(ICON_16_PATH);
-            //iconBuffers[1] = icon32.loadImage( in32 );
-            //iconBuffers[2] = icon24.loadImage( in24 );
+            iconBuffers[0] = loadIconBuffer(ICON_16_PATH);            
+            iconBuffers[1] = loadIconBuffer(ICON_32_PATH);
         }
         catch ( IOException ex )
         {
