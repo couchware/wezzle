@@ -96,7 +96,7 @@ public class Game extends Canvas implements IWindowCallback
     final public static String APPLICATION_NAME = "Wezzle";
     
     /** The version of the application. */
-    final public static String APPLICATION_VERSION = "Beta 2";
+    final public static String APPLICATION_VERSION = "1.0";
     
     /** The full title of the game. */
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
