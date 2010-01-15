@@ -52,7 +52,6 @@ import java.util.Set;
 public class PieceManager implements IResettable, IKeyListener, IMouseListener
 {
     private static int SLOW_SPEED = SettingsManager.get().getInt( Key.ANIMATION_PIECE_PULSE_SPEED_SLOW );
-
     private static int FAST_SPEED = SettingsManager.get().getInt( Key.ANIMATION_PIECE_PULSE_SPEED_FAST );
 
     // -------------------------------------------------------------------------
