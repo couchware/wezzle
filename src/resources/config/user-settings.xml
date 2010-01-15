@@ -13,7 +13,7 @@
   <entry name="User.Music.Default">TRON</entry>
   <entry name="User.Piece.Preview.Traditional">true</entry>
   <entry name="User.Piece.Preview.Overlay">false</entry>
-  <entry name="User.Piece.Preview.Shadow">true</entry>
+  <entry name="User.Piece.Preview.Shadow">false</entry>
   <entry name="User.Graphics.Fullscreen">false</entry>
   <entry name="User.Graphics.Antialiasing.Samples">4</entry>
   <entry name="User.Auto.Pause">true</entry>  

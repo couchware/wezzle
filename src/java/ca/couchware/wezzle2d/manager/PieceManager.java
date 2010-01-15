@@ -1049,9 +1049,10 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 return;
         }
 
-        if ( hub.boardMan != null )
+        boolean debugItemKeysEnabled = hub.settingsMan.getBool( Key.DEBUG_ENABLE_ITEMS_KEYS );
+        if ( debugItemKeysEnabled && hub.boardMan != null )
         {
-            handleItemKeys( event );
+            handleDebugItemKeys( event );
         }
     }
 
@@ -1061,7 +1062,13 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         // Intentionally left blank.
     }
 
-    private void handleItemKeys(KeyEvent event)
+    /**
+     * Handles the debug item keys, if that option is turned on in the
+     * settings.
+     *
+     * @param event
+     */
+    private void handleDebugItemKeys(KeyEvent event)
     {
         int index = -1;
         Tile oldTile;
