@@ -102,7 +102,7 @@ public class Game extends Canvas implements IWindowCallback
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
     
     /** The copyright. */
-    final public static String COPYRIGHT = "\u00A9 2009 Couchware Inc.";
+    final public static String COPYRIGHT = "\u00A9 2010 Couchware Inc.";
     
     //--------------------------------------------------------------------------
     // Members
