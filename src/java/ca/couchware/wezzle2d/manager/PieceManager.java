@@ -1048,7 +1048,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
                 return;
         }
 
-        boolean debugItemKeysEnabled = hub.settingsMan.getBool( Key.DEBUG_ENABLE_ITEMS_KEYS );
+        boolean debugItemKeysEnabled = hub.settingsMan.getBool( Key.DEBUG_ENABLE_ITEM_KEYS );
         if ( debugItemKeysEnabled && hub.boardMan != null )
         {
             handleDebugItemKeys( event );

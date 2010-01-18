@@ -77,7 +77,7 @@ public class Settings
         // Debug values.
 
         /** Whether or not pushing certain keys will add items under the cursor. */
-        DEBUG_ENABLE_ITEMS_KEYS(Boolean.class),
+        DEBUG_ENABLE_ITEM_KEYS(Boolean.class),
 
         /** Whether or not to show the clip rectangle.  Only works in JAVA2D mode. */
         DEBUG_SHOW_CLIP_RECT(Boolean.class),
