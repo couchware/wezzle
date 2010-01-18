@@ -503,7 +503,7 @@ FunctionEnd
 ; Execute Application with User Access
 
 Function ExecApplication
-    UAC::Exec '' '"$INSTDIR\${APP_SHORT_NAME}.exe"' '' ''
+    UAC::Exec '' '"$INSTDIR\${APP_SHORT_NAME}.exe"' '' '$INSTDIR'
 FunctionEnd
 
 ;--------------------------------
