@@ -341,6 +341,7 @@ public class Game extends Canvas implements IWindowCallback
         // Check registration.
         loader.addTask( new Runnable()
         {
+            @Override
             public void run()
             {
                 boolean registered = validateRegistration();
@@ -350,8 +351,8 @@ public class Game extends Canvas implements IWindowCallback
                 }
                 else
                 {
-                    CouchLogger.get().recordWarning( this.getClass(), "Registration code is invalid.");
-                    //System.exit(0);
+                    CouchLogger.get().recordException( this.getClass(), new Exception("Registration code is invalid."));
+                    System.exit(0);
                 }
             }
         });

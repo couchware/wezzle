@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
+import org.lwjgl.Sys;
 
 /**
  * A class to manage writing out to a log file.
@@ -182,9 +183,14 @@ public class CouchLogger
 
         String method = extractClassName( cls );
         StringWriter out = new StringWriter();
+        String exceptionString = "E. (" + getTimeStamp() + ") " + method + " - \"" + e.
+                getMessage() + "\"" + Settings.getLineSeparator();
 
-        out.write( "E. (" + getTimeStamp() + ") " + method + " - \"" + e.
-                getMessage() + "\"" + Settings.getLineSeparator() );
+        out.write( exceptionString );
+
+        Sys.alert("Error", exceptionString);
+
+
 
         e.printStackTrace( new PrintWriter( out, true ) );
         System.err.println( out.toString() );
