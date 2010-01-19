@@ -449,7 +449,7 @@ public class LWJGLWindow implements IWindow
             }
             catch (LWJGLException le)
             {
-                throw new RuntimeException("Could not initialize pixel format: " + le.toString(), le);
+                throw new RuntimeException(le.toString(), le);
             }
         } // end catch
     }
