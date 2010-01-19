@@ -347,11 +347,11 @@ public class Game extends Canvas implements IWindowCallback
                 boolean registered = validateRegistration();
                 if (registered)
                 {
-                    CouchLogger.get().recordMessage( this.getClass(), "Registration code is OK.");
+                    CouchLogger.get().recordMessage( this.getClass(), "The registration code is verified.");
                 }
                 else
                 {
-                    CouchLogger.get().recordException( this.getClass(), new Exception("Registration code is invalid."));
+                    CouchLogger.get().recordException( this.getClass(), new Exception("The registration code is invalid."));
                     System.exit(0);
                 }
             }
