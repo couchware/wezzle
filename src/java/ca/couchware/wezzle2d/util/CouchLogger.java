@@ -178,7 +178,7 @@ public class CouchLogger
     {
         if ( cls == null )
         {
-            throw new IllegalArgumentException( "cls must not be null." );
+            throw new IllegalArgumentException( "Class must not be null" );
         }
 
         String method = extractClassName( cls );
@@ -188,9 +188,10 @@ public class CouchLogger
 
         out.write( exceptionString );
 
-        Sys.alert("Error", exceptionString);
-
-
+        Sys.alert("Wezzle", "Error!" + Settings.getLineSeparator()
+                + e.getMessage() + Settings.getLineSeparator()
+                + Settings.getLineSeparator()
+                + "Please visit http://couchware.ca/www/support for help.");
 
         e.printStackTrace( new PrintWriter( out, true ) );
         System.err.println( out.toString() );
