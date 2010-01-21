@@ -53,9 +53,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javazoom.jlgui.basicplayer.BasicPlayer;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -1099,9 +1096,6 @@ public class Game extends Canvas implements IWindowCallback
         SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         Achievement.Level.initializeAchievementColorMap(settingsMan);
-
-        // Set the BasicPlayer logger level.
-        Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
 
         try
         {

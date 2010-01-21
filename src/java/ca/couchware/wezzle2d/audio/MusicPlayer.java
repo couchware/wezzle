@@ -15,6 +15,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicController;
 import javazoom.jlgui.basicplayer.BasicPlayer;
 import javazoom.jlgui.basicplayer.BasicPlayerEvent;
@@ -82,7 +84,13 @@ public class MusicPlayer
      * Has the player finished playing the track?
      */
     private AtomicBoolean finished = new AtomicBoolean(false);
-    
+
+    static
+    {
+        // Turn off logging on the basic player.
+        Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
+    }
+
     /**
      * The constructor.
      */
