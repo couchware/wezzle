@@ -344,12 +344,13 @@ public class Game extends Canvas implements IWindowCallback
                 boolean registered = validateRegistration();
                 if (registered)
                 {
-                    CouchLogger.get().recordMessage( this.getClass(), "The registration code is verified.");
+                    CouchLogger.get().recordMessage( this.getClass(), "The registration code is verified");
                 }
                 else
                 {
-                    CouchLogger.get().recordException( this.getClass(), new Exception("The registration code is invalid."));
-                    System.exit(0);
+                    CouchLogger.get().recordException( this.getClass(), 
+                            new Exception("The registration code is invalid"),
+                            true /* Fatal */);
                 }
             }
         });
@@ -967,7 +968,7 @@ public class Game extends Canvas implements IWindowCallback
         }
         catch(Exception e)
         {
-            CouchLogger.get().recordException(this.getClass(), e);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
 
         System.exit(0);
@@ -1105,8 +1106,7 @@ public class Game extends Canvas implements IWindowCallback
         }
         catch (Exception e)
         {
-            CouchLogger.get().recordException(Game.class, e);
-            CouchLogger.get().write();
+            CouchLogger.get().recordException(Game.class, e, true /* Fatal */);
         }
     }
 
@@ -1140,18 +1140,16 @@ public class Game extends Canvas implements IWindowCallback
                 int hex = 0xFF & messageDigest[i];
                 hexBuffer.append(String.format("%02x", hex));
             }
-
-            CouchLogger.get().recordMessage(this.getClass(), "Generated code: " + hexBuffer.toString());
-            CouchLogger.get().recordMessage(this.getClass(), "Stored code:    " + storedCode);
-
-            if (storedCode.toLowerCase().equals(hexBuffer.toString().toLowerCase()))
+           
+            if (storedCode.toLowerCase()
+                    .equals(hexBuffer.toString().toLowerCase()))
             {
                 return true;
             }
         }
         catch (Exception e)
         {
-            CouchLogger.get().recordException(this.getClass(), e);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
 
         return false;

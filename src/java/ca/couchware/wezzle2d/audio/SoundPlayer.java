@@ -91,7 +91,7 @@ public class SoundPlayer
         }
         catch (InterruptedException e)
         {
-            CouchLogger.get().recordException(this.getClass(), e);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
     }
        
@@ -117,17 +117,9 @@ public class SoundPlayer
             
             this.gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         }
-        catch (LineUnavailableException e)
+        catch (Exception e)
         {
-            CouchLogger.get().recordException(this.getClass(), e);
-        }        
-        catch (UnsupportedAudioFileException e)
-        {
-            CouchLogger.get().recordException(this.getClass(), e);
-        }
-        catch (IOException e)
-        {
-            CouchLogger.get().recordException(this.getClass(), e);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
         finally
         {
@@ -137,7 +129,7 @@ public class SoundPlayer
             }
             catch (IOException e)
             {
-                CouchLogger.get().recordException(this.getClass(), e);
+                CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
             }
         } // end try
     }        

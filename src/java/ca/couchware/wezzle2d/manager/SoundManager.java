@@ -175,7 +175,7 @@ public class SoundManager implements IResettable
                 }
                 catch (Exception e) 
                 { 
-                    CouchLogger.get().recordException(this.getClass(), e);
+                    CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
                 }
             }
         });

@@ -21,6 +21,8 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -46,7 +48,7 @@ import org.lwjgl.opengl.PixelFormat;
  * @author Cameron McKay
  */
 public class LWJGLWindow implements IWindow
-{
+{   
     private SettingsManager settingsMan;
     private IWindowCallback callback;
 
@@ -100,6 +102,8 @@ public class LWJGLWindow implements IWindow
         this.mouseStateMap.put(Button.MIDDLE, false);
 
         this.modifiers = EnumSet.noneOf(Modifier.class);
+
+        CouchLogger.get().recordMessage(this.getClass(), "LWJGL Version: " + Sys.getVersion());
     }
 
     /**
@@ -175,8 +179,7 @@ public class LWJGLWindow implements IWindow
             }
             catch ( LWJGLException ex )
             {
-                CouchLogger.get().recordException( this.getClass(), ex );
-                CouchLogger.get().recordWarning( this.getClass(), "Unable to create game window");
+                CouchLogger.get().recordException( this.getClass(), ex, true /* Fatal */ );                
             }
         }
     }
@@ -190,40 +193,7 @@ public class LWJGLWindow implements IWindow
     public boolean isFullscreen()
     {
         return Display.isFullscreen();
-    }
-    
-    /**
-     * Sets the display mode for fullscreen mode.
-     */
-    private boolean setDisplayMode()
-    {
-        try
-        {
-            // Get display modes.
-            DisplayMode[] dm = org.lwjgl.util.Display.getAvailableDisplayModes(
-                    width, height,
-                    -1, -1, -1, -1,
-                    Display.getDisplayMode().getFrequency(),
-                    Display.getDisplayMode().getFrequency());
-
-            org.lwjgl.util.Display.setDisplayMode(dm, new String[]
-                    {
-                        "width=" + width, "height=" + height,
-                        "freq=" + Display.getDisplayMode().getFrequency(),
-                        "bpp=" + Display.getDisplayMode().getBitsPerPixel()
-                    });
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            CouchLogger.get().recordException( this.getClass(), e );
-            System.out.println(
-                    "Unable to enter fullscreen, continuing in windowed mode.");
-        }
-
-        return false;
-    }
+    }        
 
     /** The original display mode before we tampered with things. */
     protected DisplayMode originalDisplayMode;
@@ -266,7 +236,7 @@ public class LWJGLWindow implements IWindow
                             }
                         }
 
-                        // if we've found a match for bpp and frequence against the 
+                        // if we've found a match for bpp and frequence against the
                         // original display mode then it's probably best to go for this one
                         // since it's most likely compatible with the monitor
                         if ((current.getBitsPerPixel() == originalDisplayMode.getBitsPerPixel()) &&
@@ -289,10 +259,8 @@ public class LWJGLWindow implements IWindow
                         "Failed to find value mode: " + width + "x" + height + " fullscreen=" + fullscreen + ".");
             }
 
-
-            Display.setDisplayMode(targetDisplayMode);
             Display.setFullscreen(fullscreen);
-
+            Display.setDisplayMode(targetDisplayMode);
         }
         catch (LWJGLException e)
         {
@@ -354,8 +322,7 @@ public class LWJGLWindow implements IWindow
             }
             catch ( LWJGLException nofsex )
             {
-                CouchLogger.get().recordException( this.getClass(), nofsex );
-                CouchLogger.get().recordWarning( this.getClass(), "Unable to start game window");
+                CouchLogger.get().recordException( this.getClass(), nofsex, true /* Fatal */ );
             }
         }
     }
@@ -420,12 +387,12 @@ public class LWJGLWindow implements IWindow
                     "Number of samples must be 0 or more");
         }
 
-        PixelFormat pixelFormat = new PixelFormat()
+        final PixelFormat pixelFormat = new PixelFormat()
                 .withAlphaBits(ALPHA_BITS)
                 .withDepthBits(DEPTH_BITS)
                 .withStencilBits(STENCIL_BITS)
                 .withSamples(samples);
-
+        
         try
         {
             // Try setting the pixel format.
@@ -434,10 +401,10 @@ public class LWJGLWindow implements IWindow
         catch (LWJGLException sampleException)
         {
             // If we failed, try using 0 samples.
-            CouchLogger.get().recordWarning(this.getClass(),
+            CouchLogger.get().recordWarning(LWJGLWindow.class,
                     "Could not set samples to: " + pixelFormat.getSamples());
 
-            pixelFormat = new PixelFormat()
+            final PixelFormat safePixelFormat = new PixelFormat()
                 .withAlphaBits(ALPHA_BITS)
                 .withDepthBits(DEPTH_BITS)
                 .withStencilBits(STENCIL_BITS)
@@ -445,11 +412,11 @@ public class LWJGLWindow implements IWindow
 
             try
             {
-                Display.create(pixelFormat);
+                Display.create(safePixelFormat);
             }
             catch (LWJGLException le)
             {
-                throw new RuntimeException(le.toString(), le);
+                CouchLogger.get().recordException(LWJGLWindow.class, le, true /* Fatal */);
             }
         } // end catch
     }

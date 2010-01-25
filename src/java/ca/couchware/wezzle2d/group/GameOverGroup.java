@@ -36,7 +36,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Game over :(")
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Game Over")
                 .visible(false).build();
         hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);

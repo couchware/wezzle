@@ -88,7 +88,7 @@ public class SettingsManager
         {
             CouchLogger.get().recordWarning( this.getClass(), "Could not create file with path: " + f.
                     getAbsolutePath() );
-            CouchLogger.get().recordException( this.getClass(), e );
+            CouchLogger.get().recordException( this.getClass(), e, true /* Fatal */ );
         }
     }
 
@@ -143,7 +143,7 @@ public class SettingsManager
             }
             catch ( MalformedURLException ex )
             {
-                CouchLogger.get().recordException( this.getClass(), ex );
+                CouchLogger.get().recordException( this.getClass(), ex, true /* Fatal */ );
             }
         } // end if  
         else
@@ -225,11 +225,11 @@ public class SettingsManager
         }
         catch ( JDOMException ex )
         {
-            CouchLogger.get().recordException( this.getClass(), ex );
+            CouchLogger.get().recordException( this.getClass(), ex, true /* Fatal */ );
         }
         catch ( IOException ex )
         {
-            CouchLogger.get().recordException( this.getClass(), ex );
+            CouchLogger.get().recordException( this.getClass(), ex, true /* Fatal */ );
         }
     }
 

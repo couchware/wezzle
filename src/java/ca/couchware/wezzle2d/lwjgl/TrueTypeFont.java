@@ -166,7 +166,7 @@ public class TrueTypeFont implements Serializable
     {
         // Create a temporary image to extract the character size.
         BufferedImage i = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gfx1 = (Graphics2D) i.getGraphics();
+        Graphics2D gfx1 = i.createGraphics();
 
         // Turn on anti-aliasing for smooth-looking fonts.
         gfx1.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -199,7 +199,7 @@ public class TrueTypeFont implements Serializable
         // Create another image holding the character we are creating.
         BufferedImage fontImage;
         fontImage = new BufferedImage(charWidth, charHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gfx2 = (Graphics2D) fontImage.getGraphics();
+        Graphics2D gfx2 = fontImage.createGraphics();
         
         gfx2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);       
@@ -225,7 +225,7 @@ public class TrueTypeFont implements Serializable
                 FontTextureWidth, FontTextureHeight,
                 BufferedImage.TYPE_INT_ARGB);
 
-            Graphics2D gfx = (Graphics2D) image.getGraphics();
+            Graphics2D gfx = image.createGraphics();
             determineHeight( gfx );
 
             int rowHeight = 0;
@@ -266,7 +266,7 @@ public class TrueTypeFont implements Serializable
         }        
         catch (IOException e)
         {
-            CouchLogger.get().recordException(this.getClass(), e);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
 
     }

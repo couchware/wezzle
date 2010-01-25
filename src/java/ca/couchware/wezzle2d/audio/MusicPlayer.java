@@ -219,7 +219,7 @@ public class MusicPlayer
                 }
                 catch (BasicPlayerException e)
                 {
-                    CouchLogger.get().recordException(this.getClass(), e);
+                    CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
                 }
             }            
         };
@@ -300,7 +300,7 @@ public class MusicPlayer
                         }
                         catch (BasicPlayerException e)
                         {
-                            CouchLogger.get().recordException(this.getClass(), e);
+                            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
                         }
                     } // end sync
                 }
@@ -366,7 +366,7 @@ public class MusicPlayer
                     }
                     catch (BasicPlayerException e)
                     {
-                        CouchLogger.get().recordException(this.getClass(), e);
+                        CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
                     }
                     break;
             } // end switch

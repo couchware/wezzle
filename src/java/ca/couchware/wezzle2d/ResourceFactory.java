@@ -294,76 +294,36 @@ public class ResourceFactory
             e.printStackTrace();
         }
         
-//        boolean isJar = (jarPathUrl.toString().endsWith( ".jar" )
-//                || jarPathUrl.toString().endsWith( ".exe" ));
-//
-//
-//        // If we're running from a JAR, then we need to read the JAR entries to
-//        // figure out all the names of the sprites.
-//        if ( isJar )
-//        {
-            try
+        try
+        {
+            // Open the jar.
+            JarInputStream in = new JarInputStream( jarPathUrl.toURL().
+                    openStream() );
+
+            while ( true )
             {
-                // Open the jar.
-                JarInputStream in = new JarInputStream( jarPathUrl.toURL().
-                        openStream() );
+                JarEntry entry = in.getNextJarEntry();
 
-                while ( true )
+                if ( entry == null )
                 {
-                    JarEntry entry = in.getNextJarEntry();
+                    break;
+                }
 
-                    if ( entry == null )
-                    {
-                        break;
-                    }
+                if ( entry.isDirectory() )
+                {
+                    continue;
+                }
 
-                    if ( entry.isDirectory() == true )
-                    {
-                        continue;
-                    }
-
-                    if ( entry.getName().startsWith( Settings.
-                            getSpriteResourcesPath() ) )
-                    {
-                        spriteList.add( entry.getName() );
-                    }
+                if ( entry.getName().startsWith( Settings.getSpriteResourcesPath() ) )
+                {
+                    spriteList.add( entry.getName() );
                 }
             }
-            catch ( IOException e )
-            {
-                CouchLogger.get().recordException( this.getClass(), e );
-            }
-//        }
-//        // If we're running from the file system, all we need to do is use
-//        // the File class to get a list of the sprites.
-//        else
-//        {
-//            // The directory of sprites.
-//            File dir;
-//
-//            try
-//            {
-//                // Get a list of all the sprites in the sprites directory.
-//                //URL url = this.getClass().getClassLoader()
-//                //        .getResource(Settings.getSpriteResourcesPath());
-//                URL url = this.getClass().getClassLoader().getResource( Settings.
-//                        getSpriteResourcesPath() );
-//
-//                // Convert to file.
-//                dir = new File( url.toURI() );
-//
-//                // Construct the full URL to the sprite.
-//                for ( String spriteName : dir.list() )
-//                {
-//                    spriteList.add( Settings.getSpriteResourcesPath() + "/" + spriteName );
-//                }
-//            }
-//            catch ( URISyntaxException e )
-//            {
-//                CouchLogger.get().recordException( this.getClass(), e );
-//
-//            } // end try
-//        }
+        }
+        catch ( IOException e )
+        {
+            CouchLogger.get().recordException( this.getClass(), e, true /* Fatal */ );
+        }
 
         // Get the contents of the directory.
         List<Runnable> runnableList = new ArrayList<Runnable>();

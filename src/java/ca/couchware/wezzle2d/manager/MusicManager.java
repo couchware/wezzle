@@ -221,7 +221,7 @@ public class MusicManager
     public void play()
     {
         // Make sure the play list has items, if not, ignore the play command.
-        if (this.playList.isEmpty() == true)
+        if (this.playList.isEmpty())
             return;
         
         // Grab the player for the current track if it hasn't been grabbed
@@ -240,7 +240,7 @@ public class MusicManager
         }
         catch (BasicPlayerException e)
         {
-            CouchLogger.get().recordException(this.getClass(), e);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
     }
     
@@ -257,7 +257,7 @@ public class MusicManager
         }
         catch (BasicPlayerException e)
         {
-            CouchLogger.get().recordException(this.getClass(), e);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
     }
     
@@ -303,7 +303,7 @@ public class MusicManager
         {
             try
             {
-                if (paused == true)
+                if (paused)
                 {
                     player.pause();
                 }
@@ -314,7 +314,7 @@ public class MusicManager
             }
             catch (BasicPlayerException e)
             {
-                CouchLogger.get().recordException(this.getClass(), e);
+                CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
             }
         } // end if
     }   
@@ -346,7 +346,7 @@ public class MusicManager
         }
         catch (BasicPlayerException e)
         {
-            CouchLogger.get().recordException(this.getClass(), e);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
     }
 
@@ -418,7 +418,7 @@ public class MusicManager
         }
         catch (BasicPlayerException e)
         {
-            CouchLogger.get().recordException(MusicPlayer.class, e);
+            CouchLogger.get().recordException(MusicPlayer.class, e, true /* Fatal */);
         }
         
         // Return the player.

@@ -74,7 +74,7 @@ public class FontStore
             }
             catch ( Exception e )
             {
-                CouchLogger.get().recordException( this.getClass(), e );
+                CouchLogger.get().recordException( this.getClass(), e, true /* Fatal */ );
             }
         }
         // Otherwise, derive all other fonts from the size 1.        

@@ -174,7 +174,7 @@ public class CouchLogger
      * @param message The error message.
      * @param t The current thread, usually Thread.currentThread().
      */
-    public void recordException(Class cls, Exception e)
+    public void recordException(Class cls, Exception e, boolean fatal)
     {
         if ( cls == null )
         {
@@ -188,11 +188,6 @@ public class CouchLogger
 
         out.write( exceptionString );
 
-        Sys.alert("Wezzle", "Error!" + Settings.getLineSeparator()
-                + e.getMessage() + Settings.getLineSeparator()
-                + Settings.getLineSeparator()
-                + "Please visit http://couchware.ca/www/support for help.");
-
         e.printStackTrace( new PrintWriter( out, true ) );
         System.err.println( out.toString() );
 
@@ -200,6 +195,23 @@ public class CouchLogger
         {
             append( out.toString() );
         }
+
+        if (fatal)
+        {
+            write();
+            
+            Sys.alert("Wezzle", "Error!" + Settings.getLineSeparator()
+                    + e.getMessage() + Settings.getLineSeparator()
+                    + Settings.getLineSeparator()
+                    + "Please visit http://couchware.ca/www/support for help.");
+
+            System.exit(0);
+        }
+    }
+
+    public void recordException(Class cls, Exception e)
+    {
+        recordException(cls, e, false);
     }
 
     /**
