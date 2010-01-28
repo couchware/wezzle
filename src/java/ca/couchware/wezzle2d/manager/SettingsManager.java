@@ -161,7 +161,7 @@ public class SettingsManager
         loadExternalSettings( Settings.getExternalSettingsPath(), Settings.
                 getAchievementsFileName() );
         loadExternalSettings( Settings.getExternalSettingsPath(), Settings.
-                getRegistrationFileName() );
+                getLicenseFileName() );
     }
 
     private void loadFromXML(URL url)

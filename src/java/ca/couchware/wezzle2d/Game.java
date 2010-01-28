@@ -341,7 +341,7 @@ public class Game extends Canvas implements IWindowCallback
             @Override
             public void run()
             {
-                boolean registered = validateRegistration();
+                boolean registered = validateLicenseInformation();
                 if (registered)
                 {
                     CouchLogger.get().recordMessage( this.getClass(), "The registration code is verified");
@@ -1116,15 +1116,15 @@ public class Game extends Canvas implements IWindowCallback
     final static String SECRET_CODE = "minsquibbion";
 
     /**
-     * Validates the registration information for Wezzle.
-     * @return True if the registration is validated, false otherwise.
+     * Validates the license information for Wezzle.
+     * @return True if the license is validated, false otherwise.
      */
-    private boolean validateRegistration()
+    private boolean validateLicenseInformation()
     {
-        final String storedName = hub.settingsMan.getString(Key.REGISTRATION_NAME);
-        final String storedCode = this.hub.settingsMan.getString(Key.REGISTRATION_CODE);
+        final String storedSerialNumber = hub.settingsMan.getString(Key.USER_SERIAL_NUMBER);
+        final String storedLicenseKey = hub.settingsMan.getString(Key.USER_LICENSE_KEY);
         
-        final String plainText = storedName + SECRET_CODE;
+        final String plainText = storedSerialNumber + SECRET_CODE;
 
         byte[] defaultBytes = plainText.getBytes();
         try
@@ -1141,7 +1141,7 @@ public class Game extends Canvas implements IWindowCallback
                 hexBuffer.append(String.format("%02x", hex));
             }
            
-            if (storedCode.toLowerCase()
+            if (storedLicenseKey.toLowerCase()
                     .equals(hexBuffer.toString().toLowerCase()))
             {
                 return true;

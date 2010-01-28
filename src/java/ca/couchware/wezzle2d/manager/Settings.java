@@ -46,7 +46,8 @@ public class Settings
         /** Whether or not auto-pause is enabled. */
         USER_AUTO_PAUSE(Boolean.class),
         
-        // Tutorials.       
+        // Tutorials.
+        
         USER_TUTORIAL_BASIC_RAN(Boolean.class),
         USER_TUTORIAL_ROTATE_RAN(Boolean.class),
         USER_TUTORIAL_ROCKET_RAN(Boolean.class),
@@ -54,10 +55,10 @@ public class Settings
         USER_TUTORIAL_BOMB_RAN(Boolean.class),
         USER_TUTORIAL_STAR_RAN(Boolean.class),
 
-        // Registration values.
+        // License values.
 
-        REGISTRATION_NAME(String.class),
-        REGISTRATION_CODE(String.class),
+        USER_SERIAL_NUMBER(String.class),
+        USER_LICENSE_KEY(String.class),
 
         // Graphics values.              
         
@@ -262,8 +263,8 @@ public class Settings
     /** The name of the achievements file. */
     final private static String achievementsFileName = "achievements.xml";
 
-    /** The name of the registration file. */
-    final private static String registrationFileName = "registration.xml";
+    /** The name of the license file. */
+    final private static String licenseFileName = "license.xml";
     
     /** The file path of default game settings file. */
     final private static String defaultGameSettingsFilePath = configResourcesPath
@@ -293,9 +294,9 @@ public class Settings
     final private static String achievementsFilePath = externalSettingsPath 
             + "/" + achievementsFileName;
 
-     /** The file path of external registration settings file. */
-    final private static String registrationFilePath = externalSettingsPath
-            + "/" + registrationFileName;
+     /** The file path of external license settings file. */
+    final private static String licenseFilePath = externalSettingsPath
+            + "/" + licenseFileName;
 
     /** The file path to the disk cache. */
     final private static String cachePath = externalSettingsPath + "/Cache";
@@ -325,22 +326,7 @@ public class Settings
                 set.add(key);       
         
         return set;
-    }
-
-    /**
-     * Determines all the registration settings keys and returns them.
-     * @return
-     */
-    final private static EnumSet<Key> calculateRegistrationKeys()
-    {
-        EnumSet<Key> set = EnumSet.noneOf(Key.class);
-
-        for (Key key : Key.values())
-            if (key.toString().startsWith("REGISTRATION_"))
-                set.add(key);
-
-        return set;
-    }
+    }    
             
     /**
      * Determines all the achievement settings keys and returns them.
@@ -437,9 +423,9 @@ public class Settings
         return achievementsFileName;
     }
 
-    public static String getRegistrationFileName()
+    public static String getLicenseFileName()
     {
-        return registrationFileName;
+        return licenseFileName;
     }
 
     public static String getTextResourcesPath()
@@ -472,9 +458,9 @@ public class Settings
         return achievementsFilePath;
     }
 
-    public static String getRegistrationFilePath()
+    public static String getLicenseFilePath()
     {
-        return registrationFilePath;
+        return licenseFilePath;
     }
 
     public static String getExternalSettingsPath()
