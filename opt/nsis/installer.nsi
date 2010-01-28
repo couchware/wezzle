@@ -18,14 +18,14 @@
   
   !define SECRET_CODE "minsquibbion"
   !define HEXADECIMAL "0123456789abcdefABCDEF"
-  ; R8 contains the registration name
-  ; R9 contains the registration code
+  ; R8 contains the serial number
+  ; R9 contains the license key
     
   !define MUI_FINISHPAGE_RUN
   !define MUI_FINISHPAGE_RUN_TEXT "Run Wezzle"  
   !define MUI_FINISHPAGE_RUN_FUNCTION ExecApplication
   
-  ; This is for making the registration code take uppercase only    
+  ; This is for making the license key take uppercase only    
   !define UPPERCASE 0x8  
   
   !macro STYLE HWND STYLE
@@ -74,7 +74,7 @@
   !define MUI_COMPONENTSPAGE_SMALLDESC
 
   !insertmacro MUI_PAGE_LICENSE "..\License.txt"
-  Page custom CreateRegistrationPage ValidateRegistrationPage
+  Page custom CreateLicensePage ValidateLicensePage
   !insertmacro MUI_PAGE_COMPONENTS  
   !insertmacro MUI_PAGE_DIRECTORY  
   !insertmacro MUI_PAGE_INSTFILES
@@ -106,21 +106,21 @@ Section "Wezzle" SecWezzle
   ; Make it required.
   SectionIn RO
 
-  ;MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration name is: $R8'
-  ;MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration code is: $R9'
+  ;MessageBox MB_OK|MB_ICONEXCLAMATION 'Serial number is: $R8'
+  ;MessageBox MB_OK|MB_ICONEXCLAMATION 'License key is: $R9'
 
   SetOutPath "$INSTDIR"
 
   File /r ..\..\dist\*.*
 
-  ; Write registration code information.
+  ; Write license information.
   ; We write to the game-settings.xml instead of
   ; the user-settings.xml so we don't clobber any
   ; existing user settings like high scores.
   ; Upon the first running of the game, Wezzle will
   ; automatically move the registration information
   ; into the user-settings.xml file.
-  Delete "${USER_DIR}\registration.xml"
+  Delete "${USER_DIR}\license.xml"
   
   Var /GLOBAL ln0
   Var /GLOBAL ln1
@@ -130,12 +130,12 @@ Section "Wezzle" SecWezzle
   
   StrCpy $ln0 `<?xml version="1.0" encoding="UTF-8"?>$\r$\n`
   StrCpy $ln1 `<settings>$\r$\n`
-  StrCpy $ln2 `  <entry name="Registration.Name">$R8</entry>$\r$\n`
-  StrCpy $ln3 `  <entry name="Registration.Code">$R9</entry>$\r$\n`
+  StrCpy $ln2 `  <entry name="User.Serial.Number">$R8</entry>$\r$\n`
+  StrCpy $ln3 `  <entry name="User.License.Key">$R9</entry>$\r$\n`
   StrCpy $ln4 `</settings>$\r$\n`
   
   Push "$ln0$ln1$ln2$ln3$ln4"
-  Push "${USER_DIR}\registration.xml"
+  Push "${USER_DIR}\license.xml"
   Call WriteToFile
 
   ; Store installation folder
@@ -245,7 +245,7 @@ Function .onInit
     ${EndIf}
     
     ; Extract the INI file for the registration page.
-    !insertmacro INSTALLOPTIONS_EXTRACT "registration.ini"           
+    !insertmacro INSTALLOPTIONS_EXTRACT "license.ini"           
 
 FunctionEnd
 
@@ -258,17 +258,20 @@ Function .OnInstSuccess
 FunctionEnd
 
 ;--------------------------------
-; Registration
+; License
 
-LangString PAGE_TITLE ${LANG_ENGLISH} "Registration"
-LangString PAGE_SUBTITLE ${LANG_ENGLISH} "Please enter your registration information."
+LangString PAGE_TITLE ${LANG_ENGLISH} "License Information"
+LangString PAGE_SUBTITLE ${LANG_ENGLISH} "Please enter your license information."
 
-Function CreateRegistrationPage
+Function CreateLicensePage
 
    !insertmacro MUI_HEADER_TEXT $(PAGE_TITLE) $(PAGE_SUBTITLE)     
    
-   InstallOptions::initDialog /NOUNLOAD "$PLUGINSDIR\registration.ini"
+   InstallOptions::initDialog /NOUNLOAD "$PLUGINSDIR\license.ini"
    Pop $R0
+   
+   GetDlgItem $R1 $R0 1201 ; 1200 + Field number - 1
+   !insertmacro STYLE $R1 ${UPPERCASE}
    
    GetDlgItem $R1 $R0 1203 ; 1200 + Field number - 1
    !insertmacro STYLE $R1 ${UPPERCASE}
@@ -286,25 +289,34 @@ Function CreateRegistrationPage
    Pop $R0            
       
    ; Read the registration name into R8.
-   ReadINIStr $R8 "$PLUGINSDIR\registration.ini" "Field 2" "State"  
+   ReadINIStr $R8 "$PLUGINSDIR\license.ini" "Field 2" "State"  
    
    ; Read the registration code into R9.
-   Call GetRegistrationCode
+   Call GetLicenseKey
    Pop $R9    
 
 FunctionEnd
 
-Function ValidateRegistrationPage
+Function ValidateLicensePage
    
    Push $R0
    Push $R1
    Push $R2
              
-   ; Field 1 is the Full Name.
-   ReadINIStr $R2 "$PLUGINSDIR\registration.ini" "Field 2" "State"  
+   ; Field 1 is the serial number.
+   ReadINIStr $R2 "$PLUGINSDIR\license.ini" "Field 2" "State"  
+            
+   ; Make sure there are no non-hex characters.     
+   Push ${HEXADECIMAL}
+   Push $R2 
+   Call StrCSpnReverse
+   Pop $R0   
+   StrCmp $R0 "" +3   
+   MessageBox MB_OK|MB_ICONEXCLAMATION 'Serial number contains an invalid character "$R0".   '
+   Abort  
                  
    ; Read all the code blocks into one string.   
-   Call GetRegistrationCode
+   Call GetLicenseKey
    Pop $R1
    
    ; Make sure there are no non-hex characters.
@@ -313,14 +325,14 @@ Function ValidateRegistrationPage
    Call StrCSpnReverse
    Pop $R0   
    StrCmp $R0 "" +3   
-   MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration code contains an invalid character "$R0".   '
+   MessageBox MB_OK|MB_ICONEXCLAMATION 'License key contains an invalid character "$R0".   '
    Abort               
    
    ; Make sure the registration code is correct for the given name.
    md5dll::GetMD5String "$R2${SECRET_CODE}"   
    Pop $R0
    StrCmp $R0 $R1 +3
-   MessageBox MB_OK|MB_ICONEXCLAMATION 'Registration code is incorrect.   '
+   MessageBox MB_OK|MB_ICONEXCLAMATION 'Serial number or license key is incorrect.   '
    Abort               
    
    Pop $R2
@@ -329,7 +341,7 @@ Function ValidateRegistrationPage
 
 FunctionEnd
 
-Function GetRegistrationCode
+Function GetLicenseKey
 
    Push $R0 ; Code block
    Push $R1 ; Code
@@ -341,16 +353,16 @@ Function GetRegistrationCode
    ; ...
    ; Field 7 is the 4th code block      
 
-   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 4" "State"
+   ReadINIStr $R0 "$PLUGINSDIR\license.ini" "Field 4" "State"
    StrCpy $R1 "$R1$R0"         
    
-   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 5" "State"
+   ReadINIStr $R0 "$PLUGINSDIR\license.ini" "Field 5" "State"
    StrCpy $R1 "$R1$R0"
    
-   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 6" "State"
+   ReadINIStr $R0 "$PLUGINSDIR\license.ini" "Field 6" "State"
    StrCpy $R1 "$R1$R0"
    
-   ReadINIStr $R0 "$PLUGINSDIR\registration.ini" "Field 7" "State"
+   ReadINIStr $R0 "$PLUGINSDIR\license.ini" "Field 7" "State"
    StrCpy $R1 "$R1$R0"   
    
    ; Push the full code onto the stack
