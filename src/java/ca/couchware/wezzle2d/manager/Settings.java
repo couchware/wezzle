@@ -304,9 +304,6 @@ public class Settings
     /** The path to the log file. */
     final private static String logPath = externalSettingsPath;
     
-    /** The file path to the log file. */    
-    final private static String logFilePath = logPath + "/log.txt";
-
     /** A set of all the user keys. */
     final private static EnumSet<Key> userKeys = calculateUserKeys();
     
@@ -386,11 +383,6 @@ public class Settings
     public static String getCachePath()
     {
         return cachePath;
-    }
-
-    public static String getLogFilePath()
-    {
-        return logFilePath;
     }
 
     public static String getLogPath()

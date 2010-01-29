@@ -1,13 +1,25 @@
 package ca.couchware.wezzle2d.util;
 
 import ca.couchware.wezzle2d.manager.*;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.ContextBase;
+import ch.qos.logback.core.layout.EchoLayout;
+import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
 import org.lwjgl.Sys;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class to manage writing out to a log file.
@@ -22,38 +34,65 @@ public class CouchLogger
 
     /** The only instance of the log manager. */
     final private static CouchLogger SINGLE = new CouchLogger();
-
-    /**
-     * Write out to the log. If this is set to true, all messages and
-     * errors will be written out to the log file.
-     */
-    private final boolean OUTPUT_TO_FILE = true;
-
-    /**
-     * Is the writer opened?
-     */
-    private boolean opened = false;
-
-    /**
-     * The file path to the log file.
-     */
-    private File logFile;
-
-    /**
-     * A string buffer to store the log information in before writing it.
-     */
-    private StringBuilder buffer = new StringBuilder();
-
-    /**
-     * The file writer to write to the log.
-     */
-    private BufferedWriter writer;
-
+    final private Logger logger;
+    
     // ---------------------------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------------------------
+
+    /**
+     * The constructor configures a static logger. The logger contains 2
+     * appenders, one to the console and one to files. The file appender
+     * is a rolling one.
+     */
     private CouchLogger()
     {
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        lc.reset(); // we want to override the default-config.
+
+        // Console Appender
+        ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<ILoggingEvent>();
+        consoleAppender.setContext(lc);
+        consoleAppender.setLayout(new EchoLayout<ILoggingEvent>());
+
+        // Rolling appender
+        RollingFileAppender<ILoggingEvent> rollingAppender = new RollingFileAppender<ILoggingEvent>();
+        rollingAppender.setContext(lc);
+        rollingAppender.setLayout(new EchoLayout<ILoggingEvent>());
+
+        // Rolling Policy, set to roll every month and keep 6 month history.
+        Context context = new ContextBase();
+        TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
+        rollingPolicy.setFileNamePattern(Settings.getLogPath() + "/log-%d{MM-yyyy}.txt");
+        rollingPolicy.setContext(context);
+        rollingPolicy.setMaxHistory(6);
+        rollingPolicy.setParent(rollingAppender);
+
+       
+
+        try
+        {
+            rollingPolicy.start();
+
+            //OutputStream os = new FileOutputStream(Settings.getLogFilePath());
+            //rollingAppender.setWriter(new OutputStreamWriter(os));
+            rollingAppender.setImmediateFlush(true);
+            rollingAppender.setRollingPolicy(rollingPolicy);
+            
+            rollingAppender.start();
+            consoleAppender.start();
+
+            Logger root = lc.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+            root.addAppender(rollingAppender);
+            root.addAppender(consoleAppender);
+
+        }
+        catch(Exception e)
+        {
+            this.recordException(this.getClass(), e);
+        }
+
+        logger = lc.getLogger("CouchLogger");
     }
 
     /**
@@ -68,105 +107,6 @@ public class CouchLogger
     // ---------------------------------------------------------------------------
     // Static Methods
     // ---------------------------------------------------------------------------
-    /**
-     * A method to append a string of text to the log file.
-     * The text is written and the buffer is flushes so that
-     * errors can be logged and read in real time while the
-     * program is open.
-     *
-     * @param text The text to append.
-     */
-    private void append(String text)
-    {
-        buffer.append( text + Settings.getLineSeparator() );
-    }
-
-    /**
-     * A method to write the contexts of the buffer to the log file.
-     */
-    public void write()
-    {
-        try
-        {
-            // Make sure file is opened.
-            if ( !opened )
-            {
-                open();
-            }
-
-            // Write the buffer.
-            writer.write( buffer.toString() );
-            writer.flush();
-
-            // Clear the buffer.
-            buffer = new StringBuilder();
-
-            // Close the file.
-            close();
-        }
-        catch ( Exception e )
-        {
-            recordException( this.getClass(), e );
-        }
-    }
-
-    private void open()
-    {
-        // See if we already opened it.
-        if ( opened )
-        {
-            return;
-        }
-
-        // Set the opened variable.
-        this.opened = true;
-
-        // Check if the directory exists.
-        File dir = new File( Settings.getLogPath() );
-
-        // If the directory doesn't exist. Create it.
-        if ( dir.isDirectory() == false )
-        {
-            dir.mkdirs();
-        }
-
-        // Create the file.
-        logFile = new File( Settings.getLogFilePath() );
-
-        try
-        {
-            // If the file does not exist, create it.
-            if ( logFile.exists() == false )
-            {
-                logFile.createNewFile();
-            }
-
-            // Create the writer.
-            writer = new BufferedWriter( new FileWriter( logFile, true ) );
-        }
-        catch ( Exception e )
-        {
-            recordException( this.getClass(), e );
-        }
-    }
-
-    /**
-     * A method to close the log. This method closes the bufferedWriter
-     * and flushes the buffer.
-     */
-    private void close()
-    {
-        try
-        {
-            writer.close();
-            opened = false;
-        }
-        catch ( Exception e )
-        {
-            recordException( this.getClass(), e );
-        }
-    }
-
     /**
      * Prints an error to standard error, dumps the stack, and then terminates
      * the program.
@@ -183,23 +123,17 @@ public class CouchLogger
 
         String method = extractClassName( cls );
         StringWriter out = new StringWriter();
-        String exceptionString = "E. (" + getTimeStamp() + ") " + method + " - \"" + e.
+        String exceptionString = "(" + getTimeStamp() + ") " + method + " - \"" + e.
                 getMessage() + "\"" + Settings.getLineSeparator();
 
         out.write( exceptionString );
 
         e.printStackTrace( new PrintWriter( out, true ) );
-        System.err.println( out.toString() );
-
-        if ( OUTPUT_TO_FILE )
-        {
-            append( out.toString() );
-        }
+        logger.error( out.toString() );
 
         if (fatal)
         {
-            write();
-            
+   
             Sys.alert("Wezzle", "Error!" + Settings.getLineSeparator()
                     + e.getMessage() + Settings.getLineSeparator()
                     + Settings.getLineSeparator()
@@ -208,6 +142,7 @@ public class CouchLogger
             System.exit(0);
         }
     }
+    
 
     public void recordException(Class cls, Exception e)
     {
@@ -227,13 +162,10 @@ public class CouchLogger
         }
 
         String method = extractClassName( cls );
-        String output = "W. (" + getTimeStamp() + ") " + method + " - \"" + message + "\"";
-        System.err.println( output );
+        String output = "(" + getTimeStamp() + ") " + method + " - \"" + message + "\"";
 
-        if ( OUTPUT_TO_FILE )
-        {
-            append( output );
-        }
+        logger.warn( output );
+        
     }
 
     /**
@@ -249,13 +181,10 @@ public class CouchLogger
         }
 
         String method = extractClassName( cls );
-        String output = "M. (" + getTimeStamp() + ") " + method + " - \"" + message + "\"";
-        System.out.println( output );
+        String output = "(" + getTimeStamp() + ") " + method + " - \"" + message + "\"";
 
-        if ( OUTPUT_TO_FILE == true )
-        {
-            append( output );
-        }
+        logger.info( output );
+        
     }
 
     private static String extractClassName(Class cls)

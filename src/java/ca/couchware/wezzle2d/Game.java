@@ -963,8 +963,7 @@ public class Game extends Canvas implements IWindowCallback
                 hub.settingsMan.saveSettings();
             }
 
-            // Save the log data.
-            CouchLogger.get().write();
+            CouchLogger.get().recordMessage(this.getClass(), "Game closed.");
         }
         catch(Exception e)
         {
@@ -1106,7 +1105,7 @@ public class Game extends Canvas implements IWindowCallback
         }
         catch (Exception e)
         {
-            CouchLogger.get().recordException(Game.class, e, true /* Fatal */);
+            CouchLogger.get().recordException(Game.class, e);
         }
     }
 
@@ -1140,7 +1139,13 @@ public class Game extends Canvas implements IWindowCallback
                 int hex = 0xFF & messageDigest[i];
                 hexBuffer.append(String.format("%02x", hex));
             }
-           
+
+            if(null == storedLicenseKey)
+            {
+                CouchLogger.get().recordException(this.getClass(),
+                        new Exception("License is missing or corrupt."), true);
+            }
+            
             if (storedLicenseKey.toLowerCase()
                     .equals(hexBuffer.toString().toLowerCase()))
             {
