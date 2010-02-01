@@ -316,7 +316,7 @@ public class TileDropper implements IResettable
                         if (tile == null)
                         {
                             throw new NullPointerException(
-                                    "A tile was null in the tile drop list.");
+                                    "A tile was null in the tile drop list");
                         }
                         else
                         {                                                                   
@@ -396,7 +396,7 @@ public class TileDropper implements IResettable
        
     public void startDrop()
     {
-        CouchLogger.get().recordMessage(this.getClass(), "Starting the tile drop.");
+        CouchLogger.get().recordMessage(this.getClass(), "Starting the tile drop");
         this.tileDropping = true;
     }
       

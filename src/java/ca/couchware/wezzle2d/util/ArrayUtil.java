@@ -20,7 +20,7 @@ public class ArrayUtil
     {
         if ( array == null )
         {
-            throw new IllegalArgumentException( "array must not be null." );
+            throw new IllegalArgumentException( "Array must not be null" );
         }
 
         for ( int j = 0; j < array[0].length; j++ )
@@ -57,7 +57,7 @@ public class ArrayUtil
     {
         if ( array == null )
         {
-            throw new IllegalArgumentException( "array must not be null." );
+            throw new IllegalArgumentException( "Array must not be null" );
         }
 
         Object swap = array[c1][r1];
@@ -86,7 +86,7 @@ public class ArrayUtil
             count++;
         }
 
-        throw new RuntimeException( "This should not happen." );
+        throw new RuntimeException( "This should not happen" );
     }
 
 }

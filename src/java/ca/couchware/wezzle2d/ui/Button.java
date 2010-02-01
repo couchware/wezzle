@@ -176,7 +176,7 @@ public class Button extends AbstractButton
         if (activeLabel != null) activeLabel.setPosition(POS_X, POS_Y);
                
         if (!validateWidth())
-            throw new RuntimeException("The button width is too narrow.");                                                                                 
+            throw new RuntimeException("The button width is too narrow");                                                                                 
     }
     
     public static class Builder implements IBuilder<Button>

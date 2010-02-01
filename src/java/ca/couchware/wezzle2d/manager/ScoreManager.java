@@ -151,13 +151,19 @@ public class ScoreManager implements IResettable, ISaveable, IGameListener, ILev
      */
     public int calculateLineScore(Set<Integer> indexSet, ScoreType type, int chainCount)
     {
-        if ( indexSet == null || type == null )
+        if ( indexSet == null )
         {
-            throw new IllegalArgumentException( "indexSet and type not be null." );
+            throw new IllegalArgumentException( "IndexSet cannot be null" );
         }
+        
+        if ( type == null )
+        {
+            throw new IllegalArgumentException( "Type cannot be null" );
+        }
+
         if ( chainCount < 0 )
         {
-            throw new IllegalArgumentException( "chainCount must be non-negative." );
+            throw new IllegalArgumentException( "Chain count must be non-negative" );
         }
 
         // Reset the count map.
@@ -200,11 +206,11 @@ public class ScoreManager implements IResettable, ISaveable, IGameListener, ILev
     {
         if ( numTotal <= 0 )
         {
-            throw new IllegalArgumentException( "numTotal must be greater than 0." );
+            throw new IllegalArgumentException( "Total number of tiles must be greater than 0" );
         }
         if ( type == null )
         {
-            throw new IllegalArgumentException( "type must not be null." );
+            throw new IllegalArgumentException( "Type must not be null" );
         }
 
         // If we have a line with a star tile, then the line is worth half.
@@ -240,7 +246,7 @@ public class ScoreManager implements IResettable, ISaveable, IGameListener, ILev
         // Sanity check.
         if ( indexSet == null )
         {
-            throw new IllegalArgumentException( "indexSet must not be null." );
+            throw new IllegalArgumentException( "Index set must not be null." );
         }
         // Initilize deltaScore variable.
         int deltaScore = 0;
@@ -270,7 +276,7 @@ public class ScoreManager implements IResettable, ISaveable, IGameListener, ILev
         // Level is at least 1.
         if ( level <= 0 )
         {
-            throw new IllegalArgumentException( "level must be greater than 0." );
+            throw new IllegalArgumentException( "Level must be greater than 0" );
         }
 
         return level * 1200;
@@ -320,7 +326,7 @@ public class ScoreManager implements IResettable, ISaveable, IGameListener, ILev
     {
         if ( totalScore < 0 )
         {
-            throw new IllegalArgumentException( "totalScore must be non-negative." );
+            throw new IllegalArgumentException( "Total score must be non-negative" );
         }
         this.totalScore = totalScore;
     }
@@ -368,7 +374,7 @@ public class ScoreManager implements IResettable, ISaveable, IGameListener, ILev
     {
         if ( targetTotalScore < 0 )
         {
-            throw new IllegalArgumentException( "targetTotalScore must be non-negative." );
+            throw new IllegalArgumentException( "Target total score must be non-negative" );
         }
 
         this.targetTotalScore = targetTotalScore;
@@ -474,7 +480,7 @@ public class ScoreManager implements IResettable, ISaveable, IGameListener, ILev
         // See if there is a save state.
         if ( managerState.isEmpty() == true )
         {
-            CouchLogger.get().recordWarning( this.getClass(), "No save state exists." );
+            CouchLogger.get().recordWarning( this.getClass(), "No save state exists" );
             return;
         }
 

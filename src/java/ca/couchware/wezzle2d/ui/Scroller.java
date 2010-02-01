@@ -236,7 +236,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         { 
             if (val >= optionList.size())
             {
-                throw new IllegalArgumentException("Selected index is larger than option list.");
+                throw new IllegalArgumentException("Selected index is larger than the option list");
             }
             
             selectedIndex = val; return this; 
@@ -268,7 +268,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     {
         // Make sure the offset isn't too high.
         if ( scrollOffset > (rowList.size() - rows) )
-            throw new IllegalStateException("Offset too high.");
+            throw new IllegalStateException("Offset is too high");
                     
         // Make all labels invisible.
         for (ScrollerRow r : rowList)
@@ -368,7 +368,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     public Color getColor(int index)
     {
         if(index < 0 || index >= rowList.size())
-            throw new IllegalArgumentException("index out of range.");
+            throw new IllegalArgumentException("Index is out of range");
         
         IButton button = rowList.get(index).getButton();
         
@@ -385,7 +385,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     public void setColor(int index, Color color)
     {
         if(index < 0 || index >= rowList.size())
-            throw new IllegalArgumentException("index out of range.");
+            throw new IllegalArgumentException("Index is out of range");
         
         IButton button = rowList.get(index).getButton();
         
@@ -402,7 +402,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     public void setLabelColor(int index, Color color)
     {
         if(index < 0 || index >= rowList.size())
-            throw new IllegalArgumentException("index out of range.");
+            throw new IllegalArgumentException("Index is out of range");
 
         ITextLabel label = rowList.get(index).getLabel();
 
@@ -419,7 +419,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     public void setLabelText(int index, String text)
     {
         if(index < 0 || index >= rowList.size())
-            throw new IllegalArgumentException("index out of range.");
+            throw new IllegalArgumentException("Index is out of range");
 
         ITextLabel label = rowList.get(index).getLabel();
 

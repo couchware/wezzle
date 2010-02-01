@@ -34,7 +34,7 @@ public enum Sound
     Sound(int numberOfBuffers)
     {
         if (numberOfBuffers < 1)
-            throw new IllegalArgumentException("At least 1 buffer is required.");
+            throw new IllegalArgumentException("At least 1 buffer is required");
 
         this.numberOfBuffers = numberOfBuffers;
     }

@@ -125,7 +125,7 @@ public class PNGImageData
         int read = input.read(buffer, 0, SIGNATURE.length);
         if (read != SIGNATURE.length || !checkSignatur(buffer))
         {
-            throw new IOException("Not a valid PNG file.");
+            throw new IOException("Not a valid PNG file");
         }
 
         openChunk(IHDR);

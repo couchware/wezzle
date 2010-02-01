@@ -416,7 +416,7 @@ public class LWJGLGraphics implements IGraphics
     {
 		if (cornerRadius < 0)
         {
-			throw new IllegalArgumentException("Corner radius must be > 0.");
+			throw new IllegalArgumentException("Corner radius must be > 0");
         }
         
 		if (cornerRadius == 0) 
@@ -469,7 +469,7 @@ public class LWJGLGraphics implements IGraphics
     {
 		if (cornerRadius < 0)
         {
-			throw new IllegalArgumentException("Corner radius must be > 0.");
+			throw new IllegalArgumentException("Corner radius must be > 0");
         }
         
 		if (cornerRadius == 0) 

@@ -221,7 +221,7 @@ public class TutorialManager implements IResettable
         // Check to see if a tutorial is running, if it is, then we're
         // trying to reset the tutorial manager while it is running.
         if (tutorial != null)
-            throw new IllegalStateException("Cannot close tutorial manager while a tutorial is running.");
+            throw new IllegalStateException("Cannot close tutorial manager while a tutorial is running");
         
         // Clear the tutorial list.
         this.tutorialList.clear();

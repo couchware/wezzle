@@ -346,7 +346,7 @@ public class Achievement implements IXMLizable
                             Rule.NumeratorSubType.ALL_MULTIPLIERS));
                     break;
                 
-                default: throw new IllegalArgumentException("Unrecognized numerator type.");
+                default: throw new IllegalArgumentException("Unrecognized numerator type");
             }           
         }
 

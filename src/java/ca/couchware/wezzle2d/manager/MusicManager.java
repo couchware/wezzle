@@ -125,7 +125,7 @@ public class MusicManager
         this.theme = theme;       
         
         // Record what it was changed to.
-        CouchLogger.get().recordMessage(this.getClass(), "Theme set to " + theme + ".");
+        CouchLogger.get().recordMessage(this.getClass(), "Theme set to " + theme);
         
         // Stop and discard the player.
         stop();        
@@ -209,7 +209,7 @@ public class MusicManager
             case ALL:
             case RANDOM:
                 
-                throw new IllegalArgumentException("Only A, B, C are valid for this method.");                                                                            
+                throw new IllegalArgumentException("Only TRON, ELECTRONIC and HIPPOP are valid for this method");
                 
             default: throw new AssertionError();
         }  
@@ -408,7 +408,7 @@ public class MusicManager
         // Check the URL.
         if (url == null)
         {
-            throw new RuntimeException("Url Error: " + path + " does not exist.");
+            throw new RuntimeException("Url Error: " + path + " does not exist");
         }
         
         try

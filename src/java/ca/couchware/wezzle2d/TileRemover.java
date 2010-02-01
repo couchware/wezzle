@@ -183,10 +183,10 @@ public class TileRemover implements IResettable, ILevelListener
     {
         // Sanity check.
         if (game == null)
-            throw new IllegalArgumentException("Hub cannot be null.");
+            throw new IllegalArgumentException("Hub cannot be null");
         
         if (hub == null)
-            throw new IllegalArgumentException("Game cannot be null.");
+            throw new IllegalArgumentException("Game cannot be null");
         
         final ListenerManager listenerMan = hub.listenerMan;
         final PieceManager pieceMan       = hub.pieceMan;
@@ -519,10 +519,10 @@ public class TileRemover implements IResettable, ILevelListener
     {
         // Sanity check.
         if (game == null)
-            throw new IllegalArgumentException("Game cannot be null.");
+            throw new IllegalArgumentException("Game cannot be null");
 
         if (hub == null)
-            throw new IllegalArgumentException("Hub cannot be null.");
+            throw new IllegalArgumentException("Hub cannot be null");
         
         // Shortcuts to managers.
         final AnimationManager animationMan = hub.gameAnimationMan;
@@ -645,10 +645,10 @@ public class TileRemover implements IResettable, ILevelListener
     {
         // Sanity check.
         if (game == null)
-            throw new IllegalArgumentException("Game cannot be null.");
+            throw new IllegalArgumentException("Game cannot be null");
 
         if (hub == null)
-            throw new IllegalArgumentException("Hub cannot be null.");
+            throw new IllegalArgumentException("Hub cannot be null");
         
         final AnimationManager animationMan = hub.gameAnimationMan;
         final BoardManager     boardMan     = hub.boardMan;
@@ -782,10 +782,10 @@ public class TileRemover implements IResettable, ILevelListener
     {        
         // Sanity check.
         if (game == null)
-            throw new IllegalArgumentException("Game cannot be null.");
+            throw new IllegalArgumentException("Game cannot be null");
 
         if (hub == null)
-            throw new IllegalArgumentException("Hub cannot be null.");
+            throw new IllegalArgumentException("Hub cannot be null");
         
         // Create shortcuts to all the managers.
         final AnimationManager animationMan = hub.gameAnimationMan;
@@ -916,10 +916,10 @@ public class TileRemover implements IResettable, ILevelListener
     {        
         // Sanity check.
         if (game == null)
-            throw new IllegalArgumentException("Game cannot be null.");
+            throw new IllegalArgumentException("Game cannot be null");
 
         if (hub == null)
-            throw new IllegalArgumentException("Hub cannot be null.");
+            throw new IllegalArgumentException("Hub cannot be null");
         
         // Create shortcuts to all the managers.
         final AnimationManager animationMan = hub.gameAnimationMan;

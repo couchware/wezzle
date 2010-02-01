@@ -218,7 +218,7 @@ public class Tracker implements IScoreListener, IResettable
                     break;
 
                 default:
-                    throw new RuntimeException("Unknown tile type.");
+                    throw new RuntimeException("Unknown tile type: " + type);
             }
 
         }

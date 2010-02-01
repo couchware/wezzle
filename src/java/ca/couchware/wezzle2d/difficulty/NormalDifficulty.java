@@ -121,7 +121,7 @@ public class NormalDifficulty implements IDifficultyStrategy
         // See if the drop amount is -1.  If it is, then something broke.
         if (dropAmount == -1)
         {
-            throw new IllegalStateException("The drop amount was not set properly.");
+            throw new IllegalStateException("The drop amount was not set properly");
         }
 
         // Otherwise, update the total drop amount.

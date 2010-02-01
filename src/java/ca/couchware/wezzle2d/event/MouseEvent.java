@@ -68,16 +68,16 @@ public class MouseEvent extends EventObject
         
         // Check the arguments.
         if (buttonState == null)
-            throw new NullPointerException("Button state cannot be null.");
+            throw new NullPointerException("Button state cannot be null");
         
         if (modifierState == null)
-            throw new NullPointerException("Modifier state cannot be null.");
+            throw new NullPointerException("Modifier state cannot be null");
         
         if (position == null)
-            throw new NullPointerException("Position cannot be null.");
+            throw new NullPointerException("Position cannot be null");
         
         if (type == null)
-            throw new NullPointerException("Type cannot be null.");
+            throw new NullPointerException("Type cannot be null");
                 
         this.button = buttonState;
         this.modifierState = modifierState;
@@ -114,7 +114,7 @@ public class MouseEvent extends EventObject
                 this.button = Button.NONE;
                 break;
                                                 
-            default: throw new IllegalStateException("Unknown button.");
+            default: throw new IllegalStateException("Unknown button");
         }
         
         // Deal with modifiers here in the future if we need them.

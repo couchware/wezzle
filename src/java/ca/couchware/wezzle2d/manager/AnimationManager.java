@@ -74,12 +74,12 @@ public class AnimationManager implements ISaveable
 
     public void saveState()
     {
-        throw new UnsupportedOperationException("Not supported.");
+        throw new UnsupportedOperationException("Not supported");
     }
 
     public void loadState()
     {
-        throw new UnsupportedOperationException("Not supported.");
+        throw new UnsupportedOperationException("Not supported");
     }
 
     public void resetState()

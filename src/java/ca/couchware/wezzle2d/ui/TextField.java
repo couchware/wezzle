@@ -157,7 +157,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         this.height = middleSprite.getHeight();
                
         if (!validateWidth())
-            throw new RuntimeException("The button width is too narrow.");
+            throw new RuntimeException("The button width is too narrow");
                         
         // Determine the offsets.
         this.alignment = builder.alignment;

@@ -192,8 +192,6 @@ public class TimerManager implements
                 .getStrategy()
                 .determineTimeForLevel( event.getNewLevel() );
         this.setStartTime( time );
-
-        //CouchLogger.get().recordMessage( this.getClass(), "Level changed." );
     }
 
     public void resetState()

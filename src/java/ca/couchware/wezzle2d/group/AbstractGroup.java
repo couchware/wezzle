@@ -145,7 +145,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     public boolean draw()
     {
         throw new UnsupportedOperationException(
-                "This method is not supported for groups.");
+                "This method is not supported for groups");
     }
     
     /**

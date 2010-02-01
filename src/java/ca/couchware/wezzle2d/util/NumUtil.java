@@ -112,7 +112,7 @@ public class NumUtil
             double toLower, double toUpper, double fromNumber)
     {
         if(fromUpper < fromLower)
-            throw new IllegalArgumentException("fromUpper < fromLower.");
+            throw new IllegalArgumentException("fromUpper < fromLower");
         if(toUpper < toLower)
             throw new IllegalArgumentException("toUpper < toLower");
         

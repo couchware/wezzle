@@ -107,8 +107,11 @@ public class LayerManager implements IDisposable, IDrawer
     public void add(final IDrawable drawable, Layer layer)
     {         
         // The drawable cannot be null.
-         if(drawable == null || layer == null)
-            throw new IllegalArgumentException("drawable and layer cannot be null.");
+        if ( drawable == null )
+            throw new IllegalArgumentException("Drawable cannot be null");
+
+        if ( layer == null )
+            throw new IllegalArgumentException("Layer cannot be null");
 
         // Set disabledness.
         if (disabled == true && drawable instanceof IEntity)
@@ -201,7 +204,7 @@ public class LayerManager implements IDisposable, IDrawer
     public void clearLayer(Layer layer)
     {
         CouchLogger.get().recordMessage(this.getClass(),
-                String.format("Layer %s cleared of %d entities.",
+                String.format("Layer %s cleared of %d entities",
                     layer.toString(), layerList.get(layer.ordinal()).size()));
         
         layerList.get(layer.ordinal()).clear();
@@ -322,10 +325,7 @@ public class LayerManager implements IDisposable, IDrawer
 //                }
 //                //total++;
             }           
-        } // end for
-        
-        // Report the number of sprites drawn.
-        //Util.handleMessage("Drew " + count + " of " + total + " drawables.");
+        } // end for                
     }
     
     /**
@@ -476,7 +476,7 @@ public class LayerManager implements IDisposable, IDrawer
         for (List<IDrawable> layer : layerList)
         {            
             buffer.append("Layer " + i + ": " 
-                    + layer.size() + " drawables." + Settings.getLineSeparator());
+                    + layer.size() + " drawables" + Settings.getLineSeparator());
             i++;
         }       
         

@@ -341,9 +341,9 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         managerState.put( Keys.BOARD, board.clone() );
         managerState.put( Keys.SCRATCH_BOARD, scratchBoard.clone() );
 
-        CouchLogger.get().recordMessage( this.getClass(), "Saved " + numberOfTiles + " tiles." );
-        CouchLogger.get().recordMessage( this.getClass(), "Saved " + numberOfItems + " items." );
-        CouchLogger.get().recordMessage( this.getClass(), "Saved " + numberOfMultipliers + " mults." );
+        CouchLogger.get().recordMessage( this.getClass(), "Saved " + numberOfTiles + " tiles" );
+        CouchLogger.get().recordMessage( this.getClass(), "Saved " + numberOfItems + " items" );
+        CouchLogger.get().recordMessage( this.getClass(), "Saved " + numberOfMultipliers + " multipliers" );
     }
 
     /**
@@ -382,16 +382,16 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                     {
                         item.incrementCurrentAmount();
                         CouchLogger.get().recordMessage( this.getClass(), item.
-                                getTileType() + " has " + item.getCurrentAmount() + " instances." );
+                                getTileType() + " has " + item.getCurrentAmount() + " instances" );
                         break;
                     }
                 } // end for
             } // end if
         }
 
-        CouchLogger.get().recordMessage( this.getClass(), "Loaded " + numberOfTiles + " tiles." );
-        CouchLogger.get().recordMessage( this.getClass(), "Loaded " + numberOfItems + " items." );
-        CouchLogger.get().recordMessage( this.getClass(), "Loaded " + numberOfMultipliers + " multipliers." );
+        CouchLogger.get().recordMessage( this.getClass(), "Loaded " + numberOfTiles + " tiles" );
+        CouchLogger.get().recordMessage( this.getClass(), "Loaded " + numberOfItems + " items" );
+        CouchLogger.get().recordMessage( this.getClass(), "Loaded " + numberOfMultipliers + " multipliers" );
     }
 
     /**
@@ -674,7 +674,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             // Check if we have a match.
             if ( j >= minimumMatch )
             {
-                CouchLogger.get().recordMessage( this.getClass(), "XMatch of length " + j + " found." );
+                CouchLogger.get().recordMessage( this.getClass(), "XMatch of length " + j + " found" );
 
                 lineCount++;
 
@@ -761,7 +761,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             // Check if we have a match.
             if ( j >= minimumMatch )
             {
-                CouchLogger.get().recordMessage( this.getClass(), "YMatch of length " + j + " found." );
+                CouchLogger.get().recordMessage( this.getClass(), "YMatch of length " + j + " found" );
 
                 lineCount++;
 
@@ -832,7 +832,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         // Make sure the tile count hasn't changed.
         if ( newNumberOfTiles != numberOfTiles )
         {
-            throw new IllegalStateException( "Expected " + numberOfTiles + ", " + "Found " + newNumberOfTiles + "." );
+            throw new IllegalStateException( "Expected " + numberOfTiles + ", " + "Found " + newNumberOfTiles );
         }
 
         // Trade-sies!
@@ -1152,7 +1152,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 break;
 
             default:
-                throw new IllegalStateException( "Unknown direction." );
+                throw new IllegalStateException( "Unknown direction: " + direction );
         }
 
         // Return the count.
@@ -1213,7 +1213,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 
             item.incrementCurrentAmount();
             CouchLogger.get().recordMessage( this.getClass(), item.getTileType() + " has " + item.
-                    getCurrentAmount() + " instances." );
+                    getCurrentAmount() + " instances" );
         }
 
         // Set the tile.
@@ -1228,7 +1228,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             case X3:
             case X4:
 
-                CouchLogger.get().recordMessage( this.getClass(), "Multiplier added." );
+                CouchLogger.get().recordMessage( this.getClass(), "Multiplier added" );
                 this.incrementNumberOfMultipliers();
 
                 break;
@@ -1238,13 +1238,13 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             case BOMB:
             case STAR:
 
-                CouchLogger.get().recordMessage( this.getClass(), "Item added." );
+                CouchLogger.get().recordMessage( this.getClass(), "Item added" );
                 this.incrementNumberOfItems();
 
                 break;
 
             default:
-                throw new IllegalStateException( "Unhandled tile type." );
+                throw new IllegalStateException( "Unhandled tile type" );
         }
 
         // Increment tile count.
@@ -1407,7 +1407,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         // If the tile does not exist, throw an exception.
         if ( t == null )
         {
-            throw new NullPointerException( "No tile at that index." );
+            throw new NullPointerException( "No tile at that index" );
         }
 
         // Decrement the item count.
@@ -1417,7 +1417,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             Item item = itemMan.getItemOrMultiplier( t.getType() );
             item.decrementCurrentAmount();
             CouchLogger.get().recordMessage( this.getClass(), item.getTileType() + " has " + item.
-                    getCurrentAmount() + " instances." );
+                    getCurrentAmount() + " instances" );
         }
 
         switch ( t.getType() )
@@ -1429,7 +1429,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             case X3:
             case X4:
 
-                CouchLogger.get().recordMessage( this.getClass(), "Multiplier removed." );
+                CouchLogger.get().recordMessage( this.getClass(), "Multiplier removed" );
                 this.decrementNumberOfMultipliers();
 
                 break;
@@ -1439,13 +1439,13 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
             case BOMB:
             case STAR:
 
-                CouchLogger.get().recordMessage( this.getClass(), "Item removed." );
+                CouchLogger.get().recordMessage( this.getClass(), "Item removed" );
                 this.decrementNumberOfItems();
 
                 break;
 
             default:
-                throw new IllegalStateException( "Unhandled tile type." );
+                throw new IllegalStateException( "Unhandled tile type" );
         }
 
         // Remove from layer manager.
@@ -1500,13 +1500,13 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         if ( column < 0 || column >= columns )
         {
             throw new IndexOutOfBoundsException(
-                    "Column out of bounds: " + column + "." );
+                    "Column out of bounds: " + column );
         }
 
         if ( row < 0 || row >= rows )
         {
             throw new IndexOutOfBoundsException(
-                    "Row out of bounds: " + row + "." );
+                    "Row out of bounds: " + row );
         }
 
         return getTile( column + (row * columns) );
@@ -1942,7 +1942,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                     return getTile( i ).getAnimation();
                 }
             }
-            throw new IllegalStateException( "There are no tiles on the board." );
+            throw new IllegalStateException( "There are no tiles on the board" );
         }
         else
         {
@@ -2025,7 +2025,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                 }
                 else
                 {
-                    throw new AssertionError( "Angle should only be 0 or 180." );
+                    throw new AssertionError( "Angle should only be 0 or 180" );
                 }
 
                 int moveWait = settingsMan.getInt( Key.ANIMATION_SLIDEFADE_MOVE_WAIT );
@@ -2128,7 +2128,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                     return getTile( i ).getAnimation();
                 }
             }
-            throw new IllegalStateException( "There are no tiles on the board." );
+            throw new IllegalStateException( "There are no tiles on the board" );
         }
         else
         {
@@ -2497,7 +2497,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 
     public void setVisible(boolean visible)
     {
-        CouchLogger.get().recordMessage( this.getClass(), "Board visible: " + visible + "." );
+        CouchLogger.get().recordMessage( this.getClass(), "Board visible: " + visible );
 
         for ( Tile tile : board )
         {

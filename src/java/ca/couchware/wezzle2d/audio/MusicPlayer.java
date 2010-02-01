@@ -123,7 +123,7 @@ public class MusicPlayer
     {
         if (finished.get() == true)
         {
-            CouchLogger.get().recordWarning(this.getClass(), "Attempted to play a track that was finished.");
+            CouchLogger.get().recordWarning(this.getClass(), "Attempted to play a track that was finished");
             return;
         }
         
@@ -193,9 +193,7 @@ public class MusicPlayer
                 double delta = FADE_DELTA;
 
                 if (NumUtil.equalsDouble(n, targetNormalizedGain, EPSILON))
-                {
-                    //LogManager.get().recordMessage("Fade completed.");
-                    
+                {                                        
                     // Cancel this runnable.          
                     synchronized (fadeFutureLock)
                     {
@@ -280,9 +278,7 @@ public class MusicPlayer
             final private double targetGain = nGain;
             
             public void run()
-            {
-                //CouchLogger.get().recordMessage(MusicPlayer.class, "Checking...");
-                
+            {                
                 if (NumUtil.equalsDouble(targetGain, normalizedGain.get(), EPSILON))
                 {                                        
                     synchronized (player)

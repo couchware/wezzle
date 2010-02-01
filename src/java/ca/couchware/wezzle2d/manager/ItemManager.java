@@ -291,7 +291,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         item = multiplierMap.get(type);
         if (item != null) return item;
         
-        throw new RuntimeException("Attempted to get an item or multiplier that did not exist.");
+        throw new RuntimeException("Attempted to get an item or multiplier that did not exist");
 	}
        
         
@@ -444,7 +444,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 		
 		// We should never get here.
 		CouchLogger.get().recordWarning(this.getClass(),
-                "Random number out of range! (" + randomNumber + ").");
+                "Random number out of range! (" + randomNumber + ")");
         
 		return itemList.get(0);
 	}
@@ -511,7 +511,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
        {
            i.decrementCooldown();
           CouchLogger.get().recordMessage(this.getClass(),
-                  String.format("%s's cooldown is %d.", i.getTileType(), i.getCooldown()));
+                  String.format("%s's cooldown is %d", i.getTileType(), i.getCooldown()));
        }
     }
 

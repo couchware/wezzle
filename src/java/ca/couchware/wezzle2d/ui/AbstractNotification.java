@@ -111,13 +111,13 @@ public abstract class AbstractNotification extends AbstractEntity implements INo
     @Override
     public void setWidth(int width)
     {
-        throw new UnsupportedOperationException("Achievement notification width is immutable.");
+        throw new UnsupportedOperationException("Achievement notification width is immutable");
     }
 
     @Override
     public void setHeight(int height)
     {
-        throw new UnsupportedOperationException("Achievement notification width is immutable.");
+        throw new UnsupportedOperationException("Achievement notification width is immutable");
     }
 
     @Override

@@ -256,7 +256,7 @@ public class LWJGLWindow implements IWindow
             if (targetDisplayMode == null)
             {
                 throw new RuntimeException(
-                        "Failed to find value mode: " + width + "x" + height + " fullscreen=" + fullscreen + ".");
+                        "Failed to find value mode: " + width + "x" + height + " fullscreen=" + fullscreen);
             }
 
             Display.setFullscreen(fullscreen);
@@ -265,7 +265,7 @@ public class LWJGLWindow implements IWindow
         catch (LWJGLException e)
         {
             String message = String.format(
-                    "Unable to setup mode %dx%d (fullscreen = %s).",
+                    "Unable to setup mode %dx%d (fullscreen = %s)",
                     width, height, fullscreen);
 
             throw new LWJGLException(message, e);

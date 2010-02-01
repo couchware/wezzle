@@ -114,7 +114,7 @@ public class ResourceFactory
         // types
         if ( window != null )
         {
-            throw new RuntimeException( "You may not change the rendering type during runtime." );
+            throw new RuntimeException( "You may not change the rendering type during runtime" );
         }
 
         this.renderer = renderer;
@@ -200,7 +200,7 @@ public class ResourceFactory
         if ( window == null )
         {
             throw new RuntimeException(
-                    "Attempt to retrieve sprite before game window was created." );
+                    "Attempt to retrieve sprite before game window was created" );
         }
 
         switch ( renderer )

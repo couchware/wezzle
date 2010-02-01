@@ -949,10 +949,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
 
     @Override
     public void mouseReleased(MouseEvent e)
-    {
-        // Debug.
-        //Util.handleMessage("Button clicked.", Thread.currentThread());                
-
+    {        
         // Retrieve the mouse position.
         final ImmutablePosition p = window.getMouseImmutablePosition();
 

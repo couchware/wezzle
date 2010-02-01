@@ -600,7 +600,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     final public void setVirtualValue(int value)
     {
         if(value < virtualLower || value > virtualUpper)
-            throw new IllegalArgumentException("value out of range.");
+            throw new IllegalArgumentException("Value is out of range");
        
         this.virtualValue = value;
         

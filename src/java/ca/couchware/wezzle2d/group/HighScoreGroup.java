@@ -50,8 +50,9 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
     public HighScoreGroup(ManagerHub hub)
     {
         // Save a reference to the hub.
-        if(hub == null)
-            throw new IllegalArgumentException("hub must not be null.");
+        if (hub == null)
+            throw new IllegalArgumentException("Hub must not be null");
+        
         this.hub = hub;
                  
         // Create the high score header.

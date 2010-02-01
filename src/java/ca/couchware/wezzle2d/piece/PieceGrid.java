@@ -433,13 +433,13 @@ public class PieceGrid extends AbstractEntity
     @Override
     public void setWidth(int width)
     {
-        throw new UnsupportedOperationException( "Not supported." );
+        throw new UnsupportedOperationException( "Not supported" );
     }
 
     @Override
     public void setHeight(int height)
     {
-        throw new UnsupportedOperationException( "Not supported." );
+        throw new UnsupportedOperationException( "Not supported" );
     }
 
     public Color getColor()

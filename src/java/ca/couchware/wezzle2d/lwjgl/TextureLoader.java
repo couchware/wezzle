@@ -362,7 +362,7 @@ public class TextureLoader
 
         if (url == null)
         {
-            throw new IOException("Cannot find: " + path + ".");
+            throw new IOException("Cannot find: " + path);
         }
 
         BufferedImage bufferedImage = ImageIO.read(new BufferedInputStream(

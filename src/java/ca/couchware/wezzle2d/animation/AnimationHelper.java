@@ -167,10 +167,10 @@ public class AnimationHelper
     {
         // Sanity check.
         if (hub == null)
-            throw new IllegalArgumentException("Hub cannot be null.");
+            throw new IllegalArgumentException("Hub cannot be null");
 
         if (tile == null)
-            throw new IllegalArgumentException("Tile cannot be null.");
+            throw new IllegalArgumentException("Tile cannot be null");
 
         // The clone of tile, used to make the effect.
         final Tile clone = TileHelper.cloneTile(tile);

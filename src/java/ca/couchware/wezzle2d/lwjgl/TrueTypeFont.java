@@ -134,10 +134,10 @@ public class TrueTypeFont implements Serializable
     public TrueTypeFont(TextureLoader textureLoader, Font font)
     {
         if (textureLoader == null)
-            throw new NullPointerException("Texture loader must not be null.");
+            throw new NullPointerException("Texture loader must not be null");
         
         if (font == null)
-            throw new NullPointerException("Font must not be null.");
+            throw new NullPointerException("Font must not be null");
             
         this.font = font;
         this.fontSize = font.getSize();

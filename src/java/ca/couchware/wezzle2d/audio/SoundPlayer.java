@@ -68,7 +68,7 @@ public class SoundPlayer
         
         // Check the URL.
         if (url == null)
-            throw new RuntimeException("Url Error: " + path + " does not exist.");                
+            throw new RuntimeException("Url Error: " + path + " does not exist");                
                
         // Open the clip.
         open();
@@ -78,9 +78,7 @@ public class SoundPlayer
     }               
     
     public void play()
-    {
-        //LogManager.get().recordMessage("Playing in clip-mode.", "AudioPlayer#playClip");
-        
+    {       
         // Play clip from the start.
         clip.setFramePosition(0);
         clip.start();

@@ -126,15 +126,15 @@ public class Rule
     {
         if (type == null)
         {
-            throw new NullPointerException("Type cannot be null.");
+            throw new NullPointerException("Type cannot be null");
         }
         if (operation == null)
         {
-            throw new NullPointerException("Operation cannot be null.");
+            throw new NullPointerException("Operation cannot be null");
         }
         if (value < 0)
         {
-            throw new IllegalArgumentException("Value must be >= 0.");
+            throw new IllegalArgumentException("Value must be >= 0");
         }
 
         this.type = type;
@@ -250,10 +250,11 @@ public class Rule
     public boolean evaluate(Game game, ManagerHub hub)
     {        
         // Sanity check.
-        if(game == null || hub == null)
-        {
-            throw new IllegalArgumentException("game and hub cannot be null.");
-        }
+        if (game == null)
+            throw new IllegalArgumentException("Game cannot be null");
+
+        if (hub == null)
+            throw new IllegalArgumentException("Hub cannot be null");
 
         
         // Make sure we're not a COLLISION-type.
@@ -295,7 +296,7 @@ public class Rule
                 break;
                 
             default:
-                throw new IllegalArgumentException("Unknown type.");                
+                throw new IllegalArgumentException("Unknown type");                
         }
                                   
         // If the test is successful, return true, otherwise, return false         
@@ -327,7 +328,7 @@ public class Rule
                 break;
                 
             default:
-                throw new IllegalArgumentException("Unknown operation.");
+                throw new IllegalArgumentException("Unknown operation");
         }
         
         return false;

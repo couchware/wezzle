@@ -8,13 +8,8 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.ContextBase;
 import ch.qos.logback.core.layout.EchoLayout;
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
@@ -66,9 +61,7 @@ public class CouchLogger
         rollingPolicy.setFileNamePattern(Settings.getLogPath() + "/log-%d{MM-yyyy}.txt");
         rollingPolicy.setContext(context);
         rollingPolicy.setMaxHistory(6);
-        rollingPolicy.setParent(rollingAppender);
-
-       
+        rollingPolicy.setParent(rollingAppender);      
 
         try
         {
@@ -107,6 +100,7 @@ public class CouchLogger
     // ---------------------------------------------------------------------------
     // Static Methods
     // ---------------------------------------------------------------------------
+
     /**
      * Prints an error to standard error, dumps the stack, and then terminates
      * the program.
@@ -135,7 +129,7 @@ public class CouchLogger
         {
    
             Sys.alert("Wezzle", "Error!" + Settings.getLineSeparator()
-                    + e.getMessage() + Settings.getLineSeparator()
+                    + e.getMessage() + "." + Settings.getLineSeparator()
                     + Settings.getLineSeparator()
                     + "Please visit http://couchware.ca/www/support for help.");
 
@@ -158,7 +152,7 @@ public class CouchLogger
     {
         if ( cls == null )
         {
-            throw new IllegalArgumentException( "cls must not be null." );
+            throw new IllegalArgumentException( "Class must not be null" );
         }
 
         String method = extractClassName( cls );
@@ -177,7 +171,7 @@ public class CouchLogger
     {
         if ( cls == null )
         {
-            throw new IllegalArgumentException( "cls must not be null." );
+            throw new IllegalArgumentException( "Class must not be null" );
         }
 
         String method = extractClassName( cls );

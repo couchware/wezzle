@@ -148,7 +148,7 @@ public class SettingsManager
         } // end if  
         else
         {
-            CouchLogger.get().recordWarning( this.getClass(), "Could not load external settings." );
+            CouchLogger.get().recordWarning( this.getClass(), "Could not load external settings" );
         }
     }
 
@@ -512,7 +512,7 @@ public class SettingsManager
         {
             if ( getStringUnchecked( key ) == null )
             {
-                throw new NullPointerException( "Key did not exist." );
+                throw new NullPointerException( "Key did not exist" );
             }
 
             val = Integer.parseInt( getStringUnchecked( key ) );
@@ -635,7 +635,7 @@ public class SettingsManager
         }
         else
         {
-            throw new UnsupportedOperationException( "Cannot cast non-list to list." );
+            throw new UnsupportedOperationException( "Cannot cast non-list to list" );
         }
 
         return Collections.unmodifiableList( list );

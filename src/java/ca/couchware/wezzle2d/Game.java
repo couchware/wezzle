@@ -495,7 +495,7 @@ public class Game extends Canvas implements IWindowCallback
                         break;
                         
                     case NOTHING:
-                        throw new IllegalStateException("This should not occur.");                        
+                        throw new IllegalStateException("Transition target was not set");
                 }
                 
                 transitionTo = TransitionTarget.NOTHING;                
@@ -537,13 +537,13 @@ public class Game extends Canvas implements IWindowCallback
                     default:
                         
                         throw new IllegalStateException(
-                                "Unrecogonized fade animation type.");
+                                "Unrecogonized fade animation type");
                 }                                               
             }            
             else
             {
                 throw new RuntimeException(
-                        "Unrecognized board animation class.");
+                        "Unrecognized board animation class");
             }
 
             // Clear the board animation.
@@ -624,7 +624,7 @@ public class Game extends Canvas implements IWindowCallback
         if (window.isKeyPressed('R'))
         {
             hub.settingsMan.loadExternalSettings();
-            CouchLogger.get().recordMessage(this.getClass(), "Reloaded external settings.");
+            CouchLogger.get().recordMessage(this.getClass(), "Reloaded external settings");
         }
         
         // Check the achievements.
@@ -841,11 +841,11 @@ public class Game extends Canvas implements IWindowCallback
         // Set the flag.
         if (activateBoardHideAnimation == true)
             throw new IllegalStateException(
-                    "Attempted to show board while it is being hidden.");
+                    "Attempted to show board while it is being hidden");
         
         if (activateBoardShowAnimation == true)
             throw new IllegalStateException(
-                    "Attempted to show board while it is already being shown.");
+                    "Attempted to show board while it is already being shown");
         
         activateBoardShowAnimation = true;
         boardAnimationType = type;
@@ -862,11 +862,11 @@ public class Game extends Canvas implements IWindowCallback
         // Set the flag.
         if (activateBoardShowAnimation)
             throw new IllegalStateException(
-                    "Attempted to hide board while it is being shown.");
+                    "Attempted to hide board while it is being shown");
         
         if (activateBoardHideAnimation)
             throw new IllegalStateException(
-                    "Attempted to hide board while it is already being hidden.");
+                    "Attempted to hide board while it is already being hidden");
         
         activateBoardHideAnimation = true;
         boardAnimationType = type;
@@ -963,7 +963,7 @@ public class Game extends Canvas implements IWindowCallback
                 hub.settingsMan.saveSettings();
             }
 
-            CouchLogger.get().recordMessage(this.getClass(), "Game closed.");
+            CouchLogger.get().recordMessage(this.getClass(), "Game closed");
         }
         catch(Exception e)
         {
@@ -1140,10 +1140,10 @@ public class Game extends Canvas implements IWindowCallback
                 hexBuffer.append(String.format("%02x", hex));
             }
 
-            if(null == storedLicenseKey)
+            if (null == storedLicenseKey)
             {
                 CouchLogger.get().recordException(this.getClass(),
-                        new Exception("License is missing or corrupt."), true);
+                        new Exception("License is missing or corrupt"), true);
             }
             
             if (storedLicenseKey.toLowerCase()

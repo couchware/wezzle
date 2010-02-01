@@ -204,7 +204,7 @@ public class StatManager implements IResettable, ISaveable, IGameListener, ILine
     {
         if(cycleLineCount < 0)
         {
-           throw new IllegalArgumentException("cycleLineCount must be non-negative.");
+           throw new IllegalArgumentException("Cycle line count must be non-negative");
         }
         this.cycleLineCount = cycleLineCount;
     }        
@@ -233,7 +233,7 @@ public class StatManager implements IResettable, ISaveable, IGameListener, ILine
     {
         if(startLevel <= 0)
         {
-           throw new IllegalArgumentException("startLevel must be greater than 0.");
+           throw new IllegalArgumentException("Start level must be greater than 0");
         }
         this.startLevel = startLevel;
     }        
@@ -310,7 +310,7 @@ public class StatManager implements IResettable, ISaveable, IGameListener, ILine
         // See if there is a save state.
         if (managerState.isEmpty() == true)
         {
-            CouchLogger.get().recordWarning(this.getClass(), "No save state exists.");
+            CouchLogger.get().recordWarning(this.getClass(), "No save state exists");
             return;
         }
         

@@ -151,7 +151,7 @@ public enum Ascii
         if (ch < values.length)
             return values[ch];
             
-        throw new IllegalArgumentException("Not a valid ASCII character.");                    
+        throw new IllegalArgumentException("Not a valid ASCII character");                    
     }
     
     @Override

@@ -80,7 +80,7 @@ public class FontStore
         // Otherwise, derive all other fonts from the size 1.        
         else
         {
-            //CouchLogger.get().recordMessage( this.getClass(), "Font size " + size + " created." );
+            //CouchLogger.get().recordMessage( this.getClass(), "Font size " + size + " created" );
 
             // Create the base font if it doesn't exist.
             if ( baseFont == null )
@@ -98,7 +98,7 @@ public class FontStore
             return ttfont;
         }
 
-        throw new IllegalStateException( "Font problem." );
+        throw new IllegalStateException( "Unknown font problem" );
     }
 
 }

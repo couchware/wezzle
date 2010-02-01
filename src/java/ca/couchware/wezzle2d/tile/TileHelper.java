@@ -82,7 +82,7 @@ public class TileHelper
                 t = new GravityTile(color, x, y);
                 break;
 
-            default: throw new AssertionError("Unknown type.");
+            default: throw new AssertionError("Unknown type");
         }
 
         return t;

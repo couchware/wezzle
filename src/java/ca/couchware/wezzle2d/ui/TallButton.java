@@ -46,7 +46,7 @@ public class TallButton extends Button
                                
         // Validate the width.
         if (!validateWidth())
-            throw new RuntimeException("The button width is too narrow.");
+            throw new RuntimeException("The button width is too narrow");
         
         // Recalulate offests.
         this.offsetX = determineOffsetX(alignment, width);

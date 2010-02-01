@@ -256,7 +256,7 @@ public class ImageIOImageData
      */
     public ByteBuffer getImageBufferData()
     {
-        throw new RuntimeException( "ImageIOImageData doesn't store it's image." );
+        throw new RuntimeException( "ImageIOImageData doesn't store it's image" );
     }
 
     /**

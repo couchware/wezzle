@@ -148,15 +148,15 @@ public class ProgressBar extends AbstractEntity
 
         if ( progressUpper <= progressLower )
         {
-            throw new IllegalStateException( "progressUpper <= progressLower." );
+            throw new IllegalStateException( "progressUpper <= progressLower" );
         }
         if ( progressValue < progressLower )
         {
-            throw new IllegalStateException( "progressValue < progressLower." );
+            throw new IllegalStateException( "progressValue < progressLower" );
         }
         if ( progressValue > progressUpper )
         {
-            throw new IllegalStateException( "progressValue > progressUpper." );
+            throw new IllegalStateException( "progressValue > progressUpper" );
         }
 
 
@@ -494,7 +494,7 @@ public class ProgressBar extends AbstractEntity
     {
         // Wig out.
         throw new UnsupportedOperationException(
-                "Height cannot be set on progress bar." );
+                "Height cannot be set on progress bar" );
     }    
 
 }
