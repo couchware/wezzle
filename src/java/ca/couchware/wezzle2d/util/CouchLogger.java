@@ -1,6 +1,6 @@
 package ca.couchware.wezzle2d.util;
 
-import ca.couchware.wezzle2d.manager.*;
+import ca.couchware.wezzle2d.manager.Settings;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;

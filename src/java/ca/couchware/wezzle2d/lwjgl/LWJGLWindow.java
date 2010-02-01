@@ -62,7 +62,7 @@ public class LWJGLWindow implements IWindow
     private boolean gameRunning = true;
 
     /** True if the window is active. */
-    private boolean active = false;
+    private boolean activated = false;
 
     /** The width of the game display area. */
     private int width;
@@ -480,6 +480,9 @@ public class LWJGLWindow implements IWindow
         GL11.glClearStencil(0);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
 
+        // Set the display activeness.
+        this.activated = Display.isActive();
+
         while (gameRunning)
         {
             // Always call Window.update(), all the time - it does some behind the
@@ -497,23 +500,22 @@ public class LWJGLWindow implements IWindow
                 gameRunning = false;
                 Display.destroy();
                 callback.windowClosed();
-            }
-            //else if (Display.)
-            //{
-
-            //}
-            // The window is in the foreground, so we should play the game
-            else // if (Display.isActive())
+            }                    
+            else
             {
-                // Notify of activation.
-                if (!this.active)
+                if (false) { }
+                else if (this.activated && !Display.isActive())
+                {
+                    callback.windowDeactivated();
+                    this.activated = false;
+                }             
+                else if (!this.activated && Display.isActive())
                 {
                     callback.windowActivated();
-                    this.active = true;
+                    this.activated = true;
                 }
 
-                callback.update();
-                //callback.draw();
+                callback.update();               
 
                 // Only bother rendering if the window is visible or dirty
                 if (Display.isVisible() || Display.isDirty())

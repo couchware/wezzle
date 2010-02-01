@@ -972,9 +972,7 @@ public class Game extends Canvas implements IWindowCallback
 
         System.exit(0);
     }
-
-
-    
+   
     /**
      * Notification that the game window has been deactivated in some way.
      */
