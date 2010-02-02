@@ -22,7 +22,7 @@
   ; R9 contains the license key
     
   !define MUI_FINISHPAGE_RUN
-  !define MUI_FINISHPAGE_RUN_TEXT "Run Wezzle"  
+  !define MUI_FINISHPAGE_RUN_TEXT "Run ${APP_SHORT_NAME}"  
   !define MUI_FINISHPAGE_RUN_FUNCTION ExecApplication
   
   ; This is for making the license key take uppercase only    
@@ -40,6 +40,16 @@
     System::Call 'user32::SetWindowLongA(i ${HWND},i -16,i r1) n'
     
   !macroend  
+  
+  ; This is the workaround so we can have a pretty uninstaller name
+  ; when the user manually runs the uninstaller.
+  
+  ; This is used by the uninstaller to communicate whether or not
+  ; we've open a new process yet to mask the AU_.exe name.
+  !define UNINSTALLER_INI "uac.ini"
+  
+  ; This is the pretty uninstaller name we'll use.
+  !define UNINSTALLER_NAME "Uninstall"
 
 ;--------------------------------
 ; Include InstallOptions
@@ -215,8 +225,8 @@ Function .onInit
     UAC_Elevate:
         UAC::RunElevated 
         StrCmp 1223 $0 UAC_ElevationAborted ; UAC dialog aborted by user?
-        StrCmp 0 $0 0 UAC_Err ; Error?
-        StrCmp 1 $1 0 UAC_Success ; Are we the real deal or just the wrapper?
+        StrCmp 0 $0 0 UAC_Err               ; Error?
+        StrCmp 1 $1 0 UAC_Success           ; Are we the real deal or just the wrapper?
         Quit
  
     UAC_Err:
@@ -229,7 +239,7 @@ Function .onInit
         Abort
      
     UAC_Success:
-        StrCmp 1 $3 +4 ; Admin?
+        StrCmp 1 $3 +4                     ; Admin?
         StrCmp 3 $1 0 UAC_ElevationAborted ; Try again?
         MessageBox mb_iconstop "Setup requires Administrator access to install."
         goto UAC_Elevate     
@@ -244,7 +254,7 @@ Function .onInit
         StrCpy $INSTDIR $R1
     ${EndIf}
     
-    ; Extract the INI file for the registration page.
+    ; Extract the INI file for the license page.
     !insertmacro INSTALLOPTIONS_EXTRACT "license.ini"           
 
 FunctionEnd
@@ -254,6 +264,53 @@ Function .OnInstFailed
 FunctionEnd
  
 Function .OnInstSuccess
+    UAC::Unload ; Must call unload DLL.
+FunctionEnd
+
+;--------------------------------
+; un.Init
+
+Function un.onInit
+    
+    ReadIniStr $0 "$EXEDIR\${UNINSTALLER_INI}" UAC first
+    ${If} $0 <> 1
+        InitPluginsDir
+        WriteIniStr "$PluginsDir\${UNINSTALLER_INI}" UAC first 1
+        CopyFiles /SILENT "$EXEPATH" "$PluginsDir\${UNINSTALLER_NAME}.exe"
+        ExecWait '"$PluginsDir\${UNINSTALLER_NAME}.exe" _?=$INSTDIR' $0
+        SetErrorLevel $0
+        Quit
+    ${EndIf}
+    
+    UAC_Elevate:
+        UAC::RunElevated 
+        StrCmp 1223 $0 UAC_ElevationAborted ; UAC dialog aborted by user?
+        StrCmp 0 $0 0 UAC_Err               ; Error?
+        StrCmp 1 $1 0 UAC_Success           ; Are we the real deal or just the wrapper?
+        Quit
+ 
+    UAC_Err:
+        MessageBox mb_iconstop "Uninstaller was unable to elevate access (error $0)."
+        Abort
+     
+    UAC_ElevationAborted:
+        ; Elevation was aborted, run as normal?
+        MessageBox mb_iconstop "Uninstaller requires Administrator access to uninstall."
+        Abort
+     
+    UAC_Success:
+        StrCmp 1 $3 +4                     ; Admin?
+        StrCmp 3 $1 0 UAC_ElevationAborted ; Try again?
+        MessageBox mb_iconstop "Uninstaller requires Administrator access to uninstall."
+        goto UAC_Elevate         
+
+FunctionEnd
+
+Function un.OnUnInstFailed
+    UAC::Unload ; Must call unload DLL.
+FunctionEnd
+ 
+Function un.OnUnInstSuccess
     UAC::Unload ; Must call unload DLL.
 FunctionEnd
 
@@ -586,7 +643,6 @@ Function WriteToFile
    
 FunctionEnd
 
-
 ;--------------------------------
 ; Descriptions
 
@@ -609,11 +665,10 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ; ADD YOUR OWN FILES HERE...
-
   Delete "$INSTDIR\Uninstall.exe"
 
   ; Remove shortcuts.
+  Delete "$DESKTOP\${APP_SHORT_NAME}.lnk"
   Delete "$SMPROGRAMS\${APP_SHORT_NAME}\*.*"
   RMDir "$SMPROGRAMS\${APP_SHORT_NAME}"
 
