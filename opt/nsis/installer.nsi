@@ -10,7 +10,7 @@
   !define APP_SHORT_NAME "Wezzle"
   !define APP_FULL_NAME "Wezzle"
   !define APP_VERSION "1.0"
-  !define JAVA_REQUIRED "1.5.0"
+  !define JAVA_REQUIRED "1.6.0"
   !define JAVA_INSTALLER "..\jre-installer\jre-6u17-windows-i586-s.exe"
   !define HKCU_REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"
   !define HKLM_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_FULL_NAME}"
