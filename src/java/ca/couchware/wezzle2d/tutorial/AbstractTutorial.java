@@ -308,37 +308,18 @@ public abstract class AbstractTutorial implements ITutorial
 
         });
 
-        hub.gameAnimationMan.add( fadeButtons );
-                        
-        EntityGroup text = new EntityGroup( labelList );
-        EntityGroup entities = new EntityGroup( text, bubble );
+        hub.gameAnimationMan.add( fadeButtons );                               
 
-        IAnimation fadeEntities = new FadeAnimation
-                .Builder(FadeAnimation.Type.OUT, entities)
-                .duration( 300 )
-                .build();
+        hub.layerMan.remove(bubble, Layer.EFFECT);
+        bubble.dispose();
+        bubble = null;
 
-        fadeEntities.addAnimationListener( new AnimationAdapter()
+        for (ITextLabel label : labelList)
         {
-
-            @Override
-            public void animationFinished()
-            {
-                hub.layerMan.remove(bubble, Layer.EFFECT);
-                bubble.dispose();
-                bubble = null;
-
-                for (ITextLabel label : labelList)
-                {
-                    hub.layerMan.remove(label, Layer.EFFECT);
-                    label.dispose();
-                }
-                labelList = null;
-            }
-
-        });
-
-        hub.gameAnimationMan.add( fadeEntities );
+            hub.layerMan.remove(label, Layer.EFFECT);
+            label.dispose();
+        }
+        labelList = null;
         
         // Remove the restriction board.
         hub.pieceMan.clearRestrictionBoard();
