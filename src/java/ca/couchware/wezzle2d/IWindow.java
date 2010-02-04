@@ -51,11 +51,14 @@ public interface IWindow
      * Start the game window rendering the display
      */
     public void start();
-
+    
     /**
-     * Update the key presses.
+     * Pops up an alert with the given title and message.
+     * 
+     * @param title
+     * @param message
      */
-    public void updateKeyPresses();
+    public void alert(String title, String message);
 
     /**
      * Set the callback that should be notified of the window events.
@@ -63,7 +66,16 @@ public interface IWindow
      * @param callback
      *            The callback that should be notified of game window events.
      */
-    public void setGameWindowCallback(IWindowCallback callback);
+    public void setGameWindowCallback(IWindowCallback callback);    
+
+    //--------------------------------------------------------------------------
+    // Keyboard
+    //--------------------------------------------------------------------------
+
+    /**
+     * Update the key presses.
+     */
+    public void updateKeyPresses();
 
     /**
      * Check if a particular key is pressed
@@ -73,10 +85,6 @@ public interface IWindow
      * @return True if the particular key is pressed
      */
     public boolean isKeyPressed(int keyCode);
-
-    //--------------------------------------------------------------------------
-    // Keyboard
-    //--------------------------------------------------------------------------
 
     /**
      * Registers a mouse listener.

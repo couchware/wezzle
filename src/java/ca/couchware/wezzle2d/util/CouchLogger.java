@@ -1,5 +1,7 @@
 package ca.couchware.wezzle2d.util;
 
+import ca.couchware.wezzle2d.IWindow;
+import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.manager.Settings;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -13,7 +15,6 @@ import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
-import org.lwjgl.Sys;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -127,8 +128,8 @@ public class CouchLogger
 
         if (fatal)
         {
-   
-            Sys.alert("Wezzle", "Error!" + Settings.getLineSeparator()
+            IWindow win = ResourceFactory.get().getWindow();
+            win.alert("Wezzle", "Error!" + Settings.getLineSeparator()
                     + e.getMessage() + "." + Settings.getLineSeparator()
                     + Settings.getLineSeparator()
                     + "Please visit http://couchware.ca/www/support for help.");

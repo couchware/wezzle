@@ -335,7 +335,7 @@ public class Game extends Canvas implements IWindowCallback
         loader = new Loader("Loading Wezzle...", hub.settingsMan);
         setDrawer(loader);
 
-        // Check registration.
+        // Check license.
         loader.addTask( new Runnable()
         {
             @Override
@@ -344,12 +344,12 @@ public class Game extends Canvas implements IWindowCallback
                 boolean registered = validateLicenseInformation();
                 if (registered)
                 {
-                    CouchLogger.get().recordMessage( this.getClass(), "The registration code is verified");
+                    CouchLogger.get().recordMessage( this.getClass(), "License information verified");
                 }
                 else
                 {
                     CouchLogger.get().recordException( this.getClass(), 
-                            new Exception("The registration code is invalid"),
+                            new Exception("Invalid license information"),
                             true /* Fatal */);
                 }
             }

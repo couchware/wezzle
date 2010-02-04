@@ -21,8 +21,6 @@ import ca.couchware.wezzle2d.util.ImmutablePosition;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -529,9 +527,17 @@ public class LWJGLWindow implements IWindow
         } // end while
     }
 
-    //--------------------------------------------------------------------------
-    // Color & clip code.
-    //--------------------------------------------------------------------------
+    /**
+     * {@inheritDoc}
+     * 
+     * @param title
+     * @param message
+     */
+    public void alert(String title, String message)
+    {
+        Sys.alert(title, message);
+    }
+
     @Override
     public void setCursor(int type)
     {
@@ -916,8 +922,7 @@ public class LWJGLWindow implements IWindow
     /**
      * Clears the mouse events instead of firing them.
      */
-
-    @SuppressWarnings("empty-statement") // Not sure if this is doing anything.
+    @SuppressWarnings("empty-statement")
     @Override
     public void clearMouseEvents()
     {
