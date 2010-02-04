@@ -280,7 +280,7 @@ public class Settings
     
     /** The path to the user settings file. */
     final private static String externalSettingsPath = 
-            System.getProperty("user.home") + "/.Couchware/Wezzle";
+            System.getProperty("user.home") + "/.couchware/Wezzle";
                     
     /** The file path of external game settings file. */
     final private static String gameSettingsFilePath = externalSettingsPath 

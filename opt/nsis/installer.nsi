@@ -14,7 +14,7 @@
   !define JAVA_INSTALLER "..\jre-installer\jre-6u17-windows-i586-s.exe"
   !define HKCU_REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"
   !define HKLM_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_FULL_NAME}"
-  !define USER_DIR "$PROFILE\.Couchware\Wezzle"
+  !define USER_DIR "$PROFILE\.couchware\Wezzle"
   
   !define SECRET_CODE "minsquibbion"
   !define HEXADECIMAL "0123456789abcdefABCDEF"
@@ -123,32 +123,11 @@ Section "Wezzle" SecWezzle
 
   File /r ..\..\dist\*.*
 
-  ; Write license information.
-  ; We write to the game-settings.xml instead of
-  ; the user-settings.xml so we don't clobber any
-  ; existing user settings like high scores.
-  ; Upon the first running of the game, Wezzle will
-  ; automatically move the registration information
-  ; into the user-settings.xml file.
-  Delete "${USER_DIR}\license.xml"
-  
-  Var /GLOBAL ln0
-  Var /GLOBAL ln1
-  Var /GLOBAL ln2
-  Var /GLOBAL ln3
-  Var /GLOBAL ln4
-  
-  StrCpy $ln0 `<?xml version="1.0" encoding="UTF-8"?>$\r$\n`
-  StrCpy $ln1 `<settings>$\r$\n`
-  StrCpy $ln2 `  <entry name="User.Serial.Number">$R8</entry>$\r$\n`
-  StrCpy $ln3 `  <entry name="User.License.Key">$R9</entry>$\r$\n`
-  StrCpy $ln4 `</settings>$\r$\n`
-  
-  Push "$ln0$ln1$ln2$ln3$ln4"
-  Push "${USER_DIR}\license.xml"
-  Call WriteToFile
+  ; Write license information with user privileges.
+  GetFunctionAddress $0 WriteLicense
+  UAC::ExecCodeSegment $0 
 
-  ; Store installation folder
+  ; Store installation folder.
   WriteRegStr HKLM "${HKLM_REG_KEY}" "InstallDir" $INSTDIR
 
   ; Setup Add/Remove information.
@@ -548,6 +527,40 @@ Function DetectJava
     Pop $1	; => rv,r0
     Exch	; => r0,rv
     Pop $0	; => rv
+
+FunctionEnd
+
+;--------------------------------
+; Write License
+
+Function WriteLicense
+
+    CreateDirectory "${USER_DIR}"
+    
+    ; Write license information.
+    ; We write to the game-settings.xml instead of
+    ; the user-settings.xml so we don't clobber any
+    ; existing user settings like high scores.
+    ; Upon the first running of the game, Wezzle will
+    ; automatically move the registration information
+    ; into the user-settings.xml file.
+    Delete "${USER_DIR}\license.xml"
+  
+    Var /GLOBAL ln0
+    Var /GLOBAL ln1
+    Var /GLOBAL ln2
+    Var /GLOBAL ln3
+    Var /GLOBAL ln4
+  
+    StrCpy $ln0 `<?xml version="1.0" encoding="UTF-8"?>$\r$\n`
+    StrCpy $ln1 `<settings>$\r$\n`
+    StrCpy $ln2 `  <entry name="User.Serial.Number">$R8</entry>$\r$\n`
+    StrCpy $ln3 `  <entry name="User.License.Key">$R9</entry>$\r$\n`
+    StrCpy $ln4 `</settings>$\r$\n`
+  
+    Push "$ln0$ln1$ln2$ln3$ln4"
+    Push "${USER_DIR}\license.xml"
+    Call WriteToFile
 
 FunctionEnd
 
