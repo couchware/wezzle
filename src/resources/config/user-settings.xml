@@ -14,7 +14,7 @@
   <entry name="User.Piece.Preview.Traditional">true</entry>
   <entry name="User.Piece.Preview.Overlay">false</entry>
   <entry name="User.Piece.Preview.Shadow">false</entry>
-  <entry name="User.Graphics.Fullscreen">false</entry>
+  <entry name="User.Graphics.Fullscreen">true</entry>
   <entry name="User.Graphics.Antialiasing.Samples">4</entry>
   <entry name="User.Auto.Pause">true</entry>  
   <entry name="User.Tutorial.Basic.Ran">false</entry>
