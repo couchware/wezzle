@@ -203,16 +203,6 @@ public class Game extends Canvas implements IWindowCallback
      */
     public Game(ResourceFactory.Renderer renderer)
     {
-        // Print the build number.
-        Class cls = this.getClass();
-        CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
-        CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
-        CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
-        CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
-        CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
-        CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
-        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
-
         // Create a window based on a chosen rendering method.
         ResourceFactory.get().setRenderer(renderer);
 
@@ -330,6 +320,19 @@ public class Game extends Canvas implements IWindowCallback
 
         // Make sure the listener and settings managers are ready.
         hub.initialize(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS), this);
+
+        // Set the log level.
+        CouchLogger.get().setLogLevel(hub.settingsMan.getString(Key.DEBUG_LOG_LEVEL));
+
+         // Print the build number.
+        Class cls = this.getClass();
+        CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
+        CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
+        CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
+        CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
+        CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
+        CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
+        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
 
         // Create the loader.
         loader = new Loader("Loading Wezzle...", hub.settingsMan);

@@ -14,6 +14,7 @@
   <entry name="Game.Score.Carryover.Denominator">10</entry>
   <entry name="Debug.Enable.Item.Keys">false</entry>
   <entry name="Debug.Show.Clip.Rect">false</entry>
+  <entry name="Debug.Log.Level">warn</entry>
   <entry name="Refactor.Slower.Speed.X">70</entry>
   <entry name="Refactor.Slower.Speed.Y">70</entry>
   <entry name="Refactor.Slower.Gravity">800</entry>

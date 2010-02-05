@@ -3,6 +3,8 @@ package ca.couchware.wezzle2d.util;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.SettingsManager;
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -14,6 +16,7 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Calendar;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,7 @@ public class CouchLogger
     /** The only instance of the log manager. */
     final private static CouchLogger SINGLE = new CouchLogger();
     final private Logger logger;
+    final private int MONTHS = 1;
     
     // ---------------------------------------------------------------------------
     // Constructor
@@ -61,15 +65,12 @@ public class CouchLogger
         TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
         rollingPolicy.setFileNamePattern(Settings.getLogPath() + "/log-%d{MM-yyyy}.txt");
         rollingPolicy.setContext(context);
-        rollingPolicy.setMaxHistory(6);
+        rollingPolicy.setMaxHistory(MONTHS);
         rollingPolicy.setParent(rollingAppender);      
 
         try
         {
             rollingPolicy.start();
-
-            //OutputStream os = new FileOutputStream(Settings.getLogFilePath());
-            //rollingAppender.setWriter(new OutputStreamWriter(os));
             rollingAppender.setImmediateFlush(true);
             rollingAppender.setRollingPolicy(rollingPolicy);
             
@@ -87,6 +88,7 @@ public class CouchLogger
         }
 
         logger = lc.getLogger("CouchLogger");
+        logger.setLevel(Level.WARN);
     }
 
     /**
@@ -192,6 +194,16 @@ public class CouchLogger
         {
             return cls.getSimpleName();
         }
+    }
+
+    public void setLogLevel(String level)
+    {
+        String[] levels = { "info", "warn", "debug", "error" };
+
+        if(null == level || !Arrays.asList(levels).contains(level.toLowerCase()) )
+            return;
+        
+        logger.setLevel(Level.valueOf(level));
     }
 
     private static String getTimeStamp()

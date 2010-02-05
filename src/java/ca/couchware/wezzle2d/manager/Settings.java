@@ -82,6 +82,9 @@ public class Settings
 
         /** Whether or not to show the clip rectangle.  Only works in JAVA2D mode. */
         DEBUG_SHOW_CLIP_RECT(Boolean.class),
+
+        /** Logging **/
+        DEBUG_LOG_LEVEL(String.class),
         
         // Refactor values.
         
