@@ -409,6 +409,11 @@ public abstract class AbstractTutorial implements ITutorial
         return done;
     }
 
+    public boolean isMenuShowing()
+    {
+        return menuShown;
+    }
+
     public String getName()
     {
         return name;

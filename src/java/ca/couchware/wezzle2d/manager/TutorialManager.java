@@ -93,6 +93,16 @@ public class TutorialManager implements IResettable
     }
 
     /**
+     * Is the tutorial menu showing?
+     * 
+     * @return
+     */
+    public boolean isTutorialMenuShowing()
+    {
+        return tutorial != null && tutorial.isMenuShowing();
+    }
+
+    /**
      * Get the currently running tutorial.
      * 
      * @return The currently running tutorial, or null, if no tutorial is running.

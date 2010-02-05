@@ -820,18 +820,29 @@ public class Game extends Canvas implements IWindowCallback
                || activateBoardHideAnimation == true               
                || this.boardAnimation != null;
     }       
-    
+
+    /**
+     * Checks to see if the tiles are being manipulated in any way.
+     *
+     * @return
+     */
     public boolean isTileManipulating()
     {
         return 
                refactorer.isRefactoring()               
                || tileRemover.isTileRemoving() 
                || tileDropper.isTileDropping();
-    }        
-    
+    }
+
+
     public boolean isCompletelyBusy()
     {
         return isContextManipulating() || isTileManipulating();
+    }
+
+    public boolean shouldHidePieceGrid()
+    {
+        return isCompletelyBusy() || hub.tutorialMan.isTutorialMenuShowing();
     }
     
     /**

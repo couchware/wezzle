@@ -73,6 +73,13 @@ public interface ITutorial
      * @return
      */
     public boolean isDone();
+
+    /**
+     * Is the tutorial showing a menu?
+     * 
+     * @return
+     */
+    public boolean isMenuShowing();
     
     /**
      * Updates the tutorial's internal logic.  If the tutorial is activated,

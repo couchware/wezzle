@@ -131,7 +131,7 @@ public class MainMenuGroup extends AbstractGroup
         else if ( noButton.isActivated() )
         {
             noButton.setActivated( false );
-            hub.groupMan.hideGroup( this, !game.isCompletelyBusy() );
+            hub.groupMan.hideGroup( this, !game.shouldHidePieceGrid() );
         }
         else if ( yesButton.isActivated() )
         {

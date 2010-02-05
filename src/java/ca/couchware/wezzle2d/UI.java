@@ -849,11 +849,11 @@ public class UI implements
                         GroupManager.Layer.MIDDLE);            
             }
             else
-            {
+            {                
                 hub.groupMan.hideGroup(
                         GroupManager.Type.HIGH_SCORE,
                         GroupManager.Layer.MIDDLE,
-                        !game.isCompletelyBusy());
+                        !game.shouldHidePieceGrid());
             }
         } // end if
                 
@@ -871,7 +871,7 @@ public class UI implements
                 hub.groupMan.hideGroup(
                         GroupManager.Type.PAUSE,
                         GroupManager.Layer.MIDDLE,
-                        !game.isCompletelyBusy());
+                        !game.shouldHidePieceGrid());
             }
         } // end if
                 
@@ -889,7 +889,7 @@ public class UI implements
                 hub.groupMan.hideGroup(
                         GroupManager.Type.OPTIONS,
                         GroupManager.Layer.MIDDLE,
-                        !game.isCompletelyBusy());
+                        !game.shouldHidePieceGrid());
             }
         } // end if
 
@@ -907,7 +907,7 @@ public class UI implements
                 hub.groupMan.hideGroup(
                         GroupManager.Type.HELP,
                         GroupManager.Layer.MIDDLE,
-                        !game.isCompletelyBusy());
+                        !game.shouldHidePieceGrid());
             }
         } // end if
 

@@ -164,7 +164,7 @@ public class AudioGroup extends AbstractGroup
         {                                    
             // Hide all side triggered menues.
             backButton.setActivated(false);
-            hub.groupMan.hideGroup(this, !game.isCompletelyBusy());
+            hub.groupMan.hideGroup(this, !game.shouldHidePieceGrid());
         }   
         else if ( soundRadio.changed() )
         {
