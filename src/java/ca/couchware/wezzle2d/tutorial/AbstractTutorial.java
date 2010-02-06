@@ -209,7 +209,8 @@ public abstract class AbstractTutorial implements ITutorial
             hub.gameAnimationMan.add( fade );
 
             // Menu is now shown.
-            menuShown = true;                  
+            menuShown = true;
+            hub.layerMan.hide(Layer.PIECE_GRID);
             
             return true;
         }
@@ -276,6 +277,9 @@ public abstract class AbstractTutorial implements ITutorial
     
     public void finish(final Game game, final ManagerHub hub)
     {        
+        // Make sure the piece grid is visible again.
+        hub.layerMan.show(Layer.PIECE_GRID);
+
         // Write out completion.
         hub.settingsMan.setBool(this.getHasRunSettingsKey(), true);
 
@@ -388,6 +392,7 @@ public abstract class AbstractTutorial implements ITutorial
         
         // Menu is not shown.
         menuShown = false;
+        hub.layerMan.show(Layer.PIECE_GRID);
         
         // Make sure the bubble opacity is full.
         bubble.setOpacity(100);            
