@@ -42,7 +42,7 @@ public class LicenseDialog extends javax.swing.JDialog
     private static final int LICENSE_KEY_MAX = 8;
 
     final private static String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
-    //final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
+    final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
 
     /** Creates new form LicenseDialog */
     public LicenseDialog(java.awt.Frame parent, boolean modal)
@@ -53,10 +53,10 @@ public class LicenseDialog extends javax.swing.JDialog
         try
         {
             URL icon16Url = LicenseDialog.class.getClassLoader().getResource(ICON_16_PATH);
-            //URL icon32Url = LicenseDialog.class.getClassLoader().getResource(ICON_32_PATH);
+            URL icon32Url = LicenseDialog.class.getClassLoader().getResource(ICON_32_PATH);
             List<Image> icons = new ArrayList<Image>();
             icons.add(ImageIO.read(icon16Url));
-            //icons.add(ImageIO.read(icon32Url));
+            icons.add(ImageIO.read(icon32Url));
             this.setIconImages(icons);
         }
         catch (IOException ex)
@@ -177,30 +177,32 @@ public class LicenseDialog extends javax.swing.JDialog
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(instructionsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(244, 244, 244))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(licensePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(instructionsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addComponent(instructionsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(instructionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(licensePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton)
-                    .addComponent(okButton))
-                .addContainerGap(19, Short.MAX_VALUE))
+                    .addComponent(okButton)
+                    .addComponent(cancelButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -250,33 +252,36 @@ public class LicenseDialog extends javax.swing.JDialog
             licenseKeyField4.requestFocus();
         }
 
-        // Try to validate.
-        final String serialNumber = serialNumberField.getText();
-        final String licenseKey =
-                licenseKeyField1.getText() +
-                licenseKeyField2.getText() +
-                licenseKeyField3.getText() +
-                licenseKeyField4.getText();
-        
-        if (!Game.validateLicenseInformation(serialNumber, licenseKey))
+        if (!problem)
         {
-            problem = true;
-            title = "Invalid License Key";
-            text  = "The license key does not match this serial number.";
-        }
+            // Try to validate.
+            final String serialNumber = serialNumberField.getText();
+            final String licenseKey =
+                    licenseKeyField1.getText() +
+                    licenseKeyField2.getText() +
+                    licenseKeyField3.getText() +
+                    licenseKeyField4.getText();
 
+            if (!Game.validateLicenseInformation(serialNumber, licenseKey))
+            {
+                problem = true;
+                title = "Invalid License Key";
+                text  = "The license key does not match this serial number.";
+            }
+            else
+            {
+                SettingsManager.get().setString(Key.USER_SERIAL_NUMBER, serialNumber);
+                SettingsManager.get().setString(Key.USER_LICENSE_KEY, licenseKey);
+                setVisible(false);
+                dispose();
+            }
+        }
+        
         if (problem)
         {
             JOptionPane.showMessageDialog(
                     rootPane, text, title, JOptionPane.INFORMATION_MESSAGE);
-        }
-        else
-        {
-            SettingsManager.get().setString(Key.USER_SERIAL_NUMBER, serialNumber);
-            SettingsManager.get().setString(Key.USER_LICENSE_KEY, licenseKey);
-            setVisible(false);
-            dispose();
-        }
+        }        
     }//GEN-LAST:event_okButtonMouseClicked
 
     private void cancelButtonMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_cancelButtonMouseClicked
