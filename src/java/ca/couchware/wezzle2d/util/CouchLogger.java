@@ -131,6 +131,7 @@ public class CouchLogger
         if (fatal)
         {
             IWindow win = ResourceFactory.get().getWindow();
+            win.setFullscreen(false);
             win.alert("Wezzle", "Error!" + Settings.getLineSeparator()
                     + e.getMessage() + "." + Settings.getLineSeparator()
                     + Settings.getLineSeparator()

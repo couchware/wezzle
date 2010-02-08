@@ -41,8 +41,39 @@
                  classname="net.sf.launch4j.ant.Launch4jTask"
                  classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"/>
         <launch4j configFile="./l4j-config.xml"/>
+    </target>
 
+    <target name="app" depends="jar,macosx" description="Build the Wezzle Mac .app">
+        <!-- This take creates the app file. -->
+        <taskdef name="jarbundler"
+                classname="net.sourceforge.jarbundler.JarBundler"
+                classpath="${jarbundler.dir}/jarbundler-2.1.0.jar"/>
 
+        <jarbundler dir="${dist.dir}" 
+                verbose="true"
+                showPlist="true"
+                name="${application.title}"
+                mainclass="ca.couchware.wezzle2d.Game"
+                icon="${opt.dir}/icons/mac-icon.icns"
+                version="${application.version}"
+                bundleid="ca.couchware.wezzle2d"
+                jvmversion="1.5+"
+                signature="WEZL"
+                vmoptions="-ea"
+                workingdirectory="$APP_PACKAGE/Contents/Resources">
+
+            <jarfilelist dir="${dist.dir}" files="${application.title}.jar"/>
+
+            <jarfileset dir="${dist.dir}/lib">
+                <include name="*.jar"/>
+            </jarfileset>
+
+            <jarfileset dir="${dist.dir}/lib/native/macosx">
+                <include name="*.jnilib"/>
+                <include name="*.dylib"/>
+            </jarfileset>
+        
+        </jarbundler>
     </target>
 
     <target name="windows-installer" depends="exe,jar,windows" description="Build the Wezzle Windows Installer">
