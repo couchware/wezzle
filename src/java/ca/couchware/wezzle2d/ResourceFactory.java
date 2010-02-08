@@ -153,10 +153,6 @@ public class ResourceFactory
         {
             switch ( renderer )
             {
-//				case JAVA2D:				
-//					window = new Java2DGameWindow();
-//					break;
-
                 case LWJGL:
                     window = new LWJGLWindow( this.settingsMan );
                     break;
@@ -174,10 +170,6 @@ public class ResourceFactory
         {
             switch ( renderer )
             {
-//				case JAVA2D:				
-//					gfx = new Java2DGraphics();
-//					break;
-
                 case LWJGL:
                     gfx = new LWJGLGraphics();
                     break;
@@ -205,9 +197,6 @@ public class ResourceFactory
 
         switch ( renderer )
         {
-//			case JAVA2D:			
-//				return SpriteStore.get().getSprite((Java2DGameWindow) window, path);                
-
             case LWJGL:
                 return new LWJGLSprite(
                         (LWJGLWindow) window,
@@ -233,18 +222,6 @@ public class ResourceFactory
 
         switch ( renderer )
         {
-//			case JAVA2D:			
-//				return new Java2DLabel((Java2DGameWindow) window,
-//                        builder.x,
-//                        builder.y,
-//                        builder.alignment,                       
-//                        builder.color,
-//                        builder.opacity,
-//                        builder.size,
-//                        builder.text,
-//                        builder.visible,
-//                        builder.cached);
-
             case LWJGL:
                 return new LWJGLTextLabel( (LWJGLWindow) window,
                         builder.x,

@@ -1,6 +1,6 @@
 /*
  *  Wezzle
- *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ *  Copyright (c) 2007-2010 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d;
@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.dialog.LicenseDialog;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
@@ -53,6 +54,12 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -336,27 +343,7 @@ public class Game extends Canvas implements IWindowCallback
 
         // Create the loader.
         loader = new Loader("Loading Wezzle...", hub.settingsMan);
-        setDrawer(loader);
-
-        // Check license.
-        loader.addTask( new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                boolean registered = validateLicenseInformation();
-                if (registered)
-                {
-                    CouchLogger.get().recordMessage( this.getClass(), "License information verified");
-                }
-                else
-                {
-                    CouchLogger.get().recordException( this.getClass(), 
-                            new Exception("Invalid license information"),
-                            true /* Fatal */);
-                }
-            }
-        });
+        setDrawer(loader);        
 
         // Preload the sprites.
         loader.addTasks( resourceFactory.preloadSprites() );
@@ -1094,7 +1081,7 @@ public class Game extends Canvas implements IWindowCallback
      *            The arguments that are passed into our game
      */
     public static void main(String argv[])
-    {
+    {                      
         // Make sure the setting manager is loaded.
         SettingsManager settingsMan = SettingsManager.get();
 
@@ -1111,7 +1098,32 @@ public class Game extends Canvas implements IWindowCallback
 
         try
         {
-            //Game game = new Game(ResourceFactory.Renderer.JAVA2D);
+            final String serialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
+            final String licenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
+            final boolean validated = Game.validateLicenseInformation(serialNumber, licenseKey);
+
+            if (!validated)
+            {
+                LicenseDialog.run();
+
+                final String enteredSerialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
+                final String enteredLicenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
+                final boolean enteredValidated = 
+                        Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
+
+                if (enteredValidated)
+                {
+                    CouchLogger.get().recordMessage( Game.class,
+                            "License information verified");
+                }
+                else
+                {
+                    CouchLogger.get().recordException( Game.class,
+                            new Exception("Invalid license information"));
+                    System.exit(0);
+                }
+            }           
+            
             Game game = new Game(ResourceFactory.Renderer.LWJGL);
             game.start();
         }
@@ -1130,12 +1142,9 @@ public class Game extends Canvas implements IWindowCallback
      * Validates the license information for Wezzle.
      * @return True if the license is validated, false otherwise.
      */
-    private boolean validateLicenseInformation()
-    {
-        final String storedSerialNumber = hub.settingsMan.getString(Key.USER_SERIAL_NUMBER);
-        final String storedLicenseKey = hub.settingsMan.getString(Key.USER_LICENSE_KEY);
-        
-        final String plainText = storedSerialNumber + SECRET_CODE;
+    public static boolean validateLicenseInformation(String serialNumber, String licenseKey)
+    {                
+        final String plainText = serialNumber + SECRET_CODE;
 
         byte[] defaultBytes = plainText.getBytes();
         try
@@ -1152,13 +1161,13 @@ public class Game extends Canvas implements IWindowCallback
                 hexBuffer.append(String.format("%02x", hex));
             }
 
-            if (null == storedLicenseKey)
+            if (null == licenseKey)
             {
-                CouchLogger.get().recordException(this.getClass(),
+                CouchLogger.get().recordException(Game.class,
                         new Exception("License is missing or corrupt"), true);
             }
             
-            if (storedLicenseKey.toLowerCase()
+            if (licenseKey.toLowerCase()
                     .equals(hexBuffer.toString().toLowerCase()))
             {
                 return true;
@@ -1166,7 +1175,7 @@ public class Game extends Canvas implements IWindowCallback
         }
         catch (Exception e)
         {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
+            CouchLogger.get().recordException(Game.class, e, true /* Fatal */);
         }
 
         return false;
