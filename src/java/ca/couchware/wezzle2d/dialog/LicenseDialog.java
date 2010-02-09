@@ -1,6 +1,9 @@
 package ca.couchware.wezzle2d.dialog;
 
 import java.awt.*;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.*;
 import ca.couchware.wezzle2d.Game;
@@ -8,23 +11,19 @@ import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
+import ca.couchware.wezzle2d.util.PartialMaskFormatter;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.MaskFormatter;
 
 /*
  * Created by JFormDesigner on Tue Feb 09 01:03:32 EST 2010
@@ -38,8 +37,8 @@ public class LicenseDialog extends JDialog
     private static final int SERIAL_NUMBER_MIN = 8;
     private static final int SERIAL_NUMBER_MAX = 16;
 
-    private static final int LICENSE_KEY_MIN = 36;
-    private static final int LICENSE_KEY_MAX = 36;
+    private static final int LICENSE_KEY_MIN = 35;
+    private static final int LICENSE_KEY_MAX = 35;
 
     final private static String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
     final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
@@ -63,8 +62,26 @@ public class LicenseDialog extends JDialog
             CouchLogger.get().recordException(this.getClass(), ex);
         }
 
-        serialNumberField.setDocument(new HexadecimalDocument(SERIAL_NUMBER_MAX));
-        licenseKeyField.setDocument(new HexadecimalDocument(LICENSE_KEY_MAX));
+        try
+        {
+            MaskFormatter serialNumberFormatter =
+                    new PartialMaskFormatter("HHHHHHHHHHHHHHHH");
+            serialNumberFormatter.setValueContainsLiteralCharacters(false);
+
+            serialNumberField.setFormatterFactory(new DefaultFormatterFactory(
+                    serialNumberFormatter));
+
+            MaskFormatter licenseKeyFormatter =
+                    new PartialMaskFormatter("HHHHHHHH-HHHHHHHH-HHHHHHHH-HHHHHHHH");
+            licenseKeyFormatter.setValueContainsLiteralCharacters(false);
+
+            licenseKeyField.setFormatterFactory(new DefaultFormatterFactory(
+                    licenseKeyFormatter));
+        }
+        catch (ParseException ex)
+        {
+            Logger.getLogger(LicenseDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         okButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
@@ -109,8 +126,8 @@ public class LicenseDialog extends JDialog
         if (!problem)
         {
             // Try to validate.
-            final String serialNumber = serialNumberField.getText();
-            final String licenseKey = licenseKeyField.getText();
+            final String serialNumber = (String) serialNumberField.getValue();
+            final String licenseKey = (String) licenseKeyField.getValue();
 
             if (!Game.validateLicenseInformation(serialNumber, licenseKey))
             {
@@ -182,9 +199,9 @@ public class LicenseDialog extends JDialog
 		instructionsLabel = new JLabel();
 		licensePanel = new JPanel();
 		serialNumberLabel = new JLabel();
-		serialNumberField = new JTextField();
+		serialNumberField = new JFormattedTextField();
 		licenseKeyLabel = new JLabel();
-		licenseKeyField = new JTextField();
+		licenseKeyField = new JFormattedTextField();
 		buttonPanel = new JPanel();
 		okButton = new JButton();
 		cancelButton = new JButton();
@@ -196,15 +213,7 @@ public class LicenseDialog extends JDialog
 
 		//======== dialogPane ========
 		{
-			dialogPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-
-			// JFormDesigner evaluation mark
-			//dialogPane.setBorder(new javax.swing.border.CompoundBorder(
-			//	new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-			//		"JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-			//		javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-			//		java.awt.Color.red), dialogPane.getBorder())); dialogPane.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
+			dialogPane.setBorder(new EmptyBorder(20, 20, 20, 20));		
 			dialogPane.setLayout(new BorderLayout());
 
 			//======== contentPanel ========
@@ -236,13 +245,13 @@ public class LicenseDialog extends JDialog
 						licensePanelLayout.createParallelGroup()
 							.addGroup(GroupLayout.Alignment.TRAILING, licensePanelLayout.createSequentialGroup()
 								.addContainerGap()
-								.addGroup(licensePanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-									.addComponent(licenseKeyLabel, GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
-									.addComponent(serialNumberLabel, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 66, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 								.addGroup(licensePanelLayout.createParallelGroup()
-									.addComponent(licenseKeyField, GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
-									.addComponent(serialNumberField, GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE))
+									.addComponent(licenseKeyLabel, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+									.addComponent(serialNumberLabel, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addGroup(licensePanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+									.addComponent(licenseKeyField, GroupLayout.Alignment.TRAILING)
+									.addComponent(serialNumberField, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))
 								.addContainerGap())
 					);
 					licensePanelLayout.setVerticalGroup(
@@ -323,9 +332,9 @@ public class LicenseDialog extends JDialog
 	private JLabel instructionsLabel;
 	private JPanel licensePanel;
 	private JLabel serialNumberLabel;
-	private JTextField serialNumberField;
+	private JFormattedTextField serialNumberField;
 	private JLabel licenseKeyLabel;
-	private JTextField licenseKeyField;
+	private JFormattedTextField licenseKeyField;
 	private JPanel buttonPanel;
 	private JButton okButton;
 	private JButton cancelButton;
