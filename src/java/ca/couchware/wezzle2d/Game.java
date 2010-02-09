@@ -1143,7 +1143,12 @@ public class Game extends Canvas implements IWindowCallback
      * @return True if the license is validated, false otherwise.
      */
     public static boolean validateLicenseInformation(String serialNumber, String licenseKey)
-    {                
+    {
+        if (null == serialNumber || null == licenseKey)
+        {
+            return false;
+        }
+
         final String plainText = serialNumber + SECRET_CODE;
 
         byte[] defaultBytes = plainText.getBytes();
@@ -1159,13 +1164,7 @@ public class Game extends Canvas implements IWindowCallback
             {
                 int hex = 0xFF & messageDigest[i];
                 hexBuffer.append(String.format("%02x", hex));
-            }
-
-            if (null == licenseKey)
-            {
-                CouchLogger.get().recordException(Game.class,
-                        new Exception("License is missing or corrupt"), true);
-            }
+            }            
             
             if (licenseKey.toLowerCase()
                     .equals(hexBuffer.toString().toLowerCase()))
