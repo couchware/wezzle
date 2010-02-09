@@ -94,13 +94,16 @@ public class LicenseDialog extends javax.swing.JDialog
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Wezzle");
+        setBounds(new java.awt.Rectangle(0, 0, 0, 0));
         setIconImage(null);
-        setResizable(false);
+        setMinimumSize(new java.awt.Dimension(432, 263));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         instructionsLabel.setText("<html>Please enter your serial number and license key.<br/><br/>Remember to enter your serial number and license key exactly as it appears in the e-mail you received from Couchware Inc.</html>");
         instructionsLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         instructionsLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
         instructionsLabel.setPreferredSize(new java.awt.Dimension(300, 14));
+        getContentPane().add(instructionsLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 11, 392, 81));
 
         licensePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
@@ -158,12 +161,15 @@ public class LicenseDialog extends javax.swing.JDialog
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        getContentPane().add(licensePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 98, -1, -1));
+
         okButton.setText("OK");
         okButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 okButtonMouseClicked(evt);
             }
         });
+        getContentPane().add(okButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 189, 73, -1));
 
         cancelButton.setText("Cancel");
         cancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -171,39 +177,7 @@ public class LicenseDialog extends javax.swing.JDialog
                 cancelButtonMouseClicked(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(244, 244, 244))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(licensePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(instructionsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(instructionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(licensePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(okButton)
-                    .addComponent(cancelButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        getContentPane().add(cancelButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(99, 189, 73, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
