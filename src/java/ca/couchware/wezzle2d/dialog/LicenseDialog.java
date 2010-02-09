@@ -228,13 +228,13 @@ public class LicenseDialog extends JDialog
 					serialNumberLabel.setText("Serial Number");
 
 					//---- serialNumberField ----
-					serialNumberField.setFont(new Font("Courier New", Font.PLAIN, 12));
+					serialNumberField.setFont(new Font("monospaced", Font.PLAIN, 12));
 
 					//---- licenseKeyLabel ----
 					licenseKeyLabel.setText("License Key");
 
 					//---- licenseKeyField ----
-					licenseKeyField.setFont(new Font("Courier New", Font.PLAIN, 12));
+					licenseKeyField.setFont(new Font("monospaced", Font.PLAIN, 12));
 
 					GroupLayout licensePanelLayout = new GroupLayout(licensePanel);
 					licensePanel.setLayout(licensePanelLayout);
