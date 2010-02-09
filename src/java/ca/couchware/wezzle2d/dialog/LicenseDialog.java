@@ -130,7 +130,7 @@ public class LicenseDialog extends JDialog
             {
                 problem = true;
                 title = "Invalid License Key";
-                text = "The license key does not match this serial number.";
+                text = "The license key does not match the serial number.";
             }
             else
             {
