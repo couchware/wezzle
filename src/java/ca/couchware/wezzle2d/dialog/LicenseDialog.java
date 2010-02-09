@@ -81,6 +81,9 @@ public class LicenseDialog extends javax.swing.JDialog
     private void initComponents() {
 
         instructionsLabel = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        okButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
         licensePanel = new javax.swing.JPanel();
         serialNumberLabel = new javax.swing.JLabel();
         licenseKeyLabel = new javax.swing.JLabel();
@@ -89,21 +92,31 @@ public class LicenseDialog extends javax.swing.JDialog
         licenseKeyField3 = new javax.swing.JTextField();
         licenseKeyField4 = new javax.swing.JTextField();
         serialNumberField = new javax.swing.JTextField();
-        okButton = new javax.swing.JButton();
-        cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Wezzle");
         setBounds(new java.awt.Rectangle(0, 0, 0, 0));
         setIconImage(null);
         setMinimumSize(new java.awt.Dimension(432, 263));
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         instructionsLabel.setText("<html>Please enter your serial number and license key.<br/><br/>Remember to enter your serial number and license key exactly as it appears in the e-mail you received from Couchware Inc.</html>");
         instructionsLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        instructionsLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        instructionsLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 10, 10, 10));
         instructionsLabel.setPreferredSize(new java.awt.Dimension(300, 14));
-        getContentPane().add(instructionsLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 11, 392, 81));
+
+        okButton.setText("OK");
+        okButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                okButtonMouseClicked(evt);
+            }
+        });
+
+        cancelButton.setText("Exit");
+        cancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cancelButtonMouseClicked(evt);
+            }
+        });
 
         licensePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
@@ -112,7 +125,6 @@ public class LicenseDialog extends javax.swing.JDialog
         licenseKeyLabel.setText("License Key");
 
         licenseKeyField1.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-        licenseKeyField1.setText("00000000");
 
         licenseKeyField2.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
@@ -129,7 +141,7 @@ public class LicenseDialog extends javax.swing.JDialog
             .addGroup(licensePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(licensePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(licenseKeyLabel)
+                    .addComponent(licenseKeyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
                     .addComponent(serialNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(licensePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -142,7 +154,7 @@ public class LicenseDialog extends javax.swing.JDialog
                 .addComponent(licenseKeyField3, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(licenseKeyField4, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         licensePanelLayout.setVerticalGroup(
             licensePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -154,30 +166,54 @@ public class LicenseDialog extends javax.swing.JDialog
                 .addGap(5, 5, 5)
                 .addGroup(licensePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(licenseKeyField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(licenseKeyLabel)
+                    .addComponent(licenseKeyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(licenseKeyField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(licenseKeyField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(licenseKeyField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        getContentPane().add(licensePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 98, -1, -1));
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(240, 240, 240))
+            .addComponent(licensePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(licensePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cancelButton)
+                    .addComponent(okButton))
+                .addContainerGap())
+        );
 
-        okButton.setText("OK");
-        okButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                okButtonMouseClicked(evt);
-            }
-        });
-        getContentPane().add(okButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 189, 73, -1));
-
-        cancelButton.setText("Cancel");
-        cancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cancelButtonMouseClicked(evt);
-            }
-        });
-        getContentPane().add(cancelButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(99, 189, 73, -1));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(instructionsLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(instructionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -250,19 +286,19 @@ public class LicenseDialog extends javax.swing.JDialog
                 dispose();
             }
         }
-        
+
         if (problem)
         {
             JOptionPane.showMessageDialog(
                     rootPane, text, title, JOptionPane.INFORMATION_MESSAGE);
-        }        
-    }//GEN-LAST:event_okButtonMouseClicked
+        }
+}//GEN-LAST:event_okButtonMouseClicked
 
     private void cancelButtonMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_cancelButtonMouseClicked
     {//GEN-HEADEREND:event_cancelButtonMouseClicked
         setVisible(false);
         dispose();
-    }//GEN-LAST:event_cancelButtonMouseClicked
+}//GEN-LAST:event_cancelButtonMouseClicked
     
     /**
      * @param args the command line arguments
@@ -303,6 +339,7 @@ public class LicenseDialog extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JLabel instructionsLabel;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField licenseKeyField1;
     private javax.swing.JTextField licenseKeyField2;
     private javax.swing.JTextField licenseKeyField3;
