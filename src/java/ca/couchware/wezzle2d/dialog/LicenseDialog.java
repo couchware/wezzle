@@ -35,10 +35,7 @@ public class LicenseDialog extends JDialog
 {
 
     private static final int SERIAL_NUMBER_MIN = 8;
-    private static final int SERIAL_NUMBER_MAX = 16;
-
-    private static final int LICENSE_KEY_MIN = 35;
-    private static final int LICENSE_KEY_MAX = 35;
+    private static final int LICENSE_KEY_MIN = 32;    
 
     final private static String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
     final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
@@ -108,14 +105,17 @@ public class LicenseDialog extends JDialog
         String title = "";
         String text = "";
 
-        if (serialNumberField.getText().length() < SERIAL_NUMBER_MIN)
+        final String serialNumber = (String) serialNumberField.getValue();
+        final String licenseKey = (String) licenseKeyField.getValue();
+
+        if (serialNumber == null || serialNumber.length() < SERIAL_NUMBER_MIN)
         {
             problem = true;
             title = "Serial Number Problem";
             text = "Serial number must be between 8 and 16 characters in length.";
             serialNumberField.requestFocus();
         }
-        else if (licenseKeyField.getText().length() < LICENSE_KEY_MIN)
+        else if (licenseKey == null || licenseKey.length() < LICENSE_KEY_MIN)
         {
             problem = true;
             title = "License Key Problem";
@@ -125,10 +125,7 @@ public class LicenseDialog extends JDialog
 
         if (!problem)
         {
-            // Try to validate.
-            final String serialNumber = (String) serialNumberField.getValue();
-            final String licenseKey = (String) licenseKeyField.getValue();
-
+            // Try to validate.            
             if (!Game.validateLicenseInformation(serialNumber, licenseKey))
             {
                 problem = true;
