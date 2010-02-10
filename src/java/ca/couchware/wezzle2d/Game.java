@@ -54,12 +54,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -100,7 +94,10 @@ public class Game extends Canvas implements IWindowCallback
     final public static String APPLICATION_NAME = "Wezzle";
     
     /** The version of the application. */
-    final public static String APPLICATION_VERSION = "1.0";
+    final public static int APPLICATION_VERSION_MAJOR = 1;
+    final public static int APPLICATION_VERSION_MINOR = 1;
+    final public static String APPLICATION_VERSION = 
+            APPLICATION_VERSION_MAJOR + "." + APPLICATION_VERSION_MINOR;
     
     /** The full title of the game. */
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;

@@ -43,11 +43,17 @@ public class FontStore
      */
     private static final HashMap<Integer, TrueTypeFont> fontMap =
             new HashMap<Integer, TrueTypeFont>();  
-
+   
     public TrueTypeFont getFont(Integer size, TextureLoader textureLoader)
     {
+        // Between 20 and 50, only use even fonts.
+        if (size > 20 && size % 2 != 0)
+        {            
+            size++;
+        }
+        
         // If we already have the font cached, return it.
-        if ( fontMap.containsKey( size ) == true )
+        if ( fontMap.containsKey( size ) )
         {
             return fontMap.get( size );
         }
@@ -86,7 +92,7 @@ public class FontStore
             if ( baseFont == null )
             {
                 getFont( 1, textureLoader );
-            }
+            }            
 
             // Derive new font from it.
             Font font = baseFont.deriveFont( (float) size );
