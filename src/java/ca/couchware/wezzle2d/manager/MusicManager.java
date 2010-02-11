@@ -27,8 +27,12 @@ import javazoom.jlgui.basicplayer.BasicPlayerException;
  */
 
 public class MusicManager 
-{            
-    
+{
+    /**
+     * The key for the current player.
+     */
+    private static final String CURRENT_PLAYER_KEY = "Current";
+
     /**
      * Is the music manager paused?
      */
@@ -234,8 +238,8 @@ public class MusicManager
         // Grab the player for the current track if it hasn't been grabbed
         // already.
         if (this.player == null)
-        {
-            this.player = createPlayer("current", playList.get(index));
+        {            
+            this.player = createPlayer(CURRENT_PLAYER_KEY, playList.get(index));
         }
         
         try
@@ -465,7 +469,7 @@ public class MusicManager
     public MusicPlayer createPlayer(String key, Music track)
     {
         if (playerMap.containsKey(key))
-            throw new RuntimeException("Key conflict: " + key);
+            this.destroyPlayer(key);
         
         MusicPlayer mp = createPlayer(track.getPath());
         playerMap.put(key, mp);
