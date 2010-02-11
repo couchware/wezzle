@@ -14,7 +14,9 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
 
@@ -86,6 +88,11 @@ public class MusicManager
      * has not been played yet.
      */
     private MusicPlayer player;
+
+    /**
+     * The list of all players in existence.
+     */
+    private Map<String, MusicPlayer> playerMap = new HashMap<String, MusicPlayer>();
         
     /**
      * The normalized gain.
@@ -228,7 +235,7 @@ public class MusicManager
         // already.
         if (this.player == null)
         {
-            this.player = createPlayer(playList.get(index));            
+            this.player = createPlayer("current", playList.get(index));
         }
         
         try
@@ -260,7 +267,30 @@ public class MusicManager
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
     }
-    
+
+    public void stopAtGain(double nGain)
+    {
+        if (this.player == null)
+            return;
+
+        this.player.stopAtGain(nGain);
+    }
+
+    public void stopAll()
+    {
+        try
+        {
+            for (MusicPlayer p : playerMap.values())
+            {
+                p.stop();
+            }
+        }
+        catch (BasicPlayerException e)
+        {
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
+        }
+    }
+
     public void next()
     {
         // Make sure the play list has items, if not, ignore the command.
@@ -427,13 +457,47 @@ public class MusicManager
     
     /**
      * Creates a player for the passed track.
-     * 
+     *
+     * @param key
      * @param track
      * @return
      */
-    public static MusicPlayer createPlayer(Music track)
+    public MusicPlayer createPlayer(String key, Music track)
     {
-        return createPlayer(track.getPath());
+        if (playerMap.containsKey(key))
+            throw new RuntimeException("Key conflict: " + key);
+        
+        MusicPlayer mp = createPlayer(track.getPath());
+        playerMap.put(key, mp);
+        
+        return mp;
+    }
+
+    /**
+     * Destory a player identified by a key.
+     * 
+     * @param key
+     */
+    public void destroyPlayer(String key)
+    {
+        try
+        {
+            playerMap.remove(key).stop();
+        }
+        catch (BasicPlayerException e)
+        {
+            CouchLogger.get().recordException(MusicPlayer.class, e, true /* Fatal */);
+        }
+    }
+
+    /**
+     * Destory a player identified by a key but fade it out.
+     *
+     * @param key
+     */
+    public void destroyPlayerWithFade(String key, double nGain)
+    {
+        playerMap.remove(key).stopAtGain(nGain);
     }
     
 }

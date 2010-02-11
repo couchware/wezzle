@@ -59,6 +59,9 @@ public class LWJGLWindow implements IWindow
     /** True if the game is currently "running", i.e. the game loop is looping. */
     private boolean gameRunning = true;
 
+    /** True if a stop has been requested. */
+    private boolean stopRequested = false;
+
     /** True if the window is active. */
     private boolean activated = false;
 
@@ -297,6 +300,14 @@ public class LWJGLWindow implements IWindow
     }
 
     /**
+     * Stop the rendering process.
+     */
+    public void stop()
+    {
+        stopRequested = true;
+    }
+
+    /**
      * Initialize the display mode to something that'll work.
      */
     private void initializeDisplayMode()
@@ -493,9 +504,9 @@ public class LWJGLWindow implements IWindow
             GL11.glLoadIdentity();
             //GL11.glEnable(GL11.GL_LINE_SMOOTH | GL11.GL_POLYGON_SMOOTH);
 
-            if (Display.isCloseRequested())
+            if (Display.isCloseRequested() || stopRequested)
             {
-                gameRunning = false;
+                this.gameRunning = false;
                 Display.destroy();
                 callback.windowClosed();
             }                    

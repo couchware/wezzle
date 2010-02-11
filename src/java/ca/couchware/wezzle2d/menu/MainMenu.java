@@ -58,6 +58,8 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     /** The wezzle logo starburst path. */
     final private static String WEZZLE_LOGO_STARBURST_PATH = Settings.getSpriteResourcesPath()
             + "/WezzleLogoStarburst.png";
+
+    final public static String MENU_PLAYER_KEY = "Menu";
     
     /** An enum containing the possible states for the loader to be in. */
     public enum State
@@ -142,7 +144,8 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.menuLayerMan = LayerManager.newInstance();
 
         // Initialize the menu music.
-        this.player = MusicManager.createPlayer( Music.ERHU );
+        this.player = hub.musicMan.createPlayer( MENU_PLAYER_KEY, Music.ERHU );
+
         try
         {
             int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);

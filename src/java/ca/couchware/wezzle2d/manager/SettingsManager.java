@@ -105,9 +105,9 @@ public class SettingsManager
 
         if ( url == null )
         {
-            CouchLogger.get().recordWarning( this.getClass(),
-                    "Can't find required resource: " + path );
-            System.exit( 0 );
+            CouchLogger.get().recordException( this.getClass(),
+                    new Exception("Can't find required resource: " + path),
+                    true /* Fatal */);
         }
 
         // Load the data from XML.

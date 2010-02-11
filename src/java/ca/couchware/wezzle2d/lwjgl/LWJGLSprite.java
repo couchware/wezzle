@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.ISpriteDrawer;
+import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
 import java.awt.Rectangle;
@@ -71,12 +72,7 @@ public class LWJGLSprite implements ISprite
         }
         catch (IOException e)
         {
-            // a tad abrupt, but our purposes if you can't find a 
-
-            // sprite's image you might as well give up.
-
-            System.err.println("Unable to load texture: " + path);
-            System.exit(0);
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
     }
 

@@ -136,8 +136,7 @@ public class CouchLogger
                     + e.getMessage() + "." + Settings.getLineSeparator()
                     + Settings.getLineSeparator()
                     + "Please visit http://couchware.ca/www/support for help.");
-
-            System.exit(0);
+            win.stop();
         }
     }
     

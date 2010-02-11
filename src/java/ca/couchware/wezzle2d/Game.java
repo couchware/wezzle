@@ -238,7 +238,7 @@ public class Game extends Canvas implements IWindowCallback
                 window.clearMouseEvents();
 
                 // Shut off the music.
-                hub.musicMan.stop();
+                hub.musicMan.stopAtGain(0.0);
 
                 resetGame(true);
 
@@ -961,14 +961,17 @@ public class Game extends Canvas implements IWindowCallback
                 hub.settingsMan.saveSettings();
             }
 
+            if (hub.musicMan != null)
+            {
+                hub.musicMan.stopAll();
+            }
+
             CouchLogger.get().recordMessage(this.getClass(), "Game closed");
         }
         catch(Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
-
-        System.exit(0);
     }
    
     /**
@@ -1116,13 +1119,16 @@ public class Game extends Canvas implements IWindowCallback
                 else
                 {
                     CouchLogger.get().recordException( Game.class,
-                            new Exception("Invalid license information"));
-                    System.exit(0);
+                            new Exception("Invalid license information"),
+                            true /* Fatal */);
                 }
             }           
             
             Game game = new Game(ResourceFactory.Renderer.LWJGL);
             game.start();
+
+            // THis is to make sure everything is dead.
+            System.exit(0);
         }
         catch (Exception e)
         {

@@ -123,7 +123,7 @@ public class ExitGameGroup extends AbstractGroup
         else if ( yesButton.isActivated() )
         {
             yesButton.setActivated( false );
-            game.windowClosed();
+            game.getWindow().stop();
         }
 
         // Clear the change setting.

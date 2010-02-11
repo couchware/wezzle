@@ -48,9 +48,14 @@ public interface IWindow
     public boolean isFullscreen();
 
     /**
-     * Start the game window rendering the display
+     * Start the game window rendering the display.
      */
     public void start();
+
+    /**
+     * Stop the game window rendering the display.
+     */
+    public void stop();
     
     /**
      * Pops up an alert with the given title and message.

@@ -249,8 +249,9 @@ public class ResourceFactory
         // Check to see if the sprites have been preloaded.
         if ( this.spritesPreloaded )
         {
-            CouchLogger.get().recordWarning( this.getClass(), "Attempted to preload sprites twice!" );
-            System.exit( 0 );
+            CouchLogger.get().recordException( this.getClass(),
+                    new Exception("Attempted to preload sprites twice!"),
+                    true /* Fatal */);
         }
 
         // Flag the sprites as preloaded.

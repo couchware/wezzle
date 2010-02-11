@@ -134,7 +134,7 @@ public class ExitGameMenu extends AbstractMenu
         if (yesButton.isActivated() == true)
         {
             // Close the game.
-            game.windowClosed();
+            game.getWindow().stop();
         }
         // See if the "No" button was pressed.
         else if (noButton.isActivated() == true)

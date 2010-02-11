@@ -83,6 +83,10 @@ public class PlayNowMenu extends AbstractMenu
     final private static int THEME_TRON = 0;
     final private static int THEME_ELECTRONIC = 1;
     final private static int THEME_HIPPOP = 2;
+
+    final private static String THEME_TRON_KEY = "Tron";
+    final private static String THEME_ELECTRONIC_KEY = "Electronic";
+    final private static String THEME_HIPPOP_KEY = "HipPop";
     
     public PlayNowMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)
     {                
@@ -366,9 +370,9 @@ public class PlayNowMenu extends AbstractMenu
         this.playerList = new ArrayList<MusicPlayer>();
        
         // Create three players, 1 for each theme.
-        this.playerList.add(MusicManager.createPlayer(Music.TRON2));
-        this.playerList.add(MusicManager.createPlayer(Music.ELECTRONIC1));
-        this.playerList.add(MusicManager.createPlayer(Music.HIPPOP1));
+        this.playerList.add(hub.musicMan.createPlayer(THEME_TRON_KEY, Music.TRON2));
+        this.playerList.add(hub.musicMan.createPlayer(THEME_ELECTRONIC_KEY, Music.ELECTRONIC1));
+        this.playerList.add(hub.musicMan.createPlayer(THEME_HIPPOP_KEY, Music.HIPPOP1));
         
         try 
         {            
@@ -533,11 +537,10 @@ public class PlayNowMenu extends AbstractMenu
         }
 
         // Stop all the players.
-        for (MusicPlayer p : playerList)
-        {
-            //p.fadeToGain(0.0);
-            p.stopAtGain(0.0);
-        }
+        hub.musicMan.destroyPlayerWithFade(THEME_TRON_KEY, 0.0);
+        hub.musicMan.destroyPlayerWithFade(THEME_ELECTRONIC_KEY, 0.0);
+        hub.musicMan.destroyPlayerWithFade(THEME_HIPPOP_KEY, 0.0);
+        hub.musicMan.destroyPlayerWithFade(MainMenu.MENU_PLAYER_KEY, 0.0);
 
         game.startBoard();
         hub.pieceMan.nextPiece();
