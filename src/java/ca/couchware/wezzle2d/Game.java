@@ -238,7 +238,8 @@ public class Game extends Canvas implements IWindowCallback
                 window.clearMouseEvents();
 
                 // Shut off the music.
-                hub.musicMan.stopAtGain(0.0);
+                //hub.musicMan.stopAtGain(0.0);
+                hub.musicMan.stop();
 
                 resetGame(true);
 
