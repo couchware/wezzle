@@ -1,0 +1,4 @@
+#!/bin/bash
+test -f Wezzle-setup.dmg && rm Wezzle-setup.dmg
+./create-dmg --window-size 536 368 --background background.png --icon-size 128 --volname "Wezzle" --icon "Wezzle" 131 183 --icon "Applications" 411 183 Wezzle-setup.dmg ../../dist/app
+

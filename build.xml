@@ -49,7 +49,14 @@
                 classname="net.sourceforge.jarbundler.JarBundler"
                 classpath="${jarbundler.dir}/jarbundler-2.1.0.jar"/>
 
-        <jarbundler dir="${dist.dir}" 
+        <mkdir dir="${dist.dir}/app" />
+
+        <exec executable="mkalias" dir="${dist.dir}/app">
+            <arg value="/Applications" />
+            <arg value="Applications" />
+        </exec>
+
+        <jarbundler dir="${dist.dir}/app"
                 verbose="true"
                 showPlist="true"
                 name="${application.title}"
@@ -76,7 +83,13 @@
         </jarbundler>
     </target>
 
-    <target name="windows-installer" depends="exe,jar,windows" description="Build the Wezzle Windows Installer">
+    <target name="mac-installer" depends="app">
+        <exec executable="./create-wezzle-dmg" dir="${opt.dir}/dmg" />
+        <move file="${opt.dir}/dmg/Wezzle-setup.dmg"
+            tofile="${opt.dir}/dmg/Wezzle-${application.version}-setup.dmg" />
+    </target>
+
+    <target name="windows-installer" depends="exe" description="Build the Wezzle Windows Installer">
         <taskdef name="nsis" classname="net.sf.nsisant.Task">
             <classpath location="./lib/nsis/nsisant-1.2.jar"/>
         </taskdef>

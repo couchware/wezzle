@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IFPkgDescriptionDescription</key>
+	<string>README file for osxutils package version 1.6 2004-12-20
+
+osxutils is a package of potentially useful Mac-oriented command-line
+utilities for Mac OS X version 10.0 or later (although the
+functionality of some tools may be specific to later versions). These
+tools represent an effort to bring command-line control over certain
+aspects of the Mac OS, particularly file meta-data such as Finder
+flags, heritage file Type and Creator codes, icons, comments, labels, icons, Finder kind strings, and the display of suffixes / file extensions. 
+
+I would like to note that these are command-line utilities.  They are intended for people who are familiar and comfortable with the
+command-line interface.
+
+To keep up with the most recent version of osxutils you can visit the
+SourceForge project website at &lt;http://osxutils.sourceforge.net&gt;.
+
+To see a short example of the uses for these tools you may visit
+&lt;http://sveinbjorn.vefsyn.is/osxutils_docs&gt;.
+
+For any comments, criticism, feature suggestions and code donations you
+can email me.
+
+Sveinbjorn Thordarson &lt;sveinbt@hi.is&gt;</string>
+	<key>IFPkgDescriptionTitle</key>
+	<string>osxutils 1.7</string>
+</dict>
+</plist>
