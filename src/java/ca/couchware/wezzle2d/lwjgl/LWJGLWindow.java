@@ -410,7 +410,7 @@ public class LWJGLWindow implements IWindow
         catch (LWJGLException sampleException)
         {
             // If we failed, try using 0 samples.
-            CouchLogger.get().recordWarning(LWJGLWindow.class,
+            CouchLogger.get().recordMessage(this.getClass(),
                     "Could not set samples to: " + pixelFormat.getSamples());
 
             final PixelFormat safePixelFormat = new PixelFormat()
@@ -425,7 +425,7 @@ public class LWJGLWindow implements IWindow
             }
             catch (LWJGLException le)
             {
-                CouchLogger.get().recordException(LWJGLWindow.class, le, true /* Fatal */);
+                CouchLogger.get().recordException(this.getClass(), le, true /* Fatal */);
             }
         } // end catch
     }

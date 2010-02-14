@@ -147,15 +147,15 @@ public class SettingsManager
             }
         } // end if  
         else
-        {
-            CouchLogger.get().recordWarning( this.getClass(), "Could not load external settings" );
+        {                            
+            CouchLogger.get().recordMessage( this.getClass(), "Could not load external settings: " + file );
         }
     }
 
     public void loadExternalSettings()
     {
         loadExternalSettings( Settings.getExternalSettingsPath(), Settings.
-                getGameSettingsFileName() );
+                getGameSettingsFileName());
         loadExternalSettings( Settings.getExternalSettingsPath(), Settings.
                 getUserSettingsFileName() );
         loadExternalSettings( Settings.getExternalSettingsPath(), Settings.
