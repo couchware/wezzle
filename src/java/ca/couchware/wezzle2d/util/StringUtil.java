@@ -1,10 +1,15 @@
 /*
  * Wezzle
- * Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ * Copyright (c) 2007-2010 Couchware Inc.  All rights reserved.
  */
-
 package ca.couchware.wezzle2d.util;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -13,7 +18,7 @@ import java.util.Iterator;
  * 
  * @author cdmckay
  */
-public class StringUtil 
+public class StringUtil
 {
 
     /**
@@ -42,7 +47,6 @@ public class StringUtil
         return buffer.toString();
     }
 
-
     /**
      * Extracts the file extension from a file with the name.ext format.
      * 
@@ -52,15 +56,17 @@ public class StringUtil
     public static String getFileExtension(final String path)
     {
         String fileName = new java.io.File(path).getName();
-        
+
         String ext = "";
-        
-        if (fileName.lastIndexOf(".") != -1)        
-            ext = fileName.substring(fileName.lastIndexOf(".") + 1);        
-        
+
+        if (fileName.lastIndexOf(".") != -1)
+        {
+            ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+        }
+
         return ext;
-    }       
-    
+    }
+
     /**
      * Pad the right side of a string with the given character up to a given
      * number of characters.
@@ -73,19 +79,19 @@ public class StringUtil
     public static String padString(String str, char ch, int length)
     {
         StringBuffer buffer = new StringBuffer(str);
-        int strLength  = buffer.length();
-        
+        int strLength = buffer.length();
+
         if (length > 0 && length > strLength)
         {
             for (int i = strLength; i < length; i++)
             {
-                buffer.append(ch);                
+                buffer.append(ch);
             } // end for
         } // end if
-        
+
         return buffer.toString();
     }
-    
+
     /**
      * Capitalize the first letter of the string and lowercase the rest of the
      * string.
@@ -100,5 +106,24 @@ public class StringUtil
     {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
-            
+
+    public static String readFileIntoString(URL url) throws IOException
+    {
+        final char[] buffer = new char[0x10000];
+        StringBuilder str = new StringBuilder();
+        Reader in = new InputStreamReader(url.openStream(), "UTF-8");
+
+        int read;
+        do
+        {
+            read = in.read(buffer, 0, buffer.length);
+            if (read > 0)
+            {
+                str.append(buffer, 0, read);
+            }            
+        }
+        while (read >= 0);
+
+        return str.toString();
+    }
 }

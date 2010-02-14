@@ -57,6 +57,7 @@ public class Settings
 
         // License values.
 
+        USER_AGREEMENT_ACCEPTED(Boolean.class),
         USER_SERIAL_NUMBER(String.class),
         USER_LICENSE_KEY(String.class),
 

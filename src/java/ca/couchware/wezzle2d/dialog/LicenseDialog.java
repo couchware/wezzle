@@ -1,17 +1,18 @@
 package ca.couchware.wezzle2d.dialog;
 
-import java.awt.*;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.border.*;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.PartialMaskFormatter;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Image;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -19,9 +20,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.LayoutStyle;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
 
@@ -322,18 +331,19 @@ public class LicenseDialog extends JDialog
 		setLocationRelativeTo(null);
 		// JFormDesigner - End of component initialization//GEN-END:initComponents
     }
-	// JFormDesigner - Variables declaration - DO NOT MODIFY//GEN-BEGIN:variables
-	// Generated using JFormDesigner Evaluation license - Cameron McKay
-	private JPanel dialogPane;
-	private JPanel contentPanel;
-	private JLabel instructionsLabel;
-	private JPanel licensePanel;
-	private JLabel serialNumberLabel;
-	private JFormattedTextField serialNumberField;
-	private JLabel licenseKeyLabel;
-	private JFormattedTextField licenseKeyField;
-	private JPanel buttonPanel;
-	private JButton okButton;
-	private JButton cancelButton;
-	// JFormDesigner - End of variables declaration//GEN-END:variables
+
+    // JFormDesigner - Variables declaration - DO NOT MODIFY//GEN-BEGIN:variables
+    // Generated using JFormDesigner Evaluation license - Cameron McKay
+    private JPanel dialogPane;
+    private JPanel contentPanel;
+    private JLabel instructionsLabel;
+    private JPanel licensePanel;
+    private JLabel serialNumberLabel;
+    private JFormattedTextField serialNumberField;
+    private JLabel licenseKeyLabel;
+    private JFormattedTextField licenseKeyField;
+    private JPanel buttonPanel;
+    private JButton okButton;
+    private JButton cancelButton;
+    // JFormDesigner - End of variables declaration//GEN-END:variables
 }

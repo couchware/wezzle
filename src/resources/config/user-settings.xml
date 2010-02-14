@@ -16,11 +16,14 @@
   <entry name="User.Piece.Preview.Shadow">false</entry>
   <entry name="User.Graphics.Fullscreen">true</entry>
   <entry name="User.Graphics.Antialiasing.Samples">4</entry>
-  <entry name="User.Auto.Pause">true</entry>  
+  <entry name="User.Auto.Pause">true</entry>
   <entry name="User.Tutorial.Basic.Ran">false</entry>
   <entry name="User.Tutorial.Rotate.Ran">false</entry>
   <entry name="User.Tutorial.Rocket.Ran">false</entry>
   <entry name="User.Tutorial.Gravity.Ran">false</entry>
   <entry name="User.Tutorial.Bomb.Ran">false</entry>
   <entry name="User.Tutorial.Star.Ran">false</entry>
+  <entry name="User.Agreement.Accepted">false</entry>
+  <entry name="User.Serial.Number"></entry>
+  <entry name="User.License.Key"></entry>
 </settings>

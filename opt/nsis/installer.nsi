@@ -83,7 +83,7 @@
 
   !define MUI_COMPONENTSPAGE_SMALLDESC
 
-  !insertmacro MUI_PAGE_LICENSE "..\License.txt"
+  !insertmacro MUI_PAGE_LICENSE "..\..\src\resources\license.txt"
   Page custom CreateLicensePage ValidateLicensePage
   !insertmacro MUI_PAGE_COMPONENTS  
   !insertmacro MUI_PAGE_DIRECTORY  
@@ -551,14 +551,16 @@ Function WriteLicense
     Var /GLOBAL ln2
     Var /GLOBAL ln3
     Var /GLOBAL ln4
+    Var /GLOBAL ln5
   
     StrCpy $ln0 `<?xml version="1.0" encoding="UTF-8"?>$\r$\n`
     StrCpy $ln1 `<settings>$\r$\n`
     StrCpy $ln2 `  <entry name="User.Serial.Number">$R8</entry>$\r$\n`
     StrCpy $ln3 `  <entry name="User.License.Key">$R9</entry>$\r$\n`
-    StrCpy $ln4 `</settings>$\r$\n`
+    StrCpy $ln4 `  <entry name="User.Agreement.Accepted">true</entry>$\r$\n`
+    StrCpy $ln5 `</settings>$\r$\n`
   
-    Push "$ln0$ln1$ln2$ln3$ln4"
+    Push "$ln0$ln1$ln2$ln3$ln4$ln5"
     Push "${USER_DIR}\license.xml"
     Call WriteToFile
 

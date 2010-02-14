@@ -13,6 +13,7 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.dialog.AgreementDialog;
 import ca.couchware.wezzle2d.dialog.LicenseDialog;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
@@ -952,29 +953,24 @@ public class Game extends Canvas implements IWindowCallback
     //--------------------------------------------------------------------------
     
     /**
-     * Notification that the game window has been closed
+     * Notification that we need to close the window (and game).
      */
     public void windowClosed()
     {
         try
         {
             // Save the properites.
-            if (hub.settingsMan != null)
-            {
-                hub.settingsMan.saveSettings();
-            }
-
-            if (hub.musicMan != null)
-            {
-                hub.musicMan.stopAll();
-            }
+            if (hub.settingsMan != null) hub.settingsMan.saveSettings();
+            if (hub.musicMan != null)    hub.musicMan.stopAll();
 
             CouchLogger.get().recordMessage(this.getClass(), "Game closed");
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
+
+        System.exit(0);
     }
    
     /**
@@ -1071,78 +1067,15 @@ public class Game extends Canvas implements IWindowCallback
     {
         return tracker;
     }
-    
-    //--------------------------------------------------------------------------
-    // Main method
-    //--------------------------------------------------------------------------
-    
-    /**
-     * The entry point into the game. We'll simply create an instance of class
-     * which will start the display and game loop.
-     *
-     * @param argv
-     *            The arguments that are passed into our game
-     */
-    public static void main(String argv[])
-    {                      
-        // Make sure the setting manager is loaded.
-        SettingsManager settingsMan = SettingsManager.get();
-
-        // Send a reference to the resource manager.
-        ResourceFactory.get().setSettingsManager(settingsMan);
-
-        // Set the default color scheme.
-        ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        Achievement.Level.initializeAchievementColorMap(settingsMan);
-
-        try
-        {
-            final String serialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
-            final String licenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
-            final boolean validated = Game.validateLicenseInformation(serialNumber, licenseKey);
-
-            if (!validated)
-            {
-                LicenseDialog.run();
-
-                final String enteredSerialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
-                final String enteredLicenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
-                final boolean enteredValidated = 
-                        Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
-
-                if (enteredValidated)
-                {
-                    CouchLogger.get().recordMessage( Game.class,
-                            "License information verified");
-                }
-                else
-                {
-                    CouchLogger.get().recordException( Game.class,
-                            new Exception("Invalid license information"),
-                            true /* Fatal */);
-                }
-            }           
-            
-            Game game = new Game(ResourceFactory.Renderer.LWJGL);
-            game.start();
-
-            // THis is to make sure everything is dead.
-            System.exit(0);
-        }
-        catch (Exception e)
-        {
-            CouchLogger.get().recordException(Game.class, e);
-        }
-    }
 
     /**
      * The secret part of the registration code.  Shhh.  Don't tell anyone.
      */
     final static String SECRET_CODE = "minsquibbion";
+
+    //--------------------------------------------------------------------------
+    // License information validation
+    //--------------------------------------------------------------------------
 
     /**
      * Validates the license information for Wezzle.
@@ -1170,8 +1103,8 @@ public class Game extends Canvas implements IWindowCallback
             {
                 int hex = 0xFF & messageDigest[i];
                 hexBuffer.append(String.format("%02x", hex));
-            }            
-            
+            }
+
             if (licenseKey.toLowerCase()
                     .equals(hexBuffer.toString().toLowerCase()))
             {
@@ -1185,5 +1118,102 @@ public class Game extends Canvas implements IWindowCallback
 
         return false;
     }
+
+    //--------------------------------------------------------------------------
+    // Main method
+    //--------------------------------------------------------------------------
+    
+    /**
+     * The entry point into the game. We'll simply create an instance of class
+     * which will start the display and game loop.
+     *
+     * @param argv
+     *            The arguments that are passed into our game
+     */
+    public static void main(String argv[])
+    {
+        // Make sure the setting manager is loaded.
+        SettingsManager settingsMan = SettingsManager.get();
+
+        // Send a reference to the resource manager.
+        ResourceFactory.get().setSettingsManager(settingsMan);
+
+        // Set the default color scheme.
+        ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
+        Achievement.Level.initializeAchievementColorMap(settingsMan);
+
+        // Create the game.
+        Game game = new Game(ResourceFactory.Renderer.LWJGL);        
+
+        try
+        {
+            boolean agreementAccepted = settingsMan.getBool(Key.USER_AGREEMENT_ACCEPTED);
+            
+            if (!agreementAccepted)
+            {
+                AgreementDialog.run();
+                final boolean enteredAgreementAccepted = settingsMan.getBool(Key.USER_AGREEMENT_ACCEPTED);
+                if (enteredAgreementAccepted)
+                {
+                    agreementAccepted = true;
+                    CouchLogger.get().recordMessage( Game.class,
+                            "Terms of the agreement accepted");
+                }
+                else
+                {
+                    CouchLogger.get().recordException( Game.class,
+                            new Exception("You must accept the terms of the agreement\n"
+                                + "in order to play Wezzle"),
+                            true /* Fatal */);
+                }
+            }
+
+            final String serialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
+            final String licenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
+            boolean validated = Game.validateLicenseInformation(serialNumber, licenseKey);
+
+            if (!validated)
+            {
+                LicenseDialog.run();
+
+                final String enteredSerialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
+                final String enteredLicenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
+                final boolean enteredValidated = 
+                        Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
+
+                if (enteredValidated)
+                {
+                    validated = true;
+                    CouchLogger.get().recordMessage( Game.class,
+                            "License information verified");
+                }
+                else
+                {
+                    CouchLogger.get().recordException( Game.class,
+                            new Exception("Invalid license information"),
+                            true /* Fatal */);
+                }
+            }
+
+            // Start the game!
+            if (agreementAccepted && validated)
+            {
+                game.start();
+            }
+        }
+        catch (Exception e)
+        {
+            CouchLogger.get().recordException(Game.class, e, true /* Fatal */);
+        }
+
+        // This is to make sure everything is dead.
+        // In practice it'll never get run, as the game should exit in the
+        // windowClosed() method.
+        System.exit(0);
+    }    
 
 }

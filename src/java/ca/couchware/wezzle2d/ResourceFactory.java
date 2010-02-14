@@ -62,7 +62,7 @@ public class ResourceFactory
     /**
      * The type of rendering that we are currently using.
      */
-    private Renderer renderer = Renderer.LWJGL;
+    private Renderer renderer = null;
 
     /**
      * The settings manager.
