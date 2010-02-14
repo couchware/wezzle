@@ -3,7 +3,6 @@ package ca.couchware.wezzle2d.util;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.manager.Settings;
-import ca.couchware.wezzle2d.manager.SettingsManager;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -196,14 +195,26 @@ public class CouchLogger
         }
     }
 
-    public void setLogLevel(String level)
+    /**
+     * Attempt to set the log level to the level specified.  If the log level
+     * passed is unrecognized, it will default to WARN.
+     * 
+     * @param logLevel
+     */
+    public void setLogLevel(String logLevel)
     {
-        String[] levels = { "info", "warn", "debug", "error" };
+        if (null == logLevel)
+            throw new IllegalArgumentException("Log level must not be null");
 
-        if(null == level || !Arrays.asList(levels).contains(level.toLowerCase()) )
-            return;
-        
-        logger.setLevel(Level.valueOf(level));
+        try
+        {
+            Level level = Level.valueOf(logLevel);
+            logger.setLevel(level);
+        }
+        catch(IllegalArgumentException e)
+        {
+            logger.setLevel(Level.WARN);
+        }       
     }
 
     private static String getTimeStamp()

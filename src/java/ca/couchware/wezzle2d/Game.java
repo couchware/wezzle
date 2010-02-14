@@ -327,7 +327,9 @@ public class Game extends Canvas implements IWindowCallback
         hub.initialize(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS), this);
 
         // Set the log level.
-        CouchLogger.get().setLogLevel(hub.settingsMan.getString(Key.DEBUG_LOG_LEVEL));
+        String logLevel = hub.settingsMan.getString(Key.DEBUG_LOG_LEVEL);
+        if (null != logLevel)
+            CouchLogger.get().setLogLevel(logLevel);
 
          // Print the build number.
         Class cls = this.getClass();
