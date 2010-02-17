@@ -51,11 +51,11 @@
            <class>org.jdesktop.layout.GroupLayout</class> 
            <void method="setProperty"> 
             <string>$horizontalGroup</string> 
-            <string>par l {comp buttonPanel::l:::x, comp instructionsLabel::l::402:x, comp scrollPane1::l:p:402:p}</string> 
+            <string>par l {comp buttonPanel::l:::x, comp instructionsLabel::l::402:x, comp scrollPane::l:p:402:p}</string> 
            </void> 
            <void method="setProperty"> 
             <string>$verticalGroup</string> 
-            <string>par l {seq t {comp instructionsLabel:::::x, space s:::p, comp scrollPane1:::p:213:p, space :::p, comp buttonPanel:::p::p}}</string> 
+            <string>par l {seq t {comp instructionsLabel:::::x, space s:::p, comp scrollPane:::p:213:p, space :::p, comp buttonPanel:::p::p}}</string> 
            </void> 
           </object> 
           <void property="name"> 
@@ -142,7 +142,7 @@
              <int>31</int> 
             </void> 
             <void property="name"> 
-             <string>scrollPane1</string> 
+             <string>scrollPane</string> 
             </void> 
             <void method="add"> 
              <object class="com.jformdesigner.model.FormComponent"> 
@@ -168,7 +168,7 @@
                <boolean>true</boolean> 
               </void> 
               <void property="name"> 
-               <string>textArea1</string> 
+               <string>agreementArea</string> 
               </void> 
              </object> 
             </void> 

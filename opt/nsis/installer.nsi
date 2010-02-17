@@ -124,6 +124,8 @@ Section "Wezzle" SecWezzle
   File /r ..\..\dist\*.*
 
   ; Write license information with user privileges.
+  ; Do not write license if it already exists.
+  IfFileExists "${USER_DIR}\license.xml" +3 0
   GetFunctionAddress $0 WriteLicense
   UAC::ExecCodeSegment $0 
 
@@ -300,6 +302,11 @@ LangString PAGE_TITLE ${LANG_ENGLISH} "License Information"
 LangString PAGE_SUBTITLE ${LANG_ENGLISH} "Please enter your license information."
 
 Function CreateLicensePage
+
+   ; If the license XML file already exists,
+   ; then skip the license page.   
+   IfFileExists "${USER_DIR}\license.xml" 0 +2
+   Abort
 
    !insertmacro MUI_HEADER_TEXT $(PAGE_TITLE) $(PAGE_SUBTITLE)     
    

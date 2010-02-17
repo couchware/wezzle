@@ -30,8 +30,8 @@ public class AgreementDialog extends JDialog {
 		buttonPanel = new JPanel();
 		okButton = new JButton();
 		cancelButton = new JButton();
-		scrollPane1 = new JScrollPane();
-		textArea1 = new JTextArea();
+		scrollPane = new JScrollPane();
+		agreementArea = new JTextArea();
 
 		//======== this ========
 		setTitle("Wezzle");
@@ -89,17 +89,17 @@ public class AgreementDialog extends JDialog {
 					);
 				}
 
-				//======== scrollPane1 ========
+				//======== scrollPane ========
 				{
-					scrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-					scrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+					scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+					scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-					//---- textArea1 ----
-					textArea1.setEditable(false);
-					textArea1.setLineWrap(true);
-					textArea1.setFont(new Font("Tahoma", Font.PLAIN, 11));
-					textArea1.setWrapStyleWord(true);
-					scrollPane1.setViewportView(textArea1);
+					//---- agreementArea ----
+					agreementArea.setEditable(false);
+					agreementArea.setLineWrap(true);
+					agreementArea.setFont(new Font("Tahoma", Font.PLAIN, 11));
+					agreementArea.setWrapStyleWord(true);
+					scrollPane.setViewportView(agreementArea);
 				}
 
 				GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
@@ -108,14 +108,14 @@ public class AgreementDialog extends JDialog {
 					contentPanelLayout.createParallelGroup()
 						.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addComponent(instructionsLabel, GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
-						.addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, 402, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 402, GroupLayout.PREFERRED_SIZE)
 				);
 				contentPanelLayout.setVerticalGroup(
 					contentPanelLayout.createParallelGroup()
 						.addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup()
 							.addComponent(instructionsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addGap(18, 18, 18)
-							.addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE)
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 							.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				);
@@ -136,7 +136,7 @@ public class AgreementDialog extends JDialog {
 	private JPanel buttonPanel;
 	private JButton okButton;
 	private JButton cancelButton;
-	private JScrollPane scrollPane1;
-	private JTextArea textArea1;
+	private JScrollPane scrollPane;
+	private JTextArea agreementArea;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 }
