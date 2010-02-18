@@ -20,19 +20,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.LayoutStyle;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
+import org.jdesktop.layout.LayoutStyle;
+import org.jdesktop.layout.GroupLayout;
 
 /*
  * Created by JFormDesigner on Tue Feb 09 01:03:32 EST 2010
@@ -46,7 +46,6 @@ public class LicenseDialog extends JDialog
     private static final int SERIAL_NUMBER_MIN = 8;
     private static final int LICENSE_KEY_MIN = 32;    
 
-    final private static String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
     final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
 
     public LicenseDialog(Frame owner)
@@ -55,13 +54,9 @@ public class LicenseDialog extends JDialog
         initComponents();
 
         try
-        {
-            URL icon16Url = LicenseDialog.class.getClassLoader().getResource(ICON_16_PATH);
-            URL icon32Url = LicenseDialog.class.getClassLoader().getResource(ICON_32_PATH);
-            List<Image> icons = new ArrayList<Image>();
-            icons.add(ImageIO.read(icon16Url));
-            icons.add(ImageIO.read(icon32Url));
-            this.setIconImages(icons);
+        {            
+            URL icon32Url = LicenseDialog.class.getClassLoader().getResource(ICON_32_PATH);                        
+            owner.setIconImage(ImageIO.read(icon32Url));
         }
         catch (IOException ex)
         {
@@ -249,28 +244,28 @@ public class LicenseDialog extends JDialog
 					licensePanel.setLayout(licensePanelLayout);
 					licensePanelLayout.setHorizontalGroup(
 						licensePanelLayout.createParallelGroup()
-							.addGroup(GroupLayout.Alignment.TRAILING, licensePanelLayout.createSequentialGroup()
+							.add(GroupLayout.TRAILING, licensePanelLayout.createSequentialGroup()
 								.addContainerGap()
-								.addGroup(licensePanelLayout.createParallelGroup()
-									.addComponent(licenseKeyLabel, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
-									.addComponent(serialNumberLabel, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(licensePanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-									.addComponent(licenseKeyField, GroupLayout.Alignment.TRAILING)
-									.addComponent(serialNumberField, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))
+								.add(licensePanelLayout.createParallelGroup()
+									.add(licenseKeyLabel, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+									.add(serialNumberLabel, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
+								.addPreferredGap(LayoutStyle.RELATED)
+								.add(licensePanelLayout.createParallelGroup(GroupLayout.LEADING, false)
+									.add(GroupLayout.TRAILING, licenseKeyField)
+									.add(GroupLayout.TRAILING, serialNumberField, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))
 								.addContainerGap())
 					);
 					licensePanelLayout.setVerticalGroup(
 						licensePanelLayout.createParallelGroup()
-							.addGroup(licensePanelLayout.createSequentialGroup()
+							.add(licensePanelLayout.createSequentialGroup()
 								.addContainerGap()
-								.addGroup(licensePanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-									.addComponent(serialNumberField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(serialNumberLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(licensePanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-									.addComponent(licenseKeyField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(licenseKeyLabel, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE))
+								.add(licensePanelLayout.createParallelGroup(GroupLayout.BASELINE)
+									.add(serialNumberField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.add(serialNumberLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+								.addPreferredGap(LayoutStyle.RELATED)
+								.add(licensePanelLayout.createParallelGroup(GroupLayout.BASELINE)
+									.add(licenseKeyField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.add(licenseKeyLabel, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE))
 								.addContainerGap())
 					);
 				}
@@ -288,20 +283,20 @@ public class LicenseDialog extends JDialog
 					buttonPanel.setLayout(buttonPanelLayout);
 					buttonPanelLayout.setHorizontalGroup(
 						buttonPanelLayout.createParallelGroup()
-							.addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+							.add(GroupLayout.TRAILING, buttonPanelLayout.createSequentialGroup()
 								.addContainerGap(223, Short.MAX_VALUE)
-								.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-								.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-								.addGap(9, 9, 9))
+								.add(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.UNRELATED)
+								.add(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+								.addContainerGap(9, 9))
 					);
 					buttonPanelLayout.setVerticalGroup(
 						buttonPanelLayout.createParallelGroup()
-							.addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+							.add(GroupLayout.TRAILING, buttonPanelLayout.createSequentialGroup()
 								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-									.addComponent(cancelButton)
-									.addComponent(okButton))
+								.add(buttonPanelLayout.createParallelGroup(GroupLayout.BASELINE)
+									.add(cancelButton)
+									.add(okButton))
 								.addContainerGap())
 					);
 				}
@@ -310,18 +305,18 @@ public class LicenseDialog extends JDialog
 				contentPanel.setLayout(contentPanelLayout);
 				contentPanelLayout.setHorizontalGroup(
 					contentPanelLayout.createParallelGroup()
-						.addComponent(licensePanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(instructionsLabel, GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+						.add(licensePanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.add(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.add(instructionsLabel, GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
 				);
 				contentPanelLayout.setVerticalGroup(
 					contentPanelLayout.createParallelGroup()
-						.addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup()
-							.addComponent(instructionsLabel, GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
-							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-							.addComponent(licensePanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.add(GroupLayout.TRAILING, contentPanelLayout.createSequentialGroup()
+							.add(instructionsLabel, GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+							.addPreferredGap(LayoutStyle.UNRELATED)
+							.add(licensePanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(LayoutStyle.RELATED)
+							.add(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				);
 			}
 			dialogPane.add(contentPanel, BorderLayout.CENTER);

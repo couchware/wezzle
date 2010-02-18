@@ -125,8 +125,7 @@ public class LWJGLWindow implements IWindow
      * Set the title of this window.
      *
      * @param title The title to set on this window
-     */
-    @Override
+     */    
     public void setTitle(String title)
     {
         this.title = title;
@@ -144,7 +143,6 @@ public class LWJGLWindow implements IWindow
      * @param x The width of the game display area
      * @param y The height of the game display area
      */
-    @Override
     public void setResolution(int x, int y)
     {
         width = x;
@@ -156,7 +154,6 @@ public class LWJGLWindow implements IWindow
      * 
      * @param fullscreen
      */
-    @Override
     public void setFullscreen(boolean fullscreen)
     {
         if (Display.isFullscreen() == fullscreen)
@@ -190,7 +187,6 @@ public class LWJGLWindow implements IWindow
      *
      * @return
      */
-    @Override
     public boolean isFullscreen()
     {
         return Display.isFullscreen();
@@ -277,7 +273,7 @@ public class LWJGLWindow implements IWindow
      * Start the rendering process. This method will cause the
      * display to redraw as fast as possible.
      */
-    @Override
+    
     public void start()
     {                         
         initializeDisplayMode();
@@ -460,8 +456,7 @@ public class LWJGLWindow implements IWindow
      *
      * @param callback The callback that should be notified of game
      * window events.
-     */
-    @Override
+     */    
     public void setGameWindowCallback(IWindowCallback callback)
     {
         this.callback = callback;
@@ -548,14 +543,12 @@ public class LWJGLWindow implements IWindow
     {
         Sys.alert(title, message);
     }
-
-    @Override
+   
     public void setCursor(int type)
     {
         // Intentionally left blank.
     }
-
-    @Override
+   
     public ImmutablePosition getMouseImmutablePosition()
     {
         return new ImmutablePosition(Mouse.getX(), height - Mouse.getY());
@@ -565,8 +558,7 @@ public class LWJGLWindow implements IWindow
     // IKeyListener Methods
     //--------------------------------------------------------------------------
     List<IKeyListener> keyListenerList = new ArrayList<IKeyListener>();
-
-    @Override
+    
     public void addKeyListener(IKeyListener l)
     {
         //CouchLogger.get().recordMessage(this.getClass(), "Added key listener for " + l);
@@ -583,8 +575,7 @@ public class LWJGLWindow implements IWindow
 
         keyListenerList.add(l);
     }
-
-    @Override
+    
     public void removeKeyListener(IKeyListener l)
     {
         CouchLogger.get().recordMessage(this.getClass(),
@@ -602,8 +593,7 @@ public class LWJGLWindow implements IWindow
 
         keyListenerList.remove(l);
     }
-
-    @Override
+    
     public void updateKeyPresses()
     {
         // Before we start, make a copy of the listener list in case
@@ -723,8 +713,7 @@ public class LWJGLWindow implements IWindow
      *
      * @param keyCode The code associated with the key to check
      * @return True if the specified key is pressed
-     */
-    @Override
+     */    
     public boolean isKeyPressed(int key)
     {
         return this.keyPressSet.contains((char) key);
@@ -737,7 +726,6 @@ public class LWJGLWindow implements IWindow
     List<IMouseListener> mouseListenerList = new ArrayList<IMouseListener>();
     private ImmutablePosition mousePosition = new ImmutablePosition(
             Mouse.getX(), height - Mouse.getY());
-
 
     /**
      * Converts the LWJGL button number into a MouseEvent Button enum.
@@ -794,8 +782,7 @@ public class LWJGLWindow implements IWindow
 
     /**
      * Fires all the queued up mouse events.
-     */
-    @Override
+     */    
     public void fireMouseEvents()
     {
         // Before we start, make a copy of the listener list in case
@@ -933,8 +920,7 @@ public class LWJGLWindow implements IWindow
     /**
      * Clears the mouse events instead of firing them.
      */
-    @SuppressWarnings("empty-statement")
-    @Override
+    @SuppressWarnings("empty-statement")    
     public void clearMouseEvents()
     {
         // Empty the mouse events.
@@ -947,8 +933,7 @@ public class LWJGLWindow implements IWindow
             mouseStateMap.put(toButtonEnum(i), Mouse.isButtonDown(i));
         }
     }
-
-    @Override
+    
     public void addMouseListener(IMouseListener l)
     {
         if (l == null)
@@ -963,8 +948,7 @@ public class LWJGLWindow implements IWindow
 
         mouseListenerList.add(l);
     }
-
-    @Override
+    
     public void removeMouseListener(IMouseListener l)
     {
         if (l == null)

@@ -14,17 +14,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.LayoutStyle;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import org.jdesktop.layout.LayoutStyle;
+import org.jdesktop.layout.GroupLayout;
 
 /*
  * Created by JFormDesigner on Sat Feb 13 20:01:39 EST 2010
@@ -36,8 +36,7 @@ import javax.swing.border.EmptyBorder;
 public class AgreementDialog extends JDialog
 {
 
-    final private static String AGREEMENT_PATH = Settings.getResourcesPath() + "/" + "license.txt";
-    final private static String ICON_16_PATH = Settings.getResourcesPath() + "/" + "Icon_16x16.png";
+    final private static String AGREEMENT_PATH = Settings.getResourcesPath() + "/" + "license.txt";    
     final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
 
     public AgreementDialog(Frame owner)
@@ -46,13 +45,9 @@ public class AgreementDialog extends JDialog
         initComponents();
 
         try
-        {
-            URL icon16Url = AgreementDialog.class.getClassLoader().getResource(ICON_16_PATH);
-            URL icon32Url = AgreementDialog.class.getClassLoader().getResource(ICON_32_PATH);
-            java.util.List<Image> icons = new ArrayList<Image>();
-            icons.add(ImageIO.read(icon16Url));
-            icons.add(ImageIO.read(icon32Url));
-            this.setIconImages(icons);
+        {            
+            URL icon32Url = AgreementDialog.class.getClassLoader().getResource(ICON_32_PATH);           
+            owner.setIconImage(ImageIO.read(icon32Url));
 
             // Load in the license.
             URL agreementUrl = AgreementDialog.class.getClassLoader().getResource(AGREEMENT_PATH);
@@ -171,9 +166,9 @@ public class AgreementDialog extends JDialog
                     GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                     buttonPanel.setLayout(buttonPanelLayout);
                     buttonPanelLayout.setHorizontalGroup(
-                            buttonPanelLayout.createParallelGroup().addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(223, Short.MAX_VALUE).addComponent(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE).addGap(9, 9, 9)));
+                            buttonPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(223, Short.MAX_VALUE).add(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.UNRELATED).add(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE).addContainerGap(9, 9)));
                     buttonPanelLayout.setVerticalGroup(
-                            buttonPanelLayout.createParallelGroup().addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(cancelButton).addComponent(okButton)).addContainerGap()));
+                            buttonPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(buttonPanelLayout.createParallelGroup(GroupLayout.BASELINE).add(cancelButton).add(okButton)).addContainerGap()));
                 }
                 //======== scrollPane1 ========
                 {
@@ -191,9 +186,9 @@ public class AgreementDialog extends JDialog
                 GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
                 contentPanel.setLayout(contentPanelLayout);
                 contentPanelLayout.setHorizontalGroup(
-                        contentPanelLayout.createParallelGroup().addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(instructionsLabel, GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE).addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 402, GroupLayout.PREFERRED_SIZE));
+                        contentPanelLayout.createParallelGroup().add(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(instructionsLabel, GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE).add(scrollPane, GroupLayout.PREFERRED_SIZE, 402, GroupLayout.PREFERRED_SIZE));
                 contentPanelLayout.setVerticalGroup(
-                        contentPanelLayout.createParallelGroup().addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup().addComponent(instructionsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGap(18, 18, 18).addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)));
+                        contentPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, contentPanelLayout.createSequentialGroup().add(instructionsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addContainerGap(18, 18).add(scrollPane, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED).add(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)));
             }
             dialogPane.add(contentPanel, BorderLayout.CENTER);
         }
