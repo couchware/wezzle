@@ -96,7 +96,7 @@ public class Game extends Canvas implements IWindowCallback
     
     /** The version of the application. */
     final public static int APPLICATION_VERSION_MAJOR = 1;
-    final public static int APPLICATION_VERSION_MINOR = 1;
+    final public static int APPLICATION_VERSION_MINOR = 2;
     final public static String APPLICATION_VERSION = 
             APPLICATION_VERSION_MAJOR + "." + APPLICATION_VERSION_MINOR;
     
