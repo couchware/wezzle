@@ -119,9 +119,20 @@
                 <attribute name="Class-Path" value="${jar.classpath} lib/resources.jar"/>
             </manifest>
         </copylibs>
+        <!-- Create a list of graphics resources to auto-load. -->
+        <pathconvert pathsep="${line.separator}" property="sprites.list">
+            <flattenmapper/>
+            <fileset dir="${src.dir}/resources/sprites" includes="*.png" />
+        </pathconvert>
+        <mkdir dir="${build.dir}/resources"/>
+        <touch file="${build.dir}/resources/sprites-list.txt"/>
+        <echo message="${sprites.list}" file="${build.dir}/resources/sprites-list.txt"/>
         <!-- Delete the stupid fucking README.TXT that CopyLibs creates and has no switch to disable. -->
         <delete file="${dist.dir}/README.TXT" />
-        <jar destfile="${dist.dir}/lib/resources.jar" basedir="${src.dir}" includes="resources/**" />
+        <jar destfile="${dist.dir}/lib/resources.jar">
+            <fileset dir="${src.dir}" includes="resources/**" />
+            <fileset dir="${build.dir}" includes="resources/**" />
+        </jar>
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <echo>java -jar "${dist.jar.resolved}"</echo>

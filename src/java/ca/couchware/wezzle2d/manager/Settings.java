@@ -245,6 +245,10 @@ public class Settings
     /** The path to the sprites. */
     final private static String spriteResourcesPath
             = resourcesPath + "/sprites";
+
+    /** The path to the sprites. */
+    final private static String spriteResourcesListPath
+            = resourcesPath + "/sprites-list.txt";
     
     /** The path to the sounds. */
     final private static String soundResourcesPath
@@ -437,7 +441,12 @@ public class Settings
     public static String getSpriteResourcesPath()
     {
         return spriteResourcesPath;
-    }   
+    }
+
+    public static String getSpriteResourcesListPath()
+    {
+        return spriteResourcesListPath;
+    }
     
     public static String getGameSettingsFilePath()
     {

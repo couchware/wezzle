@@ -12,14 +12,21 @@ import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A central reference point for creating resources for use in the game. The
@@ -260,49 +267,27 @@ public class ResourceFactory
         // The list of the sprites.
         List<String> spriteList = new ArrayList<String>();
 
-        // Detect whether or not we're using a JAR file.
-        URI jarPathUrl = null;
-        try
-        {
-            jarPathUrl = ResourceFactory.class.getProtectionDomain().
-                    getCodeSource().getLocation().toURI();
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
-        
-        try
-        {
-            // Open the jar.
-            JarInputStream in = new JarInputStream( jarPathUrl.toURL().
-                    openStream() );
+        InputStream inputStream = ResourceFactory.class
+                .getClassLoader()
+                .getResourceAsStream(Settings.getSpriteResourcesListPath());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-            while ( true )
+        String line = null;
+        try
+        {
+            while ((line = reader.readLine()) != null)
             {
-                JarEntry entry = in.getNextJarEntry();
-
-                if ( entry == null )
-                {
-                    break;
-                }
-
-                if ( entry.isDirectory() )
-                {
-                    continue;
-                }
-
-                if ( entry.getName().startsWith( Settings.getSpriteResourcesPath() ) )
-                {
-                    spriteList.add( entry.getName() );
-                }
+                spriteList.add(line);
             }
+
+            reader.close();
         }
-        catch ( IOException e )
+        catch (IOException ex)
         {
-            CouchLogger.get().recordException( this.getClass(), e, true /* Fatal */ );
+            CouchLogger.get().recordException(this.getClass(), ex, true /* Fatal */);
         }
 
+        final String spritePath = Settings.getSpriteResourcesPath();
         // Get the contents of the directory.
         List<Runnable> runnableList = new ArrayList<Runnable>();
         for ( final String spriteFilePath : spriteList )
@@ -311,9 +296,9 @@ public class ResourceFactory
             {
                 public void run()
                 {
-                    //CouchLogger.get().recordMessage( ResourceFactory.class,
-                    //        "Preloading " + spriteFilePath + "..." );
-                    getSprite( spriteFilePath );
+//                    CouchLogger.get().recordWarning( ResourceFactory.class,
+//                            "Preloading " + spriteFilePath + "..." );
+                    getSprite( spritePath + "/" + spriteFilePath );
                 }
 
             } );
