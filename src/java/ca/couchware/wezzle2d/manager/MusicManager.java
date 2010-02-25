@@ -470,6 +470,8 @@ public class MusicManager
     {
         if (playerMap.containsKey(key))
             this.destroyPlayer(key);
+
+        System.out.println(track.getPath());
         
         MusicPlayer mp = createPlayer(track.getPath());
         playerMap.put(key, mp);

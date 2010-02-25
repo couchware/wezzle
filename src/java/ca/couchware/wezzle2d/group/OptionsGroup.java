@@ -100,7 +100,8 @@ public class OptionsGroup extends AbstractGroup
         try
         {
             // Create the browser launcher.
-            this.launcher = new BrowserLauncher();
+            if(!Game.APPLET)
+                this.launcher = new BrowserLauncher();
         }
         catch (BrowserLaunchingInitializingException ex)
         {

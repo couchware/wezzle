@@ -4,6 +4,7 @@
  */
 package ca.couchware.wezzle2d.lwjgl;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.IWindowCallback;
 import ca.couchware.wezzle2d.event.IKeyListener;
@@ -103,8 +104,8 @@ public class LWJGLWindow implements IWindow
         this.mouseStateMap.put(Button.MIDDLE, false);
 
         this.modifiers = EnumSet.noneOf(Modifier.class);
-
-        CouchLogger.get().recordMessage(this.getClass(), "LWJGL Version: " + Sys.getVersion());
+        if(!Game.APPLET)
+         CouchLogger.get().recordMessage(this.getClass(), "LWJGL Version: " + Sys.getVersion());
     }
 
     /**
@@ -308,7 +309,7 @@ public class LWJGLWindow implements IWindow
      */
     private void initializeDisplayMode()
     {
-        final boolean fullscreen =
+        final boolean fullscreen =  Game.APPLET ? false :
                 this.settingsMan.getBool( Key.USER_GRAPHICS_FULLSCREEN );
 
         this.originalDisplayMode = Display.getDisplayMode();

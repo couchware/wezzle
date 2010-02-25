@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.util.CouchColor;
@@ -60,7 +61,8 @@ public class SettingsManager
         this.defaultMap.putAll( currentMap );
 
         // Load user-made settings on top of that.
-        loadExternalSettings();
+        if(!Game.APPLET)
+            loadExternalSettings();
     }
 
     /**
@@ -123,6 +125,7 @@ public class SettingsManager
 
     public void loadExternalSettings(String path, String file)
     {
+      
         // Check if the directory exists.
         File dir = new File( path );
 
@@ -145,11 +148,12 @@ public class SettingsManager
             {
                 CouchLogger.get().recordException( this.getClass(), ex, true /* Fatal */ );
             }
-        } // end if  
+        } // end if
         else
         {                            
             CouchLogger.get().recordMessage( this.getClass(), "Could not load external settings: " + file );
         }
+        
     }
 
     public void loadExternalSettings()

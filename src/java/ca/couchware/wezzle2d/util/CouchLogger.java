@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.util;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.manager.Settings;
@@ -48,36 +49,44 @@ public class CouchLogger
     {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         lc.reset(); // we want to override the default-config.
-
-        // Console Appender
-        ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<ILoggingEvent>();
-        consoleAppender.setContext(lc);
-        consoleAppender.setLayout(new EchoLayout<ILoggingEvent>());
-
-        // Rolling appender
-        RollingFileAppender<ILoggingEvent> rollingAppender = new RollingFileAppender<ILoggingEvent>();
-        rollingAppender.setContext(lc);
-        rollingAppender.setLayout(new EchoLayout<ILoggingEvent>());
-
-        // Rolling Policy, set to roll every month and keep 6 month history.
-        Context context = new ContextBase();
-        TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
-        rollingPolicy.setFileNamePattern(Settings.getLogPath() + "/log-%d{MM-yyyy}.txt");
-        rollingPolicy.setContext(context);
-        rollingPolicy.setMaxHistory(MONTHS);
-        rollingPolicy.setParent(rollingAppender);      
-
         try
         {
-            rollingPolicy.start();
-            rollingAppender.setImmediateFlush(true);
-            rollingAppender.setRollingPolicy(rollingPolicy);
-            
-            rollingAppender.start();
+            // Console Appender
+            ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<ILoggingEvent>();
+            consoleAppender.setContext(lc);
+            consoleAppender.setLayout(new EchoLayout<ILoggingEvent>());
+
+
+            // Rolling appender
+            RollingFileAppender<ILoggingEvent> rollingAppender = new RollingFileAppender<ILoggingEvent>();
+
+            if(!Game.APPLET)
+            {
+                rollingAppender.setContext(lc);
+                rollingAppender.setLayout(new EchoLayout<ILoggingEvent>());
+
+                // Rolling Policy, set to roll every month and keep 6 month history.
+                Context context = new ContextBase();
+                TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
+                rollingPolicy.setFileNamePattern(Settings.getLogPath() + "/log-%d{MM-yyyy}.txt");
+                rollingPolicy.setContext(context);
+                rollingPolicy.setMaxHistory(MONTHS);
+                rollingPolicy.setParent(rollingAppender);
+
+
+
+                rollingPolicy.start();
+                rollingAppender.setImmediateFlush(true);
+                rollingAppender.setRollingPolicy(rollingPolicy);
+
+                rollingAppender.start();
+            }
             consoleAppender.start();
 
             Logger root = lc.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-            root.addAppender(rollingAppender);
+            
+            if(!Game.APPLET)
+                root.addAppender(rollingAppender);
             root.addAppender(consoleAppender);
 
         }

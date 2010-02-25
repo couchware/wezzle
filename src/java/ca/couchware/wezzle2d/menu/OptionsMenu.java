@@ -262,7 +262,8 @@ public class OptionsMenu extends AbstractMenu
         RadioItem fullscreenOn = new RadioItem.Builder().color(optionColor).text("On").build();
         RadioItem fullscreenOff = new RadioItem.Builder().color(optionColor).text("Off").build();
 
-        final boolean fullscreenSetting = hub.settingsMan.getBool(Key.USER_GRAPHICS_FULLSCREEN);
+        final boolean fullscreenSetting =  Game.APPLET ? false : hub.settingsMan.getBool(Key.USER_GRAPHICS_FULLSCREEN);
+     
         this.fullscreenRadio = new RadioGroup.Builder(
                 268 + 150,
                 fullscreenLabel.getY())

@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.Game;
 import java.awt.Color;
 import java.util.EnumSet;
 import java.util.List;
@@ -287,7 +288,7 @@ public class Settings
             + "/" + achievementsFileName;
     
     /** The path to the user settings file. */
-    final private static String externalSettingsPath = 
+    final private static String externalSettingsPath = Game.APPLET ? "" : 
             System.getProperty("user.home") + "/.couchware/Wezzle";
                     
     /** The file path of external game settings file. */

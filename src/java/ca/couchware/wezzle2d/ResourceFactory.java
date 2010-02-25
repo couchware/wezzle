@@ -16,17 +16,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  * A central reference point for creating resources for use in the game. The
@@ -253,6 +247,7 @@ public class ResourceFactory
      */
     public Collection<Runnable> preloadSprites()
     {
+       
         // Check to see if the sprites have been preloaded.
         if ( this.spritesPreloaded )
         {

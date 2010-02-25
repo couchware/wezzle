@@ -13,7 +13,6 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.dialog.AgreementDialog;
 import ca.couchware.wezzle2d.dialog.LicenseDialog;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
@@ -96,7 +95,7 @@ public class Game extends Canvas implements IWindowCallback
     
     /** The version of the application. */
     final public static int APPLICATION_VERSION_MAJOR = 1;
-    final public static int APPLICATION_VERSION_MINOR = 2;
+    final public static int APPLICATION_VERSION_MINOR = 1;
     final public static String APPLICATION_VERSION = 
             APPLICATION_VERSION_MAJOR + "." + APPLICATION_VERSION_MINOR;
     
@@ -194,7 +193,8 @@ public class Game extends Canvas implements IWindowCallback
      * The game difficulty setting.
      */
     private GameDifficulty difficulty = GameDifficulty.NORMAL;
-                
+
+    final public static boolean APPLET = true;
     //--------------------------------------------------------------------------
     // Constructor
     //--------------------------------------------------------------------------
@@ -328,20 +328,20 @@ public class Game extends Canvas implements IWindowCallback
         hub.initialize(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS), this);
 
         // Set the log level.
-        String logLevel = hub.settingsMan.getString(Key.DEBUG_LOG_LEVEL);
-        if (null != logLevel)
-            CouchLogger.get().setLogLevel(logLevel);
+        CouchLogger.get().setLogLevel(hub.settingsMan.getString(Key.DEBUG_LOG_LEVEL));
 
          // Print the build number.
-        Class cls = this.getClass();
-        CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
-        CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
-        CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
-        CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
-        CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
-        CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
-        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
-
+        if(!APPLET)
+        {
+            Class cls = this.getClass();
+            CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
+            CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
+            CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
+            CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
+            CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
+            CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
+            CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
+        }
         // Create the loader.
         loader = new Loader("Loading Wezzle...", hub.settingsMan);
         setDrawer(loader);        
@@ -612,7 +612,7 @@ public class Game extends Canvas implements IWindowCallback
         window.updateKeyPresses();
                         
         // The keys.      
-        if (window.isKeyPressed('R'))
+        if (window.isKeyPressed('R') && !APPLET)
         {
             hub.settingsMan.loadExternalSettings();
             CouchLogger.get().recordMessage(this.getClass(), "Reloaded external settings");
@@ -953,24 +953,29 @@ public class Game extends Canvas implements IWindowCallback
     //--------------------------------------------------------------------------
     
     /**
-     * Notification that we need to close the window (and game).
+     * Notification that the game window has been closed
      */
     public void windowClosed()
     {
         try
         {
             // Save the properites.
-            if (hub.settingsMan != null) hub.settingsMan.saveSettings();
-            if (hub.musicMan != null)    hub.musicMan.stopAll();
+            if (hub.settingsMan != null && !APPLET)
+            {
+                hub.settingsMan.saveSettings();
+            }
+
+            if (hub.musicMan != null)
+            {
+                hub.musicMan.stopAll();
+            }
 
             CouchLogger.get().recordMessage(this.getClass(), "Game closed");
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
-
-        System.exit(0);
     }
    
     /**
@@ -1067,15 +1072,12 @@ public class Game extends Canvas implements IWindowCallback
     {
         return tracker;
     }
+ 
 
     /**
      * The secret part of the registration code.  Shhh.  Don't tell anyone.
      */
     final static String SECRET_CODE = "minsquibbion";
-
-    //--------------------------------------------------------------------------
-    // License information validation
-    //--------------------------------------------------------------------------
 
     /**
      * Validates the license information for Wezzle.
@@ -1083,6 +1085,9 @@ public class Game extends Canvas implements IWindowCallback
      */
     public static boolean validateLicenseInformation(String serialNumber, String licenseKey)
     {
+        if(APPLET)
+            return true;
+        
         if (null == serialNumber || null == licenseKey)
         {
             return false;
@@ -1103,8 +1108,8 @@ public class Game extends Canvas implements IWindowCallback
             {
                 int hex = 0xFF & messageDigest[i];
                 hexBuffer.append(String.format("%02x", hex));
-            }
-
+            }            
+            
             if (licenseKey.toLowerCase()
                     .equals(hexBuffer.toString().toLowerCase()))
             {
@@ -1118,102 +1123,5 @@ public class Game extends Canvas implements IWindowCallback
 
         return false;
     }
-
-    //--------------------------------------------------------------------------
-    // Main method
-    //--------------------------------------------------------------------------
-    
-    /**
-     * The entry point into the game. We'll simply create an instance of class
-     * which will start the display and game loop.
-     *
-     * @param argv
-     *            The arguments that are passed into our game
-     */
-    public static void main(String argv[])
-    {
-        // Make sure the setting manager is loaded.
-        SettingsManager settingsMan = SettingsManager.get();
-
-        // Send a reference to the resource manager.
-        ResourceFactory.get().setSettingsManager(settingsMan);
-
-        // Set the default color scheme.
-        ResourceFactory.setDefaultLabelColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        ProgressBar.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        RadioItem.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        SpeechBubble.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
-        Achievement.Level.initializeAchievementColorMap(settingsMan);
-
-        // Create the game.
-        Game game = new Game(ResourceFactory.Renderer.LWJGL);        
-
-        try
-        {
-            boolean agreementAccepted = settingsMan.getBool(Key.USER_AGREEMENT_ACCEPTED);
-            
-            if (!agreementAccepted)
-            {
-                AgreementDialog.run();
-                final boolean enteredAgreementAccepted = settingsMan.getBool(Key.USER_AGREEMENT_ACCEPTED);
-                if (enteredAgreementAccepted)
-                {
-                    agreementAccepted = true;
-                    CouchLogger.get().recordMessage( Game.class,
-                            "Terms of the agreement accepted");
-                }
-                else
-                {
-                    CouchLogger.get().recordException( Game.class,
-                            new Exception("You must accept the terms of the agreement\n"
-                                + "in order to play Wezzle"),
-                            true /* Fatal */);
-                }
-            }
-
-            final String serialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
-            final String licenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
-            boolean validated = Game.validateLicenseInformation(serialNumber, licenseKey);
-
-            if (!validated)
-            {
-                LicenseDialog.run();
-
-                final String enteredSerialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
-                final String enteredLicenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
-                final boolean enteredValidated = 
-                        Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
-
-                if (enteredValidated)
-                {
-                    validated = true;
-                    CouchLogger.get().recordMessage( Game.class,
-                            "License information verified");
-                }
-                else
-                {
-                    CouchLogger.get().recordException( Game.class,
-                            new Exception("Invalid license information"),
-                            true /* Fatal */);
-                }
-            }
-
-            // Start the game!
-            if (agreementAccepted && validated)
-            {
-                game.start();
-            }
-        }
-        catch (Exception e)
-        {
-            CouchLogger.get().recordException(Game.class, e, true /* Fatal */);
-        }
-
-        // This is to make sure everything is dead.
-        // In practice it'll never get run, as the game should exit in the
-        // windowClosed() method.
-        System.exit(0);
-    }    
 
 }
