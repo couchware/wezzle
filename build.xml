@@ -12,24 +12,7 @@
     <!-- Override the default task so that it includes the native libraries -->
     <!-- for all supported platforms.                                       -->
     <target depends="test,jar,windows,macosx,linux" description="Build and test whole project." name="default"/>
-
-  <fileset id="pngs" dir="src/resources/sprites">
-    <include name="*.png"/>
-  </fileset>
-
-  <target name="sprites">
-    <script language="javascript"><![CDATA[
-        var out = new java.io.PrintWriter(new java.io.FileWriter('sprites.txt'));
-
-        var iPng = project.getReference('pngs').iterator();
-        while (iPng.hasNext()) {
-            var png = new String(iPng.next());
-            out.println(png);
-        }
-
-        out.close();
-    ]]></script>
-  </target>
+  
     <target name="windows" depends="test,jar" description="Build the Windows version of Wezzle">
         <!-- This copies the native LWJGL library. -->
         <copy todir="${dist.dir}/lib/native/windows">
@@ -150,6 +133,14 @@
             <fileset dir="${src.dir}" includes="resources/**" />
             <fileset dir="${build.dir}" includes="resources/**" />
         </jar>
+        <!--
+        <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
+            <path>
+                <fileset dir="${dist.dir}" includes="**/*.jar" />
+                <fileset dir="applet" includes="**/*.jar" />
+            </path>
+        </signjar>
+        -->
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <echo>java -jar "${dist.jar.resolved}"</echo>
