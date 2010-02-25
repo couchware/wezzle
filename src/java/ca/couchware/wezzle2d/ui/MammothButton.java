@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
@@ -58,9 +59,9 @@ public class MammothButton extends Button
     
     public static class Builder extends Button.Builder
     {
-        public Builder(int x, int y)
+        public Builder(IWindow win, int x, int y)
         {
-            super(x, y);            
+            super(win, x, y);
         }
                 
         @Override
@@ -69,7 +70,7 @@ public class MammothButton extends Button
             MammothButton button = new MammothButton(this);
             
             if (visible && !disabled)
-                button.window.addMouseListener(button);           
+                button.win.addMouseListener(button);
             
             return button;
         }

@@ -1,5 +1,6 @@
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.graphics.ISprite;
@@ -104,7 +105,7 @@ public class Button extends AbstractButton
     {      
         // Invoke the super on the required arguments.
         // This will set their variables as well.
-        super(builder.x, builder.y);
+        super(builder.win, builder.x, builder.y);
         
         // Assign values from builder.      
         this.textSize       = builder.textSize;
@@ -181,7 +182,8 @@ public class Button extends AbstractButton
     
     public static class Builder implements IBuilder<Button>
     {
-        // Required values.       
+        // Required values.
+        protected IWindow win;
         protected int x;
         protected int y;        
         
@@ -203,14 +205,16 @@ public class Button extends AbstractButton
         protected boolean autoWidth = false;
         protected int autoWidthPadding = 40;
         
-        public Builder(int x, int y)
-        {            
+        public Builder(IWindow win, int x, int y)
+        {
+            this.win = win;
             this.x = x;
             this.y = y;
         }
         
         public Builder(Button button)
-        {            
+        {
+            this.win              = button.win;
             this.x                = button.x;
             this.y                = button.y;
             this.alignment        = button.alignment.clone();
@@ -293,7 +297,7 @@ public class Button extends AbstractButton
             Button button = new Button(this);
             
             if (visible == true && disabled == false)
-                button.window.addMouseListener(button);           
+                button.win.addMouseListener(button);
             
             return button;
         }                

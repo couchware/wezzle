@@ -48,6 +48,21 @@ public interface IWindow
     public boolean isFullscreen();
 
     /**
+     * Set the callback that should be notified of the window events.
+     *
+     * @param callback
+     *            The callback that should be notified of game window events.
+     */
+    public void setGameWindowCallback(IWindowCallback callback);
+
+    /**
+     * Get a graphics instance for drawing primitives to the screen.
+     *
+     * @return
+     */
+    public IGraphics getGraphics();
+
+    /**
      * Start the game window rendering the display.
      */
     public void start();
@@ -63,22 +78,10 @@ public interface IWindow
      * @param title
      * @param message
      */
-    public void alert(String title, String message);
+    public void alert(String title, String message);    
 
     /**
-     * Set the callback that should be notified of the window events.
-     *
-     * @param callback
-     *            The callback that should be notified of game window events.
-     */
-    public void setGameWindowCallback(IWindowCallback callback);    
-
-    //--------------------------------------------------------------------------
-    // Keyboard
-    //--------------------------------------------------------------------------
-
-    /**
-     * Update the key presses.
+     * Update the internal key press information.
      */
     public void updateKeyPresses();
 
@@ -104,11 +107,7 @@ public interface IWindow
      * @param l
      */
     public void removeKeyListener(IKeyListener l);
-
-    //--------------------------------------------------------------------------
-    // Mouse
-    //--------------------------------------------------------------------------
-
+  
     /**
      * Registers a mouse listener.
      * 

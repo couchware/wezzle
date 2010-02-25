@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Rule;
 import ca.couchware.wezzle2d.event.ILevelListener;
@@ -74,7 +75,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
      */
     private int starCooldown = -1;
     
-    private ItemManager(ManagerHub hub)
+    private ItemManager(IWindow win, ManagerHub hub)
     {
         // Create the item list.
         itemMap = new EnumMap<TileType, Item>(TileType.class);                
@@ -89,7 +90,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 .initialAmount(0).weight(10).maximumOnBoard(1).build());
                           
         // Make the mutable list the master list.
-        masterRuleList = createMasterRuleList(hub);
+        masterRuleList = createMasterRuleList(win, hub);
                         
         // Create the rule list.
         ruleList = new LinkedList<Rule>();
@@ -127,12 +128,13 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         ruleList.addAll(masterRuleList);
     }
     
-    public static ItemManager newInstance(ManagerHub hub)
+    public static ItemManager newInstance(IWindow win, ManagerHub hub)
     {
-        return new ItemManager(hub);
+        return new ItemManager(win, hub);
     }
     
-    private List<Rule> createMasterRuleList(final ManagerHub hub)
+    private List<Rule> createMasterRuleList(
+            final IWindow win, final ManagerHub hub)
     {
         // Set the rules.
         List<Rule> mutableList = new ArrayList<Rule>();
@@ -150,9 +152,10 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 
                 if (hub.statMan.getStartLevel() < 3)
                 {
-                    TileNotification notif = new TileNotification.Builder(0, 0, TileType.ROCKET)
-                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .build();
+                    TileNotification notif = new TileNotification
+                            .Builder(win, 0, 0, TileType.ROCKET)
+                            .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                            .build();
 
                     hub.notificationMan.offer(notif);
                 }
@@ -172,7 +175,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 
                 if (hub.statMan.getStartLevel() < 4)
                 {
-                    TileNotification notif = new TileNotification.Builder(0, 0, TileType.GRAVITY)
+                    TileNotification notif = new TileNotification.Builder(win, 0, 0, TileType.GRAVITY)
                         .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                         .build();
 
@@ -194,9 +197,10 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 
                 if (hub.statMan.getStartLevel() < 5)
                 {
-                    TileNotification notif = new TileNotification.Builder(0, 0, TileType.BOMB)
-                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .build();
+                    TileNotification notif = new TileNotification
+                            .Builder(win, 0, 0, TileType.BOMB)
+                            .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                            .build();
 
                     hub.notificationMan.offer(notif);
                 }
@@ -216,9 +220,10 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
 
                 if (hub.statMan.getStartLevel() < 6)
                 {
-                    TileNotification notif = new TileNotification.Builder(0, 0, TileType.STAR)
-                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .build();
+                    TileNotification notif = new TileNotification
+                            .Builder(win, 0, 0, TileType.STAR)
+                            .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                            .build();
 
                     hub.notificationMan.offer(notif);
                 }

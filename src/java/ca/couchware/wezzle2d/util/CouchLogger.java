@@ -16,7 +16,6 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.Calendar;
 import org.slf4j.LoggerFactory;
 
@@ -48,19 +47,23 @@ public class CouchLogger
     private CouchLogger()
     {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        lc.reset(); // we want to override the default-config.
+        lc.reset(); // We want to override the default config.
+
         try
         {
+            Logger root = lc.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+
             // Console Appender
             ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<ILoggingEvent>();
             consoleAppender.setContext(lc);
             consoleAppender.setLayout(new EchoLayout<ILoggingEvent>());
-
+            consoleAppender.start();
+            root.addAppender(consoleAppender);
 
             // Rolling appender
             RollingFileAppender<ILoggingEvent> rollingAppender = new RollingFileAppender<ILoggingEvent>();
 
-            if(!Game.APPLET)
+            if (!Game.isApplet())
             {
                 rollingAppender.setContext(lc);
                 rollingAppender.setLayout(new EchoLayout<ILoggingEvent>());
@@ -80,15 +83,8 @@ public class CouchLogger
                 rollingAppender.setRollingPolicy(rollingPolicy);
 
                 rollingAppender.start();
-            }
-            consoleAppender.start();
-
-            Logger root = lc.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-            
-            if(!Game.APPLET)
                 root.addAppender(rollingAppender);
-            root.addAppender(consoleAppender);
-
+            }           
         }
         catch(Exception e)
         {

@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -88,10 +89,10 @@ public class PlayNowMenu extends AbstractMenu
     final private static String THEME_ELECTRONIC_KEY = "Electronic";
     final private static String THEME_HIPPOP_KEY = "HipPop";
     
-    public PlayNowMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)
+    public PlayNowMenu(IMenu parentMenu, IWindow win, ManagerHub hub, LayerManager menuLayerMan)
     {                
         // Invoke the super.
-        super(parentMenu, hub, menuLayerMan);
+        super(parentMenu, win, hub, menuLayerMan);
         
         this.hub = hub;
         this.menuPlayer = ((MainMenu) this.parent).getPlayer();
@@ -109,7 +110,7 @@ public class PlayNowMenu extends AbstractMenu
         this.entityList.add(titleLabel);
         
         // The first box.
-        Box optionBox = new Box.Builder(68, 122)
+        Box optionBox = new Box.Builder(win, 68, 122)
                 .width(400).height(398)
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
@@ -118,13 +119,13 @@ public class PlayNowMenu extends AbstractMenu
 
         this.entityList.add(optionBox);
 
-        createLevelNumberEntities(hub, LABEL_COLOR, OPTION_COLOR);
-        createDifficultyEntities(hub, LABEL_COLOR, OPTION_COLOR);
-        createTutorialEntities(hub, LABEL_COLOR, OPTION_COLOR);
-        createThemeEntities(hub, LABEL_COLOR, OPTION_COLOR);
+        createLevelNumberEntities(win, hub, LABEL_COLOR, OPTION_COLOR);
+        createDifficultyEntities(win, hub, LABEL_COLOR, OPTION_COLOR);
+        createTutorialEntities(win, hub, LABEL_COLOR, OPTION_COLOR);
+        createThemeEntities(win, hub, LABEL_COLOR, OPTION_COLOR);
 
         // Create the start button.
-        this.startButton = new Button.Builder(268, 462)
+        this.startButton = new Button.Builder(win, 268, 462)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(LABEL_COLOR)
                 .normalOpacity(90)                
@@ -148,7 +149,7 @@ public class PlayNowMenu extends AbstractMenu
      * @param labelColor
      * @param optionColor
      */
-    private void createLevelNumberEntities(ManagerHub hub,
+    private void createLevelNumberEntities(IWindow win, ManagerHub hub,
             Color labelColor, Color optionColor)
     {
         // Get the user set level and make sure it's within range.
@@ -175,8 +176,7 @@ public class PlayNowMenu extends AbstractMenu
         this.entityList.add(this.levelNumberLabel);
 
         this.levelNumberSlider = new SliderBar.Builder(
-                    268,
-                    levelLabel.getY() + 35)
+                    win, 268, levelLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .width(340)
                 .virtualRange(MIN_LEVEL, MAX_LEVEL).
@@ -193,7 +193,7 @@ public class PlayNowMenu extends AbstractMenu
      * @param labelColor
      * @param optionColor
      */
-    private void createDifficultyEntities(ManagerHub hub,
+    private void createDifficultyEntities(IWindow win, ManagerHub hub,
             Color labelColor, Color optionColor)
     {
         // Get the user set difficulty and make sure it's within range.
@@ -220,8 +220,7 @@ public class PlayNowMenu extends AbstractMenu
         this.entityList.add(this.difficultyValueLabel);
 
         this.difficultyValueSlider = new SliderBar.Builder(
-                    268,
-                    difficultyLabel.getY() + 35)
+                    win, 268, difficultyLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .width(340)
                 .virtualRange(MIN_DIFFICULTY, MAX_DIFFICULTY)
@@ -238,7 +237,7 @@ public class PlayNowMenu extends AbstractMenu
      * @param labelColor
      * @param optionColor
      */
-    private void createTutorialEntities(ManagerHub hub,
+    private void createTutorialEntities(IWindow win, ManagerHub hub,
             Color labelColor, Color optionColor)
     {
         this.tutorialLabel = new LabelBuilder(
@@ -250,18 +249,17 @@ public class PlayNowMenu extends AbstractMenu
                 .build();
         this.entityList.add(tutorialLabel);
 
-        RadioItem tutorialOn = new RadioItem.Builder()
+        RadioItem tutorialOn = new RadioItem.Builder(win)
                 .color(optionColor)
                 .text("On").build();
 
-        RadioItem tutorialOff = new RadioItem.Builder()
+        RadioItem tutorialOff = new RadioItem.Builder(win)
                 .color(optionColor)
                 .text("Off").build();
 
         final boolean tutorialDefault = hub.settingsMan.getBool(Key.USER_TUTORIAL_DEFAULT);
         this.tutorialRadio = new RadioGroup.Builder(
-                    310,
-                    tutorialLabel.getY())
+                    win, 310, tutorialLabel.getY())
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(tutorialOn,  tutorialDefault)
                 .add(tutorialOff, !tutorialDefault)
@@ -277,7 +275,7 @@ public class PlayNowMenu extends AbstractMenu
      * @param labelColor
      * @param optionColor
      */
-    private void createThemeEntities(ManagerHub hub,
+    private void createThemeEntities(IWindow win, ManagerHub hub,
             Color labelColor, Color optionColor)
     {
         this.themeLabel = new LabelBuilder(
@@ -293,7 +291,7 @@ public class PlayNowMenu extends AbstractMenu
         createPlayers();
 
         // Creat the level limit radio group.
-        RadioItem themeItem1 = new RadioItem.Builder().color(optionColor)
+        RadioItem themeItem1 = new RadioItem.Builder(win).color(optionColor)
                 .text("Tron").build();
         themeItem1.addButtonListener(new IButtonListener()
         {
@@ -301,7 +299,7 @@ public class PlayNowMenu extends AbstractMenu
             { playTheme(THEME_TRON); }
         });
 
-        RadioItem themeItem2 = new RadioItem.Builder().color(optionColor)
+        RadioItem themeItem2 = new RadioItem.Builder(win).color(optionColor)
                 .text("Elec").build();
         themeItem2.addButtonListener(new IButtonListener()
         {
@@ -309,7 +307,7 @@ public class PlayNowMenu extends AbstractMenu
             { playTheme(THEME_ELECTRONIC); }
         });
 
-        RadioItem themeItem3 = new RadioItem.Builder().color(optionColor)
+        RadioItem themeItem3 = new RadioItem.Builder(win).color(optionColor)
                 .text("HipPop").build();
         themeItem3.addButtonListener(new IButtonListener()
         {
@@ -351,8 +349,7 @@ public class PlayNowMenu extends AbstractMenu
         }
 
         this.themeRadio = new RadioGroup.Builder(
-                    268,
-                    themeLabel.getY() + 35)
+                    win, 268, themeLabel.getY() + 35)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(themeItem1, themeMap.get(Theme.TRON))
                 .add(themeItem2, themeMap.get(Theme.ELECTRONIC))

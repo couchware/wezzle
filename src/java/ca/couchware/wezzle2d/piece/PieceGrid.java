@@ -2,6 +2,7 @@ package ca.couchware.wezzle2d.piece;
 
 import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.IGraphics;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.AbstractEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
@@ -79,8 +80,8 @@ public class PieceGrid extends AbstractEntity
     /** The current alignment mode. */
     private AlignmentMode alignmentMode;
 
-    /** The game window. */
-    private IGraphics gfx;
+    private IWindow win;
+    private IGraphics graphics;
 
     /** The color of the piece grid, if we're using vector rendering. */
     private Color color;
@@ -114,11 +115,8 @@ public class PieceGrid extends AbstractEntity
      */
     private PieceGrid(Builder builder)
     {
-        // Shortcut to the resource factory.
-        ResourceFactory factory = ResourceFactory.get();
-
-        // Grab the game window.
-        this.gfx = factory.getGraphics();
+        this.win = builder.win;
+        this.graphics = win.getGraphics();
 
         // Grid is initially visible.
         this.visible = builder.visible;
@@ -140,6 +138,7 @@ public class PieceGrid extends AbstractEntity
         this.pathMap.put( RenderMode.SPRITE_DARK, SHADOW_PATH);
 
         // Load in all the sprites.
+        ResourceFactory factory = ResourceFactory.get();
         if ( renderMode == RenderMode.SPRITE_LIGHT
                 || renderMode == RenderMode.SPRITE_DARK )
         {
@@ -149,9 +148,10 @@ public class PieceGrid extends AbstractEntity
             {
                 for ( int j = 0; j < spriteArray[0].length; j++ )
                 {
-                    spriteArray[i][j] = factory.getSprite( this.pathMap.get(renderMode) );
-                }
-            }
+                    spriteArray[i][j] =
+                            factory.getSprite( this.pathMap.get(renderMode) );
+                } // end for
+            } // end for
         }
 
         // Create an blank out the structure.
@@ -183,6 +183,7 @@ public class PieceGrid extends AbstractEntity
 
     public static class Builder implements IBuilder<PieceGrid>
     {
+        final IWindow win;
         final int x;
         final int y;
         final RenderMode renderMode;
@@ -195,8 +196,9 @@ public class PieceGrid extends AbstractEntity
         boolean visible = true;
         int opacity = 100;
 
-        public Builder(int x, int y, RenderMode renderMode)
+        public Builder(IWindow win, int x, int y, RenderMode renderMode)
         {
+            this.win = win;
             this.x = x;
             this.y = y;
             this.renderMode = renderMode;
@@ -408,8 +410,8 @@ public class PieceGrid extends AbstractEntity
     private void renderVector()
     {
         // Save the old color and set the new one.
-        CouchColor oldColor = gfx.getColor();
-        gfx.setColor( color );
+        CouchColor oldColor = graphics.getColor();
+        graphics.setColor( color );
 
         // Cycle through, drawing only the sprites that should be shown.
         for ( int i = 0; i < structure.length; i++ )
@@ -418,7 +420,7 @@ public class PieceGrid extends AbstractEntity
             {
                 if ( structure[i][j] == true )
                 {                    
-                    gfx.fillEllipse(
+                    graphics.fillEllipse(
                             x + offsetX + i * cellWidth,
                             y + offsetY + j * cellHeight,
                             cellWidth, cellHeight);
@@ -427,7 +429,7 @@ public class PieceGrid extends AbstractEntity
         } // end for	
 
         // Restore the old color.
-        gfx.setColor( oldColor );
+        graphics.setColor( oldColor );
     }
 
     @Override

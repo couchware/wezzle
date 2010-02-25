@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -21,8 +22,6 @@ import java.util.EnumSet;
  */
 public class OptionsGroup extends AbstractGroup
 {
-    final private ManagerHub hub;
-
     private BrowserLauncher launcher;       
     
     private ITextLabel headerLabel;
@@ -41,13 +40,17 @@ public class OptionsGroup extends AbstractGroup
      * @param window
      * @param layerMan
      */    
-    public OptionsGroup(ManagerHub hub)
+    public OptionsGroup(IWindow win, ManagerHub hub)
     {
-        // Check the hub instance and save it.
-        if(hub == null)
-            throw new IllegalArgumentException("Hub must not be null");
+        if (win == null)
+        {
+            throw new IllegalArgumentException("Win must not be null");
+        }
 
-        this.hub = hub;
+        if (hub == null)
+        {
+            throw new IllegalArgumentException("Hub must not be null");
+        }
         
         // Create the options header.
         headerLabel = new LabelBuilder(400, 171)
@@ -55,16 +58,17 @@ public class OptionsGroup extends AbstractGroup
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .size(26).text("Options")
                 .visible(false).build();
+
         hub.layerMan.add(headerLabel, Layer.UI);
         entityList.add(headerLabel);
 
-        audio = new AudioGroup( hub );
+        audio = new AudioGroup( win, hub );
         hub.groupMan.register( audio );
 
-        mainMenu = new MainMenuGroup( hub );
+        mainMenu = new MainMenuGroup( win, hub );
         hub.groupMan.register( mainMenu );
 
-        exitGame = new ExitGameGroup( hub );
+        exitGame = new ExitGameGroup( win, hub );
         hub.groupMan.register( exitGame );
 
         // Old Y-values...
@@ -73,7 +77,7 @@ public class OptionsGroup extends AbstractGroup
         // Main Menu: 354
 
         // Create upgrade button.
-        Button templateButton = new Button.Builder(400, 0)
+        Button templateButton = new Button.Builder(win, 400, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("").normalOpacity(80).visible(false).build();
 
@@ -96,20 +100,22 @@ public class OptionsGroup extends AbstractGroup
             .text("Back to Game").build();
         hub.layerMan.add(closeButton, Layer.UI);     
         entityList.add(closeButton);
-        
-        try
+
+        if (Game.isApplet())
         {
-            // Create the browser launcher.
-            if(!Game.APPLET)
+            try
+            {
+                // Create the browser launcher.
                 this.launcher = new BrowserLauncher();
-        }
-        catch (BrowserLaunchingInitializingException ex)
-        {
-            CouchLogger.get().recordException(this.getClass(), ex);
-        }
-        catch (UnsupportedOperatingSystemException ex)
-        {
-            CouchLogger.get().recordException(this.getClass(), ex);
+            }
+            catch (BrowserLaunchingInitializingException ex)
+            {
+                CouchLogger.get().recordException(this.getClass(), ex);
+            }
+            catch (UnsupportedOperatingSystemException ex)
+            {
+                CouchLogger.get().recordException(this.getClass(), ex);
+            }
         }
     }      
     

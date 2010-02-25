@@ -73,12 +73,12 @@ public class SliderBar extends AbstractEntity implements IMouseListener
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    private final IWindow window;
+    private final IWindow win;
     
     /**
      * The graphics instance.
      */
-    private final IGraphics gfx;
+    private final IGraphics graphics;
     
     /**
      * The shape of the button.
@@ -151,8 +151,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         this.visible = builder.visible;
         
         // Store the window reference.
-        this.window = ResourceFactory.get().getWindow();
-        this.gfx = ResourceFactory.get().getGraphics();
+        this.win = builder.win;
+        this.graphics = win.getGraphics();
         
         // Set the position.
         this.x = builder.x;
@@ -221,7 +221,8 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     
     public static class Builder implements IBuilder<SliderBar>
     {
-        // Required values.         
+        // Required values.
+        private IWindow win;
         private int x;
         private int y;     
         
@@ -236,14 +237,16 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         private int virtualUpper = 100;
         private int virtualValue = 0;
         
-        public Builder(int x, int y)
-        {                      
+        public Builder(IWindow win, int x, int y)
+        {
+            this.win = win;
             this.x = x;
             this.y = y;
         }
         
         public Builder(SliderBar sliderBar)
-        {                        
+        {
+            this.win = sliderBar.win;
             this.x = sliderBar.x;
             this.y = sliderBar.y;
             this.alignment = sliderBar.alignment.clone();     
@@ -288,7 +291,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
             SliderBar bar = new SliderBar(this);
             
             if (visible)
-                bar.window.addMouseListener(bar);        
+                bar.win.addMouseListener(bar);
             
             return bar;
         }                
@@ -300,15 +303,15 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     
     private void drawRail(int x, int y, int width, int height, int border)
     {
-        gfx.setColor(CouchColor.newInstance(
+        graphics.setColor(CouchColor.newInstance(
                 Color.BLACK, 
                 CouchColor.scaleOpacity(opacity)));
-        gfx.fillRect(x, y, width + border * 2, height + border * 2);
+        graphics.fillRect(x, y, width + border * 2, height + border * 2);
         
-        gfx.setColor(CouchColor.newInstance(
+        graphics.setColor(CouchColor.newInstance(
                 Color.DARK_GRAY, 
                 CouchColor.scaleOpacity(opacity)));
-        gfx.fillRect(x + border, y + border, width, height);
+        graphics.fillRect(x + border, y + border, width, height);
     }
     
     @Override
@@ -466,13 +469,13 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         if (shape.contains(lp.getX(), lp.getY()) == false 
                 && shape.contains(p.getX(), p.getY()) == true)
         {
-            window.setCursor(Cursor.HAND_CURSOR);            
+            win.setCursor(Cursor.HAND_CURSOR);
         }
         // Mouse out.
         else if (shape.contains(lp.getX(), lp.getY()) == true
                 && shape.contains(p.getX(), p.getY()) == false)
         {
-            window.setCursor(Cursor.DEFAULT_CURSOR);
+            win.setCursor(Cursor.DEFAULT_CURSOR);
         }
     } 
     
@@ -540,12 +543,12 @@ public class SliderBar extends AbstractEntity implements IMouseListener
         // Add or remove listener based on visibility.
         if (visible == true)
         {
-            window.addMouseListener(this);            
+            win.addMouseListener(this);
         }
         else
         {
-            window.setCursor(Cursor.DEFAULT_CURSOR);
-            window.removeMouseListener(this);            
+            win.setCursor(Cursor.DEFAULT_CURSOR);
+            win.removeMouseListener(this);
         }        
     }
     
@@ -673,7 +676,7 @@ public class SliderBar extends AbstractEntity implements IMouseListener
     {
         // Stop listening to the mouse events.
         if (this.visible)
-            window.removeMouseListener(this);
+            win.removeMouseListener(this);
     }
     
 }

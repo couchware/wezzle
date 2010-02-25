@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.graphics;
 
 import ca.couchware.wezzle2d.IGraphics;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.util.CouchColor;
@@ -18,15 +19,16 @@ import java.util.EnumSet;
  */
 public class Ellipse extends AbstractEntity
 {
-
-    private final IGraphics gfx;
+    private final IWindow win;
+    private final IGraphics graphics;
     private final boolean filled;
     private Color color;
 
     private Ellipse(Builder builder)
     {
         // Set graphics reference.
-        this.gfx = ResourceFactory.get().getGraphics();
+        this.win = builder.win;
+        this.graphics = win.getGraphics();
         this.filled = builder.filled;
 
         // Set the position.
@@ -60,6 +62,7 @@ public class Ellipse extends AbstractEntity
     public static class Builder implements IBuilder<Ellipse>
     {
         // Required values.
+        private IWindow win;
         private int x;
         private int y;       
 
@@ -73,14 +76,16 @@ public class Ellipse extends AbstractEntity
         private boolean filled = false;
         private Color color = Color.BLACK;
         
-        public Builder(int x, int y)
+        public Builder(IWindow win, int x, int y)
         {
+            this.win = win;
             this.x = x;
             this.y = y;
         }
 
         public Builder(Ellipse ellipse)
         {
+            this.win = ellipse.win;
             this.x = ellipse.x;
             this.y = ellipse.y;
             this.alignment = ellipse.alignment.clone();
@@ -127,12 +132,12 @@ public class Ellipse extends AbstractEntity
     @Override
     public boolean draw()
     {
-        CouchColor oldColor = this.gfx.getColor();
-        this.gfx.setColor(this.color);
+        CouchColor oldColor = this.graphics.getColor();
+        this.graphics.setColor(this.color);
 
         if (this.filled)
         {
-            gfx.fillEllipse(
+            graphics.fillEllipse(
                     this.x + this.offsetX,
                     this.y + this.offsetY,
                     this.width,
@@ -140,14 +145,14 @@ public class Ellipse extends AbstractEntity
         }
         else
         {
-            gfx.drawEllipse(
+            graphics.drawEllipse(
                     this.x + this.offsetX,
                     this.y + this.offsetY,
                     this.width,
                     this.height);
         }
         
-        this.gfx.setColor(oldColor);
+        this.graphics.setColor(oldColor);
         return true;
     }
 

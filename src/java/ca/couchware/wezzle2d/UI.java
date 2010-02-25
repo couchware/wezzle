@@ -63,7 +63,7 @@ import java.util.List;
 public class UI implements 
         IGameListener, ILevelListener, IPieceListener, IScoreListener, ITimerListener
 {       
-
+    final private IWindow win;
     final private ManagerHub hub;
     
     final private static String FILE_EXT = ".png";
@@ -169,8 +169,9 @@ public class UI implements
     /**
      * Private constructor to ensure singletonness.
      */
-    private UI(Game game, ManagerHub hub)
+    private UI(IWindow win, Game game, ManagerHub hub)
     {
+        this.win = win;
         this.hub = hub;        
 
         initializeButtons();        
@@ -180,7 +181,7 @@ public class UI implements
         initializeTraditionalPieceBox();
         initializeOverlayPieceBox();
         initializeBars();
-        initializeGroups(game);
+        initializeGroups(win, game);
 
         initalizeMasterList();
         this.ruleList = new ArrayList<Rule>(this.masterRuleList);
@@ -193,9 +194,9 @@ public class UI implements
      * @param hub
      * @return
      */
-    public static UI newInstance(Game game, ManagerHub hub)
+    public static UI newInstance(IWindow win, Game game, ManagerHub hub)
     {
-        return new UI(game, hub);
+        return new UI(win, game, hub);
     }       
 
     /**
@@ -258,14 +259,14 @@ public class UI implements
     private void initializeButtons()
     {        
         // The high score button.
-        highScoreButton = new MammothButton.Builder(128, 299)
+        highScoreButton = new MammothButton.Builder(win, 128, 299)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("")
                 .normalOpacity(0).hoverOpacity(70).activeOpacity(95).build();
         hub.layerMan.add(highScoreButton, Layer.UI);
                 
         // Create pause button.        
-        pauseButton = new Button.Builder(668, 211)
+        pauseButton = new Button.Builder(win, 668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.NORMAL)
                 .width(170)
@@ -392,7 +393,7 @@ public class UI implements
                 .build();
         hub.layerMan.add(this.traditionalPieceBoxLabel, Layer.UI);
 
-        this.traditionalPieceBox = new Box.Builder(668, 110)
+        this.traditionalPieceBox = new Box.Builder(win, 668, 110)
                 .border(Border.MEDIUM)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(90)
@@ -404,6 +405,7 @@ public class UI implements
         Color color = CouchColor.newInstance(c, 255).toColor();
 
         this.traditionalPieceBoxGrid = new PieceGrid.Builder(
+                    win,
                     this.traditionalPieceBox.getX(),
                     this.traditionalPieceBox.getY(),                   
                     PieceGrid.RenderMode.VECTOR
@@ -430,8 +432,7 @@ public class UI implements
         Color color = CouchColor.newInstance(Color.WHITE, 80).toColor();      
         
         this.overlayPieceBoxGrid = new PieceGrid.Builder(
-                    400,
-                    300 - 1,
+                    win, 400, 300 - 1,
                     PieceGrid.RenderMode.VECTOR
                 )
                 .color(color)
@@ -474,7 +475,7 @@ public class UI implements
      *
      * @param game
      */
-    private void initializeGroups(Game game)
+    private void initializeGroups(IWindow win, Game game)
     {        
         // Initialize pause group.                
         this.pauseGroup = new PauseGroup(hub);
@@ -485,20 +486,20 @@ public class UI implements
         hub.listenerMan.registerListener(Listener.GAME, this.pauseGroup);                     
         
         // Initialize options group.
-        this.optionsGroup = new OptionsGroup(hub);
+        this.optionsGroup = new OptionsGroup(win, hub);
         hub.groupMan.register(this.optionsGroup);
 
         // Initialize help group.
-        this.helpGroup = new HelpGroup(game, hub);
+        this.helpGroup = new HelpGroup(win, game, hub);
         hub.groupMan.register(this.helpGroup);
         
         // Initialize high score group.
-        this.highScoreGroup = new HighScoreGroup(hub); 
+        this.highScoreGroup = new HighScoreGroup(win, hub);
         hub.groupMan.register(this.highScoreGroup);
         hub.listenerMan.registerListener(Listener.GAME, this.highScoreGroup);
 
         // Initialize game over group.
-        this.gameOverGroup = new GameOverGroup(hub);
+        this.gameOverGroup = new GameOverGroup(win, hub);
         hub.groupMan.register(this.gameOverGroup);
         hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
     }

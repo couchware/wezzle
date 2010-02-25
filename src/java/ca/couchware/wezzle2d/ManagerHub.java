@@ -54,7 +54,7 @@ public class ManagerHub
         SOUND,
         STAT, 
         TIMER, 
-        TUTORIAL                        
+        TUTORIAL
     }        
     
     /** The manager in charge of achievements */
@@ -132,7 +132,7 @@ public class ManagerHub
         return new ManagerHub();
     }    
     
-    public void initialize(Set<Manager> set, Game game)   
+    public void initialize(IWindow win, Game game, Set<Manager> set)
     {    
        
         if (set.contains(Manager.LISTENER))
@@ -179,7 +179,7 @@ public class ManagerHub
         if (set.contains(Manager.LAYER))
         {
             // Create the layer manager.   
-            this.layerMan = LayerManager.newInstance();  
+            this.layerMan = LayerManager.newInstance(win);
         }                
         
         if (set.contains(Manager.ANIMATION))
@@ -198,7 +198,7 @@ public class ManagerHub
         if (set.contains(Manager.ITEM))
         {
             // Create the manager.
-            this.itemMan = ItemManager.newInstance(this);
+            this.itemMan = ItemManager.newInstance(win, this);
             
             this.listenerMan.registerListener(Listener.LEVEL, this.itemMan);
             this.listenerMan.registerListener(Listener.MOVE,  this.itemMan);
@@ -228,19 +228,19 @@ public class ManagerHub
                     this.itemMan);             
             
             // Listen for key presses.
-            game.getWindow().addKeyListener(boardMan);
+            win.addKeyListener(boardMan);
         }
         
         if (set.contains(Manager.PIECE))
         {
             // Create the piece manager.
-            this.pieceMan = PieceManager.newInstance(this);
+            this.pieceMan = PieceManager.newInstance(win, this);
             this.pieceMan.hidePieceGrid();
             this.pieceMan.hideShadowPieceGrid();
             
             // Listen for the key and mouse.
-            game.getWindow().addKeyListener(pieceMan);
-            game.getWindow().addMouseListener(pieceMan);            
+            win.addKeyListener(pieceMan);
+            win.addMouseListener(pieceMan);
         }
         
         if (set.contains(Manager.GROUP))

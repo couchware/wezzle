@@ -35,7 +35,7 @@ public class LWJGLSprite implements ISprite
     /**
      * A reference to the LWJGL graphics implementation.
      */
-    private LWJGLGraphics gfx;
+    private LWJGLGraphics graphics;
     
     /** 
      * The texture that stores the image for this sprite.
@@ -58,10 +58,10 @@ public class LWJGLSprite implements ISprite
      * @param window The window in which the sprite will be displayed
      * @param ref A reference to the image on which this sprite should be based
      */
-    public LWJGLSprite(LWJGLWindow window, LWJGLGraphics gfx, String path)
+    public LWJGLSprite(LWJGLWindow window, String path)
     {
         this.window = window;
-        this.gfx    = gfx;
+        this.graphics = (LWJGLGraphics) window.getGraphics();
         
         try
         {
@@ -169,7 +169,7 @@ public class LWJGLSprite implements ISprite
             double theta, int tx, int ty,
             int opacity)
     {
-        Shape clip = gfx.getClip();
+        Shape clip = graphics.getClip();
         
         // Intersect the clip with the region.
         Area regionArea = new Area(new Rectangle(x, y, regionWidth, regionHeight));
@@ -179,9 +179,9 @@ public class LWJGLSprite implements ISprite
             regionArea.intersect(clipArea);
         }
 
-        gfx.setClip(regionArea);
+        graphics.setClip(regionArea);
         draw(x - regionX, y - regionY, width, height, theta, tx, ty, opacity);        
-        gfx.setClip(clip);
+        graphics.setClip(clip);
     }
     
     /**

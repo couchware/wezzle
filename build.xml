@@ -97,6 +97,26 @@
         <nsis script="./opt/nsis/installer.nsi"/>
     </target>
 
+    <target name="applet" depends="jar">
+
+        <!-- Copy base applet dir. -->
+        <mkdir dir="${dist.dir}/applet" />
+        <copy todir="${dist.dir}/applet">
+            <fileset dir="applet"/>
+            <fileset dir="${dist.dir}" includes="Wezzle.jar" />
+            <fileset dir="${dist.dir}" includes="lib/*.jar" />
+        </copy>  
+
+        <!-- Sign them. -->
+        <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
+            <path>
+                <fileset dir="${dist.dir}/applet" includes="Wezzle.jar" />
+                <fileset dir="${dist.dir}/applet" includes="lib/*.jar" />
+            </path>
+        </signjar>
+
+    </target>
+
     <!-- This target excludes the resources from the main JAR. -->
     <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available+main.class+mkdist.available" name="-do-jar-with-libraries">
         <property location="${build.classes.dir}" name="build.classes.dir.resolved"/>
@@ -132,15 +152,8 @@
         <jar destfile="${dist.dir}/lib/resources.jar">
             <fileset dir="${src.dir}" includes="resources/**" />
             <fileset dir="${build.dir}" includes="resources/**" />
-        </jar>
-        <!--
-        <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
-            <path>
-                <fileset dir="${dist.dir}" includes="**/*.jar" />
-                <fileset dir="applet" includes="**/*.jar" />
-            </path>
-        </signjar>
-        -->
+        </jar>                
+
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <echo>java -jar "${dist.jar.resolved}"</echo>

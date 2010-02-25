@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
@@ -40,7 +41,10 @@ public abstract class AbstractTutorial implements ITutorial
     
     /** Has the tutorial been completed? Initially false. */
     protected boolean done = false;
-    
+
+    /** The window. */
+    protected IWindow win;
+
     /** The refactorer. */
     protected Refactorer refactorer;
     
@@ -74,12 +78,10 @@ public abstract class AbstractTutorial implements ITutorial
      * 
      * @param rule
      */    
-    public AbstractTutorial(Refactorer refactorer, String name) 
-    { 
-        // Set the refactorer.
+    public AbstractTutorial(IWindow win, Refactorer refactorer, String name)
+    {
+        this.win = win;
         this.refactorer = refactorer;
-        
-        // Set the tutorial name.
         this.name = name;
     }
     
@@ -107,7 +109,7 @@ public abstract class AbstractTutorial implements ITutorial
         this.pieceBeforeInitialization = hub.pieceMan.getPiece();
 
         // Create repeat button.
-        Button templateButton = new Button.Builder(400, 0)
+        Button templateButton = new Button.Builder(win, 400, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("")
                 .normalOpacity( 80 )                

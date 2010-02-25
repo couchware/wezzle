@@ -27,7 +27,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
 {
 
     /** The game window. */
-    final private IWindow window;
+    final private IWindow win;
     
     /** The shape of the group. */
     private ImmutableRectangle shape;
@@ -62,7 +62,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     private Scroller(Builder builder)
     {
         // Set some values from the builder.
-        this.window = builder.window;
+        this.win = builder.win;
         this.x = builder.x;
         this.y = builder.y;
         this.width  = builder.width;
@@ -88,7 +88,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         this.rowList = new ArrayList<ScrollerRow>();
         
         // Create all the buttons.
-        IButton templateButton = new Button.Builder(0, 0)
+        IButton templateButton = new Button.Builder(win, 0, 0)
                 .text("").textSize(textSize)
                 .build();
         
@@ -120,7 +120,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
         }            
             
         // Create the scroll bar.
-        this.scrollBar = new SliderBar.Builder(
+        this.scrollBar = new SliderBar.Builder(win,
                     this.x + this.offsetX + this.width - padding.getRight(),
                     this.y + this.offsetY + this.height / 2
                 )
@@ -169,7 +169,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     public static class Builder implements IBuilder<Scroller>
     {
         // Required values.  
-        private final IWindow window;
+        private final IWindow win;
         private int x;
         private int y;     
         
@@ -184,9 +184,9 @@ public class Scroller extends AbstractEntity implements IMouseListener
         private Padding padding = Padding.NONE;
         private int selectedIndex = -1;
         
-        public Builder(int x, int y)
+        public Builder(IWindow win, int x, int y)
         {            
-            this.window = ResourceFactory.get().getWindow();
+            this.win = win;
             this.x = x;
             this.y = y;
         }               
@@ -254,7 +254,9 @@ public class Scroller extends AbstractEntity implements IMouseListener
             
             // Add the mouse listener.
             if (visible)
-                window.addMouseListener(scroller);                                    
+            {
+                win.addMouseListener(scroller);
+            }
                                     
             return scroller;
         }                
@@ -314,14 +316,14 @@ public class Scroller extends AbstractEntity implements IMouseListener
         // Add or remove listener based on visibility.
         if (visible)
         {                                       
-            window.addMouseListener(this);
+            win.addMouseListener(this);
 
             // Show the buttons.
             showButtons();
         }
         else
         {                            
-            window.removeMouseListener(this);
+            win.removeMouseListener(this);
 
             // Hide all the buttons.
             hideButtons();
@@ -515,7 +517,7 @@ public class Scroller extends AbstractEntity implements IMouseListener
     {
         // Stop listening to the mouse events.
         if (this.visible && !this.disabled)
-            window.removeMouseListener(this);
+            win.removeMouseListener(this);
     }
 
     private class ScrollerRow

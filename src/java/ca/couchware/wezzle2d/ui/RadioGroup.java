@@ -69,7 +69,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
     private RadioGroup(Builder builder)
     {
         // Add the window reference.
-        this.window = builder.window;
+        this.window = builder.win;
         
         // Add list reference.
         //this.itemList = builder.itemList;
@@ -132,7 +132,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
     public static class Builder implements IBuilder<RadioGroup>
     {
         // Required values.  
-        private final IWindow window;
+        private final IWindow win;
         private int x;
         private int y;     
         
@@ -146,28 +146,14 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
         private boolean visible = true;        
         private int itemSpacing = 20;                       
         
-        public Builder(int x, int y)
+        public Builder(IWindow win, int x, int y)
         {         
-            this.window = ResourceFactory.get().getWindow();
+            this.win = win;
             this.x = x;
             this.y = y;
             
             this.itemList = new ArrayList<RadioItem>();
         }
-        
-//        public Builder(RadioGroup radioGroup)
-//        {                       
-//            this.window = radioGroup.window;
-//            this.x = radioGroup.x;
-//            this.y = radioGroup.y;
-//            this.alignment = radioGroup.alignment.clone();            
-//            this.opacity = radioGroup.opacity;                        
-//            this.visible = radioGroup.visible;   
-//            this.pad = radioGroup.pad;
-//            
-//            for (RadioItem item : radioGroup.itemList)
-//                this.itemList.add(new RadioItem.Builder(item).end());
-//        }
         
         public Builder x(int val) { x = val; return this; }        
         public Builder y(int val) { y = val; return this; }
@@ -204,7 +190,7 @@ public class RadioGroup extends AbstractEntity implements IMouseListener
             RadioGroup group = new RadioGroup(this);
             
             if (visible == true)
-                window.addMouseListener(group);            
+                win.addMouseListener(group);
             
             return group;
         }                

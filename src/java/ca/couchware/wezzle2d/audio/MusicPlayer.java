@@ -88,9 +88,8 @@ public class MusicPlayer
 
     static
     {
-        // Turn off logging on the basic player.
-        if(!Game.APPLET)
-         Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
+        // Turn off logging on the basic player.       
+        Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
     }
 
     /**

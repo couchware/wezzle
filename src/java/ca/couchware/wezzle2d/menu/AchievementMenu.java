@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
@@ -43,10 +44,10 @@ public class AchievementMenu extends AbstractMenu
             new SimpleDateFormat("MMM dd yyyy");        
     
     /** The colour of completed achievements. */
-    final private Color COLOR_COMPLETED;    
+    final private Color colorCompleted;
     
     /** The colour of not completed achievements. */
-    final private Color COLOR_NOT_COMPLETED;
+    final private Color colorNotCompleted;
    
     /** The slider bar used to scroll the achievements. */
     private Scroller scroller;
@@ -69,19 +70,19 @@ public class AchievementMenu extends AbstractMenu
     /** The label for the required difficulty of the achievement. */
     private ITextLabel achievementDifficulty;
            
-    public AchievementMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
+    public AchievementMenu(IMenu parent,
+            IWindow win, ManagerHub hub, LayerManager menuLayerMan)
     {
         // Invoke the super.
-        super(parent, hub, menuLayerMan);
+        super(parent, win, hub, menuLayerMan);
 
         // Make convenience variables for the managers used.
-        final AchievementManager achievementMan = hub.achievementMan;
-        final LayerManager layerMan = this.menuLayerMan;
+        final AchievementManager achievementMan = hub.achievementMan;       
         final SettingsManager settingsMan = hub.settingsMan;
 
         // Set the completed/not completed colors.
-        this.COLOR_COMPLETED = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
-        this.COLOR_NOT_COMPLETED = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
+        this.colorCompleted = settingsMan.getColor(Key.GAME_COLOR_SECONDARY);
+        this.colorNotCompleted = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
         
         // The label color.
         final Color LABEL_COLOR  = settingsMan.getColor(Key.GAME_COLOR_PRIMARY);                
@@ -103,7 +104,7 @@ public class AchievementMenu extends AbstractMenu
         this.entityList.add(titleLabel);
         
         // The first box.
-        Box listBox = new Box.Builder(68, 122)
+        Box listBox = new Box.Builder(win, 68, 122)
                 .width(400).height(214)
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
@@ -112,7 +113,7 @@ public class AchievementMenu extends AbstractMenu
         this.entityList.add(listBox);
         
         // Create the list of titles for the first 5 achievements.
-        Scroller.Builder builder = new Scroller.Builder(68, 229)
+        Scroller.Builder builder = new Scroller.Builder(win, 68, 229)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.LEFT))
                 .padding(Padding.newInstance(12, 30, 12, 12))                
                 .rows(4)
@@ -131,9 +132,9 @@ public class AchievementMenu extends AbstractMenu
         {
             Achievement ach = achievementList.get(i);
              if (ach.getDateCompleted() == null)
-                scroller.setColor(i, COLOR_NOT_COMPLETED);
+                scroller.setColor(i, colorNotCompleted);
              else
-                scroller.setColor(i, COLOR_COMPLETED);
+                scroller.setColor(i, colorCompleted);
 
             scroller.setLabelText(i, ach.getLevel().toString());
             scroller.setLabelColor(i, getColor(ach.getLevel().toString(), settingsMan));
@@ -141,7 +142,7 @@ public class AchievementMenu extends AbstractMenu
 
         
         // The first box.
-        Box descriptionBox = new Box.Builder(68, 346)
+        Box descriptionBox = new Box.Builder(win, 68, 346)
                 .width(400).height(174)
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
@@ -201,7 +202,7 @@ public class AchievementMenu extends AbstractMenu
         // Add them all to the layer manager.
         for (IEntity e : this.entityList)
         {
-            layerMan.add(e, Layer.UI);        
+            menuLayerMan.add(e, Layer.UI);
         }                    
     }               
         

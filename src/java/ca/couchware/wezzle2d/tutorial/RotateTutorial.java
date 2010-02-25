@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
@@ -41,10 +42,10 @@ public class RotateTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public RotateTutorial(Refactorer refactorer)
+    public RotateTutorial(IWindow win, Refactorer refactorer)
     {
         // Set the name.
-        super(refactorer, "Rotate Tutorial");
+        super(win, refactorer, "Rotate Tutorial");
         
         // This tutorial has a single rule.  It activates on level one.        
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));

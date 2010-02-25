@@ -27,11 +27,13 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
      * The constructor.
      * @param layerMan
      */    
-    public GameOverGroup(ManagerHub hub)
+    public GameOverGroup(IWindow win, ManagerHub hub)
     {    
         // Sanity check.
         if (hub == null)
+        {
             throw new IllegalArgumentException("Hub must not be null");
+        }
         
         // Create the game over header.
         headerLabel = new LabelBuilder(400, 181)
@@ -59,7 +61,7 @@ public class GameOverGroup extends AbstractGroup implements IGameListener
         entityList.add(scoreLabel);
         
         // Create restart button.
-        restartButton = new Button.Builder(400, 345)
+        restartButton = new Button.Builder(win, 400, 345)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Restart").normalOpacity(70).visible(false).build();

@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.manager.HighScoreManager;
@@ -47,7 +48,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
      * @param window
      * @param layerMan
      */    
-    public HighScoreGroup(ManagerHub hub)
+    public HighScoreGroup(IWindow win, ManagerHub hub)
     {
         // Save a reference to the hub.
         if (hub == null)
@@ -100,7 +101,7 @@ public class HighScoreGroup extends AbstractGroup implements IGameListener
         this.updateScoreLabels(this.scoreLabelList, hub.highScoreMan.getScoreList());
         
         // Create close button.
-        this.closeButton = new Button.Builder(400, 420)
+        this.closeButton = new Button.Builder(win, 400, 420)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("Close").normalOpacity(70).visible(false).build();
         this.entityList.add(this.closeButton);

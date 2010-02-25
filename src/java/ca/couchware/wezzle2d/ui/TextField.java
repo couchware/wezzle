@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
@@ -126,7 +127,7 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     {      
         // Invoke the super on the required arguments.
         // This will set their variables as well.
-        super(builder.x, builder.y);
+        super(builder.win, builder.x, builder.y);
         
         // Assign values from builder.      
         this.textSize       = builder.textSize;
@@ -181,7 +182,8 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     
     public static class Builder implements IBuilder<TextField>
     {
-        // Required values.       
+        // Required values.
+        protected IWindow win;
         protected int x;
         protected int y;        
         
@@ -201,14 +203,16 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         protected boolean disabled = false;        
         protected int maximumLength = 8;
         
-        public Builder(int x, int y)
-        {            
+        public Builder(IWindow win, int x, int y)
+        {
+            this.win = win;
             this.x = x;
             this.y = y;
         }
         
         public Builder(TextField textBox)
-        {            
+        {
+            this.win              = textBox.win;
             this.x                = textBox.x;
             this.y                = textBox.y;
             this.alignment        = textBox.alignment.clone();
@@ -281,8 +285,8 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
             
             if (visible == true && disabled == false)
             {
-                textBox.window.addMouseListener(textBox);           
-                textBox.window.addKeyListener(textBox);
+                textBox.win.addMouseListener(textBox);
+                textBox.win.addKeyListener(textBox);
             }
             
             return textBox;
@@ -319,15 +323,15 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
     
     private void drawUnderline(int x, int y, int width, int height, int border)
     {                
-        gfx.setColor(CouchColor.newInstance(
+        graphics.setColor(CouchColor.newInstance(
                 Color.BLACK, 
                 CouchColor.scaleOpacity(opacity)));
-        gfx.fillRect(x, y, width + border * 2, height + border * 2);
+        graphics.fillRect(x, y, width + border * 2, height + border * 2);
         
-        gfx.setColor(CouchColor.newInstance(
+        graphics.setColor(CouchColor.newInstance(
                 Color.DARK_GRAY, 
                 CouchColor.scaleOpacity(opacity)));
-        gfx.fillRect(x + border, y + border, width, height);
+        graphics.fillRect(x + border, y + border, width, height);
     }
     
     protected void drawNormal()
@@ -588,12 +592,12 @@ public class TextField extends AbstractButton implements ITextField, IKeyListene
         // If we're adding the listener.
         if (add == true)
         {            
-            window.addKeyListener(this);            
+            win.addKeyListener(this);
         }
         // If we're removing it.
         else
         {                              
-            window.removeKeyListener(this);            
+            win.removeKeyListener(this);
         }  
     }
     

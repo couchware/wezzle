@@ -1,39 +1,59 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *  Wezzle
+ *  Copyright (c) 2007-2010 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d;
 
-import ca.couchware.wezzle2d.dialog.*;
-import ca.couchware.wezzle2d.manager.*;
+import ca.couchware.wezzle2d.dialog.LicenseDialog;
+import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.ui.*;
+import ca.couchware.wezzle2d.manager.SettingsManager;
+import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.ProgressBar;
+import ca.couchware.wezzle2d.ui.RadioItem;
+import ca.couchware.wezzle2d.ui.SpeechBubble;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.applet.Applet;
+import java.awt.BorderLayout;
+import java.awt.Canvas;
 
 /**
  *
  * @author kgrad
+ * @author cdmckay
  */
 public class Launcher extends Applet
 {
-
-
-    //--------------------------------------------------------------------------
-    // Main method
-    //--------------------------------------------------------------------------
-
     @Override
     public void init()
     {
-        start();
-    }
+        removeAll();
+        setLayout(new BorderLayout());
+        setIgnoreRepaint(true);
 
-    @Override
-    public void start()
+        try
+        {            
+            Canvas displayParent = new Canvas();
+
+            displayParent.setSize(getWidth(), getHeight());
+            add(displayParent);
+            displayParent.setFocusable(true);
+            displayParent.requestFocus();
+            displayParent.setIgnoreRepaint(true);
+            setVisible(true);
+
+            launch(displayParent);
+        }
+        catch (Exception e)
+        {
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);            
+        }
+    }
+    
+    public void launch(Canvas parent)
     {
-          // Make sure the setting manager is loaded.
+        // Make sure the setting manager is loaded.
         SettingsManager settingsMan = SettingsManager.get();
 
         // Send a reference to the resource manager.
@@ -75,21 +95,20 @@ public class Launcher extends Applet
                 }
             }
 
-
-            Game game = new Game(ResourceFactory.Renderer.LWJGL);
-
-            this.add(game);
-            game.start();
-
-
-            // THis is to make sure everything is dead.
-            //System.exit(0);
+            Game game = new Game(parent, ResourceFactory.Renderer.LWJGL);
+            game.start();            
         }
         catch (Exception e)
         {
             CouchLogger.get().recordException(Game.class, e);
         }
+        finally
+        {
+            // This is to make sure everything is dead.
+            System.exit(0);
+        }
     }
+
     /**
      * The entry point into the game. We'll simply create an instance of class
      * which will start the display and game loop.
@@ -99,7 +118,7 @@ public class Launcher extends Applet
      */
     public static void main(String argv[])
     {
-        Launcher l = new Launcher();
-        l.init();
+        Launcher launcher = new Launcher();
+        launcher.launch(null);
     }
 }

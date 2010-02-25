@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -52,7 +53,7 @@ public class AudioGroup extends AbstractGroup
      * @param groupMan
      * @param propertyMan
      */    
-    public AudioGroup(ManagerHub hub)
+    public AudioGroup(IWindow win, ManagerHub hub)
     {
         if (hub == null)
             throw new IllegalArgumentException("Hub must not be null");
@@ -69,9 +70,9 @@ public class AudioGroup extends AbstractGroup
                
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
-        RadioItem soundItem1 = new RadioItem.Builder().text("Sound On").build();
-        RadioItem soundItem2 = new RadioItem.Builder().text("Off").build();
-        soundRadio = new RadioGroup.Builder(400, 233)
+        RadioItem soundItem1 = new RadioItem.Builder(win).text("Sound On").build();
+        RadioItem soundItem2 = new RadioItem.Builder(win).text("Off").build();
+        soundRadio = new RadioGroup.Builder(win, 400, 233)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(soundItem1, hub.settingsMan.getBool(Key.USER_SOUND))
                 .add(soundItem2, !hub.settingsMan.getBool(Key.USER_SOUND))
@@ -83,7 +84,7 @@ public class AudioGroup extends AbstractGroup
         soundRadio.changed();
         
         // Create the sound slider bar.
-        soundSlider = new SliderBar.Builder(400, 272)
+        soundSlider = new SliderBar.Builder(win, 400, 272)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0, 100)                    
                 .virtualValue(hub.settingsMan.getInt(Key.USER_SOUND_VOLUME))
@@ -93,9 +94,9 @@ public class AudioGroup extends AbstractGroup
                         
         // Create the "on" and "off" radio items.  These are used
         // in the radio groups below.
-        RadioItem musicItem1 = new RadioItem.Builder().text("Music On").build();
-        RadioItem musicItem2 = new RadioItem.Builder().text("Off").build();
-        musicRadio = new RadioGroup.Builder(400, 321)
+        RadioItem musicItem1 = new RadioItem.Builder(win).text("Music On").build();
+        RadioItem musicItem2 = new RadioItem.Builder(win).text("Off").build();
+        musicRadio = new RadioGroup.Builder(win, 400, 321)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .add(musicItem1, hub.settingsMan.getBool(Key.USER_MUSIC))
                 .add(musicItem2, !hub.settingsMan.getBool(Key.USER_MUSIC))
@@ -107,7 +108,7 @@ public class AudioGroup extends AbstractGroup
         musicRadio.changed();
         
         // Create the music slider bar.
-        musicSlider = new SliderBar.Builder(400, 359)
+        musicSlider = new SliderBar.Builder(win, 400, 359)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .virtualRange(0, 100)
                 .virtualValue(hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME))
@@ -116,7 +117,7 @@ public class AudioGroup extends AbstractGroup
         entityList.add(musicSlider);
         
         // Create back button.
-        backButton = new Button.Builder(400, 420)
+        backButton = new Button.Builder(win, 400, 420)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 //.type(SpriteButton.Type.THIN)
                 .text("Back").normalOpacity(70).visible(false).build();

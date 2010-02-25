@@ -288,7 +288,7 @@ public class Settings
             + "/" + achievementsFileName;
     
     /** The path to the user settings file. */
-    final private static String externalSettingsPath = Game.APPLET ? "" : 
+    final private static String externalSettingsPath = 
             System.getProperty("user.home") + "/.couchware/Wezzle";
                     
     /** The file path of external game settings file. */

@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
@@ -40,10 +41,10 @@ public class BasicTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public BasicTutorial(Refactorer refactorer)
+    public BasicTutorial(IWindow win, Refactorer refactorer)
     {
         // Set the name.
-        super(refactorer, "Basic Tutorial");
+        super(win, refactorer, "Basic Tutorial");
         
         // This tutorial has a single rule.  It activates on level one.        
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 1));

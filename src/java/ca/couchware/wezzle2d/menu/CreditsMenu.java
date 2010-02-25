@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.menu;
 
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.animation.IAnimation;
@@ -46,10 +47,10 @@ public class CreditsMenu extends AbstractMenu
         "Design, Programming"
     };
 
-    public CreditsMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
+    public CreditsMenu(IMenu parent, IWindow win, ManagerHub hub, LayerManager menuLayerMan)
     {
         // Invoke super.
-        super(parent, hub, menuLayerMan);
+        super(parent, win, hub, menuLayerMan);
 
         // The colors.
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
@@ -65,7 +66,7 @@ public class CreditsMenu extends AbstractMenu
         this.entityList.add(titleLabel);               
 
         // The box.
-        Box optionBox = new Box.Builder(68, 122)
+        Box optionBox = new Box.Builder(win, 68, 122)
                 .width(400).height(398)
                 .border(Box.Border.MEDIUM)
                 .opacity(80)

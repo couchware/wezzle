@@ -30,7 +30,7 @@ public abstract class AbstractNotification extends AbstractEntity implements INo
      * The window that box is in.  This is for adding and removing
      * the certain listeners.
      */
-    final protected IWindow window;
+    final protected IWindow win;
  
     /** The box part of the notification. */
     final protected Box box;
@@ -38,11 +38,11 @@ public abstract class AbstractNotification extends AbstractEntity implements INo
     /** The list of entities on the achievement. */
     final List<IEntity> entityList;
       
-    public AbstractNotification(IWindow window, int x, int y,
+    public AbstractNotification(IWindow win, int x, int y,
             int opacity, boolean visible, EnumSet<Alignment> alignment)
     {
         // Save the reference.
-        this.window = window;
+        this.win = win;
 
         // Set the x and y.
         this.x  = x;
@@ -66,7 +66,7 @@ public abstract class AbstractNotification extends AbstractEntity implements INo
         this.offsetY = determineOffsetY(alignment, height);
 
          // Create the box.
-        this.box = new Box.Builder(x + offsetX, y + offsetY)
+        this.box = new Box.Builder(win, x + offsetX, y + offsetY)
                 .border(Border.MEDIUM)
                 .width(this.width).height(this.height)
                 .opacity(this.opacity)

@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.tutorial;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.Refactorer;
 import ca.couchware.wezzle2d.Refactorer.RefactorSpeed;
@@ -42,10 +43,10 @@ public class RocketTutorial extends AbstractTutorial
     /**
      * The constructor.
      */
-    public RocketTutorial(Refactorer refactorer)
+    public RocketTutorial(IWindow win, Refactorer refactorer)
     {
         // Set the name.
-        super(refactorer, "Rocket Tutorial");
+        super(win, refactorer, "Rocket Tutorial");
         
         // Activate the tutorial on a specific level.
         addRule(new Rule(Rule.Type.LEVEL, Rule.Operation.EQ, 3));

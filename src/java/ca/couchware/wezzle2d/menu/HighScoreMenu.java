@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.graphics.IEntity;
@@ -42,10 +43,11 @@ public class HighScoreMenu extends AbstractMenu
     /** The reset button. */
     final private IButton resetButton;
 
-    public HighScoreMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
+    public HighScoreMenu(IMenu parent,
+            IWindow win, ManagerHub hub, LayerManager menuLayerMan)
     {
         // Invoke super.
-        super(parent, hub, menuLayerMan);
+        super(parent, win, hub, menuLayerMan);
 
         // The colors.
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
@@ -59,7 +61,7 @@ public class HighScoreMenu extends AbstractMenu
         this.entityList.add(titleLabel);
 
          // The box.
-        Box optionBox = new Box.Builder(68, 122)
+        Box optionBox = new Box.Builder(win, 68, 122)
                 .width(400).height(398)
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
@@ -102,7 +104,7 @@ public class HighScoreMenu extends AbstractMenu
                 .visible(false).build();
 
         // Create the reset button.
-        this.resetButton = new Button.Builder(268, 445)
+        this.resetButton = new Button.Builder(win, 268, 445)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
                 .normalOpacity(90)

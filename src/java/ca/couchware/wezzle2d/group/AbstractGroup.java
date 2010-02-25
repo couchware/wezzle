@@ -40,12 +40,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     /**
      * Is the screen activated?
      */
-    protected boolean activated = false;
-
-    /**
-     * A reference to the game window.
-     */
-    final protected IWindow window;
+    protected boolean activated = false;  
 
     /**
      * An linked list of all the entities in this screen.
@@ -65,8 +60,7 @@ public abstract class AbstractGroup extends AbstractEntity implements IGroup
     public AbstractGroup(IGroup parent)
     {       
         // Store the references.
-        this.parent = parent;
-        this.window = ResourceFactory.get().getWindow();        
+        this.parent = parent;        
 
         // Make all groups start invisible.
         super.setVisible(false);

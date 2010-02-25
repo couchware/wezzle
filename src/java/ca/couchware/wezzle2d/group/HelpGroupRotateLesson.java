@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.group;
 
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.animation.AnimationHelper;
@@ -41,6 +42,7 @@ import java.util.List;
  */
 class HelpGroupRotateLesson
 {
+    private final IWindow win;
     private final ManagerHub hub;
     private final List<IEntity> entities;
     private final List<IEntity> unmodifiableEntities;
@@ -49,9 +51,11 @@ class HelpGroupRotateLesson
 
     private final ImmutableRectangle rect;
 
-    public HelpGroupRotateLesson(ManagerHub hub, List<IEntity> parentEntities,
+    public HelpGroupRotateLesson(IWindow win, ManagerHub hub,
+            List<IEntity> parentEntities,
             ImmutableRectangle rect, Padding quadrantPadding)
     {
+        this.win = win;
         this.hub = hub;
         this.entities = new ArrayList<IEntity>();
         this.unmodifiableEntities = Collections.unmodifiableList( entities );
@@ -125,6 +129,7 @@ class HelpGroupRotateLesson
         this.piece = new PieceDash();
         this.pieceGrid = new PieceGrid
                 .Builder(
+                    win,
                     gridX + hub.boardMan.getCellWidth() * 3,
                     gridY - hub.boardMan.getCellHeight(),
                     PieceGrid.RenderMode.SPRITE_LIGHT )

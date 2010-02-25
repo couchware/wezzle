@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
@@ -34,6 +35,7 @@ import java.util.List;
  */
 public class HelpGroup extends AbstractGroup
 {
+    private IWindow win;
     private Game game;
     private ManagerHub hub;
 
@@ -58,14 +60,18 @@ public class HelpGroup extends AbstractGroup
 
 //    private IButton closeButton;
 
-    public HelpGroup(Game game, ManagerHub hub)
+    public HelpGroup(IWindow win, Game game, ManagerHub hub)
     {
+        if (win == null)
+            throw new IllegalArgumentException("Win must not be null");
+
         if (game == null)
             throw new IllegalArgumentException("Game must not be null");
 
         if (hub == null)
             throw new IllegalArgumentException("Hub must not be null");
 
+        this.win = win;
         this.game = game;
         this.hub = hub;
 
@@ -202,18 +208,19 @@ public class HelpGroup extends AbstractGroup
                 w, h );
         
         this.lineBox = new Box.Builder(
-                        lineRect.getX(),
-                        lineRect.getY() )
-                    .width( lineRect.getWidth() )
-                    .height( lineRect.getHeight() )
-                    .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
-                    .border( Box.Border.MEDIUM )
-                    .opacity( 90 )
-                    .build();
+                    win,
+                    lineRect.getX(),
+                    lineRect.getY() )
+                .width( lineRect.getWidth() )
+                .height( lineRect.getHeight() )
+                .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
+                .border( Box.Border.MEDIUM )
+                .opacity( 90 )
+                .build();
 
         entityList.add( this.lineBox );
         
-        this.lineLesson = new HelpGroupLineLesson( hub, entityList, lineRect, linePad );      
+        this.lineLesson = new HelpGroupLineLesson( win, hub, entityList, lineRect, linePad );
     }
 
     private void createRotateLessonEntities(
@@ -225,18 +232,19 @@ public class HelpGroup extends AbstractGroup
                 w, h );
 
         this.rotateBox = new Box.Builder(
-                        rotateRect.getX(),
-                        rotateRect.getY() )
-                    .width( rotateRect.getWidth() )
-                    .height( rotateRect.getHeight() )
-                    .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
-                    .border( Box.Border.MEDIUM )
-                    .opacity( 90 )
-                    .build();
+                    win,
+                    rotateRect.getX(),
+                    rotateRect.getY() )
+                .width( rotateRect.getWidth() )
+                .height( rotateRect.getHeight() )
+                .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
+                .border( Box.Border.MEDIUM )
+                .opacity( 90 )
+                .build();
 
         entityList.add( this.rotateBox );
        
-        this.rotateLesson = new HelpGroupRotateLesson( hub, entityList, rotateRect, rotatePad );
+        this.rotateLesson = new HelpGroupRotateLesson( win, hub, entityList, rotateRect, rotatePad );
     }
 
     private void createItemLessonEntities(
@@ -248,18 +256,19 @@ public class HelpGroup extends AbstractGroup
                 w, h );
 
         this.itemBox = new Box.Builder(
-                        itemRect.getX(),
-                        itemRect.getY() )
-                    .width( itemRect.getWidth() )
-                    .height( itemRect.getHeight() )
-                    .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
-                    .border( Box.Border.MEDIUM )
-                    .opacity( 90 )
-                    .build();
+                    win,
+                    itemRect.getX(),
+                    itemRect.getY() )
+                .width( itemRect.getWidth() )
+                .height( itemRect.getHeight() )
+                .alignment( EnumSet.of( Alignment.TOP, Alignment.LEFT ) )
+                .border( Box.Border.MEDIUM )
+                .opacity( 90 )
+                .build();
 
         entityList.add( this.itemBox );
         
-        this.itemLesson = new HelpGroupItemLesson( hub, entityList, itemRect, itemPad );
+        this.itemLesson = new HelpGroupItemLesson( win, hub, entityList, itemRect, itemPad );
     }
 
     private IAnimation createLessonAnimations()

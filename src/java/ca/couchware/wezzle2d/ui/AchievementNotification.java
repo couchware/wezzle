@@ -45,7 +45,7 @@ public class AchievementNotification extends AbstractNotification
     
     private AchievementNotification(Builder builder)
     {
-        super(builder.window, builder.x, builder.y,
+        super(builder.win, builder.x, builder.y,
                 builder.opacity, builder.visible, builder.alignment);
 
         // Save the reference.       
@@ -81,7 +81,7 @@ public class AchievementNotification extends AbstractNotification
     public static class Builder implements IBuilder<AchievementNotification>
     {
         // Required values.  
-        private final IWindow window;
+        private final IWindow win;
         private final Achievement achievement;
         private int x;
         private int y;     
@@ -91,9 +91,9 @@ public class AchievementNotification extends AbstractNotification
         private int opacity = 100;        
         private boolean visible = true;        
         
-        public Builder(int x, int y, Achievement achievement)
+        public Builder(IWindow win, int x, int y, Achievement achievement)
         {            
-            this.window = ResourceFactory.get().getWindow();
+            this.win = win;
             this.achievement = achievement;
             this.x = x;
             this.y = y;
@@ -101,7 +101,7 @@ public class AchievementNotification extends AbstractNotification
         
         public Builder(AchievementNotification notif)
         {            
-            this.window = notif.window;
+            this.win = notif.win;
             this.achievement = notif.achievement;
             this.x = notif.x;
             this.y = notif.y;

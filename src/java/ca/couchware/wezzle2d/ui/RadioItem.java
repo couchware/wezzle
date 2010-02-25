@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.ui;
 
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.EntityGroup;
@@ -110,7 +111,7 @@ public class RadioItem extends AbstractButton
     private RadioItem(Builder builder)
     {
         // Set the game window and coordinates.
-        super(builder.x, builder.y);
+        super(builder.win, builder.x, builder.y);
         
         // Set various trivia.
         this.color = builder.color;
@@ -181,6 +182,7 @@ public class RadioItem extends AbstractButton
     public static class Builder implements IBuilder<RadioItem>
     {      
         // Optional values.
+        private IWindow win;
         private int x = 0;
         private int y = 0;
         private EnumSet<Alignment> alignment = EnumSet.of(Alignment.TOP, Alignment.LEFT);        
@@ -192,11 +194,14 @@ public class RadioItem extends AbstractButton
         private int textSize = 20;
         private int pad = 10;        
         
-        public Builder()
-        { }
+        public Builder(IWindow win)
+        { 
+            this.win = win;
+        }
         
         public Builder(RadioItem radioItem)
-        {                        
+        {
+            this.win = radioItem.win;
             this.x = radioItem.x;
             this.y = radioItem.y;            
             this.alignment = radioItem.alignment.clone();            
@@ -241,7 +246,7 @@ public class RadioItem extends AbstractButton
             RadioItem item = new RadioItem(this);
             
             if (visible == true)
-                item.window.addMouseListener(item);            
+                item.win.addMouseListener(item);
             
             return item;
         }                

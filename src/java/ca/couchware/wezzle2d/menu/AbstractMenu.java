@@ -1,6 +1,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
@@ -26,8 +27,7 @@ import java.util.List;
 public abstract class AbstractMenu extends AbstractGroup
 {
 
-    /** The manager hub. */
-    private final ManagerHub hub;
+    protected final IWindow win;    
     
     /** The layer manager used by the menu. */
     protected LayerManager menuLayerMan;
@@ -35,12 +35,15 @@ public abstract class AbstractMenu extends AbstractGroup
     /** The background window that encloses the menu. */
     protected Box menuBox;
 
-    public AbstractMenu(IMenu parentMenu, ManagerHub hub, LayerManager menuLayerMan)
-    {
-        // Run the group constructor.
+    public AbstractMenu(IMenu parentMenu, IWindow win, ManagerHub hub, LayerManager menuLayerMan)
+    {        
         super(parentMenu);
 
-        // Sanity checks and assigments.
+        if (win == null)
+        {
+            throw new IllegalArgumentException("Hub must not be null");
+        }
+
         if (hub == null)
         {
             throw new IllegalArgumentException("Hub must not be null");
@@ -51,11 +54,11 @@ public abstract class AbstractMenu extends AbstractGroup
             throw new IllegalArgumentException("Menu Layer Manager must not be null");
         }
 
-        this.hub = hub;
+        this.win = win;        
         this.menuLayerMan = menuLayerMan;
 
         // Create the menu box.        
-        this.menuBox = new Box.Builder(268, 300).width(430).height(470)
+        this.menuBox = new Box.Builder(win, 268, 300).width(430).height(470)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .opacity(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_OPACITY))
                 .visible(false).build();

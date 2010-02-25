@@ -33,7 +33,7 @@ public class TileNotification extends AbstractNotification
    
     private TileNotification(Builder builder)
     {
-        super(builder.window, builder.x, builder.y,
+        super(builder.win, builder.x, builder.y,
                 builder.opacity, builder.visible, builder.alignment);        
 
         // Save the reference.
@@ -62,24 +62,14 @@ public class TileNotification extends AbstractNotification
             rocket.setDirection(RocketTile.Direction.UP);
         }
 
-//        Tile tileL = TileFactory.cloneTile(tile);
-//        tileL.translate(-60, 0);
-//        //tileL.setOpacity(40);
-//
-//        Tile tileR = TileFactory.cloneTile(tile);
-//        tileR.translate(60, 0);
-//        //tileR.setOpacity(100);
-            
-        this.entityList.add(this.tile);
-//        this.entityList.add(tileL);
-//        this.entityList.add(tileR);
+        this.entityList.add(this.tile);    
         this.entityList.add(this.title);
     }
 
     public static class Builder implements IBuilder<TileNotification>
     {
         // Required values.
-        private final IWindow window;
+        private final IWindow win;
         private final TileType tileType;
         private int x;
         private int y;
@@ -89,9 +79,9 @@ public class TileNotification extends AbstractNotification
         private int opacity = 100;
         private boolean visible = true;
 
-        public Builder(int x, int y, TileType tileType)
+        public Builder(IWindow win, int x, int y, TileType tileType)
         {
-            this.window = ResourceFactory.get().getWindow();
+            this.win = win;
             this.tileType = tileType;
             this.x = x;
             this.y = y;
@@ -99,7 +89,7 @@ public class TileNotification extends AbstractNotification
 
         public Builder(TileNotification notif)
         {
-            this.window = notif.window;
+            this.win = notif.win;
             this.tileType = notif.tileType;
             this.x = notif.x;
             this.y = notif.y;

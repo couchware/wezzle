@@ -4,13 +4,13 @@ import ca.couchware.wezzle2d.util.IBuilder;
 import ca.couchware.wezzle2d.graphics.ISprite;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.lwjgl.LWJGLWindow;
-import ca.couchware.wezzle2d.lwjgl.LWJGLGraphics;
 import ca.couchware.wezzle2d.lwjgl.LWJGLTextLabel;
 import ca.couchware.wezzle2d.lwjgl.LWJGLSprite;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.ui.ITextLabel;
+import java.awt.Canvas;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,13 +53,10 @@ public class ResourceFactory
      * The choice of rendering engines.
      */
     public static enum Renderer
-    {
-        /** Use the Java2D rendering engine. */
-        JAVA2D,
-        /** Use the LWJGL OpenGL engine. */
+    {               
         LWJGL
-
     }
+
     /**
      * The type of rendering that we are currently using.
      */
@@ -87,7 +84,7 @@ public class ResourceFactory
      */
     private ResourceFactory()
     {
-        // Intentionally blank.
+        
     }
 
     /**
@@ -121,11 +118,12 @@ public class ResourceFactory
         this.renderer = renderer;
     }
 
-    public Renderer getRenderer()
-    {
-        return renderer;
-    }
-
+    /**
+     * Set the settings manager.  This must be set before any of the
+     * other methods of the resource factory are used.
+     * 
+     * @param settingsMan
+     */
     public void setSettingsManager(SettingsManager settingsMan)
     {
         if ( settingsMan == null )
@@ -134,58 +132,50 @@ public class ResourceFactory
         }
 
         this.settingsMan = settingsMan;
-    }
-
-    public SettingsManager getSettingsManager()
-    {
-        return this.settingsMan;
-    }
+    }  
 
     /**
-     * Retrieve the game window that should be used to render the game
+     * Create the game window that will be used to render the game.
      *
-     * @return The game window in which the game should be rendered
+     * @return The game window in which the game should be rendered.
      */
-    public IWindow getWindow()
-    {
-        // if we've yet to create the game window, create the appropriate one
-        // now
-        if ( window == null )
+    public IWindow createWindow( Canvas parent )
+    {       
+        if ( window != null )
         {
-            switch ( renderer )
-            {
-                case LWJGL:
-                    window = new LWJGLWindow( this.settingsMan );
-                    break;
-            }
+            throw new RuntimeException("The window has already been created");
+        }
+
+        switch ( renderer )
+        {
+            case LWJGL:
+                window = new LWJGLWindow( parent, this.settingsMan );
+                break;
         }
 
         return window;
     }
 
-    public IGraphics getGraphics()
+    /**
+     * Retrieve the game window that should be used to render the game.
+     *
+     * @return The game window in which the game should be rendered.
+     */
+    public IWindow getWindow()
     {
-        // if we've yet to create the game window, create the appropriate one
-        // now
-        if ( gfx == null )
+        if ( window == null )
         {
-            switch ( renderer )
-            {
-                case LWJGL:
-                    gfx = new LWJGLGraphics();
-                    break;
-            }
+            throw new RuntimeException("You cannot get that which does not exist");
         }
 
-        return gfx;
+        return window;
     }
 
     /**
      * Create or get a sprite which displays the image that is pointed to in the
      * classpath by "ref"
      *
-     * @param path
-     *            A reference to the image to load
+     * @param path A reference to the image to load.
      * @return A sprite that can be drawn onto the current graphics context.
      */
     public ISprite getSprite(String path)
@@ -199,10 +189,7 @@ public class ResourceFactory
         switch ( renderer )
         {
             case LWJGL:
-                return new LWJGLSprite(
-                        (LWJGLWindow) window,
-                        (LWJGLGraphics) gfx,
-                        path );
+                return new LWJGLSprite( (LWJGLWindow) window, path );                
         }
 
         throw new RuntimeException( "Unknown rendering type: " + renderer );

@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Game.TransitionTarget;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
@@ -26,20 +27,22 @@ import java.util.EnumSet;
  */
 public class MainMenuGroup extends AbstractGroup
 {           
-
-    private ManagerHub hub;
-
     private ITextLabel headerLabel;                     
 
     private IButton yesButton;
     private IButton noButton;
         
-    public MainMenuGroup(ManagerHub hub)
+    public MainMenuGroup(IWindow win, ManagerHub hub)
     {
-        if (hub == null)
-            throw new IllegalArgumentException("Hub must not be null");
+        if (win == null)
+        {
+            throw new IllegalArgumentException("Win must not be null");
+        }
 
-        this.hub = hub;
+        if (hub == null)
+        {
+            throw new IllegalArgumentException("Hub must not be null");
+        }        
 
         // The colors.
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
@@ -92,7 +95,7 @@ public class MainMenuGroup extends AbstractGroup
         hub.layerMan.add(label3, Layer.UI);
         this.entityList.add(label3);
 
-        Button templateButton = new Button.Builder(400, 0)
+        Button templateButton = new Button.Builder(win, 400, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("").normalOpacity(80).visible(false).build();
 

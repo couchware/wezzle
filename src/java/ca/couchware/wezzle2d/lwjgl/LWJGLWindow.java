@@ -5,6 +5,7 @@
 package ca.couchware.wezzle2d.lwjgl;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IGraphics;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.IWindowCallback;
 import ca.couchware.wezzle2d.event.IKeyListener;
@@ -19,6 +20,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
+import java.awt.Canvas;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -29,6 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -50,11 +54,8 @@ public class LWJGLWindow implements IWindow
 {   
     private SettingsManager settingsMan;
     private IWindowCallback callback;
-
-    /** The key presses. */
+    private IGraphics graphics;
     private Set<Character> keyPressSet;
-
-    /** The mouse states. */
     private Map<MouseEvent.Button, Boolean> mouseStateMap;
 
     /** True if the game is currently "running", i.e. the game loop is looping. */
@@ -66,33 +67,26 @@ public class LWJGLWindow implements IWindow
     /** True if the window is active. */
     private boolean activated = false;
 
-    /** The width of the game display area. */
-    private int width;
-
-    /** The height of the game display area. */
+    private Canvas parent;
+    private int width;  
     private int height;
 
     /** The loader responsible for converting images into OpenGL textures. */
     private TextureLoader textureLoader;
-
-    /**
-     * Title of window, we get it before our window is ready, so store it 
-     * until needed.
-     */
+   
     private String title;
-
-    /**
-     * Contains all the modifiers currently set.
-     */
     private Set<Modifier> modifiers;
 
     /**
      * Create a new game window that will use OpenGL to
      * render our game.
      */
-    public LWJGLWindow(SettingsManager settingsMan)
+    public LWJGLWindow(Canvas parent, SettingsManager settingsMan)
     {
+        this.parent = parent;
         this.settingsMan = settingsMan;
+        
+        this.graphics = new LWJGLGraphics();
 
         this.keyPressSet = new HashSet<Character>();
 
@@ -104,8 +98,8 @@ public class LWJGLWindow implements IWindow
         this.mouseStateMap.put(Button.MIDDLE, false);
 
         this.modifiers = EnumSet.noneOf(Modifier.class);
-        if(!Game.APPLET)
-         CouchLogger.get().recordMessage(this.getClass(), "LWJGL Version: " + Sys.getVersion());
+                
+        CouchLogger.get().recordMessage(this.getClass(), "LWJGL Version: " + Sys.getVersion());
     }
 
     /**
@@ -270,6 +264,11 @@ public class LWJGLWindow implements IWindow
         }
     }
 
+    public IGraphics getGraphics()
+    {
+        return graphics;
+    }
+
     /**
      * Start the rendering process. This method will cause the
      * display to redraw as fast as possible.
@@ -279,8 +278,20 @@ public class LWJGLWindow implements IWindow
     {                         
         initializeDisplayMode();
 
+        if (parent != null)
+        {
+            try
+            {
+                Display.setParent(parent);
+            }
+            catch (LWJGLException ex)
+            {
+                CouchLogger.get().recordException(this.getClass(), ex, true /* Fatal */);
+            }
+        }
+
         Display.setVSyncEnabled(true);
-        Display.setTitle(this.title);        
+        Display.setTitle(title);        
 
         initializeIcons();
         initializePixelFormat();
@@ -309,7 +320,7 @@ public class LWJGLWindow implements IWindow
      */
     private void initializeDisplayMode()
     {
-        final boolean fullscreen =  Game.APPLET ? false :
+        final boolean fullscreen =  
                 this.settingsMan.getBool( Key.USER_GRAPHICS_FULLSCREEN );
 
         this.originalDisplayMode = Display.getDisplayMode();

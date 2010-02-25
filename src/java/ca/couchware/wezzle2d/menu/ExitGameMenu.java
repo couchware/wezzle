@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.manager.LayerManager;
@@ -37,10 +38,10 @@ public class ExitGameMenu extends AbstractMenu
      * The constructor.
      * @param layerMan
      */    
-    public ExitGameMenu(IMenu parent, ManagerHub hub, LayerManager menuLayerMan)
+    public ExitGameMenu(IMenu parent, IWindow win, ManagerHub hub, LayerManager menuLayerMan)
     {
         // Invoke super.
-        super(parent, hub, menuLayerMan);
+        super(parent, win, hub, menuLayerMan);
 
         // The colors.
         final Color LABEL_COLOR  = hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY);
@@ -56,7 +57,7 @@ public class ExitGameMenu extends AbstractMenu
         this.entityList.add(titleLabel);
 
         // The box.
-        Box optionBox = new Box.Builder(68, 122)
+        Box optionBox = new Box.Builder(win, 68, 122)
                 .width(400).height(398)
                 .border(Box.Border.MEDIUM)
                 .opacity(80)
@@ -93,7 +94,7 @@ public class ExitGameMenu extends AbstractMenu
         final int buttonStartY  = 360;
         final int buttonSpacing = 60;
 
-        Button templateButton = new Button.Builder(266, 400)
+        Button templateButton = new Button.Builder(win, 266, 400)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(LABEL_COLOR)
                 .normalOpacity(90)
@@ -134,7 +135,7 @@ public class ExitGameMenu extends AbstractMenu
         if (yesButton.isActivated() == true)
         {
             // Close the game.
-            game.getWindow().stop();
+            win.stop();
         }
         // See if the "No" button was pressed.
         else if (noButton.isActivated() == true)

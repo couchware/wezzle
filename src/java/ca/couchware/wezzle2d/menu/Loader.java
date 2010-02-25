@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.manager.LayerManager;
@@ -82,10 +83,10 @@ public class Loader implements IDrawer
      * 
      * @param settingsMan
      */       
-    public Loader(String title, SettingsManager settingsMan)
+    public Loader(IWindow win, SettingsManager settingsMan, String title)
     {                
         // Create the layer manager.
-        this.layerMan = LayerManager.newInstance();                
+        this.layerMan = LayerManager.newInstance(win);
         
         // Add the background.
         GraphicEntity backgroundGraphic = 
@@ -226,11 +227,6 @@ public class Loader implements IDrawer
         return layerMan.draw();
     }
     
-    public void forceRedraw()
-    {
-        layerMan.forceRedraw();
-    }
-
     public boolean draw(Shape region, boolean exact)
     {
         return layerMan.draw(region, exact);

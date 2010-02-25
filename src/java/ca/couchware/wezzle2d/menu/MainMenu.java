@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.menu;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -129,7 +130,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
     /**
      * Create a new main menu.
      */
-    public MainMenu(ManagerHub hub)
+    public MainMenu(IWindow win, ManagerHub hub)
     {               
         // Invoke super.
         if (hub == null)
@@ -141,7 +142,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.activated = true;
 
         // Create the menu's layer manager.
-        this.menuLayerMan = LayerManager.newInstance();
+        this.menuLayerMan = LayerManager.newInstance(win);
 
         // Initialize the menu music.
         this.player = hub.musicMan.createPlayer( MENU_PLAYER_KEY, Music.ERHU );
@@ -172,8 +173,8 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
 
         initializeBackground(hub);
         initializeLogo(hub);
-        initializeButtons(hub);
-        initializeGroups(hub);
+        initializeButtons(win, hub);
+        initializeGroups(win, hub);
                 
         // Create the slide animation.
         this.slideAnimation = new MetaAnimation.Builder()
@@ -230,7 +231,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.logoEntity = new EntityGroup(e1, e2);
     }
     
-    private void initializeButtons(ManagerHub hub) 
+    private void initializeButtons(IWindow win, ManagerHub hub)
     {                
         // Create the button list.
         this.buttonMap = new EnumMap<Menu, IButton>(Menu.class);
@@ -239,7 +240,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         IButton button = null;
         
         // Create the buttons.               
-        Button templateButton = new Button.Builder(910, 0)
+        Button templateButton = new Button.Builder(win, 910, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                               
                 .text("")
                 .textSize(20)
@@ -289,7 +290,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         buttonMap.put(Menu.EXIT, button);
     };
     
-    private void initializeGroups(ManagerHub hub)
+    private void initializeGroups(IWindow win, ManagerHub hub)
     {
         // Create the group map.
         this.menuMap = new EnumMap<Menu, IGroup>(Menu.class);
@@ -303,27 +304,27 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.menuMap.put(Menu.NONE, menu);
         
         // Create the "Play Now" group.
-        menu = new PlayNowMenu(this, hub, this.menuLayerMan);
+        menu = new PlayNowMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.PLAY_NOW, menu);
 
         // Create the "Achievements" group.
-        menu = new AchievementMenu(this, hub, this.menuLayerMan);
+        menu = new AchievementMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.ACHIEVEMENTS, menu);
 
         // Create the "Achievements" group.
-        menu = new OptionsMenu(this, hub, this.menuLayerMan);
+        menu = new OptionsMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.OPTIONS, menu);
         
         // Create the "High Scores" group.
-        menu = new HighScoreMenu(this, hub, this.menuLayerMan);
+        menu = new HighScoreMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.HIGH_SCORES, menu);
         
         // Create the "Credits" group.
-        menu = new CreditsMenu(this, hub, this.menuLayerMan);
+        menu = new CreditsMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.CREDITS, menu);
 
         // Create the "Credits" group.
-        menu = new ExitGameMenu(this, hub, this.menuLayerMan);
+        menu = new ExitGameMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.EXIT, menu);
     }
     
@@ -608,20 +609,19 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         return this.menuLayerMan.draw(region);
     }
     
-    public void forceRedraw()
-    {
-        this.menuLayerMan.forceRedraw();
-    }
-    
     @Override
     public void dispose()
     {
         // Make sure all the groups are disposed.
         for (IButton button : buttonMap.values())
+        {
             button.dispose();
+        }
         
         for (IGroup group : menuMap.values())
+        {
             group.dispose();
+        }
     }
     
 }

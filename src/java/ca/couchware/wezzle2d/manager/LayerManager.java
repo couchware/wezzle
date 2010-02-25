@@ -3,6 +3,7 @@ package ca.couchware.wezzle2d.manager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IGraphics;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ResourceFactory;
 import ca.couchware.wezzle2d.graphics.IDisposable;
 import ca.couchware.wezzle2d.graphics.IDrawable;
@@ -54,24 +55,16 @@ public class LayerManager implements IDisposable, IDrawer
      */
     private boolean[] hidden;
     
-    /**
-     * The graphics instance.  Used when drawing regions of the screen.
-     */
-    private IGraphics gfx;   
-    
-    /**
-     * The remove clip.  This clip is used to make sure that things that are
-     * removed are drawn over.
-     */
-    private Rectangle removeRect;
+    private IWindow win;
+    private IGraphics graphics;
     
     /**
      * The constructor.
      */
-    private LayerManager()
+    private LayerManager(IWindow win)
     {
-        // Set the window reference.
-        this.gfx = ResourceFactory.get().getGraphics();          
+        this.win = win;
+        this.graphics = win.getGraphics();
         
         // Initialize layer arraylist.
         layerList = new ArrayList<ArrayList<IDrawable>>(Layer.values().length);
@@ -84,10 +77,7 @@ public class LayerManager implements IDisposable, IDrawer
         {
             layerList.add(new ArrayList<IDrawable>());
             hidden[i] = false;
-        }        
-        
-        // Initialize remove clip.
-        this.removeRect = new Rectangle();
+        }                      
     }
         
     /**
@@ -95,9 +85,9 @@ public class LayerManager implements IDisposable, IDrawer
      * 
      * @return
      */
-    public static LayerManager newInstance()
+    public static LayerManager newInstance(IWindow win)
     {
-        return new LayerManager();
+        return new LayerManager(win);
     }
     
     /**
@@ -290,18 +280,6 @@ public class LayerManager implements IDisposable, IDrawer
      */
     public void drawAll()
     {
-        // The number of sprites drawn.
-        //int count = 0;
-        //int total = 0;
-        
-//        // The clipping area.        
-//        Rectangle clip;
-//        
-//        if (gfx.getClip() !=  null)
-//            clip = gfx.getClip().getBounds();
-//        else
-//            clip = null;
-                
         // Cycle through all the layers, drawing them.
         for (int i = 0; i < Layer.values().length; i++)
         {                        
@@ -316,14 +294,6 @@ public class LayerManager implements IDisposable, IDrawer
             for (IDrawable d : layer)
             {             
                 d.draw();               
-//                if (clip == null 
-//                        || (d.getDrawRect() != null 
-//                            && d.getDrawRect().intersects(clip) == true))
-//                {                   
-//                    //count++;
-//                    d.draw();                
-//                }
-//                //total++;
             }           
         } // end for                
     }
@@ -336,30 +306,19 @@ public class LayerManager implements IDisposable, IDrawer
      * exact is false, then only the area that has changed will be drawn.
      */
     public boolean draw(Shape region, boolean exact)
-    {        
-        // Draw the screen differently, depending on the renderer.
-        switch(ResourceFactory.get().getRenderer())
+    {               
+        // If we want the exact region, then we must clip.
+        if (exact)
         {
-//            case JAVA2D:
-//                return drawMinimal(region, exact);
-                
-            case LWJGL:
-               
-                // If we want the exact region, then we must clip.
-                if (exact) 
-                {
-                    gfx.setClip(region);
-                    drawAll();
-                    gfx.setClip(null);
-                    return true;
-                }
-                
-                // Draw everything.
-                drawAll();
-                return true;
-                
-            default: throw new AssertionError();
+            graphics.setClip(region);
+            drawAll();
+            graphics.setClip(null);
+            return true;
         }
+
+        // Draw everything.
+        drawAll();
+        return true;
     }               
     
     public boolean draw(Shape region)
@@ -370,100 +329,7 @@ public class LayerManager implements IDisposable, IDrawer
     public boolean draw()
     {
         return draw(Game.SCREEN_RECTANGLE, false);
-    }
-    
-//    private boolean drawMinimal(Shape region, boolean exact)
-//    {
-//        Rectangle clip = null;
-//        
-//        // Cycle through all the layers, drawing them.
-//        for (int i = 0; i < Layer.values().length; i++)
-//        {                                             
-//            // Grab this layer.
-//            ArrayList<IDrawable> layer = layerList.get(i);
-//            
-//            // See if it's in the region.
-//            for (IDrawable d : layer)
-//            {
-//                if (d.isDirty() == false)
-//                    continue;                                
-//                
-//                // Clear dirtiness.                
-//                //LogManager.recordMessage(d + " is dirty.");
-//                d.setDirty(false);
-//                
-//                Rectangle r = d.getDrawRect();                                
-//                               
-//                if (r != null && region.intersects(r) == true)
-//                {                                          
-//                    if (clip == null) clip = new Rectangle(r);
-//                    else clip.add(r);
-//                }
-//            } // end for                       
-//        }     
-//        
-//        // If the remove clip is not empty.
-//        if (getRemoveRect() != null)
-//        {
-//            // See if there's a clip to add to, or if we need to make one.
-//            if (clip == null)
-//                clip = getRemoveRect();
-//            else
-//                clip.add(getRemoveRect());
-//        }
-//             
-//        // Check to see if we're doing an exact area or a minimal clip.
-//        if (exact == true || clip != null)
-//        {
-//            //Util.handleMessage(clip.toString(), Thread.currentThread());
-//                        
-//            gfx.setClip(exact == true ? region : clip);                
-//            drawAll();
-//
-//            // Show the clip rect if required.
-//            if (SettingsManager.get().getBoolean(Key.DEBUG_SHOW_CLIP_RECT) == true)
-//            {
-//                Rectangle r = gfx.getClip().getBounds();
-//                LogManager.recordMessage("Bounds are " + r);
-//                gfx.drawRect(r.x, r.y, r.width - 1, r.height - 1);
-//            }
-//                        
-//            gfx.setClip(null);          
-//               
-//            // Reset the remove clip.
-//            resetRemoveRect();
-//            
-//            return true;
-//        }        
-//        else
-//        {
-//            // Nothing changed, so don't bother rendering this frame.
-//            return false;
-//        }
-//    }        
-    
-//    private void addRemoveRect(Rectangle r)
-//    {
-//        if (removeRect == null)
-//            removeRect = new Rectangle(r);
-//        else
-//            removeRect.add(r);
-//    }
-//    
-//    private Rectangle getRemoveRect()
-//    {
-//        return removeRect;
-//    }   
-//    
-//    private void resetRemoveRect()
-//    {       
-//        removeRect = null;
-//    }
-    
-    public void forceRedraw()
-    {
-        removeRect = Game.SCREEN_RECTANGLE.toRectangle();
-    }
+    }            
     
     @Override
     public String toString()
@@ -559,7 +425,7 @@ public class LayerManager implements IDisposable, IDrawer
                 {
                     ((IDisposable) drawable).dispose();
                 }
-            }
+            } // end for
         } // end for
     }
     

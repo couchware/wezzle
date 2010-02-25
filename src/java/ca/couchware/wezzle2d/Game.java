@@ -13,13 +13,11 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.dialog.LicenseDialog;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
 import ca.couchware.wezzle2d.manager.Achievement;
-import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.manager.ListenerManager.Listener;
@@ -38,10 +36,6 @@ import ca.couchware.wezzle2d.tutorial.RotateTutorial;
 import ca.couchware.wezzle2d.tutorial.StarTutorial;
 import ca.couchware.wezzle2d.ui.AchievementNotification;
 import ca.couchware.wezzle2d.ui.ITextLabel;
-import ca.couchware.wezzle2d.ui.ProgressBar;
-import ca.couchware.wezzle2d.ui.RadioItem;
-import ca.couchware.wezzle2d.ui.SpeechBubble;
-import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.group.GameOverGroup;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
@@ -104,6 +98,9 @@ public class Game extends Canvas implements IWindowCallback
     
     /** The copyright. */
     final public static String COPYRIGHT = "\u00A9 2010 Couchware Inc.";
+
+    /** Is the game running as an applet? */
+    final private static boolean APPLET = true;
     
     //--------------------------------------------------------------------------
     // Members
@@ -134,7 +131,7 @@ public class Game extends Canvas implements IWindowCallback
     private Tracker tracker;
     
     /** The window that is being used to render the game. */
-    private IWindow window;    
+    private IWindow win;
     
     //--------------------------------------------------------------------------
     // Private Members
@@ -192,9 +189,8 @@ public class Game extends Canvas implements IWindowCallback
     /**
      * The game difficulty setting.
      */
-    private GameDifficulty difficulty = GameDifficulty.NORMAL;
+    private GameDifficulty difficulty = GameDifficulty.NORMAL;    
 
-    final public static boolean APPLET = true;
     //--------------------------------------------------------------------------
     // Constructor
     //--------------------------------------------------------------------------
@@ -206,20 +202,24 @@ public class Game extends Canvas implements IWindowCallback
      *            The type of rendering to use (should be one of the contansts
      *            from ResourceFactory)
      */
-    public Game(ResourceFactory.Renderer renderer)
-    {
-        // Create a window based on a chosen rendering method.
+    public Game(Canvas parent, ResourceFactory.Renderer renderer)
+    {        
         ResourceFactory.get().setRenderer(renderer);
 
-        window = ResourceFactory.get().getWindow();
-        window.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
-        window.setGameWindowCallback(Game.this);
-        window.setTitle(windowTitle);     
+        win = ResourceFactory.get().createWindow(parent);
+        win.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+        win.setGameWindowCallback(this);
+        win.setTitle(windowTitle);
+    }
+
+    public static boolean isApplet()
+    {
+        return APPLET;
     }
 
     public void start()
     {
-        window.start();
+        win.start();
     }
             
     public void startBoard()
@@ -236,7 +236,7 @@ public class Game extends Canvas implements IWindowCallback
                 
                 // Create the main menu.
                 // Empty the mouse events.
-                window.clearMouseEvents();
+                win.clearMouseEvents();
 
                 // Shut off the music.
                 //hub.musicMan.stopAtGain(0.0);
@@ -245,7 +245,7 @@ public class Game extends Canvas implements IWindowCallback
                 resetGame(true);
 
                 // Create the main menu.
-                mainMenu = new MainMenu(hub);
+                mainMenu = new MainMenu(win, hub);
                 mainMenu.setDisabled(true);
 
                 // Create the layer manager transition animation.
@@ -274,7 +274,7 @@ public class Game extends Canvas implements IWindowCallback
     private void initializeCoreManagers()
     {
         // Create the UI.
-        ui = UI.newInstance(this, hub);
+        ui = UI.newInstance(win, this, hub);
         hub.listenerMan.registerListener(Listener.GAME, this.ui);
         hub.listenerMan.registerListener(Listener.LEVEL, this.ui);
         hub.listenerMan.registerListener(Listener.PIECE, this.ui);
@@ -304,12 +304,12 @@ public class Game extends Canvas implements IWindowCallback
     public void initializeTutorials(boolean isActivated)
     {
         List<ITutorial> tutorials = new ArrayList<ITutorial>();
-        tutorials.add( new BasicTutorial(refactorer) );
-        tutorials.add( new RotateTutorial(refactorer) );
-        tutorials.add( new GravityTutorial(refactorer) );
-        tutorials.add( new RocketTutorial(refactorer) );
-        tutorials.add( new BombTutorial(refactorer) );
-        tutorials.add( new StarTutorial(refactorer) );
+        tutorials.add( new BasicTutorial(win, refactorer) );
+        tutorials.add( new RotateTutorial(win, refactorer) );
+        tutorials.add( new GravityTutorial(win, refactorer) );
+        tutorials.add( new RocketTutorial(win, refactorer) );
+        tutorials.add( new BombTutorial(win, refactorer) );
+        tutorials.add( new StarTutorial(win, refactorer) );
 
         for (ITutorial t : tutorials)
             if (isActivated || !t.hasRun( hub ))
@@ -325,25 +325,25 @@ public class Game extends Canvas implements IWindowCallback
         executor = Executors.newCachedThreadPool();
 
         // Make sure the listener and settings managers are ready.
-        hub.initialize(EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS), this);
+        hub.initialize(win, this,
+                EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS));
 
         // Set the log level.
         CouchLogger.get().setLogLevel(hub.settingsMan.getString(Key.DEBUG_LOG_LEVEL));
 
-         // Print the build number.
-        if(!APPLET)
-        {
-            Class cls = this.getClass();
-            CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
-            CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
-            CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
-            CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
-            CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
-            CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
-            CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
-        }
+        // Print the build number.        
+        Class cls = this.getClass();
+        CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
+        CouchLogger.get().recordMessage(cls, "Wezzle Build: " + BUILD_NUMBER);
+        CouchLogger.get().recordMessage(cls, "Wezzle Version: " + APPLICATION_VERSION);
+        CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
+        CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
+        CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
+        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
+
+
         // Create the loader.
-        loader = new Loader("Loading Wezzle...", hub.settingsMan);
+        loader = new Loader(win, hub.settingsMan, "Loading Wezzle...");
         setDrawer(loader);        
 
         // Preload the sprites.
@@ -372,7 +372,7 @@ public class Game extends Canvas implements IWindowCallback
         {
            public void run()
            {
-               hub.initialize(EnumSet.allOf(Manager.class), Game.this);
+               hub.initialize(win, Game.this, EnumSet.allOf(Manager.class));
                hub.layerMan.setDisabled(true);
            }
         });
@@ -402,10 +402,10 @@ public class Game extends Canvas implements IWindowCallback
                 loader = null;
                 
                 // Empty the mouse events.
-                window.clearMouseEvents();
+                win.clearMouseEvents();
                                
                 // Create the main menu.
-                mainMenu = new MainMenu(hub);
+                mainMenu = new MainMenu(win, hub);
                 setDrawer(mainMenu);
             }   
             else return;                        
@@ -423,7 +423,7 @@ public class Game extends Canvas implements IWindowCallback
             if (mainMenu.getState() == MainMenu.State.FINISHED)
             {                                
                 // Empty the mouse events.
-                window.clearMouseEvents();   
+                win.clearMouseEvents();
                 
                 // Remove the loader.
                 mainMenu.dispose();
@@ -457,8 +457,8 @@ public class Game extends Canvas implements IWindowCallback
             else
             {      
                 // Fire the mouse events.
-                window.fireMouseEvents();
-                window.updateKeyPresses();
+                win.fireMouseEvents();
+                win.updateKeyPresses();
                 
                 // Draw using the loader.
                 return;
@@ -608,11 +608,11 @@ public class Game extends Canvas implements IWindowCallback
         hub.uiAnimationMan.animate();
                         
         // Fire all the queued mouse events.
-        window.fireMouseEvents();                
-        window.updateKeyPresses();
+        win.fireMouseEvents();
+        win.updateKeyPresses();
                         
         // The keys.      
-        if (window.isKeyPressed('R') && !APPLET)
+        if (win.isKeyPressed('R') && !isApplet())
         {
             hub.settingsMan.loadExternalSettings();
             CouchLogger.get().recordMessage(this.getClass(), "Reloaded external settings");
@@ -630,7 +630,7 @@ public class Game extends Canvas implements IWindowCallback
             List<Achievement> achievementList = hub.achievementMan.getNewlyCompletedAchievementList();
             for (Achievement ach : achievementList)
             {
-                AchievementNotification notif = new AchievementNotification.Builder(0, 0, ach)
+                AchievementNotification notif = new AchievementNotification.Builder(win, 0, 0, ach)
                     .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                     .build();
 
@@ -960,7 +960,7 @@ public class Game extends Canvas implements IWindowCallback
         try
         {
             // Save the properites.
-            if (hub.settingsMan != null && !APPLET)
+            if (hub.settingsMan != null && !isApplet())
             {
                 hub.settingsMan.saveSettings();
             }
@@ -993,12 +993,7 @@ public class Game extends Canvas implements IWindowCallback
                 && (hub.tutorialMan != null && !hub.tutorialMan.isTutorialRunning()))
         {
             ui.showPauseGroup(hub.groupMan);
-        }
-                        
-        if (hub.layerMan != null)
-        {
-            hub.layerMan.forceRedraw();
-        }                
+        }                                         
     }
     
     /**
@@ -1006,16 +1001,7 @@ public class Game extends Canvas implements IWindowCallback
      */
     public void windowActivated()
     {                
-        // Force redraw.
-        if (loader != null)
-        {
-            loader.forceRedraw();
-        }
-            
-        if (hub.layerMan != null)
-        {
-            hub.layerMan.forceRedraw();
-        }
+  
     }
     
     public Executor getExecutor()
@@ -1061,19 +1047,13 @@ public class Game extends Canvas implements IWindowCallback
     public void setDifficulty(GameDifficulty difficulty)
     {
         this.difficulty = difficulty;
-    }
-
-    public IWindow getWindow()
-    {
-        return window;
-    }
+    }   
 
     public Tracker getTracker()
     {
         return tracker;
     }
  
-
     /**
      * The secret part of the registration code.  Shhh.  Don't tell anyone.
      */
@@ -1085,8 +1065,7 @@ public class Game extends Canvas implements IWindowCallback
      */
     public static boolean validateLicenseInformation(String serialNumber, String licenseKey)
     {
-        if(APPLET)
-            return true;
+        if (isApplet()) return true;
         
         if (null == serialNumber || null == licenseKey)
         {

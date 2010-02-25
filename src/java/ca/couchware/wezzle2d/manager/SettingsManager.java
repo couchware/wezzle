@@ -61,8 +61,14 @@ public class SettingsManager
         this.defaultMap.putAll( currentMap );
 
         // Load user-made settings on top of that.
-        if(!Game.APPLET)
+        if (Game.isApplet())
+        {
+            setBool(Key.USER_GRAPHICS_FULLSCREEN, false);
+        }
+        else
+        {
             loadExternalSettings();
+        }
     }
 
     /**

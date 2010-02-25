@@ -1,6 +1,6 @@
 /*
  *  Wezzle
- *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
+ *  Copyright (c) 2007-2010 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d.ui;
@@ -74,12 +74,12 @@ public class Box extends AbstractEntity implements IMouseListener
     /**
      * The reference to the window.
      */
-    protected IWindow window;     
+    protected IWindow win;
     
     /**
      * The reference to the graphics instance.
      */
-    protected IGraphics gfx;
+    protected IGraphics graphics;
     
     /**
      * The shape of the window.
@@ -123,8 +123,8 @@ public class Box extends AbstractEntity implements IMouseListener
     private Box(Builder builder)
     {
         // Set window reference.
-        this.window = ResourceFactory.get().getWindow();
-        this.gfx = ResourceFactory.get().getGraphics();
+        this.win = builder.win;
+        this.graphics = win.getGraphics();
         
         // Set the position.
         this.x = builder.x;
@@ -172,7 +172,8 @@ public class Box extends AbstractEntity implements IMouseListener
     
     public static class Builder implements IBuilder<Box>
     {
-        // Required values.       
+        // Required values.
+        private IWindow win;
         private int x;
         private int y;             
         
@@ -185,14 +186,16 @@ public class Box extends AbstractEntity implements IMouseListener
         private boolean disabled = false;
         private Border border = Border.THICK;
         
-        public Builder(int x, int y)
-        {            
+        public Builder(IWindow win, int x, int y)
+        {
+            this.win = win;
             this.x = x;
             this.y = y;
         }
         
         public Builder(Box window)
-        {            
+        {
+            this.win = window.win;
             this.x = window.x;
             this.y = window.y;
             this.alignment = window.alignment.clone();
@@ -227,12 +230,14 @@ public class Box extends AbstractEntity implements IMouseListener
         
         public Box build()
         {
-            Box win = new Box(this);
+            Box box = new Box(this);
             
-            if (visible == true && disabled == false)
-                win.window.addMouseListener(win); 
+            if (visible && !disabled)
+            {
+                win.addMouseListener(box);
+            }
             
-            return win;
+            return box;
         }                
     } 
     
@@ -276,8 +281,8 @@ public class Box extends AbstractEntity implements IMouseListener
             return false;
         
         // Draw the inside of the window.
-        gfx.setColor(color);
-        gfx.fillRect(
+        graphics.setColor(color);
+        graphics.fillRect(
                 x + cornerSprite.getWidth() + offsetX, 
                 y + cornerSprite.getHeight() + offsetY, 
                 width - cornerSprite.getWidth() * 2, 
@@ -402,9 +407,9 @@ public class Box extends AbstractEntity implements IMouseListener
         if (add == true)
         {
             // Pretend like we just moved the mouse.
-            handleMoved(window.getMouseImmutablePosition());
+            handleMoved(win.getMouseImmutablePosition());
             
-            window.addMouseListener(this);            
+            win.addMouseListener(this);
         }
         // If we're removing it.
         else
@@ -413,7 +418,7 @@ public class Box extends AbstractEntity implements IMouseListener
             handleMoved(ImmutablePosition.ORIGIN);
             
             //window.setCursor(Cursor.DEFAULT_CURSOR);            
-            window.removeMouseListener(this);            
+            win.removeMouseListener(this);
         }  
     }
     
@@ -527,7 +532,7 @@ public class Box extends AbstractEntity implements IMouseListener
     {
         // Stop listening to the mouse events.
         if (this.visible && !this.disabled)
-            window.removeMouseListener(this);
+            win.removeMouseListener(this);
     }
     
 }

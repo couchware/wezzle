@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d.group;
 
 import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
@@ -25,7 +26,7 @@ import java.util.EnumSet;
  */
 public class ExitGameGroup extends AbstractGroup
 {           
-
+    private IWindow win;
     private ManagerHub hub;
 
     private ITextLabel headerLabel;                     
@@ -33,11 +34,19 @@ public class ExitGameGroup extends AbstractGroup
     private IButton yesButton;
     private IButton noButton;
         
-    public ExitGameGroup(ManagerHub hub)
+    public ExitGameGroup(IWindow win, ManagerHub hub)
     {
-        if (hub == null)
-            throw new IllegalArgumentException("Hub must not be null");
+        if (win == null)
+        {
+            throw new IllegalArgumentException("Win must not be null");
+        }
 
+        if (hub == null)
+        {
+            throw new IllegalArgumentException("Hub must not be null");
+        }
+
+        this.win = win;
         this.hub = hub;
 
         // The colors.
@@ -79,7 +88,7 @@ public class ExitGameGroup extends AbstractGroup
         hub.layerMan.add(label2, Layer.UI);
         this.entityList.add(label2);
 
-        Button templateButton = new Button.Builder(400, 0)
+        Button templateButton = new Button.Builder(win, 400, 0)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .text("").normalOpacity(80).visible(false).build();
 
@@ -123,7 +132,7 @@ public class ExitGameGroup extends AbstractGroup
         else if ( yesButton.isActivated() )
         {
             yesButton.setActivated( false );
-            game.getWindow().stop();
+            win.stop();
         }
 
         // Clear the change setting.

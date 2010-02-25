@@ -42,13 +42,13 @@ public abstract class AbstractButton extends AbstractEntity implements
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    final protected IWindow window;
+    final protected IWindow win;
 
     /**
      * The window that button is in.  This is for adding and removing
      * the mouse listeners.
      */
-    final protected IGraphics gfx;
+    final protected IGraphics graphics;
 
     /**
      * The current state of the button.
@@ -73,11 +73,11 @@ public abstract class AbstractButton extends AbstractEntity implements
      * The constructor.
      * @param shape The shape of the button.
      */
-    protected AbstractButton(final int x, final int y)
+    protected AbstractButton(IWindow win, final int x, final int y)
     {
         // Grab the window reference.
-        this.window = ResourceFactory.get().getWindow();
-        this.gfx = ResourceFactory.get().getGraphics();
+        this.win = win;
+        this.graphics = win.getGraphics();
 
         // Set the initial state.
         this.state = EnumSet.noneOf( State.class );
@@ -106,7 +106,7 @@ public abstract class AbstractButton extends AbstractEntity implements
         shape = new ImmutableRectangle( x + offsetX, y + offsetY, width, height );
 
         // Pretend like we just moved the mouse.
-        handleMoved( window.getMouseImmutablePosition() );
+        handleMoved( win.getMouseImmutablePosition() );
     }
 
     @Override
@@ -116,7 +116,7 @@ public abstract class AbstractButton extends AbstractEntity implements
         shape = new ImmutableRectangle( x + offsetX, y + offsetY, width, height );
 
         // Pretend like we just moved the mouse.
-        handleMoved( window.getMouseImmutablePosition() );
+        handleMoved( win.getMouseImmutablePosition() );
     }
 
     protected void handleReleased()
@@ -173,7 +173,7 @@ public abstract class AbstractButton extends AbstractEntity implements
             else
             {
                 //LogManager.recordMessage("Hand");
-                window.setCursor( Cursor.HAND_CURSOR );
+                win.setCursor( Cursor.HAND_CURSOR );
             }
         }
     }
@@ -182,7 +182,7 @@ public abstract class AbstractButton extends AbstractEntity implements
     {
         //LogManager.recordMessage(this + " on called");
         // Set the cursor appropriately.
-        window.setCursor( Cursor.HAND_CURSOR );
+        win.setCursor( Cursor.HAND_CURSOR );
 
         setDirty( true );
     }
@@ -191,7 +191,7 @@ public abstract class AbstractButton extends AbstractEntity implements
     {
         //LogManager.recordMessage(this + " off called");
         // Set the cursor appropriately.
-        window.setCursor( Cursor.DEFAULT_CURSOR );
+        win.setCursor( Cursor.DEFAULT_CURSOR );
 
         setDirty( true );
     }
@@ -272,9 +272,9 @@ public abstract class AbstractButton extends AbstractEntity implements
         if ( add )
         {
             // Pretend like we just moved the mouse.
-            handleMoved( window.getMouseImmutablePosition() );
+            handleMoved( win.getMouseImmutablePosition() );
 
-            window.addMouseListener( this );
+            win.addMouseListener( this );
         }
         // If we're removing it.
         else
@@ -282,8 +282,8 @@ public abstract class AbstractButton extends AbstractEntity implements
             // Clear the last mouse position.
             handleMoved( ImmutablePosition.ORIGIN );
 
-            window.setCursor( Cursor.DEFAULT_CURSOR );
-            window.removeMouseListener( this );
+            win.setCursor( Cursor.DEFAULT_CURSOR );
+            win.removeMouseListener( this );
         }
     }
 
@@ -420,7 +420,7 @@ public abstract class AbstractButton extends AbstractEntity implements
         // Stop listening to the mouse events.
         if ( this.visible && !this.disabled )
         {
-            window.removeMouseListener( this );
+            win.removeMouseListener( this );
         }
     }
 

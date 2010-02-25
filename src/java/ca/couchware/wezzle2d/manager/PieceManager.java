@@ -58,7 +58,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     // Private Members
     // -------------------------------------------------------------------------       
     /** A reference to the game window. */
-    private IWindow window;
+    private IWindow win;
 
     /** The possible buttons that may be clicked. */
     private static enum MouseButton
@@ -105,16 +105,19 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
      *
      * @param boardMan The board manager.
      */
-    private PieceManager(ManagerHub hub)
+    private PieceManager(IWindow win, ManagerHub hub)
     {
-        // Set the reference.
-        this.window = ResourceFactory.get().getWindow();
+        if ( win == null )
+        {
+            throw new IllegalArgumentException( "Win must not be null" );
+        }
 
         if ( hub == null )
         {
             throw new IllegalArgumentException( "Hub must not be null" );
         }
 
+        this.win = win;        
         this.hub = hub;
 
         // Create manager convenience variables.
@@ -122,12 +125,14 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         final LayerManager layerMan = hub.layerMan;
 
         this.shadowPieceGrid = new PieceGrid.Builder(
+                win,
                 boardMan.getX() + boardMan.getCellWidth(),
                 boardMan.getY() + boardMan.getCellHeight(),
                 PieceGrid.RenderMode.SPRITE_DARK ).visible( false ).opacity( 60 )
                 .build();
 
         this.pieceGrid = new PieceGrid.Builder(
+                win,
                 boardMan.getX() + boardMan.getCellWidth(),
                 boardMan.getY() + boardMan.getCellHeight(),
                 PieceGrid.RenderMode.SPRITE_LIGHT ).visible( false ).opacity( 100 )
@@ -147,7 +152,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         //this.loadPiece();
 
         // Get the cursor position.
-        this.cursorPosition = limitPosition( window.getMouseImmutablePosition(), this.piece );
+        this.cursorPosition = limitPosition( win.getMouseImmutablePosition(), this.piece );
 
         // Move the piece to the cursor position.
         this.movePieceGridTo( this.cursorPosition );
@@ -184,9 +189,9 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
      * @param boardMan
      * @return
      */
-    public static PieceManager newInstance(ManagerHub hub)
+    public static PieceManager newInstance(IWindow win, ManagerHub hub)
     {
-        return new PieceManager( hub );
+        return new PieceManager( win, hub );
     }
 
     //--------------------------------------------------------------------------
@@ -576,7 +581,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             }
 
             // Update piece grid too!
-            this.cursorPosition = limitPosition( window.getMouseImmutablePosition(), this.pieceQueue.peek());
+            this.cursorPosition = limitPosition( win.getMouseImmutablePosition(), this.pieceQueue.peek());
             this.movePieceGridTo( this.cursorPosition );
 
             return;
@@ -606,7 +611,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
             }
 
             //this.cursorPosition = limitPosition(pieceGrid.getPosition());
-            this.cursorPosition = limitPosition( window.getMouseImmutablePosition(), this.piece );
+            this.cursorPosition = limitPosition( win.getMouseImmutablePosition(), this.piece );
             this.movePieceGridTo( this.cursorPosition );
             this.pieceGrid.setDirty( true );
 
@@ -623,7 +628,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
         {
             // Filter the current position.
             ImmutablePosition pos =
-                    limitPosition( window.getMouseImmutablePosition(), this.piece );
+                    limitPosition( win.getMouseImmutablePosition(), this.piece );
 
             int speed = getPulseSpeed( hub.timerMan.getStartTime(),
                     hub.timerMan.getCurrrentTime() );
@@ -947,7 +952,7 @@ public class PieceManager implements IResettable, IKeyListener, IMouseListener
     public void mouseReleased(MouseEvent e)
     {        
         // Retrieve the mouse position.
-        final ImmutablePosition p = window.getMouseImmutablePosition();
+        final ImmutablePosition p = win.getMouseImmutablePosition();
 
         // Create convenience variable.
         final BoardManager boardMan = hub.boardMan;
