@@ -100,7 +100,7 @@ public class Game extends Canvas implements IWindowCallback
     final public static String COPYRIGHT = "\u00A9 2010 Couchware Inc.";
 
     /** Is the game running as an applet? */
-    final private static boolean APPLET = true;
+    final private static boolean APPLET = false;
     
     //--------------------------------------------------------------------------
     // Members

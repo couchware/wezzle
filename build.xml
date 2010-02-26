@@ -12,7 +12,7 @@
     <!-- Override the default task so that it includes the native libraries -->
     <!-- for all supported platforms.                                       -->
     <target depends="test,jar,windows,macosx,linux" description="Build and test whole project." name="default"/>
-  
+
     <target name="windows" depends="test,jar" description="Build the Windows version of Wezzle">
         <!-- This copies the native LWJGL library. -->
         <copy todir="${dist.dir}/lib/native/windows">
@@ -46,8 +46,8 @@
     <target name="app" depends="jar,macosx" description="Build the Wezzle Mac .app">
         <!-- This take creates the app file. -->
         <taskdef name="jarbundler"
-                classname="net.sourceforge.jarbundler.JarBundler"
-                classpath="${jarbundler.dir}/jarbundler-2.1.0.jar"/>
+                 classname="net.sourceforge.jarbundler.JarBundler"
+                 classpath="${jarbundler.dir}/jarbundler-2.1.0.jar"/>
 
         <mkdir dir="${dist.dir}/app" />
 
@@ -57,17 +57,17 @@
         </exec>
 
         <jarbundler dir="${dist.dir}/app"
-                verbose="true"
-                showPlist="true"
-                name="${application.title}"
-                mainclass="ca.couchware.wezzle2d.Game"
-                icon="${opt.dir}/icons/mac-icon.icns"
-                version="${application.version}"
-                bundleid="ca.couchware.wezzle2d"
-                jvmversion="1.5+"
-                signature="WEZL"
-                vmoptions="-ea"
-                workingdirectory="$APP_PACKAGE/Contents/Resources">
+                    verbose="true"
+                    showPlist="true"
+                    name="${application.title}"
+                    mainclass="ca.couchware.wezzle2d.Game"
+                    icon="${opt.dir}/icons/mac-icon.icns"
+                    version="${application.version}"
+                    bundleid="ca.couchware.wezzle2d"
+                    jvmversion="1.5+"
+                    signature="WEZL"
+                    vmoptions="-ea"
+                    workingdirectory="$APP_PACKAGE/Contents/Resources">
 
             <jarfilelist dir="${dist.dir}" files="${application.title}.jar"/>
 
@@ -79,14 +79,14 @@
                 <include name="*.jnilib"/>
                 <include name="*.dylib"/>
             </jarfileset>
-        
+
         </jarbundler>
     </target>
 
     <target name="mac-installer" depends="app">
         <exec executable="./create-wezzle-dmg" dir="${opt.dir}/dmg" />
         <move file="${opt.dir}/dmg/Wezzle-setup.dmg"
-            tofile="${opt.dir}/dmg/Wezzle-${application.version}-setup.dmg" />
+              tofile="${opt.dir}/dmg/Wezzle-${application.version}-setup.dmg" />
     </target>
 
     <target name="windows-installer" depends="exe" description="Build the Wezzle Windows Installer">
@@ -97,15 +97,14 @@
         <nsis script="./opt/nsis/installer.nsi"/>
     </target>
 
-    <target name="applet" depends="jar">
-
+    <target name="applet" depends="set-applet,jar,unset-applet">
         <!-- Copy base applet dir. -->
         <mkdir dir="${dist.dir}/applet" />
         <copy todir="${dist.dir}/applet">
             <fileset dir="applet"/>
             <fileset dir="${dist.dir}" includes="Wezzle.jar" />
             <fileset dir="${dist.dir}" includes="lib/*.jar" />
-        </copy>  
+        </copy>
 
         <!-- Sign them. -->
         <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
@@ -114,7 +113,6 @@
                 <fileset dir="${dist.dir}/applet" includes="lib/*.jar" />
             </path>
         </signjar>
-
     </target>
 
     <!-- This target excludes the resources from the main JAR. -->
@@ -152,7 +150,7 @@
         <jar destfile="${dist.dir}/lib/resources.jar">
             <fileset dir="${src.dir}" includes="resources/**" />
             <fileset dir="${build.dir}" includes="resources/**" />
-        </jar>                
+        </jar>
 
         <echo>To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
@@ -243,6 +241,20 @@
                 </java>
             </sequential>
         </macrodef>
+    </target>
+
+    <target name="unset-applet">
+        <replaceregexp file="./src/java/ca/couchware/wezzle2d/Game.java"
+                       match="final private static boolean APPLET = true;"
+                       replace="final private static boolean APPLET = false;" />
+        <echo>Setting APPLET = false</echo>
+    </target>
+    
+    <target name="set-applet">
+        <echo>Setting APPLET = true</echo>
+        <replaceregexp file="./src/java/ca/couchware/wezzle2d/Game.java"
+        match="final private static boolean APPLET = false;"
+        replace="final private static boolean APPLET = true;" />
     </target>
 
     <!--
