@@ -83,24 +83,26 @@ public class Game extends Canvas implements IWindowCallback
     /** A rectangle the size of the screen. */
     final public static ImmutableRectangle SCREEN_RECTANGLE = 
             new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);   
-    
+
+    /** Is the game running as an applet? */
+    final private static boolean APPLET = true;
+
     /** The name of the application. */
     final public static String APPLICATION_NAME = "Wezzle";
     
     /** The version of the application. */
     final public static int APPLICATION_VERSION_MAJOR = 1;
-    final public static int APPLICATION_VERSION_MINOR = 1;
+    final public static int APPLICATION_VERSION_MINOR = 3;
+    final public static String APPLICATION_DISTRIBUTION = APPLET ? "Web" : "Desktop";
     final public static String APPLICATION_VERSION = 
-            APPLICATION_VERSION_MAJOR + "." + APPLICATION_VERSION_MINOR;
+            String.format("%d.%d (%s)", 
+            APPLICATION_VERSION_MAJOR, APPLICATION_VERSION_MINOR, APPLICATION_DISTRIBUTION);
     
     /** The full title of the game. */
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
     
     /** The copyright. */
-    final public static String COPYRIGHT = "\u00A9 2010 Couchware Inc.";
-
-    /** Is the game running as an applet? */
-    final private static boolean APPLET = false;
+    final public static String COPYRIGHT = "\u00A9 2010 Couchware Inc.";    
     
     //--------------------------------------------------------------------------
     // Members

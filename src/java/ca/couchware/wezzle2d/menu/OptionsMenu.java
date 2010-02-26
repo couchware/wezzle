@@ -51,6 +51,7 @@ public class OptionsMenu extends AbstractMenu
             
     private RadioGroup autoPauseRadio;
     private RadioGroup fullscreenRadio;
+
     private RadioGroup piecePreviewBoxRadio;        
     private RadioGroup piecePreviewShadowRadio;   
 
@@ -260,26 +261,42 @@ public class OptionsMenu extends AbstractMenu
 
         this.gamePageEntities.add(fullscreenLabel);
 
-        RadioItem fullscreenOn = new RadioItem.Builder(win).color(optionColor)
+        if (Game.isApplet())
+        {
+            ITextLabel noFullScreenLabel = new LabelBuilder(
+                    268 + 90,
+                    fullscreenLabel.getY())
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .color(Color.DARK_GRAY)
+                    .text("Not Available").size(16)
+                    .visible(false)
+                    .build();
+
+            this.gamePageEntities.add(noFullScreenLabel);
+        }
+        else
+        {
+            RadioItem fullscreenOn = new RadioItem.Builder(win).color(optionColor)
                 .text("On").build();
-        
-        RadioItem fullscreenOff = new RadioItem.Builder(win).color(optionColor)
-                .text("Off").build();
 
-        final boolean fullscreenSetting = hub.settingsMan.getBool(Key.USER_GRAPHICS_FULLSCREEN);
-     
-        this.fullscreenRadio = new RadioGroup.Builder(
-                win, 268 + 150, fullscreenLabel.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .add(fullscreenOn, fullscreenSetting)
-                .add(fullscreenOff, !fullscreenSetting)
-                .visible(false)
-                .build();
+            RadioItem fullscreenOff = new RadioItem.Builder(win).color(optionColor)
+                    .text("Off").build();
 
-        this.gamePageEntities.add(fullscreenRadio);
+            final boolean fullscreenSetting = hub.settingsMan.getBool(Key.USER_GRAPHICS_FULLSCREEN);
+
+            this.fullscreenRadio = new RadioGroup.Builder(
+                    win, 268 + 150, fullscreenLabel.getY())
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                    .add(fullscreenOn, fullscreenSetting)
+                    .add(fullscreenOff, !fullscreenSetting)
+                    .visible(false)
+                    .build();
+
+            this.gamePageEntities.add(fullscreenRadio);
+        }
         // </editor-fold>
 
-        // <editor-fold defaultstate="collapsed" desc="Auto Pause">
+        // <editor-fold defaultstate="collapsed" desc="Auto Pause">        
         ITextLabel autoPauseLabel = new LabelBuilder(
                 fullscreenLabel.getX(),
                 fullscreenLabel.getY() + 60)
@@ -288,25 +305,41 @@ public class OptionsMenu extends AbstractMenu
                 .text("Auto-Pause").size(20)
                 .visible(false)
                 .build();
-        
+
         this.gamePageEntities.add(autoPauseLabel);
 
-        RadioItem autoPauseOn = new RadioItem.Builder(win).color(optionColor)
+        if (Game.isApplet())
+        {
+             ITextLabel noAutoPauseButton = new LabelBuilder(
+                    268 + 90,
+                    autoPauseLabel.getY())
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .color(Color.DARK_GRAY)
+                    .text("Not Available").size(16)
+                    .visible(false)
+                    .build();
+
+            this.gamePageEntities.add(noAutoPauseButton);
+        }
+        else
+        {
+            final RadioItem autoPauseOn = new RadioItem.Builder(win).color(optionColor)
                 .text("On").build();
-        
-        RadioItem autoPauseOff = new RadioItem.Builder(win).color(optionColor)
-                .text("Off").build();
 
-        final boolean autoPauseSetting = hub.settingsMan.getBool(Key.USER_AUTO_PAUSE);
-        this.autoPauseRadio = new RadioGroup.Builder(
-                win, 268 + 150, autoPauseLabel.getY())
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
-                .add(autoPauseOn, autoPauseSetting)
-                .add(autoPauseOff, !autoPauseSetting)
-                .visible(false)
-                .build();
+            final RadioItem autoPauseOff = new RadioItem.Builder(win).color(optionColor)
+                    .text("Off").build();
 
-        this.gamePageEntities.add(autoPauseRadio);
+            final boolean autoPauseSetting = hub.settingsMan.getBool(Key.USER_AUTO_PAUSE);
+            this.autoPauseRadio = new RadioGroup.Builder(
+                    win, 268 + 150, autoPauseLabel.getY())
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
+                    .add(autoPauseOn, autoPauseSetting)
+                    .add(autoPauseOff, !autoPauseSetting)
+                    .visible(false)
+                    .build();
+
+            this.gamePageEntities.add(autoPauseRadio);
+        }                        
         // </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="Piece Preview Box">
@@ -524,7 +557,7 @@ public class OptionsMenu extends AbstractMenu
     {
         super.updateLogic( game, hub );
 
-        if ( this.fullscreenRadio.changed() )
+        if ( this.fullscreenRadio != null && this.fullscreenRadio.changed() )
         {
             int selected = this.fullscreenRadio.getSelectedIndex();
             boolean isOn = selected == ON;
@@ -533,7 +566,7 @@ public class OptionsMenu extends AbstractMenu
             hub.settingsMan.setBool( Key.USER_GRAPHICS_FULLSCREEN, win.isFullscreen() );
         }
 
-        if ( this.autoPauseRadio.changed() )
+        if ( this.autoPauseRadio != null && this.autoPauseRadio.changed() )
         {
             int selected = this.autoPauseRadio.getSelectedIndex();
             boolean isOn = selected == ON;

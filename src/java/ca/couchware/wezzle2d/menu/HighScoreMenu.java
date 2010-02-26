@@ -33,7 +33,12 @@ import java.util.Locale;
  */
 public class HighScoreMenu extends AbstractMenu
 {
-
+    private static final String[] NO_HIGH_SCORES = new String[]
+    {
+        "There are no",
+        "high scores yet."
+    };
+        
     /** The "no high score" array. */
     private ITextLabel[] noHighScore;
 
@@ -88,19 +93,22 @@ public class HighScoreMenu extends AbstractMenu
         // Update the labels.
         this.updateScoreLabels(scoreLabelList, hub.highScoreMan.getScoreList());
 
+        // Set the text source.
+        String[] textSource = NO_HIGH_SCORES;
+
         // Create the no high score label.
         this.noHighScore = new ITextLabel[2];
 
         this.noHighScore[0] = new LabelBuilder(268, 306)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .size(20).text("There are no")
+                .size(20).text(textSource[0])
                 .visible(false).build();
 
         this.noHighScore[1] = new LabelBuilder(268, 336)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY))
-                .size(20).text("high scores yet.")
+                .size(20).text(textSource[1])
                 .visible(false).build();
 
         // Create the reset button.

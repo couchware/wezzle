@@ -244,10 +244,10 @@
     </target>
 
     <target name="unset-applet">
+        <echo>Setting APPLET = false</echo>
         <replaceregexp file="./src/java/ca/couchware/wezzle2d/Game.java"
                        match="final private static boolean APPLET = true;"
-                       replace="final private static boolean APPLET = false;" />
-        <echo>Setting APPLET = false</echo>
+                       replace="final private static boolean APPLET = false;" />        
     </target>
     
     <target name="set-applet">

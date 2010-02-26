@@ -308,7 +308,9 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.menuMap.put(Menu.PLAY_NOW, menu);
 
         // Create the "Achievements" group.
-        menu = new AchievementMenu(this, win, hub, this.menuLayerMan);
+        menu = Game.isApplet()
+                ? new NotAvailableMenu(this, "Achievements", win, hub, this.menuLayerMan)
+                : new AchievementMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.ACHIEVEMENTS, menu);
 
         // Create the "Achievements" group.
@@ -316,7 +318,9 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.menuMap.put(Menu.OPTIONS, menu);
         
         // Create the "High Scores" group.
-        menu = new HighScoreMenu(this, win, hub, this.menuLayerMan);
+        menu = Game.isApplet()
+                ? new NotAvailableMenu(this, "High Scores", win, hub, this.menuLayerMan)
+                : new HighScoreMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.HIGH_SCORES, menu);
         
         // Create the "Credits" group.
