@@ -264,11 +264,11 @@ public class OptionsMenu extends AbstractMenu
         if (Game.isApplet())
         {
             ITextLabel noFullScreenLabel = new LabelBuilder(
-                    268 + 90,
+                    268 + 158,
                     fullscreenLabel.getY())
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                     .color(Color.DARK_GRAY)
-                    .text("Not Available").size(16)
+                    .text("Not Available").size(20)
                     .visible(false)
                     .build();
 
@@ -311,11 +311,11 @@ public class OptionsMenu extends AbstractMenu
         if (Game.isApplet())
         {
              ITextLabel noAutoPauseButton = new LabelBuilder(
-                    268 + 90,
+                    268 + 158,
                     autoPauseLabel.getY())
-                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.RIGHT))
                     .color(Color.DARK_GRAY)
-                    .text("Not Available").size(16)
+                    .text("Not Available").size(20)
                     .visible(false)
                     .build();
 
