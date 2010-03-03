@@ -82,7 +82,10 @@ public class AchievementManager implements ICollisionListener
      * Import the achievements from the settings amanager.
      */
     final private void importAchievements()
-    {        
+    {
+        // This effectively shuts off achievements as none are loaded.
+        if(Game.isApplet())
+            return;
         // Get the master list from the settings manager. 
         List masterList = this.settingsMan.getList(Key.USER_ACHIEVEMENT);
         
