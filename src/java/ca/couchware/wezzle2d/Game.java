@@ -689,14 +689,8 @@ public class Game extends Canvas implements IWindowCallback
                 hub.timerMan.setPaused(true);
 
                 CouchLogger.get().recordMessage(this.getClass(), "Level up!");
-                //levelMan.levelUp(this);
                
                 hub.levelMan.incrementLevel();
-
-//                if (isApplet() && hub.levelMan.getLevel() >= 6)
-//                {
-//                    this.startGameOver();
-//                }
 
                 hub.soundMan.play(Sound.LEVEL_UP);
 
