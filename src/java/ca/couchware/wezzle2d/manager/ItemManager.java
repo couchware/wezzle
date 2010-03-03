@@ -84,11 +84,14 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         multiplierMap = new EnumMap<TileType, Item>(TileType.class);        
         multiplierMap.put(TileType.X2, new Item.Builder(TileType.X2)
                 .initialAmount(2).weight(50).maximumOnBoard(3).build());
-        multiplierMap.put(TileType.X3, new Item.Builder(TileType.X3)
-                .initialAmount(0).weight(20).maximumOnBoard(1).build());
-        multiplierMap.put(TileType.X4, new Item.Builder(TileType.X4)
-                .initialAmount(0).weight(10).maximumOnBoard(1).build());
-                          
+
+        if(!Game.isApplet())
+        {
+            multiplierMap.put(TileType.X3, new Item.Builder(TileType.X3)
+                    .initialAmount(0).weight(20).maximumOnBoard(1).build());
+            multiplierMap.put(TileType.X4, new Item.Builder(TileType.X4)
+                    .initialAmount(0).weight(10).maximumOnBoard(1).build());
+        }
         // Make the mutable list the master list.
         masterRuleList = createMasterRuleList(win, hub);
                         
@@ -113,16 +116,18 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
                 
         itemMap.put(TileType.ROCKET, new Item.Builder(TileType.ROCKET)
                 .initialAmount(0).weight(0).maximumOnBoard(1).build());
-        
-        itemMap.put(TileType.BOMB, new Item.Builder(TileType.BOMB)
-                .initialAmount(0).weight(0).maximumOnBoard(1).build());
-        
-        itemMap.put(TileType.STAR, new Item.Builder(TileType.STAR)
-                .initialAmount(0).weight(0).maximumOnBoard(1).build());
-        
-        itemMap.put(TileType.GRAVITY, new Item.Builder(TileType.GRAVITY)
-                .initialAmount(0).weight(0).maximumOnBoard(1).build());
-        
+
+        if(!Game.isApplet())
+        {
+            itemMap.put(TileType.BOMB, new Item.Builder(TileType.BOMB)
+                    .initialAmount(0).weight(0).maximumOnBoard(1).build());
+
+            itemMap.put(TileType.STAR, new Item.Builder(TileType.STAR)
+                    .initialAmount(0).weight(0).maximumOnBoard(1).build());
+
+            itemMap.put(TileType.GRAVITY, new Item.Builder(TileType.GRAVITY)
+                    .initialAmount(0).weight(0).maximumOnBoard(1).build());
+        }
         // Reset the rules.
         ruleList.clear();
         ruleList.addAll(masterRuleList);
@@ -162,74 +167,75 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
             }            
         });  
         
-        // Make it so the bomb block is added.
-        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 4)
-        {
-            @Override
-            public void onMatch()
-            {                
-                // Add the bomb.
-                itemMap.put(TileType.GRAVITY,
-                        new Item.Builder(TileType.GRAVITY)
-                        .initialAmount(1).weight(50).maximumOnBoard(1).build());
-
-                if (hub.statMan.getStartLevel() < 4)
-                {
-                    TileNotification notif = new TileNotification.Builder(win, 0, 0, TileType.GRAVITY)
-                        .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                        .build();
-
-                    hub.notificationMan.offer(notif);
-                }
-            }            
-        });  
-        
-        // Make it so the bomb block is added.
-        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 5)
-        {
-            @Override
-            public void onMatch()
-            {                
-                // Add the bomb.
-                itemMap.put(TileType.BOMB,
-                        new Item.Builder(TileType.BOMB)
-                        .initialAmount(1).weight(10).maximumOnBoard(1).build());
-
-                if (hub.statMan.getStartLevel() < 5)
-                {
-                    TileNotification notif = new TileNotification
-                            .Builder(win, 0, 0, TileType.BOMB)
-                            .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                            .build();
-
-                    hub.notificationMan.offer(notif);
-                }
-            }            
-        }); 
-        
-        // Make it so the star block is added.
-        mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 6)
-        {
-            @Override
-            public void onMatch()
+       if(!Game.isApplet())
+       {
+            mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 4)
             {
-                // Add the star.
-                itemMap.put(TileType.STAR,
-                        new Item.Builder(TileType.STAR)
-                        .initialAmount(0).weight(10).maximumOnBoard(1).build());
-
-                if (hub.statMan.getStartLevel() < 6)
+                @Override
+                public void onMatch()
                 {
-                    TileNotification notif = new TileNotification
-                            .Builder(win, 0, 0, TileType.STAR)
+                    // Add the bomb.
+                    itemMap.put(TileType.GRAVITY,
+                            new Item.Builder(TileType.GRAVITY)
+                            .initialAmount(1).weight(50).maximumOnBoard(1).build());
+
+                    if (hub.statMan.getStartLevel() < 4)
+                    {
+                        TileNotification notif = new TileNotification.Builder(win, 0, 0, TileType.GRAVITY)
                             .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                             .build();
 
-                    hub.notificationMan.offer(notif);
+                        hub.notificationMan.offer(notif);
+                    }
                 }
-            }            
-        });           
-        
+            });
+
+
+            mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 5)
+            {
+                @Override
+                public void onMatch()
+                {
+                    // Add the bomb.
+                    itemMap.put(TileType.BOMB,
+                            new Item.Builder(TileType.BOMB)
+                            .initialAmount(1).weight(10).maximumOnBoard(1).build());
+
+                    if (hub.statMan.getStartLevel() < 5)
+                    {
+                        TileNotification notif = new TileNotification
+                                .Builder(win, 0, 0, TileType.BOMB)
+                                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                                .build();
+
+                        hub.notificationMan.offer(notif);
+                    }
+                }
+            });
+
+            // Make it so the star block is added.
+            mutableList.add(new Rule(Rule.Type.LEVEL, Rule.Operation.GTEQ, 6)
+            {
+                @Override
+                public void onMatch()
+                {
+                    // Add the star.
+                    itemMap.put(TileType.STAR,
+                            new Item.Builder(TileType.STAR)
+                            .initialAmount(0).weight(10).maximumOnBoard(1).build());
+
+                    if (hub.statMan.getStartLevel() < 6)
+                    {
+                        TileNotification notif = new TileNotification
+                                .Builder(win, 0, 0, TileType.STAR)
+                                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                                .build();
+
+                        hub.notificationMan.offer(notif);
+                    }
+                }
+            });
+        }
         return Collections.unmodifiableList(mutableList);
     }       
     
