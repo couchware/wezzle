@@ -319,6 +319,8 @@ public class OptionsMenu extends AbstractMenu
                     .visible(false)
                     .build();
 
+             hub.settingsMan.setBool(Key.USER_AUTO_PAUSE, false);
+
             this.gamePageEntities.add(noAutoPauseButton);
         }
         else
