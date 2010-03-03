@@ -5,7 +5,6 @@
 
 package ca.couchware.wezzle2d.audio;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
 import ca.couchware.wezzle2d.util.NumUtil;
