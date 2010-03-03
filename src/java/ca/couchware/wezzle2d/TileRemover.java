@@ -241,12 +241,19 @@ public class TileRemover implements IResettable, ILevelListener
                     boolean shouldGetNextPiece =
                             !levelUpImminent && !hub.tutorialMan.isTutorialRunning();
 
-                    startNextMove(pieceMan, timerMan, shouldGetNextPiece);
-                    //CouchLogger.get().recordWarning(this.getClass(), "getNextPiece = " + shouldGetNextPiece);
-                    
                     // Clear the level up in progress flag.
-                    this.levelUpInProgress = false;                                             
-                                                                                                  
+                    this.levelUpInProgress = false;
+                    
+                    // If the level is 6 or greater in applet mode then end this
+                    // shiznat.
+                    if (Game.isApplet() && hub.levelMan.getLevel() >= 6)
+                    {
+                        game.startGameOver();
+                    }
+                    else
+                    {
+                        startNextMove(pieceMan, timerMan, shouldGetNextPiece);
+                    }
                 } // end if                                                                               
             } // end if
         } // end if                       

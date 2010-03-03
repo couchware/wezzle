@@ -693,10 +693,10 @@ public class Game extends Canvas implements IWindowCallback
                
                 hub.levelMan.incrementLevel();
 
-                if (isApplet() && hub.levelMan.getLevel() >= 6)
-                {
-                    this.startGameOver();
-                }
+//                if (isApplet() && hub.levelMan.getLevel() >= 6)
+//                {
+//                    this.startGameOver();
+//                }
 
                 hub.soundMan.play(Sound.LEVEL_UP);
 
