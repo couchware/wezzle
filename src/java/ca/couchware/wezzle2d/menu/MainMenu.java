@@ -305,6 +305,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         
         // Create the "Play Now" group.
         menu = new PlayNowMenu(this, win, hub, this.menuLayerMan);
+
         this.menuMap.put(Menu.PLAY_NOW, menu);
 
         // Create the "Achievements" group.
@@ -364,14 +365,23 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 // the others.
                 if (clickedButton != null)
                 {
+
+
                     for (Menu menu : this.buttonMap.keySet())
                     {
+                         if(Game.isApplet() && menu == Menu.PLAY_NOW)
+                         {
+                                ((PlayNowMenu)menuMap.get(menu)).startGame(game, hub);
+                                return;
+                         }
+
                         // Make sure their clicked flag is clear.
                         IButton button = buttonMap.get(menu);
                         
                         // Activate the button if it is the clicked button.
                         if ( button == clickedButton )
                         {
+                           
                             // Activate the new button.
                             button.setActivated(true);
                             button.setDisabled(true);

@@ -437,7 +437,7 @@ public class PlayNowMenu extends AbstractMenu
         themeRadio.changed();
     }
 
-    private void startGame(Game game, ManagerHub hub)
+    public void startGame(Game game, ManagerHub hub)
     {
         // Make sure no groups are showing if we've come back to the menu
         // from a previous game.
