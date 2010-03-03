@@ -259,16 +259,16 @@ public class UI implements
     private void initializeButtons()
     {        
         // The high score button.
-         if(!Game.isApplet())
-         {
+        if (!Game.isApplet())
+        {
             highScoreButton = new MammothButton.Builder(win, 128, 299)
-                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
-                .text("")
-                .normalOpacity(0).hoverOpacity(70).activeOpacity(95).build();
-       
-       
+                    .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                    .text("")
+                    .normalOpacity(0).hoverOpacity(70).activeOpacity(95).build();
+
             hub.layerMan.add(highScoreButton, Layer.UI);
-         }
+        }
+        
         // Create pause button.        
         pauseButton = new Button.Builder(win, 668, 211)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))

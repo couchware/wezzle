@@ -365,40 +365,37 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 // the others.
                 if (clickedButton != null)
                 {
-
-
                     for (Menu menu : this.buttonMap.keySet())
-                    {
-                         if(Game.isApplet() && menu == Menu.PLAY_NOW)
-                         {
-                                ((PlayNowMenu)menuMap.get(menu)).startGame(game, hub);
-                                return;
-                         }
-
+                    {                         
                         // Make sure their clicked flag is clear.
                         IButton button = buttonMap.get(menu);
                         
                         // Activate the button if it is the clicked button.
                         if ( button == clickedButton )
-                        {
-                           
+                        {                                                       
                             // Activate the new button.
                             button.setActivated(true);
                             button.setDisabled(true);
-                            
-                            // Animate the change.
-                            this.currentAnimation = new MetaAnimation.Builder()
-                                    .finishRule(MetaAnimation.FinishRule.ALL)
-                                    //.runRule(MetaAnimation.RunRule.SEQUENCE)
-                                    .add(this.menuMap.get(currentMenu).animateHide())
-                                    .add(this.menuMap.get(menu).animateShow())
-                                    .build();
-                            
-                            // Set the new current button.                            
-                            this.currentMenu = menu;
-                            
-                            // Activate the current group.
-                            this.menuMap.get(menu).setActivated(true);
+
+                            if (Game.isApplet() && menu == Menu.PLAY_NOW)
+                            {
+                                ((PlayNowMenu) this.menuMap.get(menu)).startGame(game, hub);                                
+                            }
+                            else
+                            {
+                                // Animate the change.
+                                this.currentAnimation = new MetaAnimation.Builder()
+                                        .finishRule(MetaAnimation.FinishRule.ALL)                                       
+                                        .add(this.menuMap.get(currentMenu).animateHide())
+                                        .add(this.menuMap.get(menu).animateShow())
+                                        .build();
+
+                                // Set the new current button.
+                                this.currentMenu = menu;
+
+                                // Activate the current group.
+                                this.menuMap.get(menu).setActivated(true);
+                            }
                         }
                         else
                         {
@@ -407,11 +404,14 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                             button.setDisabled(true);
                             
                             // Deactivate the other groups.
-                            this.menuMap.get(menu).setActivated(false);
+                            if (!Game.isApplet())
+                            {
+                                this.menuMap.get(menu).setActivated(false);
+                            }
                         }                        
                     } // end for
                 } // end if
-                
+
                 // See if the running group deactivated itself.  If it did,
                 // then we need to hide the group and deactivate the button.
                 // This will bring us back to the initial menu screen with

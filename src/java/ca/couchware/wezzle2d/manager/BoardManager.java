@@ -639,8 +639,8 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
         // Cycle through the board looking for a match in the X-direction.
         for ( int i = 0; i < cells; i++ )
         {
-            // Build up the tiles to build up lines.
-            List<Tile> tileList = new ArrayList<Tile>();
+                // Build up the tiles to build up lines.
+                List<Tile> tileList = new ArrayList<Tile>();
 
             // Check to see if there's even enough room for an X-match.
             if ( columns - (i % columns) < minimumMatch )

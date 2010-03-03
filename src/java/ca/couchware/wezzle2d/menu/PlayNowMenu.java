@@ -19,7 +19,6 @@ import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.util.CouchLogger;
-import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.manager.MusicManager.Theme;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;

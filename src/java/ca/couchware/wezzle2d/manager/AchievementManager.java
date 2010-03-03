@@ -65,7 +65,11 @@ public class AchievementManager implements ICollisionListener
         this.completedList      = new ArrayList<Achievement>();
         this.newlyCompletedList = new ArrayList<Achievement>();        
         
-        this.importAchievements();
+        // This effectively shuts off achievements as none are loaded.
+        if (!Game.isApplet())
+        {
+            this.importAchievements();
+        }
     }
     
     /**
@@ -82,10 +86,7 @@ public class AchievementManager implements ICollisionListener
      * Import the achievements from the settings amanager.
      */
     final private void importAchievements()
-    {
-        // This effectively shuts off achievements as none are loaded.
-        if(Game.isApplet())
-            return;
+    {     
         // Get the master list from the settings manager. 
         List masterList = this.settingsMan.getList(Key.USER_ACHIEVEMENT);
         
@@ -174,9 +175,7 @@ public class AchievementManager implements ICollisionListener
         this.completedList.add(completedAchievement);
 
         // Set the flag.
-        this.achievementCompleted = true;
-
- 
+        this.achievementCompleted = true; 
     }
     
     /**
@@ -238,10 +237,10 @@ public class AchievementManager implements ICollisionListener
      */
     public void collisionOccured(CollisionEvent e, ManagerHub hub, GameDifficulty difficulty)
     {
-        if(true == hub.tutorialMan.isTutorialRunning())
+        if (hub.tutorialMan.isTutorialRunning())
             return;
         
-        CouchLogger.get().recordMessage(this.getClass(), e.getChain().getTree().toString());
+        //CouchLogger.get().recordMessage(this.getClass(), e.getChain().getTree().toString());
         
         // Set to true if an achievement was achieved.
         boolean achieved = false;
@@ -259,7 +258,7 @@ public class AchievementManager implements ICollisionListener
         } // end for
 
          // If we have achieved something, check meta achievements.
-        if(achieved == true)
+        if (achieved)
         {
             for (Iterator<Achievement> itr = incompletedList.iterator(); itr.hasNext(); )
             {

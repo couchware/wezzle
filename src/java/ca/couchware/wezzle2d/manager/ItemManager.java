@@ -85,7 +85,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         multiplierMap.put(TileType.X2, new Item.Builder(TileType.X2)
                 .initialAmount(2).weight(50).maximumOnBoard(3).build());
 
-        if(!Game.isApplet())
+        if (!Game.isApplet())
         {
             multiplierMap.put(TileType.X3, new Item.Builder(TileType.X3)
                     .initialAmount(0).weight(20).maximumOnBoard(1).build());
@@ -117,7 +117,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
         itemMap.put(TileType.ROCKET, new Item.Builder(TileType.ROCKET)
                 .initialAmount(0).weight(0).maximumOnBoard(1).build());
 
-        if(!Game.isApplet())
+        if (!Game.isApplet())
         {
             itemMap.put(TileType.BOMB, new Item.Builder(TileType.BOMB)
                     .initialAmount(0).weight(0).maximumOnBoard(1).build());
@@ -128,6 +128,7 @@ public class ItemManager implements IResettable, ILevelListener, IMoveListener
             itemMap.put(TileType.GRAVITY, new Item.Builder(TileType.GRAVITY)
                     .initialAmount(0).weight(0).maximumOnBoard(1).build());
         }
+        
         // Reset the rules.
         ruleList.clear();
         ruleList.addAll(masterRuleList);

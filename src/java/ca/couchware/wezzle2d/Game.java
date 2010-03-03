@@ -310,12 +310,13 @@ public class Game extends Canvas implements IWindowCallback
         tutorials.add( new RotateTutorial(win, refactorer) );
         tutorials.add( new RocketTutorial(win, refactorer) );
         
-        if(!isApplet())
+        if (!isApplet())
         {
             tutorials.add( new GravityTutorial(win, refactorer) );
             tutorials.add( new BombTutorial(win, refactorer) );
             tutorials.add( new StarTutorial(win, refactorer) );
         }
+        
         for (ITutorial t : tutorials)
             if (isActivated || !t.hasRun( hub ))
                 hub.tutorialMan.add(t);
@@ -692,7 +693,7 @@ public class Game extends Canvas implements IWindowCallback
                
                 hub.levelMan.incrementLevel();
 
-                if(isApplet() && hub.levelMan.getLevel() >= 6)
+                if (isApplet() && hub.levelMan.getLevel() >= 6)
                 {
                     this.startGameOver();
                 }
