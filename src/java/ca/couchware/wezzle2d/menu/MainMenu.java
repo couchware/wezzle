@@ -512,20 +512,30 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                 continue;
             
             final IButton button = this.buttonMap.get(menu);
-            
-            final IAnimation anim = new MoveAnimation.Builder(button).theta(180)
+
+            final IAnimation move = new MoveAnimation
+                    .Builder(button).theta(180)
                     .speed(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
+                    .acceleration(250)
                     .minX(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_MIN_X))
                     .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * menu.getRank())
                     .build();
+
+            button.setOpacity( 0 );
+            final IAnimation fade = new FadeAnimation
+                    .Builder(FadeAnimation.Type.IN, button)
+                    .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * menu.getRank() + 100)
+                    .duration(500)
+                    .build();
             
-            builder.add(anim);
+            builder.add(move);
+            builder.add(fade);
             
-            anim.addAnimationListener(new AnimationAdapter()
+            move.addAnimationListener(new AnimationAdapter()
             {
                 @Override
                 public void animationStarted()
-                {
+                {                    
                     button.setDisabled(true);
                 }
 
@@ -552,12 +562,12 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         builder.add(this.menuMap.get(this.currentMenu).animateHide());
         
         // Fade out the logo.
-        IAnimation fade = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
+        IAnimation fadeLogo = new FadeAnimation.Builder(FadeAnimation.Type.OUT, logoEntity)
                 .wait(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_WAIT))
                 .duration(hub.settingsMan.getInt(Key.MAIN_MENU_LOGO_FADE_OUT_DURATION))
                 .build();
         
-        fade.addAnimationListener(new AnimationAdapter()
+        fadeLogo.addAnimationListener(new AnimationAdapter()
         {           
             @Override
             public void animationFinished()
@@ -567,23 +577,31 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
             }
         });
         
-        builder.add(fade);
+        builder.add(fadeLogo);
          
         // Slide out the buttons.
         // Animate the buttons coming in.        
-        for (Menu m : this.buttonMap.keySet())
+        for (Menu menu : this.buttonMap.keySet())
         {                        
-            final IButton button = this.buttonMap.get(m);
+            final IButton button = this.buttonMap.get(menu);
             
-            final IAnimation anim = new MoveAnimation.Builder(button).theta(0)
-                    .speed(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED))
+            final IAnimation move = new MoveAnimation.Builder(button).theta(0)
+                    .speed(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_SPEED) - 200)
+                    .acceleration(500)
                     .maxX(910)
-                    .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * m.getRank())
+                    .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * menu.getRank())
+                    .build();
+
+            final IAnimation fade = new FadeAnimation
+                    .Builder(FadeAnimation.Type.OUT, button)
+                    .wait(hub.settingsMan.getInt(Key.MAIN_MENU_SLIDE_WAIT) * menu.getRank() + 100)
+                    .duration(500)
                     .build();
             
-            builder.add(anim);
+            builder.add(move);
+            builder.add(fade);
             
-            anim.addAnimationListener(new AnimationAdapter()
+            move.addAnimationListener(new AnimationAdapter()
             {
                 @Override
                 public void animationStarted()

@@ -73,7 +73,7 @@ public abstract class AbstractMenu extends AbstractGroup
         menuBox.setVisible(true);
 
         IAnimation move = new MoveAnimation.Builder(menuBox).theta(-90).maxY(300)
-                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
+                .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))                
                 .build();
 
         List<IAnimation> fadeList = new ArrayList<IAnimation>(entityList.size());
@@ -115,7 +115,7 @@ public abstract class AbstractMenu extends AbstractGroup
     public IAnimation animateHide()
     {
         IAnimation anim = new MoveAnimation.Builder(menuBox).theta(-90)
-                .maxY(Game.SCREEN_HEIGHT + 300)
+                .maxY(Game.SCREEN_HEIGHT + 300)               
                 .speed(SettingsManager.get().getInt(Key.MAIN_MENU_WINDOW_SPEED))
                 .build();
 

@@ -98,9 +98,9 @@ public class Launcher extends Applet
             Game game = new Game(parent, ResourceFactory.Renderer.LWJGL);
             game.start();            
         }
-        catch (Exception e)
+        catch (Throwable t)
         {
-            CouchLogger.get().recordException(Game.class, e);
+            CouchLogger.get().recordException(Game.class, t);
         }
         finally
         {

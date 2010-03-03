@@ -574,7 +574,10 @@ public class UI implements
      */
     private void setBackgroundTo(Background bg)
     {
-        if (this.backgroundGraphic != null)
+        if ( !this.backgroundAnimation.isFinished() )
+            this.backgroundAnimation.setFinished();
+
+        if ( this.backgroundGraphic != null )
             hub.layerMan.remove( this.backgroundGraphic, Layer.BACKGROUND );
 
         this.background = bg;

@@ -115,7 +115,7 @@ public class CouchLogger
      * @param message The error message.
      * @param t The current thread, usually Thread.currentThread().
      */
-    public void recordException(Class cls, Exception e, boolean fatal)
+    public void recordException(Class cls, Throwable t, boolean fatal)
     {
         if ( cls == null )
         {
@@ -124,12 +124,12 @@ public class CouchLogger
 
         String method = extractClassName( cls );
         StringWriter out = new StringWriter();
-        String exceptionString = "(" + getTimeStamp() + ") " + method + " - \"" + e.
+        String exceptionString = "(" + getTimeStamp() + ") " + method + " - \"" + t.
                 getMessage() + "\"" + Settings.getLineSeparator();
 
         out.write( exceptionString );
 
-        e.printStackTrace( new PrintWriter( out, true ) );
+        t.printStackTrace( new PrintWriter( out, true ) );
         logger.error( out.toString() );
 
         if (fatal)
@@ -137,7 +137,7 @@ public class CouchLogger
             IWindow win = ResourceFactory.get().getWindow();
             win.setFullscreen(false);
             win.alert("Wezzle", "Error!" + Settings.getLineSeparator()
-                    + e.getMessage() + "." + Settings.getLineSeparator()
+                    + t.getMessage() + "." + Settings.getLineSeparator()
                     + Settings.getLineSeparator()
                     + "Please visit http://couchware.ca/www/support for help.");
             win.stop();
@@ -145,9 +145,9 @@ public class CouchLogger
     }
     
 
-    public void recordException(Class cls, Exception e)
+    public void recordException(Class cls, Throwable t)
     {
-        recordException(cls, e, false);
+        recordException(cls, t, false);
     }
 
     /**

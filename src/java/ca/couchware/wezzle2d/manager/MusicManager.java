@@ -150,12 +150,9 @@ public class MusicManager
         if (theme == Theme.NONE) return;
         
         // Create a theme list (used below).
-        List<Theme> themeList = new ArrayList<Theme>(3);
-        if (!Game.isApplet())
-        {
-            themeList.add(Theme.TRON);
-            themeList.add(Theme.ELECTRONIC);
-        }
+        List<Theme> themeList = new ArrayList<Theme>(3);        
+        themeList.add(Theme.TRON);
+        themeList.add(Theme.ELECTRONIC);      
         themeList.add(Theme.HIPPOP);
         Collections.shuffle(themeList);
         
@@ -163,11 +160,7 @@ public class MusicManager
         switch (theme)
         {
             case TRON:                                                
-            case ELECTRONIC:
-
-                if (Game.isApplet())                
-                    break;                
-
+            case ELECTRONIC:                            
             case HIPPOP:
                 
                enqueueTheme(theme);

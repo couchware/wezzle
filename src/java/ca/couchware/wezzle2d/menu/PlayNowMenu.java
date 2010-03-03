@@ -485,20 +485,28 @@ public class PlayNowMenu extends AbstractMenu
 
         // Set the music.
         Theme theme = null;
-        switch (themeRadio.getSelectedIndex())
-        {
-            case THEME_TRON:
-                theme = Theme.TRON;
-                break;
-            case THEME_ELECTRONIC:
-                theme = Theme.ELECTRONIC;
-                break;
-            case THEME_HIPPOP:
-                theme = Theme.HIPPOP;
-                break;
 
-            default: throw new AssertionError();
-        }             
+        if (Game.isApplet())
+        {
+            theme = Theme.HIPPOP;
+        }
+        else
+        {
+            switch (themeRadio.getSelectedIndex())
+            {
+                case THEME_TRON:
+                    theme = Theme.TRON;
+                    break;
+                case THEME_ELECTRONIC:
+                    theme = Theme.ELECTRONIC;
+                    break;
+                case THEME_HIPPOP:
+                    theme = Theme.HIPPOP;
+                    break;
+
+                default: throw new AssertionError();
+            }
+        }
 
         // Save the theme preference and set it in the music manager.
         hub.settingsMan.setString(Key.USER_MUSIC_DEFAULT, theme.toString());
@@ -510,7 +518,7 @@ public class PlayNowMenu extends AbstractMenu
         hub.musicMan.importSettings();
 
         // Set the target score.
-        hub.levelMan.setLevel(5 /*levelNumber*/, false);
+        hub.levelMan.setLevel(levelNumber, false);
         hub.scoreMan.setTargetTotalScore(hub.scoreMan.generateTargetLevelScore(levelNumber));
         hub.scoreMan.setTargetLevelScore(hub.scoreMan.generateTargetLevelScore(levelNumber));
 
