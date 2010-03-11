@@ -36,7 +36,6 @@ import ca.couchware.wezzle2d.tutorial.RotateTutorial;
 import ca.couchware.wezzle2d.tutorial.StarTutorial;
 import ca.couchware.wezzle2d.ui.AchievementNotification;
 import ca.couchware.wezzle2d.ui.ITextLabel;
-import ca.couchware.wezzle2d.group.GameOverGroup;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
@@ -930,7 +929,7 @@ public class Game extends Canvas implements IWindowCallback
         }
 
         // Notify all listeners of reset.
-        hub.listenerMan.notifyGameReset(new GameEvent(GameOverGroup.class,
+        hub.listenerMan.notifyGameReset(new GameEvent(this,
                 this.getDifficulty(),
                 level,
                 hub.scoreMan.getLevelScore()));

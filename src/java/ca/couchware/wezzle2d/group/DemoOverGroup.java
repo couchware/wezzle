@@ -1,26 +1,30 @@
 package ca.couchware.wezzle2d.group;
 
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.GroupManager;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.event.GameEvent;
-import ca.couchware.wezzle2d.event.IGameListener;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.ui.*;
+import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.ITextLabel;
+import ca.couchware.wezzle2d.util.CouchLogger;
+import edu.stanford.ejalbert.BrowserLauncher;
+import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
+import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.util.EnumSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This screen is shown when the demo is over due to level contrainsts.
  * @author cdmckay
  */
-public class DemoOverGroup extends AbstractGroup implements IGameListener
-{             
-    private ITextLabel headerLabel;
-    private ITextLabel scoreHeaderLabel;
-    private ITextLabel scoreLabel;
-
+public class DemoOverGroup extends AbstractGroup
+{
     private Button restartButton;    
     private Button buyNowButton;
        
@@ -31,45 +35,72 @@ public class DemoOverGroup extends AbstractGroup implements IGameListener
             throw new IllegalArgumentException("Hub must not be null");
         }
                 
-        headerLabel = new LabelBuilder(400, 181)
+        ITextLabel headerLabel = new LabelBuilder(400, 181)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Game Over")
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(26).text("Demo Over")
                 .visible(false).build();
-        hub.layerMan.add(headerLabel, Layer.UI);
+
+        hub.layerMan.add(headerLabel, Layer.UI);        
         entityList.add(headerLabel);
-                
-        scoreHeaderLabel = new LabelBuilder(400, 234)
+
+        ITextLabel demoText0 = new LabelBuilder(400, 219)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(12)
+                .text("The full version features:")
+                .visible(false).build();
+
+        hub.layerMan.add(demoText0, Layer.UI);
+        entityList.add(demoText0);
+
+        ITextLabel demoText1 = new LabelBuilder(400, 244)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
                 .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(14)
-                .text("Your final score was")
+                .text("-Four unique items")
                 .visible(false).build();
-        hub.layerMan.add(scoreHeaderLabel, Layer.UI); 
-        entityList.add(scoreHeaderLabel);
-                
-        scoreLabel = new LabelBuilder(400, 270)
+
+        hub.layerMan.add(demoText1, Layer.UI);
+        entityList.add(demoText1);
+
+        ITextLabel demoText2 = new LabelBuilder(400, 264)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(30)
-                .text("0").visible(false).build();
-        hub.layerMan.add(scoreLabel, Layer.UI); 
-        entityList.add(scoreLabel);
-                
-        restartButton = new Button.Builder(win, 400, 345)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(14)
+                .text("-Three difficuly modes")
+                .visible(false).build();
+
+        hub.layerMan.add(demoText2, Layer.UI);
+        entityList.add(demoText2);
+
+        ITextLabel demoText3 = new LabelBuilder(400, 284)
                 .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
-                //.type(SpriteButton.Type.THIN)
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(14)
+                .text("-10 exclusive songs")
+                .visible(false).build();
+
+        hub.layerMan.add(demoText3, Layer.UI);
+        entityList.add(demoText3);
+
+        ITextLabel demoText4 = new LabelBuilder(400, 304)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))
+                .color(hub.settingsMan.getColor(Key.GAME_COLOR_PRIMARY)).size(14)
+                .text("-Unlimited levels")
+                .visible(false).build();
+
+        hub.layerMan.add(demoText4, Layer.UI);
+        entityList.add(demoText4);
+                
+        restartButton = new Button.Builder(win, 400, 405)
+                .alignment(EnumSet.of(Alignment.MIDDLE, Alignment.CENTER))                
                 .text("Restart").normalOpacity(70).visible(false).build();
         hub.layerMan.add(restartButton, Layer.UI);
+
         entityList.add(restartButton);
         
-        buyNowButton = new Button.Builder(restartButton)
-                .y(405).text("Continue").build();
+        buyNowButton = new Button.Builder(restartButton).y(355)
+                .text("Buy Now").build();
         hub.layerMan.add(buyNowButton, Layer.UI);
+
         entityList.add(buyNowButton);
-    }        
-    
-    public void setScore(final int score)
-    {
-        this.scoreLabel.setText(String.format("%,d", score));
-    }      
+    }                   
     
     /**
      * Override the update logic method.
@@ -90,51 +121,53 @@ public class DemoOverGroup extends AbstractGroup implements IGameListener
         // Make sure something changed.
         if ( !this.controlChanged() ) return;
 
-        // Hide the screen.
-        hub.groupMan.hideGroup(
-                GroupManager.Type.GAME_OVER,
-                GroupManager.Layer.BOTTOM,
-                !game.isCompletelyBusy());
-                       
-        // This action will change a lot of shit, so keep that in mind.
-        game.resetGame(this.restartButton.isActivated());
+        if (false) {}
+        else if ( this.restartButton.clicked() )
+        {
+             // Hide the screen.
+            hub.groupMan.hideGroup(
+                    GroupManager.Type.GAME_OVER,
+                    GroupManager.Layer.BOTTOM,
+                    !game.isCompletelyBusy());
 
-        // Create board and make it invisible.
-        hub.boardMan.setVisible(false);
-        hub.boardMan.generateBoard(hub.itemMan.getItemList(), hub.levelMan.getLevel());                    
+            // This action will change a lot of shit, so keep that in mind.
+            game.resetGame(true);
 
-        // Unpause the game.
-        // Don't worry! The game won't pass updates to the 
-        // timer unless the board is shown.  In hindsight, this
-        // is kind of crappy, but whatever, we'll make it prettier
-        // one day.
-        hub.timerMan.setPaused(false);
-       
-        // Start the board show animation.  This will
-        // make the board visible when it's done.
-        game.startBoardShowAnimation(AnimationType.ROW_FADE);        
-        
-        // Deactivate button.
-        this.restartButton.setActivated(false);
+            // Create board and make it invisible.
+            hub.boardMan.setVisible(false);
+            hub.boardMan.generateBoard(hub.itemMan.getItemList(), hub.levelMan.getLevel());
+
+            // Unpause the game.
+            // Don't worry! The game won't pass updates to the
+            // timer unless the board is shown.  In hindsight, this
+            // is kind of crappy, but whatever, we'll make it prettier
+            // one day.
+            hub.timerMan.setPaused(false);
+
+            // Start the board show animation.  This will
+            // make the board visible when it's done.
+            game.startBoardShowAnimation(AnimationType.ROW_FADE);
+
+            // Deactivate button.
+            this.restartButton.setActivated(false);
+        }
+        else if ( this.buyNowButton.clicked() )
+        {
+            try
+            {
+                BrowserLauncher launcher = new BrowserLauncher();
+                launcher.openURLinBrowser(Settings.getUpgradeUrl());
+            }
+            catch (Exception ex)
+            {
+                CouchLogger.get().recordException(this.getClass(), ex);
+            }
+
+            this.buyNowButton.setActivated(false);
+        }       
         
         // Clear the change setting.
         this.clearChanged();
-    }
-
-    public void gameStarted(GameEvent event)
-    {
-        // Intentionally blank.        
-    }
-
-    public void gameReset(GameEvent event)
-    {
-        // Intentionally blank.
-    }
-
-    public void gameOver(GameEvent event)
-    {
-        // Set the score to whatever the score manager has now.
-        this.setScore(event.getTotalScore());
-    }
+    }    
             
 }

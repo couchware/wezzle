@@ -26,6 +26,12 @@ import ca.couchware.wezzle2d.graphics.EntityGroup;
 import ca.couchware.wezzle2d.graphics.GraphicEntity;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.graphics.IPositionable.Alignment;
+import ca.couchware.wezzle2d.group.DemoOverGroup;
+import ca.couchware.wezzle2d.group.GameOverGroup;
+import ca.couchware.wezzle2d.group.HelpGroup;
+import ca.couchware.wezzle2d.group.HighScoreGroup;
+import ca.couchware.wezzle2d.group.OptionsGroup;
+import ca.couchware.wezzle2d.group.PauseGroup;
 import ca.couchware.wezzle2d.piece.PieceGrid;
 import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
@@ -41,11 +47,6 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.ProgressBar;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.MammothButton;
-import ca.couchware.wezzle2d.group.GameOverGroup;
-import ca.couchware.wezzle2d.group.HelpGroup;
-import ca.couchware.wezzle2d.group.HighScoreGroup;
-import ca.couchware.wezzle2d.group.OptionsGroup;
-import ca.couchware.wezzle2d.group.PauseGroup;
 import ca.couchware.wezzle2d.util.CouchColor;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -153,6 +154,7 @@ public class UI implements
     private HelpGroup helpGroup;
     private HighScoreGroup highScoreGroup;
     private GameOverGroup gameOverGroup;
+    private DemoOverGroup demoOverGroup;
 
     /**
      * The master rule list.  Contains all the rules that should exist
@@ -503,9 +505,18 @@ public class UI implements
         hub.listenerMan.registerListener(Listener.GAME, this.highScoreGroup);
 
         // Initialize game over group.
-        this.gameOverGroup = new GameOverGroup(win, hub);
-        hub.groupMan.register(this.gameOverGroup);
-        hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
+        if (Game.isApplet())
+        {
+            this.demoOverGroup = new DemoOverGroup(win, hub);
+            hub.groupMan.register(this.demoOverGroup);            
+        }
+        else
+        {
+            this.gameOverGroup = new GameOverGroup(win, hub);
+            hub.groupMan.register(this.gameOverGroup);
+            hub.listenerMan.registerListener(Listener.GAME, this.gameOverGroup);
+        }
+        
     }
 
     /**
@@ -616,10 +627,8 @@ public class UI implements
     }
 
     public void showGameOverGroup(GroupManager groupMan)
-    {
-        // Draw game over screen.
-        //gameOverGroup.setScore(scoreMan.getTotalScore());
-        groupMan.showGroup(null, gameOverGroup, 
+    {        
+        groupMan.showGroup(null, Game.isApplet() ? demoOverGroup : gameOverGroup,
                 GroupManager.Type.GAME_OVER,
                 GroupManager.Layer.BOTTOM);  
     }

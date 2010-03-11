@@ -518,7 +518,7 @@ public class PlayNowMenu extends AbstractMenu
         hub.musicMan.importSettings();
 
         // Set the target score.
-        hub.levelMan.setLevel(levelNumber, false);
+        hub.levelMan.setLevel(5, false);
         hub.scoreMan.setTargetTotalScore(hub.scoreMan.generateTargetLevelScore(levelNumber));
         hub.scoreMan.setTargetLevelScore(hub.scoreMan.generateTargetLevelScore(levelNumber));
 

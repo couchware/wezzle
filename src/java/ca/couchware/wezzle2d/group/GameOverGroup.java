@@ -1,14 +1,18 @@
 package ca.couchware.wezzle2d.group;
 
+import ca.couchware.wezzle2d.Game;
+import ca.couchware.wezzle2d.IWindow;
+import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.GroupManager;
-import ca.couchware.wezzle2d.*;
 import ca.couchware.wezzle2d.manager.BoardManager.AnimationType;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.event.IGameListener;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import ca.couchware.wezzle2d.ui.*;
+import ca.couchware.wezzle2d.ui.Button;
+import ca.couchware.wezzle2d.ui.IButton;
+import ca.couchware.wezzle2d.ui.ITextLabel;
 import java.util.EnumSet;
 
 /**

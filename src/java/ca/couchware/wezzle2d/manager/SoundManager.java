@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.manager;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.audio.SoundPlayer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -56,6 +57,24 @@ public class SoundManager implements IResettable
      * The normalized gain.
      */
     private double normalizedGain = 0.0;
+
+    private final Sound[] appletSounds =
+    {
+        Sound.BLEEP,
+        Sound.CLICK,
+        Sound.CLICK_LIGHT,
+        Sound.LEVEL_UP,
+        Sound.LINE_1,
+        Sound.LINE_2,
+        Sound.LINE_3,
+        Sound.LINE_4,
+        Sound.LINE_5,
+        Sound.LINE_6,
+        Sound.LINE_7,
+        Sound.ROCKET
+    };
+
+    private final Sound[] desktopSounds = Sound.values();
     
     /**
      * Creates the effect list.
@@ -78,7 +97,8 @@ public class SoundManager implements IResettable
         String path = Settings.getSoundResourcesPath();
         
         // Create the sound objects.
-        for (Sound sound : Sound.values())
+        Sound[] sounds = Game.isApplet() ? appletSounds : desktopSounds;
+        for (Sound sound : sounds)
         {
             this.create(sound, path + "/" + sound.toString() + ".wav");
         }
@@ -121,7 +141,7 @@ public class SoundManager implements IResettable
      * Note: returns null if the key was not found.
      * Note: returns the sound effect of the proper buffer.
      * @param key The associated key.
-     * @return The effect or null if the key was not found.
+     * @return The effect.
      */
     public SoundPlayer get(final Sound track)
     {        
@@ -144,7 +164,7 @@ public class SoundManager implements IResettable
             }
         }
                 
-        return null;
+        throw new RuntimeException("Could not find sound: " + track);
     }
     
     /**

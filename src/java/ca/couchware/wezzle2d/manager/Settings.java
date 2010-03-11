@@ -231,7 +231,7 @@ public class Settings
     // Static settings.
     
     /** The upgrade URL. */
-    final private static String upgradeUrl = "http://couchware.ca";
+    final private static String upgradeUrl = "http://couchware.ca/www/wezzle/buy";
     
     /** The cross platform line separator. */
     final private static String lineSeparator = System.getProperty("line.separator");
