@@ -34,11 +34,15 @@ import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.group.AbstractGroup;
 import ca.couchware.wezzle2d.group.EmptyGroup;
 import ca.couchware.wezzle2d.group.IGroup;
-import ca.couchware.wezzle2d.manager.MusicManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
+import edu.stanford.ejalbert.BrowserLauncher;
+import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
+import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Shape;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
@@ -86,6 +90,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         OPTIONS(2),
         HIGH_SCORES(3),
         CREDITS(4),
+        BUY_NOW(5),
         EXIT(5);
                 
         private int rank;
@@ -174,7 +179,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         initializeBackground(hub);
         initializeLogo(hub);
         initializeButtons(win, hub);
-        initializeGroups(win, hub);
+        initializeMenus(win, hub);
                 
         // Create the slide animation.
         this.slideAnimation = new MetaAnimation.Builder()
@@ -283,14 +288,25 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.menuLayerMan.add(button, Layer.UI);
         buttonMap.put(Menu.CREDITS, button);
 
-        button = new Button.Builder(templateButton)
-                .y(startY + 50 * Menu.EXIT.getRank())
-                .text("Exit").build();
-        this.menuLayerMan.add(button, Layer.UI);
-        buttonMap.put(Menu.EXIT, button);
+        if (Game.isApplet())
+        {
+            button = new Button.Builder(templateButton)
+                    .y(startY + 50 * Menu.BUY_NOW.getRank())
+                    .text("Buy Now").build();
+            this.menuLayerMan.add(button, Layer.UI);
+            buttonMap.put(Menu.BUY_NOW, button);
+        }
+        else
+        {
+             button = new Button.Builder(templateButton)
+                    .y(startY + 50 * Menu.EXIT.getRank())
+                    .text("Exit").build();
+            this.menuLayerMan.add(button, Layer.UI);
+            buttonMap.put(Menu.EXIT, button);
+        }
     };
     
-    private void initializeGroups(IWindow win, ManagerHub hub)
+    private void initializeMenus(IWindow win, ManagerHub hub)
     {
         // Create the group map.
         this.menuMap = new EnumMap<Menu, IGroup>(Menu.class);
@@ -327,6 +343,10 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         // Create the "Credits" group.
         menu = new CreditsMenu(this, win, hub, this.menuLayerMan);
         this.menuMap.put(Menu.CREDITS, menu);
+
+        // Create the "Buy Now" group.
+        menu = new BuyNowMenu(this, win, hub, this.menuLayerMan);
+        this.menuMap.put(Menu.BUY_NOW, menu);
 
         // Create the "Credits" group.
         menu = new ExitGameMenu(this, win, hub, this.menuLayerMan);
@@ -383,6 +403,20 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                             }
                             else
                             {
+                                if (Game.isApplet() && menu == Menu.BUY_NOW)
+                                {
+
+                                    try
+                                    {
+                                        BrowserLauncher launcher = new BrowserLauncher();
+                                        launcher.openURLinBrowser(Settings.getUpgradeUrl());
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        CouchLogger.get().recordException(this.getClass(), ex);
+                                    }
+                                }
+
                                 // Animate the change.
                                 this.currentAnimation = new MetaAnimation.Builder()
                                         .finishRule(MetaAnimation.FinishRule.ALL)                                       

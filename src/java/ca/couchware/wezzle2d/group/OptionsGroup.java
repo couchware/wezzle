@@ -6,6 +6,7 @@ import ca.couchware.wezzle2d.manager.GroupManager;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.IButton;
@@ -15,20 +16,21 @@ import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.util.EnumSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author cdmckay
  */
 public class OptionsGroup extends AbstractGroup
-{
-    private BrowserLauncher launcher;       
-    
+{   
     private ITextLabel headerLabel;
-    private IButton audioButton;
-    private IButton mainMenuButton;
-    private IButton exitGameButton;
-    private IButton closeButton;
+    private Button audioButton;
+    private Button mainMenuButton;    
+    private Button buyNowButton;
+    private Button exitGameButton;
+    private Button closeButton;
 
     private AudioGroup audio;
     private MainMenuGroup mainMenu;
@@ -91,10 +93,7 @@ public class OptionsGroup extends AbstractGroup
         hub.layerMan.add(mainMenuButton, Layer.UI);
         entityList.add(mainMenuButton);
 
-        exitGameButton = new Button.Builder(templateButton).y(354)
-            .text("Exit Game").build();
-        hub.layerMan.add(exitGameButton, Layer.UI);
-        entityList.add(exitGameButton);
+        
 
         closeButton = new Button.Builder(templateButton).y(420)
             .text("Back to Game").build();
@@ -103,19 +102,23 @@ public class OptionsGroup extends AbstractGroup
 
         if (Game.isApplet())
         {
-            try
-            {
-                // Create the browser launcher.
-                this.launcher = new BrowserLauncher();
-            }
-            catch (BrowserLaunchingInitializingException ex)
-            {
-                CouchLogger.get().recordException(this.getClass(), ex);
-            }
-            catch (UnsupportedOperatingSystemException ex)
-            {
-                CouchLogger.get().recordException(this.getClass(), ex);
-            }
+            buyNowButton = new Button
+                    .Builder(templateButton).y(354)
+                    .text("Buy Now")
+                    .build();
+
+            hub.layerMan.add(buyNowButton, Layer.UI);
+            entityList.add(buyNowButton);
+        }
+        else
+        {
+            exitGameButton = new Button
+                    .Builder(templateButton).y(354)
+                    .text("Exit Game")
+                    .build();
+
+            hub.layerMan.add(exitGameButton, Layer.UI);
+            entityList.add(exitGameButton);
         }
     }      
     
@@ -183,12 +186,25 @@ public class OptionsGroup extends AbstractGroup
                 GroupManager.Type.OPTIONS,
                 GroupManager.Layer.MIDDLE);
         }
-        else if (exitGameButton.isActivated())
+        else if (buyNowButton != null && buyNowButton.isActivated())
+        {
+            BrowserLauncher launcher;
+            try
+            {
+                launcher = new BrowserLauncher();
+                launcher.openURLinBrowser(Settings.getUpgradeUrl());
+            }
+            catch (Exception ex)
+            {
+                CouchLogger.get().recordException(this.getClass(), ex);
+            }
+        }
+        else if (exitGameButton != null && exitGameButton.isActivated())
         {            
             hub.groupMan.showGroup(exitGameButton, exitGame,
                 GroupManager.Type.OPTIONS,
                 GroupManager.Layer.MIDDLE);
-        }        
+        }
 
         // Clear the change setting.
         this.clearChanged();

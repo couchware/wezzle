@@ -233,8 +233,7 @@ public class ResourceFactory
      * can only be run once.
      */
     public Collection<Runnable> preloadSprites()
-    {
-       
+    {        
         // Check to see if the sprites have been preloaded.
         if ( this.spritesPreloaded )
         {
@@ -278,8 +277,6 @@ public class ResourceFactory
             {
                 public void run()
                 {
-//                    CouchLogger.get().recordWarning( ResourceFactory.class,
-//                            "Preloading " + spriteFilePath + "..." );
                     getSprite( spritePath + "/" + spriteFilePath );
                 }
 

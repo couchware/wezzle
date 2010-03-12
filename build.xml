@@ -98,15 +98,27 @@
     </target>
 
     <target name="applet" depends="set-applet,jar,unset-applet">
-        <!-- Copy base applet dir. -->
+
+        <!-- Delete resources.jar and re-build it with fewer resources. -->
+        <!--
+        <delete file="${dist.dir}/lib/resources.jar" />
+        <jar destfile="${dist.dir}/lib/resources.jar">
+            <fileset dir="${src.dir}" includes="resources/**">
+                <exclude name="resources/sprites/Background_Circles_Green.png" />
+                <exclude name="resources/sprites/Background_Circles_Gold.png" />
+            </fileset>
+            <fileset dir="${build.dir}" includes="resources/**" />
+        </jar>
+        -->
+
         <mkdir dir="${dist.dir}/applet" />
+
         <copy todir="${dist.dir}/applet">
             <fileset dir="applet"/>
             <fileset dir="${dist.dir}" includes="Wezzle.jar" />
             <fileset dir="${dist.dir}" includes="lib/*.jar" />
         </copy>
-
-        <!-- Sign them. -->
+        
         <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
             <path>
                 <fileset dir="${dist.dir}/applet" includes="Wezzle.jar" />

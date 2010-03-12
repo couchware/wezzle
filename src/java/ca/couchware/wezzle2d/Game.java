@@ -352,7 +352,10 @@ public class Game extends Canvas implements IWindowCallback
         setDrawer(loader);        
 
         // Preload the sprites.
-        loader.addTasks( resourceFactory.preloadSprites() );
+        if (Game.isApplet())
+        {
+            loader.addTasks( resourceFactory.preloadSprites() );
+        }
 
         // Preload fonts.
         final int MIN_FONT = 10;
