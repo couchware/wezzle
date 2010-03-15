@@ -436,26 +436,24 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      */
     public void generateBoard(List<Item> itemList, int level)
     {
+        if (itemList == null || itemList.isEmpty())
+            throw new IllegalArgumentException("Item list cannot be null or empty");
+
+        if (level < 1)
+            throw new IllegalArgumentException("Level must be > 0");
+
         // Make sure the board is clean.
-        this.clearBoard();
-        assert (itemList.get( 0 ) instanceof Item);
+        clearBoard();        
 
         int count = 0;
-        for ( int i = 0; i < itemList.size(); i++ )
+        for ( Item item : itemList )
         {
-            int offset = 0;
-
-            // Handle the case where the normal tiles are different. This occurs
-            // When players start on a level other than level 1.
-            if ( i == 0 )
+            int initialAmount = item.getInitialAmount() +
+                    (item.getTileType() == TileType.NORMAL ? (level - 1) : 0);
+            
+            for ( int j = 0; j < initialAmount; j++ )
             {
-                offset = level - 1;
-            }
-
-            for ( int j = 0;
-                    j < itemList.get( i ).getInitialAmount() + offset; j++ )
-            {
-                this.createTile( count, itemList.get( i ).getTileType() );
+                createTile( count, item.getTileType() );
                 count++;
             }
         }
@@ -465,34 +463,19 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 
         HashSet<Integer> set = new HashSet<Integer>();
 
-
-
-        while ( true )
+        do
         {
+            set.clear();
 
             findXMatch( set, null );
             findYMatch( set, null );
 
-
-
-            if ( set.size() > 0 )
+            for ( int i : set )
             {
-                for ( Iterator it = set.iterator(); it.hasNext(); )
-                {
-                    Integer n = (Integer) it.next();
-                    this.createTile( n.intValue(),
-                            getTile( n.intValue() ).getType() );
-                }
-
-                set.clear();
+                createTile( i, getTile( i ).getType() );
             }
-            else
-            {
-                break;
-            }
-        } // end while
-
-
+        }
+        while (!set.isEmpty());
     }
 
     /**
