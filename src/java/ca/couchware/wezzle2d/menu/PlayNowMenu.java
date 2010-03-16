@@ -287,7 +287,10 @@ public class PlayNowMenu extends AbstractMenu
         this.entityList.add(themeLabel);
 
         // Create the music players.
-        createPlayers();
+        if (!Game.isApplet())
+        {
+            createPlayers();
+        }
 
         // Creat the level limit radio group.
         RadioItem themeItem1 = new RadioItem.Builder(win).color(optionColor)
@@ -488,7 +491,7 @@ public class PlayNowMenu extends AbstractMenu
 
         if (Game.isApplet())
         {
-            theme = Theme.HIPPOP;
+            theme = Theme.DEMO;
         }
         else
         {
@@ -541,10 +544,13 @@ public class PlayNowMenu extends AbstractMenu
         }
 
         // Stop all the players.
-        hub.musicMan.destroyPlayerWithFade(THEME_TRON_KEY, 0.0);
-        hub.musicMan.destroyPlayerWithFade(THEME_ELECTRONIC_KEY, 0.0);
-        hub.musicMan.destroyPlayerWithFade(THEME_HIPPOP_KEY, 0.0);
-        hub.musicMan.destroyPlayerWithFade(MainMenu.MENU_PLAYER_KEY, 0.0);
+        if (!Game.isApplet())
+        {
+            hub.musicMan.destroyPlayerWithFade(THEME_TRON_KEY, 0.0);
+            hub.musicMan.destroyPlayerWithFade(THEME_ELECTRONIC_KEY, 0.0);
+            hub.musicMan.destroyPlayerWithFade(THEME_HIPPOP_KEY, 0.0);
+            hub.musicMan.destroyPlayerWithFade(MainMenu.MENU_PLAYER_KEY, 0.0);
+        }
 
         game.startBoard();
         hub.pieceMan.nextPiece();
@@ -562,7 +568,10 @@ public class PlayNowMenu extends AbstractMenu
             playTheme(themeRadio.getSelectedIndex());            
         }
 
-        this.menuPlayer.fadeToGain( 0.0 );
+        if (!Game.isApplet())
+        {
+            this.menuPlayer.fadeToGain( 0.0 );
+        }
         
         return super.animateShow();
     }
@@ -576,10 +585,13 @@ public class PlayNowMenu extends AbstractMenu
             stopThemes();                             
         }
 
-        int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
-        double gain = (double) intGain / 100.0;
-        this.menuPlayer.fadeToGain( gain );
-        
+        if (!Game.isApplet())
+        {
+            int intGain = hub.settingsMan.getInt(Key.USER_MUSIC_VOLUME);
+            double gain = (double) intGain / 100.0;
+            this.menuPlayer.fadeToGain( gain );
+        }
+                
         return super.animateHide();
     }
 

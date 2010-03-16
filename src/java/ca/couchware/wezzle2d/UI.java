@@ -362,11 +362,14 @@ public class UI implements
         this.backgroundMap.put( Background.Purple,
                 new GraphicEntity.Builder( 0, 0, PURPLE_BACKGROUND_PATH ).build());
 
-        this.backgroundMap.put( Background.Green,
+        if (!Game.isApplet())
+        {
+            this.backgroundMap.put( Background.Green,
                 new GraphicEntity.Builder( 0, 0, GREEN_BACKGROUND_PATH ).build());
 
-        this.backgroundMap.put( Background.Gold,
+            this.backgroundMap.put( Background.Gold,
                 new GraphicEntity.Builder( 0, 0, GOLD_BACKGROUND_PATH ).build());
+        }
         
         setBackgroundTo( Background.Blue );
     }

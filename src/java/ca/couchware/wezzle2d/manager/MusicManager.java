@@ -54,6 +54,9 @@ public class MusicManager
         
         /** HIP POP */
         HIPPOP,
+
+        /** DEMO theme */
+        DEMO,
         
         /** All themes, in a random order. */
         ALL,
@@ -162,6 +165,7 @@ public class MusicManager
             case TRON:                                                
             case ELECTRONIC:                            
             case HIPPOP:
+            case DEMO:
                 
                enqueueTheme(theme);
                break;
@@ -194,7 +198,7 @@ public class MusicManager
         switch (theme)
         {
             case TRON:
-                
+                                
                 this.playList.add(Music.TRON1);
                 this.playList.add(Music.TRON2);
                 this.playList.add(Music.TRON3);
@@ -202,7 +206,7 @@ public class MusicManager
                 break;
                 
             case ELECTRONIC:
-                
+               
                 this.playList.add(Music.ELECTRONIC1);
                 this.playList.add(Music.ELECTRONIC2);
                 this.playList.add(Music.ELECTRONIC3);
@@ -214,6 +218,12 @@ public class MusicManager
                 this.playList.add(Music.HIPPOP1);
                 this.playList.add(Music.HIPPOP2);
                 this.playList.add(Music.HIPPOP3);
+                
+                break;
+
+            case DEMO:
+
+                this.playList.add(Music.HIPPOP1);
                 
                 break;
                 

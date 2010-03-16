@@ -99,17 +99,24 @@
 
     <target name="applet" depends="set-applet,jar,unset-applet">
 
-        <!-- Delete resources.jar and re-build it with fewer resources. -->
-        <!--
+        <!-- Delete resources.jar and re-build it with fewer resources. -->        
         <delete file="${dist.dir}/lib/resources.jar" />
         <jar destfile="${dist.dir}/lib/resources.jar">
             <fileset dir="${src.dir}" includes="resources/**">
                 <exclude name="resources/sprites/Background_Circles_Green.png" />
                 <exclude name="resources/sprites/Background_Circles_Gold.png" />
+                <exclude name="resources/sprites/Explosion.png" />
+                <exclude name="resources/music/Erhu.ogg" />
+                <exclude name="resources/music/Tron*.ogg" />
+                <exclude name="resources/music/Electronic*.ogg" />
+                <exclude name="resources/music/HipPop2.ogg" />
+                <exclude name="resources/music/HipPop3.ogg" />
+                <exclude name="resources/sounds/ACHIEVEMENT.wav" />
+                <exclude name="resources/sounds/BOMB.wav" />
+                <exclude name="resources/sounds/STAR.wav" />
             </fileset>
             <fileset dir="${build.dir}" includes="resources/**" />
-        </jar>
-        -->
+        </jar>       
 
         <mkdir dir="${dist.dir}/applet" />
 

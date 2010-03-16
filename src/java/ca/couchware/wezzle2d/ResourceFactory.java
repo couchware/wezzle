@@ -16,10 +16,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -246,7 +249,7 @@ public class ResourceFactory
         this.spritesPreloaded = true;
 
         // The list of the sprites.
-        List<String> spriteList = new ArrayList<String>();
+        List<String> spriteList = new ArrayList<String>();        
 
         InputStream inputStream = ResourceFactory.class
                 .getClassLoader()
@@ -273,6 +276,28 @@ public class ResourceFactory
         List<Runnable> runnableList = new ArrayList<Runnable>();
         for ( final String spriteFilePath : spriteList )
         {
+            InputStream in = ResourceFactory.class
+                .getClassLoader()
+                .getResourceAsStream(spriteFilePath);
+
+            if (in == null)
+            {
+                CouchLogger.get().recordMessage(this.getClass(), 
+                        "Could not find sprite:" + spriteFilePath);
+                continue;
+            }
+            else
+            {
+                try
+                {
+                    in.close();
+                }
+                catch (IOException ex)
+                {
+                    CouchLogger.get().recordException(this.getClass(), ex);
+                }
+            }
+
             runnableList.add( new Runnable()
             {
                 public void run()

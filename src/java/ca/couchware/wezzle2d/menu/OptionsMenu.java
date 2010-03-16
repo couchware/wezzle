@@ -598,20 +598,23 @@ public class OptionsMenu extends AbstractMenu
             int selected = this.musicRadio.getSelectedIndex();
             boolean isSwitchedOn = selected == ON;
 
-            try
+            if (!Game.isApplet())
             {
-                if (isSwitchedOn)
+                try
                 {
-                    this.menuPlayer.resume();
+                    if (isSwitchedOn)
+                    {
+                        this.menuPlayer.resume();
+                    }
+                    else
+                    {
+                        this.menuPlayer.pause();
+                    }
                 }
-                else
+                catch ( BasicPlayerException e )
                 {
-                    this.menuPlayer.pause();
+                    CouchLogger.get().recordException(this.getClass(), e);
                 }
-            }
-            catch ( BasicPlayerException e )
-            {
-                CouchLogger.get().recordException(this.getClass(), e);
             }
 
             hub.settingsMan.setBool(Key.USER_MUSIC, isSwitchedOn);
@@ -632,14 +635,17 @@ public class OptionsMenu extends AbstractMenu
             hub.settingsMan.setInt(Key.USER_MUSIC_VOLUME, this.musicVolumeValue);
             //hub.musicMan.setNormalizedGain( musicVolumeValueSlider.getVirtualPercent() );
 
-            try
-            {             
-                this.menuPlayer.setNormalizedGain(
-                        musicVolumeValueSlider.getVirtualPercent() );
-            }
-            catch ( BasicPlayerException e )
+            if (!Game.isApplet())
             {
-                CouchLogger.get().recordException(this.getClass(), e);
+                try
+                {
+                    this.menuPlayer.setNormalizedGain(
+                            musicVolumeValueSlider.getVirtualPercent() );
+                }
+                catch ( BasicPlayerException e )
+                {
+                    CouchLogger.get().recordException(this.getClass(), e);
+                }
             }
         }
 

@@ -84,7 +84,7 @@ public class Game extends Canvas implements IWindowCallback
             new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);   
 
     /** Is the game running as an applet? */
-    final private static boolean APPLET = true;
+    final private static boolean APPLET = false;
 
     /** The name of the application. */
     final public static String APPLICATION_NAME = "Wezzle";
@@ -92,7 +92,7 @@ public class Game extends Canvas implements IWindowCallback
     /** The version of the application. */
     final public static int APPLICATION_VERSION_MAJOR = 1;
     final public static int APPLICATION_VERSION_MINOR = 3;
-    final public static String APPLICATION_DISTRIBUTION = APPLET ? "Web" : "Desktop";
+    final public static String APPLICATION_DISTRIBUTION = APPLET ? "Web" : "Full";
     final public static String APPLICATION_VERSION = 
             String.format("%d.%d (%s)", 
             APPLICATION_VERSION_MAJOR, APPLICATION_VERSION_MINOR, APPLICATION_DISTRIBUTION);

@@ -36,13 +36,9 @@ import ca.couchware.wezzle2d.group.EmptyGroup;
 import ca.couchware.wezzle2d.group.IGroup;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import edu.stanford.ejalbert.BrowserLauncher;
-import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
-import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Shape;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
@@ -150,30 +146,33 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         this.menuLayerMan = LayerManager.newInstance(win);
 
         // Initialize the menu music.
-        this.player = hub.musicMan.createPlayer( MENU_PLAYER_KEY, Music.ERHU );
-
-        try
+        if (!Game.isApplet())
         {
-            int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);
-            double gain = (double) intGain / 100.0;
-            this.player.setLooping(true);
-            this.player.play();
+            this.player = hub.musicMan.createPlayer( MENU_PLAYER_KEY, Music.ERHU );
 
-            boolean isOn = SettingsManager.get().getBool(Settings.Key.USER_MUSIC);
-            if (isOn)
+            try
             {
-                this.player.setNormalizedGain( 0.0 );
-                this.player.fadeToGain( gain );
+                int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);
+                double gain = (double) intGain / 100.0;
+                this.player.setLooping(true);
+                this.player.play();
+
+                boolean isOn = SettingsManager.get().getBool(Settings.Key.USER_MUSIC);
+                if (isOn)
+                {
+                    this.player.setNormalizedGain( 0.0 );
+                    this.player.fadeToGain( gain );
+                }
+                else
+                {
+                    this.player.setNormalizedGain( gain );
+                    this.player.pause();
+                }
             }
-            else
+            catch ( BasicPlayerException ex )
             {
-                this.player.setNormalizedGain( gain );
-                this.player.pause();
+                CouchLogger.get().recordException( this.getClass(), ex );
             }
-        }
-        catch ( BasicPlayerException ex )
-        {
-            CouchLogger.get().recordException( this.getClass(), ex );
         }
 
         initializeBackground(hub);
@@ -476,7 +475,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                         try
                         {
                             // Turn off the menu music.
-                            this.player.stop();
+                            if (!Game.isApplet()) this.player.stop();
                         }
                         catch ( BasicPlayerException ex )
                         {
