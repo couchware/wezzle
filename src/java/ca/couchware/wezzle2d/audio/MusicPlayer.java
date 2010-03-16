@@ -5,6 +5,7 @@
 
 package ca.couchware.wezzle2d.audio;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
 import ca.couchware.wezzle2d.util.NumUtil;
@@ -89,8 +90,11 @@ public class MusicPlayer
 
     static
     {
-        // Turn off logging on the basic player.       
-        //Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
+        // Turn off logging on the basic player.
+        if (!Game.isApplet())
+        {
+            Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
+        }
     }
 
     /**
