@@ -35,7 +35,6 @@ import ca.couchware.wezzle2d.group.AbstractGroup;
 import ca.couchware.wezzle2d.group.EmptyGroup;
 import ca.couchware.wezzle2d.group.IGroup;
 import ca.couchware.wezzle2d.util.CouchLogger;
-import edu.stanford.ejalbert.BrowserLauncher;
 import java.awt.Shape;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -407,8 +406,7 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
 
                                     try
                                     {
-                                        BrowserLauncher launcher = new BrowserLauncher();
-                                        launcher.openURLinBrowser(Settings.getUpgradeUrl());
+                                        game.openURLinBrowser(Settings.getUpgradeUrl());
                                     }
                                     catch (Exception ex)
                                     {

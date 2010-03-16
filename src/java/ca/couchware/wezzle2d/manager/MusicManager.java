@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -447,18 +448,12 @@ public class MusicManager
         MusicPlayer player = MusicPlayer.newInstance(); 
 
         // Load the reserouce.
-        URL url = MusicManager.class.getClassLoader().getResource(path);
-
-        // Check the URL.
-        if (url == null)
-        {
-            throw new RuntimeException("Url Error: " + path + " does not exist");
-        }
+        InputStream stream = MusicManager.class.getClassLoader().getResourceAsStream(path);
         
         try
         {                    
             // Try top oen the file.
-            player.open(url);            
+            player.open(stream);
         }
         catch (BasicPlayerException e)
         {

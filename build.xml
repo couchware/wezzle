@@ -125,13 +125,15 @@
             <fileset dir="${dist.dir}" includes="Wezzle.jar" />
             <fileset dir="${dist.dir}" includes="lib/*.jar" />
         </copy>
-        
+
+        <!--
         <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
             <path>
                 <fileset dir="${dist.dir}/applet" includes="Wezzle.jar" />
                 <fileset dir="${dist.dir}/applet" includes="lib/*.jar" />
             </path>
         </signjar>
+        -->
     </target>
 
     <!-- This target excludes the resources from the main JAR. -->

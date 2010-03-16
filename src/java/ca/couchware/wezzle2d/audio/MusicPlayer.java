@@ -8,6 +8,8 @@ package ca.couchware.wezzle2d.audio;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
 import ca.couchware.wezzle2d.util.NumUtil;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -88,7 +90,7 @@ public class MusicPlayer
     static
     {
         // Turn off logging on the basic player.       
-        Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
+        //Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
     }
 
     /**
@@ -111,11 +113,12 @@ public class MusicPlayer
         return new MusicPlayer();
     }
     
-    public void open(URL url) throws BasicPlayerException
+    public void open(InputStream stream) throws BasicPlayerException
     {
+        BufferedInputStream buffered = new BufferedInputStream(stream);
         synchronized (playerLock)
         { 
-            player.open(url); 
+            player.open(buffered);
         }
     }
     

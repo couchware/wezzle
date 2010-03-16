@@ -39,7 +39,12 @@ import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.ImmutablePosition;
 import ca.couchware.wezzle2d.util.ImmutableRectangle;
+import edu.stanford.ejalbert.BrowserLauncher;
+import java.applet.Applet;
+import java.applet.AppletContext;
 import java.awt.Canvas;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Date;
@@ -137,7 +142,10 @@ public class Game extends Canvas implements IWindowCallback
     //--------------------------------------------------------------------------
     // Private Members
     //--------------------------------------------------------------------------                                 
-    
+
+    /** The parent of the game (used in applet mode). */
+    final private Canvas parent;
+
     /** The current build number. */
     final private String BUILD_NUMBER = "N/A";        
     
@@ -204,23 +212,77 @@ public class Game extends Canvas implements IWindowCallback
      *            from ResourceFactory)
      */
     public Game(Canvas parent, ResourceFactory.Renderer renderer)
-    {        
+    {
+        this.parent = parent;
+        
         ResourceFactory.get().setRenderer(renderer);
-
         win = ResourceFactory.get().createWindow(parent);
         win.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
         win.setGameWindowCallback(this);
         win.setTitle(windowTitle);
     }
 
+    /**
+     * Check if the game is running in the more restrictive applet mode.
+     *
+     * @return True if the game is running as an applet, false otherwise.
+     */
     public static boolean isApplet()
     {
         return APPLET;
-    }
+    }    
 
+    /**
+     * Start the game.
+     */
     public void start()
     {
         win.start();
+    }
+
+    /**
+     * Send a message to the rendering window telling it to stop.  Keep in mind
+     * that this won't instantly stop the rendering, but will cause it to stop
+     * fairly quickly.
+     */
+    public void stop()
+    {
+        win.stop();
+    }
+
+    /**
+     * Open a url in a new browser window.
+     *
+     * @param urlString
+     */
+    public void openURLinBrowser(String urlString)
+    {
+        if (APPLET)
+        {
+            Applet applet = (Applet) parent.getParent();
+            AppletContext context = applet.getAppletContext();
+
+            try
+            {
+                context.showDocument(new URL(urlString), "_blank");
+            }
+            catch (MalformedURLException ex)
+            {
+                CouchLogger.get().recordException(Game.class, ex);
+            }
+        }
+        else
+        {
+            try
+            {
+                BrowserLauncher launcher = new BrowserLauncher();
+                launcher.openURLinBrowser(urlString);
+            }
+            catch (Exception ex)
+            {
+                CouchLogger.get().recordException(Game.class, ex);
+            }
+        }
     }
             
     public void startBoard()

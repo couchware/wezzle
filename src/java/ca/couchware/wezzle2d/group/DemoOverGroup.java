@@ -11,13 +11,7 @@ import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.ITextLabel;
-import ca.couchware.wezzle2d.util.CouchLogger;
-import edu.stanford.ejalbert.BrowserLauncher;
-import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
-import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.util.EnumSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This screen is shown when the demo is over due to level contrainsts.
@@ -153,16 +147,7 @@ public class DemoOverGroup extends AbstractGroup
         }
         else if ( this.buyNowButton.clicked() )
         {
-            try
-            {
-                BrowserLauncher launcher = new BrowserLauncher();
-                launcher.openURLinBrowser(Settings.getUpgradeUrl());
-            }
-            catch (Exception ex)
-            {
-                CouchLogger.get().recordException(this.getClass(), ex);
-            }
-
+            game.openURLinBrowser(Settings.getUpgradeUrl());
             this.buyNowButton.setActivated(false);
         }       
         

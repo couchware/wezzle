@@ -25,6 +25,9 @@ import java.awt.Canvas;
  */
 public class Launcher extends Applet
 {
+    private Game game;
+    private Canvas displayParent;
+
     @Override
     public void init()
     {
@@ -34,7 +37,7 @@ public class Launcher extends Applet
 
         try
         {            
-            Canvas displayParent = new Canvas();
+            displayParent = new Canvas();
 
             displayParent.setSize(getWidth(), getHeight());
             add(displayParent);
@@ -43,15 +46,28 @@ public class Launcher extends Applet
             displayParent.setIgnoreRepaint(true);
             setVisible(true);
 
-            launch(displayParent);
+            startWezzle(displayParent);
         }
         catch (Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);            
         }
     }
+
+    @Override
+    public void destroy()
+    {
+        stopWezzle();
+
+        if (displayParent != null)
+        {
+            remove(displayParent);
+        }
+        
+        super.destroy();
+    }
     
-    public void launch(Canvas parent)
+    public void startWezzle(Canvas parent)
     {
         // Make sure the setting manager is loaded.
         SettingsManager settingsMan = SettingsManager.get();
@@ -95,7 +111,7 @@ public class Launcher extends Applet
                 }
             }
 
-            Game game = new Game(parent, ResourceFactory.Renderer.LWJGL);
+            game = new Game(parent, ResourceFactory.Renderer.LWJGL);
             game.start();            
         }
         catch (Throwable t)
@@ -109,6 +125,11 @@ public class Launcher extends Applet
         }
     }
 
+    public void stopWezzle()
+    {
+        game.stop();
+    }
+
     /**
      * The entry point into the game. We'll simply create an instance of class
      * which will start the display and game loop.
@@ -119,6 +140,6 @@ public class Launcher extends Applet
     public static void main(String argv[])
     {
         Launcher launcher = new Launcher();
-        launcher.launch(null);
+        launcher.startWezzle(null);
     }
 }

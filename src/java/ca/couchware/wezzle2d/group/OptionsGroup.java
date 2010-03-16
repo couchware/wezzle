@@ -188,16 +188,7 @@ public class OptionsGroup extends AbstractGroup
         }
         else if (buyNowButton != null && buyNowButton.isActivated())
         {
-            BrowserLauncher launcher;
-            try
-            {
-                launcher = new BrowserLauncher();
-                launcher.openURLinBrowser(Settings.getUpgradeUrl());
-            }
-            catch (Exception ex)
-            {
-                CouchLogger.get().recordException(this.getClass(), ex);
-            }
+            game.openURLinBrowser(Settings.getUpgradeUrl());
         }
         else if (exitGameButton != null && exitGameButton.isActivated())
         {            
