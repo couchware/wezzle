@@ -27,6 +27,7 @@ public class Launcher extends Applet
 {
     private Game game;
     private Canvas displayParent;
+    private Thread thread;
 
     @Override
     public void init()
@@ -46,7 +47,15 @@ public class Launcher extends Applet
             displayParent.setIgnoreRepaint(true);
             setVisible(true);
 
-            startWezzle(displayParent);
+            thread = new Thread()
+            {
+                @Override
+                public void run()
+                {
+                    startWezzle(displayParent);
+                }
+            };
+            thread.start();
         }
         catch (Exception e)
         {
@@ -58,6 +67,15 @@ public class Launcher extends Applet
     public void destroy()
     {
         stopWezzle();
+
+        try
+        {
+            thread.join();
+        }
+        catch (InterruptedException e)
+        {
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
+        }
 
         if (displayParent != null)
         {
@@ -117,12 +135,7 @@ public class Launcher extends Applet
         catch (Throwable t)
         {
             CouchLogger.get().recordException(Game.class, t);
-        }
-        finally
-        {
-            // This is to make sure everything is dead.
-            System.exit(0);
-        }
+        }        
     }
 
     public void stopWezzle()
@@ -141,5 +154,6 @@ public class Launcher extends Applet
     {
         Launcher launcher = new Launcher();
         launcher.startWezzle(null);
+        System.exit(0);
     }
 }
