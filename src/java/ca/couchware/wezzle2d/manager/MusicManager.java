@@ -252,35 +252,17 @@ public class MusicManager
         {            
             this.player = createPlayer(CURRENT_PLAYER_KEY, playList.get(index));
         }
-        
-        try
-        {            
-            // Play.            
-            this.player.play();
-            this.player.setNormalizedGain(0.0);
-            this.player.fadeToGain(normalizedGain);
-        }
-        catch (BasicPlayerException e)
-        {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-        }
+                   
+        // Play.
+        this.player.play();
+        this.player.setNormalizedGain(0.0);
+        this.player.fadeToGain(normalizedGain);
     }
     
     public void stop()
-    {
-        // If the player is not assigned, then stop has no effect.
-        if (this.player == null)
-            return;
-                
-        try
-        {            
-            // Otherwise, stop the player.
-            this.player.stop();
-        }
-        catch (BasicPlayerException e)
-        {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-        }
+    {        
+        if (player == null) return;                                           
+        player.stop();
     }
 
     public void stopAtGain(double nGain)
@@ -292,41 +274,34 @@ public class MusicManager
     }
 
     public void stopAll()
-    {
-        try
-        {
-            for (MusicPlayer p : playerMap.values())
-            {
-                p.stop();
-            }
-        }
-        catch (BasicPlayerException e)
-        {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-        }
+    {       
+        for (MusicPlayer p : playerMap.values())
+            p.stop();
     }
 
     public void next()
     {
         // Make sure the play list has items, if not, ignore the command.
-        if ( this.playList.isEmpty() )
+        if ( playList.isEmpty() )
             return;
         
         // Stop the current track, advance the index and release the old player.
         stop();
-        this.player = null;
+        player.rewind();
+        player = null;
         index = (index + 1) % playList.size();               
     }
     
     public void previous()
     {
         // Make sure the play list has items, if not, ignore the play command.
-        if (this.playList.isEmpty() == true)
+        if ( playList.isEmpty() )
             return;
         
         // Stop the current track, reduce the index and release the old player.
         stop();
-        this.player = null;
+        player.rewind();
+        player = null;
         index = (index - 1) < 0 ? playList.size() - 1 : index - 1;  
     }             
     
@@ -345,21 +320,14 @@ public class MusicManager
         
         // Pause the player if it exists.
         if (this.player != null)
-        {
-            try
+        {            
+            if (paused)
             {
-                if (paused)
-                {
-                    player.pause();
-                }
-                else
-                {
-                    player.resume();
-                }
+                player.pause();
             }
-            catch (BasicPlayerException e)
+            else
             {
-                CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
+                player.resume();
             }
         } // end if
     }   
@@ -380,18 +348,11 @@ public class MusicManager
 
         // Rememeber it.
         this.normalizedGain = nGain;
-        
-        try
-        {            
-            // Adjust the current player.
-            if (this.player != null)
-            {
-                this.player.setNormalizedGain(nGain);
-            }
-        }
-        catch (BasicPlayerException e)
+                           
+        // Adjust the current player.
+        if (this.player != null)
         {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
+            this.player.setNormalizedGain(nGain);
         }
     }
 
@@ -444,24 +405,8 @@ public class MusicManager
      */
     private static MusicPlayer createPlayer(String path)
     {
-        // Create the new basic player.
-        MusicPlayer player = MusicPlayer.newInstance(); 
-
-        // Load the reserouce.
-        InputStream stream = MusicManager.class.getClassLoader().getResourceAsStream(path);
-        
-        try
-        {                    
-            // Try top oen the file.
-            player.open(stream);
-        }
-        catch (BasicPlayerException e)
-        {
-            CouchLogger.get().recordException(MusicPlayer.class, e, true /* Fatal */);
-        }
-        
-        // Return the player.
-        return player;
+        MusicPlayer mp = MusicPlayer.newInstance(path);
+        return mp;
     }
     
     /**
@@ -488,15 +433,9 @@ public class MusicManager
      * @param key
      */
     public void destroyPlayer(String key)
-    {
-        try
-        {
-            playerMap.remove(key).stop();
-        }
-        catch (BasicPlayerException e)
-        {
-            CouchLogger.get().recordException(MusicPlayer.class, e, true /* Fatal */);
-        }
+    {       
+        MusicPlayer mp = playerMap.remove(key);
+        mp.stop();
     }
 
     /**
@@ -506,7 +445,8 @@ public class MusicManager
      */
     public void destroyPlayerWithFade(String key, double nGain)
     {
-        playerMap.remove(key).stopAtGain(nGain);
+        MusicPlayer mp = playerMap.remove(key);
+        mp.stopAtGain(nGain);
     }
     
 }

@@ -149,28 +149,21 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
         {
             this.player = hub.musicMan.createPlayer( MENU_PLAYER_KEY, Music.ERHU );
 
-            try
-            {
-                int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);
-                double gain = (double) intGain / 100.0;
-                this.player.setLooping(true);
-                this.player.play();
+            final int intGain = SettingsManager.get().getInt(Settings.Key.USER_MUSIC_VOLUME);
+            final double gain = (double) intGain / 100.0;
+            this.player.setLooping(true);
+            this.player.play();
 
-                boolean isOn = SettingsManager.get().getBool(Settings.Key.USER_MUSIC);
-                if (isOn)
-                {
-                    this.player.setNormalizedGain( 0.0 );
-                    this.player.fadeToGain( gain );
-                }
-                else
-                {
-                    this.player.setNormalizedGain( gain );
-                    this.player.pause();
-                }
-            }
-            catch ( BasicPlayerException ex )
+            boolean isOn = SettingsManager.get().getBool(Settings.Key.USER_MUSIC);
+            if (isOn)
             {
-                CouchLogger.get().recordException( this.getClass(), ex );
+                this.player.setNormalizedGain( 0.0 );
+                this.player.fadeToGain( gain );
+            }
+            else
+            {
+                this.player.setNormalizedGain( gain );
+                this.player.pause();
             }
         }
 
@@ -469,16 +462,9 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
                     // See if the group deactivated the main menu.  If the main
                     // menu is deactivated, then we need to start the game.                    
                     if ( !this.activated )
-                    {
-                        try
-                        {
-                            // Turn off the menu music.
-                            if (!Game.isApplet()) this.player.stop();
-                        }
-                        catch ( BasicPlayerException ex )
-                        {
-                            CouchLogger.get().recordException( this.getClass(), ex);
-                        }
+                    {                       
+                        // Turn off the menu music.
+                        if (!Game.isApplet()) this.player.stop();
 
                         // Create the hide animation.
                         final IAnimation anim = animateHide();                        

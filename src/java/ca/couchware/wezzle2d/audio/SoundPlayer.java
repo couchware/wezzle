@@ -1,15 +1,21 @@
 /*
  *  Wezzle
- *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved. 
+ *  Copyright (c) 2007-2010 Couchware Inc.  All rights reserved.
  */
 
 package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.util.CouchLogger;
-import java.net.URL;
-import java.io.*;
-import javax.sound.sampled.*;
-
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 
 /**
  * A class to hold an audio file.  This is used by both the sound and music
@@ -19,90 +25,40 @@ import javax.sound.sampled.*;
  */
 
 public class SoundPlayer
-{             
-    
-    /** 
-     * The audio track.
-     */
-    private Sound track;
-          
-    /** 
-     * The url for the file.
-     */
-    private URL url;          
-    
-    /**
-     * The sound clip.
-     */
-    private Clip clip;      
-    
-    /**
-     * The gain control.
-     */
+{    
+    private Clip clip;         
     private FloatControl gainControl;
-    
-    /**
-     * The normalized gain.
-     */
-    private double normalizedGain;
-          
-    /** 
-     * The current volume.
-     */
-    private float volume;
+    private double normalizedGain;          
 
     /**
      * The constructor.
      * 
      * @param key
-     * @param path
-     * @param cache
+     * @param path     
      */
-    public SoundPlayer(Sound track, String path, boolean cache)
-    {
-        // The associated key.
-        this.track = track;
-        
-        // Load the reserouce.
-        url = this.getClass().getClassLoader().getResource(path);
-        
-        // Check the URL.
-        if (url == null)
-            throw new RuntimeException("Url Error: " + path + " does not exist");                
-               
-        // Open the clip.
-        open();
-        
-        // Set the current volumne.
-        this.volume = 0.0f;                    
+    public SoundPlayer(String path)
+    {               
+        InputStream stream = SoundPlayer.class.getClassLoader().getResourceAsStream(path);
+        open(stream);
     }               
     
     public void play()
     {       
         // Play clip from the start.
         clip.setFramePosition(0);
-        clip.start();
-        
-        try
-        {
-            Thread.sleep(clip.getMicrosecondLength() / 1000);
-        }
-        catch (InterruptedException e)
-        {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-        }
+        clip.loop(0);
     }
        
     /**
      * A method to load/rest an audio file.      
      */
-    private void open()
+    private void open(InputStream stream)
     {                                   
         // Create the Audio Stream.
         AudioInputStream in = null;
         try
         {
-            in = AudioSystem.getAudioInputStream(new BufferedInputStream(url.openStream()));
+            in = AudioSystem.getAudioInputStream(new BufferedInputStream(stream));
 
             // The base audio format.
             AudioFormat baseFormat = in.getFormat();
@@ -130,12 +86,15 @@ public class SoundPlayer
                 CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
             }
         } // end try
-    }        
-       
-    //--------------------------------------------------------------------------
-    // Getters and Setters.
-    //--------------------------------------------------------------------------           
-   
+    }
+
+    public void close()
+    {
+        clip.drain();
+        clip.stop();
+        clip.close();
+    }
+           
     /**
      * Sets gain (i.e. volume) value.     
      * 
@@ -164,16 +123,6 @@ public class SoundPlayer
     public double getNormalizedGain()
     {
         return normalizedGain;
-    }
-    
-    /**
-     * Get the track enumeration.
-     *  
-     * @return
-     */
-    public Sound getTrack()
-    {
-        return track;
     }
     
 }

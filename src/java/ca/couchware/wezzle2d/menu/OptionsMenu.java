@@ -599,21 +599,14 @@ public class OptionsMenu extends AbstractMenu
             boolean isSwitchedOn = selected == ON;
 
             if (!Game.isApplet())
-            {
-                try
+            {                
+                if (isSwitchedOn)
                 {
-                    if (isSwitchedOn)
-                    {
-                        this.menuPlayer.resume();
-                    }
-                    else
-                    {
-                        this.menuPlayer.pause();
-                    }
+                    this.menuPlayer.resume();
                 }
-                catch ( BasicPlayerException e )
+                else
                 {
-                    CouchLogger.get().recordException(this.getClass(), e);
+                    this.menuPlayer.pause();
                 }
             }
 
@@ -637,15 +630,9 @@ public class OptionsMenu extends AbstractMenu
 
             if (!Game.isApplet())
             {
-                try
-                {
-                    this.menuPlayer.setNormalizedGain(
-                            musicVolumeValueSlider.getVirtualPercent() );
-                }
-                catch ( BasicPlayerException e )
-                {
-                    CouchLogger.get().recordException(this.getClass(), e);
-                }
+                
+                this.menuPlayer.setNormalizedGain( musicVolumeValueSlider.getVirtualPercent() );
+               
             }
         }
 
@@ -659,7 +646,7 @@ public class OptionsMenu extends AbstractMenu
 
         if ( this.soundTestButton.clicked() )
         {            
-            hub.soundMan.play( Sound.ROCKET );            
+            hub.soundMan.play( Sound.ROCKET );
         }
 
         // Clear the clicked flag.

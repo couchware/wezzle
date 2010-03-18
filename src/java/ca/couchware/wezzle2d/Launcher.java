@@ -130,7 +130,8 @@ public class Launcher extends Applet
             }
 
             game = new Game(parent, ResourceFactory.Renderer.LWJGL);
-            game.start();            
+            game.start();
+            //game = null;
         }
         catch (Throwable t)
         {

@@ -11,7 +11,9 @@ import ca.couchware.wezzle2d.audio.SoundPlayer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
@@ -26,13 +28,7 @@ import java.util.concurrent.Executor;
  */
 
 public class SoundManager implements IResettable
-{               
-      
-    /**
-     * A link to the executor that the manager uses to play sounds.
-     */
-    private Executor executor;   
-    
+{                             
     /**
      * The settings manager.
      */
@@ -41,12 +37,12 @@ public class SoundManager implements IResettable
     /** 
      * The list of effects.
      */   
-    private List<List<SoundPlayer>> soundList;
+    private Map<Sound, List<SoundPlayer>> soundMap;
     
     /**
      * The current buffer.
      */
-    private List<Integer> bufferPointerList;
+    private Map<Sound, Integer> bufferPointerMap;
    
     /** 
      * Determine if the sound is on or off.
@@ -83,24 +79,20 @@ public class SoundManager implements IResettable
      * @param propertyMan
      */
     private SoundManager(Executor executor, SettingsManager settingsMan) 
-    {        
-        // The executor.
-        this.executor = executor;  
+    {                        
         this.settingsMan = settingsMan;
         
         // Initiate the array list.
-        this.soundList = new ArrayList<List<SoundPlayer>>(); 
-        this.bufferPointerList = new ArrayList<Integer>();
+        this.soundMap = new EnumMap<Sound, List<SoundPlayer>>(Sound.class);
+        this.bufferPointerMap = new EnumMap<Sound, Integer>(Sound.class);
         
         // Add some Sound effects. MUST USE addsound effect as it 
         // handles buffering.
-        String path = Settings.getSoundResourcesPath();
-        
-        // Create the sound objects.
-        Sound[] sounds = Game.isApplet() ? appletSounds : desktopSounds;
+        final String path = Settings.getSoundResourcesPath();
+        final Sound[] sounds = Game.isApplet() ? appletSounds : desktopSounds;
         for (Sound sound : sounds)
         {
-            this.create(sound, path + "/" + sound.toString() + ".wav");
+            create(sound, path + "/" + sound.toString() + ".wav");
         }
                              
         resetState();
@@ -121,50 +113,39 @@ public class SoundManager implements IResettable
      * A method to add a new effect to the player.
      * @param effect The new effect.
      */
-    public void create(Sound track, String path)
+    final private void create(Sound sound, String path)
     {
-        final int numBuffers = track.getNumberOfBuffers();
-        List<SoundPlayer> buffer = new ArrayList<SoundPlayer>(numBuffers);
+        final int numBuffers = sound.getNumberOfBuffers();
+        final List<SoundPlayer> buffer = new ArrayList<SoundPlayer>(numBuffers);
+
         for (int i = 0; i < numBuffers; i++)
-            buffer.add(new SoundPlayer(track, path, true));
+        {
+            buffer.add(new SoundPlayer(path));
+        }
         
-        // Add the effect.
-        this.soundList.add(buffer);
-        
-        // Add the corresponding buffer pointer.
-        this.bufferPointerList.add(0);
+        soundMap.put(sound, buffer);
+        bufferPointerMap.put(sound, 0);
     }
         
     /**
      * Return a reference to the effect with the associated key.
-     * Note: This method does not remove the effect from the list.
-     * Note: returns null if the key was not found.
-     * Note: returns the sound effect of the proper buffer.
+     *
      * @param key The associated key.
      * @return The effect.
      */
-    public SoundPlayer get(final Sound track)
-    {        
-        // Find and return the effect.
-        for (int i = 0; i < soundList.size(); i++)
-        {
-            if (soundList.get(i).get(0).getTrack() == track)
-            {
-                // The current buffer.
-                int bufferNum = bufferPointerList.get(i);
+    public SoundPlayer getPlayer(final Sound sound)
+    {               
+        // The current buffer.
+        int bufferPointer = bufferPointerMap.get(sound);
 
-                // The next buffer
-                int nextBufferNum = (bufferNum + 1) % track.getNumberOfBuffers();
+        // The next buffer
+        int nextBufferPointer = (bufferPointer + 1) % sound.getNumberOfBuffers();
 
-                // Set the next buffer to be used.
-                bufferPointerList.set(i, new Integer(nextBufferNum));
+        // Set the next buffer to be used.
+        bufferPointerMap.put(sound, nextBufferPointer);
 
-                // Return the proper buffered effect.
-                return soundList.get(i).get(bufferNum); 
-            }
-        }
-                
-        throw new RuntimeException("Could not find sound: " + track);
+        // Return the proper buffered effect.
+        return soundMap.get(sound).get(bufferPointer);
     }
     
     /**
@@ -172,35 +153,31 @@ public class SoundManager implements IResettable
      * 
      * @param key The key of the associated effect.
      */
-    public void play(final Sound track)
+    public void play(final Sound sound)
     {
         // If paused, don't play.
         if (this.paused == true)
             return;
         
         // Get the sound effect to play.
-        final SoundPlayer player = get(track);
-        
-        // Play the effect in the background.
-        executor.execute(new Runnable()
-        {            
-            public void run() 
-            {
-                try 
-                { 
-                    // Play the sound.       
-                    player.setNormalizedGain(normalizedGain);
-                    player.play();
-                    
-                }
-                catch (Exception e) 
-                { 
-                    CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-                }
-            }
-        });
+        final SoundPlayer player = getPlayer(sound);
+
+        // Play the sound.
+        player.setNormalizedGain(normalizedGain);
+        player.play();        
     }     
-        
+
+    public void stopAll()
+    {
+        for (Sound sound : soundMap.keySet())
+        {
+            for (SoundPlayer player : soundMap.get(sound))
+            {
+                player.close();
+            } // end for
+        } // end for
+    }
+
     public double getNormalizedGain()
     {
         return normalizedGain;

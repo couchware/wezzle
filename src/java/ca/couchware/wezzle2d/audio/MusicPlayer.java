@@ -11,7 +11,6 @@ import ca.couchware.wezzle2d.util.AtomicDouble;
 import ca.couchware.wezzle2d.util.NumUtil;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -34,58 +33,34 @@ import javazoom.jlgui.basicplayer.BasicPlayerListener;
  */
 public class MusicPlayer
 {
+    private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1); 
+
+    public static void shutdownExecutor()
+    {
+        executor.shutdown();
+    }
+
     private static final double MIN_GAIN = 0.0;
     private static final double MAX_GAIN = 1.0;
     private static final double EPSILON = 0.001;
     private static final double FADE_DELTA = 0.02;
 
     private static final int FADE_PERIOD = 100;
-    private static final int STOP_PERIOD = 500;
+    private static final int STOP_PERIOD = 500;           
 
-    /** It is used to fade the volume. */
-    private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);        
-    
-    /** The basic player that this wraps. */
-    final private BasicPlayer player;
-    
-    /**
-     * The player lock.
-     */
+    private String path;
+    private BasicPlayer player;
+
     final private Object playerLock = new Object();
-    
-    /**
-     * The future reference for the fader.
-     */
+
     private Future fadeFuture;
-    
-    /**
-     * The future reference lock.
-     */
     final private Object fadeFutureLock = new Object();
-    
-    /**
-     * The future reference for the stop at gain thing.
-     */
+
     private Future stopFuture;
-    
-     /**
-     * The future reference lock.
-     */
     final private Object stopFutureLock = new Object();
-    
-    /**
-     * The current normalizedGain.
-     */
+
     private AtomicDouble normalizedGain = new AtomicDouble();
-    
-    /**
-     * Should we loop this player?
-     */
-    private AtomicBoolean loop = new AtomicBoolean(false);
-    
-    /**
-     * Has the player finished playing the track?
-     */
+    private AtomicBoolean loop = new AtomicBoolean(false);    
     private AtomicBoolean finished = new AtomicBoolean(false);
 
     static
@@ -100,11 +75,10 @@ public class MusicPlayer
     /**
      * The constructor.
      */
-    private MusicPlayer()
-    {         
-        // Create a new basic player.
-        this.player = new BasicPlayer();
-        this.player.addBasicPlayerListener(new MusicPlayerListener());
+    private MusicPlayer(String path)
+    {                 
+        this.path = path;
+        open(path);
     }    
     
     /**
@@ -112,74 +86,124 @@ public class MusicPlayer
      * 
      * @return
      */
-    public static MusicPlayer newInstance()
+    public static MusicPlayer newInstance(String path)
     {
-        return new MusicPlayer();
+        return new MusicPlayer(path);
     }
     
-    public void open(InputStream stream) throws BasicPlayerException
-    {
-        BufferedInputStream buffered = new BufferedInputStream(stream);
+    private void open(String path)
+    {      
         synchronized (playerLock)
-        { 
-            player.open(buffered);
+        {
+            // Create a new basic player.
+            if (player != null) stop();
+
+            player = new BasicPlayer();
+            player.addBasicPlayerListener(new MusicPlayerListener());
+
+            try
+            {
+                InputStream stream = MusicPlayer.class.getClassLoader().getResourceAsStream(path);
+                BufferedInputStream bufferedStream = new BufferedInputStream(stream);
+                player.open(bufferedStream);
+            }
+            catch (BasicPlayerException ex)
+            {
+                CouchLogger.get().recordException(getClass(), ex);
+            }
         }
     }
     
-    public void play() throws BasicPlayerException
+    public void play()
     {
-        if (finished.get() == true)
+        if (finished.get())
         {
-            CouchLogger.get().recordWarning(this.getClass(), "Attempted to play a track that was finished");
+            CouchLogger.get().recordWarning(getClass(), "Attempted to play audio that was already finished");
             return;
         }
         
         synchronized (playerLock)
         { 
-            player.play();
+            try
+            {
+                player.play();
+            }
+            catch (BasicPlayerException ex)
+            {
+                CouchLogger.get().recordException(getClass(), ex);
+            }
         }
     }
     
-    public void stop() throws BasicPlayerException
+    public void stop()
     {
         synchronized (playerLock)
         { 
-            player.stop();
+            try
+            {
+                player.stop();
+            }
+            catch (BasicPlayerException ex)
+            {
+                CouchLogger.get().recordException(getClass(), ex);
+            }
         }
-        
-        // Clear the finished status.
+                
         finished.set(false);
     }
     
-    public void pause() throws BasicPlayerException
+    public void pause()
     {
         synchronized (playerLock)
         { 
-            player.pause();
+            try
+            {
+                player.pause();
+            }
+            catch (BasicPlayerException ex)
+            {
+                CouchLogger.get().recordException(getClass(), ex);
+            }
         }
     }
     
-    public void resume() throws BasicPlayerException
+    public void resume()
     {
         synchronized (playerLock)
         { 
-            player.resume();
+            try
+            {
+                player.resume();
+            }
+            catch (BasicPlayerException ex)
+            {
+                CouchLogger.get().recordException(getClass(), ex);
+            }
         }
     }
-       
-    public void setNormalizedGain(double nGain) throws BasicPlayerException
+
+    public void rewind()
     {
-        // Make sure gain is between 0.0 and 1.0.
-        nGain = Math.max( nGain, MIN_GAIN );
-        nGain = Math.min( nGain, MAX_GAIN );
-        
-        // Invoke the super.
+        stop();
+        open(path);
+    }
+       
+    public void setNormalizedGain(double nGain)
+    {                        
         synchronized (playerLock)
         { 
-            player.setGain(nGain); 
+            try
+            {                
+                nGain = Math.max( nGain, MIN_GAIN );
+                nGain = Math.min( nGain, MAX_GAIN );
+                player.setGain(nGain);
+            }
+            catch (BasicPlayerException ex)
+            {
+                CouchLogger.get().recordException(getClass(), ex);
+            }
         }
-        
-        // Set the normalized gain.
+                
         this.normalizedGain.set(nGain);
     }              
     
@@ -216,16 +240,9 @@ public class MusicPlayer
                 {
                     delta *= -1;                                        
                 }          
-                
-                try
-                {                    
-                    double g = n + delta;                                       
-                    setNormalizedGain(g);
-                }
-                catch (BasicPlayerException e)
-                {
-                    CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-                }
+                                                 
+                final double g = n + delta;
+                setNormalizedGain(g);
             }            
         };
                 
@@ -276,7 +293,7 @@ public class MusicPlayer
      *
      * @see stop
      * @see isFinished
-     * @param nGain
+     * @param nGain     
      */
     public void stopAtGain(final double nGain)
     {
@@ -292,7 +309,7 @@ public class MusicPlayer
                     {                        
                         try
                         {
-                            player.stop();
+                            player.stop();                            
                             
                             // Cancel this runnable.          
                             synchronized (stopFutureLock)
@@ -327,7 +344,7 @@ public class MusicPlayer
             // Start a new stopper.
             this.stopFuture = executor.scheduleWithFixedDelay(r, 0, STOP_PERIOD, TimeUnit.MILLISECONDS);
         } // end sync  
-    }
+    }    
             
     /**
      * A private class that listens for certain events in order to implement
@@ -356,11 +373,13 @@ public class MusicPlayer
                         synchronized (playerLock)
                         {
                             player.stop();
-                            if (loop.get() == true)
-                            {                     
+                            if (false);
+                            else if (loop.get())
+                            {
+                                open(path);
                                 player.play();
-                                setNormalizedGain(normalizedGain.get());                            
-                            }    
+                                setNormalizedGain(normalizedGain.get());
+                            }                            
                             else
                             {
                                 finished.set(true);

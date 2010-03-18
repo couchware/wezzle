@@ -12,7 +12,9 @@ import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
+import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.audio.SoundPlayer;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
@@ -69,7 +71,7 @@ import java.util.concurrent.Executors;
  * @author Kevin Grad 
  * @author Kevin Glass
  */
-public class Game extends Canvas implements IWindowCallback
+public class Game implements IWindowCallback
 {	  
     //--------------------------------------------------------------------------
     // Final & Static Members
@@ -153,10 +155,7 @@ public class Game extends Canvas implements IWindowCallback
     private IDrawer drawer;
     
     /** The normal title of the window. */
-    private String windowTitle = APPLICATION_NAME;	              
-    
-    /** The executor used by certain managers. */
-    private Executor executor;                   
+    private String windowTitle = APPLICATION_NAME;	                 
 
     /** If true */
     private boolean activateBoardShowAnimation = false;
@@ -387,10 +386,7 @@ public class Game extends Canvas implements IWindowCallback
      * Initialize the common elements for the game.
      */
     public void initialize()
-    {
-        // Initialize the executor.
-        executor = Executors.newCachedThreadPool();
-
+    {        
         // Make sure the listener and settings managers are ready.
         hub.initialize(win, this,
                 EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS));
@@ -1027,17 +1023,11 @@ public class Game extends Canvas implements IWindowCallback
     public void windowClosed()
     {
         try
-        {
-            // Save the properites.
-            if (hub.settingsMan != null && !isApplet())
-            {
-                hub.settingsMan.saveSettings();
-            }
-
-            if (hub.musicMan != null)
-            {
-                hub.musicMan.stopAll();
-            }
+        {            
+            if (hub.settingsMan != null && !isApplet()) hub.settingsMan.saveSettings();
+            if (hub.musicMan != null) hub.musicMan.stopAll();
+            if (hub.soundMan != null) hub.soundMan.stopAll();
+            MusicPlayer.shutdownExecutor();            
 
             CouchLogger.get().recordMessage(this.getClass(), "Game closed");
         }
@@ -1071,12 +1061,7 @@ public class Game extends Canvas implements IWindowCallback
     public void windowActivated()
     {                
   
-    }
-    
-    public Executor getExecutor()
-    {
-        return executor;
-    }
+    }   
 
     public ManagerHub getManagerHub()
     {

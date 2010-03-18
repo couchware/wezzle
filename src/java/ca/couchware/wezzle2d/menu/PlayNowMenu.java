@@ -372,21 +372,13 @@ public class PlayNowMenu extends AbstractMenu
         this.playerList.add(hub.musicMan.createPlayer(THEME_TRON_KEY, Music.TRON2));
         this.playerList.add(hub.musicMan.createPlayer(THEME_ELECTRONIC_KEY, Music.ELECTRONIC1));
         this.playerList.add(hub.musicMan.createPlayer(THEME_HIPPOP_KEY, Music.HIPPOP1));
-        
-        try 
-        {            
-            for (MusicPlayer p : playerList)
-            {
-                p.setLooping(true);
-                p.play();        
-                p.setNormalizedGain(0.0);
-            }            
-        }
-        catch (BasicPlayerException e)
+                           
+        for (MusicPlayer p : playerList)
         {
-            // Should try to do more than this, but this is OK for now.
-            CouchLogger.get().recordException(this.getClass(), e);
-        }             
+            p.setLooping(true);
+            p.play();
+            p.setNormalizedGain(0.0);
+        }
     }
 
     private void playTheme(int theme)
@@ -578,11 +570,11 @@ public class PlayNowMenu extends AbstractMenu
 
     @Override
     public IAnimation animateHide()
-    {
+    {        
         boolean isMusicOn = hub.settingsMan.getBool(Key.USER_MUSIC);
         if (isMusicOn)
         {
-            stopThemes();                             
+            stopThemes();
         }
 
         if (!Game.isApplet())
@@ -591,7 +583,7 @@ public class PlayNowMenu extends AbstractMenu
             double gain = (double) intGain / 100.0;
             this.menuPlayer.fadeToGain( gain );
         }
-                
+                        
         return super.animateHide();
     }
 
