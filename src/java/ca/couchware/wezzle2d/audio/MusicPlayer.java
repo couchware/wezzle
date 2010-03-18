@@ -12,10 +12,6 @@ import ca.couchware.wezzle2d.util.NumUtil;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,13 +29,6 @@ import javazoom.jlgui.basicplayer.BasicPlayerListener;
  */
 public class MusicPlayer
 {
-    private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1); 
-
-    public static void shutdownExecutor()
-    {
-        executor.shutdown();
-    }
-
     private static final double MIN_GAIN = 0.0;
     private static final double MAX_GAIN = 1.0;
     private static final double EPSILON = 0.001;
@@ -47,17 +36,16 @@ public class MusicPlayer
 
     private static final int FADE_PERIOD = 100;
     private static final int STOP_PERIOD = 500;           
-
+    
     private String path;
     private BasicPlayer player;
 
+    private Thread fadeThread;
+    private Thread stopThread;
+    private AtomicBoolean cancelFade = new AtomicBoolean(false);
+    private AtomicBoolean cancelStop = new AtomicBoolean(false);
+
     final private Object playerLock = new Object();
-
-    private Future fadeFuture;
-    final private Object fadeFutureLock = new Object();
-
-    private Future stopFuture;
-    final private Object stopFutureLock = new Object();
 
     private AtomicDouble normalizedGain = new AtomicDouble();
     private AtomicBoolean loop = new AtomicBoolean(false);    
@@ -136,17 +124,29 @@ public class MusicPlayer
     }
     
     public void stop()
-    {
-        synchronized (playerLock)
-        { 
-            try
+    {         
+        try
+        {
+            if (fadeThread != null && fadeThread.isAlive())
+            {
+                cancelFade.set(true);
+                fadeThread.join();
+            }
+
+            if (stopThread != null && stopThread.isAlive())
+            {
+                cancelStop.set(true);
+                stopThread.join();
+            }
+
+            synchronized (playerLock)
             {
                 player.stop();
             }
-            catch (BasicPlayerException ex)
-            {
-                CouchLogger.get().recordException(getClass(), ex);
-            }
+        }
+        catch (Exception ex)
+        {
+            CouchLogger.get().recordException(getClass(), ex);
         }
                 
         finished.set(false);
@@ -208,53 +208,67 @@ public class MusicPlayer
     }              
     
     /**
-     * Slowly fade the volume to the passed volume level.
+     * Slowly fade the volume to a specified gain.
      * 
      * @param targetGain The target gain to fade to, from 0.0 to 1.0.    
      */
     public void fadeToGain(final double nGain)
-    {                
-        Runnable r = new Runnable()
+    {
+        if (fadeThread != null && fadeThread.isAlive())
+        {
+            try
+            {
+                cancelFade.set(true);
+                fadeThread.join();
+            }
+            catch (InterruptedException ex)
+            {
+                CouchLogger.get().recordException(getClass(), ex);
+            }
+        }
+                
+        fadeThread = new Thread()
         {
             private double targetNormalizedGain = nGain;
             
+            @Override
             public void run()
             {
-                double n = normalizedGain.get();
-                double delta = FADE_DELTA;
+                cancelFade.set(false);
 
-                if (NumUtil.equalsDouble(n, targetNormalizedGain, EPSILON))
-                {                                        
-                    // Cancel this runnable.          
-                    synchronized (fadeFutureLock)
-                    {
-                        if (fadeFuture != null)
-                            fadeFuture.cancel(false);
-                    }                   
-                    
-                    // End execution.
-                    return;
-                }
-                
-                if (n > targetNormalizedGain)
+                while (true)
                 {
-                    delta *= -1;                                        
-                }          
-                                                 
-                final double g = n + delta;
-                setNormalizedGain(g);
-            }            
+                    final double n = normalizedGain.get();
+                    double delta = FADE_DELTA;
+
+                    if (cancelFade.get()
+                            || NumUtil.equalsDouble(n, targetNormalizedGain, EPSILON))
+                    {
+                        // End execution.                        
+                        break;
+                    }
+
+                    if (n > targetNormalizedGain)
+                    {
+                        delta *= -1;
+                    }
+
+                    final double g = n + delta;
+                    setNormalizedGain(g);
+
+                    try
+                    {
+                        Thread.sleep(FADE_PERIOD);
+                    }
+                    catch (InterruptedException ex)
+                    {
+                        break;
+                    }
+                } // end while
+            } // end thread
         };
-                
-        synchronized (fadeFutureLock)
-        {
-            // Cancel existing fader.
-            if (this.fadeFuture != null)
-                this.fadeFuture.cancel(false);
-        
-            // Start a new fader.
-            this.fadeFuture = executor.scheduleWithFixedDelay(r, 0, FADE_PERIOD, TimeUnit.MILLISECONDS);
-        } // end sync            
+
+        fadeThread.start();               
     }
 
     /**
@@ -297,53 +311,50 @@ public class MusicPlayer
      */
     public void stopAtGain(final double nGain)
     {
-        Runnable r = new Runnable()
+        stopThread = new Thread()
         {
             final private double targetGain = nGain;
             
+            @Override
             public void run()
-            {                
-                if (NumUtil.equalsDouble(targetGain, normalizedGain.get(), EPSILON))
-                {                                        
-                    synchronized (player)
-                    {                        
-                        try
-                        {
-                            player.stop();                            
-                            
-                            // Cancel this runnable.          
-                            synchronized (stopFutureLock)
-                            {
-                                if (stopFuture != null)
-                                    stopFuture.cancel(false);
-                            }  
-                        }
-                        catch (BasicPlayerException e)
-                        {
-                            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-                        }
-                    } // end sync
-                }
-                else if (finished.get())
-                {                    
-                    synchronized (stopFutureLock)
+            {
+                cancelStop.set(false);
+
+                while (true)
+                {
+                    final double n = normalizedGain.get();
+
+                    if (NumUtil.equalsDouble(targetGain, n, EPSILON)
+                        || cancelStop.get()
+                        || finished.get())
                     {
-                        if (stopFuture != null)
-                            stopFuture.cancel(false);
-                    } // end sync
-                } // end if
-            }
+                        synchronized (playerLock)
+                        {
+                            try
+                            {
+                                player.stop();
+                                break;
+                            }
+                            catch (BasicPlayerException e)
+                            {
+                                CouchLogger.get().recordException(getClass(), e, true /* Fatal */);
+                            }
+                        } // end sync
+                    }
+
+                    try
+                    {
+                        Thread.sleep(STOP_PERIOD);
+                    }
+                    catch (InterruptedException ex)
+                    {
+                        break;
+                    }
+                } // end while
+            } // end thread
         };
-        
-        synchronized (stopFutureLock)
-        {
-            // Cancel existing stopper.
-            if (this.stopFuture != null)
-                this.stopFuture.cancel(false);
-        
-            // Start a new stopper.
-            this.stopFuture = executor.scheduleWithFixedDelay(r, 0, STOP_PERIOD, TimeUnit.MILLISECONDS);
-        } // end sync  
+
+        stopThread.start();
     }    
             
     /**

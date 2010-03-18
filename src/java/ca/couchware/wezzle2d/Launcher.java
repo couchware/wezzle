@@ -155,6 +155,6 @@ public class Launcher extends Applet
     {
         Launcher launcher = new Launcher();
         launcher.startWezzle(null);
-        System.exit(0);
+//        System.exit(0);
     }
 }
