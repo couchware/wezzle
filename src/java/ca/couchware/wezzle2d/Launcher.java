@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 
 /**
+ * Launches the Wezzle applet or app, depending on how it is called.
  *
  * @author kgrad
  * @author cdmckay
@@ -29,42 +30,23 @@ public class Launcher extends Applet
     private Canvas displayParent;
     private Thread thread;
 
-    @Override
-    public void init()
+    public void initThread()
     {
-        removeAll();
-        setLayout(new BorderLayout());
-        setIgnoreRepaint(true);
+        if (thread != null) return;
 
-        try
-        {            
-            displayParent = new Canvas();
-
-            displayParent.setSize(getWidth(), getHeight());
-            add(displayParent);
-            displayParent.setFocusable(true);
-            displayParent.requestFocus();
-            displayParent.setIgnoreRepaint(true);
-            setVisible(true);
-
-            thread = new Thread()
-            {
-                @Override
-                public void run()
-                {
-                    startWezzle(displayParent);
-                }
-            };
-            thread.start();
-        }
-        catch (Exception e)
+        thread = new Thread()
         {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);            
-        }
+            @Override
+            public void run()
+            {
+                startWezzle(displayParent);
+            }
+        };
+
+        thread.start();
     }
 
-    @Override
-    public void destroy()
+    public void destroyThread()
     {
         stopWezzle();
 
@@ -76,7 +58,50 @@ public class Launcher extends Applet
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
+    }
 
+    @Override
+    public void init()
+    {
+        removeAll();
+        setLayout(new BorderLayout());
+        setIgnoreRepaint(true);
+
+        try
+        {            
+            displayParent = new Canvas()
+            {
+                @Override
+                public final void addNotify()
+                {
+                    super.addNotify();
+                    initThread();
+                }
+
+                @Override
+                public final void removeNotify()
+                {
+                    destroyThread();
+                    super.removeNotify();
+                }
+            };
+
+            displayParent.setSize(getWidth(), getHeight());
+            add(displayParent);
+            displayParent.setFocusable(true);
+            displayParent.requestFocus();
+            displayParent.setIgnoreRepaint(true);
+            setVisible(true);            
+        }
+        catch (Exception e)
+        {
+            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);            
+        }
+    }
+
+    @Override
+    public void destroy()
+    {        
         if (displayParent != null)
         {
             remove(displayParent);
