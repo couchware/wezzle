@@ -178,6 +178,17 @@ public class SoundManager implements IResettable
         } // end for
     }
 
+    public void quitAll()
+    {
+        for (Sound sound : soundMap.keySet())
+        {
+            for (SoundPlayer player : soundMap.get(sound))
+            {
+                player.quit();
+            } // end for
+        } // end for
+    }
+
     public double getNormalizedGain()
     {
         return normalizedGain;

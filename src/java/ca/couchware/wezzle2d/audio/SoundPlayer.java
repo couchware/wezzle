@@ -94,6 +94,12 @@ public class SoundPlayer
         clip.stop();
         clip.close();
     }
+
+    public void quit()
+    {
+        clip.stop();
+        clip.close();
+    }
            
     /**
      * Sets gain (i.e. volume) value.     
