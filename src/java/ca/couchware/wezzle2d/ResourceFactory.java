@@ -278,12 +278,12 @@ public class ResourceFactory
         {
             InputStream in = ResourceFactory.class
                 .getClassLoader()
-                .getResourceAsStream(spriteFilePath);
+                .getResourceAsStream(spritePath + "/" + spriteFilePath);
 
             if (in == null)
             {
                 CouchLogger.get().recordMessage(this.getClass(), 
-                        "Could not find sprite:" + spriteFilePath);
+                        "Could not find sprite: " + spriteFilePath);
                 continue;
             }
             else

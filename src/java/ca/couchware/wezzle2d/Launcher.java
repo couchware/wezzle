@@ -34,6 +34,8 @@ public class Launcher extends Applet
     {
         if (thread != null) return;
 
+        CouchLogger.get().recordMessage(getClass(), "Init thread");
+
         thread = new Thread()
         {
             @Override
@@ -48,21 +50,26 @@ public class Launcher extends Applet
 
     public void destroyThread()
     {
+        CouchLogger.get().recordMessage(getClass(), "Destroy thread");
+
         stopWezzle();
 
         try
         {
             thread.join();
+            CouchLogger.get().recordMessage(getClass(), "Thread joined");
         }
         catch (InterruptedException e)
         {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
+            CouchLogger.get().recordException(getClass(), e, true /* Fatal */);
         }
     }
 
     @Override
     public void init()
     {
+        CouchLogger.get().recordMessage(getClass(), "Applet init");
+
         removeAll();
         setLayout(new BorderLayout());
         setIgnoreRepaint(true);
@@ -101,13 +108,16 @@ public class Launcher extends Applet
 
     @Override
     public void destroy()
-    {        
+    {
+        CouchLogger.get().recordMessage(this.getClass(), "Applet destroy started");
+
         if (displayParent != null)
         {
             remove(displayParent);
         }
-        
+
         super.destroy();
+        CouchLogger.get().recordMessage(this.getClass(), "Applet destroy completed");
     }
     
     public void startWezzle(Canvas parent)

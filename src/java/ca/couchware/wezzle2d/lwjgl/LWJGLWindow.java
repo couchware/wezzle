@@ -312,6 +312,7 @@ public class LWJGLWindow implements IWindow
      */
     public void stop()
     {
+        CouchLogger.get().recordMessage(getClass(), "Stop requested");
         stopRequested = true;
     }
 
@@ -513,9 +514,15 @@ public class LWJGLWindow implements IWindow
 
             if (Display.isCloseRequested() || stopRequested)
             {
+                CouchLogger.get().recordMessage(getClass(), "Stop serviced");
                 this.gameRunning = false;
+
                 Display.destroy();
+                CouchLogger.get().recordMessage(getClass(), "Display destroyed");
+
+                CouchLogger.get().recordMessage(getClass(), "Window closed started");
                 callback.windowClosed();
+                CouchLogger.get().recordMessage(getClass(), "Window closed complete");
             }                    
             else
             {

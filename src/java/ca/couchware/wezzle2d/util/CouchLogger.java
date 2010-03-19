@@ -76,8 +76,6 @@ public class CouchLogger
                 rollingPolicy.setMaxHistory(MONTHS);
                 rollingPolicy.setParent(rollingAppender);
 
-
-
                 rollingPolicy.start();
                 rollingAppender.setImmediateFlush(true);
                 rollingAppender.setRollingPolicy(rollingPolicy);
@@ -92,7 +90,7 @@ public class CouchLogger
         }
 
         logger = lc.getLogger("CouchLogger");
-        logger.setLevel(Level.WARN);
+        logger.setLevel(Level.DEBUG);
     }
 
     /**
@@ -208,18 +206,20 @@ public class CouchLogger
      */
     public void setLogLevel(String logLevel)
     {
-        if (null == logLevel)
-            throw new IllegalArgumentException("Log level must not be null");
+        return;
 
-        try
-        {
-            Level level = Level.valueOf(logLevel);
-            logger.setLevel(level);
-        }
-        catch(IllegalArgumentException e)
-        {
-            logger.setLevel(Level.WARN);
-        }       
+//        if (null == logLevel)
+//            throw new IllegalArgumentException("Log level must not be null");
+//
+//        try
+//        {
+//            Level level = Level.valueOf(logLevel);
+//            logger.setLevel(level);
+//        }
+//        catch(IllegalArgumentException e)
+//        {
+//            logger.setLevel(Level.WARN);
+//        }
     }
 
     private static String getTimeStamp()

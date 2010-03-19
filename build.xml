@@ -60,7 +60,7 @@
                     verbose="true"
                     showPlist="true"
                     name="${application.title}"
-                    mainclass="ca.couchware.wezzle2d.Game"
+                    mainclass="ca.couchware.wezzle2d.Launcher"
                     icon="${opt.dir}/icons/mac-icon.icns"
                     version="${application.version}"
                     bundleid="ca.couchware.wezzle2d"

@@ -90,13 +90,7 @@ public class SoundPlayer
 
     public void close()
     {
-        clip.drain();
-        clip.stop();
-        clip.close();
-    }
-
-    public void quit()
-    {
+        //clip.drain();
         clip.stop();
         clip.close();
     }

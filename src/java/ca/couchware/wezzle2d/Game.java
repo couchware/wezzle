@@ -1026,9 +1026,9 @@ public class Game implements IWindowCallback
         {            
             if (hub.settingsMan != null && !isApplet()) hub.settingsMan.saveSettings();
             if (hub.musicMan != null) hub.musicMan.stopAll();
-            if (hub.soundMan != null) hub.soundMan.stopAll();                        
-
-            CouchLogger.get().recordMessage(this.getClass(), "Game closed");
+            CouchLogger.get().recordMessage(this.getClass(), "Music manager stopped");
+            if (hub.soundMan != null) hub.soundMan.stopAll();
+            CouchLogger.get().recordMessage(this.getClass(), "Sound manager stopped");
         }
         catch(Exception e)
         {
