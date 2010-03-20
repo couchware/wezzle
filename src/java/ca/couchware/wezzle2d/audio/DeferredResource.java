@@ -8,19 +8,20 @@ import java.io.IOException;
  *
  * @author kevin
  */
-public interface DeferredResource {
+public interface DeferredResource
+{
 
-	/**
-	 * Load the actual resource 
-	 * 
-	 * @throws IOException Indicates a failure to load the resource
-	 */
-	public void load() throws IOException;
-	
-	/**
-	 * Get a description of the resource to be loaded
-	 * 
-	 * @return The description of the resource to be loaded
-	 */
-	public String getDescription();
+    /**
+     * Load the actual resource
+     *
+     * @throws IOException Indicates a failure to load the resource
+     */
+    public void load() throws IOException;
+
+    /**
+     * Get a description of the resource to be loaded
+     *
+     * @return The description of the resource to be loaded
+     */
+    public String getDescription();
 }

@@ -2,7 +2,6 @@
  *  Wezzle
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
-
 package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.manager.Settings;
@@ -12,8 +11,9 @@ import ca.couchware.wezzle2d.manager.Settings;
  * 
  * @author cdmckay
  */
-public enum Music 
-{             
+public enum Music
+{
+
     TRON1(Settings.getMusicResourcesPath() + "/Tron1.ogg"),
     TRON2(Settings.getMusicResourcesPath() + "/Tron2.ogg"),
     TRON3(Settings.getMusicResourcesPath() + "/Tron3.ogg"),
@@ -24,12 +24,16 @@ public enum Music
     HIPPOP2(Settings.getMusicResourcesPath() + "/HipPop2.ogg"),
     HIPPOP3(Settings.getMusicResourcesPath() + "/HipPop3.ogg"),
     ERHU(Settings.getMusicResourcesPath() + "/Erhu.ogg");
-    
+
     private String path;
-    
+
     Music(String path)
-    { this.path = path; }
-    
+    {
+        this.path = path;
+    }
+
     public String getPath()
-    { return path; }
+    {
+        return path;
+    }
 }

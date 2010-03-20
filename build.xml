@@ -83,7 +83,7 @@
         </jarbundler>
     </target>
 
-    <target name="mac-installer" depends="app">
+    <target name="mac-installer" depends="app" description="Build the Wezzle Mac Installer">
         <exec executable="./create-wezzle-dmg" dir="${opt.dir}/dmg" />
         <move file="${opt.dir}/dmg/Wezzle-setup.dmg"
               tofile="${opt.dir}/dmg/Wezzle-${application.version}-setup.dmg" />
@@ -97,7 +97,7 @@
         <nsis script="./opt/nsis/installer.nsi"/>
     </target>
 
-    <target name="applet" depends="set-applet,jar,unset-applet">
+    <target name="applet-base" depends="set-applet,jar,unset-applet" description="Build the Wezzle Applet Base">
 
         <!-- Delete resources.jar and re-build it with fewer resources. -->        
         <delete file="${dist.dir}/lib/resources.jar" />
@@ -118,10 +118,10 @@
             <fileset dir="${build.dir}" includes="resources/**" />
         </jar>       
 
-        <mkdir dir="${dist.dir}/applet" />
+        <mkdir dir="${dist.dir}/applet" />       
 
         <copy todir="${dist.dir}/applet">
-            <fileset dir="applet"/>
+            <fileset dir="applet/common"/>
             <fileset dir="${dist.dir}" includes="Wezzle.jar" />
             <fileset dir="${dist.dir}" includes="lib/*.jar" />
         </copy>
@@ -130,10 +130,26 @@
         <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
             <path>
                 <fileset dir="${dist.dir}/applet" includes="Wezzle.jar" />
-                <fileset dir="${dist.dir}/applet" includes="lib/*.jar" />
+                <fileset dir="${dist.dir}/applet" includes="lib/lwjgl/lwjgl_util_applet.jar" />
             </path>
         </signjar>
         -->
+    </target>
+
+    <target name="applet-plugin1" depends="applet-base" description="Build the Wezzle Applet optimized for plugin1">
+
+        <copy todir="${dist.dir}/applet">
+            <fileset dir="applet/plugin1"/>
+        </copy>
+
+    </target>
+
+    <target name="applet-plugin2" depends="applet-base" description="Build the Wezzle Applet optimized for plugin2">
+
+        <copy todir="${dist.dir}/applet">
+            <fileset dir="applet/plugin2"/>
+        </copy>
+
     </target>
 
     <!-- This target excludes the resources from the main JAR. -->

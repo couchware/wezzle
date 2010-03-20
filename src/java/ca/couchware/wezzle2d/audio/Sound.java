@@ -2,7 +2,6 @@
  *  Wezzle
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
-
 package ca.couchware.wezzle2d.audio;
 
 /**
@@ -10,8 +9,9 @@ package ca.couchware.wezzle2d.audio;
  * not exceed 32.
  * @author cdmckay
  */
-public enum Sound 
+public enum Sound
 {
+
     BOMB(3),
     LINE_1(3),
     LINE_2(2),
@@ -34,11 +34,15 @@ public enum Sound
     Sound(int numberOfBuffers)
     {
         if (numberOfBuffers < 1)
+        {
             throw new IllegalArgumentException("At least 1 buffer is required");
+        }
 
         this.numberOfBuffers = numberOfBuffers;
     }
 
     public int getNumberOfBuffers()
-    { return numberOfBuffers; }
+    {
+        return numberOfBuffers;
+    }
 }
