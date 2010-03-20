@@ -7,15 +7,7 @@ package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.util.CouchLogger;
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.FloatControl;
 
 /**
  * A class to hold an audio file.  This is used by both the sound and music
@@ -26,8 +18,8 @@ import javax.sound.sampled.FloatControl;
 
 public class SoundPlayer
 {    
-    private Clip clip;         
-    private FloatControl gainControl;
+    private Audio clip;
+    //private FloatControl gainControl;
     private double normalizedGain;          
 
     /**
@@ -39,60 +31,39 @@ public class SoundPlayer
     public SoundPlayer(String path)
     {               
         InputStream stream = SoundPlayer.class.getClassLoader().getResourceAsStream(path);
-        open(stream);
+        BufferedInputStream bin = new BufferedInputStream(stream);
+        open(bin);
     }               
     
     public void play()
     {       
         // Play clip from the start.
-        clip.setFramePosition(0);
-        clip.loop(0);
+       clip.playAsSoundEffect(1.0f, (float) this.getNormalizedGain(), false);
     }
        
     /**
      * A method to load/rest an audio file.      
      */
-    private void open(InputStream stream)
+    private void open(BufferedInputStream stream)
     {                                   
         // Create the Audio Stream.
-        AudioInputStream in = null;
         try
         {
-            in = AudioSystem.getAudioInputStream(new BufferedInputStream(stream));
-
-            // The base audio format.
-            AudioFormat baseFormat = in.getFormat();
-
-            // The decoded input stream.
-            AudioInputStream decodedIn = AudioSystem.getAudioInputStream(baseFormat, in);
-
-            clip = AudioSystem.getClip();
-            clip.open(decodedIn);
             
-            this.gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            clip = AudioLoader.getAudio("WAV", stream);
+   
         }
         catch (Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
-        finally
-        {
-            try
-            {
-                in.close();
-            }
-            catch (IOException e)
-            {
-                CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-            }
-        } // end try
+ 
     }
 
     public void close()
     {
         //clip.drain();
         clip.stop();
-        clip.close();
     }
            
     /**
@@ -105,11 +76,11 @@ public class SoundPlayer
      */
     public void setNormalizedGain(double nGain)
     {        
-        double minGainDB = gainControl.getMinimum();
-        double ampGainDB = ((10.0f / 20.0f) * gainControl.getMaximum()) - gainControl.getMinimum();
-        double cste = Math.log(10.0) / 20;
-        double valueDB = minGainDB + (1 / cste) * Math.log(1 + (Math.exp(cste * ampGainDB) - 1) * nGain);
-        gainControl.setValue((float) valueDB);        
+        //double minGainDB = 0.0f;//gainControl.getMinimum();
+        //double ampGainDB = ((10.0f / 20.0f) * 1.0f) - 0.0f;//gainControl.getMaximum()) - gainControl.getMinimum();
+        //double cste = Math.log(10.0) / 20;
+        //double valueDB = minGainDB + (1 / cste) * Math.log(1 + (Math.exp(cste * ampGainDB) - 1) * nGain);
+        //gainControl.setValue((float) valueDB);
         
         // Remember the normalized gain.
         this.normalizedGain = nGain;
