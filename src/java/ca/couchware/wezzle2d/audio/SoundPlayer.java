@@ -2,7 +2,6 @@
  *  Wezzle
  *  Copyright (c) 2007-2010 Couchware Inc.  All rights reserved.
  */
-
 package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.util.CouchLogger;
@@ -15,57 +14,44 @@ import java.io.InputStream;
  * 
  * @author Kevin, Cameron
  */
-
 public class SoundPlayer
-{    
+{
     private Audio clip;
-    //private FloatControl gainControl;
-    private double normalizedGain;          
+    private double normalizedGain;
 
-    /**
-     * The constructor.
-     * 
-     * @param key
-     * @param path     
-     */
     public SoundPlayer(String path)
-    {               
+    {
         InputStream stream = SoundPlayer.class.getClassLoader().getResourceAsStream(path);
         BufferedInputStream bin = new BufferedInputStream(stream);
         open(bin);
-    }               
-    
-    public void play()
-    {       
-        // Play clip from the start.
-       clip.playAsSoundEffect(1.0f, (float) this.getNormalizedGain(), false);
     }
-       
+
+    // Plays as a sound effect only.
+    public void play()
+    {
+        clip.playAsSoundEffect(1.0f, (float) this.getNormalizedGain(), false);
+    }
+
     /**
-     * A method to load/rest an audio file.      
+     * A method to load a WAV file. This method assumes .wav format.
+     * @param stream - A markable inputstream.
      */
     private void open(BufferedInputStream stream)
-    {                                   
-        // Create the Audio Stream.
+    {
         try
         {
-            
             clip = AudioLoader.getAudio("WAV", stream);
-   
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }
- 
     }
 
     public void close()
     {
-        //clip.drain();
         clip.stop();
     }
-           
+
     /**
      * Sets gain (i.e. volume) value.     
      * 
@@ -75,17 +61,10 @@ public class SoundPlayer
      * @param fGain The gain to set.     
      */
     public void setNormalizedGain(double nGain)
-    {        
-        //double minGainDB = 0.0f;//gainControl.getMinimum();
-        //double ampGainDB = ((10.0f / 20.0f) * 1.0f) - 0.0f;//gainControl.getMaximum()) - gainControl.getMinimum();
-        //double cste = Math.log(10.0) / 20;
-        //double valueDB = minGainDB + (1 / cste) * Math.log(1 + (Math.exp(cste * ampGainDB) - 1) * nGain);
-        //gainControl.setValue((float) valueDB);
-        
-        // Remember the normalized gain.
+    {
         this.normalizedGain = nGain;
     }
-    
+
     /**
      * Gets the gain (i.e. volume) value.
      * 
@@ -95,5 +74,4 @@ public class SoundPlayer
     {
         return normalizedGain;
     }
-    
 }
