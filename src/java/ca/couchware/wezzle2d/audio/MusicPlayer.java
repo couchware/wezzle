@@ -8,17 +8,9 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
 import ca.couchware.wezzle2d.util.NumUtil;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javazoom.jlgui.basicplayer.BasicController;
-import javazoom.jlgui.basicplayer.BasicPlayer;
-import javazoom.jlgui.basicplayer.BasicPlayerEvent;
-import javazoom.jlgui.basicplayer.BasicPlayerException;
-import javazoom.jlgui.basicplayer.BasicPlayerListener;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.SoundSystemJPCT;
 
 /**
  * An extension to the JavaZoom BasicPlayer class that incorporates more
@@ -28,91 +20,49 @@ import javazoom.jlgui.basicplayer.BasicPlayerListener;
  */
 public class MusicPlayer
 {
-
     private static final double MIN_GAIN = 0.0;
-
     private static final double MAX_GAIN = 1.0;
-
     private static final double EPSILON = 0.001;
-
     private static final double FADE_DELTA = 0.02;
-
-    private static final int FADE_PERIOD = 100;
-
-    private static final int STOP_PERIOD = 500;
-
-    private String path;
-
-    private BasicPlayer player;
-
+    private static final int FADE_PERIOD = 50;
+    private static final int STOP_PERIOD = 250;
+    public static SoundSystemJPCT player = Game.getSoundSystem();
+    private String key;
     private Thread fadeThread;
-
     private Thread stopThread;
-
+    private String path;
     private AtomicBoolean cancelFade = new AtomicBoolean(false);
-
     private AtomicBoolean cancelStop = new AtomicBoolean(false);
-
     final private Object playerLock = new Object();
-
     private AtomicDouble normalizedGain = new AtomicDouble();
-
     private AtomicBoolean loop = new AtomicBoolean(false);
-
     private AtomicBoolean finished = new AtomicBoolean(false);
-
-    static
-    {
-        // Turn off logging on the basic player.
-        if (!Game.isApplet())
-        {
-            Logger.getLogger(BasicPlayer.class.getName()).setLevel(Level.OFF);
-        }
-    }
 
     /**
      * The constructor.
      */
-    private MusicPlayer(String path)
+    private MusicPlayer(String path, String key)
     {
         this.path = path;
+        this.key = key;
         open(path);
     }
+
+   
 
     /**
      * Create a new music player instance.
      * 
      * @return
      */
-    public static MusicPlayer newInstance(String path)
+    public static MusicPlayer newInstance(String path, String key)
     {
-        return new MusicPlayer(path);
+        return new MusicPlayer(path, key);
     }
 
     private void open(String path)
     {
-        synchronized (playerLock)
-        {
-            // Create a new basic player.
-            if (player != null)
-            {
-                stop();
-            }
-
-            player = new BasicPlayer();
-            player.addBasicPlayerListener(new MusicPlayerListener());
-
-            try
-            {
-                InputStream stream = MusicPlayer.class.getClassLoader().getResourceAsStream(path);
-                BufferedInputStream bufferedStream = new BufferedInputStream(stream);
-                player.open(bufferedStream);
-            }
-            catch (BasicPlayerException ex)
-            {
-                CouchLogger.get().recordException(getClass(), ex);
-            }
-        }
+        player.newStreamingSource(true, key, path, true, SoundSystemConfig.ATTENUATION_NONE);
     }
 
     public void play()
@@ -127,9 +77,10 @@ public class MusicPlayer
         {
             try
             {
-                player.play();
-            }
-            catch (BasicPlayerException ex)
+
+                player.play(key);
+
+            } catch (Exception ex)
             {
                 CouchLogger.get().recordException(getClass(), ex);
             }
@@ -154,10 +105,9 @@ public class MusicPlayer
 
             synchronized (playerLock)
             {
-                player.stop();
+                player.stop(key);
             }
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             CouchLogger.get().recordException(getClass(), ex);
         }
@@ -171,9 +121,8 @@ public class MusicPlayer
         {
             try
             {
-                player.pause();
-            }
-            catch (BasicPlayerException ex)
+                player.pause(key);
+            } catch (Exception ex)
             {
                 CouchLogger.get().recordException(getClass(), ex);
             }
@@ -186,9 +135,8 @@ public class MusicPlayer
         {
             try
             {
-                player.resume();
-            }
-            catch (BasicPlayerException ex)
+                player.play(key);
+            } catch (Exception ex)
             {
                 CouchLogger.get().recordException(getClass(), ex);
             }
@@ -199,6 +147,7 @@ public class MusicPlayer
     {
         stop();
         open(path);
+        // player.rewind(key);
     }
 
     public void setNormalizedGain(double nGain)
@@ -209,9 +158,8 @@ public class MusicPlayer
             {
                 nGain = Math.max(nGain, MIN_GAIN);
                 nGain = Math.min(nGain, MAX_GAIN);
-                player.setGain(nGain);
-            }
-            catch (BasicPlayerException ex)
+                player.setVolume(key, (float) nGain);
+            } catch (Exception ex)
             {
                 CouchLogger.get().recordException(getClass(), ex);
             }
@@ -233,8 +181,7 @@ public class MusicPlayer
             {
                 cancelFade.set(true);
                 fadeThread.join();
-            }
-            catch (InterruptedException ex)
+            } catch (InterruptedException ex)
             {
                 CouchLogger.get().recordException(getClass(), ex);
             }
@@ -242,7 +189,6 @@ public class MusicPlayer
 
         fadeThread = new Thread()
         {
-
             private double targetNormalizedGain = nGain;
 
             @Override
@@ -273,8 +219,7 @@ public class MusicPlayer
                     try
                     {
                         Thread.sleep(FADE_PERIOD);
-                    }
-                    catch (InterruptedException ex)
+                    } catch (InterruptedException ex)
                     {
                         break;
                     }
@@ -327,7 +272,6 @@ public class MusicPlayer
     {
         stopThread = new Thread()
         {
-
             final private double targetGain = nGain;
 
             @Override
@@ -347,10 +291,9 @@ public class MusicPlayer
                         {
                             try
                             {
-                                player.stop();
+                                player.stop(key);
                                 break;
-                            }
-                            catch (BasicPlayerException e)
+                            } catch (Exception e)
                             {
                                 CouchLogger.get().recordException(getClass(), e, true /* Fatal */);
                             }
@@ -360,8 +303,7 @@ public class MusicPlayer
                     try
                     {
                         Thread.sleep(STOP_PERIOD);
-                    }
-                    catch (InterruptedException ex)
+                    } catch (InterruptedException ex)
                     {
                         break;
                     }
@@ -372,58 +314,8 @@ public class MusicPlayer
         stopThread.start();
     }
 
-    /**
-     * A private class that listens for certain events in order to implement
-     * looping.
-     */
-    private class MusicPlayerListener implements BasicPlayerListener
+    public static void shutDownSystem()
     {
-
-        public void opened(Object stream, Map properties)
-        {
-            // Intentionally left blank.
-        }
-
-        public void progress(int bytesread, long microseconds, byte[] pcmdata, Map properties)
-        {
-            // Intentionally left blank.
-        }
-
-        public void stateUpdated(BasicPlayerEvent event)
-        {
-            // Wait for EOM.  If looping is enabled, then loop.
-            switch (event.getCode())
-            {
-                case BasicPlayerEvent.EOM:
-                    try
-                    {
-                        synchronized (playerLock)
-                        {
-                            player.stop();
-                            if (false);
-                            else if (loop.get())
-                            {
-                                open(path);
-                                player.play();
-                                setNormalizedGain(normalizedGain.get());
-                            }
-                            else
-                            {
-                                finished.set(true);
-                            }
-                        } // end sync                                                                
-                    }
-                    catch (BasicPlayerException e)
-                    {
-                        CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-                    }
-                    break;
-            } // end switch
-        }
-
-        public void setController(BasicController controller)
-        {
-            // Intentionally left blank.
-        }
+        player.cleanup();
     }
 }

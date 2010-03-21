@@ -403,9 +403,9 @@ public class MusicManager
      * @param String path
      * @return A new player with that passed path already opened.
      */
-    private static MusicPlayer createPlayer(String path)
+    private static MusicPlayer createPlayer(String path, String sourcename)
     {
-        MusicPlayer mp = MusicPlayer.newInstance(path);
+        MusicPlayer mp = MusicPlayer.newInstance(path, sourcename);
         return mp;
     }
     
@@ -421,7 +421,7 @@ public class MusicManager
         if (playerMap.containsKey(key))
             this.destroyPlayer(key);        
         
-        MusicPlayer mp = createPlayer(track.getPath());
+        MusicPlayer mp = createPlayer(track.getPath(), track.name());
         playerMap.put(key, mp);
         
         return mp;

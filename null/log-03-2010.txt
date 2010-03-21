@@ -1,0 +1,63 @@
+[ERROR] (19:52:25.407) Game - "SoundSystemJPCT did not load after 30 seconds."
+paulscode.sound.SoundSystemException: SoundSystemJPCT did not load after 30 seconds.
+	at paulscode.sound.SoundSystem.newLibrary(SoundSystem.java:1399)
+	at paulscode.sound.SoundSystem.init(SoundSystem.java:241)
+	at paulscode.sound.SoundSystemJPCT.init(SoundSystemJPCT.java:172)
+	at paulscode.sound.SoundSystem.<init>(SoundSystem.java:201)
+	at paulscode.sound.SoundSystemJPCT.<init>(SoundSystemJPCT.java:107)
+	at ca.couchware.wezzle2d.Game.<clinit>(Game.java:182)
+	at ca.couchware.wezzle2d.manager.Settings.<clinit>(Settings.java:291)
+	at ca.couchware.wezzle2d.manager.SettingsManager.loadDefaultSettings(SettingsManager.java:127)
+	at ca.couchware.wezzle2d.manager.SettingsManager.<init>(SettingsManager.java:57)
+	at ca.couchware.wezzle2d.manager.SettingsManager.<clinit>(SettingsManager.java:39)
+	at ca.couchware.wezzle2d.Launcher.startWezzle(Launcher.java:126)
+	at ca.couchware.wezzle2d.Launcher.main(Launcher.java:192)
+
+[INFO] (19:52:25.548) LWJGLWindow - "LWJGL Version: 2.3"
+[INFO] (19:52:25.939) Game - "Date: Sun Mar 21 19:52:25 EDT 2010"
+[INFO] (19:52:25.939) Game - "Wezzle Build: N/A"
+[INFO] (19:52:25.939) Game - "Wezzle Version: 1.3 (Full)"
+[INFO] (19:52:25.939) Game - "Java Version: 1.6.0_17"
+[INFO] (19:52:25.940) Game - "OS Name: Windows 7"
+[INFO] (19:52:25.940) Game - "OS Architecture: x86"
+[INFO] (19:52:25.940) Game - "OS Version: 6.1"
+[ERROR] (19:52:32.189) Game - "null"
+java.lang.NullPointerException
+	at ca.couchware.wezzle2d.audio.SoundPlayer.<init>(SoundPlayer.java:25)
+	at ca.couchware.wezzle2d.manager.SoundManager.create(SoundManager.java:123)
+	at ca.couchware.wezzle2d.manager.SoundManager.<init>(SoundManager.java:95)
+	at ca.couchware.wezzle2d.manager.SoundManager.newInstance(SoundManager.java:109)
+	at ca.couchware.wezzle2d.ManagerHub.initialize(ManagerHub.java:164)
+	at ca.couchware.wezzle2d.Game$3.run(Game.java:428)
+	at ca.couchware.wezzle2d.menu.Loader.executeNextTask(Loader.java:148)
+	at ca.couchware.wezzle2d.menu.Loader.updateLogic(Loader.java:190)
+	at ca.couchware.wezzle2d.Game.update(Game.java:455)
+	at ca.couchware.wezzle2d.lwjgl.LWJGLWindow.loop(LWJGLWindow.java:541)
+	at ca.couchware.wezzle2d.lwjgl.LWJGLWindow.start(LWJGLWindow.java:307)
+	at ca.couchware.wezzle2d.Game.start(Game.java:227)
+	at ca.couchware.wezzle2d.Launcher.startWezzle(Launcher.java:168)
+	at ca.couchware.wezzle2d.Launcher.main(Launcher.java:192)
+
+[ERROR] (19:52:44.185) Game - "SoundSystemJPCT did not load after 30 seconds."
+paulscode.sound.SoundSystemException: SoundSystemJPCT did not load after 30 seconds.
+	at paulscode.sound.SoundSystem.newLibrary(SoundSystem.java:1399)
+	at paulscode.sound.SoundSystem.init(SoundSystem.java:241)
+	at paulscode.sound.SoundSystemJPCT.init(SoundSystemJPCT.java:172)
+	at paulscode.sound.SoundSystem.<init>(SoundSystem.java:201)
+	at paulscode.sound.SoundSystemJPCT.<init>(SoundSystemJPCT.java:107)
+	at ca.couchware.wezzle2d.Game.<clinit>(Game.java:182)
+	at ca.couchware.wezzle2d.manager.Settings.<clinit>(Settings.java:291)
+	at ca.couchware.wezzle2d.manager.SettingsManager.loadDefaultSettings(SettingsManager.java:127)
+	at ca.couchware.wezzle2d.manager.SettingsManager.<init>(SettingsManager.java:57)
+	at ca.couchware.wezzle2d.manager.SettingsManager.<clinit>(SettingsManager.java:39)
+	at ca.couchware.wezzle2d.Launcher.startWezzle(Launcher.java:126)
+	at ca.couchware.wezzle2d.Launcher.main(Launcher.java:192)
+
+[INFO] (19:52:44.333) LWJGLWindow - "LWJGL Version: 2.3"
+[INFO] (19:52:44.756) Game - "Date: Sun Mar 21 19:52:44 EDT 2010"
+[INFO] (19:52:44.756) Game - "Wezzle Build: N/A"
+[INFO] (19:52:44.756) Game - "Wezzle Version: 1.3 (Full)"
+[INFO] (19:52:44.756) Game - "Java Version: 1.6.0_17"
+[INFO] (19:52:44.757) Game - "OS Name: Windows 7"
+[INFO] (19:52:44.757) Game - "OS Architecture: x86"
+[INFO] (19:52:44.757) Game - "OS Version: 6.1"

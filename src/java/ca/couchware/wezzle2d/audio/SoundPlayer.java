@@ -4,9 +4,8 @@
  */
 package ca.couchware.wezzle2d.audio;
 
-import ca.couchware.wezzle2d.util.CouchLogger;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
+import ca.couchware.wezzle2d.Game;
+import paulscode.sound.SoundSystemJPCT;
 
 /**
  * A class to hold an audio file.  This is used by both the sound and music
@@ -16,40 +15,30 @@ import java.io.InputStream;
  */
 public class SoundPlayer
 {
-    private Audio clip;
     private double normalizedGain;
+    private SoundSystemJPCT player = Game.getSoundSystem();
+    private String key;
 
-    public SoundPlayer(String path)
+    public SoundPlayer(String path, String key)
     {
-        InputStream stream = SoundPlayer.class.getClassLoader().getResourceAsStream(path);
-        BufferedInputStream bin = new BufferedInputStream(stream);
-        open(bin);
+        this.key = key;
+        player.newSource(true, key, path, false);
     }
 
     // Plays as a sound effect only.
     public void play()
     {
-        clip.playAsSoundEffect(1.0f, (float) this.getNormalizedGain(), false);
+        player.play(key);
     }
 
     /**
      * A method to load a WAV file. This method assumes .wav format.
      * @param stream - A markable inputstream.
      */
-    private void open(BufferedInputStream stream)
-    {
-        try
-        {
-            clip = AudioLoader.getAudio("WAV", stream);
-        } catch (Exception e)
-        {
-            CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
-        }
-    }
-
+  
     public void close()
     {
-        clip.stop();
+        player.stop(key);
     }
 
     /**
@@ -62,6 +51,7 @@ public class SoundPlayer
      */
     public void setNormalizedGain(double nGain)
     {
+        player.setVolume(key, (float)nGain);
         this.normalizedGain = nGain;
     }
 
