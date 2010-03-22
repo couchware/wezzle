@@ -11,7 +11,7 @@ import ca.couchware.wezzle2d.manager.Settings;
  * 
  * @author cdmckay
  */
-public enum MusicType 
+public enum Music
 {
 
     TRON1(Settings.getMusicResourcesPath() + "/Tron1.ogg"),
@@ -27,7 +27,7 @@ public enum MusicType
 
     private String path;
 
-    MusicType(String path)
+    Music(String path)
     {
         this.path = path;
     }

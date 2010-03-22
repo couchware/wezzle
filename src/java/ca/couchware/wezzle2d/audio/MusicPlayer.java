@@ -48,8 +48,6 @@ public class MusicPlayer
         open(path);
     }
 
-   
-
     /**
      * Create a new music player instance.
      * 
@@ -62,7 +60,7 @@ public class MusicPlayer
 
     private void open(String path)
     {
-        player.newStreamingSource(true, key, path, true, SoundSystemConfig.ATTENUATION_NONE);
+        player.newStreamingSource(true, key, path, false, SoundSystemConfig.ATTENUATION_NONE);
     }
 
     public void play()
@@ -145,9 +143,7 @@ public class MusicPlayer
 
     public void rewind()
     {
-        stop();
-        open(path);
-        // player.rewind(key);
+       player.rewind(key);
     }
 
     public void setNormalizedGain(double nGain)

@@ -22,7 +22,7 @@ public class SoundPlayer
     public SoundPlayer(String path, String key)
     {
         this.key = key;
-        player.newSource(true, key, path, false);
+        player.newSource(false, key, path, false);
     }
 
     // Plays as a sound effect only.
