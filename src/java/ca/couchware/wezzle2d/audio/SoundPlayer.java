@@ -17,11 +17,10 @@ public class SoundPlayer
 {
     private double normalizedGain;
     private SoundSystemJPCT player = Game.getSoundSystem();
-    private String key;
+    private String key = String.valueOf(this.hashCode());
 
-    public SoundPlayer(String path, String key)
+    public SoundPlayer(String path)
     {
-        this.key = key;
         player.newSource(false, key, path, false);
     }
 
@@ -38,7 +37,8 @@ public class SoundPlayer
   
     public void close()
     {
-        player.stop(key);
+        if(player.playing(key))
+            player.stop(key);
     }
 
     /**

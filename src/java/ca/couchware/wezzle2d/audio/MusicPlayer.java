@@ -30,7 +30,6 @@ public class MusicPlayer
     private String key;
     private Thread fadeThread;
     private Thread stopThread;
-    private String path;
     private AtomicBoolean cancelFade = new AtomicBoolean(false);
     private AtomicBoolean cancelStop = new AtomicBoolean(false);
     final private Object playerLock = new Object();
@@ -43,7 +42,6 @@ public class MusicPlayer
      */
     private MusicPlayer(String path, String key)
     {
-        this.path = path;
         this.key = key;
         open(path);
     }
@@ -144,6 +142,7 @@ public class MusicPlayer
     public void rewind()
     {
        player.rewind(key);
+       finished.set(false);
     }
 
     public void setNormalizedGain(double nGain)
@@ -244,6 +243,7 @@ public class MusicPlayer
     public void setLooping(boolean loop)
     {
         this.loop.set(loop);
+        player.setLooping(key, loop);
     }
 
     /**
@@ -251,6 +251,9 @@ public class MusicPlayer
      */
     public boolean isFinished()
     {
+        if(!player.playing(key))
+            finished.set(true);
+        
         return finished.get();
     }
 
@@ -308,10 +311,5 @@ public class MusicPlayer
         };
 
         stopThread.start();
-    }
-
-    public static void shutDownSystem()
-    {
-        player.cleanup();
     }
 }

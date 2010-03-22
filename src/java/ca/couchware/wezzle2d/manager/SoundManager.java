@@ -92,7 +92,7 @@ public class SoundManager implements IResettable
         final Sound[] sounds = Game.isApplet() ? appletSounds : desktopSounds;
         for (Sound sound : sounds)
         {
-            create(sound, path + "/" + sound.toString() + ".wav", sound.toString());
+            create(sound, path + "/" + sound.toString() + ".wav");
         }
                              
         resetState();
@@ -113,14 +113,14 @@ public class SoundManager implements IResettable
      * A method to add a new effect to the player.
      * @param effect The new effect.
      */
-    final private void create(Sound sound, String path, String key)
+    final private void create(Sound sound, String path)
     {
         final int numBuffers = sound.getNumberOfBuffers();
         final List<SoundPlayer> buffer = new ArrayList<SoundPlayer>(numBuffers);
 
         for (int i = 0; i < numBuffers; i++)
         {
-            buffer.add(new SoundPlayer(path, key));
+            buffer.add(new SoundPlayer(path));
         }
         
         soundMap.put(sound, buffer);

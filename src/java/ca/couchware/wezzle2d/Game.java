@@ -11,9 +11,7 @@ import ca.couchware.wezzle2d.animation.AnimationAdapter;
 import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
-import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.audio.SoundPlayer;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
@@ -1031,7 +1029,7 @@ public class Game implements IWindowCallback
             }
             CouchLogger.get().recordMessage(this.getClass(), "Sound manager stopped");
 
-            MusicPlayer.shutDownSystem();
+            soundSystem.cleanup();
         } catch (Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);

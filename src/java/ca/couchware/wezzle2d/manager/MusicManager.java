@@ -11,15 +11,13 @@ import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
 import ca.couchware.wezzle2d.manager.Settings.Key;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import javazoom.jlgui.basicplayer.BasicPlayerException;
+
 
 /**
  * A class to handle background music.
