@@ -632,6 +632,11 @@ public class Game implements IWindowCallback
         // Uphdate the music manager logic.
         hub.musicMan.updateLogic(this, hub);
 
+        if (win.isKeyPressed('n'))
+        {
+            hub.musicMan.stop();
+        }
+
         // Check to see if we should be showing the board.
         if (activateBoardShowAnimation)
         {

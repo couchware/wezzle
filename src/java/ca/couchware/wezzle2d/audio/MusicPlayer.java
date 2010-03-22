@@ -7,7 +7,6 @@ package ca.couchware.wezzle2d.audio;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
-import ca.couchware.wezzle2d.util.NumUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import paulscode.sound.SoundSystemConfig;
@@ -22,20 +21,21 @@ import paulscode.sound.SoundSystemJPCT;
 public class MusicPlayer
 {
     private static final double MIN_GAIN = 0.0;
-    private static final double MAX_GAIN = 1.0;
-    private static final double EPSILON = 0.001;
+    private static final double MAX_GAIN = 1.0;    
     private static final double FADE_DELTA = 0.02;
     private static final int FADE_PERIOD = 50;
     private static final int STOP_PERIOD = 250;
+    private static final int WAIT_PERIOD = 250;
     public static SoundSystemJPCT player = Game.getSoundSystem();
     private String key;
     private Thread fadeThread;
-    private Thread stopThread;    
+    private Thread stopThread;
+    private Thread waitThread;
     private AtomicBoolean cancelFade = new AtomicBoolean(false);
     private AtomicBoolean cancelStop = new AtomicBoolean(false);
     final private Object playerLock = new Object();
     private AtomicDouble normalizedGain = new AtomicDouble();
-    private AtomicBoolean loop = new AtomicBoolean(false);
+    private AtomicBoolean looping = new AtomicBoolean(false);    
     
     /* The fade direction is 1 for up, -1 for down */
     final private static int DIR_UP = 1;
@@ -72,14 +72,41 @@ public class MusicPlayer
         {
             try
             {
-
-                player.play(key);
-
-            } catch (Exception ex)
+                player.play(key);                
+            }
+            catch (Exception ex)
             {
                 CouchLogger.get().recordException(getClass(), ex);
             }
         }
+
+        waitThread = new Thread("MusicPlayerWaitThread")
+        {
+            @Override
+            public void run()
+            {
+                while (true)
+                {
+                    try
+                    {
+                        if (player.playing())
+                            break;
+                    
+                        Thread.sleep(WAIT_PERIOD);
+                    }
+                    catch (InterruptedException ex)
+                    {
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        CouchLogger.get().recordException(getClass(), ex);
+                    }
+                } // end while
+            } // end thread
+        };
+        
+        waitThread.start();
     }
 
     public void stop()
@@ -178,7 +205,7 @@ public class MusicPlayer
             }
         }
 
-        fadeThread = new Thread()
+        fadeThread = new Thread("MusicPlayerFadeThread")
         {
             final private double targetNormalizedGain = nGain;
 
@@ -231,7 +258,7 @@ public class MusicPlayer
      */
     public boolean isLooping()
     {
-        return loop.get();
+        return looping.get();
     }
 
     /**
@@ -240,17 +267,22 @@ public class MusicPlayer
      * @param loop
      */
     public void setLooping(boolean loop)
-    {
-        this.loop.set(loop);
+    {        
         player.setLooping(key, loop);
+        looping.set(loop);
+    }    
+
+    private boolean isWaiting()
+    {
+        return waitThread != null && waitThread.isAlive();
     }
 
     /**
      * Is the player at the end of the track?
      */
     public synchronized boolean isFinished()
-    {
-        return !player.playing(key);
+    {        
+        return !isWaiting() && !player.playing(key);
     }
 
     /**
@@ -265,7 +297,7 @@ public class MusicPlayer
      */
     public void stopAtGain(final double nGain)
     {
-        stopThread = new Thread()
+        stopThread = new Thread("MusicPlayerStopThread")
         {
             final private double targetNormalizedGain = nGain;
 
