@@ -22,12 +22,10 @@ import ca.couchware.wezzle2d.ui.Box;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.IButton;
 import ca.couchware.wezzle2d.ui.SliderBar;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
  * The play now group, which holds all the configuration options for playing

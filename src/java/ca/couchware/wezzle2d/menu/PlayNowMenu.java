@@ -18,7 +18,6 @@ import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.IResettable;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
-import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.manager.MusicManager.Theme;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -38,7 +37,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 /**
  * The play now group, which holds all the configuration options for playing

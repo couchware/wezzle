@@ -11,7 +11,7 @@ package ca.couchware.wezzle2d.audio;
  */
 public enum Sound
 {
-
+    ACHIEVEMENT(3),
     BOMB(3),
     LINE_1(3),
     LINE_2(2),
@@ -25,8 +25,7 @@ public enum Sound
     CLICK_LIGHT(1),
     LEVEL_UP(1),
     STAR(1),
-    ROCKET(3),
-    ACHIEVEMENT(3);
+    ROCKET(3);
 
     /** The number of buffers this clip needs. */
     final private int numberOfBuffers;

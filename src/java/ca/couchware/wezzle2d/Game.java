@@ -49,11 +49,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 import paulscode.sound.SoundSystemJPCT;
+import paulscode.sound.codecs.CodecJOgg;
+import paulscode.sound.codecs.CodecWav;
 import paulscode.sound.libraries.LibraryJOAL;
 
 /**
@@ -76,7 +76,8 @@ public class Game implements IWindowCallback
 {
     //--------------------------------------------------------------------------
     // Final & Static Members
-    //--------------------------------------------------------------------------                                                   
+    //--------------------------------------------------------------------------
+    
     /** The manager hub. */
     final private ManagerHub hub = ManagerHub.newInstance();
     /** The width of the screen. */
@@ -101,9 +102,11 @@ public class Game implements IWindowCallback
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
     /** The copyright. */
     final public static String COPYRIGHT = "\u00A9 2010 Couchware Inc.";
+
     //--------------------------------------------------------------------------
     // Members
-    //--------------------------------------------------------------------------                  
+    //--------------------------------------------------------------------------
+    
     /** The loader. */
     public Loader loader;
     /** The main menu. */
@@ -122,9 +125,11 @@ public class Game implements IWindowCallback
     private Tracker tracker;
     /** The window that is being used to render the game. */
     private IWindow win;
+
     //--------------------------------------------------------------------------
     // Private Members
-    //--------------------------------------------------------------------------                                 
+    //--------------------------------------------------------------------------
+    
     /** The parent of the game (used in applet mode). */
     final private Canvas parent;
     /** The current build number. */
@@ -172,13 +177,18 @@ public class Game implements IWindowCallback
     //--------------------------------------------------------------------------
     // Constructor
     //--------------------------------------------------------------------------
+
     static
     {
         SoundSystemConfig.setSoundFilesPackage("");
         try
         {
+            SoundSystemConfig.addLibrary( LibraryJOAL.class );
+            SoundSystemConfig.setCodec( "wav", CodecWav.class );
+            SoundSystemConfig.setCodec( "ogg", CodecJOgg.class );
             soundSystem = new SoundSystemJPCT(LibraryJOAL.class);
-        } catch (SoundSystemException ex)
+        }
+        catch (SoundSystemException ex)
         {
             CouchLogger.get().recordException(Game.class, ex);
         }
@@ -1035,6 +1045,7 @@ public class Game implements IWindowCallback
             CouchLogger.get().recordMessage(this.getClass(), "Sound manager stopped");
 
             soundSystem.cleanup();
+            
         } catch (Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);

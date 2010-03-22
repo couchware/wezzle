@@ -5,6 +5,7 @@
 package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.Game;
+import java.util.UUID;
 import paulscode.sound.SoundSystemJPCT;
 
 /**
@@ -18,7 +19,7 @@ public class SoundPlayer
 
     private double normalizedGain;
     private SoundSystemJPCT player = Game.getSoundSystem();
-    private String key = String.valueOf(this.hashCode());
+    private String key = UUID.randomUUID().toString();
 
     public SoundPlayer(String path)
     {
