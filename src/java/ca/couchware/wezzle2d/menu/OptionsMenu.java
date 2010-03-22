@@ -34,10 +34,7 @@ import java.util.List;
  * @author cdmckay
  */
 public class OptionsMenu extends AbstractMenu
-{
-    final private static int MIN_QUALITY = 0;       
-    final private static int MAX_QUALITY = 4;
-
+{    
     final private static int MIN_VOLUME = 0;
     final private static int MAX_VOLUME = 100;
 

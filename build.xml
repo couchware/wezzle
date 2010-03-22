@@ -20,6 +20,12 @@
         </copy>
     </target>
 
+    <target name="native-windows-jar" depends="jar">
+        <jar destfile="${dist.dir}/lib/native/windows_natives.jar">
+            <fileset dir="lib/native/windows" />
+        </jar>
+    </target>
+
     <target name="macosx" depends="test,jar" description="Build the Mac OS X version of Wezzle">
         <!-- This copies the native LWJGL library. -->
         <copy todir="${dist.dir}/lib/native/macosx">
@@ -27,11 +33,23 @@
         </copy>
     </target>
 
+    <target name="native-macosx-jar" depends="jar">
+        <jar destfile="${dist.dir}/lib/native/macosx_natives.jar">
+            <fileset dir="lib/native/macosx" />
+        </jar>
+    </target>
+
     <target name="linux" depends="test,jar" description="Build the Linux version of Wezzle">
         <!-- This copies the native LWJGL library. -->
         <copy todir="${dist.dir}/lib/native/linux">
             <fileset dir="lib/native/linux" excludes="*.jar"/>
         </copy>
+    </target>
+
+    <target name="native-linux-jar" depends="jar">
+        <jar destfile="${dist.dir}/lib/native/linux_natives.jar">
+            <fileset dir="lib/native/linux" />
+        </jar>
     </target>
 
     <!-- This task creates the .exe for Windows. -->
@@ -97,7 +115,9 @@
         <nsis script="./opt/nsis/installer.nsi"/>
     </target>
 
-    <target name="applet-base" depends="set-applet,jar,unset-applet" description="Build the Wezzle Applet Base">
+    <target name="native-jars" depends="native-windows-jar,native-macosx-jar,native-linux-jar" description="Build all native JARs"/>
+
+    <target name="applet" depends="set-applet,native-jars,unset-applet" description="Build the Wezzle Applet">
 
         <!-- Delete resources.jar and re-build it with fewer resources. -->        
         <delete file="${dist.dir}/lib/resources.jar" />
@@ -121,36 +141,23 @@
         <mkdir dir="${dist.dir}/applet" />       
 
         <copy todir="${dist.dir}/applet">
-            <fileset dir="applet/common"/>
+            <fileset dir="applet"/>
             <fileset dir="${dist.dir}" includes="Wezzle.jar" />
-            <fileset dir="${dist.dir}" includes="lib/*.jar" />
+            <fileset dir="${dist.dir}" includes="lib/*.jar" />            
         </copy>
 
-        <!--
+        <copy todir="${dist.dir}/applet/lib/lwjgl">
+            <fileset dir="${dist.dir}/lib/native" includes="*.jar" />
+        </copy>        
+        
         <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
-            <path>
-                <fileset dir="${dist.dir}/applet" includes="Wezzle.jar" />
-                <fileset dir="${dist.dir}/applet" includes="lib/lwjgl/lwjgl_util_applet.jar" />
+            <path>                
+                <fileset dir="${dist.dir}/applet/lib/lwjgl" includes="lwjgl_util_applet.jar,*_natives.jar" />
+                <fileset dir="${dist.dir}/applet/lib" includes="SoundSystemJPCT.jar,LibraryJOAL.jar,joal.jar" />
             </path>
         </signjar>
-        -->
-    </target>
-
-    <target name="applet-plugin1" depends="applet-base" description="Build the Wezzle Applet optimized for plugin1">
-
-        <copy todir="${dist.dir}/applet">
-            <fileset dir="applet/plugin1"/>
-        </copy>
-
-    </target>
-
-    <target name="applet-plugin2" depends="applet-base" description="Build the Wezzle Applet optimized for plugin2">
-
-        <copy todir="${dist.dir}/applet">
-            <fileset dir="applet/plugin2"/>
-        </copy>
-
-    </target>
+        
+    </target>    
 
     <!-- This target excludes the resources from the main JAR. -->
     <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available+main.class+mkdist.available" name="-do-jar-with-libraries">

@@ -277,12 +277,20 @@ public class MusicPlayer
         return waitThread != null && waitThread.isAlive();
     }
 
+    private boolean isPlaying()
+    {
+        synchronized (playerLock)
+        {
+            return player.playing(key);
+        }
+    }
+
     /**
      * Is the player at the end of the track?
      */
-    public synchronized boolean isFinished()
+    public boolean isFinished()
     {        
-        return !isWaiting() && !player.playing(key);
+        return !isWaiting() && !isPlaying();
     }
 
     /**
