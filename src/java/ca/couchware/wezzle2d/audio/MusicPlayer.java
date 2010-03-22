@@ -35,7 +35,6 @@ public class MusicPlayer
     final private Object playerLock = new Object();
     private AtomicDouble normalizedGain = new AtomicDouble();
     private AtomicBoolean loop = new AtomicBoolean(false);
-    //private AtomicBoolean finished = new AtomicBoolean(false);
 
     /**
      * The constructor.
@@ -63,12 +62,6 @@ public class MusicPlayer
 
     public void play()
     {
-//        if (isFinished())
-//        {
-//            CouchLogger.get().recordWarning(getClass(), "Attempted to play audio that was already finished");
-//            return;
-//        }
-
         synchronized (playerLock)
         {
             try
