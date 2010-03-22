@@ -22,26 +22,26 @@ public class MusicPlayer
 {
     private static final double MIN_GAIN = 0.0;
     private static final double MAX_GAIN = 1.0;
-    private static final double EPSILON = 0.001;
+    private static final double EPSILON = 0.01;
     private static final double FADE_DELTA = 0.02;
     private static final int FADE_PERIOD = 50;
     private static final int STOP_PERIOD = 250;
     public static SoundSystemJPCT player = Game.getSoundSystem();
     private String key;
     private Thread fadeThread;
-    private Thread stopThread;
+    private Thread stopThread;    
     private AtomicBoolean cancelFade = new AtomicBoolean(false);
     private AtomicBoolean cancelStop = new AtomicBoolean(false);
     final private Object playerLock = new Object();
     private AtomicDouble normalizedGain = new AtomicDouble();
     private AtomicBoolean loop = new AtomicBoolean(false);
-    private AtomicBoolean finished = new AtomicBoolean(false);
+    //private AtomicBoolean finished = new AtomicBoolean(false);
 
     /**
      * The constructor.
      */
     private MusicPlayer(String path, String key)
-    {
+    {        
         this.key = key;
         open(path);
     }
@@ -63,11 +63,11 @@ public class MusicPlayer
 
     public void play()
     {
-        if (finished.get())
-        {
-            CouchLogger.get().recordWarning(getClass(), "Attempted to play audio that was already finished");
-            return;
-        }
+//        if (isFinished())
+//        {
+//            CouchLogger.get().recordWarning(getClass(), "Attempted to play audio that was already finished");
+//            return;
+//        }
 
         synchronized (playerLock)
         {
@@ -107,8 +107,6 @@ public class MusicPlayer
         {
             CouchLogger.get().recordException(getClass(), ex);
         }
-
-        finished.set(false);
     }
 
     public void pause()
@@ -141,8 +139,7 @@ public class MusicPlayer
 
     public void rewind()
     {
-       player.rewind(key);
-       finished.set(false);
+       player.rewind(key);       
     }
 
     public void setNormalizedGain(double nGain)
@@ -169,7 +166,7 @@ public class MusicPlayer
      * @param targetGain The target gain to fade to, from 0.0 to 1.0.    
      */
     public void fadeToGain(final double nGain)
-    {
+    {        
         if (fadeThread != null && fadeThread.isAlive())
         {
             try
@@ -199,7 +196,7 @@ public class MusicPlayer
                     if (cancelFade.get()
                             || NumUtil.equalsDouble(n, targetNormalizedGain, EPSILON))
                     {
-                        // End execution.                        
+                        // End execution.
                         break;
                     }
 
@@ -249,12 +246,9 @@ public class MusicPlayer
     /**
      * Is the player at the end of the track?
      */
-    public boolean isFinished()
+    public synchronized boolean isFinished()
     {
-        if(!player.playing(key))
-            finished.set(true);
-        
-        return finished.get();
+        return !player.playing(key);
     }
 
     /**
@@ -284,7 +278,7 @@ public class MusicPlayer
 
                     if (NumUtil.equalsDouble(targetGain, n, EPSILON)
                             || cancelStop.get()
-                            || finished.get())
+                            || isFinished())
                     {
                         synchronized (playerLock)
                         {

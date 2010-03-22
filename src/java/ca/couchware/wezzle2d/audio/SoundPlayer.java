@@ -15,6 +15,7 @@ import paulscode.sound.SoundSystemJPCT;
  */
 public class SoundPlayer
 {
+
     private double normalizedGain;
     private SoundSystemJPCT player = Game.getSoundSystem();
     private String key = String.valueOf(this.hashCode());
@@ -24,7 +25,6 @@ public class SoundPlayer
         player.newSource(false, key, path, false);
     }
 
-    // Plays as a sound effect only.
     public void play()
     {
         player.play(key);
@@ -34,7 +34,6 @@ public class SoundPlayer
      * A method to load a WAV file. This method assumes .wav format.
      * @param stream - A markable inputstream.
      */
-  
     public void close()
     {
         if(player.playing(key))
@@ -43,15 +42,13 @@ public class SoundPlayer
 
     /**
      * Sets gain (i.e. volume) value.     
-     * 
      * Linear scale 0.0 - 1.0.
-     * Threshold Coefficent : 1/2 to avoid saturation.
      * 
      * @param fGain The gain to set.     
      */
     public void setNormalizedGain(double nGain)
     {
-        player.setVolume(key, (float)nGain);
+        player.setVolume(key, (float) nGain);
         this.normalizedGain = nGain;
     }
 
