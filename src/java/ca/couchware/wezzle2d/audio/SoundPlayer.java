@@ -6,7 +6,8 @@ package ca.couchware.wezzle2d.audio;
 
 import ca.couchware.wezzle2d.Game;
 import java.util.UUID;
-import paulscode.sound.SoundSystemJPCT;
+import paulscode.sound.SoundSystem;
+import paulscode.sound.SoundSystemConfig;
 
 /**
  * A class to hold an audio file.  This is used by both the sound and music
@@ -18,12 +19,12 @@ public class SoundPlayer
 {
 
     private double normalizedGain;
-    private SoundSystemJPCT player = Game.getSoundSystem();
+    private SoundSystem player = Game.getSoundSystem();
     private String key = UUID.randomUUID().toString();
 
     public SoundPlayer(String path)
     {
-        player.newSource(false, key, path, false);
+        player.newSource(false, key, path, false, 0, 0, 0, SoundSystemConfig.ATTENUATION_NONE, 1);
     }
 
     public void play()

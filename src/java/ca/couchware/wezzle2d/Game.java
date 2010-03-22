@@ -49,9 +49,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
-import paulscode.sound.SoundSystemJPCT;
 import paulscode.sound.codecs.CodecJOgg;
 import paulscode.sound.codecs.CodecWav;
 import paulscode.sound.libraries.LibraryJOAL;
@@ -172,7 +172,7 @@ public class Game implements IWindowCallback
      * The game difficulty setting.
      */
     private GameDifficulty difficulty = GameDifficulty.NORMAL;
-    private static SoundSystemJPCT soundSystem;
+    private static SoundSystem soundSystem;
 
     //--------------------------------------------------------------------------
     // Constructor
@@ -183,10 +183,11 @@ public class Game implements IWindowCallback
         SoundSystemConfig.setSoundFilesPackage("");
         try
         {
+            soundSystem = new SoundSystem(LibraryJOAL.class);
             SoundSystemConfig.addLibrary( LibraryJOAL.class );
             SoundSystemConfig.setCodec( "wav", CodecWav.class );
             SoundSystemConfig.setCodec( "ogg", CodecJOgg.class );
-            soundSystem = new SoundSystemJPCT(LibraryJOAL.class);
+            
         }
         catch (SoundSystemException ex)
         {
@@ -194,7 +195,7 @@ public class Game implements IWindowCallback
         }
     }
 
-    public static SoundSystemJPCT getSoundSystem()
+    public static SoundSystem getSoundSystem()
     {
         return soundSystem;
     }

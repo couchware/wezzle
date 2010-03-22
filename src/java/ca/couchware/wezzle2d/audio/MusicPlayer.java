@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemJPCT;
 
@@ -26,7 +27,7 @@ public class MusicPlayer
     private static final int FADE_PERIOD = 50;
     private static final int STOP_PERIOD = 250;
     private static final int WAIT_PERIOD = 250;
-    public static SoundSystemJPCT player = Game.getSoundSystem();
+    public static SoundSystem player = Game.getSoundSystem();
     private String key;
     private Thread fadeThread;
     private Thread stopThread;
@@ -63,7 +64,8 @@ public class MusicPlayer
 
     private void open(String path)
     {
-        player.newStreamingSource(true, key, path, false, SoundSystemConfig.ATTENUATION_NONE);
+        player.newStreamingSource(true, key, path, false, 0, 0, 0, SoundSystemConfig.ATTENUATION_NONE, 1);
+       // player.newStreamingSource(true, key, path, false, SoundSystemConfig.ATTENUATION_NONE);
     }
 
     public void play()
