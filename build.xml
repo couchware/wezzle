@@ -153,7 +153,7 @@
         <signjar lazy="true" alias="couchware" keystore="couchware.ks" storepass="p00bags">
             <path>                
                 <fileset dir="${dist.dir}/applet/lib/lwjgl" includes="lwjgl_util_applet.jar,*_natives.jar" />
-                <fileset dir="${dist.dir}/applet/lib" includes="SoundSystemJPCT.jar,LibraryJOAL.jar,joal.jar" />
+                <fileset dir="${dist.dir}/applet/lib" includes="SoundSystem.jar" />
             </path>
         </signjar>
         
