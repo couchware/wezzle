@@ -47,9 +47,8 @@ public class MusicPlayer
     /**
      * The constructor.
      */
-    private MusicPlayer(String path, String key)
+    private MusicPlayer(String path)
     {        
-        //this.key = key;
         open(path);
     }
 
@@ -58,15 +57,14 @@ public class MusicPlayer
      * 
      * @return
      */
-    public static MusicPlayer newInstance(String path, String key)
+    public static MusicPlayer newInstance(String path)
     {
-        return new MusicPlayer(path, key);
+        return new MusicPlayer(path);
     }
 
     private void open(String path)
     {
         player.newStreamingSource(true, key, path, false, 0, 0, 0, SoundSystemConfig.ATTENUATION_NONE, 1);
-       // player.newStreamingSource(true, key, path, false, SoundSystemConfig.ATTENUATION_NONE);
     }
 
     public void play()
