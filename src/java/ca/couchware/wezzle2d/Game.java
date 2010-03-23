@@ -54,7 +54,7 @@ import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 import paulscode.sound.codecs.CodecJOgg;
 import paulscode.sound.codecs.CodecWav;
-import paulscode.sound.libraries.LibraryJOAL;
+import paulscode.sound.libraries.LibraryLWJGLOpenAL;
 
 /**
  * The main hook of our game. This class with both act as a manager for the
@@ -183,8 +183,8 @@ public class Game implements IWindowCallback
         SoundSystemConfig.setSoundFilesPackage("");
         try
         {
-            soundSystem = new SoundSystem(LibraryJOAL.class);
-            SoundSystemConfig.addLibrary(LibraryJOAL.class);
+            soundSystem = new SoundSystem(LibraryLWJGLOpenAL.class);
+            SoundSystemConfig.addLibrary(LibraryLWJGLOpenAL.class);
             SoundSystemConfig.setCodec("wav", CodecWav.class);
             SoundSystemConfig.setCodec("ogg", CodecJOgg.class);
             
