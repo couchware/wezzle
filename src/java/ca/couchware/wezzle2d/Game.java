@@ -184,9 +184,9 @@ public class Game implements IWindowCallback
         try
         {
             soundSystem = new SoundSystem(LibraryJOAL.class);
-            SoundSystemConfig.addLibrary( LibraryJOAL.class );
-            SoundSystemConfig.setCodec( "wav", CodecWav.class );
-            SoundSystemConfig.setCodec( "ogg", CodecJOgg.class );
+            SoundSystemConfig.addLibrary(LibraryJOAL.class);
+            SoundSystemConfig.setCodec("wav", CodecWav.class);
+            SoundSystemConfig.setCodec("ogg", CodecJOgg.class);
             
         }
         catch (SoundSystemException ex)

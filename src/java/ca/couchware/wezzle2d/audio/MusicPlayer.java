@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
-import paulscode.sound.SoundSystemJPCT;
 
 /**
  * An extension to the JavaZoom BasicPlayer class that incorporates more
@@ -27,7 +26,7 @@ public class MusicPlayer
     private static final int FADE_PERIOD = 50;
     private static final int STOP_PERIOD = 250;
     private static final int WAIT_PERIOD = 250;
-    public static SoundSystem player = Game.getSoundSystem();
+    private static SoundSystem player = Game.getSoundSystem();
     private String key;
     private Thread fadeThread;
     private Thread stopThread;
