@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.audio;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import paulscode.sound.SoundSystem;
@@ -27,7 +28,7 @@ public class MusicPlayer
     private static final int STOP_PERIOD = 250;
     private static final int WAIT_PERIOD = 250;
     private static SoundSystem player = Game.getSoundSystem();
-    private String key;
+    private String key = UUID.randomUUID().toString();
     private Thread fadeThread;
     private Thread stopThread;
     private Thread waitThread;
@@ -35,6 +36,7 @@ public class MusicPlayer
     private AtomicBoolean cancelStop = new AtomicBoolean(false);
     final private Object playerLock = new Object();
     private AtomicDouble normalizedGain = new AtomicDouble();
+    private AtomicBoolean stopped = new AtomicBoolean(true);
     private AtomicBoolean looping = new AtomicBoolean(false);    
     
     /* The fade direction is 1 for up, -1 for down */
@@ -47,7 +49,7 @@ public class MusicPlayer
      */
     private MusicPlayer(String path, String key)
     {        
-        this.key = key;
+        //this.key = key;
         open(path);
     }
 
@@ -80,6 +82,8 @@ public class MusicPlayer
                 CouchLogger.get().recordException(getClass(), ex);
             }
         }
+
+        stopped.set(false);
 
         waitThread = new Thread("MusicPlayerWaitThread")
         {
@@ -130,7 +134,10 @@ public class MusicPlayer
             {
                 player.stop(key);
             }
-        } catch (Exception ex)
+
+            stopped.set(true);
+        }
+        catch (Exception ex)
         {
             CouchLogger.get().recordException(getClass(), ex);
         }
@@ -286,12 +293,17 @@ public class MusicPlayer
         }
     }
 
+    private boolean isStopped()
+    {
+        return stopped.get();
+    }
+
     /**
      * Is the player at the end of the track?
      */
     public boolean isFinished()
     {        
-        return !isWaiting() && !isPlaying();
+        return !isWaiting() && !isStopped() && !isPlaying();
     }
 
     /**
@@ -334,6 +346,7 @@ public class MusicPlayer
                             try
                             {
                                 player.stop(key);
+                                stopped.set(true);
                                 break;
                             } catch (Exception e)
                             {

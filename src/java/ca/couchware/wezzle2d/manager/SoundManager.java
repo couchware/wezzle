@@ -78,7 +78,7 @@ public class SoundManager implements IResettable
      * @param executor
      * @param propertyMan
      */
-    private SoundManager(Executor executor, SettingsManager settingsMan) 
+    private SoundManager(SettingsManager settingsMan) 
     {                        
         this.settingsMan = settingsMan;
         
@@ -104,9 +104,9 @@ public class SoundManager implements IResettable
      * @param userProperties
      * @return
      */
-    public static SoundManager newInstance(Executor executor, SettingsManager settingsMan)
+    public static SoundManager newInstance(SettingsManager settingsMan)
     {
-        return new SoundManager(executor, settingsMan);
+        return new SoundManager(settingsMan);
     }
     
     /**

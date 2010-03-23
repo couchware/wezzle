@@ -67,12 +67,7 @@ public class MusicManager
     /**
      * The current music theme.  Default to A.
      */
-    private Theme theme = Theme.NONE;
-    
-    /**
-     * A link to the executor that the manager uses to play sounds.
-     */
-    private Executor executor;
+    private Theme theme = Theme.NONE;        
     
     /**
      * The settings manager.
@@ -108,10 +103,9 @@ public class MusicManager
     /**
      * Creates the song list.
      */
-    private MusicManager(Executor executor, SettingsManager settingsMan) 
+    private MusicManager(SettingsManager settingsMan) 
     {        
-        // The executor.
-        this.executor = executor;
+        // The executor.        
         this.settingsMan = settingsMan;
                
         // Initiate the array list and song number.
@@ -127,9 +121,9 @@ public class MusicManager
     /**
      * Static constructor.
      */
-    public static MusicManager newInstance(Executor executor, SettingsManager settingsMan)
+    public static MusicManager newInstance(SettingsManager settingsMan)
     {
-        return new MusicManager(executor, settingsMan);
+        return new MusicManager(settingsMan);
     }           
     
     public void setTheme(Theme theme)
