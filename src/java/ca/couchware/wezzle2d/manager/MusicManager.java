@@ -97,7 +97,9 @@ public class MusicManager
     /**
      * The normalized gain.
      */
-    private double normalizedGain = 0.0; 
+    private double normalizedGain = 0.0;
+
+    private static final Map<String, MusicPlayer> musicPlayerCache = new HashMap<String, MusicPlayer>();
     
     /**
      * Creates the song list.
@@ -396,7 +398,18 @@ public class MusicManager
      */
     private static MusicPlayer createPlayer(String path, String sourcename)
     {
+        if (musicPlayerCache.containsKey(sourcename))
+        {
+            MusicPlayer player = musicPlayerCache.get(sourcename);
+            player.stop();
+            player.rewind();
+            CouchLogger.get().recordMessage(MusicManager.class, "returning cached player");
+            return player;
+        }
+
         MusicPlayer mp = MusicPlayer.newInstance(path, sourcename);
+
+        musicPlayerCache.put(sourcename, mp);
         return mp;
     }
     
