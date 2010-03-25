@@ -7,7 +7,6 @@ package ca.couchware.wezzle2d.audio;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import paulscode.sound.SoundSystem;
@@ -28,7 +27,7 @@ public class MusicPlayer
     private static final int STOP_PERIOD = 250;
     private static final int WAIT_PERIOD = 250;
     private static SoundSystem player = Game.getSoundSystem();
-    private String key = UUID.randomUUID().toString();
+    private String key;
     private Thread fadeThread;
     private Thread stopThread;
     private Thread waitThread;
@@ -47,8 +46,9 @@ public class MusicPlayer
     /**
      * The constructor.
      */
-    private MusicPlayer(String path)
+    private MusicPlayer(String path, String key)
     {        
+        this.key = key;
         open(path);
     }
 
@@ -57,9 +57,9 @@ public class MusicPlayer
      * 
      * @return
      */
-    public static MusicPlayer newInstance(String path)
+    public static MusicPlayer newInstance(String path, String key)
     {
-        return new MusicPlayer(path);
+        return new MusicPlayer(path, key);
     }
 
     private void open(String path)
