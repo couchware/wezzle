@@ -206,20 +206,18 @@ public class CouchLogger
      */
     public void setLogLevel(String logLevel)
     {
-        return;
+        if (null == logLevel)
+            throw new IllegalArgumentException("Log level must not be null");
 
-//        if (null == logLevel)
-//            throw new IllegalArgumentException("Log level must not be null");
-//
-//        try
-//        {
-//            Level level = Level.valueOf(logLevel);
-//            logger.setLevel(level);
-//        }
-//        catch(IllegalArgumentException e)
-//        {
-//            logger.setLevel(Level.WARN);
-//        }
+        try
+        {
+            Level level = Level.valueOf(logLevel);
+            logger.setLevel(level);
+        }
+        catch(IllegalArgumentException e)
+        {
+            logger.setLevel(Level.WARN);
+        }
     }
 
     private static String getTimeStamp()

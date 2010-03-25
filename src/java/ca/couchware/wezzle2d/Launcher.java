@@ -136,6 +136,9 @@ public class Launcher extends Applet
         Button.setDefaultColor(settingsMan.getColor(Key.GAME_COLOR_PRIMARY));
         Achievement.Level.initializeAchievementColorMap(settingsMan);
 
+        // Set up log level.
+        CouchLogger.get().setLogLevel(settingsMan.getString(Key.DEBUG_LOG_LEVEL));
+
         try
         {
             final String serialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);

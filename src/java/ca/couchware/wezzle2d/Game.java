@@ -386,10 +386,7 @@ public class Game implements IWindowCallback
         // Make sure the listener and settings managers are ready.
         hub.initialize(win, this,
                 EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS));
-
-        // Set the log level.
-        CouchLogger.get().setLogLevel(hub.settingsMan.getString(Key.DEBUG_LOG_LEVEL));
-
+               
         // Print the build number.        
         Class cls = this.getClass();
         CouchLogger.get().recordMessage(cls, "Date: " + (new Date()));
