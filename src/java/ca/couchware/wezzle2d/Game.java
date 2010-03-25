@@ -172,11 +172,8 @@ public class Game implements IWindowCallback
      * The game difficulty setting.
      */
     private GameDifficulty difficulty = GameDifficulty.NORMAL;
-    private static SoundSystem soundSystem;
 
-    //--------------------------------------------------------------------------
-    // Constructor
-    //--------------------------------------------------------------------------
+    private static SoundSystem soundSystem;
 
     static
     {
