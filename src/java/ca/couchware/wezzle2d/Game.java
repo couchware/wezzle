@@ -181,6 +181,7 @@ public class Game implements IWindowCallback
         try
         {
             soundSystem = new SoundSystem(LibraryLWJGLOpenAL.class);
+            //SoundSystemConfig.set
             SoundSystemConfig.addLibrary(LibraryLWJGLOpenAL.class);
             SoundSystemConfig.setCodec("wav", CodecWav.class);
             SoundSystemConfig.setCodec("ogg", CodecJOgg.class);
@@ -516,7 +517,7 @@ public class Game implements IWindowCallback
                 hub.musicMan.play();
 
                 // See if the music is off.
-                if (hub.settingsMan.getBool(Key.USER_MUSIC) == false)
+                if (!hub.settingsMan.getBool(Key.USER_MUSIC))
                 {
                     hub.musicMan.setPaused(true);
                 }
@@ -634,7 +635,7 @@ public class Game implements IWindowCallback
         // Update all the group logic.
         hub.groupMan.updateLogic(this, hub);
 
-        // Uphdate the music manager logic.        
+        // Update the music manager logic.        
         hub.musicMan.updateLogic(this, hub);        
 
         // Check to see if we should be showing the board.
@@ -1023,20 +1024,24 @@ public class Game implements IWindowCallback
             {
                 hub.settingsMan.saveSettings();
             }
+
             if (hub.musicMan != null)
             {
                 hub.musicMan.stopAll();
             }
+
             CouchLogger.get().recordMessage(this.getClass(), "Music manager stopped");
+
             if (hub.soundMan != null)
             {
                 hub.soundMan.stopAll();
             }
+            
             CouchLogger.get().recordMessage(this.getClass(), "Sound manager stopped");
 
-            soundSystem.cleanup();
-            
-        } catch (Exception e)
+            soundSystem.cleanup();            
+        }
+        catch (Exception e)
         {
             CouchLogger.get().recordException(this.getClass(), e, true /* Fatal */);
         }

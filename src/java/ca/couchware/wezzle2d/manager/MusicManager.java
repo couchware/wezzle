@@ -88,18 +88,11 @@ public class MusicManager
      * has not been played yet.
      */
     private MusicPlayer player;
-
-    /**
-     * The list of all players in existence.
-     */
-    private Map<String, MusicPlayer> playerMap = new HashMap<String, MusicPlayer>();
-        
-    /**
-     * The normalized gain.
-     */
-    private double normalizedGain = 0.0;
-
+    
+    private final Map<String, MusicPlayer> playerMap = new HashMap<String, MusicPlayer>();
     private static final Map<String, MusicPlayer> musicPlayerCache = new HashMap<String, MusicPlayer>();
+
+    private double normalizedGain = 0.0;
     
     /**
      * Creates the song list.
@@ -383,7 +376,7 @@ public class MusicManager
         // See if there's even something playing.  
         // If there is, then check to see if it's done playing.
         // If it is, then move to the next track and start playing it.
-        if (this.player != null && this.player.isFinished() == true)
+        if (this.player != null && this.player.isFinished())
         {
             next();
             play();
@@ -398,17 +391,17 @@ public class MusicManager
      */
     private static MusicPlayer createPlayer(String path, String sourcename)
     {
+        MusicPlayer mp;
+
         if (musicPlayerCache.containsKey(sourcename))
         {
-            MusicPlayer player = musicPlayerCache.get(sourcename);
-            player.stop();
-            player.rewind();
-            CouchLogger.get().recordMessage(MusicManager.class, "returning cached player");
-            return player;
+            mp = musicPlayerCache.get(sourcename);
+            mp.stop();
+            mp.destroy();            
+            //CouchLogger.get().recordMessage(MusicManager.class, "Returning cached player");
         }
 
-        MusicPlayer mp = MusicPlayer.newInstance(path, sourcename);
-
+        mp = MusicPlayer.newInstance(path);
         musicPlayerCache.put(sourcename, mp);
         return mp;
     }
@@ -417,15 +410,15 @@ public class MusicManager
      * Creates a player for the passed track.
      *
      * @param key
-     * @param track
+     * @param music
      * @return
      */
-    public MusicPlayer createPlayer(String key, Music track)
+    public MusicPlayer createPlayer(String key, Music music)
     {
         if (playerMap.containsKey(key))
             this.destroyPlayer(key);        
         
-        MusicPlayer mp = createPlayer(track.getPath(), track.name());
+        MusicPlayer mp = createPlayer(music.getPath(), music.name());
         playerMap.put(key, mp);
         
         return mp;

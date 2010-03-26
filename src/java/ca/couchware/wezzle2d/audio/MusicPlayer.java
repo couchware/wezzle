@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d.audio;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import paulscode.sound.SoundSystem;
@@ -27,7 +28,7 @@ public class MusicPlayer
     private static final int STOP_PERIOD = 250;
     private static final int WAIT_PERIOD = 250;
     private static SoundSystem player = Game.getSoundSystem();
-    private String key;
+    private final String key = UUID.randomUUID().toString();
     private Thread fadeThread;
     private Thread stopThread;
     private Thread waitThread;
@@ -36,6 +37,7 @@ public class MusicPlayer
     final private Object playerLock = new Object();
     private AtomicDouble normalizedGain = new AtomicDouble();
     private AtomicBoolean stopped = new AtomicBoolean(true);
+    private AtomicBoolean paused = new AtomicBoolean(true);
     private AtomicBoolean looping = new AtomicBoolean(false);    
     
     /* The fade direction is 1 for up, -1 for down */
@@ -46,9 +48,8 @@ public class MusicPlayer
     /**
      * The constructor.
      */
-    private MusicPlayer(String path, String key)
+    private MusicPlayer(String path)
     {        
-        this.key = key;
         open(path);
     }
 
@@ -57,9 +58,9 @@ public class MusicPlayer
      * 
      * @return
      */
-    public static MusicPlayer newInstance(String path, String key)
+    public static MusicPlayer newInstance(String path)
     {
-        return new MusicPlayer(path, key);
+        return new MusicPlayer(path);
     }
 
     private void open(String path)
@@ -73,7 +74,7 @@ public class MusicPlayer
         {
             try
             {
-                player.play(key);                
+                player.play(key);
             }
             catch (Exception ex)
             {
@@ -81,6 +82,7 @@ public class MusicPlayer
             }
         }
 
+        paused.set(false);
         stopped.set(false);
 
         waitThread = new Thread("MusicPlayerWaitThread")
@@ -130,7 +132,7 @@ public class MusicPlayer
 
             synchronized (playerLock)
             {
-                player.stop(key);
+                player.stop(key);                
             }
 
             stopped.set(true);
@@ -148,7 +150,9 @@ public class MusicPlayer
             try
             {
                 player.pause(key);
-            } catch (Exception ex)
+                paused.set(true);
+            }
+            catch (Exception ex)
             {
                 CouchLogger.get().recordException(getClass(), ex);
             }
@@ -157,16 +161,7 @@ public class MusicPlayer
 
     public void resume()
     {
-        synchronized (playerLock)
-        {
-            try
-            {
-                player.play(key);
-            } catch (Exception ex)
-            {
-                CouchLogger.get().recordException(getClass(), ex);
-            }
-        }
+        play();
     }
 
     public void rewind()
@@ -291,6 +286,11 @@ public class MusicPlayer
         }
     }
 
+    private boolean isPaused()
+    {
+        return paused.get();
+    }
+
     private boolean isStopped()
     {
         return stopped.get();
@@ -301,7 +301,7 @@ public class MusicPlayer
      */
     public boolean isFinished()
     {        
-        return !isWaiting() && !isStopped() && !isPlaying();
+        return !isWaiting() && !isPaused() && !isStopped() && !isPlaying();
     }
 
     /**
@@ -366,4 +366,11 @@ public class MusicPlayer
 
         stopThread.start();
     }
+
+    public void destroy()
+    {
+        stop();
+        player.removeSource(key);
+    }
+
 }

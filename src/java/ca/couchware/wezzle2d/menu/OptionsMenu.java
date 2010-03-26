@@ -14,6 +14,7 @@ import ca.couchware.wezzle2d.audio.Sound;
 import ca.couchware.wezzle2d.graphics.IEntity;
 import ca.couchware.wezzle2d.manager.LayerManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.ITextLabel;
 import ca.couchware.wezzle2d.ui.RadioGroup;
@@ -597,6 +598,9 @@ public class OptionsMenu extends AbstractMenu
             {                
                 if (isSwitchedOn)
                 {
+                    final int intGain = hub.settingsMan.getInt(Settings.Key.USER_MUSIC_VOLUME);
+                    final double gain = (double) intGain / 100.0;
+                    this.menuPlayer.setNormalizedGain(gain);
                     this.menuPlayer.resume();
                 }
                 else
@@ -624,10 +628,8 @@ public class OptionsMenu extends AbstractMenu
             //hub.musicMan.setNormalizedGain( musicVolumeValueSlider.getVirtualPercent() );
 
             if (!Game.isApplet())
-            {
-                
-                this.menuPlayer.setNormalizedGain( musicVolumeValueSlider.getVirtualPercent() );
-               
+            {                
+                this.menuPlayer.setNormalizedGain( musicVolumeValueSlider.getVirtualPercent() );               
             }
         }
 
