@@ -94,7 +94,7 @@ public class MusicPlayer
                 {
                     try
                     {
-                        if (player.playing())
+                        if (player.playing(key) || paused.get())
                             break;
                     
                         Thread.sleep(WAIT_PERIOD);
@@ -194,6 +194,8 @@ public class MusicPlayer
      */
     public void fadeToGain(final double nGain)
     {
+        //if (isPaused()) return;
+
         if (fadeThread != null && fadeThread.isAlive())
         {
             try

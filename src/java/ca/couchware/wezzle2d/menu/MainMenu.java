@@ -151,17 +151,16 @@ public class MainMenu extends AbstractGroup implements IDrawer, IMenu
             final int intGain = hub.settingsMan.getInt(Settings.Key.USER_MUSIC_VOLUME);
             final double gain = (double) intGain / 100.0;
             this.player.setLooping(true);            
+            this.player.setNormalizedGain( 0.0 );
 
             boolean isOn = SettingsManager.get().getBool(Settings.Key.USER_MUSIC);
             if (isOn)
-            {
-                this.player.setNormalizedGain( 0.0 );
+            {                
                 this.player.play();                
                 this.player.fadeToGain( gain );                
             }
             else
-            {
-                this.player.setNormalizedGain( 0.0 );
+            {                
                 this.player.play();                
                 this.player.pause();
                 //this.player.setNormalizedGain( gain );

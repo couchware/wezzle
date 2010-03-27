@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.manager.LayerManager.Layer;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.ui.Button;
 import ca.couchware.wezzle2d.ui.IButton;
@@ -186,6 +187,13 @@ public class AudioGroup extends AbstractGroup
             SettingsManager.get().setBool(Key.USER_MUSIC, musicOn);
             
             // Set the pausedness.
+            if (musicOn)
+            {
+                final int intGain = hub.settingsMan.getInt(Settings.Key.USER_MUSIC_VOLUME);
+                final double gain = (double) intGain / 100.0;
+                hub.musicMan.setNormalizedGain(gain);
+            }
+
             hub.musicMan.setPaused(!musicOn);           
         } 
         else if ( soundSlider.changed() )

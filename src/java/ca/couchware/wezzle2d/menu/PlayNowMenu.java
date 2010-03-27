@@ -381,6 +381,9 @@ public class PlayNowMenu extends AbstractMenu
 
     private void playTheme(int theme)
     {
+        final boolean isMusicOn = hub.settingsMan.getBool(Key.USER_MUSIC);
+        if (!isMusicOn) return;
+
         for (int i = 0; i < playerList.size(); i++)
         {
             if (i == theme) continue;

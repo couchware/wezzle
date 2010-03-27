@@ -94,10 +94,14 @@ public class Game implements IWindowCallback
     /** The version of the application. */
     final public static int APPLICATION_VERSION_MAJOR = 1;
     final public static int APPLICATION_VERSION_MINOR = 3;
+    final public static int APPLICATION_VERSION_BUGFIX = 1;
     final public static String APPLICATION_DISTRIBUTION = APPLET ? "Web" : "Full";
     final public static String APPLICATION_VERSION =
-            String.format("%d.%d (%s)",
-            APPLICATION_VERSION_MAJOR, APPLICATION_VERSION_MINOR, APPLICATION_DISTRIBUTION);
+            String.format("%d.%d.%d (%s)",
+            APPLICATION_VERSION_MAJOR,
+            APPLICATION_VERSION_MINOR,
+            APPLICATION_VERSION_BUGFIX,
+            APPLICATION_DISTRIBUTION);
     /** The full title of the game. */
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
     /** The copyright. */
@@ -512,16 +516,19 @@ public class Game implements IWindowCallback
 
                 // Queue in the animation manager.
                 hub.gameAnimationMan.add(transition);
-
-                // Start the music.
-                hub.musicMan.play();
-
-                // See if the music is off.
-                if (!hub.settingsMan.getBool(Key.USER_MUSIC))
+                                                
+                if (hub.settingsMan.getBool(Key.USER_MUSIC))
                 {
+                    hub.musicMan.play();
+                }
+                else
+                {
+                    hub.musicMan.setNormalizedGain( 0.0 );
+                    hub.musicMan.play();
                     hub.musicMan.setPaused(true);
                 }
-            } else
+            }
+            else
             {
                 // Fire the mouse events.
                 win.fireMouseEvents();
