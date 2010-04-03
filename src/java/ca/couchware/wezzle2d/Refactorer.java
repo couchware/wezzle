@@ -27,33 +27,39 @@ public class Refactorer implements IResettable
         /** The slower refactor speed, used in tutorials. */
         SLOWER( settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_X ),
             settingsMan.getInt( Key.REFACTOR_SLOWER_SPEED_Y ),
-            settingsMan.getInt( Key.REFACTOR_SLOWER_GRAVITY )),
+            settingsMan.getInt( Key.REFACTOR_SLOWER_GRAVITY ),
+            settingsMan.getInt( Key.REFACTOR_SLOWER_ACCELERATION )),
 
         /** The slow refactor speed, used in tutorials. */
         SLOW( settingsMan.getInt( Key.REFACTOR_SLOW_SPEED_X ),
             settingsMan.getInt( Key.REFACTOR_SLOW_SPEED_Y ),
-            settingsMan.getInt( Key.REFACTOR_SLOW_GRAVITY )),
+            settingsMan.getInt( Key.REFACTOR_SLOW_GRAVITY ),
+            settingsMan.getInt( Key.REFACTOR_SLOW_ACCELERATION )),
 
         /** The normal refactor speed, used during normal operation. */
         NORMAL( settingsMan.getInt( Key.REFACTOR_NORMAL_SPEED_X ),
             settingsMan.getInt( Key.REFACTOR_NORMAL_SPEED_Y ),
-            settingsMan.getInt( Key.REFACTOR_NORMAL_GRAVITY )),
+            settingsMan.getInt( Key.REFACTOR_NORMAL_GRAVITY ),
+            settingsMan.getInt( Key.REFACTOR_NORMAL_ACCELERATION )),
 
         /** The fast refactor speed, used during hard mode. */
         FAST( settingsMan.getInt( Key.REFACTOR_FAST_SPEED_X ),
             settingsMan.getInt( Key.REFACTOR_FAST_SPEED_Y ),
-            settingsMan.getInt( Key.REFACTOR_FAST_GRAVITY )),
+            settingsMan.getInt( Key.REFACTOR_FAST_GRAVITY ),
+            settingsMan.getInt( Key.REFACTOR_FAST_ACCELERATION )),
 
         /** The shift refactor speed, used during gravity shifts. */
         SHIFT( settingsMan.getInt( Key.REFACTOR_SHIFT_SPEED_X ),
             settingsMan.getInt( Key.REFACTOR_SHIFT_SPEED_Y ),
-            settingsMan.getInt( Key.REFACTOR_SHIFT_GRAVITY ));
+            settingsMan.getInt( Key.REFACTOR_SHIFT_GRAVITY ),
+            settingsMan.getInt( Key.REFACTOR_SHIFT_ACCELERATION ));
         
-        private int horizontalSpeed;
-        private int verticalSpeed;
-        private int gravity;
+        final private int horizontalSpeed;
+        final private int verticalSpeed;
+        final private int gravity;
+        final private int acceleration;
 
-        RefactorSpeed(int horizontal, int vertical, int gravity)
+        RefactorSpeed(int horizontal, int vertical, int gravity, int acceleration)
         {
             if ( horizontal == 0 )            
                 throw new IllegalArgumentException( "Horzontal speed must > 0" );
@@ -64,9 +70,13 @@ public class Refactorer implements IResettable
             if ( gravity < 0 )
                 throw new IllegalArgumentException( "Gravity must be >= 0" );
 
+            if ( acceleration < 0 )
+                throw new IllegalArgumentException( "Acceleration must be >= 0" );
+
             this.horizontalSpeed = horizontal;
             this.verticalSpeed = vertical;
             this.gravity = gravity;
+            this.acceleration = acceleration;
         }
 
         public int getHorizontalSpeed()
@@ -82,6 +92,11 @@ public class Refactorer implements IResettable
         public int getGravity()
         {
             return gravity;
+        }
+
+        public int getAcceleration()
+        {
+            return acceleration;
         }
 
     }   
@@ -295,7 +310,7 @@ public class Refactorer implements IResettable
 
             // Start left refactor.
             refactorAnimationList =
-                    hub.boardMan.startHorizontalShift( speed.getHorizontalSpeed() );
+                    hub.boardMan.startHorizontalShift( speed.getHorizontalSpeed(), speed.getAcceleration() );
 
             // Add to the animation manager.
             // No need to worry about removing them, that'll happen

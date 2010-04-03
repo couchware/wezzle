@@ -94,7 +94,7 @@ public class Game implements IWindowCallback
     /** The version of the application. */
     final public static int APPLICATION_VERSION_MAJOR = 1;
     final public static int APPLICATION_VERSION_MINOR = 3;
-    final public static int APPLICATION_VERSION_BUGFIX = 1;
+    final public static int APPLICATION_VERSION_BUGFIX = 2;
     final public static String APPLICATION_DISTRIBUTION = APPLET ? "Web" : "Full";
     final public static String APPLICATION_VERSION =
             String.format("%d.%d.%d (%s)",
@@ -365,14 +365,10 @@ public class Game implements IWindowCallback
         List<ITutorial> tutorials = new ArrayList<ITutorial>();
         tutorials.add(new BasicTutorial(win, refactorer));
         tutorials.add(new RotateTutorial(win, refactorer));
-        tutorials.add(new RocketTutorial(win, refactorer));
-
-        if (!isApplet())
-        {
-            tutorials.add(new GravityTutorial(win, refactorer));
-            tutorials.add(new BombTutorial(win, refactorer));
-            tutorials.add(new StarTutorial(win, refactorer));
-        }
+        tutorials.add(new RocketTutorial(win, refactorer));       
+        tutorials.add(new GravityTutorial(win, refactorer));
+        tutorials.add(new BombTutorial(win, refactorer));
+        tutorials.add(new StarTutorial(win, refactorer));
 
         for (ITutorial t : tutorials)
         {

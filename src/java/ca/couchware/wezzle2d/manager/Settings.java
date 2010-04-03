@@ -93,22 +93,27 @@ public class Settings
         REFACTOR_SLOWER_SPEED_X(Integer.class),
         REFACTOR_SLOWER_SPEED_Y(Integer.class),
         REFACTOR_SLOWER_GRAVITY(Integer.class),
+        REFACTOR_SLOWER_ACCELERATION(Integer.class),
 
         REFACTOR_SLOW_SPEED_X(Integer.class),
         REFACTOR_SLOW_SPEED_Y(Integer.class),
         REFACTOR_SLOW_GRAVITY(Integer.class),
+        REFACTOR_SLOW_ACCELERATION(Integer.class),
 
         REFACTOR_NORMAL_SPEED_X(Integer.class),
         REFACTOR_NORMAL_SPEED_Y(Integer.class),
         REFACTOR_NORMAL_GRAVITY(Integer.class),
+        REFACTOR_NORMAL_ACCELERATION(Integer.class),
 
         REFACTOR_FAST_SPEED_X(Integer.class),
         REFACTOR_FAST_SPEED_Y(Integer.class),
         REFACTOR_FAST_GRAVITY(Integer.class),
+        REFACTOR_FAST_ACCELERATION(Integer.class),
 
         REFACTOR_SHIFT_SPEED_X(Integer.class),
         REFACTOR_SHIFT_SPEED_Y(Integer.class),
         REFACTOR_SHIFT_GRAVITY(Integer.class),
+        REFACTOR_SHIFT_ACCELERATION(Integer.class),
         
         // Animation values.
             

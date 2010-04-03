@@ -246,7 +246,7 @@ public class TileRemover implements IResettable, ILevelListener
                     
                     // If the level is 6 or greater in applet mode then end this
                     // shiznat.
-                    if (Game.isApplet() && hub.levelMan.getLevel() >= 6)
+                    if (Game.isApplet() && hub.levelMan.getLevel() >= 11)
                     {
                         game.startGameOver();
                     }

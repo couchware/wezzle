@@ -57,6 +57,7 @@ public class SoundManager implements IResettable
     private final Sound[] appletSounds =
     {
         Sound.BLEEP,
+        Sound.BOMB,
         Sound.CLICK,
         Sound.CLICK_LIGHT,
         Sound.LEVEL_UP,
@@ -67,7 +68,8 @@ public class SoundManager implements IResettable
         Sound.LINE_5,
         Sound.LINE_6,
         Sound.LINE_7,
-        Sound.ROCKET
+        Sound.ROCKET,
+        Sound.STAR
     };
 
     private final Sound[] desktopSounds = Sound.values();

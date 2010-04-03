@@ -123,17 +123,13 @@
         <delete file="${dist.dir}/lib/resources.jar" />
         <jar destfile="${dist.dir}/lib/resources.jar">
             <fileset dir="${src.dir}" includes="resources/**">
-                <exclude name="resources/sprites/Background_Circles_Green.png" />
                 <exclude name="resources/sprites/Background_Circles_Gold.png" />
-                <exclude name="resources/sprites/Explosion.png" />
                 <exclude name="resources/music/Erhu.ogg" />
                 <exclude name="resources/music/Tron*.ogg" />
                 <exclude name="resources/music/Electronic*.ogg" />
                 <exclude name="resources/music/HipPop2.ogg" />
                 <exclude name="resources/music/HipPop3.ogg" />
-                <exclude name="resources/sounds/ACHIEVEMENT.wav" />
-                <exclude name="resources/sounds/BOMB.wav" />
-                <exclude name="resources/sounds/STAR.wav" />
+                <exclude name="resources/sounds/ACHIEVEMENT.wav" />                
             </fileset>
             <fileset dir="${build.dir}" includes="resources/**" />
         </jar>       

@@ -875,8 +875,12 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         bound = calculateBound( direction,
                                 countTilesInDirection( direction, i ) );
 
-                        a = new MoveAnimation.Builder( board[i] ).speed( v ).
-                                minY( bound ).theta( 90 ).build();
+                        a = new MoveAnimation.Builder( board[i] )
+                                .speed( v )
+                                .gravity( -gravity )
+                                .minY( bound )
+                                .theta( 90 )
+                                .build();
                         animationList.add( a );
                     }
                 }
@@ -895,8 +899,12 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         bound = calculateBound( direction,
                                 countTilesInDirection( direction, i ) );
 
-                        a = new MoveAnimation.Builder( board[i] ).speed( v ).
-                                gravity( 1000 ).maxY( bound ).theta( -90 ).build();
+                        a = new MoveAnimation.Builder( board[i] )
+                                .speed( v )
+                                .gravity( gravity )
+                                .maxY( bound )
+                                .theta( -90 )
+                                .build();
                         animationList.add( a );
                     }
                 }
@@ -916,8 +924,12 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         bound = calculateBound( direction,
                                 countTilesInDirection( direction, i ) );
 
-                        a = new MoveAnimation.Builder( board[i] ).speed( v ).
-                                minX( bound ).theta( 180 ).build();
+                        a = new MoveAnimation.Builder( board[i] )
+                                .speed( v )
+                                .acceleration( -gravity )
+                                .minX( bound )
+                                .theta( 180 )
+                                .build();
                         animationList.add( a );
                     }
                 }
@@ -937,8 +949,12 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
                         bound = calculateBound( direction,
                                 countTilesInDirection( direction, i ) );
 
-                        a = new MoveAnimation.Builder( board[i] ).speed( v ).
-                                maxX( bound ).theta( 0 ).build();
+                        a = new MoveAnimation.Builder( board[i] )
+                                .speed( v )
+                                .acceleration( gravity )
+                                .maxX( bound )
+                                .theta( 0 )
+                                .build();
                         animationList.add( a );
                     }
                 }
@@ -987,7 +1003,7 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
      * 
      * @param speed
      */
-    public List<IAnimation> startHorizontalShift(final int speed)
+    public List<IAnimation> startHorizontalShift(final int speed, int acceleration)
     {
         if ( speed == 0 )
         {
@@ -997,11 +1013,11 @@ public class BoardManager implements IResettable, ISaveable, IKeyListener
 
         if ( gravityDirection.contains( Direction.LEFT ) )
         {
-            return startShift( Direction.LEFT, speed, 0 );
+            return startShift( Direction.LEFT, speed, acceleration );
         }
         else
         {
-            return startShift( Direction.RIGHT, speed, 0 );
+            return startShift( Direction.RIGHT, speed, acceleration );
         }
     }
 
