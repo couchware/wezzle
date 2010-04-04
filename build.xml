@@ -21,6 +21,7 @@
     </target>
 
     <target name="native-windows-jar" depends="jar">
+        <mkdir dir="${dist.dir}/lib/native" />
         <jar destfile="${dist.dir}/lib/native/windows_natives.jar">
             <fileset dir="lib/native/windows" />
         </jar>
@@ -34,6 +35,7 @@
     </target>
 
     <target name="native-macosx-jar" depends="jar">
+        <mkdir dir="${dist.dir}/lib/native" />
         <jar destfile="${dist.dir}/lib/native/macosx_natives.jar">
             <fileset dir="lib/native/macosx" />
         </jar>
@@ -47,6 +49,7 @@
     </target>
 
     <target name="native-linux-jar" depends="jar">
+        <mkdir dir="${dist.dir}/lib/native" />
         <jar destfile="${dist.dir}/lib/native/linux_natives.jar">
             <fileset dir="lib/native/linux" />
         </jar>
