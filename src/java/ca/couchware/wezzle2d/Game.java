@@ -80,30 +80,34 @@ public class Game implements IWindowCallback
     
     /** The manager hub. */
     final private ManagerHub hub = ManagerHub.newInstance();
+
     /** The width of the screen. */
     final public static int SCREEN_WIDTH = 800;
+
     /** The height of the screen  */
     final public static int SCREEN_HEIGHT = 600;
+
     /** A rectangle the size of the screen. */
     final public static ImmutableRectangle SCREEN_RECTANGLE =
             new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
     /** Is the game running as an applet? */
     final private static boolean APPLET = false;
+
     /** The name of the application. */
     final public static String APPLICATION_NAME = "Wezzle";
-    /** The version of the application. */
-    final public static int APPLICATION_VERSION_MAJOR = 1;
-    final public static int APPLICATION_VERSION_MINOR = 3;
-    final public static int APPLICATION_VERSION_BUGFIX = 2;
+    
+    /** The version of the application.  Automaticaly set by Ant. */
+    final public static String APPLICATION_VERSION_NUMBER = "1.3.3";
     final public static String APPLICATION_DISTRIBUTION = APPLET ? "Web" : "Full";
     final public static String APPLICATION_VERSION =
-            String.format("%d.%d.%d (%s)",
-            APPLICATION_VERSION_MAJOR,
-            APPLICATION_VERSION_MINOR,
-            APPLICATION_VERSION_BUGFIX,
+            String.format("%s (%s)",
+            APPLICATION_VERSION_NUMBER,
             APPLICATION_DISTRIBUTION);
+
     /** The full title of the game. */
     final public static String TITLE = APPLICATION_NAME + " " + APPLICATION_VERSION;
+
     /** The copyright. */
     final public static String COPYRIGHT = "\u00A9 2010 Couchware Inc.";
 

@@ -156,7 +156,7 @@
     </target>    
 
     <!-- This target excludes the resources from the main JAR. -->
-    <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available+main.class+mkdist.available" name="-do-jar-with-libraries">
+    <target name="-do-jar-with-libraries" depends="init,compile,-pre-pre-jar,-pre-jar, set-version" if="manifest.available+main.class+mkdist.available">
         <property location="${build.classes.dir}" name="build.classes.dir.resolved"/>
         <pathconvert property="run.classpath.without.build.classes.dir">
             <path path="${run.classpath}"/>
@@ -283,19 +283,26 @@
         </macrodef>
     </target>
 
-    <target name="unset-applet">
-        <echo>Setting APPLET = false</echo>
-        <replaceregexp file="./src/java/ca/couchware/wezzle2d/Game.java"
-                       match="final private static boolean APPLET = true;"
-                       replace="final private static boolean APPLET = false;" />        
+    <target name="set-version">
+        <echo>Setting VERSION = ${application.version}</echo>
+        <replaceregexp file="src/java/ca/couchware/wezzle2d/Game.java"
+                       match='final public static String APPLICATION_VERSION_NUMBER = "\d+\.\d+\.\d+";'
+                       replace='final public static String APPLICATION_VERSION_NUMBER = "${application.version}";' />
     </target>
-    
+
     <target name="set-applet">
         <echo>Setting APPLET = true</echo>
-        <replaceregexp file="./src/java/ca/couchware/wezzle2d/Game.java"
+        <replaceregexp file="src/java/ca/couchware/wezzle2d/Game.java"
         match="final private static boolean APPLET = false;"
         replace="final private static boolean APPLET = true;" />
     </target>
+
+    <target name="unset-applet">
+        <echo>Setting APPLET = false</echo>
+        <replaceregexp file="src/java/ca/couchware/wezzle2d/Game.java"
+                       match="final private static boolean APPLET = true;"
+                       replace="final private static boolean APPLET = false;" />        
+    </target>        
 
     <!--
 

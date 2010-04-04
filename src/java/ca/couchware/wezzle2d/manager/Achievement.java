@@ -2,7 +2,6 @@
  *  Wezzle
  *  Copyright (c) 2007-2008 Couchware Inc.  All rights reserved.
  */
-
 package ca.couchware.wezzle2d.manager;
 
 import ca.couchware.wezzle2d.Game;
@@ -52,18 +51,18 @@ import ca.couchware.wezzle2d.difficulty.GameDifficulty;
  */
 public class Achievement implements IXMLizable
 {
-   
+
     /** The levels of achievement difficulty. */
     public static enum Level
     {
-        BRONZE, 
-        SILVER, 
-        GOLD, 
+
+        BRONZE,
+        SILVER,
+        GOLD,
         PLATINUM;
-        
+
         /** The color map for the difficulties. */
-        final private static Map<Achievement.Level, Color> levelColorMap
-                = new EnumMap<Achievement.Level, Color>(Achievement.Level.class);
+        final private static Map<Achievement.Level, Color> levelColorMap = new EnumMap<Achievement.Level, Color>(Achievement.Level.class);
 
         /**
          * Initializes the difficulty colour map.  Can only be called once
@@ -77,14 +76,14 @@ public class Achievement implements IXMLizable
             {
                 throw new IllegalStateException("Color map already created!");
             }
-            
+
             Map<Achievement.Level, Color> map = levelColorMap;
-            map.put(Achievement.Level.BRONZE,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE));
-            map.put(Achievement.Level.SILVER,   settingsMan.getColor(Key.ACHIEVEMENT_COLOR_SILVER));
-            map.put(Achievement.Level.GOLD,     settingsMan.getColor(Key.ACHIEVEMENT_COLOR_GOLD));
+            map.put(Achievement.Level.BRONZE, settingsMan.getColor(Key.ACHIEVEMENT_COLOR_BRONZE));
+            map.put(Achievement.Level.SILVER, settingsMan.getColor(Key.ACHIEVEMENT_COLOR_SILVER));
+            map.put(Achievement.Level.GOLD, settingsMan.getColor(Key.ACHIEVEMENT_COLOR_GOLD));
             map.put(Achievement.Level.PLATINUM, settingsMan.getColor(Key.ACHIEVEMENT_COLOR_PLATINUM));
         }
-        
+
         /**
          * Returns the colour associated with the difficulty level.
          * 
@@ -96,11 +95,10 @@ public class Achievement implements IXMLizable
             {
                 throw new IllegalStateException("Color map has not been created!");
             }
-            
+
             return levelColorMap.get(this);
         }
     }
-
     /** The rule list for this achievement. */
     private final List<Rule> ruleList;
 
@@ -131,44 +129,43 @@ public class Achievement implements IXMLizable
      * @param description
      * @param difficulty
      */
-    private Achievement(List<Rule> ruleList, 
+    private Achievement(List<Rule> ruleList,
             String title,
             String formattedDescription,
-            String description, 
+            String description,
             Achievement.Level difficulty,
             CouchDate dateCompleted,
-            GameDifficulty gameDifficulty )
+            GameDifficulty gameDifficulty)
     {
-        this.ruleList             = ruleList;
-        this.title                = title;
+        this.ruleList = ruleList;
+        this.title = title;
         this.formattedDescription = formattedDescription;
-        this.description          = description;
-        this.level           = difficulty;
-        this.dateCompleted        = dateCompleted;
-        this.difficulty       = gameDifficulty;
+        this.description = description;
+        this.level = difficulty;
+        this.dateCompleted = dateCompleted;
+        this.difficulty = gameDifficulty;
     }
-        
-    public static Achievement newInstance(List<Rule> ruleList, 
+
+    public static Achievement newInstance(List<Rule> ruleList,
             String title,
-            String description, 
+            String description,
             Achievement.Level difficulty,
             CouchDate dateCompleted,
-            GameDifficulty gameDifficulty
-            )
+            GameDifficulty gameDifficulty)
     {
-       return new Achievement(ruleList, 
-               title, 
-               description, 
-               description, 
-               difficulty, 
-               dateCompleted,
-               gameDifficulty);
+        return new Achievement(ruleList,
+                title,
+                description,
+                description,
+                difficulty,
+                dateCompleted,
+                gameDifficulty);
     }
-    
+
     public static Achievement newInstance(Achievement achievement, CouchDate dateCompleted)
     {
         return new Achievement(
-                achievement.ruleList, 
+                achievement.ruleList,
                 achievement.title,
                 achievement.formattedDescription,
                 achievement.description,
@@ -177,31 +174,31 @@ public class Achievement implements IXMLizable
                 achievement.difficulty);
     }
 
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("unchecked")
     public static Achievement newInstanceFromXml(Element element)
     {
         // Get the name.
         String name = element.getAttributeValue("name");
-                
+
         // Get the description.
         Element descriptionElement = element.getChild("description");
-        String formattedDescription = descriptionElement == null ? "" : descriptionElement.getText();         
+        String formattedDescription = descriptionElement == null ? "" : descriptionElement.getText();
         String description = descriptionElement.getTextTrim().replaceAll("\n +", "\n");
-        
+
         // Get the difficulty.
         Achievement.Level difficulty = Achievement.Level.valueOf(element.getAttributeValue("level"));
         GameDifficulty gameDifficulty = GameDifficulty.valueOf(element.getAttributeValue("difficulty"));
-        
+
         // Get the date.
         Element dateElement = element.getChild("date");
         CouchDate dateCompleted = dateElement != null
                 ? CouchDate.newInstanceFromXml(dateElement)
-                : null;                
-        
+                : null;
+
         // Get all the rules.        
         List<Rule> rules = new ArrayList<Rule>();
-        
-        for ( Object o : element.getChildren("rule") )
+
+        for (Object o : element.getChildren("rule"))
         {
             Element rule = (Element) o;
             Rule.Type type = Rule.Type.valueOf(rule.getAttributeValue("type").toString());
@@ -209,12 +206,12 @@ public class Achievement implements IXMLizable
             switch (type)
             {
                 case META:
-                
+
                     rules.add(createMetaRule(rule));
                     break;
 
                 case COLLISION:
-                
+
                     rules.add(createCollisionRule(rule));
                     break;
 
@@ -222,16 +219,16 @@ public class Achievement implements IXMLizable
 
                     rules.add(createRateRule(rule));
                     break;
-                
+
                 default:
-                    
+
                     rules.add(createSimpleRule(type, rule));
-             
+
             } // end witch
         } // end while
-        
+
         // Get the collisions.
-        return new Achievement(rules, name, formattedDescription, description, 
+        return new Achievement(rules, name, formattedDescription, description,
                 difficulty, dateCompleted, gameDifficulty);
     }
 
@@ -250,7 +247,7 @@ public class Achievement implements IXMLizable
         {
             return new Rule(Rule.Type.META, operation, value);
         }
-        
+
         while (achieve != null)
         {
             achievementNamesList.add(achieve.getAttributeValue("name").toString());
@@ -277,7 +274,6 @@ public class Achievement implements IXMLizable
         return new Rule(Rule.Type.COLLISION, operation, tileTree);
     }
 
-
     @SuppressWarnings("unchecked")
     private static Rule createRateRule(Element rule)
     {
@@ -285,82 +281,76 @@ public class Achievement implements IXMLizable
         List<Numerator> numeratorList = new ArrayList<Numerator>();
 
         // Get the numerator type.        
-        for ( Object o : rule.getChildren("numerator") )
+        for (Object o : rule.getChildren("numerator"))
         {
             // The numerator element.
             Element numerator = (Element) o;
 
             Integer value = null;
             Rule.Operation operation = null;
-            Rule.NumeratorType numeratorType = Rule.NumeratorType
-                    .valueOf(numerator.getAttributeValue("type").toString());
+            Rule.NumeratorType numeratorType = Rule.NumeratorType.valueOf(numerator.getAttributeValue("type").toString());
 
             // Set the operation and value here if this is not a collision.
             // If it is a collision, the operation is set below.
             if (!numeratorType.equals(Rule.NumeratorType.COLLISION))
             {
                 operation = Rule.Operation.valueOf(numerator.getAttributeValue("operation"));
-                value = Integer.parseInt(numerator.getAttributeValue("value").toString());                
+                value = Integer.parseInt(numerator.getAttributeValue("value").toString());
             }
 
             switch (numeratorType)
             {
                 case COLLISION:
                 {
-                    
-                 
-                        Rule.NumeratorSubType type = Rule.NumeratorSubType
-                                .valueOf(numerator.getAttributeValue("sub-type"));
 
-                        operation = Rule.Operation
-                                .valueOf(numerator.getAttributeValue("operation"));
 
-                        value = Integer.parseInt(numerator
-                                .getAttributeValue("value").toString());
+                    Rule.NumeratorSubType type = Rule.NumeratorSubType.valueOf(numerator.getAttributeValue("sub-type"));
 
-                        numeratorList.add(new Numerator(value, operation, numeratorType, type));                       
-                   
+                    operation = Rule.Operation.valueOf(numerator.getAttributeValue("operation"));
+
+                    value = Integer.parseInt(numerator.getAttributeValue("value").toString());
+
+                    numeratorList.add(new Numerator(value, operation, numeratorType, type));
+
                     break;
                 }
                 case LINES:
-                
+
                     numeratorList.add(new Numerator(value, operation, numeratorType,
                             Rule.NumeratorSubType.LINES));
                     break;
-                
+
                 case SCORE:
-                
+
                     numeratorList.add(new Numerator(value, operation, numeratorType,
                             Rule.NumeratorSubType.SCORE));
                     break;
-                
+
                 case ITEMS:
-                
+
                     numeratorList.add(new Numerator(value, operation, numeratorType,
                             Rule.NumeratorSubType.ALL_ITEMS));
                     break;
-                
-                 case MULTIPLIERS:
-                
+
+                case MULTIPLIERS:
+
                     numeratorList.add(new Numerator(value, operation, numeratorType,
                             Rule.NumeratorSubType.ALL_MULTIPLIERS));
                     break;
-                
-                default: throw new IllegalArgumentException("Unrecognized numerator type");
-            }           
+
+                default:
+                    throw new IllegalArgumentException("Unrecognized numerator type");
+            }
         }
 
         // Only one denominator for now.
         Element denominator = rule.getChild("denominator");
 
-        Rule.DenominatorType denominatorType = Rule.DenominatorType
-                .valueOf(denominator.getAttributeValue("type").toString());
+        Rule.DenominatorType denominatorType = Rule.DenominatorType.valueOf(denominator.getAttributeValue("type").toString());
 
-        Integer denominatorValue = Integer.parseInt(denominator
-                .getAttributeValue("value").toString());
+        Integer denominatorValue = Integer.parseInt(denominator.getAttributeValue("value").toString());
 
-        Rule.Operation denominatorOp = Rule.Operation.valueOf(denominator
-                .getAttributeValue("operation"));
+        Rule.Operation denominatorOp = Rule.Operation.valueOf(denominator.getAttributeValue("operation"));
 
         // Add the rule and continue to get the next rule.
         return new Rule(Rule.Type.RATE, numeratorList,
@@ -380,16 +370,16 @@ public class Achievement implements IXMLizable
      * @param parentNode
      * @param elementList
      */
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("unchecked")
     private static void convertElementToInternalTree(
             Node<Set<TileType>> parentNode,
             List<Element> elementList)
     {
-        for ( Element e : elementList )
+        for (Element e : elementList)
         {
             String[] typeStrList = e.getAttributeValue("type").split(",");
             Set<TileType> typeSet = new HashSet<TileType>();
-            for ( String typeStr : typeStrList )
+            for (String typeStr : typeStrList)
             {
                 // Check for a pseudo-type.
                 if (typeStr.startsWith("ALL"))
@@ -412,7 +402,7 @@ public class Achievement implements IXMLizable
                     typeSet.add(TileType.valueOf(typeStr));
                 }
             }
-            
+
             Node<Set<TileType>> node = parentNode.addChild(typeSet);
             convertElementToInternalTree(node, (List<Element>) e.getChildren("item"));
         }
@@ -422,7 +412,7 @@ public class Achievement implements IXMLizable
             Element element,
             Node<Set<TileType>> parentNode)
     {
-        for ( Node<Set<TileType>> child : parentNode.getChildren() )
+        for (Node<Set<TileType>> child : parentNode.getChildren())
         {
             Element e = new Element("item");
 
@@ -438,12 +428,12 @@ public class Achievement implements IXMLizable
             {
                 e.setAttribute("type", StringUtil.join(child.getData(), ","));
             }
-            
+
             convertInternalTreeToElement(e, child);
             element.addContent(e);
         }
     }
-    
+
     /**
      * A method to evaluate an achievement to check if it has been completed.
      * 
@@ -456,36 +446,44 @@ public class Achievement implements IXMLizable
         // meet the requirements. any null values are automatically
         // accepted.
 
-         if(this.difficulty != difficulty.NONE &&
-                 !game.getDifficulty().equals(this.difficulty))
+        if (this.difficulty != difficulty.NONE
+                && !game.getDifficulty().equals(this.difficulty))
+        {
             return false;
-        
+        }
+
         for (Rule rule : ruleList)
         {
-           if (!rule.evaluate(game, hub))
-               return false;
+            if (!rule.evaluate(game, hub))
+            {
+                return false;
+            }
         }
-       
-        return true;       
-    }   
-    
+
+        return true;
+    }
+
     public boolean evaluateCollision(Node<Tile> tileTree, GameDifficulty difficulty)
     {
         // Use the private helper method to test if all of the fields
         // meet the requirements. any null values are automatically
         // accepted.
 
-         if(this.difficulty != difficulty.NONE &&
-                 !difficulty.equals(this.difficulty))
+        if (this.difficulty != difficulty.NONE
+                && !difficulty.equals(this.difficulty))
+        {
             return false;
+        }
 
         for (Rule rule : ruleList)
         {
-           if (!rule.evaluateCollision(tileTree))
-               return false;
+            if (!rule.evaluateCollision(tileTree))
+            {
+                return false;
+            }
         }
-       
-        return true;       
+
+        return true;
     }
 
     public boolean evaluateMeta(AchievementManager achievementMan, GameDifficulty difficulty)
@@ -494,18 +492,22 @@ public class Achievement implements IXMLizable
         // meet the requirements. any null values are automatically
         // accepted.
 
-         if(this.difficulty != difficulty.NONE &&
-                 !difficulty.equals(this.difficulty))
+        if (this.difficulty != difficulty.NONE
+                && !difficulty.equals(this.difficulty))
+        {
             return false;
+        }
 
         for (Rule rule : ruleList)
         {
-           if (!rule.evaluateMeta(achievementMan))
-               return false;
+            if (!rule.evaluateMeta(achievementMan))
+            {
+                return false;
+            }
         }
 
         return true;
-    }    
+    }
 
     /**
      * Get the achievement title.
@@ -515,7 +517,7 @@ public class Achievement implements IXMLizable
     {
         return title;
     }
-    
+
     /**
      * Get the description of the achievement.
      * @return The description.
@@ -551,32 +553,32 @@ public class Achievement implements IXMLizable
     {
         return dateCompleted;
     }
-    
+
     @Override
     public String toString()
     {
         return String.format("[ %s - %s ] %s", this.title, this.level, this.description);
-    }    
-    
+    }
+
     public Element toXmlElement()
     {
         Element element = new Element("achievement");
-        element.setAttribute("name",  this.title);        
+        element.setAttribute("name", this.title);
         element.setAttribute("level", String.valueOf(this.level));
         element.setAttribute("difficulty", String.valueOf(this.difficulty));
-       
+
         Element descriptionElement = new Element("description");
         descriptionElement.setText(this.formattedDescription);
         element.addContent(descriptionElement);
-        
+
         // Date.
         if (dateCompleted != null)
-        {                       
+        {
             element.addContent(dateCompleted.toXmlElement());
         }
-        
-        for ( Rule rule : this.ruleList )
-        {            
+
+        for (Rule rule : this.ruleList)
+        {
             switch (rule.getType())
             {
                 case META:
@@ -595,7 +597,7 @@ public class Achievement implements IXMLizable
                     element.addContent(createSimpleXmlRule(rule));
             }
         }
-        
+
         return element;
     }
 
@@ -608,15 +610,15 @@ public class Achievement implements IXMLizable
 
         // Set amount.
         Element amount = new Element("amount");
-        amount.setAttribute("metatype",  rule.getStatus().toString());
+        amount.setAttribute("type", rule.getStatus().toString());
         amount.setAttribute("operation", String.valueOf(rule.getOperation()));
-        amount.setAttribute("value",     String.valueOf(rule.getValue()));
+        amount.setAttribute("value", String.valueOf(rule.getValue()));
         element.addContent(amount);
 
         List<String> achievementNamesList = rule.getAchievementNameList();
-        if ( achievementNamesList != null )
+        if (achievementNamesList != null)
         {
-            for ( String achStr : achievementNamesList )
+            for (String achStr : achievementNamesList)
             {
                 Element achElement = new Element("achievement");
                 achElement.setAttribute("name", achStr);
@@ -641,27 +643,29 @@ public class Achievement implements IXMLizable
         List<Numerator> numerators = rule.getNumeratorList();
 
         // Do everything but the collisions.
-        for(Iterator<Numerator> it = numerators.iterator(); it.hasNext();)
+        for (Iterator<Numerator> it = numerators.iterator(); it.hasNext();)
         {
-           Numerator n = it.next();
-           
-           if (n.type.equals(Rule.NumeratorType.COLLISION))
-               continue;
+            Numerator n = it.next();
 
-           Element numerator = new Element("numerator");
-           numerator.setAttribute("type", n.type.toString());
-           numerator.setAttribute("operation", n.operation.toString());
-           numerator.setAttribute("value", String.valueOf(n.value));
+            if (n.type.equals(Rule.NumeratorType.COLLISION))
+            {
+                continue;
+            }
 
-           element.addContent(numerator);
+            Element numerator = new Element("numerator");
+            numerator.setAttribute("type", n.type.toString());
+            numerator.setAttribute("operation", n.operation.toString());
+            numerator.setAttribute("value", String.valueOf(n.value));
 
-           it.remove();
+            element.addContent(numerator);
+
+            it.remove();
         }
 
         // We should only have the collisions left.
         if (numerators.size() > 0)
         {
-            
+
 
             for (Numerator n : numerators)
             {
@@ -674,7 +678,7 @@ public class Achievement implements IXMLizable
                 element.addContent(numerator);
             }
 
-            
+
         }
 
         Element denominator = new Element("denominator");
@@ -734,18 +738,18 @@ public class Achievement implements IXMLizable
     {
         if (o == this)
         {
-            return true;            
+            return true;
         }
         if (!(o instanceof Achievement))
         {
             return false;
         }
-        
+
         Achievement achievement = (Achievement) o;
         return this.title.equals(achievement.title)
                 && this.description.equals(achievement.description);
     }
-    
+
     /**
      * Must override hashcode if you override <pre>equals()</pre>.     
      * The method used here is taking from Effective Java (2nd Ed.) pp. 46-48.     
@@ -756,7 +760,7 @@ public class Achievement implements IXMLizable
     {
         int result = 17;
         result = 31 * result + title.hashCode();
-        result = 31 * result + description.hashCode();        
+        result = 31 * result + description.hashCode();
         return result;
     }
 
@@ -764,8 +768,11 @@ public class Achievement implements IXMLizable
     {
 
         public final int value;
+
         public final Rule.Operation operation;
+
         public final Rule.NumeratorType type;
+
         public final Rule.NumeratorSubType subType;
 
         public Numerator(
@@ -779,7 +786,5 @@ public class Achievement implements IXMLizable
             this.operation = operation;
             this.subType = subType;
         }
-
     }
-    
 }

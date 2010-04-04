@@ -205,15 +205,22 @@ public class SettingsManager
                     {
                         Element element = (Element) object;
 
-                        Object instance = createInstanceFromXml( element );
-                        if ( instance != null )
+                        try
                         {
-                            list.add( instance );
+                            Object instance = createInstanceFromXml( element );
+                            if ( instance != null )
+                            {
+                                list.add( instance );
+                            }
+                            else
+                            {
+                                throw new IllegalArgumentException( "Unknown tag type" );
+                            }
                         }
-                        else
+                        catch (Exception e)
                         {
-                            throw new IllegalArgumentException( "Unknown tag type" );
-                        }
+                            CouchLogger.get().recordException(getClass(), e);
+                        }                        
                     }
 
                     // Return the list as the value.
