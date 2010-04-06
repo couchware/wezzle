@@ -450,6 +450,13 @@ public class Game implements IWindowCallback
 
     public void update()
     {
+
+        if (TimeTrial.isStarted())
+        {
+            TimeTrial.updateRegistry();
+            if (TimeTrial.isTrialExpired())
+                System.out.println("expired");
+        }
         // If the loader is running, bypass all the rendering to show it.        
         if (this.drawer == loader)
         {
@@ -1171,5 +1178,10 @@ public class Game implements IWindowCallback
         }
 
         return false;
+    }
+
+    public static boolean isTimeTrial()
+    {
+        return true;
     }
 }

@@ -9,6 +9,7 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
+import ca.couchware.wezzle2d.TimeTrial;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;
@@ -550,6 +551,9 @@ public class PlayNowMenu extends AbstractMenu
 
         // Notify the main menu.
         this.parent.setActivated(false);
+
+        if(Game.isTimeTrial())
+            TimeTrial.start();
     }
 
     @Override
