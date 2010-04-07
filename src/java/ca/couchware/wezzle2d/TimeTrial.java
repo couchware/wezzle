@@ -1,6 +1,7 @@
 
 package ca.couchware.wezzle2d;
 
+import ca.couchware.wezzle2d.util.CouchLogger;
 import java.util.Calendar;
 import java.util.prefs.*;
 
@@ -13,6 +14,7 @@ public class TimeTrial
     private static int timePlayed;
     private static Preferences prefs;
     private static boolean started = false;
+    private static final IWindow win = ResourceFactory.get().getWindow();
 
     private TimeTrial()
     {
@@ -27,9 +29,9 @@ public class TimeTrial
             prefs = Preferences.userNodeForPackage(TimeTrial.class);
             //prefs.put(KEY, "0");
             timePlayed = prefs.getInt(KEY, 0);
-            System.out.println("time played: " + timePlayed + " minutes.");
+            CouchLogger.get().recordMessage(TimeTrial.class, "time played: " + timePlayed + " minutes.");
             started = true;
-            startInstant = ResourceFactory.get().getWindow().getTime();
+            startInstant = win.getTime();
         }
     }
 
@@ -40,14 +42,15 @@ public class TimeTrial
 
     public synchronized static void updateRegistry()
     {
-        long currentInstant = ResourceFactory.get().getWindow().getTime();
+        long currentInstant = win.getTime();
 
         if (currentInstant - startInstant > MINUTE)
         {
-            timePlayed += (currentInstant - startInstant) / MINUTE;
-            startInstant = currentInstant;
+            long offset = (currentInstant - startInstant);
+            timePlayed += offset / MINUTE;
+            startInstant = currentInstant - (offset % MINUTE);
             prefs.put(KEY, String.valueOf(timePlayed));
-            System.out.println("time played: " + timePlayed + " minutes.");
+            CouchLogger.get().recordMessage(TimeTrial.class, "time played: " + timePlayed + " minutes.");
         }
     }
 
