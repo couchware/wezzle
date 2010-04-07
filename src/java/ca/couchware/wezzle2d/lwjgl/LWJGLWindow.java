@@ -478,7 +478,8 @@ public class LWJGLWindow implements IWindow
      *
      * @return The system time in milliseconds
      */
-    public static long getTime()
+    @Override
+    public long getTime()
     {
         return (Sys.getTime() * 1000) / Sys.getTimerResolution();
     }

@@ -551,9 +551,6 @@ public class PlayNowMenu extends AbstractMenu
 
         // Notify the main menu.
         this.parent.setActivated(false);
-
-        if(Game.isTimeTrial())
-            TimeTrial.start();
     }
 
     @Override

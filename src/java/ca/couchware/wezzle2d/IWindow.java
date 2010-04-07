@@ -148,4 +148,6 @@ public interface IWindow
      */
     public void clearMouseEvents();
 
+    public long getTime();
+
 }

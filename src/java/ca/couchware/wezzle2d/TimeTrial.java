@@ -6,57 +6,52 @@ import java.util.prefs.*;
 
 public class TimeTrial
 {
-    private final static Integer TOTAL_TIME = 60;
+    private final static long TOTAL_TIME = 1000 * 60 * 60;
+    private final static long MINUTE = 1000 * 60;
     private final static String KEY = "TRIAL";
-    private final static TimeTrial instance = new TimeTrial();
-    private static Integer startSecond;
-    private static Integer timePlayed;
+    private static long startInstant;
+    private static int timePlayed;
     private static Preferences prefs;
-    private static boolean wait = true;
     private static boolean started = false;
 
     private TimeTrial()
     {
-        prefs = Preferences.userNodeForPackage(TimeTrial.class);
-        //prefs.put(KEY, "0");
-        timePlayed = prefs.getInt(KEY, 0);
-        System.out.println("time played: " + timePlayed + " minutes.");
+        
     }
 
-    public static void start()
+
+    public synchronized static void start()
     {
         if(started == false)
         {
+            prefs = Preferences.userNodeForPackage(TimeTrial.class);
+            //prefs.put(KEY, "0");
+            timePlayed = prefs.getInt(KEY, 0);
             System.out.println("time played: " + timePlayed + " minutes.");
             started = true;
-            startSecond = Calendar.getInstance().get(Calendar.SECOND);
+            startInstant = ResourceFactory.get().getWindow().getTime();
         }
     }
 
-    public static boolean isStarted()
+    public synchronized static boolean isStarted()
     {
         return started;
     }
 
-    public static void updateRegistry()
+    public synchronized static void updateRegistry()
     {
-        int currentSecond = Calendar.getInstance().get(Calendar.SECOND);
+        long currentInstant = ResourceFactory.get().getWindow().getTime();
 
-        if (wait == true)
-           wait = currentSecond == startSecond ? true : false;
-
-
-        System.out.println(currentSecond + " : " + startSecond);
-        if (currentSecond == startSecond && false == wait)
+        if (currentInstant - startInstant > MINUTE)
         {
-            wait = true;
-            timePlayed += 1;
-            prefs.put(KEY, timePlayed.toString());
-            System.out.println("time played:" + timePlayed);
+            timePlayed += (currentInstant - startInstant) / MINUTE;
+            startInstant = currentInstant;
+            prefs.put(KEY, String.valueOf(timePlayed));
+            System.out.println("time played: " + timePlayed + " minutes.");
         }
     }
 
-    public static boolean isTrialExpired()
+    public synchronized static boolean isTrialExpired()
     {
         return timePlayed >= TOTAL_TIME;
     }

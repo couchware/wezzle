@@ -446,6 +446,9 @@ public class Game implements IWindowCallback
                 initializeCoreManagers();
             }
         });
+
+        if(this.isTimeTrial())
+            TimeTrial.start();
     }
 
     public void update()
@@ -1180,7 +1183,7 @@ public class Game implements IWindowCallback
         return false;
     }
 
-    public static boolean isTimeTrial()
+    private boolean isTimeTrial()
     {
         return true;
     }
