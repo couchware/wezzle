@@ -457,7 +457,7 @@ public class Game implements IWindowCallback
         if (TimeTrial.isStarted())
         {
             TimeTrial.updateRegistry();
-            if (TimeTrial.isTrialExpired())
+            if (TimeTrial.hasTrialExpired())
                 System.out.println("expired");
         }
         // If the loader is running, bypass all the rendering to show it.        
