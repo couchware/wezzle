@@ -6,6 +6,7 @@
 package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.dialog.LicenseDialog;
+import ca.couchware.wezzle2d.dialog.TrialLauncherDialog;
 import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
@@ -17,6 +18,7 @@ import ca.couchware.wezzle2d.util.CouchLogger;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import javax.swing.JFrame;
 
 /**
  * Launches the Wezzle applet or app, depending on how it is called.
@@ -165,10 +167,11 @@ public class Launcher extends Applet
                             new Exception("Invalid license information"),
                             true /* Fatal */);
                 }
-            }
+            }            
 
-            game = new Game(parent, ResourceFactory.Renderer.LWJGL);
-            game.start();
+            //TrialLauncherDialog.run();
+            game = new Game(parent, ResourceFactory.Renderer.LWJGL);            
+            game.start();            
             //game = null;
         }
         catch (Throwable t)

@@ -16,7 +16,7 @@ public class FontStore
     /**
      * The font url.
      */
-    final private static String PATH = Settings.getFontResourcesPath() + "/bubbleboy2.ttf";
+    final private static String PATH = Settings.getFontResourcesPath() + "/Bubbleboy-2.ttf";
 
     /**
      * The single instance of this class
@@ -65,9 +65,7 @@ public class FontStore
             try
             {
                 URL url = this.getClass().getClassLoader().getResource( PATH );
-
                 InputStream in = url.openStream();
-
                 Font font = Font.createFont( Font.TRUETYPE_FONT, in );
                 this.baseFont = font;
 

@@ -12,6 +12,8 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
+import ca.couchware.wezzle2d.dialog.LicenseDialog;
+import ca.couchware.wezzle2d.dialog.TrialLauncherDialog;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
@@ -386,8 +388,9 @@ public class Game implements IWindowCallback
     /**
      * Initialize the common elements for the game.
      */
+    @Override
     public void initialize()
-    {
+    {        
         // Make sure the listener and settings managers are ready.
         hub.initialize(win, this,
                 EnumSet.of(Manager.ANIMATION, Manager.LISTENER, Manager.SETTINGS));
@@ -400,8 +403,7 @@ public class Game implements IWindowCallback
         CouchLogger.get().recordMessage(cls, "Java Version: " + System.getProperty("java.version"));
         CouchLogger.get().recordMessage(cls, "OS Name: " + System.getProperty("os.name"));
         CouchLogger.get().recordMessage(cls, "OS Architecture: " + System.getProperty("os.arch"));
-        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));
-
+        CouchLogger.get().recordMessage(cls, "OS Version: " + System.getProperty("os.version"));        
 
         // Create the loader.
         loader = new Loader(win, hub.settingsMan, "Loading Wezzle...");
@@ -421,6 +423,7 @@ public class Game implements IWindowCallback
             final int size = i;
             loader.addTask(new Runnable()
             {
+                @Override
                 public void run()
                 {
                     new ResourceFactory.LabelBuilder(0, 0).size(size).build();
@@ -431,6 +434,7 @@ public class Game implements IWindowCallback
         // Initialize managers.
         loader.addTask(new Runnable()
         {
+            @Override
             public void run()
             {
                 hub.initialize(win, Game.this, EnumSet.allOf(Manager.class));
@@ -441,6 +445,7 @@ public class Game implements IWindowCallback
         // Initialize the core managers.
         loader.addTask(new Runnable()
         {
+            @Override
             public void run()
             {
                 initializeCoreManagers();
@@ -451,6 +456,7 @@ public class Game implements IWindowCallback
             TimeTrial.start();
     }
 
+    @Override
     public void update()
     {
 
@@ -738,6 +744,7 @@ public class Game implements IWindowCallback
      * @return True if the frame has been updated, false if nothing has been
      * updated.
      */
+    @Override
     public boolean draw()
     {
         // If the background is dirty, then redraw everything.
@@ -1013,10 +1020,7 @@ public class Game implements IWindowCallback
         // Reset the stat man.
         hub.statMan.resetState();
     }
-
-    //--------------------------------------------------------------------------
-    // Getters and Setters
-    //--------------------------------------------------------------------------       
+   
     public IDrawer getDrawer()
     {
         return drawer;
@@ -1033,6 +1037,7 @@ public class Game implements IWindowCallback
     /**
      * Notification that the game window has been closed
      */
+    @Override
     public void windowClosed()
     {
         try
@@ -1067,6 +1072,7 @@ public class Game implements IWindowCallback
     /**
      * Notification that the game window has been deactivated in some way.
      */
+    @Override
     public void windowDeactivated()
     {
         // Don't auto-pause game if:
@@ -1085,6 +1091,7 @@ public class Game implements IWindowCallback
     /**
      * Notification that the game window has been reactivated in some way.
      */
+    @Override
     public void windowActivated()
     {
     }
@@ -1182,6 +1189,51 @@ public class Game implements IWindowCallback
 
         return false;
     }
+
+//    private void poo()
+//    {
+//        final String serialNumber = hub.settingsMan.getString(Key.USER_SERIAL_NUMBER);
+//        final String licenseKey = hub.settingsMan.getString(Key.USER_LICENSE_KEY);
+//        final boolean validated = Game.validateLicenseInformation(serialNumber, licenseKey);
+//
+//        if (!validated)
+//        {
+//            try
+//            {
+//                LicenseDialog.run();
+//            }
+//            catch (Exception e)
+//            {
+//                throw new RuntimeException(e);
+//            }
+//
+//            final String enteredSerialNumber = hub.settingsMan.getString(Key.USER_SERIAL_NUMBER);
+//            final String enteredLicenseKey = hub.settingsMan.getString(Key.USER_LICENSE_KEY);
+//            final boolean enteredValidated =
+//                    Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
+//
+//            if (enteredValidated)
+//            {
+//                CouchLogger.get().recordMessage( Game.class,
+//                        "License information verified");
+//            }
+//            else
+//            {
+//                CouchLogger.get().recordException( Game.class,
+//                        new Exception("Invalid license information"),
+//                        true /* Fatal */);
+//            }
+//        }
+//
+//        try
+//        {
+//            TrialLauncherDialog.run();
+//        }
+//        catch (Exception e)
+//        {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     private boolean isTimeTrial()
     {

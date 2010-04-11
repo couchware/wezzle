@@ -1,3 +1,7 @@
+/*
+ *  Wezzle
+ *  Copyright (c) 2007-2010 Couchware Inc.  All rights reserved.
+ */
 package ca.couchware.wezzle2d.dialog;
 
 import ca.couchware.wezzle2d.manager.Settings;
@@ -8,11 +12,9 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Image;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -26,18 +28,33 @@ import javax.swing.border.EmptyBorder;
 import org.jdesktop.layout.LayoutStyle;
 import org.jdesktop.layout.GroupLayout;
 
-/*
- * Created by JFormDesigner on Sat Feb 13 20:01:39 EST 2010
- */
-
 /**
+ * Displays the Wezzle EULA click-through and sets a setting if it is approved.
+ *
  * @author Cameron McKay
  */
 public class AgreementDialog extends JDialog
 {
 
-    final private static String AGREEMENT_PATH = Settings.getResourcesPath() + "/" + "license.txt";    
+    final private static String AGREEMENT_PATH = Settings.getResourcesPath() + "/" + "license.txt";
+
     final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
+
+    private JPanel dialogPane;
+
+    private JPanel contentPanel;
+
+    private JLabel instructionsLabel;
+
+    private JPanel buttonPanel;
+
+    private JButton okButton;
+
+    private JButton cancelButton;
+
+    private JScrollPane scrollPane;
+
+    private JTextArea agreementArea;
 
     public AgreementDialog(Frame owner)
     {
@@ -45,8 +62,8 @@ public class AgreementDialog extends JDialog
         initComponents();
 
         try
-        {            
-            URL icon32Url = AgreementDialog.class.getClassLoader().getResource(ICON_32_PATH);           
+        {
+            URL icon32Url = AgreementDialog.class.getClassLoader().getResource(ICON_32_PATH);
             owner.setIconImage(ImageIO.read(icon32Url));
 
             // Load in the license.
@@ -62,6 +79,7 @@ public class AgreementDialog extends JDialog
 
         okButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
+
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt)
             {
@@ -71,6 +89,7 @@ public class AgreementDialog extends JDialog
 
         cancelButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
+
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt)
             {
@@ -98,6 +117,7 @@ public class AgreementDialog extends JDialog
         java.awt.EventQueue.invokeAndWait(new Runnable()
         {
 
+            @Override
             public void run()
             {
                 try
@@ -114,10 +134,10 @@ public class AgreementDialog extends JDialog
                 //dialog.setLocationRelativeTo(null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter()
                 {
+
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e)
                     {
-
                     }
                 });
 
@@ -128,8 +148,6 @@ public class AgreementDialog extends JDialog
 
     private void initComponents()
     {
-        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        // Generated using JFormDesigner Evaluation license - Cameron McKay
         dialogPane = new JPanel();
         contentPanel = new JPanel();
         instructionsLabel = new JLabel();
@@ -139,74 +157,47 @@ public class AgreementDialog extends JDialog
         scrollPane = new JScrollPane();
         agreementArea = new JTextArea();
 
-        //======== this ========
         setTitle("Wezzle");
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
-        
-        //======== dialogPane ========
-        {
-            dialogPane.setBorder(new EmptyBorder(20, 20, 20, 20));           
-            dialogPane.setLayout(new BorderLayout());
-            //======== contentPanel ========
-            {
 
-                //---- instructionsLabel ----
-                instructionsLabel.setText("<html>Please review the license terms before playing Wezzle.<br/> <br/>If you accept the terms of the agreement, click I Agree.  You must accept the terms of the agreement to play Wezzle.</html>");
-                instructionsLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
-                //======== buttonPanel ========
-                {
+        dialogPane.setBorder(new EmptyBorder(20, 20, 20, 20));
+        dialogPane.setLayout(new BorderLayout());
 
-                    //---- okButton ----
-                    okButton.setText("I Agree");
+        instructionsLabel.setText("<html>Please review the license terms before playing Wezzle.<br/> <br/>If you accept the terms of the agreement, click I Agree.  You must accept the terms of the agreement to play Wezzle.</html>");
+        instructionsLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-                    //---- cancelButton ----
-                    cancelButton.setText("Cancel");
+        okButton.setText("I Agree");
+        cancelButton.setText("Cancel");
 
-                    GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-                    buttonPanel.setLayout(buttonPanelLayout);
-                    buttonPanelLayout.setHorizontalGroup(
-                            buttonPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(223, Short.MAX_VALUE).add(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.UNRELATED).add(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE).addContainerGap(9, 9)));
-                    buttonPanelLayout.setVerticalGroup(
-                            buttonPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(buttonPanelLayout.createParallelGroup(GroupLayout.BASELINE).add(cancelButton).add(okButton)).addContainerGap()));
-                }
-                //======== scrollPane1 ========
-                {
-                    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+        buttonPanel.setLayout(buttonPanelLayout);
+        buttonPanelLayout.setHorizontalGroup(
+                buttonPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(223, Short.MAX_VALUE).add(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.UNRELATED).add(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE).addContainerGap(9, 9)));
+        buttonPanelLayout.setVerticalGroup(
+                buttonPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(buttonPanelLayout.createParallelGroup(GroupLayout.BASELINE).add(cancelButton).add(okButton)).addContainerGap()));
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-                    //---- textArea1 ----
-                    agreementArea.setEditable(false);
-                    agreementArea.setLineWrap(true);
-                    agreementArea.setFont(new Font("Tahoma", Font.PLAIN, 11));
-                    agreementArea.setWrapStyleWord(true);
-                    scrollPane.setViewportView(agreementArea);
-                }
+        //---- textArea1 ----
+        agreementArea.setEditable(false);
+        agreementArea.setLineWrap(true);
+        agreementArea.setFont(new Font("Tahoma", Font.PLAIN, 11));
+        agreementArea.setWrapStyleWord(true);
+        scrollPane.setViewportView(agreementArea);
 
-                GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
-                contentPanel.setLayout(contentPanelLayout);
-                contentPanelLayout.setHorizontalGroup(
-                        contentPanelLayout.createParallelGroup().add(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(instructionsLabel, GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE).add(scrollPane, GroupLayout.PREFERRED_SIZE, 402, GroupLayout.PREFERRED_SIZE));
-                contentPanelLayout.setVerticalGroup(
-                        contentPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, contentPanelLayout.createSequentialGroup().add(instructionsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addContainerGap(18, 18).add(scrollPane, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED).add(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)));
-            }
-            dialogPane.add(contentPanel, BorderLayout.CENTER);
-        }
+
+        GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
+        contentPanel.setLayout(contentPanelLayout);
+        contentPanelLayout.setHorizontalGroup(
+                contentPanelLayout.createParallelGroup().add(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(instructionsLabel, GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE).add(scrollPane, GroupLayout.PREFERRED_SIZE, 402, GroupLayout.PREFERRED_SIZE));
+        contentPanelLayout.setVerticalGroup(
+                contentPanelLayout.createParallelGroup().add(GroupLayout.TRAILING, contentPanelLayout.createSequentialGroup().add(instructionsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addContainerGap(18, 18).add(scrollPane, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED).add(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)));
+
+        dialogPane.add(contentPanel, BorderLayout.CENTER);
+
         contentPane.add(dialogPane, BorderLayout.NORTH);
         pack();
         setLocationRelativeTo(null);
-        // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
-    
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner Evaluation license - Cameron McKay
-    private JPanel dialogPane;
-    private JPanel contentPanel;
-    private JLabel instructionsLabel;
-    private JPanel buttonPanel;
-    private JButton okButton;
-    private JButton cancelButton;
-    private JScrollPane scrollPane;
-    private JTextArea agreementArea;
-    // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

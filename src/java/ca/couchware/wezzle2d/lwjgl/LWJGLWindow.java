@@ -293,7 +293,7 @@ public class LWJGLWindow implements IWindow
         }
 
         Display.setVSyncEnabled(true);
-        Display.setTitle(title);        
+        Display.setTitle(title);
 
         initializeIcons();
         initializePixelFormat();
