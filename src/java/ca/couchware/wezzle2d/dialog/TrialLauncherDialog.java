@@ -6,30 +6,32 @@ package ca.couchware.wezzle2d.dialog;
 
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.CouchLogger;
+import ca.couchware.wezzle2d.util.PartialMaskFormatter;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Frame;
 import java.awt.Image;
-import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.MaskFormatter;
 
 /**
  * A launcher dialog ...
@@ -41,8 +43,23 @@ public class TrialLauncherDialog extends JFrame
     final private static String FONT_PATH =
             Settings.getFontResourcesPath() + "/" + "Bubbleboy-2.ttf";
 
-    final private static String BACKGROUND_PATH =
+    final private static String MAIN_PANE_BACKGROUND =
             Settings.getSpriteResourcesPath() + "/" + "TrialLauncherBackground.png";
+
+    final private static String PLAY_NOW_PATH =
+            Settings.getSpriteResourcesPath() + "/" + "TrialPlayNow.png";
+
+    final private static String BUY_NOW_PATH =
+            Settings.getSpriteResourcesPath() + "/" + "TrialBuyNow.png";
+
+    final private static String LICENSE_PANE_BACKGROUND =
+            Settings.getSpriteResourcesPath() + "/" + "TrialLauncherLicenseBackground.png";
+
+    final private static String OK_PATH =
+            Settings.getSpriteResourcesPath() + "/" + "TrialOK.png";
+
+    final private static String CANCEL_PATH =
+            Settings.getSpriteResourcesPath() + "/" + "TrialCancel.png";
     
     final private static String ICON_32_PATH =
             Settings.getResourcesPath() + "/" + "Icon_32x32.png";    
@@ -51,6 +68,9 @@ public class TrialLauncherDialog extends JFrame
     final private static Color TEXT_COLOR = new Color(51, 51, 51);
 
     private Font baseFont;
+
+    final private JPanel mainPane;
+    final private JPanel licensePane;
 
     public TrialLauncherDialog()
     {        
@@ -65,6 +85,8 @@ public class TrialLauncherDialog extends JFrame
             CouchLogger.get().recordException(getClass(), ex, true);
         }
 
+        mainPane = createMainPane();
+        licensePane = createLicensePane();
         initComponents();
 
         try
@@ -82,33 +104,92 @@ public class TrialLauncherDialog extends JFrame
     {
         setTitle("Buy Wezzle");
 
-        JLayeredPane pane = new JLayeredPane();
+        add(mainPane);
+       
+        setResizable(false);
+        pack();
+        setLocationRelativeTo(null);
+    }
+
+    private JPanel createMainPane()
+    {
+        final JPanel pane = new JPanel();
         pane.setLayout(null);
-        pane.setPreferredSize(new Dimension(640, 480));        
-        add(pane);        
+        pane.setPreferredSize(new Dimension(640, 480));
 
         JLabel label = new JLabel("59 Minutes of Free Gameplay Left");
         label.setForeground(HEADER_COLOR);
         label.setFont(baseFont.deriveFont(18f));
         label.setHorizontalAlignment(JLabel.CENTER);
-        label.setBounds(207, 180, 387, 49);
+        label.setBounds(207, 184, 387, 49);
         pane.add(label);
-        
-        JButton playNow = new JButton("Play Now");
-        //playNow.setFont(font20);
-        playNow.setBounds(207, 374, 181, 49);
-        pane.add(playNow);
-
-        JButton buyNow = new JButton("Buy Now");        
-        //buyNow.setFont(font20);
-        buyNow.setBounds(414, 374, 181, 49);
-        pane.add(buyNow);
 
         try
-        {            
-            final InputStream backgroundImageStream = TrialLauncherDialog.class.getClassLoader().getResourceAsStream(BACKGROUND_PATH);
+        {
+            final InputStream playNowImageStream = TrialLauncherDialog.class
+                    .getClassLoader()
+                    .getResourceAsStream(PLAY_NOW_PATH);
+            final Image playNowImage = ImageIO.read(playNowImageStream);
+            final JLabel playNow = new JLabel(new ImageIcon(playNowImage));
+            playNow.setBounds(207, 372, 181, 49);
+            pane.add(playNow);
+
+            final InputStream buyNowImageStream = TrialLauncherDialog.class
+                    .getClassLoader()
+                    .getResourceAsStream(BUY_NOW_PATH);
+            final Image buyNowImage = ImageIO.read(buyNowImageStream);
+            final JLabel buyNow = new JLabel(new ImageIcon(buyNowImage));
+            buyNow.setBounds(414, 372, 181, 49);
+            pane.add(buyNow);
+        }
+        catch (IOException ex)
+        {
+            CouchLogger.get().recordException(getClass(), ex, true);
+        }       
+
+        final JLabel enterLicense = new JLabel("<html><u>Already own it?</u></html>");
+        enterLicense.setBounds(207, 430, 181, 25);
+        enterLicense.setHorizontalAlignment(JLabel.CENTER);
+        enterLicense.setFont(baseFont.deriveFont(14f));
+        enterLicense.setForeground(TEXT_COLOR);
+        enterLicense.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent me)
+            {
+                enterLicense.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent me)
+            {
+                enterLicense.setCursor(Cursor.getDefaultCursor());
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {                
+                changeToLicensePane();
+            }
+
+        });
+
+        pane.add(enterLicense);
+
+        JLabel security = new JLabel("<html><u>Security</u></html>");
+        security.setBounds(414, 430, 181, 25);
+        security.setHorizontalAlignment(JLabel.CENTER);
+        security.setFont(baseFont.deriveFont(14f));
+        security.setForeground(TEXT_COLOR);
+        pane.add(security);
+
+        try
+        {
+            final InputStream backgroundImageStream = TrialLauncherDialog.class
+                    .getClassLoader()
+                    .getResourceAsStream(MAIN_PANE_BACKGROUND);
             final Image backgroundImage = ImageIO.read(backgroundImageStream);
-            final JLabel background = new JLabel(new ImageIcon(backgroundImage));            
+            final JLabel background = new JLabel(new ImageIcon(backgroundImage));
             background.setBounds(0, 0, 640, 480);
             pane.add(background);
         }
@@ -116,10 +197,108 @@ public class TrialLauncherDialog extends JFrame
         {
             CouchLogger.get().recordException(getClass(), ex, true);
         }
-       
-        setResizable(false);
+        
+        return pane;
+    }
+
+    private JPanel createLicensePane()
+    {
+        JPanel pane = new JPanel();
+        pane.setLayout(null);
+        pane.setPreferredSize(new Dimension(640, 480));       
+
+        try
+        {
+            MaskFormatter serialNumberFormatter =
+                    new PartialMaskFormatter("HHHHHHHHHHHHHHHH");
+            serialNumberFormatter.setValueContainsLiteralCharacters(false);
+
+            JFormattedTextField serialNumberField = new JFormattedTextField();
+            serialNumberField.setFormatterFactory(
+                    new DefaultFormatterFactory(serialNumberFormatter));
+            serialNumberField.setBounds(173, 282, 424, 39);
+            serialNumberField.setFont(serialNumberField.getFont().deriveFont(20f));            
+
+            MaskFormatter licenseKeyFormatter =
+                    new PartialMaskFormatter("HHHHHHHH-HHHHHHHH-HHHHHHHH-HHHHHHHH");
+            licenseKeyFormatter.setValueContainsLiteralCharacters(false);            
+
+            JFormattedTextField licenseKeyField = new JFormattedTextField();
+            licenseKeyField.setFormatterFactory(
+                    new DefaultFormatterFactory(licenseKeyFormatter));
+            licenseKeyField.setBounds(173, 332, 424, 39);
+            licenseKeyField.setFont(licenseKeyField.getFont().deriveFont(20f));
+
+            pane.add(serialNumberField);
+            pane.add(licenseKeyField);
+        }
+        catch (ParseException ex)
+        {
+            CouchLogger.get().recordException(getClass(), ex, true);
+        }
+
+        try
+        {
+            final InputStream okImageStream = TrialLauncherDialog.class
+                    .getClassLoader()
+                    .getResourceAsStream(OK_PATH);
+            final Image okImage = ImageIO.read(okImageStream);
+            final JLabel ok = new JLabel(new ImageIcon(okImage));
+            ok.setBounds(191, 390, 181, 49);
+            pane.add(ok);
+
+            final InputStream cancelImageStream = TrialLauncherDialog.class
+                    .getClassLoader()
+                    .getResourceAsStream(CANCEL_PATH);
+            final Image cancelImage = ImageIO.read(cancelImageStream);
+            final JLabel cancel = new JLabel(new ImageIcon(cancelImage));
+            cancel.setBounds(398, 390, 181, 49);
+            cancel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    changeToMainPane();
+                }
+            });
+            pane.add(cancel);
+        }
+        catch (IOException ex)
+        {
+            CouchLogger.get().recordException(getClass(), ex, true);
+        }       
+        
+        try
+        {
+            final InputStream backgroundImageStream = TrialLauncherDialog.class
+                    .getClassLoader()
+                    .getResourceAsStream(LICENSE_PANE_BACKGROUND);
+            final Image backgroundImage = ImageIO.read(backgroundImageStream);
+            final JLabel background = new JLabel(new ImageIcon(backgroundImage));
+            background.setBounds(0, 0, 640, 480);
+            pane.add(background);
+        }
+        catch (IOException ex)
+        {
+            CouchLogger.get().recordException(getClass(), ex, true);
+        }
+
+        return pane;
+    }
+
+    public synchronized void changeToLicensePane()
+    {
+        remove(mainPane);
+        add(licensePane);
         pack();
-        setLocationRelativeTo(null);
+        repaint();
+    }
+
+    public synchronized void changeToMainPane()
+    {
+        remove(licensePane);
+        add(mainPane);
+        pack();
+        repaint();
     }
 
     public static void run() throws InterruptedException, InvocationTargetException

@@ -5,8 +5,6 @@
 package ca.couchware.wezzle2d.dialog;
 
 import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.manager.Settings.Key;
@@ -22,6 +20,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -43,7 +42,7 @@ import org.jdesktop.layout.GroupLayout;
  *
  * @author Cameron McKay
  */
-public class LicenseDialog extends JDialog
+public class LicenseDialog extends JFrame
 {
     private static final int SERIAL_NUMBER_MIN = 8;
     private static final int LICENSE_KEY_MIN = 32;
@@ -63,15 +62,14 @@ public class LicenseDialog extends JDialog
     private JButton okButton;
     private JButton cancelButton;
 
-    public LicenseDialog(Frame owner)
-    {
-        super(owner, true);
+    public LicenseDialog()
+    {        
         initComponents();
 
         try
         {
             URL icon32Url = LicenseDialog.class.getClassLoader().getResource(ICON_32_PATH);
-            owner.setIconImage(ImageIO.read(icon32Url));
+            setIconImage(ImageIO.read(icon32Url));
         }
         catch (IOException ex)
         {
@@ -96,12 +94,10 @@ public class LicenseDialog extends JDialog
         }
         catch (ParseException ex)
         {
-            Logger.getLogger(LicenseDialog.class.getName()).log(Level.SEVERE, null, ex);
+            CouchLogger.get().recordException(getClass(), ex, true);
         }
 
-        okButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-
+        okButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt)
             {
@@ -109,9 +105,7 @@ public class LicenseDialog extends JDialog
             }
         });
 
-        cancelButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-
+        cancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt)
             {
@@ -175,6 +169,8 @@ public class LicenseDialog extends JDialog
 
     public static void run() throws InterruptedException, InvocationTargetException
     {
+        final CountDownLatch finished = new CountDownLatch(1);
+
         java.awt.EventQueue.invokeAndWait(new Runnable()
         {
             @Override
@@ -188,9 +184,8 @@ public class LicenseDialog extends JDialog
                 {
                     CouchLogger.get().recordException(LicenseDialog.class, e, true /* Fatal */);
                 }
-
-                final JFrame frame = new JFrame();
-                final LicenseDialog dialog = new LicenseDialog(frame);
+                
+                final LicenseDialog dialog = new LicenseDialog();
 
                 //dialog.setLocationRelativeTo(null);
                 dialog.addWindowListener(new WindowAdapter()
@@ -198,14 +193,17 @@ public class LicenseDialog extends JDialog
                     @Override
                     public void windowClosing(WindowEvent e)
                     {
-                        frame.setVisible(false);
-                        frame.dispose();
+                        finished.countDown();
+                        dialog.setVisible(false);
+                        dialog.dispose();
                     }
                 });
 
                 dialog.setVisible(true);
             }
         });
+
+        finished.await();
     }
 
     private void initComponents()

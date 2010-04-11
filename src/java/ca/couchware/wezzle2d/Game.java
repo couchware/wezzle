@@ -12,8 +12,6 @@ import ca.couchware.wezzle2d.animation.FadeAnimation;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.animation.MoveAnimation;
 import ca.couchware.wezzle2d.audio.Sound;
-import ca.couchware.wezzle2d.dialog.LicenseDialog;
-import ca.couchware.wezzle2d.dialog.TrialLauncherDialog;
 import ca.couchware.wezzle2d.difficulty.GameDifficulty;
 import ca.couchware.wezzle2d.event.GameEvent;
 import ca.couchware.wezzle2d.graphics.IDrawer;
@@ -183,25 +181,7 @@ public class Game implements IWindowCallback
      */
     private GameDifficulty difficulty = GameDifficulty.NORMAL;
 
-    private static SoundSystem soundSystem;
-
-    static
-    {
-        SoundSystemConfig.setSoundFilesPackage("");
-        try
-        {
-            soundSystem = new SoundSystem(LibraryLWJGLOpenAL.class);
-            //SoundSystemConfig.set
-            SoundSystemConfig.addLibrary(LibraryLWJGLOpenAL.class);
-            SoundSystemConfig.setCodec("wav", CodecWav.class);
-            SoundSystemConfig.setCodec("ogg", CodecJOgg.class);
-            
-        }
-        catch (SoundSystemException ex)
-        {
-            CouchLogger.get().recordException(Game.class, ex);
-        }
-    }
+    private static SoundSystem soundSystem;   
 
     public static SoundSystem getSoundSystem()
     {
@@ -218,6 +198,8 @@ public class Game implements IWindowCallback
     public Game(Canvas parent, ResourceFactory.Renderer renderer)
     {
         this.parent = parent;
+
+        startSoundSystem();
 
         ResourceFactory.get().setRenderer(renderer);
         win = ResourceFactory.get().createWindow(parent);
@@ -252,6 +234,25 @@ public class Game implements IWindowCallback
     public void stop()
     {
         win.stop();
+    }
+
+    /**
+     * Start the sound system, load the appropriate modules,
+     * poo your pants, etc.
+     */
+    public void startSoundSystem()
+    {
+        SoundSystemConfig.setSoundFilesPackage("");
+        try
+        {
+            soundSystem = new SoundSystem(LibraryLWJGLOpenAL.class);            
+            SoundSystemConfig.setCodec("wav", CodecWav.class);
+            SoundSystemConfig.setCodec("ogg", CodecJOgg.class);
+        }
+        catch (SoundSystemException ex)
+        {
+            CouchLogger.get().recordException(Game.class, ex);
+        }
     }
 
     /**

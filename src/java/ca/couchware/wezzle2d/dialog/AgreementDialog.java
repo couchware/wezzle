@@ -11,13 +11,14 @@ import ca.couchware.wezzle2d.util.StringUtil;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.Frame;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -33,38 +34,28 @@ import org.jdesktop.layout.GroupLayout;
  *
  * @author Cameron McKay
  */
-public class AgreementDialog extends JDialog
+public class AgreementDialog extends JFrame
 {
-
     final private static String AGREEMENT_PATH = Settings.getResourcesPath() + "/" + "license.txt";
-
     final private static String ICON_32_PATH = Settings.getResourcesPath() + "/" + "Icon_32x32.png";
 
     private JPanel dialogPane;
-
     private JPanel contentPanel;
-
     private JLabel instructionsLabel;
-
     private JPanel buttonPanel;
-
     private JButton okButton;
-
     private JButton cancelButton;
-
     private JScrollPane scrollPane;
-
     private JTextArea agreementArea;
 
-    public AgreementDialog(Frame owner)
-    {
-        super(owner, true);
+    public AgreementDialog()
+    {      
         initComponents();
 
         try
         {
             URL icon32Url = AgreementDialog.class.getClassLoader().getResource(ICON_32_PATH);
-            owner.setIconImage(ImageIO.read(icon32Url));
+            setIconImage(ImageIO.read(icon32Url));
 
             // Load in the license.
             URL agreementUrl = AgreementDialog.class.getClassLoader().getResource(AGREEMENT_PATH);
@@ -102,18 +93,18 @@ public class AgreementDialog extends JDialog
     {
         SettingsManager.get().setBool(Settings.Key.USER_AGREEMENT_ACCEPTED, true);
 
-        setVisible(false);
-        dispose();
+        processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
     }
 
     private void cancelButtonMouseClicked(java.awt.event.MouseEvent evt)
     {
-        setVisible(false);
-        dispose();
+        processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
     }
 
     public static void run() throws InterruptedException, InvocationTargetException
     {
+        final CountDownLatch finished = new CountDownLatch(1);
+
         java.awt.EventQueue.invokeAndWait(new Runnable()
         {
 
@@ -129,21 +120,25 @@ public class AgreementDialog extends JDialog
                     CouchLogger.get().recordException(AgreementDialog.class, e, true /* Fatal */);
                 }
 
-                AgreementDialog dialog = new AgreementDialog(new javax.swing.JFrame());
+                final AgreementDialog dialog = new AgreementDialog();
 
                 //dialog.setLocationRelativeTo(null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter()
                 {
-
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e)
                     {
+                        finished.countDown();
+                        dialog.dispose();
+                        dialog.setVisible(false);
                     }
                 });
 
                 dialog.setVisible(true);
             }
         });
+
+        finished.await();
     }
 
     private void initComponents()
