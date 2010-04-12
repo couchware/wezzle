@@ -98,7 +98,7 @@ public class Game implements IWindowCallback
     final public static String APPLICATION_NAME = "Wezzle";
     
     /** The version of the application.  Automaticaly set by Ant. */
-    final public static String APPLICATION_VERSION_NUMBER = "1.3.3";
+    final public static String APPLICATION_VERSION_NUMBER = "1.3.4";
     final public static String APPLICATION_DISTRIBUTION = APPLET ? "Web" : "Full";
     final public static String APPLICATION_VERSION =
             String.format("%s (%s)",
@@ -453,20 +453,24 @@ public class Game implements IWindowCallback
             }
         });
 
-        if(this.isTimeTrial())
-            TimeTrial.start();
+        if (isTimeTrial())
+        {
+            Trial.start(win);
+        }
     }
 
     @Override
     public void update()
     {
-
-        if (TimeTrial.isStarted())
+        if (Trial.hasStarted())
         {
-            TimeTrial.updateRegistry();
-            if (TimeTrial.hasTrialExpired())
-                System.out.println("expired");
+            Trial.updateRegistry(win);
+            if (Trial.hasTrialExpired())
+            {
+                // Expired
+            }
         }
+        
         // If the loader is running, bypass all the rendering to show it.        
         if (this.drawer == loader)
         {
@@ -1043,6 +1047,11 @@ public class Game implements IWindowCallback
     {
         try
         {
+            if (Trial.hasStarted())
+            {
+                Trial.updateRegistry(win, true);
+            }
+
             if (hub.settingsMan != null && !isApplet())
             {
                 hub.settingsMan.saveSettings();

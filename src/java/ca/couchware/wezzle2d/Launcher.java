@@ -7,6 +7,7 @@ package ca.couchware.wezzle2d;
 
 import ca.couchware.wezzle2d.dialog.AgreementDialog;
 import ca.couchware.wezzle2d.dialog.LicenseDialog;
+import ca.couchware.wezzle2d.dialog.TrialLauncherDialog;
 import ca.couchware.wezzle2d.manager.Achievement;
 import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
@@ -168,10 +169,12 @@ public class Launcher extends Applet
                 }
             }            
 
-            //TrialLauncherDialog.run();
-            //AgreementDialog.run();
-            game = new Game(parent, ResourceFactory.Renderer.LWJGL);            
-            game.start();            
+            final boolean allowed = TrialLauncherDialog.run();
+            if (allowed)
+            {
+                game = new Game(parent, ResourceFactory.Renderer.LWJGL);
+                game.start();
+            }
         }
         catch (Throwable t)
         {

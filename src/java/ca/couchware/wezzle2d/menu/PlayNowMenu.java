@@ -9,7 +9,7 @@ import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.IWindow;
 import ca.couchware.wezzle2d.ManagerHub;
 import ca.couchware.wezzle2d.ResourceFactory.LabelBuilder;
-import ca.couchware.wezzle2d.TimeTrial;
+import ca.couchware.wezzle2d.Trial;
 import ca.couchware.wezzle2d.animation.IAnimation;
 import ca.couchware.wezzle2d.audio.Music;
 import ca.couchware.wezzle2d.audio.MusicPlayer;

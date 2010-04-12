@@ -4,6 +4,7 @@
  */
 package ca.couchware.wezzle2d.dialog;
 
+import ca.couchware.wezzle2d.Trial;
 import ca.couchware.wezzle2d.manager.Settings;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.PartialMaskFormatter;
@@ -22,12 +23,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.text.DefaultFormatterFactory;
@@ -72,13 +75,14 @@ public class TrialLauncherDialog extends JFrame
     final private JPanel mainPane;
     final private JPanel licensePane;
 
+    private AtomicBoolean allowed = new AtomicBoolean(false);
+
     public TrialLauncherDialog()
     {        
         try
         {
             final InputStream fontStream = TrialLauncherDialog.class.getClassLoader().getResourceAsStream(FONT_PATH);
             baseFont = Font.createFont(Font.TRUETYPE_FONT, fontStream);
-
         }
         catch (Exception ex)
         {            
@@ -117,12 +121,15 @@ public class TrialLauncherDialog extends JFrame
         pane.setLayout(null);
         pane.setPreferredSize(new Dimension(640, 480));
 
-        JLabel label = new JLabel("59 Minutes of Free Gameplay Left");
-        label.setForeground(HEADER_COLOR);
-        label.setFont(baseFont.deriveFont(18f));
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setBounds(207, 184, 387, 49);
-        pane.add(label);
+        final int timeLeft = 60 - Trial.getTimePlayedInMinutes();
+        final String timeNoun = timeLeft == 1 ? "Minute" : "Minutes";
+
+        JLabel timeLeftLabel = new JLabel(String.format("%d %s of Free Gameplay Left", timeLeft, timeNoun));
+        timeLeftLabel.setForeground(HEADER_COLOR);
+        timeLeftLabel.setFont(baseFont.deriveFont(18f));
+        timeLeftLabel.setHorizontalAlignment(JLabel.CENTER);
+        timeLeftLabel.setBounds(207, 184, 387, 49);
+        pane.add(timeLeftLabel);
 
         try
         {
@@ -132,6 +139,38 @@ public class TrialLauncherDialog extends JFrame
             final Image playNowImage = ImageIO.read(playNowImageStream);
             final JLabel playNow = new JLabel(new ImageIcon(playNowImage));
             playNow.setBounds(207, 372, 181, 49);
+            playNow.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent me)
+                {
+                    playNow.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent me)
+                {
+                    playNow.setCursor(Cursor.getDefaultCursor());
+                }
+
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    if (hasTrialExpired())
+                    {
+                        JOptionPane.showMessageDialog(
+                            pane,
+                            "We're sorry but your 60 minutes of free gameplay have been used up!\n" +
+                            "Click the Buy Now button to buy Wezzle and keep playing.",
+                            "Trial Expired",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else
+                    {
+                        allowed.set(true);
+                        closeWindow();
+                    }
+                }
+            });
             pane.add(playNow);
 
             final InputStream buyNowImageStream = TrialLauncherDialog.class
@@ -153,7 +192,6 @@ public class TrialLauncherDialog extends JFrame
         enterLicense.setFont(baseFont.deriveFont(14f));
         enterLicense.setForeground(TEXT_COLOR);
         enterLicense.addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseEntered(MouseEvent me)
             {
@@ -171,7 +209,6 @@ public class TrialLauncherDialog extends JFrame
             {                
                 changeToLicensePane();
             }
-
         });
 
         pane.add(enterLicense);
@@ -255,6 +292,17 @@ public class TrialLauncherDialog extends JFrame
             cancel.setBounds(398, 390, 181, 49);
             cancel.addMouseListener(new MouseAdapter() {
                 @Override
+                public void mouseEntered(MouseEvent me)
+                {
+                    cancel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent me)
+                {
+                    cancel.setCursor(Cursor.getDefaultCursor());
+                }
+                @Override
                 public void mouseClicked(MouseEvent e)
                 {
                     changeToMainPane();
@@ -301,8 +349,24 @@ public class TrialLauncherDialog extends JFrame
         repaint();
     }
 
-    public static void run() throws InterruptedException, InvocationTargetException
+    private boolean hasTrialExpired()
     {
+        return Trial.getTimePlayedInMinutes() >= 60;
+    }
+
+    public boolean isAllowed()
+    {
+        return allowed.get();
+    }
+
+    private void closeWindow()
+    {
+        processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+    }
+
+    public static boolean run() throws InterruptedException, InvocationTargetException
+    {
+        final AtomicBoolean allowed = new AtomicBoolean(false);
         final CountDownLatch finished = new CountDownLatch(1);
 
         java.awt.EventQueue.invokeAndWait(new Runnable()
@@ -329,6 +393,7 @@ public class TrialLauncherDialog extends JFrame
                     public void windowClosing(WindowEvent e)
                     {
                         finished.countDown();
+                        allowed.set(dialog.isAllowed());
                         dialog.setVisible(false);
                         dialog.dispose();
                     }
@@ -339,5 +404,6 @@ public class TrialLauncherDialog extends JFrame
         });
 
         finished.await();
+        return allowed.get();
     }
 }
