@@ -11,6 +11,7 @@ import ca.couchware.wezzle2d.manager.Settings.Key;
 import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.PartialMaskFormatter;
+import edu.stanford.ejalbert.BrowserLauncher;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -28,11 +29,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -152,7 +150,7 @@ public class TrialLauncherDialog extends JFrame
                 @Override
                 public void mouseClicked(MouseEvent e)
                 {
-                    if (hasTrialExpired())
+                    if (!hasTrialExpired())
                     {
                         JOptionPane.showMessageDialog(
                             pane,
@@ -176,6 +174,33 @@ public class TrialLauncherDialog extends JFrame
             final Image buyNowImage = ImageIO.read(buyNowImageStream);
             final JLabel buyNow = new JLabel(new ImageIcon(buyNowImage));
             buyNow.setBounds(414, 372, 181, 49);
+            buyNow.addMouseListener(new HandCursorMouseAdapter(buyNow) {
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    JOptionPane.showMessageDialog(pane,
+                            "<html>" +
+                            "You will now be sent to Couchware's VeriSign\u00AE secured order form.<br/>" +
+                            "<br/>" +
+                            "After you purchase of Wezzle, you will receive an e-mail with your<br/>" +
+                            "serial number and license key.  Return to this window and follow the<br/>" +
+                            "on-screen instructions to enter it and register Wezzle.<br/>" +
+                            "</html>",
+                            "Instructions",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    changeToLicensePane();
+
+                    try
+                    {
+                        BrowserLauncher launcher = new BrowserLauncher();
+                        launcher.openURLinBrowser(Settings.getUpgradeUrl());
+                    } catch (Exception ex)
+                    {
+                        CouchLogger.get().recordException(Game.class, ex);
+                    }
+                }
+            });
             pane.add(buyNow);
         }
         catch (IOException ex)
@@ -203,6 +228,28 @@ public class TrialLauncherDialog extends JFrame
         security.setHorizontalAlignment(JLabel.CENTER);
         security.setFont(baseFont.deriveFont(14f));
         security.setForeground(TEXT_COLOR);
+        security.addMouseListener(new HandCursorMouseAdapter(security) {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                JOptionPane.showMessageDialog(pane,
+                        "<html>" +
+                        "When you order Wezzle from our VeriSign\u00AE secured order form,<br/>" +
+                        "your credit card information is sent over a SSL-encrypted connection.<br/>" +
+                        "<br/>" +
+                        "When you buy Wezzle, you receive a serial number and license key by<br/>" +
+                        "e-mail.  If you ever need to re-install or install on another computer<br/>" +
+                        "you simply re-enter your license information.  There's no risk of ever<br/>" +
+                        "losing your game!<br/>" +
+                        "<br/>" +
+                        "Couchware Inc. guarantees a refund if you are the victim of fraud or<br/>" +
+                        "computer error, or within 30 days if you are dissatisfied with your<br/>" +
+                        "purchase.<br/>" +
+                        "</html>",
+                        "Security",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         pane.add(security);
 
         try
