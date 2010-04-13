@@ -4,11 +4,15 @@
  */
 package ca.couchware.wezzle2d.dialog;
 
+import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.Trial;
 import ca.couchware.wezzle2d.manager.Settings;
+import ca.couchware.wezzle2d.manager.Settings.Key;
+import ca.couchware.wezzle2d.manager.SettingsManager;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.PartialMaskFormatter;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -24,6 +28,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,6 +49,9 @@ import javax.swing.text.MaskFormatter;
  */
 public class TrialLauncherDialog extends JFrame
 {
+    private static final int SERIAL_NUMBER_MIN = 8;
+    private static final int LICENSE_KEY_MIN = 32;
+
     final private static String FONT_PATH =
             Settings.getFontResourcesPath() + "/" + "Bubbleboy-2.ttf";
 
@@ -75,7 +84,7 @@ public class TrialLauncherDialog extends JFrame
     final private JPanel mainPane;
     final private JPanel licensePane;
 
-    private AtomicBoolean allowed = new AtomicBoolean(false);
+    private AtomicBoolean allowed = new AtomicBoolean(false);   
 
     public TrialLauncherDialog()
     {        
@@ -139,19 +148,7 @@ public class TrialLauncherDialog extends JFrame
             final Image playNowImage = ImageIO.read(playNowImageStream);
             final JLabel playNow = new JLabel(new ImageIcon(playNowImage));
             playNow.setBounds(207, 372, 181, 49);
-            playNow.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent me)
-                {
-                    playNow.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent me)
-                {
-                    playNow.setCursor(Cursor.getDefaultCursor());
-                }
-
+            playNow.addMouseListener(new HandCursorMouseAdapter(playNow) {
                 @Override
                 public void mouseClicked(MouseEvent e)
                 {
@@ -191,19 +188,7 @@ public class TrialLauncherDialog extends JFrame
         enterLicense.setHorizontalAlignment(JLabel.CENTER);
         enterLicense.setFont(baseFont.deriveFont(14f));
         enterLicense.setForeground(TEXT_COLOR);
-        enterLicense.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent me)
-            {
-                enterLicense.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent me)
-            {
-                enterLicense.setCursor(Cursor.getDefaultCursor());
-            }
-
+        enterLicense.addMouseListener(new HandCursorMouseAdapter(enterLicense) {
             @Override
             public void mouseClicked(MouseEvent e)
             {                
@@ -240,27 +225,27 @@ public class TrialLauncherDialog extends JFrame
 
     private JPanel createLicensePane()
     {
-        JPanel pane = new JPanel();
+        final JPanel pane = new JPanel();
         pane.setLayout(null);
         pane.setPreferredSize(new Dimension(640, 480));       
 
         try
         {
-            MaskFormatter serialNumberFormatter =
+            final MaskFormatter serialNumberFormatter =
                     new PartialMaskFormatter("HHHHHHHHHHHHHHHH");
             serialNumberFormatter.setValueContainsLiteralCharacters(false);
 
-            JFormattedTextField serialNumberField = new JFormattedTextField();
+            final JFormattedTextField serialNumberField = new JFormattedTextField();
             serialNumberField.setFormatterFactory(
                     new DefaultFormatterFactory(serialNumberFormatter));
             serialNumberField.setBounds(173, 282, 424, 39);
             serialNumberField.setFont(serialNumberField.getFont().deriveFont(20f));            
 
-            MaskFormatter licenseKeyFormatter =
+            final MaskFormatter licenseKeyFormatter =
                     new PartialMaskFormatter("HHHHHHHH-HHHHHHHH-HHHHHHHH-HHHHHHHH");
             licenseKeyFormatter.setValueContainsLiteralCharacters(false);            
 
-            JFormattedTextField licenseKeyField = new JFormattedTextField();
+            final JFormattedTextField licenseKeyField = new JFormattedTextField();
             licenseKeyField.setFormatterFactory(
                     new DefaultFormatterFactory(licenseKeyFormatter));
             licenseKeyField.setBounds(173, 332, 424, 39);
@@ -268,20 +253,40 @@ public class TrialLauncherDialog extends JFrame
 
             pane.add(serialNumberField);
             pane.add(licenseKeyField);
-        }
-        catch (ParseException ex)
-        {
-            CouchLogger.get().recordException(getClass(), ex, true);
-        }
-
-        try
-        {
+       
             final InputStream okImageStream = TrialLauncherDialog.class
                     .getClassLoader()
                     .getResourceAsStream(OK_PATH);
             final Image okImage = ImageIO.read(okImageStream);
             final JLabel ok = new JLabel(new ImageIcon(okImage));
             ok.setBounds(191, 390, 181, 49);
+            ok.addMouseListener(new HandCursorMouseAdapter(ok) {
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    try
+                    {
+                        // This code is needed because the JLabel "buttons"
+                        // don't take focus when clicked and thus don't force
+                        // the formatted text fields to commit.
+                        serialNumberField.commitEdit();
+                        licenseKeyField.commitEdit();
+                    }
+                    catch (ParseException ex)
+                    {
+                        CouchLogger.get().recordException(getClass(), ex);
+                    }
+
+                    final boolean confirmed =
+                            checkSerialNumberAndLicenseKey(pane, serialNumberField, licenseKeyField);
+
+                    if (confirmed)
+                    {
+                        allowed.set(true);
+                        closeWindow();
+                    }
+                }
+            });
             pane.add(ok);
 
             final InputStream cancelImageStream = TrialLauncherDialog.class
@@ -290,18 +295,7 @@ public class TrialLauncherDialog extends JFrame
             final Image cancelImage = ImageIO.read(cancelImageStream);
             final JLabel cancel = new JLabel(new ImageIcon(cancelImage));
             cancel.setBounds(398, 390, 181, 49);
-            cancel.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent me)
-                {
-                    cancel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent me)
-                {
-                    cancel.setCursor(Cursor.getDefaultCursor());
-                }
+            cancel.addMouseListener(new HandCursorMouseAdapter(cancel) {
                 @Override
                 public void mouseClicked(MouseEvent e)
                 {
@@ -309,14 +303,7 @@ public class TrialLauncherDialog extends JFrame
                 }
             });
             pane.add(cancel);
-        }
-        catch (IOException ex)
-        {
-            CouchLogger.get().recordException(getClass(), ex, true);
-        }       
-        
-        try
-        {
+       
             final InputStream backgroundImageStream = TrialLauncherDialog.class
                     .getClassLoader()
                     .getResourceAsStream(LICENSE_PANE_BACKGROUND);
@@ -325,7 +312,7 @@ public class TrialLauncherDialog extends JFrame
             background.setBounds(0, 0, 640, 480);
             pane.add(background);
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
             CouchLogger.get().recordException(getClass(), ex, true);
         }
@@ -347,6 +334,64 @@ public class TrialLauncherDialog extends JFrame
         add(mainPane);
         pack();
         repaint();
+    }
+
+    private boolean checkSerialNumberAndLicenseKey(
+            JPanel pane,
+            JFormattedTextField serialNumberField,
+            JFormattedTextField licenseKeyField)
+    {
+        boolean problem = false;
+        String title = "";
+        String text = "";
+
+        final String serialNumber = (String) serialNumberField.getValue();
+        final String licenseKey = (String) licenseKeyField.getValue();
+
+        if (serialNumber == null || serialNumber.length() < SERIAL_NUMBER_MIN)
+        {
+            problem = true;
+            title = "Serial Number Problem";
+            text = "Serial number must be between 8 and 16 characters in length.";
+            serialNumberField.requestFocus();
+        }
+        else if (licenseKey == null || licenseKey.length() < LICENSE_KEY_MIN)
+        {
+            problem = true;
+            title = "License Key Problem";
+            text = "The license key must be 4 groups of 8 characters (32 characters total).";
+            licenseKeyField.requestFocus();
+        }
+
+        if (!problem)
+        {
+            // Try to validate.
+            if (!Game.validateLicenseInformation(serialNumber, licenseKey))
+            {
+                problem = true;
+                title = "Invalid License Key";
+                text = "The license key is not valid for the given serial number.";
+            }
+            else
+            {
+                SettingsManager.get().setString(Key.USER_SERIAL_NUMBER, serialNumber);
+                SettingsManager.get().setString(Key.USER_LICENSE_KEY, licenseKey);                
+            }
+        }
+
+        if (problem)
+        {
+            JOptionPane.showMessageDialog(
+                    pane, text, title, JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(pane, 
+                    "Thank you for supporting Wezzle!", "Success!",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }
     }
 
     private boolean hasTrialExpired()
@@ -405,5 +450,31 @@ public class TrialLauncherDialog extends JFrame
 
         finished.await();
         return allowed.get();
+    }
+
+    /**
+     * A variation on the mouse adapter that automatically turns the
+     * cursor into a hand when moused over.
+     */
+    private static class HandCursorMouseAdapter extends MouseAdapter
+    {
+        private final Component component;
+
+        public HandCursorMouseAdapter(Component component)
+        {
+            this.component = component;
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent me)
+        {
+            component.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
+
+        @Override
+        public void mouseExited(MouseEvent me)
+        {
+            component.setCursor(Cursor.getDefaultCursor());
+        }
     }
 }

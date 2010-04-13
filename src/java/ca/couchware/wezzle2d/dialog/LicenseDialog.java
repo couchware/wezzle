@@ -14,7 +14,6 @@ import ca.couchware.wezzle2d.util.PartialMaskFormatter;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -23,7 +22,6 @@ import java.net.URL;
 import java.util.concurrent.CountDownLatch;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -134,7 +132,7 @@ public class LicenseDialog extends JFrame
         {
             problem = true;
             title = "License Key Problem";
-            text = "The license key must be 4 groups of 8 characters (32 charaters total).";
+            text = "The license key must be 4 groups of 8 characters (32 characters total).";
             licenseKeyField.requestFocus();
         }
 
@@ -145,7 +143,7 @@ public class LicenseDialog extends JFrame
             {
                 problem = true;
                 title = "Invalid License Key";
-                text = "The license key does not match the serial number.";
+                text = "The license key is not valid for the given serial number.";
             }
             else
             {

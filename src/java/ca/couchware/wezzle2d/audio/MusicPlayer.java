@@ -34,6 +34,7 @@ public class MusicPlayer
     private Thread waitThread;
     private AtomicBoolean cancelFade = new AtomicBoolean(false);
     private AtomicBoolean cancelStop = new AtomicBoolean(false);
+    private AtomicBoolean cancelWait = new AtomicBoolean(false);
     final private Object playerLock = new Object();
     private AtomicDouble normalizedGain = new AtomicDouble();
     private AtomicBoolean stopped = new AtomicBoolean(true);
@@ -85,16 +86,30 @@ public class MusicPlayer
         paused.set(false);
         stopped.set(false);
 
+        if (waitThread != null && waitThread.isAlive())
+        {
+            try
+            {
+                cancelWait.set(true);
+                waitThread.join();
+            } catch (InterruptedException ex)
+            {
+                CouchLogger.get().recordException(getClass(), ex);
+            }
+        }
+
         waitThread = new Thread("MusicPlayerWaitThread")
         {
             @Override
             public void run()
             {
+                cancelWait.set(false);
+
                 while (true)
                 {
                     try
                     {
-                        if (player.playing(key) || paused.get())
+                        if (cancelWait.get() || player.playing(key) || paused.get())
                             break;
                     
                         Thread.sleep(WAIT_PERIOD);
@@ -128,6 +143,12 @@ public class MusicPlayer
             {
                 cancelStop.set(true);
                 stopThread.join();
+            }
+
+            if (waitThread != null && waitThread.isAlive())
+            {
+                cancelWait.set(true);
+                waitThread.join();
             }
 
             synchronized (playerLock)
