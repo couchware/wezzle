@@ -65,7 +65,11 @@
 
   ; Name and file
   Name "${APP_FULL_NAME}"
-  OutFile "${APP_SHORT_NAME}-${APP_VERSION}-setup.exe"
+  !ifdef TRIAL
+    OutFile "${APP_SHORT_NAME}-${APP_VERSION}-dl-setup.exe"
+  !else
+    OutFile "${APP_SHORT_NAME}-${APP_VERSION}-setup.exe"
+  !endif
 
   ; Default installation folder
   InstallDir "$PROGRAMFILES\${APP_VENDOR}\${APP_FULL_NAME}" 
