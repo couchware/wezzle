@@ -61,7 +61,16 @@
         <taskdef name="launch4j"
                  classname="net.sf.launch4j.ant.Launch4jTask"
                  classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"/>
-        <launch4j configFile="./l4j-config.xml"/>
+        <launch4j configFile="l4j-config.xml"/>
+    </target>
+
+    <!-- This task creates the .exe for Windows. -->
+    <target name="trial-exe" depends="jar,windows" description="Build the Wezzle Windows Trial .exe">
+        <!-- This task creates the exe file. -->
+        <taskdef name="launch4j"
+                 classname="net.sf.launch4j.ant.Launch4jTask"
+                 classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"/>
+        <launch4j configFile="l4j-config-for-trial.xml"/>
     </target>
 
     <target name="app" depends="jar,macosx" description="Build the Wezzle Mac .app">
@@ -112,10 +121,20 @@
 
     <target name="windows-installer" depends="exe" description="Build the Wezzle Windows Installer">
         <taskdef name="nsis" classname="net.sf.nsisant.Task">
-            <classpath location="./lib/nsis/nsisant-1.2.jar"/>
+            <classpath location="lib/nsis/nsisant-1.2.jar"/>
         </taskdef>
 
-        <nsis script="./opt/nsis/installer.nsi"/>
+        <nsis script="opt/nsis/installer.nsi"/>
+    </target>
+
+    <target name="trial-windows-installer" depends="trial-exe" description="Build the Wezzle Windows Trial Installer">
+        <taskdef name="nsis" classname="net.sf.nsisant.Task">
+            <classpath location="lib/nsis/nsisant-1.2.jar"/>
+        </taskdef>
+
+        <nsis script="opt/nsis/installer.nsi">
+            <define name="TRIAL" value="1"/>
+        </nsis>
     </target>
 
     <target name="native-jars" depends="native-windows-jar,native-macosx-jar,native-linux-jar" description="Build all native JARs"/>

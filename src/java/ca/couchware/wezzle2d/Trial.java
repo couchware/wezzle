@@ -8,7 +8,7 @@ public class Trial
 {
     private final static long MILLISECONDS_PER_MINUTE = 1000 * 60;
     private final static long TOTAL_TIME = 60 * MILLISECONDS_PER_MINUTE;
-    private final static String KEY = "TRIAL";
+    private final static String KEY = "Zormander";
 
     private static long startInstant;
     private static long timePlayedInMilliseconds;

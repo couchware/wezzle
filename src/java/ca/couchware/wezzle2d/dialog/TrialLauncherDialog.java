@@ -150,7 +150,7 @@ public class TrialLauncherDialog extends JFrame
                 @Override
                 public void mouseClicked(MouseEvent e)
                 {
-                    if (!hasTrialExpired())
+                    if (hasTrialExpired())
                     {
                         JOptionPane.showMessageDialog(
                             pane,
@@ -178,7 +178,7 @@ public class TrialLauncherDialog extends JFrame
                 @Override
                 public void mouseClicked(MouseEvent e)
                 {
-                    JOptionPane.showMessageDialog(pane,
+                    final int result = JOptionPane.showConfirmDialog(pane,
                             "<html>" +
                             "You will now be sent to Couchware's VeriSign\u00AE secured order form.<br/>" +
                             "<br/>" +
@@ -187,17 +187,21 @@ public class TrialLauncherDialog extends JFrame
                             "on-screen instructions to enter it and register Wezzle.<br/>" +
                             "</html>",
                             "Instructions",
+                            JOptionPane.OK_CANCEL_OPTION,
                             JOptionPane.INFORMATION_MESSAGE);
 
-                    changeToLicensePane();
+                    if (result == JOptionPane.OK_OPTION)
+                    {
+                        changeToLicensePane();
 
-                    try
-                    {
-                        BrowserLauncher launcher = new BrowserLauncher();
-                        launcher.openURLinBrowser(Settings.getUpgradeUrl());
-                    } catch (Exception ex)
-                    {
-                        CouchLogger.get().recordException(Game.class, ex);
+                        try
+                        {
+                            BrowserLauncher launcher = new BrowserLauncher();
+                            launcher.openURLinBrowser(Settings.getUpgradeUrl());
+                        } catch (Exception ex)
+                        {
+                            CouchLogger.get().recordException(Game.class, ex);
+                        }
                     }
                 }
             });

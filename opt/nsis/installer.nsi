@@ -308,6 +308,12 @@ Function CreateLicensePage
    IfFileExists "${USER_DIR}\license.xml" 0 +2
    Abort
 
+   ; If we're in trial mode, skip this license screen, as the trial
+   ; provides it.
+   !ifdef TRIAL
+     Abort
+   !endif
+
    !insertmacro MUI_HEADER_TEXT $(PAGE_TITLE) $(PAGE_SUBTITLE)     
    
    InstallOptions::initDialog /NOUNLOAD "$PLUGINSDIR\license.ini"

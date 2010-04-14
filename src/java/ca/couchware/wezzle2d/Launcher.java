@@ -43,7 +43,7 @@ public class Launcher extends Applet
             @Override
             public void run()
             {
-                startWezzle(displayParent);
+                startWezzle(displayParent, false);
             }
         };
 
@@ -122,7 +122,7 @@ public class Launcher extends Applet
         CouchLogger.get().recordMessage(this.getClass(), "Applet destroy completed");
     }
     
-    public void startWezzle(Canvas parent)
+    public void startWezzle(Canvas parent, boolean trialMode)
     {
         // Make sure the setting manager is loaded.
         SettingsManager settingsMan = SettingsManager.get();
@@ -149,32 +149,39 @@ public class Launcher extends Applet
 
             if (!validated)
             {
-                LicenseDialog.run();
-
-                final String enteredSerialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
-                final String enteredLicenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
-                final boolean enteredValidated =
-                        Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
-
-                if (enteredValidated)
+                if (!trialMode)
                 {
-                    CouchLogger.get().recordMessage( Game.class,
-                            "License information verified");
+                    LicenseDialog.run();
+
+                    final String enteredSerialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
+                    final String enteredLicenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
+                    final boolean enteredValidated =
+                            Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
+
+                    if (enteredValidated)
+                    {
+                        CouchLogger.get().recordMessage( Game.class,
+                                "License information verified");
+                    }
+                    else
+                    {
+                        CouchLogger.get().recordWarning( Game.class,
+                                "Invalid license information");
+                        return;
+                    }
                 }
                 else
                 {
-                    CouchLogger.get().recordException( Game.class,
-                            new Exception("Invalid license information"),
-                            true /* Fatal */);
-                }
-            }            
-
-            final boolean allowed = TrialLauncherDialog.run();
-            if (allowed)
-            {
-                game = new Game(parent, ResourceFactory.Renderer.LWJGL);
-                game.start();
-            }
+                    final boolean allowed = TrialLauncherDialog.run();
+                    if (!allowed)
+                    {
+                        return;
+                    }
+                } // end if
+            } // end if
+            
+            game = new Game(parent, ResourceFactory.Renderer.LWJGL, trialMode);
+            game.start();
         }
         catch (Throwable t)
         {
@@ -196,8 +203,10 @@ public class Launcher extends Applet
      */
     public static void main(String argv[])
     {
+        final boolean trialMode = argv.length > 0 && argv[0].equals("--trial");
+
         Launcher launcher = new Launcher();
-        launcher.startWezzle(null);
+        launcher.startWezzle(null, trialMode);
 //        System.exit(0);
     }
 }

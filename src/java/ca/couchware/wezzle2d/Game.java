@@ -92,7 +92,7 @@ public class Game implements IWindowCallback
             new ImmutableRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     /** Is the game running as an applet? */
-    final private static boolean APPLET = false;
+    final private static boolean APPLET = false;    
 
     /** The name of the application. */
     final public static String APPLICATION_NAME = "Wezzle";
@@ -140,6 +140,9 @@ public class Game implements IWindowCallback
     
     /** The parent of the game (used in applet mode). */
     final private Canvas parent;
+    /** Is the game running as a trial? */
+    final private boolean trial;
+    
     /** The current build number. */
     final private String BUILD_NUMBER = "N/A";
     /** The current drawer. */
@@ -195,9 +198,10 @@ public class Game implements IWindowCallback
      *            The type of rendering to use (should be one of the contansts
      *            from ResourceFactory)
      */
-    public Game(Canvas parent, ResourceFactory.Renderer renderer)
+    public Game(Canvas parent, ResourceFactory.Renderer renderer, boolean trialMode)
     {
         this.parent = parent;
+        this.trial = trialMode;
 
         startSoundSystem();
 
@@ -216,6 +220,11 @@ public class Game implements IWindowCallback
     public static boolean isApplet()
     {
         return APPLET;
+    }
+
+    private boolean isTimeTrial()
+    {
+        return trial;
     }
 
     /**
@@ -1198,55 +1207,5 @@ public class Game implements IWindowCallback
         }
 
         return false;
-    }
-
-//    private void poo()
-//    {
-//        final String serialNumber = hub.settingsMan.getString(Key.USER_SERIAL_NUMBER);
-//        final String licenseKey = hub.settingsMan.getString(Key.USER_LICENSE_KEY);
-//        final boolean validated = Game.validateLicenseInformation(serialNumber, licenseKey);
-//
-//        if (!validated)
-//        {
-//            try
-//            {
-//                LicenseDialog.run();
-//            }
-//            catch (Exception e)
-//            {
-//                throw new RuntimeException(e);
-//            }
-//
-//            final String enteredSerialNumber = hub.settingsMan.getString(Key.USER_SERIAL_NUMBER);
-//            final String enteredLicenseKey = hub.settingsMan.getString(Key.USER_LICENSE_KEY);
-//            final boolean enteredValidated =
-//                    Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
-//
-//            if (enteredValidated)
-//            {
-//                CouchLogger.get().recordMessage( Game.class,
-//                        "License information verified");
-//            }
-//            else
-//            {
-//                CouchLogger.get().recordException( Game.class,
-//                        new Exception("Invalid license information"),
-//                        true /* Fatal */);
-//            }
-//        }
-//
-//        try
-//        {
-//            TrialLauncherDialog.run();
-//        }
-//        catch (Exception e)
-//        {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-    private boolean isTimeTrial()
-    {
-        return true;
-    }
+    }    
 }
