@@ -161,13 +161,13 @@ public class ManagerHub
         if (set.contains(Manager.SOUND))
         {
             // Create the sound manager.
-            this.soundMan = SoundManager.newInstance(this.settingsMan);
+            this.soundMan = SoundManager.newInstance(game.getSoundSystem(), this.settingsMan);
         }
         
         if (set.contains(Manager.MUSIC))
         {
             // Create the music manager.            
-            this.musicMan = MusicManager.newInstance(this.settingsMan);
+            this.musicMan = MusicManager.newInstance(game.getSoundSystem(), this.settingsMan);
         }
 
         if (set.contains(Manager.NOTIFICATION))

@@ -19,6 +19,7 @@ import ca.couchware.wezzle2d.util.CouchLogger;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.io.File;
 
 /**
  * Launches the Wezzle applet or app, depending on how it is called.
@@ -162,31 +163,44 @@ public class Launcher extends Applet
                     {
                         CouchLogger.get().recordMessage( Game.class,
                                 "License information verified");
+                        startGame(parent, trialMode);
                     }
                     else
                     {
                         CouchLogger.get().recordWarning( Game.class,
-                                "Invalid license information");
-                        return;
+                                "Invalid license information");                        
                     }
                 }
                 else
                 {
-                    final boolean allowed = TrialLauncherDialog.run();
-                    if (!allowed)
+                    boolean loadWezzle = false;
+                    do
                     {
-                        return;
-                    }
+                        loadWezzle = TrialLauncherDialog.run();
+                        if (loadWezzle)
+                        {
+                            startGame(parent, trialMode);
+                        }
+                    } while (loadWezzle);
+                    
                 } // end if
             } // end if
-            
-            game = new Game(parent, ResourceFactory.Renderer.LWJGL, trialMode);
-            game.start();
+            else
+            {
+                startGame(parent, trialMode);
+            }
         }
         catch (Throwable t)
         {
             CouchLogger.get().recordException(Game.class, t);
+            System.exit(0);
         }        
+    }
+
+    private void startGame(Canvas parent, boolean trialMode)
+    {
+        game = new Game(parent, ResourceFactory.Renderer.LWJGL, trialMode);
+        game.start();
     }
 
     public void stopWezzle()
@@ -206,7 +220,7 @@ public class Launcher extends Applet
         final boolean trialMode = argv.length > 0 && argv[0].equals("--trial");
 
         Launcher launcher = new Launcher();
-        launcher.startWezzle(null, trialMode);
+        launcher.startWezzle(null, true);
 //        System.exit(0);
     }
 }

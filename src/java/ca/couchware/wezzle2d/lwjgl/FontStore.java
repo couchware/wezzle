@@ -17,31 +17,16 @@ public class FontStore
      * The font url.
      */
     final private static String PATH = Settings.getFontResourcesPath() + "/Bubbleboy-2.ttf";
-
-    /**
-     * The single instance of this class
-     */
-    final private static FontStore single = new FontStore();
-
+   
     /**
      * The base font that all font sizes are derived from.
      */
     private Font baseFont;
 
     /**
-     * Get the single instance of this class .
-     *
-     * @return The single instance of this class
-     */
-    public static FontStore get()
-    {
-        return single;
-    }
-
-    /**
      * The font map.
      */
-    private static final HashMap<Integer, TrueTypeFont> fontMap =
+    private final HashMap<Integer, TrueTypeFont> fontMap =
             new HashMap<Integer, TrueTypeFont>();  
    
     public TrueTypeFont getFont(Integer size, TextureLoader textureLoader)

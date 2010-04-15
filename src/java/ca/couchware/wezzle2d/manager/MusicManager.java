@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import paulscode.sound.SoundSystem;
 
 
 /**
@@ -29,7 +30,7 @@ public class MusicManager
     /**
      * The key for the current player.
      */
-    private static final String CURRENT_PLAYER_KEY = "Current";
+    private static final String CURRENT_PLAYER_KEY = "Current";    
 
     /**
      * Is the music manager paused?
@@ -67,11 +68,9 @@ public class MusicManager
      * The current music theme.  Default to A.
      */
     private Theme theme = Theme.NONE;        
-    
-    /**
-     * The settings manager.
-     */
-    private SettingsManager settingsMan;
+        
+    private final SettingsManager settingsMan;
+    private final SoundSystem soundSystem;
        
     /** 
      * The list of the music.
@@ -97,9 +96,9 @@ public class MusicManager
     /**
      * Creates the song list.
      */
-    private MusicManager(SettingsManager settingsMan) 
+    private MusicManager(SoundSystem soundSystem, SettingsManager settingsMan)
     {        
-        // The executor.        
+        this.soundSystem = soundSystem;
         this.settingsMan = settingsMan;
                
         // Initiate the array list and song number.
@@ -115,9 +114,9 @@ public class MusicManager
     /**
      * Static constructor.
      */
-    public static MusicManager newInstance(SettingsManager settingsMan)
+    public static MusicManager newInstance(SoundSystem soundSystem, SettingsManager settingsMan)
     {
-        return new MusicManager(settingsMan);
+        return new MusicManager(soundSystem, settingsMan);
     }           
     
     public void setTheme(Theme theme)
@@ -389,7 +388,7 @@ public class MusicManager
      * @param String path
      * @return A new player with that passed path already opened.
      */
-    private static MusicPlayer createPlayer(String path, String sourcename)
+    private MusicPlayer createPlayer(String path, String sourcename)
     {
         MusicPlayer mp;
 
@@ -401,7 +400,7 @@ public class MusicManager
             //CouchLogger.get().recordMessage(MusicManager.class, "Returning cached player");
         }
 
-        mp = MusicPlayer.newInstance(path);
+        mp = MusicPlayer.newInstance(soundSystem, path);
         musicPlayerCache.put(sourcename, mp);
         return mp;
     }

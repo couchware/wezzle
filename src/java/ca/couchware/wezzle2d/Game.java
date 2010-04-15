@@ -141,7 +141,7 @@ public class Game implements IWindowCallback
     /** The parent of the game (used in applet mode). */
     final private Canvas parent;
     /** Is the game running as a trial? */
-    final private boolean trial;
+    final private boolean trialMode;
     
     /** The current build number. */
     final private String BUILD_NUMBER = "N/A";
@@ -179,14 +179,12 @@ public class Game implements IWindowCallback
      * to transition from the menu to the game and vice-versa.
      */
     private ITransition transition;
-    /**
-     * The game difficulty setting.
-     */
+    /** The game difficulty setting. */
     private GameDifficulty difficulty = GameDifficulty.NORMAL;
 
-    private static SoundSystem soundSystem;   
+    private SoundSystem soundSystem;   
 
-    public static SoundSystem getSoundSystem()
+    public SoundSystem getSoundSystem()
     {
         return soundSystem;
     }
@@ -194,14 +192,16 @@ public class Game implements IWindowCallback
     /**
      * Construct our game and set it running.
      *
+     * @param parent The parent canvas, if it exists.
      * @param renderingType
      *            The type of rendering to use (should be one of the contansts
      *            from ResourceFactory)
+     * @param trialMode Runs the game in trial mode if set.
      */
     public Game(Canvas parent, ResourceFactory.Renderer renderer, boolean trialMode)
     {
         this.parent = parent;
-        this.trial = trialMode;
+        this.trialMode = trialMode;
 
         startSoundSystem();
 
@@ -222,9 +222,9 @@ public class Game implements IWindowCallback
         return APPLET;
     }
 
-    private boolean isTimeTrial()
+    public boolean isTrial()
     {
-        return trial;
+        return trialMode;
     }
 
     /**
@@ -462,7 +462,7 @@ public class Game implements IWindowCallback
             }
         });
 
-        if (isTimeTrial())
+        if (isTrial())
         {
             Trial.start(win);
         }
@@ -1059,6 +1059,7 @@ public class Game implements IWindowCallback
             if (Trial.hasStarted())
             {
                 Trial.updateRegistry(win, true);
+                Trial.stop();
             }
 
             if (hub.settingsMan != null && !isApplet())
@@ -1079,8 +1080,9 @@ public class Game implements IWindowCallback
             }
             
             CouchLogger.get().recordMessage(this.getClass(), "Sound manager stopped");
-
-            soundSystem.cleanup();            
+            
+            resourceFactory.cleanup();
+            soundSystem.cleanup();                      
         }
         catch (Exception e)
         {

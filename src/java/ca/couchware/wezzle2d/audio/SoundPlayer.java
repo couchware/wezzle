@@ -17,19 +17,24 @@ import paulscode.sound.SoundSystemConfig;
  */
 public class SoundPlayer
 {
-
     private double normalizedGain;
-    private SoundSystem player = Game.getSoundSystem();
+    private final SoundSystem soundSystem;
     private String key = UUID.randomUUID().toString();
 
-    public SoundPlayer(String path)
+    public SoundPlayer(SoundSystem soundSystem, String path)
     {
-        player.newSource(false, key, path, false, 0, 0, 0, SoundSystemConfig.ATTENUATION_NONE, 1);
+        this.soundSystem = soundSystem;
+        open(path);
+    }
+
+    private void open(String path)
+    {
+        soundSystem.newSource(false, key, path, false, 0, 0, 0, SoundSystemConfig.ATTENUATION_NONE, 1);
     }
 
     public void play()
     {
-        player.play(key);
+        soundSystem.play(key);
     }
 
     /**
@@ -38,8 +43,8 @@ public class SoundPlayer
      */
     public void close()
     {
-        if(player.playing(key))
-            player.stop(key);
+        if (soundSystem.playing(key))
+            soundSystem.stop(key);
     }
 
     /**
@@ -50,7 +55,7 @@ public class SoundPlayer
      */
     public void setNormalizedGain(double nGain)
     {
-        player.setVolume(key, (float) nGain);
+        soundSystem.setVolume(key, (float) nGain);
         this.normalizedGain = nGain;
     }
 

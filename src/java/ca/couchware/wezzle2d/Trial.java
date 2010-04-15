@@ -13,7 +13,6 @@ public class Trial
     private static long startInstant;
     private static long timePlayedInMilliseconds;
     private static Preferences preferences;
-    private static boolean inited = false;
     private static boolean started = false;
 
     private Trial()
@@ -40,12 +39,18 @@ public class Trial
         }
     }
 
-    public synchronized  static long getTimePlayedInMilliseconds()
+    public synchronized static void stop()
+    {
+        started = false;
+        startInstant = 0;
+    }
+
+    public synchronized static long getTimePlayedInMilliseconds()
     {
         return timePlayedInMilliseconds;
     }
 
-    public synchronized  static int getTimePlayedInMinutes()
+    public synchronized static int getTimePlayedInMinutes()
     {
         return (int) (timePlayedInMilliseconds / MILLISECONDS_PER_MINUTE);
     }
@@ -65,6 +70,11 @@ public class Trial
         if (!started)
         {
             throw new RuntimeException("Attempted to update registry before starting the trial");
+        }
+
+        if (getTimePlayedInMinutes() >= 60)
+        {
+            return;
         }
 
         final long currentInstant = win.getTime();

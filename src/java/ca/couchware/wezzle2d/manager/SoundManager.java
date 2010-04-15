@@ -15,6 +15,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import paulscode.sound.SoundSystem;
 
 /**
  * A class for managing the playing of game sounds.
@@ -28,11 +29,9 @@ import java.util.concurrent.Executor;
  */
 
 public class SoundManager implements IResettable
-{                             
-    /**
-     * The settings manager.
-     */
+{                                 
     private SettingsManager settingsMan;
+    private final SoundSystem soundSystem;
     
     /** 
      * The list of effects.
@@ -80,8 +79,9 @@ public class SoundManager implements IResettable
      * @param executor
      * @param propertyMan
      */
-    private SoundManager(SettingsManager settingsMan) 
-    {                        
+    private SoundManager(SoundSystem soundSystem, SettingsManager settingsMan)
+    {
+        this.soundSystem = soundSystem;
         this.settingsMan = settingsMan;
         
         // Initiate the array list.
@@ -106,9 +106,9 @@ public class SoundManager implements IResettable
      * @param userProperties
      * @return
      */
-    public static SoundManager newInstance(SettingsManager settingsMan)
+    public static SoundManager newInstance(SoundSystem soundSystem, SettingsManager settingsMan)
     {
-        return new SoundManager(settingsMan);
+        return new SoundManager(soundSystem, settingsMan);
     }
     
     /**
@@ -122,7 +122,7 @@ public class SoundManager implements IResettable
 
         for (int i = 0; i < numBuffers; i++)
         {
-            buffer.add(new SoundPlayer(path));
+            buffer.add(new SoundPlayer(soundSystem, path));
         }
         
         soundMap.put(sound, buffer);

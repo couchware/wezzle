@@ -4,7 +4,6 @@
  */
 package ca.couchware.wezzle2d.audio;
 
-import ca.couchware.wezzle2d.Game;
 import ca.couchware.wezzle2d.util.CouchLogger;
 import ca.couchware.wezzle2d.util.AtomicDouble;
 import java.util.UUID;
@@ -27,7 +26,7 @@ public class MusicPlayer
     private static final int FADE_PERIOD = 50;
     private static final int STOP_PERIOD = 250;
     private static final int WAIT_PERIOD = 250;
-    private static SoundSystem player = Game.getSoundSystem();
+    private final SoundSystem soundSystem;
     private final String key = UUID.randomUUID().toString();
     private Thread fadeThread;
     private Thread stopThread;
@@ -49,8 +48,9 @@ public class MusicPlayer
     /**
      * The constructor.
      */
-    private MusicPlayer(String path)
-    {        
+    private MusicPlayer(SoundSystem soundSystem, String path)
+    {
+        this.soundSystem = soundSystem;
         open(path);
     }
 
@@ -59,14 +59,14 @@ public class MusicPlayer
      * 
      * @return
      */
-    public static MusicPlayer newInstance(String path)
+    public static MusicPlayer newInstance(SoundSystem soundSystem, String path)
     {
-        return new MusicPlayer(path);
+        return new MusicPlayer(soundSystem, path);
     }
 
     private void open(String path)
     {
-        player.newStreamingSource(true, key, path, false, 0, 0, 0, SoundSystemConfig.ATTENUATION_NONE, 1);
+        soundSystem.newStreamingSource(true, key, path, false, 0, 0, 0, SoundSystemConfig.ATTENUATION_NONE, 1);
     }
 
     public void play()
@@ -75,7 +75,7 @@ public class MusicPlayer
         {
             try
             {
-                player.play(key);
+                soundSystem.play(key);
             }
             catch (Exception ex)
             {
@@ -109,7 +109,7 @@ public class MusicPlayer
                 {
                     try
                     {
-                        if (cancelWait.get() || player.playing(key) || paused.get())
+                        if (cancelWait.get() || soundSystem.playing(key) || paused.get())
                             break;
                     
                         Thread.sleep(WAIT_PERIOD);
@@ -153,7 +153,7 @@ public class MusicPlayer
 
             synchronized (playerLock)
             {
-                player.stop(key);                
+                soundSystem.stop(key);
             }
 
             stopped.set(true);
@@ -170,7 +170,7 @@ public class MusicPlayer
         {
             try
             {
-                player.pause(key);
+                soundSystem.pause(key);
                 paused.set(true);
             }
             catch (Exception ex)
@@ -187,7 +187,7 @@ public class MusicPlayer
 
     public void rewind()
     {
-       player.rewind(key);       
+       soundSystem.rewind(key);
     }
 
     public void setNormalizedGain(double nGain)
@@ -198,7 +198,7 @@ public class MusicPlayer
             {
                 nGain = Math.max(nGain, MIN_GAIN);
                 nGain = Math.min(nGain, MAX_GAIN);
-                player.setVolume(key, (float) nGain);
+                soundSystem.setVolume(key, (float) nGain);
             } catch (Exception ex)
             {
                 CouchLogger.get().recordException(getClass(), ex);
@@ -292,7 +292,7 @@ public class MusicPlayer
      */
     public void setLooping(boolean loop)
     {        
-        player.setLooping(key, loop);
+        soundSystem.setLooping(key, loop);
         looping.set(loop);
     }    
 
@@ -305,7 +305,7 @@ public class MusicPlayer
     {
         synchronized (playerLock)
         {
-            return player.playing(key);
+            return soundSystem.playing(key);
         }
     }
 
@@ -366,7 +366,7 @@ public class MusicPlayer
                         {
                             try
                             {
-                                player.stop(key);
+                                soundSystem.stop(key);
                                 stopped.set(true);
                                 break;
                             } catch (Exception e)
@@ -393,7 +393,7 @@ public class MusicPlayer
     public void destroy()
     {
         stop();
-        player.removeSource(key);
+        soundSystem.removeSource(key);
     }
 
 }

@@ -60,25 +60,9 @@ public class ResourceFactory
         LWJGL
     }
 
-    /**
-     * The type of rendering that we are currently using.
-     */
-    private Renderer renderer = null;
-
-    /**
-     * The settings manager.
-     */
     private SettingsManager settingsMan;
-
-    /**
-     * The window the game should use to render.
-     */
-    private IWindow window;
-
-    /**
-     * The graphics the game should use to draw.
-     */
-    private IGraphics gfx;
+    private Renderer renderer = null;
+    private IWindow win;
 
     /**
      * The default contructor has been made private to prevent construction of
@@ -100,6 +84,12 @@ public class ResourceFactory
         return SINGLE;
     }
 
+    public void cleanup()
+    {        
+        renderer = null;
+        win = null;
+    }
+
     /**
      * Set the rendering method that should be used. Note: This can only be done
      * before the first resource is accessed.
@@ -110,15 +100,11 @@ public class ResourceFactory
     public void setRenderer(Renderer renderer)
     {
         // If the window has already been created then we have already created
-        // resources in
-        // the current rendering method, we are not allowed to change rendering
-        // types
-        if ( window != null )
+        // resources inthe current rendering method, we are not allowed to change rendering        
+        if ( win == null )
         {
-            throw new RuntimeException( "You may not change the rendering type during runtime" );
-        }
-
-        this.renderer = renderer;
+            this.renderer = renderer;
+        }        
     }
 
     /**
@@ -144,19 +130,17 @@ public class ResourceFactory
      */
     public IWindow createWindow( Canvas parent )
     {       
-        if ( window != null )
+        if ( win == null )
         {
-            throw new RuntimeException("The window has already been created");
-        }
+            switch ( renderer )
+            {
+                case LWJGL:
+                    win = new LWJGLWindow( parent, this.settingsMan );
+                    break;
+            }           
+        }        
 
-        switch ( renderer )
-        {
-            case LWJGL:
-                window = new LWJGLWindow( parent, this.settingsMan );
-                break;
-        }
-
-        return window;
+        return win;
     }
 
     /**
@@ -166,12 +150,12 @@ public class ResourceFactory
      */
     public IWindow getWindow()
     {
-        if ( window == null )
+        if ( win == null )
         {
-            throw new RuntimeException("You cannot get that which does not exist");
+            throw new RuntimeException("You need to create a window to get one");
         }
 
-        return window;
+        return win;
     }
 
     /**
@@ -183,7 +167,7 @@ public class ResourceFactory
      */
     public ISprite getSprite(String path)
     {
-        if ( window == null )
+        if ( win == null )
         {
             throw new RuntimeException(
                     "Attempt to retrieve sprite before game window was created" );
@@ -192,7 +176,7 @@ public class ResourceFactory
         switch ( renderer )
         {
             case LWJGL:
-                return new LWJGLSprite( (LWJGLWindow) window, path );                
+                return new LWJGLSprite( (LWJGLWindow) win, path );
         }
 
         throw new RuntimeException( "Unknown rendering type: " + renderer );
@@ -205,7 +189,7 @@ public class ResourceFactory
      */
     private ITextLabel getLabel(LabelBuilder builder)
     {
-        if ( window == null )
+        if ( win == null )
         {
             throw new RuntimeException(
                     "Attempted to retrieve text before game window was created" );
@@ -214,7 +198,7 @@ public class ResourceFactory
         switch ( renderer )
         {
             case LWJGL:
-                return new LWJGLTextLabel( (LWJGLWindow) window,
+                return new LWJGLTextLabel( (LWJGLWindow) win,
                         builder.x,
                         builder.y,
                         builder.alignment,
@@ -226,28 +210,14 @@ public class ResourceFactory
         }
 
         throw new RuntimeException( "Unknown rendering type: " + renderer );
-    }
-
-    /** The variable that indicates whether the sprites have been prelaoded. */
-    private boolean spritesPreloaded = false;
+    }    
 
     /**
      * This method will preload all the sprites in the sprite directory.  It 
      * can only be run once.
      */
     public Collection<Runnable> preloadSprites()
-    {        
-        // Check to see if the sprites have been preloaded.
-        if ( this.spritesPreloaded )
-        {
-            CouchLogger.get().recordException( this.getClass(),
-                    new Exception("Attempted to preload sprites twice!"),
-                    true /* Fatal */);
-        }
-
-        // Flag the sprites as preloaded.
-        this.spritesPreloaded = true;
-
+    {                
         // The list of the sprites.
         List<String> spriteList = new ArrayList<String>();        
 
@@ -300,6 +270,7 @@ public class ResourceFactory
 
             runnableList.add( new Runnable()
             {
+                @Override
                 public void run()
                 {
                     getSprite( spritePath + "/" + spriteFilePath );
@@ -397,6 +368,7 @@ public class ResourceFactory
             return this;
         }      
 
+        @Override
         public ITextLabel build()
         {
             return get().getLabel( this );

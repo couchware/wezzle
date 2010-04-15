@@ -69,6 +69,7 @@ public class LWJGLWindow implements IWindow
     private int height;
 
     /** The loader responsible for converting images into OpenGL textures. */
+    private FontStore fontStore;
     private TextureLoader textureLoader;
    
     private String title;
@@ -97,6 +98,11 @@ public class LWJGLWindow implements IWindow
         this.modifiers = EnumSet.noneOf(Modifier.class);
                 
         CouchLogger.get().recordMessage(this.getClass(), "LWJGL Version: " + Sys.getVersion());
+    }
+
+    FontStore getFontStore()
+    {
+        return fontStore;
     }
 
     /**
@@ -252,8 +258,8 @@ public class LWJGLWindow implements IWindow
                         "Failed to find value mode: " + width + "x" + height + " fullscreen=" + fullscreen);
             }
 
-            Display.setFullscreen(fullscreen);
-            Display.setDisplayMode(targetDisplayMode);
+            Display.setFullscreen(fullscreen);            
+            Display.setDisplayMode(targetDisplayMode);            
         }
         catch (LWJGLException e)
         {
@@ -299,6 +305,7 @@ public class LWJGLWindow implements IWindow
         initializePixelFormat();
         initializeOpenGL();
 
+        fontStore = new FontStore();
         textureLoader = new TextureLoader();
 
         if (callback != null)
@@ -522,7 +529,8 @@ public class LWJGLWindow implements IWindow
                 CouchLogger.get().recordMessage(getClass(), "Stop serviced");
                 this.gameRunning = false;
 
-                Display.destroy();
+                Display.destroy();                
+                
                 CouchLogger.get().recordMessage(getClass(), "Display destroyed");
 
                 CouchLogger.get().recordMessage(getClass(), "Window closed started");

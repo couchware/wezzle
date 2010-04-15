@@ -128,7 +128,7 @@ public class TrialLauncherDialog extends JFrame
         pane.setLayout(null);
         pane.setPreferredSize(new Dimension(640, 480));
 
-        final int timeLeft = 60 - Trial.getTimePlayedInMinutes();
+        final int timeLeft = Math.max(0, 60 - Trial.getTimePlayedInMinutes());
         final String timeNoun = timeLeft == 1 ? "Minute" : "Minutes";
 
         JLabel timeLeftLabel = new JLabel(String.format("%d %s of Free Gameplay Left", timeLeft, timeNoun));
