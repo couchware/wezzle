@@ -221,7 +221,7 @@ public class Launcher extends Applet
         final boolean trialMode = argv.length > 0 && argv[0].equals("--trial");
 
         Launcher launcher = new Launcher();
-        launcher.startWezzle(null, true);
+        launcher.startWezzle(null, trialMode);
 //        System.exit(0);
     }
 }
