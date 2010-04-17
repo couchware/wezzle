@@ -474,9 +474,13 @@ public class Game implements IWindowCallback
         if (Trial.hasStarted())
         {
             Trial.updateRegistry(win);
-            if (Trial.hasTrialExpired())
+            if (Trial.hasExpired())
             {
-                // Expired
+                win.alert("Trial Expired", 
+                        "We're sorry but your 60 minutes of free gameplay have been used up!\n" +
+                        "Please buy Wezzle to continue playing.\n\n" +
+                        "Wezzle will now exit.");
+                win.stop();
             }
         }
         

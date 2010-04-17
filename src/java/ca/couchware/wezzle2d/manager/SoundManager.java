@@ -30,7 +30,7 @@ import paulscode.sound.SoundSystem;
 
 public class SoundManager implements IResettable
 {                                 
-    private SettingsManager settingsMan;
+    private final SettingsManager settingsMan;
     private final SoundSystem soundSystem;
     
     /** 
@@ -81,6 +81,16 @@ public class SoundManager implements IResettable
      */
     private SoundManager(SoundSystem soundSystem, SettingsManager settingsMan)
     {
+        if (soundSystem == null)
+        {
+            throw new IllegalArgumentException("Sound system cannot be null");
+        }
+
+        if (settingsMan == null)
+        {
+            throw new IllegalArgumentException("Settings manager cannot be null");
+        }
+
         this.soundSystem = soundSystem;
         this.settingsMan = settingsMan;
         

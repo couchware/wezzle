@@ -89,7 +89,7 @@ public class MusicManager
     private MusicPlayer player;
     
     private final Map<String, MusicPlayer> playerMap = new HashMap<String, MusicPlayer>();
-    private static final Map<String, MusicPlayer> musicPlayerCache = new HashMap<String, MusicPlayer>();
+    private final Map<String, MusicPlayer> musicPlayerCache = new HashMap<String, MusicPlayer>();
 
     private double normalizedGain = 0.0;
     
@@ -97,7 +97,17 @@ public class MusicManager
      * Creates the song list.
      */
     private MusicManager(SoundSystem soundSystem, SettingsManager settingsMan)
-    {        
+    {
+        if (soundSystem == null)
+        {
+            throw new IllegalArgumentException("Sound system cannot be null");
+        }
+
+        if (settingsMan == null)
+        {
+            throw new IllegalArgumentException("Settings manager cannot be null");
+        }
+
         this.soundSystem = soundSystem;
         this.settingsMan = settingsMan;
                

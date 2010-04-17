@@ -138,7 +138,7 @@ public class ManagerHub
         if (set.contains(Manager.LISTENER))
         {
             // Get the singleton.
-            this.listenerMan = ListenerManager.get();                        
+            this.listenerMan = new ListenerManager();
         }
         
         if (set.contains(Manager.SETTINGS))

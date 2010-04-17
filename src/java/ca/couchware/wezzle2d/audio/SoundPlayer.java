@@ -4,7 +4,6 @@
  */
 package ca.couchware.wezzle2d.audio;
 
-import ca.couchware.wezzle2d.Game;
 import java.util.UUID;
 import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
@@ -23,6 +22,16 @@ public class SoundPlayer
 
     public SoundPlayer(SoundSystem soundSystem, String path)
     {
+        if (soundSystem == null)
+        {
+            throw new IllegalArgumentException("Sound system cannot be null");
+        }
+
+        if (path == null)
+        {
+            throw new IllegalArgumentException("Path cannot be null");
+        }
+
         this.soundSystem = soundSystem;
         open(path);
     }

@@ -129,9 +129,11 @@ Section "Wezzle" SecWezzle
 
   ; Write license information with user privileges.
   ; Do not write license if it already exists.
-  IfFileExists "${USER_DIR}\license.xml" +3 0
-  GetFunctionAddress $0 WriteLicense
-  UAC::ExecCodeSegment $0 
+  !ifndef TRIAL
+    IfFileExists "${USER_DIR}\license.xml" +3 0
+    GetFunctionAddress $0 WriteLicense
+    UAC::ExecCodeSegment $0
+  !endif
 
   ; Store installation folder.
   WriteRegStr HKLM "${HKLM_REG_KEY}" "InstallDir" $INSTDIR

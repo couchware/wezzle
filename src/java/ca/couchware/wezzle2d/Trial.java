@@ -91,7 +91,7 @@ public class Trial
         }
     }
 
-    public synchronized static boolean hasTrialExpired()
+    public synchronized static boolean hasExpired()
     {
         return timePlayedInMilliseconds >= TOTAL_TIME;
     }

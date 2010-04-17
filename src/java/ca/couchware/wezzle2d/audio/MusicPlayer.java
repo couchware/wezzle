@@ -50,6 +50,16 @@ public class MusicPlayer
      */
     private MusicPlayer(SoundSystem soundSystem, String path)
     {
+        if (soundSystem == null)
+        {
+            throw new IllegalArgumentException("Sound system cannot be null");
+        }
+
+        if (path == null)
+        {
+            throw new IllegalArgumentException("Path cannot be null");
+        }
+
         this.soundSystem = soundSystem;
         open(path);
     }

@@ -64,10 +64,7 @@ public class ListenerManager
         PIECE,
         SCORE,
         TIMER
-    }
-    
-    /** The single listener manager. */
-    private final static ListenerManager SINGLE = new ListenerManager();            
+    }        
     
     /** The score listener list. */
     private Map<Listener, List<IListener>> listenerMap;
@@ -75,7 +72,7 @@ public class ListenerManager
     /**
      * Private constructor to ensure only a single instance ever exists.
      */
-    private ListenerManager()
+    public ListenerManager()
     {
         // Make the listener map.
         listenerMap = new EnumMap<Listener, List<IListener>>(Listener.class);
@@ -85,17 +82,7 @@ public class ListenerManager
         {
             listenerMap.put(t, new ArrayList<IListener>());
         }
-    }
-    
-    /**
-     * Get the one instance of this manager.
-     * 
-     * @return The only instance of the listener manager in the whole wide world.
-     */
-    public static ListenerManager get()
-    {
-        return SINGLE;
-    }            
+    }              
     
     public void registerListener(Listener listenerType, IListener listener)
     {

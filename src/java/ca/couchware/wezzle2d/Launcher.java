@@ -122,6 +122,13 @@ public class Launcher extends Applet
         super.destroy();
         CouchLogger.get().recordMessage(this.getClass(), "Applet destroy completed");
     }
+
+    public boolean validate(SettingsManager settingsMan)
+    {
+        final String serialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
+        final String licenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
+        return Game.validateLicenseInformation(serialNumber, licenseKey);
+    }
     
     public void startWezzle(Canvas parent, boolean trialMode)
     {
@@ -143,27 +150,18 @@ public class Launcher extends Applet
         CouchLogger.get().setLogLevel(settingsMan.getString(Key.DEBUG_LOG_LEVEL));
 
         try
-        {
-            final String serialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
-            final String licenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
-            final boolean validated = Game.validateLicenseInformation(serialNumber, licenseKey);
-
-            if (!validated)
+        {           
+            if (!validate(settingsMan))
             {
                 if (!trialMode)
                 {
                     LicenseDialog.run();
 
-                    final String enteredSerialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
-                    final String enteredLicenseKey = settingsMan.getString(Key.USER_LICENSE_KEY);
-                    final boolean enteredValidated =
-                            Game.validateLicenseInformation(enteredSerialNumber, enteredLicenseKey);
-
-                    if (enteredValidated)
+                    if (!validate(settingsMan))
                     {
                         CouchLogger.get().recordMessage( Game.class,
                                 "License information verified");
-                        startGame(parent, trialMode);
+                        startGame(parent, false);
                     }
                     else
                     {
@@ -173,21 +171,24 @@ public class Launcher extends Applet
                 }
                 else
                 {
+                    boolean licensed = false;
                     boolean loadWezzle = false;
                     do
                     {
                         loadWezzle = TrialLauncherDialog.run();
+                        licensed = validate(settingsMan);
                         if (loadWezzle)
                         {
-                            startGame(parent, trialMode);
+                            startGame(parent, !licensed);
                         }
-                    } while (loadWezzle);
+                    }
+                    while (loadWezzle && !licensed);
                     
                 } // end if
             } // end if
             else
             {
-                startGame(parent, trialMode);
+                startGame(parent, false);
             }
         }
         catch (Throwable t)
