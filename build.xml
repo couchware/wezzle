@@ -11,7 +11,7 @@
 
     <!-- Override the default task so that it includes the native libraries -->
     <!-- for all supported platforms.                                       -->
-    <target depends="test,jar,windows,macosx,linux" description="Build and test whole project." name="default"/>
+    <target depends="test,jar,windows,mac,linux" description="Build and test whole project." name="default"/>
 
     <target name="windows" depends="test,jar" description="Build the Windows version of Wezzle">
         <!-- This copies the native LWJGL library. -->
@@ -27,14 +27,14 @@
         </jar>
     </target>
 
-    <target name="macosx" depends="test,jar" description="Build the Mac OS X version of Wezzle">
+    <target name="mac" depends="test,jar" description="Build the Mac OS X version of Wezzle">
         <!-- This copies the native LWJGL library. -->
         <copy todir="${dist.dir}/lib/native/macosx">
             <fileset dir="lib/native/macosx" excludes="*.jar"/>
         </copy>
     </target>
 
-    <target name="native-macosx-jar" depends="jar">
+    <target name="native-mac-jar" depends="jar">
         <mkdir dir="${dist.dir}/lib/native" />
         <jar destfile="${dist.dir}/lib/native/macosx_natives.jar">
             <fileset dir="lib/native/macosx" />
@@ -73,8 +73,8 @@
         <launch4j configFile="l4j-config-for-trial.xml"/>
     </target>
 
-    <target name="app" depends="jar,macosx" description="Build the Wezzle Mac .app">
-        <!-- This take creates the app file. -->
+    <target name="mkapp" description="Internal, do not call">
+        <!-- This task creates the app file. -->
         <taskdef name="jarbundler"
                  classname="net.sourceforge.jarbundler.JarBundler"
                  classpath="${jarbundler.dir}/jarbundler-2.1.0.jar"/>
@@ -97,6 +97,7 @@
                     jvmversion="1.5+"
                     signature="WEZL"
                     vmoptions="-ea"
+                    arguments="${arguments}"
                     workingdirectory="$APP_PACKAGE/Contents/Resources">
 
             <jarfilelist dir="${dist.dir}" files="${application.title}.jar"/>
@@ -113,10 +114,28 @@
         </jarbundler>
     </target>
 
+    <target name="app" depends="jar,mac" description="Build the Wezzle Mac .app">
+        <antcall target="mkapp">
+            <param name="arguments" value="" />
+        </antcall>
+    </target>
+
+    <target name="trial-app" depends="jar,mac" description="Build the Wezzle Mac Trial .app">
+        <antcall target="mkapp">
+            <param name="arguments" value="--trial" />
+        </antcall>
+    </target>
+
     <target name="mac-installer" depends="app" description="Build the Wezzle Mac Installer">
         <exec executable="./create-wezzle-dmg" dir="${opt.dir}/dmg" />
         <move file="${opt.dir}/dmg/Wezzle-setup.dmg"
               tofile="${opt.dir}/dmg/Wezzle-${application.version}-setup.dmg" />
+    </target>
+
+    <target name="trial-mac-installer" depends="trial-app" description="Build the Wezzle Mac Trial Installer">
+        <exec executable="./create-wezzle-dmg" dir="${opt.dir}/dmg" />
+        <move file="${opt.dir}/dmg/Wezzle-setup.dmg"
+              tofile="${opt.dir}/dmg/Wezzle-${application.version}-dl-setup.dmg" />
     </target>
 
     <target name="windows-installer" depends="exe" description="Build the Wezzle Windows Installer">
@@ -137,7 +156,7 @@
         </nsis>
     </target>
 
-    <target name="native-jars" depends="native-windows-jar,native-macosx-jar,native-linux-jar" description="Build all native JARs"/>
+    <target name="native-jars" depends="native-windows-jar,native-mac-jar,native-linux-jar" description="Build all native JARs"/>
 
     <target name="applet" depends="set-applet,native-jars,unset-applet" description="Build the Wezzle Applet">
 

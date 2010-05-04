@@ -157,7 +157,7 @@ public class Launcher extends Applet
                 {
                     LicenseDialog.run();
 
-                    if (!validate(settingsMan))
+                    if (validate(settingsMan))
                     {
                         CouchLogger.get().recordMessage( Game.class,
                                 "License information verified");
