@@ -398,7 +398,6 @@ public class Game implements IWindowCallback
     /**
      * Initialize the common elements for the game.
      */
-    @Override
     public void initialize()
     {        
         // Make sure the listener and settings managers are ready.
@@ -433,7 +432,6 @@ public class Game implements IWindowCallback
             final int size = i;
             loader.addTask(new Runnable()
             {
-                @Override
                 public void run()
                 {
                     new ResourceFactory.LabelBuilder(0, 0).size(size).build();
@@ -444,7 +442,6 @@ public class Game implements IWindowCallback
         // Initialize managers.
         loader.addTask(new Runnable()
         {
-            @Override
             public void run()
             {
                 hub.initialize(win, Game.this, EnumSet.allOf(Manager.class));
@@ -455,7 +452,6 @@ public class Game implements IWindowCallback
         // Initialize the core managers.
         loader.addTask(new Runnable()
         {
-            @Override
             public void run()
             {
                 initializeCoreManagers();
@@ -468,7 +464,6 @@ public class Game implements IWindowCallback
         }
     }
 
-    @Override
     public void update()
     {
         if (Trial.hasStarted())
@@ -762,7 +757,6 @@ public class Game implements IWindowCallback
      * @return True if the frame has been updated, false if nothing has been
      * updated.
      */
-    @Override
     public boolean draw()
     {
         // If the background is dirty, then redraw everything.
@@ -1055,7 +1049,6 @@ public class Game implements IWindowCallback
     /**
      * Notification that the game window has been closed
      */
-    @Override
     public void windowClosed()
     {
         try
@@ -1097,7 +1090,6 @@ public class Game implements IWindowCallback
     /**
      * Notification that the game window has been deactivated in some way.
      */
-    @Override
     public void windowDeactivated()
     {
         // Don't auto-pause game if:
@@ -1116,7 +1108,6 @@ public class Game implements IWindowCallback
     /**
      * Notification that the game window has been reactivated in some way.
      */
-    @Override
     public void windowActivated()
     {
     }

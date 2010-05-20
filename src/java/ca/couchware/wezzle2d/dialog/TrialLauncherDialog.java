@@ -467,7 +467,6 @@ public class TrialLauncherDialog extends JFrame
 
         java.awt.EventQueue.invokeAndWait(new Runnable()
         {
-            @Override
             public void run()
             {
                 try

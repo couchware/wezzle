@@ -123,6 +123,11 @@ public class Launcher extends Applet
         CouchLogger.get().recordMessage(this.getClass(), "Applet destroy completed");
     }
 
+    public boolean acceptedAgreement(SettingsManager settingsMan)
+    {
+        return settingsMan.getBool(Key.USER_AGREEMENT_ACCEPTED);
+    }
+
     public boolean validate(SettingsManager settingsMan)
     {
         final String serialNumber = settingsMan.getString(Key.USER_SERIAL_NUMBER);
@@ -150,45 +155,62 @@ public class Launcher extends Applet
         CouchLogger.get().setLogLevel(settingsMan.getString(Key.DEBUG_LOG_LEVEL));
 
         try
-        {           
-            if (!validate(settingsMan))
+        {                       
+            if (!acceptedAgreement(settingsMan))
             {
-                if (!trialMode)
+                AgreementDialog.run();
+                if (!acceptedAgreement(settingsMan))
                 {
-                    LicenseDialog.run();
-
-                    if (validate(settingsMan))
-                    {
-                        CouchLogger.get().recordMessage( Game.class,
-                                "License information verified");
-                        startGame(parent, false);
-                    }
-                    else
-                    {
-                        CouchLogger.get().recordWarning( Game.class,
-                                "Invalid license information");                        
-                    }
+                    CouchLogger.get().recordWarning( Game.class,
+                            "Did not accept agreement");
                 }
                 else
                 {
-                    boolean licensed = false;
-                    boolean loadWezzle = false;
-                    do
+                    settingsMan.saveSettings();
+                }
+            }
+
+            if (acceptedAgreement(settingsMan))
+            {
+                if (!validate(settingsMan))
+                {
+                    if (!trialMode)
                     {
-                        loadWezzle = TrialLauncherDialog.run();
-                        licensed = validate(settingsMan);
-                        if (loadWezzle)
+                        LicenseDialog.run();
+
+                        if (validate(settingsMan))
                         {
-                            startGame(parent, !licensed);
+                            CouchLogger.get().recordMessage( Game.class,
+                                    "License information verified");
+                            startGame(parent, false);
+                        }
+                        else
+                        {
+                            CouchLogger.get().recordWarning( Game.class,
+                                    "Invalid license information");                        
                         }
                     }
-                    while (loadWezzle && !licensed);
-                    
+                    else
+                    {
+                        boolean licensed = false;
+                        boolean loadWezzle = false;
+                        do
+                        {
+                            loadWezzle = TrialLauncherDialog.run();
+                            licensed = validate(settingsMan);
+                            if (loadWezzle)
+                            {
+                                startGame(parent, !licensed);
+                            }
+                        }
+                        while (loadWezzle && !licensed);
+
+                    } // end if
                 } // end if
-            } // end if
-            else
-            {
-                startGame(parent, false);
+                else
+                {
+                    startGame(parent, false);
+                }
             }
         }
         catch (Throwable t)

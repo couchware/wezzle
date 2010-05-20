@@ -269,8 +269,7 @@ public class ResourceFactory
             }
 
             runnableList.add( new Runnable()
-            {
-                @Override
+            {               
                 public void run()
                 {
                     getSprite( spritePath + "/" + spriteFilePath );
@@ -368,7 +367,6 @@ public class ResourceFactory
             return this;
         }      
 
-        @Override
         public ITextLabel build()
         {
             return get().getLabel( this );

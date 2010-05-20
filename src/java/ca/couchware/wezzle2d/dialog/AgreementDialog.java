@@ -107,8 +107,6 @@ public class AgreementDialog extends JFrame
 
         java.awt.EventQueue.invokeAndWait(new Runnable()
         {
-
-            @Override
             public void run()
             {
                 try
