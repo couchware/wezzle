@@ -157,7 +157,7 @@ public class AgreementDialog extends JFrame
         dialogPane.setBorder(new EmptyBorder(20, 20, 20, 20));
         dialogPane.setLayout(new BorderLayout());
 
-        instructionsLabel.setText("<html>Please review the license terms before playing Wezzle.<br/> <br/>If you accept the terms of the agreement, click I Agree.  You must accept the terms of the agreement to play Wezzle.</html>");
+        instructionsLabel.setText("<html>Please review the license terms before playing Wezzle.<br><br>If you accept the terms of the agreement, click I Agree.  You must accept the terms of the agreement to play Wezzle.</html>");
         instructionsLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         okButton.setText("I Agree");

@@ -98,7 +98,7 @@ public class Game implements IWindowCallback
     final public static String APPLICATION_NAME = "Wezzle";
     
     /** The version of the application.  Automaticaly set by Ant. */
-    final public static String APPLICATION_VERSION_NUMBER = "1.3.4";
+    final public static String APPLICATION_VERSION_NUMBER = "1.3.5";
     final public static String APPLICATION_DISTRIBUTION = APPLET ? "Web" : "Full";
     final public static String APPLICATION_VERSION =
             String.format("%s (%s)",
