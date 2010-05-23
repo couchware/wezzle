@@ -143,7 +143,9 @@
             <classpath location="lib/nsis/nsisant-1.2.jar"/>
         </taskdef>
 
-        <nsis script="opt/nsis/installer.nsi"/>
+        <nsis script="opt/nsis/installer.nsi">
+            <define name="APP_VERSION" value="${application.version}"/>
+        </nsis>
     </target>
 
     <target name="trial-windows-installer" depends="trial-exe" description="Build the Wezzle Windows Trial Installer">
@@ -152,6 +154,7 @@
         </taskdef>
 
         <nsis script="opt/nsis/installer.nsi">
+            <define name="APP_VERSION" value="${application.version}"/>
             <define name="TRIAL" value="1"/>
         </nsis>
     </target>

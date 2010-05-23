@@ -6,10 +6,13 @@
 ;--------------------------------
 ; Settings
 
+  !ifndef APP_VERSION
+    !define APP_VERSION "unknown"
+  !endif
+
   !define APP_VENDOR "Couchware"
   !define APP_SHORT_NAME "Wezzle"
-  !define APP_FULL_NAME "Wezzle"
-  !define APP_VERSION "1.3.4"
+  !define APP_FULL_NAME "Wezzle"  
   !define JAVA_REQUIRED "1.6.0"
   !define JAVA_INSTALLER "..\jre-installer\jre-6u17-windows-i586-s.exe"
   !define HKCU_REG_KEY "Software\${APP_VENDOR}\${APP_FULL_NAME}"
